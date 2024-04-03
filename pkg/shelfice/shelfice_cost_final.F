@@ -31,7 +31,9 @@ C     == Global variables ===
 
 #ifdef ALLOW_COST
 # include "cost.h"
-# include "optim.h"
+# ifndef ALLOW_OPENAD
+#  include "OPTIMCYCLE.h"
+# endif
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:

@@ -62,12 +62,12 @@ C Local variables
 
       IF ( arrType.EQ.'RL' ) THEN
         CALL MDS_READ_SEC_XZ(
-     I                fName, filePrec, .FALSE., arrType, nNz,
+     I                fName, filePrec, .FALSE., arrType, nNz, 1, nNz,
      O                arr, dummyRS,
      I                irecord, myThid )
       ELSE
         CALL MDS_READ_SEC_XZ(
-     I                fName, filePrec, .FALSE., arrType, nNz,
+     I                fName, filePrec, .FALSE., arrType, nNz, 1, nNz,
      O                dummyRL, arr,
      I                irecord, myThid )
       ENDIF
@@ -127,12 +127,12 @@ C Local variables
 
       IF ( arrType.EQ.'RL' ) THEN
         CALL MDS_READ_SEC_YZ(
-     I                fName, filePrec, .FALSE., arrType, nNz,
+     I                fName, filePrec, .FALSE., arrType, nNz, 1, nNz,
      O                arr, dummyRS,
      I                irecord, myThid )
       ELSE
         CALL MDS_READ_SEC_YZ(
-     I                fName, filePrec, .FALSE., arrType, nNz,
+     I                fName, filePrec, .FALSE., arrType, nNz, 1, nNz,
      O                dummyRL, arr,
      I                irecord, myThid )
       ENDIF
@@ -192,12 +192,12 @@ C Local variables
 
       IF ( arrType.EQ.'RL' ) THEN
         CALL MDS_READ_SEC_XZ(
-     I                fName, filePrec, .TRUE., arrType, nNz,
+     I                fName, filePrec, .TRUE., arrType, nNz, 1, nNz,
      O                arr, dummyRS,
      I                irecord, myThid )
       ELSE
         CALL MDS_READ_SEC_XZ(
-     I                fName, filePrec, .TRUE., arrType, nNz,
+     I                fName, filePrec, .TRUE., arrType, nNz, 1, nNz,
      O                dummyRL, arr,
      I                irecord, myThid )
       ENDIF
@@ -257,12 +257,12 @@ C Local variables
 
       IF ( arrType.EQ.'RL' ) THEN
         CALL MDS_READ_SEC_YZ(
-     I                fName, filePrec, .TRUE., arrType, nNz,
+     I                fName, filePrec, .TRUE., arrType, nNz, 1, nNz,
      O                arr, dummyRS,
      I                irecord, myThid )
       ELSE
         CALL MDS_READ_SEC_YZ(
-     I                fName, filePrec, .TRUE., arrType, nNz,
+     I                fName, filePrec, .TRUE., arrType, nNz, 1, nNz,
      O                dummyRL, arr,
      I                irecord, myThid )
       ENDIF
@@ -329,12 +329,12 @@ C Local variables
       IF ( arrType.EQ.'RL' ) THEN
         CALL MDS_WRITE_SEC_XZ(
      I                 fName, filePrec, globalFile, .FALSE.,
-     I                 arrType, nNz, arr, dummyRS,
+     I                 arrType, nNz, 1, nNz, arr, dummyRS,
      I                 irecord, myIter, myThid )
       ELSE
         CALL MDS_WRITE_SEC_XZ(
      I                 fName, filePrec, globalFile, .FALSE.,
-     I                 arrType, nNz, dummyRL, arr,
+     I                 arrType, nNz, 1, nNz, dummyRL, arr,
      I                 irecord, myIter, myThid )
       ENDIF
 
@@ -400,12 +400,12 @@ C Local variables
       IF ( arrType.EQ.'RL' ) THEN
         CALL MDS_WRITE_SEC_YZ(
      I                 fName, filePrec, globalFile, .FALSE.,
-     I                 arrType, nNz, arr, dummyRS,
+     I                 arrType, nNz, 1, nNz, arr, dummyRS,
      I                 irecord, myIter, myThid )
       ELSE
         CALL MDS_WRITE_SEC_YZ(
      I                 fName, filePrec, globalFile, .FALSE.,
-     I                 arrType, nNz, dummyRL, arr,
+     I                 arrType, nNz, 1, nNz, dummyRL, arr,
      I                 irecord, myIter, myThid )
       ENDIF
 
@@ -471,12 +471,12 @@ C Local variables
       IF ( arrType.EQ.'RL' ) THEN
         CALL MDS_WRITE_SEC_XZ(
      I                 fName, filePrec, globalFile, .TRUE.,
-     I                 arrType, nNz, arr, dummyRS,
+     I                 arrType, nNz, 1, nNz, arr, dummyRS,
      I                 irecord, myIter, myThid )
       ELSE
         CALL MDS_WRITE_SEC_XZ(
      I                 fName, filePrec, globalFile, .TRUE.,
-     I                 arrType, nNz, dummyRL, arr,
+     I                 arrType, nNz, 1, nNz, dummyRL, arr,
      I                 irecord, myIter, myThid )
       ENDIF
 
@@ -542,12 +542,12 @@ C Local variables
       IF ( arrType.EQ.'RL' ) THEN
         CALL MDS_WRITE_SEC_YZ(
      I                 fName, filePrec, globalFile, .TRUE.,
-     I                 arrType, nNz, arr, dummyRS,
+     I                 arrType, nNz, 1, nNz, arr, dummyRS,
      I                 irecord, myIter, myThid )
       ELSE
         CALL MDS_WRITE_SEC_YZ(
      I                 fName, filePrec, globalFile, .TRUE.,
-     I                 arrType, nNz, dummyRL, arr,
+     I                 arrType, nNz, 1, nNz, dummyRL, arr,
      I                 irecord, myIter, myThid )
       ENDIF
 

@@ -9,7 +9,7 @@ C     | o computes the cost for netcdf profiles data             |
 C     | started: Gael Forget 15-March-2006                       |
 C     o==========================================================o
 
-      SUBROUTINE cost_profiles( myiter, mytime, myThid )
+      SUBROUTINE cost_profiles( myIter, myTime, myThid )
 
       IMPLICIT NONE
 
@@ -28,13 +28,13 @@ C     ======== Global data ============================
 # include "netcdf.inc"
 #endif
 #ifdef ALLOW_CTRL
-# include "optim.h"
+# include "OPTIMCYCLE.h"
 #endif
 
 c     == routine arguments ==
-      integer myiter
-      _RL     mytime
-      integer mythid
+      integer myIter
+      _RL     myTime
+      integer myThid
 
 #ifdef ALLOW_PROFILES
 
@@ -46,8 +46,8 @@ C     ========= Local variables =======================
 #ifndef ALLOW_CTRL
       integer optimcycle
 #endif
-      character*(max_len_mbuf) msgbuf
-      character*(80) profilesfile, fnameequinc
+      CHARACTER*(MAX_LEN_MBUF) msgbuf
+      CHARACTER*(MAX_LEN_FNAM) profilesfile, fnameequinc
       integer IL, JL, err
 
       _RL  objf_prof_tile (nSx,nSy)
@@ -60,7 +60,7 @@ C     ========= Local variables =======================
       integer itmp
       integer k2, ix9, iy9, ktmp
       integer cunit
-      character*(MAX_LEN_FNAM) cfile
+      CHARACTER*(MAX_LEN_FNAM) cfile
 
       _RL prof_data1D_mean(NLEVELMAX)
       _RL prof_count1D(NLEVELMAX)
@@ -90,12 +90,12 @@ c     == end of interface ==
 
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf,
-     &  standardmessageunit,SQUEEZE_RIGHT , mythid)
+     &  standardMessageUnit,SQUEEZE_RIGHT , myThid)
       write(msgbuf,'(a)') '== cost_profiles: begin =='
       call print_message( msgbuf,
-     &  standardmessageunit,SQUEEZE_RIGHT , mythid)
+     &  standardMessageUnit,SQUEEZE_RIGHT , myThid)
 
-        _BEGIN_MASTER( mythid )
+        _BEGIN_MASTER( myThid )
 
 #ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
       NAVGBIN = 0
@@ -137,11 +137,11 @@ c then re-open it to compute cost function
            iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
            jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
            IL  = ILNBLNK( profilesfiles(num_file) )
-           write(profilesfile(1:80),'(1a)')
+           write(profilesfile,'(1a)')
      &     profilesfiles(num_file)(1:IL)
            IL  = ILNBLNK( profilesfile )
            JL  = ILNBLNK( profilesDir )
-           write(fnameequinc(1:80),'(3a,i3.3,a,i3.3,a)')
+           write(fnameequinc,'(3a,i3.3,a,i3.3,a)')
      &     profilesDir(1:JL),profilesfile(1:IL),'.',iG,'.',jG,'.equi.nc'
 c
            err = NF_OPEN(fnameequinc,NF_NOWRITE,
@@ -167,7 +167,7 @@ C find the vertical indices
           if (vec_quantities(num_file,num_var,bi,bj).EQV..TRUE.) then
            do prof_num=1,NOBSGLOB
             if (prof_num.LE.ProfNo(num_file,bi,bj)) then
- 
+
               do K=1,NLEVELMAX
                 prof_traj1D(k)=0.
 C             prof_traj1D_mean(k)=0.
@@ -178,7 +178,7 @@ C             prof_data1D_mean(k)=0.
               enddo
               ix9 = prof_interp_i(num_file,prof_num,1,bi,bj)
               iy9 = prof_interp_j(num_file,prof_num,1,bi,bj)
- 
+
               if(prof_ind_avgbin(num_file,prof_num,bi,bj).GT.NAVGBIN)
      &         NAVGBIN = prof_ind_avgbin(num_file,prof_num,bi,bj)
 
@@ -189,13 +189,13 @@ C             prof_data1D_mean(k)=0.
 
                call active_read_profile(num_file,
      &          ProfDepthNo(num_file,bi,bj),prof_traj1D,num_var,
-     &          prof_num,.false.,optimcycle,bi,bj,mythid,
+     &          prof_num,.false.,optimcycle,bi,bj,myThid,
      &          profiles_dummy(num_file,num_var,bi,bj))
 
                call profiles_readvector(num_file,num_var,
      &          prof_ind_glob(num_file,prof_num,bi,bj),
      &          ProfDepthNo(num_file,bi,bj),prof_data1D,bi,bj,myThid)
- 
+
                call profiles_readvector(num_file,-num_var,
      &          prof_ind_glob(num_file,prof_num,bi,bj),
      &          ProfDepthNo(num_file,bi,bj),
@@ -210,7 +210,7 @@ C             prof_data1D_mean(k)=0.
      &            = prof_traj1D_all_mean(itmp,
      &               prof_lev_comb(k,num_file,bi,bj), num_var)
      &            + prof_traj1D(k)
- 
+
                  prof_data1D_all_mean(itmp,
      &            prof_lev_comb(k,num_file,bi,bj), num_var)
      &            = prof_data1D_all_mean(itmp,
@@ -297,13 +297,13 @@ C Now do the averaging
      &          prof_count1D_all_mean(iavgbin,ikzz,num_var)
              prof_traj1D_all_mean(iavgbin,ikzz,num_var)
      &        = prof_traj1D_all_mean(iavgbin,ikzz,num_var)*
-     &          tmp_recip_count 
+     &          tmp_recip_count
              prof_data1D_all_mean(iavgbin,ikzz,num_var)
      &        = prof_data1D_all_mean(iavgbin,ikzz,num_var)*
-     &          tmp_recip_count 
+     &          tmp_recip_count
              prof_weights1D_all_mean(iavgbin,ikzz,num_var)
      &        = prof_weights1D_all_mean(iavgbin,ikzz,num_var)*
-     &          tmp_recip_count 
+     &          tmp_recip_count
             ENDIF
          ENDDO
         ENDDO
@@ -330,19 +330,19 @@ C note prof_weights1D_all_mean is still sigam^2. Need to convert to weight
         ENDDO
        ENDDO
 
-C     _BEGIN_MASTER( mythid )
+C     _BEGIN_MASTER( myThid )
        IF ( myProcId .eq. 0 ) THEN
 
         DO num_var=1,NVARMAX
          iL = ILNBLNK( prof_names(1,num_var) )
          write(cfile,'(2a)') prof_names(1,num_var)(1:iL),
      &   '_data_mean.data'
-         call mdsfindunit( cunit, mythid )
+         call mdsfindunit( cunit, myThid )
          open( cunit, file   = cfile,
      &        status = 'unknown',
      &        access  = 'direct',
      &        recl = NAVGBINMAX*4)
-  
+
          DO ikzz = 1, NLEVELCOMB
           tmp99(1:NAVGBINMAX)=
      &      prof_data1D_all_mean(1:NAVGBINMAX,ikzz,num_var)
@@ -352,7 +352,7 @@ C     _BEGIN_MASTER( mythid )
 
          write(cfile,'(2a)')prof_names(1,num_var)(1:iL),
      &    '_model_mean.data'
-         call mdsfindunit( cunit, mythid )
+         call mdsfindunit( cunit, myThid )
          open( cunit, file   = cfile,
      &         status = 'unknown',
 C    &         form   = 'unformatted',
@@ -369,7 +369,7 @@ C    &         access  = 'sequential'   )
 
          write(cfile,'(2a)')
      &     prof_names(1,num_var)(1:iL),'_weight_mean.data'
-         call mdsfindunit( cunit, mythid )
+         call mdsfindunit( cunit, myThid )
          open( cunit, file   = cfile,
      &         status = 'unknown',
      &         access  = 'direct',
@@ -384,12 +384,12 @@ C    &         access  = 'sequential'   )
 
          write(cfile,'(2a)')prof_names(1,num_var)(1:iL),
      &    '_count_mean.data'
-         call mdsfindunit( cunit, mythid )
+         call mdsfindunit( cunit, myThid )
          open( cunit, file   = cfile,
      &         status = 'unknown',
      &         access  = 'direct',
      &         recl = NAVGBINMAX*4)
- 
+
          DO ikzz = 1, NLEVELCOMB
           tmp99(1:NAVGBINMAX)=
      &     prof_count1D_all_mean(1:NAVGBINMAX,ikzz,num_var)
@@ -398,7 +398,7 @@ C    &         access  = 'sequential'   )
          close ( cunit )
         ENDDO ! DO num_var=1,NVARMAX
        ENDIF ! IF ( myProcId .eq. 0 ) THEN
-C      _END_MASTER( mythid )
+C      _END_MASTER( myThid )
        _BARRIER
 #endif
 
@@ -416,11 +416,11 @@ c then re-open it to compute cost function
            iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
            jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
            IL  = ILNBLNK( profilesfiles(num_file) )
-           write(profilesfile(1:80),'(1a)')
+           write(profilesfile,'(1a)')
      &     profilesfiles(num_file)(1:IL)
            IL  = ILNBLNK( profilesfile )
            JL  = ILNBLNK( profilesDir )
-           write(fnameequinc(1:80),'(3a,i3.3,a,i3.3,a)')
+           write(fnameequinc,'(3a,i3.3,a,i3.3,a)')
      &     profilesDir(1:JL),profilesfile(1:IL),'.',iG,'.',jG,'.equi.nc'
 c
            err = NF_OPEN(fnameequinc,NF_NOWRITE,
@@ -472,7 +472,7 @@ C end of #ifndef ALLOW_PROFILES_SAMPLESPLIT_COST
 
              call active_read_profile(num_file,
      &           ProfDepthNo(num_file,bi,bj),prof_traj1D,num_var,
-     &           prof_num,.false.,optimcycle,bi,bj,mythid,
+     &           prof_num,.false.,optimcycle,bi,bj,myThid,
      &           profiles_dummy(num_file,num_var,bi,bj))
 
              call profiles_readvector(num_file,num_var,
@@ -521,7 +521,7 @@ C end of #ifndef ALLOW_PROFILES_SAMPLESPLIT_COST
            write(msgbuf,'(a,4I9)') 'bi,bj,prof_num,num_var ',bi,bj,
      &      ProfNo(num_file,bi,bj),num_var
            call print_message(
-     &      msgbuf, standardmessageunit, SQUEEZE_RIGHT , mythid)
+     &      msgbuf, standardMessageUnit, SQUEEZE_RIGHT , myThid)
            write(msgbuf,'(a,D22.15,D22.15)')
      &      prof_names(num_file,num_var),
      &      objf_profiles(num_file,num_var,bi,bj),
@@ -590,14 +590,14 @@ C        if (ProfNo(num_file,bi,bj).GT.0) then
            write(msgbuf,'(a,4I9)') 'bi,bj,num_var ',bi,bj,
      &      num_var
            call print_message(
-     &      msgbuf, standardmessageunit, SQUEEZE_RIGHT , mythid)
+     &      msgbuf, standardMessageUnit, SQUEEZE_RIGHT , myThid)
 
            write(msgbuf,'(a,a5,D22.15,D22.15)') prof_names(1,num_var),
      &      '_mean',
      &      objf_profiles_mean(num_var,bi,bj),
      &      num_profiles_mean(num_var,bi,bj)
            call print_message(
-     &      msgbuf, standardmessageunit, SQUEEZE_RIGHT , mythid)
+     &      msgbuf, standardMessageUnit, SQUEEZE_RIGHT , myThid)
 
           enddo !do num_var...
 C        endif
@@ -611,14 +611,14 @@ C        enddo !do num_file
        ENDDO
       ENDDO
 
-      _END_MASTER( mythid )
+      _END_MASTER( myThid )
 
 c print cost function values
       do num_file=1,NFILESPROFMAX
       do num_var=1,NVARMAX
 c
-      do bj = mybylo(mythid),mybyhi(mythid)
-        do bi = mybxlo(mythid),mybxhi(mythid)
+      do bj = myByLo(myThid),myByHi(myThid)
+        do bi = myBxLo(myThid),myBxHi(myThid)
           objf_prof_tile(bi,bj) =
      &             objf_profiles(num_file,num_var,bi,bj)
           num_prof_tile(bi,bj) =
@@ -634,7 +634,7 @@ c
      &  objf_prof_glo,num_prof_glo
 
       IF ( num_prof_glo .GT. 0. ) call print_message( msgbuf,
-     &  standardmessageunit,SQUEEZE_RIGHT , mythid)
+     &  standardMessageUnit,SQUEEZE_RIGHT , myThid)
 c
       enddo
       enddo
@@ -642,8 +642,8 @@ c
 #ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
       do num_var=1,NVARMAX
 c
-      do bj = mybylo(mythid),mybyhi(mythid)
-        do bi = mybxlo(mythid),mybxhi(mythid)
+      do bj = myByLo(myThid),myByHi(myThid)
+        do bi = myBxLo(myThid),myBxHi(myThid)
           objf_prof_mean_tile(bi,bj) =
      &             objf_profiles_mean(num_var,bi,bj)
           num_prof_mean_tile(bi,bj) =
@@ -661,22 +661,21 @@ c
      &  objf_prof_mean_glo,num_prof_mean_glo
 
       IF ( num_prof_mean_glo .GT. 0. ) call print_message( msgbuf,
-     &  standardmessageunit,SQUEEZE_RIGHT , mythid)
+     &  standardMessageUnit,SQUEEZE_RIGHT , myThid)
 c
       enddo
 
 #endif
 C! ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
 
-
       write(msgbuf,'(a)') '== cost_profiles: end   =='
       call print_message( msgbuf,
-     &  standardmessageunit,SQUEEZE_RIGHT , mythid)
+     &  standardMessageUnit,SQUEEZE_RIGHT , myThid)
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf,
-     &  standardmessageunit,SQUEEZE_RIGHT , mythid)
+     &  standardMessageUnit,SQUEEZE_RIGHT , myThid)
 
-c     call profiles_make_ncfile(mythid)
+c     call profiles_make_ncfile(myThid)
 
 C===========================================================
 

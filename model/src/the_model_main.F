@@ -468,6 +468,7 @@ C/\  | | | | |                        :: advection scheme (pkg/generic_advdiff)
 C/\  | | | | |-CD_CODE_WRITE_PICKUP   :: Write CD-code pickups (see pkg/cd_code)
 C/\  | | | | |-OBCS_WRITE_PICKUP      :: Write OBCS pickups    (see pkg/obcs)
 C/\  | | | | |-GGL90_WRITE_PICKUP     :: Write GGL90 pickups   (see pkg/ggl90)
+C/\  | | | | |-GMREDI_WRITE_PICKUP    :: Write GMREDI pickups  (see pkg/gmredi)
 C/\  | | | | |-BBL_WRITE_PICKUP       :: Write BBL pickups     (see pkg/bbl)
 C/\  | | | | |-CHEAPAML_WRITE_PICKUP  :: Write CheapAML pickups (pkg/cheapaml)
 C/\  | | | | |-FLT_WRITE_PICKUP       :: Write Floats pickups  (see pkg/flt)
@@ -475,7 +476,7 @@ C/\  | | | | |-PTRACERS_WRITE_PICKUP  :: Write pTracers pickups (pkg/ptracers)
 C/\  | | | | |-GCHEM_WRITE_PICKUP     :: Write Geo-Chem pickups (see pkg/gchem)
 C/\  | | | | |-SEAICE_WRITE_PICKUP    :: Write SeaIce pickups  (see pkg/seaice)
 C/\  | | | | |-STREAMICE_WRITE_PICKUP :: Write StreamIce pickups (pkg/streamice)
-C/\  | | | | |-SHELFICE_WRITE_PICKUP :: Write ShelfIce pickups (pkg/shelfice)
+C/\  | | | | |-SHELFICE_WRITE_PICKUP  :: Write ShelfIce pickups (pkg/shelfice)
 C/\  | | | | |-THSICE_WRITE_PICKUP    :: Write ThSIce pickups  (see pkg/thsice)
 C/\  | | | | |-LAND_WRITE_PICKUP      :: Write Land   pickups  (see pkg/land)
 C/\  | | | | |-ATM_PHYS_WRITE_PICKUP  :: Write Atm-Phys pickups (pkg/atm_phys)
@@ -483,6 +484,7 @@ C/\  | | | | |-FIZHI_WRITE_PICKUP     :: Write Fizhi pickups   (see pkg/fizhi)
 C/\  | | | | |-FIZHI_WRITE_VEGTILES   :: Write Fizhi VegTiles  (see pkg/fizhi)
 C/\  | | | | |-FIZHI_WRITE_DATETIME   :: Write Fizhi DateTime  (see pkg/fizhi)
 C/\  | | | | |-CPL_WRITE_PICKUP       :: Write Coupling-Interface pickups
+C/\  | | | | |-ECCO_WRITE_PICKUP      :: Write ECCO pickups    (see pkg/ecco)
 C/\  | | | | |-MYPACKAGE_WRITE_PICKUP :: Write pkg/mypackage pickups
 C/\  | | | |
 C/\  | | | |-WRITE_PICKUP          :: Write main model pickup files.
@@ -584,8 +586,9 @@ C     == Global variables ===
 # include "tamc.h"
 #endif
 #ifdef ALLOW_CTRL
-# include "ctrl.h"
-# include "optim.h"
+# include "CTRL_SIZE.h"
+# include "CTRL.h"
+# include "OPTIMCYCLE.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -660,6 +663,8 @@ C--   Set model configuration (fixed arrays)
 
 # if defined( ALLOW_TANGENTLINEAR_RUN )
 
+# ifndef ALLOW_TAPENADE
+
 #  ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('G_THE_MAIN_LOOP',myThid)
 #  endif
@@ -667,7 +672,13 @@ C--   Set model configuration (fixed arrays)
       CALL G_THE_MAIN_LOOP ( myTime, myIter, myThid )
       CALL TIMER_STOP ('G_THE_MAIN_LOOP           [TANGENT RUN]',myThid)
 
+# endif /* ndef ALLOW_TAPENADE */
+
 # elif defined( ALLOW_ADJOINT_RUN )
+
+# ifdef ALLOW_TAPENADE
+        CALL THE_MAIN_LOOP_B( myTime, myIter, myThid )
+# else /* ALLOW_TAPENADE */
 
 #  ifdef ALLOW_DIVIDED_ADJOINT
 C-- The following assumes the TAF option '-pure'
@@ -698,6 +709,7 @@ C-- The following assumes the TAF option '-pure'
       CALL ADTHE_MAIN_LOOP ( myThid )
       CALL TIMER_STOP ('ADTHE_MAIN_LOOP          [ADJOINT RUN]', myThid)
 #  endif /* ALLOW_DIVIDED_ADJOINT */
+# endif /* ALLOW_TAPENADE */
 
 # else /* forward run only within AD setting */
 
@@ -712,7 +724,7 @@ C--   Call time stepping loop of full model
 # endif /* forward run only within AD setting */
 
 # ifdef ALLOW_CTRL
-# ifndef EXCLUDE_CTRL_PACK
+#  ifndef EXCLUDE_CTRL_PACK
       IF ( useCTRL ) THEN
       IF ( lastdiva .AND. doMainPack ) THEN
          CALL TIMER_START('CTRL_PACK           [THE_MODEL_MAIN]',myThid)
@@ -726,8 +738,8 @@ C--   Call time stepping loop of full model
          ENDIF
       ENDIF
       ENDIF
-# endif /* EXCLUDE_CTRL_PACK */
-# endif
+#  endif /* EXCLUDE_CTRL_PACK */
+# endif /* ALLOW_CTRL */
 
 # ifdef ALLOW_GRDCHK
       IF ( useGrdchk .AND. lastdiva ) THEN

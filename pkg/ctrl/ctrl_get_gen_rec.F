@@ -8,10 +8,7 @@
      O                        changed,
      O                        count0,
      O                        count1,
-     I                        mytime,
-     I                        myiter,
-     I                        mythid
-     &                      )
+     I                        myTime, myIter, myThid )
 
 C     ==================================================================
 C     SUBROUTINE ctrl_get_gen_rec
@@ -32,7 +29,8 @@ C     == global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "ctrl.h"
+#include "CTRL_SIZE.h"
+#include "CTRL.h"
 #ifdef ALLOW_CAL
 # include "cal.h"
 #endif
@@ -46,9 +44,9 @@ C     == routine arguments ==
       logical changed
       integer count0
       integer count1
-      _RL     mytime
-      integer myiter
-      integer mythid
+      _RL     myTime
+      integer myIter
+      integer myThid
 
 C     == local variables ==
 
@@ -95,7 +93,7 @@ C     Map the field parameters.
       call cal_CopyDate(
      I     xx_genstartdate,
      O     fldstartdate,
-     I     mythid
+     I     myThid
      &     )
       fldperiod = xx_genperiod
       lArgErr = .false.
@@ -113,13 +111,13 @@ C     Jan. through Dec.
        call cal_GetMonthsRec(
      O      fac, first, changed,
      O      count0, count1, year0, year1,
-     I      mytime, myiter, mythid
+     I      myTime, myIter, myThid
      &      )
       elseif ( fldperiod .eq. 0. _d 0 ) then
 C     Read field only once in the beginning. Hack: count1=count0 causes
 C     the model to read the first record twice, but since this this is
 C     done only the first time around it is not too much of an overhead.
-       first   = ((mytime - modelstart) .lt. 0.5*modelstep)
+       first   = ((myTime - modelstart) .lt. 0.5*modelstep)
        changed = .false.
        fac     = 1. _d 0
        count0  = 1
@@ -127,34 +125,33 @@ C     done only the first time around it is not too much of an overhead.
       else
 C     fldperiod .ne. 0
 C--   Determine the current date.
-       call cal_GetDate( myiter, mytime, mydate, mythid )
+       call cal_GetDate( myIter, myTime, mydate, myThid )
 
 C     Determine first record:
 c      call cal_TimePassed( fldstartdate, modelstartdate,
-c    &                      difftime, mythid )
-c      call cal_ToSeconds ( difftime, fldsecs, mythid )
-c      startrec = int((modelstart + startTime - fldsecs)/
-c    &                fldperiod) + 1
+c    &                      difftime, myThid )
+c      call cal_ToSeconds ( difftime, fldsecs, myThid )
+c      startrec = int((modelstart - fldsecs)/fldperiod) + 1
 
 C     Determine the flux record just before mycurrentdate.
        call cal_TimePassed( fldstartdate, mydate, difftime,
-     &                      mythid )
-       call cal_ToSeconds( difftime, fldsecs, mythid )
+     &                      myThid )
+       call cal_ToSeconds( difftime, fldsecs, myThid )
        fldsecs  = int((fldsecs+0.5)/fldperiod)*fldperiod
        fldcount = int((fldsecs+0.5)/fldperiod) + 1
 
 C     Set switches for reading new records.
-       first = ((mytime - modelstart) .lt. 0.5*modelstep)
+       first = ((myTime - modelstart) .lt. 0.5*modelstep)
 
        if ( first) then
         changed = .false.
        else
-        call cal_GetDate( myiter-1, mytime-modelstep,
-     &                    previousdate, mythid )
+        call cal_GetDate( myIter-1, myTime-modelstep,
+     &                    previousdate, myThid )
 
         call cal_TimePassed( fldstartdate, previousdate,
-     &                       difftime, mythid )
-        call cal_ToSeconds( difftime, prevfldsecs, mythid )
+     &                       difftime, myThid )
+        call cal_ToSeconds( difftime, prevfldsecs, myThid )
         prevfldsecs  = int((prevfldsecs+0.5)/fldperiod)*fldperiod
         prevfldcount = int((prevfldsecs+0.5)/fldperiod) + 1
 
@@ -168,10 +165,10 @@ C     Set switches for reading new records.
        count0 = fldcount
        count1 = fldcount + 1
 
-       call cal_TimeInterval( fldsecs, 'secs', difftime, mythid )
-       call cal_AddTime( fldstartdate, difftime, flddate, mythid )
-       call cal_TimePassed( flddate, mydate, difftime, mythid )
-       call cal_ToSeconds( difftime, fldsecs, mythid )
+       call cal_TimeInterval( fldsecs, 'secs', difftime, myThid )
+       call cal_AddTime( fldstartdate, difftime, flddate, myThid )
+       call cal_TimePassed( flddate, mydate, difftime, myThid )
+       call cal_ToSeconds( difftime, fldsecs, myThid )
 
 C     Weight belonging to irec for linear interpolation purposes.
 C     Note: The weight as chosen here is 1. - fac of the "old"
@@ -216,24 +213,24 @@ C--   Now calculate whether it is time to update the forcing arrays
 
 #ifdef ECCO_VERBOSE
 C     Do some printing for the protocol.
-      _BEGIN_MASTER( mythid )
+      _BEGIN_MASTER( myThid )
         write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
+        call print_message( msgbuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
         write(msgbuf,'(a,2x,l2,2x,l2,2x,D15.8)')
      &    '                     first, changed, fac:',
      &                          first, changed, fac
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
+        call print_message( msgbuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
         write(msgbuf,'(a,i4,i4)')
      &    '                          count0, count1:',
      &                               count0, count1
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
+        call print_message( msgbuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
         write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-      _END_MASTER( mythid )
+        call print_message( msgbuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+      _END_MASTER( myThid )
 #endif
 
       return

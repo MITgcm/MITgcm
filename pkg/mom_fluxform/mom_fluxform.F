@@ -32,6 +32,8 @@ CEOI
 #ifdef ALLOW_GGL90
 # include "GGL90_OPTIONS.h"
 #endif
+C- to switch back to (very) old accounting of geometry/Area factor
+#undef OLD_UV_GEOM
 
 CBOP
 C !ROUTINE: MOM_FLUXFORM
@@ -184,7 +186,7 @@ C     uDudxFac, AhDudxFac, etc ... individual term parameters for switching term
       _RL  mtFacV
       _RL  mtNHFacV
       _RL  sideMaskFac
-      LOGICAL bottomDragTerms
+      LOGICAL bottomDragTerms, metricTerms
 CEOP
 #ifdef MOM_BOUNDARY_CONSERVE
       COMMON / MOM_FLUXFORM_LOCAL / uBnd, vBnd
@@ -251,6 +253,7 @@ C     o V momentum equation
       mtNHFacV     = 1.
       fvFac        = cfFacMom*1.
 
+      metricTerms  = selectMetricTerms.GE.1
       IF (implicitViscosity) THEN
         ArDudrFac  = 0.
         ArDvdrFac  = 0.
@@ -275,6 +278,9 @@ C       vorticity at a no-slip boundary by a factor of 2 = sideDragFactor
 
 C--   Calculate open water fraction at vorticity points
       CALL MOM_CALC_HFACZ( bi,bj,k,hFacZ,r_hFacZ,myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE hFacZ(:,:)  = comlev1_bibj_k, key = kkey, byte = isbyte
+#endif
 
 C---- Calculate common quantities used in both U and V equations
 C     Calculate tracer cell face open areas
@@ -297,7 +303,10 @@ C     Calculate tracer cell face open areas
      &       MIN( h0FacS(i,j,k,bi,bj), h0FacS(i-1,j,k,bi,bj) ) )
          ENDDO
         ENDDO
-       ENDIF
+      ENDIF
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE h0FacZ(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
+# endif
 #endif /* NONLIN_FRSURF */
 
 C     Make local copies of horizontal flow field
@@ -356,6 +365,20 @@ C     stretching will be zero, unless using QG Leith
         ENDIF
 #endif
       ENDIF
+#ifdef ALLOW_AUTODIFF_TAMC
+C     KE is used a lot, so we save here in order to avoid multiple
+C     recomputations of this variable.
+CADJ STORE KE(:,:)      = comlev1_bibj_k, key = kkey, byte = isbyte
+C     Variables tension and strain are relatively cheap to recompute, so
+C     we do not save them here (but saving them would clearly avoid
+C     the recomputations).
+cCADJ STORE tension(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
+cCADJ STORE strain(:,:)  = comlev1_bibj_k, key = kkey, byte = isbyte
+C     hDiv and vort3 are relatively expensive to recompute, so we save
+C     them here.
+CADJ STORE hDiv(:,:)    = comlev1_bibj_k, key = kkey, byte = isbyte
+CADJ STORE vort3(:,:)   = comlev1_bibj_k, key = kkey, byte = isbyte
+#endif
 
 C---  First call (k=1): compute vertical adv. flux fVerUkm & fVerVkm
       IF (momAdvection.AND.k.EQ.1) THEN
@@ -399,6 +422,12 @@ C---  Calculate vertical transports (at k+1) below U & V points :
      O                        rTransU, rTransV,
      I                        myTime, myIter, myThid )
       ENDIF
+#ifdef ALLOW_AUTODIFF_TAMC
+C     This saves us from calling the relatively expensive
+C     mom_calc_rtrans in AD mode.
+CADJ STORE rTransU(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
+CADJ STORE rTransV(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
+#endif
 
 #ifdef MOM_BOUNDARY_CONSERVE
       IF ( momAdvection .AND. k.LT.Nr ) THEN
@@ -425,6 +454,17 @@ C---  Calculate vertical transports (at k+1) below U & V points :
      I           hDiv, vort3, tension, strain, stretching, KE, hFacZ,
      I           myThid )
        ENDIF
+#ifdef ALLOW_AUTODIFF_TAMC
+# ifndef AUTODIFF_ALLOW_VISCFACADJ
+C     These store directive must not be here, if you want to recompute
+C     these viscosity coefficients with a modified viscFacAdj = viscFacInAd
+C     because the store directives intentionally prevent the recomputation.
+CADJ STORE viscAh_Z(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
+CADJ STORE viscAh_D(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
+CADJ STORE viscA4_Z(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
+CADJ STORE viscA4_D(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
+# endif /* AUTODIFF_ALLOW_VISCFACADJ */
+#endif /* ALLOW_AUTODIFF_TAMC */
       ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -539,6 +579,9 @@ C     Bi-harmonic term del^2 U -> v4F
         IF ( useBiharmonicVisc )
      &  CALL MOM_U_DEL2U( bi, bj, k, uFld, hFacZ, h0FacZ,
      O                    v4f, myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE v4f(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
+#endif
 
 C     Laplacian and bi-harmonic terms, Zonal  Fluxes -> fZon
         CALL MOM_U_XVISCFLUX( bi,bj,k,uFld,v4F,fZon,
@@ -607,6 +650,9 @@ CADJ STORE KE(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
      I                   uFld, vFld, kappaRU, KE,
      O                   cDrag,
      I                   myIter, myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE cDrag(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
+#endif
          DO j=jMin,jMax
           DO i=iMin,iMax
             guDiss(i,j) = guDiss(i,j)
@@ -633,6 +679,9 @@ CADJ STORE KE(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
      I                   uFld, vFld, kappaRU, KE,
      O                   cDrag,
      I                   myIter, myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE cDrag(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
+#endif
          DO j=jMin,jMax
           DO i=iMin,iMax
             guDiss(i,j) = guDiss(i,j)
@@ -789,6 +838,9 @@ C     Bi-harmonic term del^2 V -> v4F
         IF ( useBiharmonicVisc )
      &  CALL MOM_V_DEL2V( bi, bj, k, vFld, hFacZ, h0FacZ,
      O                    v4f, myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE v4f(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
+#endif
 
 C     Laplacian and bi-harmonic terms, Zonal  Fluxes -> fZon
         CALL MOM_V_XVISCFLUX( bi,bj,k,vFld,v4f,hFacZ,fZon,
@@ -857,6 +909,9 @@ CADJ STORE KE(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
      I                   uFld, vFld, kappaRV, KE,
      O                   cDrag,
      I                   myIter, myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE cDrag(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
+#endif
          DO j=jMin,jMax
           DO i=iMin,iMax
             gvDiss(i,j) = gvDiss(i,j)
@@ -883,6 +938,9 @@ CADJ STORE KE(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
      I                   uFld, vFld, kappaRV, KE,
      O                   cDrag,
      I                   myIter, myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE cDrag(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
+#endif
          DO j=jMin,jMax
           DO i=iMin,iMax
             gvDiss(i,j) = gvDiss(i,j)
@@ -964,14 +1022,14 @@ C--   Coriolis term (call to CD_CODE_SCHEME has been moved to timestep.F)
       ENDIF
 
 C--   3.D Coriolis term (horizontal momentum, Eastward component: -fprime*w)
-      IF ( use3dCoriolis ) THEN
+      IF ( select3dCoriScheme.GE.1 ) THEN
         CALL MOM_U_CORIOLIS_NH( bi,bj,k,wVel,uCf,myThid )
         DO j=jMin,jMax
          DO i=iMin,iMax
           gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj) + fuFac*uCf(i,j)
          ENDDO
         ENDDO
-       IF ( usingCurvilinearGrid ) THEN
+       IF ( usingCurvilinearGrid .OR. rotateGrid ) THEN
 C-     presently, non zero angleSinC array only supported with Curvilinear-Grid
         CALL MOM_V_CORIOLIS_NH( bi,bj,k,wVel,vCf,myThid )
         DO j=jMin,jMax

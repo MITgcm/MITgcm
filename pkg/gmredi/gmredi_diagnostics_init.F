@@ -48,14 +48,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 c     IF ( useDiagnotics ) THEN
 
-        diagName  = 'GM_VisbK'
-        diagTitle =
-     &     'Mixing coefficient from Visbeck etal parameterization'
-        diagUnits = 'm^2/s           '
-        diagCode  = 'SM P    M1      '
-        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
         diagName  = 'GM_hTrsL'
         diagTitle = 'Base depth (>0) of the Transition Layer'
         diagUnits = 'm               '
@@ -103,7 +95,7 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-#endif
+#endif /* ndef GM_EXCLUDE_SUBMESO */
 
         diagName  = 'GM_Kux  '
         diagTitle = 'K_11 element (U.point, X.dir) of GM-Redi tensor'
@@ -231,7 +223,7 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-#endif
+#endif /* ALLOW_EDDYPSI */
 
 #ifdef GM_BOLUS_BVP
         diagName  = 'GM_BVPcW'
@@ -249,7 +241,82 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-#endif
+#endif /* GM_BOLUS_BVP */
+
+#ifdef GM_VISBECK_VARIABLE_K
+        diagName  = 'GM_VisbK'
+        diagTitle =
+     &     'Mixing coefficient from Visbeck etal parameterization'
+        diagUnits = 'm^2/s           '
+        diagCode  = 'SM P    M1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+#endif /* GM_VISBECK_VARIABLE_K */
+
+#ifdef GM_GEOM_VARIABLE_K
+        diagName  = 'GM_GEOMK'
+        diagTitle = 'GEOM 3d kgm field'
+        diagUnits = 'm/s^2           '
+        diagCode  = 'SMRP    LR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'GEOMeE  '
+        diagTitle = 'GEOM parameterised depth-int eddy energy'
+        diagUnits = 'm^3/s^2         '
+        diagCode  = 'SM P    M1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'GEOMstru'
+        diagTitle = 'spatial structure function'
+        diagUnits = '                '
+        diagCode  = 'SMRP    LR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'GEOMEgen'
+        diagTitle = 'GEOM eddy energy generation tendency'
+        diagUnits = 'm^3/s^3         '
+        diagCode  = 'SM P    M1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'GEOMEdis'
+        diagTitle = 'GEOM eddy energy dissipation tendency'
+        diagUnits = 'm^3/s^3         '
+        diagCode  = 'SM      M1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'GEOMEadv'
+        diagTitle = 'GEOM eddy energy advective tendency'
+        diagUnits = 'm^3/s^3         '
+        diagCode  = 'SM      M1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'GEOMEwav'
+        diagTitle = 'GEOM eddy energy wave advection tendency'
+        diagUnits = 'm^3/s^3         '
+        diagCode  = 'SM      M1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'GEOMElap'
+        diagTitle = 'GEOM eddy energy diffusion tendency'
+        diagUnits = 'm^3/s^3         '
+        diagCode  = 'SM      M1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'GEOM_c1 '
+        diagTitle = 'first baroclinic wave phase speed'
+        diagUnits = 'm/s             '
+        diagCode  = 'SM P    M1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+#endif /* GM_GEOM_VARIABLE_K */
 
 #ifdef GM_BATES_K3D
         diagName  = 'GM_BaK  '
@@ -276,7 +343,7 @@ c     IF ( useDiagnotics ) THEN
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
-#ifdef HAVE_LAPACK
+# ifdef HAVE_LAPACK
         diagName  = 'GM_A3D'
         diagTitle = '3D lower diagona'
         diagUnits = '1/m**2          '
@@ -300,7 +367,7 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-#endif
+# endif /* HAVE_LAPACK */
 
         diagName  = 'GM_MODEC'
         diagTitle = 'Eigen vector for the first barcolinic mode'
@@ -543,7 +610,7 @@ c     IF ( useDiagnotics ) THEN
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
-#ifdef GM_BATES_PASSIVE
+# ifdef GM_BATES_PASSIVE
         diagName  = 'GM_PSTAR'
         diagTitle = 'Diagnosed bolus streamfunction: V component'
         diagUnits = 'm**2/s          '
@@ -551,8 +618,8 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-#endif
-#endif
+# endif
+#endif /* GM_BATES_K3D */
 
 #ifdef ALLOW_GM_LEITH_QG
         diagName  = 'GM_LTHQG'
@@ -561,7 +628,7 @@ c     IF ( useDiagnotics ) THEN
         diagCode  = 'SM      MR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-#endif
+#endif /* ALLOW_GM_LEITH_QG */
 
 c     ENDIF
 # ifdef ALLOW_AUTODIFF

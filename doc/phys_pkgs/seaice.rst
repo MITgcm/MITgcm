@@ -46,7 +46,10 @@ Parts of the :filelink:`seaice <pkg/seaice>` code can be enabled or disabled at
 compile time via CPP preprocessor flags. These options are set in
 :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>`.
 :numref:`tab_phys_pkg_seaice_cpp` summarizes the most important ones. For more
-options see :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>`.
+options see :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>`. Note
+that defining :varlink:`SEAICE_BGRID_DYNAMICS` turns on legacy code and thus
+automatically undefines more recent features, see :filelink:`SEAICE_OPTIONS.h
+<pkg/seaice/SEAICE_OPTIONS.h>` for details.
 
 .. tabularcolumns:: |\Y{.375}|\Y{.1}|\Y{.55}|
 
@@ -56,8 +59,7 @@ options see :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>`.
    :name: tab_phys_pkg_seaice_cpp
 
    :varlink:`SEAICE_DEBUG`, #undef, enhance STDOUT for debugging
-   :varlink:`SEAICE_ALLOW_DYNAMICS`, #define, sea ice dynamics code
-   :varlink:`SEAICE_CGRID`, #define, LSR solver on C-grid (rather than original B-grid)
+   :varlink:`SEAICE_CGRID`, #define, use sea ice dynamics on C-grid
    :varlink:`SEAICE_ALLOW_EVP`, #define, enable use of EVP rheology solver
    :varlink:`SEAICE_ALLOW_JFNK`, #define, enable use of JFNK rheology solver
    :varlink:`SEAICE_ALLOW_KRYLOV`, #define, enable use of Krylov rheology solver
@@ -66,16 +68,20 @@ options see :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>`.
    :varlink:`SEAICE_ALLOW_MCE`, #undef, enable use of Mohr-Coulomb yield curve with elliptical plastic potential
    :varlink:`SEAICE_ALLOW_TD`, #undef, enable use of teardrop and parabolic Lens yield curves with normal flow rules
    :varlink:`SEAICE_LSR_ZEBRA`, #undef, use a coloring method for LSR solver
+   :varlink:`SEAICE_ALLOW_FREEDRIFT`, #undef, enable solve approximate sea ice momentum equation and bypass solving for sea ice internal stress
    :varlink:`SEAICE_EXTERNAL_FLUXES`, #define, use :filelink:`pkg/exf`-computed fluxes as starting point
    :varlink:`SEAICE_ZETA_SMOOTHREG`, #define, use differentiable regularization for viscosities
    :varlink:`SEAICE_DELTA_SMOOTHREG`, #undef, use differentiable regularization for :math:`1/\Delta`
    :varlink:`SEAICE_ALLOW_BOTTOMDRAG`, #undef, enable grounding parameterization for improved fastice in shallow seas
+   :varlink:`SEAICE_BGRID_DYNAMICS`, #undef, use sea ice dynamics code on legacy B-grid; most of the previous flags are not available with B-grid
+   :varlink:`SEAICE_BICE_STRESS`, #undef, B-grid only for backward compatiblity: turn on ice-stress on ocean; defined by default if :varlink:`SEAICE_BGRID_DYNAMICS` is defined
+   :varlink:`EXPLICIT_SSH_SLOPE`, #undef, B-grid only for backward compatiblity: use ETAN for tilt computations rather than geostrophic velocities; defined by default if :varlink:`SEAICE_BGRID_DYNAMICS` is defined
+   :varlink:`SEAICE_LSRBNEW`, #undef, FV discretization for B-grid
    :varlink:`SEAICE_ITD`, #undef, run with dynamical sea Ice Thickness Distribution (ITD)
    :varlink:`SEAICE_VARIABLE_SALINITY`, #undef, enable sea ice with variable salinity
    :varlink:`SEAICE_CAP_ICELOAD`, #undef, enable to limit seaice load (:varlink:`siceLoad`) on the sea surface
    :varlink:`ALLOW_SITRACER`, #undef, enable sea ice tracer package
-   :varlink:`SEAICE_BICE_STRESS`, #undef, B-grid only for backward compatiblity: turn on ice-stress on ocean
-   :varlink:`EXPLICIT_SSH_SLOPE`, #undef, B-grid only for backward compatiblity: use ETAN for tilt computations rather than geostrophic velocities
+   :varlink:`SEAICE_USE_GROWTH_ADX`, #undef, use of adjointable but more simplified sea ice thermodynamics model in :filelink:`seaice_growth_adx.F <pkg/seaice/seaice_growth_adx.F>` instead of :filelink:`seaice_growth.F <pkg/seaice/seaice_growth.F>`
 
 .. _ssub_phys_pkg_seaice_runtime:
 
@@ -127,6 +133,8 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICEuseEVPpickup`      |     TRUE                     | use EVP pickups                                                         |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`SEAICEuseFREEDRIFT`      |     FALSE                    | solve approximate momentum equation, bypassing rheology                 |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICEuseFluxForm`       |     TRUE                     | use flux form for 2nd central difference advection scheme               |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICErestoreUnderIce`   |     FALSE                    | enable restoring to climatology under ice                               |
@@ -152,6 +160,9 @@ General flags and parameters
   | :varlink:`SEAICEadvScheme`         | 77                           | set advection scheme for seaice scalar state variables                  |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICEuseFlooding`       | TRUE                         | use flood-freeze algorithm                                              |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`SINegFac`                | 1.0                          | over/undershoot factor for seaice advective term in forward/adjoint     |
+  |                                    |                              | (SEAICE_USE_GROWTH_ADX only)                                            |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICE_no_slip`          | FALSE                        | use no-slip boundary conditions instead of free-slip                    |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
@@ -422,15 +433,27 @@ line successive over relaxation (LSOR) method of Zhang and Hibler (1997)
 :cite:`zhang:97` for use in a parallel configuration. An EVP model and a
 free-drift implementation can be selected with run-time flags.
 
+:filelink:`pkg/seaice` includes the original so-called zero-layer
+thermodynamics with a snow cover as in the appendix of Semtner (1976)
+:cite:`semtner:76`.  Two versions of this zero-layer thermodynamic code exist,
+with a more developed version :filelink:`seaice_growth.F
+<pkg/seaice/seaice_growth.F>` and a simplified version
+:filelink:`seaice_growth_adx.F <pkg/seaice/seaice_growth_adx.F>` based on
+Fenty (2013) :cite:`fenty:13` that excludes physics such as ITD, treatment for
+sublimation, and frazil ice but provides a stable sea ice adjointable with
+physical sensitivity.  When the seaice_growth_adx code is enabled (by defining
+:varlink:`SEAICE_USE_GROWTH_ADX` in :filelink:`SEAICE_OPTIONS.h
+<pkg/seaice/SEAICE_OPTIONS.h>`), the regularization parameter
+:varlink:`SINegFac` is set to zero in adjoint mode to disable the potential
+propagation of unphysical terms associated with sea ice dynamics.
+
 
 .. _para_phys_pkg_seaice_thsice:
 
 Compatibility with ice-thermodynamics package :filelink:`pkg/thsice`
 --------------------------------------------------------------------
 
-By default :filelink:`pkg/seaice` includes the original so-called zero-layer
-thermodynamics with a snow cover as in the appendix of Semtner (1976)
-:cite:`semtner:76`. The zero-layer thermodynamic model assumes that ice does
+The zero-layer thermodynamic model assumes that ice does
 not store heat and, therefore, tends to exaggerate the seasonal variability in
 ice thickness. This exaggeration can be significantly reduced by using Winton's
 (Winton 2000 :cite:`winton:00`) three-layer thermodynamic model that permits
@@ -465,11 +488,10 @@ sea-ice model is global: in ice-free regions bulk formulae (by default computed
 in package :filelink:`exf <pkg/exf>`) are used to estimate oceanic forcing from
 the atmospheric fields.
 
-.. _para_phys_pkg_seaice_dynamics:
+.. _ssub_phys_pkg_seaice_dynamics:
 
 Dynamics
---------
-
+========
 
 The momentum equation of the sea-ice model is
 
@@ -1380,10 +1402,10 @@ zeros. In analogy to :math:`(\epsilon_{12})^Z=0` on boundaries, we set
 :math:`\sigma_{21}^{Z}=0`, or equivalently :math:`\eta_{i,j}^{Z}=0`, on
 boundaries.
 
-.. _para_phys_pkg_seaice_thermodynamics:
+.. _ssub_phys_pkg_seaice_thermodynamics:
 
 Thermodynamics
---------------
+==============
 
 **NOTE: THIS SECTION IS STILL NOT COMPLETE**
 

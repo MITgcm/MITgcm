@@ -7,11 +7,8 @@ CBOP
 C     !ROUTINE: COST_OBCSS
 C     !INTERFACE:
       subroutine cost_obcsw(
-     I                       myiter,
-     I                       mytime,
-     I                       startrec,
-     I                       endrec,
-     I                       mythid )
+     I                       startrec, endrec,
+     I                       myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 c     ==================================================================
@@ -43,30 +40,26 @@ c#endif
 #endif
 #ifdef ALLOW_CTRL
 # include "CTRL_SIZE.h"
-# include "ctrl.h"
-# include "ctrl_dummy.h"
-# include "optim.h"
+# include "CTRL.h"
+# include "CTRL_DUMMY.h"
+# include "OPTIMCYCLE.h"
 # include "CTRL_OBCS.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
-c     == routine arguments ==
-      integer myiter
-      _RL     mytime
-      integer startrec
-      integer endrec
-      integer mythid
+      integer startrec, endrec
+      _RL     myTime
+      integer myIter
+      integer myThid
 
 #if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
 
 #ifdef ALLOW_OBCSW_COST_CONTRIBUTION
-
-c     == external functions ==
+C     !FUNCTIONS:
       integer  ilnblnk
       external ilnblnk
 
 C     !LOCAL VARIABLES:
-c     == local variables ==
       integer bi,bj
       integer j,k
       integer jmin,jmax
@@ -82,13 +75,12 @@ c     == local variables ==
       _RL tmpx
       _RL tmpfield (1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL maskyz   (1-OLy:sNy+OLy,Nr,nSx,nSy)
-      character*(80) fnamefld
+      character*(MAX_LEN_FNAM) fnamefld
       logical doglobalread
       logical ladinit
 #ifdef ECCO_VERBOSE
       character*(MAX_LEN_MBUF) msgbuf
 #endif
-c     == end of interface ==
 CEOP
 
       jmin = 1
@@ -105,45 +97,54 @@ c     ip1 = 1
       fcthread = 0. _d 0
 
 #ifdef ECCO_VERBOSE
-      _BEGIN_MASTER( mythid )
+      _BEGIN_MASTER( myThid )
       write(msgbuf,'(a)') ' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+      call print_message( msgbuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)') ' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+      call print_message( msgbuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,i9.8)')
      &  ' cost_obcsw: number of records to process: ',nrec
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+      call print_message( msgbuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)') ' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      _END_MASTER( mythid )
+      call print_message( msgbuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      _END_MASTER( myThid )
 #endif
 
       if (optimcycle .ge. 0) then
         ilfld=ilnblnk( xx_obcsw_file )
-        write(fnamefld(1:80),'(2a,i10.10)')
+        write(fnamefld,'(2a,i10.10)')
      &       xx_obcsw_file(1:ilfld), '.', optimcycle
       endif
 
 c--   Loop over records.
       do irec = 1,nrec
 
-        call active_read_yz( fnamefld, tmpfield, irec, doglobalread,
-     &                       ladinit, optimcycle, mythid
-     &        , xx_obcsw_dummy )
+#ifdef ALLOW_AUTODIFF
+        call active_read_yz( fnamefld, tmpfield, irec,
+     &                       doglobalread, ladinit, optimcycle,
+     &                       myThid, xx_obcsw_dummy )
+#else
+        CALL READ_REC_YZ_RL( fnamefld, ctrlprec, Nr,
+     &                       tmpfield, irec, 1, myThid )
+#endif
 
-cgg    Need to solve for iobcs would have been.
-          gg    = (irec-1)/nobcs
-          igg   = int(gg)
-          iobcs = irec - igg*nobcs
+cgg     Need to solve for iobcs would have been.
+        gg    = (irec-1)/nobcs
+        igg   = int(gg)
+        iobcs = irec - igg*nobcs
 
-          call active_read_yz( 'maskobcsw', maskyz,
-     &                         iobcs,
-     &                         doglobalread, ladinit, 0,
-     &                         mythid, dummy )
+#ifdef ALLOW_AUTODIFF
+        call active_read_yz( 'maskobcsw', maskyz, iobcs,
+     &                       doglobalread, ladinit, 0,
+     &                       myThid, dummy )
+#else
+        CALL READ_REC_YZ_RL( 'maskobcsw', ctrlprec, Nr,
+     &                       maskyz, iobcs, 1, myThid )
+#endif
 
 c--     Loop over this thread s tiles.
         do bj = myByLo(myThid), myByHi(myThid)
@@ -176,20 +177,20 @@ CMM                  if (wobcsw2(j,k,bi,bj,iobcs)*maskyz(j,k,bi,bj).ne.0.)
 c--     Print cost function for all tiles.
         _GLOBAL_SUM_RL( fcthread , myThid )
         write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
+        call print_message( msgbuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
         write(msgbuf,'(a,i8.8)')
      &    ' cost_obcsw: irec = ',irec
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
+        call print_message( msgbuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
         write(msgbuf,'(a,a,d22.15)')
      &    ' global cost function value',
      &    ' (obcsw) = ',fcthread
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
+        call print_message( msgbuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
         write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
+        call print_message( msgbuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
 #endif
 
       enddo

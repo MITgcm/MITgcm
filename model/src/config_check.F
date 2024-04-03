@@ -506,6 +506,18 @@ C     o Need to use S/R APPLY_FORCING_U,V to get Tidal forcing
       ENDIF
 #endif /* ALLOW_SRCG */
 
+#ifndef ALLOW_BOTTOMDRAG_ROUGHNESS
+      IF (zRoughBot .GT. 0.) THEN
+        WRITE(msgBuf,'(A,A)') 'CONFIG_CHECK: zRoughBot > 0.',
+     &  ' but bottom drag code for roughness length is not compiled'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: Re-compile with',
+     &  ' #define ALLOW_BOTTOMDRAG_ROUGHNESS (MOM_COMMON_OPTIONS.h)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+#endif /* ALLOW_BOTTOMDRAG_ROUGHNESS */
+
       IF ( useNSACGSolver .AND. useSRCGSolver ) THEN
         WRITE(msgBuf,'(A,A)')
      &      'CONFIG_CHECK: both useNSACGSolver and ',
@@ -1072,12 +1084,11 @@ C--   Grid limitations:
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
-       IF ( useFLT .OR. useZonal_Filt .OR. useECCO ) THEN
-        WRITE(msgBuf,'(2A)')
-     &       'CONFIG_CHECK: specifying Euler angles will probably ',
-     &       'not work with pkgs FLT, ZONAL_FLT, ECCO'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        errCount = errCount + 1
+       IF ( useFLT .OR. useECCO ) THEN
+        WRITE(msgBuf,'(2A)') '** WARNING ** CONFIG_CHECK: specifying',
+     &       ' Euler angles may not work with pkgs FLT, ECCO'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
        ENDIF
       ENDIF
 

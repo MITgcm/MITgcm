@@ -168,7 +168,10 @@ C     == Global variables ===
 #  include "EBM.h"
 # endif
 # ifdef ALLOW_EXF
-#  include "ctrl.h"
+#  ifdef ALLOW_CTRL
+#   include "CTRL_SIZE.h"
+#   include "CTRL.h"
+#  endif
 #  include "EXF_FIELDS.h"
 #  ifdef ALLOW_BULKFORMULAE
 #   include "EXF_CONSTANTS.h"
@@ -185,12 +188,16 @@ C     == Global variables ===
 # ifdef ALLOW_SALT_PLUME
 #  include "SALT_PLUME.h"
 # endif
-# ifdef ALLOW_ECCO
-#  ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
-#   include "ecco_cost.h"
-#  endif
-# endif
 #endif /* ALLOW_AUTODIFF */
+
+#ifdef ALLOW_TAPENADE
+c# ifdef ALLOW_KPP
+c#  include "KPP_PARAMS.h"
+c# endif
+# ifdef ALLOW_SHELFICE
+#  include "SHELFICE.h"
+# endif
+#endif /* ALLOW_TAPENADE */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -388,9 +395,6 @@ CADJ STORE pload, siceload   = comlev1, key=ikey_dynamics, kind=isbyte
 #  ifdef NONLIN_FRSURF
 CADJ STORE recip_hfacc       = comlev1, key=ikey_dynamics, kind=isbyte
 #  endif
-#  ifdef ANNUAL_BALANCE
-CADJ STORE balance_itcount   = comlev1, key=ikey_dynamics, kind=isbyte
-#  endif /* ANNUAL_BALANCE */
 #  ifdef ALLOW_THSICE
 C-- store thSIce vars before advection (called from SEAICE_MODEL) updates them:
 CADJ STORE iceMask,iceHeight = comlev1, key=ikey_dynamics, kind=isbyte
@@ -553,9 +557,6 @@ C This is currently used by GMRedi, IVDC, MXL-depth  and Diagnostics
            sigmaX(i,j,k) = 0. _d 0
            sigmaY(i,j,k) = 0. _d 0
            sigmaR(i,j,k) = 0. _d 0
-#if (defined (ALLOW_SIGMAR_COST_CONTRIBUTION) || defined (ALLOW_LEITH_QG))
-           sigmaRfield(i,j,k,bi,bj) = 0. _d 0
-#endif
           ENDDO
          ENDDO
         ENDDO
@@ -796,13 +797,13 @@ CADJ STORE rhokm1 (bi,bj)       = comlev1_bibj_k, key=kkey,kind=isbyte
      O             sigmaX, sigmaY, sigmaR,
      I             myThid )
 
-#if (defined (ALLOW_SIGMAR_COST_CONTRIBUTION) || defined (ALLOW_LEITH_QG))
+#ifdef ALLOW_LEITH_QG
             DO j=jMin,jMax
              DO i=iMin,iMax
               sigmaRfield(i,j,k,bi,bj)=sigmaR(i,j,k)
              ENDDO
             ENDDO
-#endif /* ALLOW_SIGMAR_COST_CONTRIBUTION or ALLOW_LEITH_QG */
+#endif /* ALLOW_LEITH_QG */
 
 #ifdef ALLOW_AUTODIFF
 #ifdef GMREDI_WITH_STABLE_ADJOINT

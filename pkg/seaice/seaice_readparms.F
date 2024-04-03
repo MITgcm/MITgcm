@@ -87,6 +87,7 @@ C     SEAICE_freeze     :: FREEZING TEMP. OF SEA WATER
       CHARACTER*(MAX_LEN_MBUF) IceAgeFile, IceAgeTrFile(4)
       _RL SEAICE_abEps
       LOGICAL SEAICEuseAB2
+#ifdef ALLOW_COST
 C     former ALLOW_SEAICE_COST_SMR_AREA related flags
       _RL  mult_smrarea
       _RL  mult_smrsst
@@ -103,6 +104,7 @@ C     former ALLOW_SEAICE_COST_SMR_AREA related flags
       _RL smrareaperiod
       _RL SEAICE_clamp_salt
       _RL SEAICE_clamp_theta
+#endif /* ALLOW_COST */
 
 C--   SEAICE parameters
       NAMELIST /SEAICE_PARM01/
@@ -135,7 +137,7 @@ C--   SEAICE parameters
      & SEAICE_evpAlpha, SEAICE_evpBeta,
      & SEAICEaEVPcoeff, SEAICEaEVPcStar, SEAICEaEVPalphaMin,
      & SEAICE_zetaMin, SEAICE_zetaMaxFac, SEAICEusePicardAsPrecon,
-     & SEAICEuseKrylov, SEAICEuseJFNK,
+     & SEAICEuseLSRflex, SEAICEuseKrylov, SEAICEuseJFNK,
      & SEAICEnonLinIterMax, SEAICElinearIterMax, SEAICEnonLinTol,
      & SEAICEnewtonIterMax, SEAICEkrylovIterMax, JFNKgamma_nonlin,
      & SEAICEpreconNL_Iter, SEAICEpreconLinIter,
@@ -232,7 +234,7 @@ C     print a (weak) warning if data.seaice is found
       _BEGIN_MASTER(myThid)
 
 C--   set default sea ice parameters
-#ifdef SEAICE_ALLOW_DYNAMICS
+#if ( defined SEAICE_CGRID || defined SEAICE_BGRID_DYNAMICS )
       SEAICEuseDYNAMICS  = .TRUE.
 #else
       SEAICEuseDYNAMICS  = .FALSE.
@@ -331,6 +333,7 @@ c     DIFF1      = .004 _d 0
       SEAICE_deltaTevp   = UNSET_RL
       SEAICEuseBDF2      = .FALSE.
       SEAICEuseKrylov    = .FALSE.
+      SEAICEuseLSRflex   = .FALSE.
 C     JFNK stuff
       SEAICEuseJFNK       = .FALSE.
       SEAICEuseIMEX       = .FALSE.
@@ -864,6 +867,9 @@ C     Make sure that we have least two pseudo time steps for Picard-LSR
       IF ( SEAICEuseLSR .AND. .NOT. SEAICEusePicardAsPrecon )
      &     SEAICEnonLinIterMax = MAX(SEAICEnonLinIterMax,2)
 
+C     If we do not use the LSR solver, using LSRflex makes no sense
+      IF ( .NOT. SEAICEuseLSR ) SEAICEuseLSRflex = .FALSE.
+
 C-    different defaults for different linear solvers
       IF ( SEAICElinearIterMax .EQ. UNSET_I ) THEN
 C     maximum number of LSOR steps in default Picard solver
@@ -1332,7 +1338,7 @@ C-    Retired parameters
      &  'is no longer allowed in file "data.seaice"'
        CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
-#endif
+#endif /* ALLOW_COST */
       IF ( nRetired .GT. 0 ) THEN
        WRITE(msgBuf,'(2A)') 'S/R SEAICE_READPARMS: ',
      &  'Error reading parameter file "data.seaice"'

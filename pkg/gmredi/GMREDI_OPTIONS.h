@@ -1,10 +1,19 @@
-C CPP options file for GM/Redi package
-C Use this file for selecting options within the GM/Redi package
-
 #ifndef GMREDI_OPTIONS_H
 #define GMREDI_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+
+CBOP
+C !ROUTINE: GMREDI_OPTIONS.h
+C !INTERFACE:
+C #include "GMREDI_OPTIONS.h"
+
+C !DESCRIPTION:
+C *==================================================================*
+C | CPP options file for GM/Redi package:
+C | Control which optional features to compile in this package code.
+C *==================================================================*
+CEOP
 
 #ifdef ALLOW_GMREDI
 C     Package-specific Options & Macros go here
@@ -29,6 +38,9 @@ C Use old calculation (before 2007/05/24) of Visbeck etal K_GM+Redi
 C (which depends on tapering scheme)
 #undef OLD_VISBECK_CALC
 
+C This allows to use the GEOMETRIC formulation to compute K_GM
+#undef GM_GEOM_VARIABLE_K
+
 C This allows the Bates et al formulation to calculate the
 C bolus transport and K for Redi
 #undef GM_BATES_K3D
@@ -52,9 +64,9 @@ C Allows to use the Boundary-Value-Problem method to evaluate GM Bolus transport
 C Allow QG Leith variable viscosity to be added to GMRedi coefficient
 #undef ALLOW_GM_LEITH_QG
 
+C Related to Adjoint-code:
+#undef GM_AUTODIFF_EXCESSIVE_STORE
+#undef GMREDI_MASK_SLOPES
+
 #endif /* ALLOW_GMREDI */
 #endif /* GMREDI_OPTIONS_H */
-
-CEH3 ;;; Local Variables: ***
-CEH3 ;;; mode:fortran ***
-CEH3 ;;; End: ***

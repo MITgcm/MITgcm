@@ -148,7 +148,9 @@ C     Without this store directive, TAF generates an extra field anyway
 C     so we do it here explicitly with a local tape and live without the
 C     corresponding warning.
 CADJ INIT loctape_gm = COMMON, 1
-CADJ STORE dSigmaDr = loctape_gm
+C     Note that this directive is not necessary in any verification
+C     experiment, so we leave it commented out for now.
+cCADJ STORE dSigmaDr = loctape_gm
 C
 C     Alternatively one can use a global tape, to be defined in
 C     the_main_loop.F. This option is still here but commented out with
@@ -422,7 +424,7 @@ C         but still neglect Kxy & Kyx (assumed to be zero)
              SlopeX(i,j) = 0. _d 0
              SlopeY(i,j) = 0. _d 0
           ENDIF
-#ifndef ALLOWW_AUTODIFF_TAMC
+#ifndef ALLOW_AUTODIFF_TAMC
 cph-- this part does not adjoint well
           IF ( SlopeSqr(i,j) .GT. maxSlopeSqr .AND.
      &         SlopeSqr(i,j) .LT. GM_slopeSqCutoff ) THEN

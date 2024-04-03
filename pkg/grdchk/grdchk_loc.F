@@ -3,46 +3,49 @@
 # include "CTRL_OPTIONS.h"
 #endif
 
-      subroutine grdchk_loc(
-     I                     icomp,
-     I                     ichknum,
-     O                     icvrec,
-     O                     itile,
-     O                     jtile,
-     O                     layer,
-     O                     obcspos,
-     O                     itilepos,
-     O                     jtilepos,
-     O                     icglom1,
-     O                     itest,
-     O                     ierr,
-     I                     mythid
-     &                   )
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: GRDCHK_LOC
 
-c     ==================================================================
-c     SUBROUTINE grdchk_loc
-c     ==================================================================
-c
-c     o Get the location of a given component of the control vector for
-c       the current process.
-c
-c     started: Christian Eckert eckert@mit.edu 04-Apr-2000
-c     continued: heimbach@mit.edu: 13-Jun-2001
-c
-c     ==================================================================
-c     SUBROUTINE grdchk_loc
-c     ==================================================================
+C     !INTERFACE:
+      SUBROUTINE GRDCHK_LOC(
+     I                      icomp,
+     I                      ichknum,
+     O                      icvrec,
+     O                      itile,
+     O                      jtile,
+     O                      layer,
+     O                      obcspos,
+     O                      itilepos,
+     O                      jtilepos,
+     O                      icglom1,
+     O                      itest,
+     O                      ierr,
+     I                      myThid )
 
-      implicit none
+C     !DESCRIPTION:
+C     ==================================================================
+C     SUBROUTINE GRDCHK_LOC
+C     ==================================================================
+C     o Get the location of a given component of the control vector for
+C       the current process.
+C     started: Christian Eckert eckert@mit.edu 04-Apr-2000
+C     continued: heimbach@mit.edu: 13-Jun-2001
+C     ==================================================================
 
-c     == global variables ==
-
+C     !USES:
+      IMPLICIT NONE
+C     == Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "GRID.h"
-#include "ctrl.h"
-#include "CTRL_OBCS.h"
-#include "grdchk.h"
+#include "CTRL_SIZE.h"
+#include "CTRL.h"
+#ifdef ALLOW_OBCS_CONTROL
+C     CTRL_OBCS.h must be included before GRDCHK.h
+# include "CTRL_OBCS.h"
+#endif
+#include "GRDCHK.h"
 #ifdef ALLOW_OBCS
 # include "OBCS_GRID.h"
 #endif
@@ -50,55 +53,43 @@ c     == global variables ==
 # include "SHELFICE.h"
 #endif /* ALLOW_SHELFICE */
 
-c     == routine arguments ==
-
-      integer       icomp
-      integer       ichknum
-      integer       icvrec
-      integer       jtile
-      integer       itile
-      integer       layer
-      integer       obcspos
-      integer       itilepos
-      integer       jtilepos
-      integer       itest
-      integer       ierr
-      integer       mythid
+C     !INPUT/OUTPUT PARAMETERS:
+      INTEGER icomp
+      INTEGER ichknum
+      INTEGER icvrec
+      INTEGER jtile
+      INTEGER itile
+      INTEGER layer
+      INTEGER obcspos
+      INTEGER itilepos
+      INTEGER jtilepos
+      INTEGER itest
+      INTEGER ierr
+      INTEGER myThid
 
 #ifdef ALLOW_GRDCHK
-c     == local variables ==
+C--   == external ==
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 
-      integer bi,bj
-      integer i,j,k
-      integer itmp,jtmp
-      integer iobcs
-c     integer biwrk,bjwrk
-      integer iwrk, jwrk, kwrk
-      integer iobcswrk
-      integer irec, irecwrk
-      integer icglo, icglom1
-      integer itlo,ithi
-      integer jtlo,jthi
-      integer jmin,jmax
-      integer imin,imax
-      integer icomptest
-      integer icomploc
-      integer nobcsmax
+C     !LOCAL VARIABLES:
+      INTEGER bi,bj
+      INTEGER i,j,k
+      INTEGER itmp,jtmp
+      INTEGER iobcs
+c     INTEGER biwrk,bjwrk
+      INTEGER iwrk, jwrk, kwrk
+c     INTEGER iobcswrk
+      INTEGER irec, irecwrk
+      INTEGER icglo, icglom1
+      INTEGER icomptest
+      INTEGER icomploc
+      INTEGER nobcsmax
+CEOP
 
-c     == end of interface ==
+      _BEGIN_MASTER( myThid )
 
-      jtlo = 1
-      jthi = nsy
-      itlo = 1
-      ithi = nsx
-      jmin = 1
-      jmax = sny
-      imin = 1
-      imax = snx
-
-      _BEGIN_MASTER( mythid )
-
-c     initialise parameters
+C     initialise parameters
       ierr    = -5
       icglom1 = 0
       icomploc= 0
@@ -107,54 +98,59 @@ cph(
       print *, 'ph-test icomp, ncvarcomp, ichknum ',
      &     icomp, ncvarcomp, ichknum
 cph)
-      if ( icomp .gt. 0 ) then
-       if ( icomp .le. ncvarcomp ) then
-c--     A valid component of the control variable has been selected.
-         if ( ichknum .EQ. 1 ) then
-            itest     = 0
-            icomptest = 0
-            irecwrk   = 1
-c           bjwrk     = 1
-c           biwrk     = 1
-            kwrk      = 1
-            iobcswrk  = 1
-            jwrk      = 1
-            iwrk      = 1
-            icglo     = 0
-         else
-            itest     = itestmem (ichknum-1)
-            icomptest = icompmem (ichknum-1)
-            irecwrk   = irecmem  (ichknum-1)
-c           bjwrk     = bjmem    (ichknum-1)
-c           biwrk     = bimem    (ichknum-1)
-            kwrk      = klocmem  (ichknum-1)
-            iobcswrk  = iobcsmem (ichknum-1)
-            icglo     = icglomem (ichknum-1)
-            jwrk      = jlocmem  (ichknum-1)
-            iwrk      = ilocmem  (ichknum-1)
-            iwrk      = iwrk + 1
-         end if
+      IF ( icomp .GT. 0 ) THEN
+       IF ( icomp .LE. ncvarcomp ) THEN
+C--     A valid component of the control variable has been selected.
+        IF ( ichknum .EQ. 1 ) THEN
+          itest     = 0
+          icomptest = 0
+          irecwrk   = 1
+c         bjwrk     = 1
+c         biwrk     = 1
+          kwrk      = 1
+c         iobcswrk  = 1
+          jwrk      = 1
+          iwrk      = 1
+          icglo     = 0
+        ELSE
+          itest     = itestmem (ichknum-1)
+          icomptest = icompmem (ichknum-1)
+          irecwrk   = irecmem  (ichknum-1)
+c         bjwrk     = bjmem    (ichknum-1)
+c         biwrk     = bimem    (ichknum-1)
+          kwrk      = klocmem  (ichknum-1)
+c         iobcswrk  = iobcsmem (ichknum-1)
+          icglo     = icglomem (ichknum-1)
+          jwrk      = jlocmem  (ichknum-1)
+          iwrk      = ilocmem  (ichknum-1)
+          iwrk      = iwrk + 1
+        ENDIF
 
-c--   set max loop index for obcs multiplicities
-        if ( ncvargrd(grdchkvarindex) .eq. 'm' ) then
-           nobcsmax = nobcs
-        else
-           nobcsmax = 1
-        endif
+C--   set max loop index for obcs multiplicities
+        IF ( ncvargrd(grdchkvarindex) .EQ. 'm' ) THEN
+#ifdef ALLOW_OBCS_CONTROL
+         nobcsmax = nobcs
+#else
+         print *, 'S/R grdchk_loc: Ooops!'
+#endif
+        ELSE
+          nobcsmax = 1
+        ENDIF
 
 cph(
 cph-print        print *, 'ph-grd _loc: icomp, ichknum ',
 cph-print     &       icomp, ichknum, ncvarcomp
 cpj)
-c--   Start to loop over records.
-        do irec = irecwrk, ncvarrecs(grdchkvarindex)
-cph         do iobcs = iobcswrk, nobcsmax
+C--   Start to loop over records.
+        DO irec = irecwrk, ncvarrecs(grdchkvarindex)
+c        do iobcs = iobcswrk, nobcsmax
          iobcs = MOD((irec-1),nobcsmax) + 1
-c         do bj = bjwrk, jthi
-c          do bi = biwrk, ithi
-            bj = jLocTile
-            bi = iLocTile
-            do k = kwrk, ncvarnrmax(grdchkvarindex)
+c        do bj = bjwrk, nSy
+c         do bi = biwrk, nSx
+           bj = jLocTile
+           bi = iLocTile
+
+           DO k = kwrk, ncvarnrmax(grdchkvarindex)
              icglo   = icglo + nwettile(bi,bj,k,iobcs)
              icglom1 = icglo - nwettile(bi,bj,k,iobcs)
 cph(
@@ -163,19 +159,19 @@ cph(
 cph-print        print *, 'ph-grd _loc: icglo ',
 cph-print     &       k, icglo, icglom1, iwetsum(bi,bj,k)
 cpj)
-             if ( (ierr .ne. 0) .and.
-     &            (icomp .gt. icglom1 .AND. icomp .LE. icglo) ) then
+             IF ( (ierr .NE. 0) .AND.
+     &            (icomp .GT. icglom1 .AND. icomp .LE. icglo) ) THEN
 cph
-cph             if ( (ierr .ne. 0) .and.
-cph     &            (icomp .gt.
+cph             if ( (ierr .NE. 0) .AND.
+cph     &            (icomp .GT.
 cph     &              (iobcs-1)*iwetsum(bi,bj,nr)+iwetsum(bi,bj,k-1))
-cph     &              .and.
-cph     &            (icomp .le.
+cph     &              .AND.
+cph     &            (icomp .LE.
 cph     &              (iobcs-1)*iwetsum(bi,bj,nr)+iwetsum(bi,bj,k))) then
 cph
-               if ( icomptest .EQ. 0 ) then
+               IF ( icomptest .EQ. 0 ) THEN
                   icomptest = icglom1
-               endif
+               ENDIF
                icomploc = icomp
                icvrec = irec
                itile  = bi
@@ -183,79 +179,85 @@ cph
 cph(
 cph-print               print *, 'ph-grd irec, bj, bi, k ', irec, bj, bi, k
 cpj)
-               do j = jwrk, ncvarymax(grdchkvarindex)
-                do i = iwrk, ncvarxmax(grdchkvarindex)
-                 if (ierr .ne. 0) then
-                  if ( ncvargrd(grdchkvarindex) .eq. 'c' ) then
-                     if ( maskC(i,j,k,bi,bj) .gt. 0.) then
+               DO j = jwrk, ncvarymax(grdchkvarindex)
+                DO i = iwrk, ncvarxmax(grdchkvarindex)
+                 IF (ierr .NE. 0) THEN
+                  IF ( ncvargrd(grdchkvarindex) .EQ. 'c' ) THEN
+                     IF ( maskC(i,j,k,bi,bj) .GT. 0.) THEN
                         icomptest = icomptest + 1
                         itmp = i
                         jtmp = j
-                     endif
-                  else if ( ncvargrd(grdchkvarindex) .eq. 's' ) then
-                     if ( _maskS(i,j,k,bi,bj) .gt. 0.) then
+                     ENDIF
+                  ELSEIF ( ncvargrd(grdchkvarindex) .EQ. 's' ) THEN
+                     IF ( _maskS(i,j,k,bi,bj) .GT. 0.) THEN
                         icomptest = icomptest + 1
                         itmp = i
                         jtmp = j
-                     endif
-                  else if ( ncvargrd(grdchkvarindex) .eq. 'w' ) then
-                     if ( _maskW(i,j,k,bi,bj) .gt. 0.) then
+                     ENDIF
+                  ELSEIF ( ncvargrd(grdchkvarindex) .EQ. 'w' ) THEN
+                     IF ( _maskW(i,j,k,bi,bj) .GT. 0.) THEN
                         icomptest = icomptest + 1
                         itmp = i
                         jtmp = j
-                     endif
-#ifdef ALLOW_SHEFICE
-                  else if ( ncvargrd(grdchkvarindex) .eq. 'i' ) then
-                     if ( maskSHI(i,j,k,bi,bj) .gt. 0.) then
+                     ENDIF
+#ifdef ALLOW_SHELFICE
+                  ELSEIF ( ncvargrd(grdchkvarindex) .EQ. 'i' ) THEN
+                     IF ( maskSHI(i,j,k,bi,bj) .GT. 0.) THEN
                         icomptest = icomptest + 1
                         itmp = i
                         jtmp = j
-                     endif
+                     ENDIF
 #endif /* ALLOW_SHELFICE */
-                  else if ( ncvargrd(grdchkvarindex) .eq. 'm' ) then
-                     if ( grdchkvarindex .EQ. 11 ) then
+#ifdef ALLOW_OBCS_CONTROL
+                  ELSEIF ( ncvargrd(grdchkvarindex) .EQ. 'm' ) THEN
+                     IF ( ncvarfname(grdchkvarindex)
+     &                  .EQ.xx_obcsn_file ) THEN
 #ifdef ALLOW_OBCSN_CONTROL
-                        if ( grdchk_maskxz(i,k,bi,bj,iobcs) .gt. 0.
-     &                       .and. j.eq. OB_Jn(I,bi,bj) ) then
+                        IF ( grdchk_maskxz(i,k,bi,bj,iobcs) .GT. 0.
+     &                       .AND. j.EQ. OB_Jn(i,bi,bj) ) THEN
                            icomptest = icomptest + 1
                            itmp = i
-                           jtmp = OB_Jn(I,bi,bj)
-                        endif
+                           jtmp = OB_Jn(i,bi,bj)
+                        ENDIF
 #endif
-                     else if ( grdchkvarindex .EQ. 12 ) then
+                     ELSEIF ( ncvarfname(grdchkvarindex)
+     &                       .EQ.xx_obcss_file ) THEN
 #ifdef ALLOW_OBCSS_CONTROL
-                        if ( grdchk_maskxz(i,k,bi,bj,iobcs) .gt. 0.
-     &                       .and. j.eq. OB_Js(I,bi,bj) ) then
+                        IF ( grdchk_maskxz(i,k,bi,bj,iobcs) .GT. 0.
+     &                       .AND. j.EQ. OB_Js(i,bi,bj) ) THEN
                            icomptest = icomptest + 1
                            itmp = i
-                           jtmp = OB_Js(I,bi,bj)
-                        endif
+                           jtmp = OB_Js(i,bi,bj)
+                        ENDIF
 #endif
-                     else if ( grdchkvarindex .EQ. 13 ) then
-#ifdef ALLOW_OBCSW_CONTROL
-                        if ( grdchk_maskyz(j,k,bi,bj,iobcs) .gt. 0.
-     &                       .and. i.eq. OB_Iw(J,bi,bj) ) then
-                           icomptest = icomptest + 1
-                           itmp = OB_Iw(J,bi,bj)
-                           jtmp = j
-                        endif
-#endif
-                     else if ( grdchkvarindex .EQ. 14 ) then
+                     ELSEIF ( ncvarfname(grdchkvarindex)
+     &                       .EQ.xx_obcse_file ) THEN
 #ifdef ALLOW_OBCSE_CONTROL
-                        if ( grdchk_maskyz(j,k,bi,bj,iobcs) .gt. 0.
-     &                       .and. i.eq. OB_Ie(J,bi,bj) ) then
+                        IF ( grdchk_maskyz(j,k,bi,bj,iobcs) .GT. 0.
+     &                       .AND. i.EQ. OB_Ie(j,bi,bj) ) THEN
                            icomptest = icomptest + 1
-                           itmp = OB_Ie(J,bi,bj)
+                           itmp = OB_Ie(j,bi,bj)
                            jtmp = j
-                        endif
+                        ENDIF
 #endif
-                     endif
-                  endif
+                     ELSEIF ( ncvarfname(grdchkvarindex)
+     &                       .EQ.xx_obcsw_file ) THEN
+#ifdef ALLOW_OBCSW_CONTROL
+                        IF ( grdchk_maskyz(j,k,bi,bj,iobcs) .GT. 0.
+     &                       .AND. i.EQ. OB_Iw(j,bi,bj) ) THEN
+                           icomptest = icomptest + 1
+                           itmp = OB_Iw(j,bi,bj)
+                           jtmp = j
+                        ENDIF
+#endif
+                     ENDIF
+#endif /* ALLOW_OBCS_CONTROL */
+                  ENDIF
 cph(
 cph-print                  print *, 'ph-grd icomp, icomptest, icomploc, i, j ',
 cph-print     &                 icomp, icomptest, icomploc, i, j
 cpj)
-                  if ( icomploc .eq. icomptest ) then
+                  IF ( icomploc .EQ. icomptest ) THEN
                      itilepos = itmp
                      jtilepos = jtmp
                      layer    = k
@@ -266,68 +268,70 @@ cph(
                      print *, 'ph-grd -->hit<-- ', itmp,jtmp,k,iobcs
                      goto 1234
 cph)
-                  endif
-                 endif
-                enddo
+                  ENDIF
+                 ENDIF
+                ENDDO
                 iwrk = 1
-               enddo
+               ENDDO
                jwrk = 1
-             else if (ierr .NE. 0) then
-               if (icomptest .EQ. icomp-1) then
+             ELSEIF (ierr .NE. 0) THEN
+               IF (icomptest .EQ. icomp-1) THEN
                  icomptest = icomptest
-               else
+               ELSE
                  icomptest = icomptest + nwettile(bi,bj,k,iobcs)
-               endif
+               ENDIF
 cph(
 cph-print               print *, 'ph-grd after loop icomptest, icomploc, k ',
 cph-print     &              icomptest, icomploc, k
 cph)
-                iwrk      = 1
-                jwrk      = 1
-             else
-c
-             endif
-c--   End of loop over k
-            enddo
-            kwrk = 1
-c--   End of loop over bi
-c          enddo
-c          biwrk = 1
-c--   End of loop over bj
+               iwrk      = 1
+               jwrk      = 1
+             ENDIF
+
+C--   End of loop over k
+           ENDDO
+           kwrk = 1
+C--   End of loop over bi
 c         enddo
-c         bjwrk = 1
-c--   End of loop over iobcs
-cph         enddo
-cph         iobcswrk = 1
-c--   End of loop over irec records.
-         enddo
-c
-        else
-            if ( icomp .gt. maxncvarcomps ) then
-c--           Such a component does not exist.
-              ierr     = -4
-              icvrec   = -1
-              jtile    = -1
-              itile    = -1
-              layer    = -1
-              obcspos  = -1
-              jtilepos = -1
-              itilepos = -1
-            else
-c--           The component is a land point.
-              ierr     = -3
-              icvrec   = -1
-              jtile    = -1
-              itile    = -1
-              layer    = -1
-              obcspos  = -1
-              jtilepos = -1
-              itilepos = -1
-            endif
-        endif
-       else
-          if ( icomp .lt. 0 ) then
-c--         Such a component does not exist.
+c         biwrk = 1
+C--   End of loop over bj
+c        enddo
+c        bjwrk = 1
+C--   End of loop over iobcs
+c        enddo
+c        iobcswrk = 1
+C--   End of loop over irec records.
+        ENDDO
+
+       ELSE
+C--   else icomp > ncvarcomp
+         IF ( icomp .GT. maxncvarcomps ) THEN
+C--        Such a component does not exist.
+           ierr     = -4
+           icvrec   = -1
+           jtile    = -1
+           itile    = -1
+           layer    = -1
+           obcspos  = -1
+           jtilepos = -1
+           itilepos = -1
+         ELSE
+C--        The component is a land point.
+           ierr     = -3
+           icvrec   = -1
+           jtile    = -1
+           itile    = -1
+           layer    = -1
+           obcspos  = -1
+           jtilepos = -1
+           itilepos = -1
+         ENDIF
+C--   End if/else block icomp =< ncvarcomp
+       ENDIF
+      ELSE
+C--   else not( icomp > 0 )
+         IF ( icomp .LT. 0 ) THEN
+C--         Such a component does not exist.
             ierr     = -2
             icvrec   = -1
             jtile    = -1
@@ -336,8 +340,8 @@ c--         Such a component does not exist.
             obcspos  = -1
             jtilepos = -1
             itilepos = -1
-          else
-c--         Component zero.
+         ELSE
+C--         Component zero.
             ierr     = -1
             icvrec   = -1
             jtile    = -1
@@ -346,16 +350,17 @@ c--         Component zero.
             obcspos  = -1
             jtilepos = -1
             itilepos = -1
-          endif
-       endif
+         ENDIF
+C--   End if/else block icomp > 0
+      ENDIF
 
- 1234  continue
+ 1234 CONTINUE
 
-      _END_MASTER( mythid )
+      _END_MASTER( myThid )
 
       _BARRIER
 
 #endif /* ALLOW_GRDCHK */
 
-      return
-      end
+      RETURN
+      END

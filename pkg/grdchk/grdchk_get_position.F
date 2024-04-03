@@ -32,9 +32,13 @@ c     == global variables ==
 #ifdef ALLOW_OBCS
 # include "OBCS_GRID.h"
 #endif
-#include "ctrl.h"
-#include "CTRL_OBCS.h"
-#include "grdchk.h"
+#include "CTRL_SIZE.h"
+#include "CTRL.h"
+#ifdef ALLOW_OBCS_CONTROL
+C     CTRL_OBCS.h must be included before GRDCHK.h
+# include "CTRL_OBCS.h"
+#endif
+#include "GRDCHK.h"
 
 c     == routine arguments ==
       integer       mythid
@@ -107,7 +111,11 @@ c     biwrk     = 1
 
 c--   set max loop index for obcs multiplicities
       if ( ncvargrd(grdchkvarindex) .eq. 'm' ) then
+#ifdef ALLOW_OBCS_CONTROL
          nobcsmax = nobcs
+#else
+         print *, 'S/R grdchk_get_position: Ooops!'
+#endif
       else
          nobcsmax = 1
       endif
@@ -152,8 +160,10 @@ c--             Ice shelf mask.
                      endif
                      wetlocal = maskSHI(i,j,k,bi,bj)
 #endif /* ALLOW_SHELFICE */
+#ifdef ALLOW_OBCS_CONTROL
                   else if ( ncvargrd(grdchkvarindex) .eq. 'm' ) then
-                     if ( grdchkvarindex .EQ. 11 ) then
+                     if ( ncvarfname(grdchkvarindex)
+     &                  .eq.xx_obcsn_file ) then
 #ifdef ALLOW_OBCSN_CONTROL
                         if (grdchk_maskxz(i,k,bi,bj,iobcs) .gt. 0.
      &                       .and. j.eq. OB_Jn(I,bi,bj) ) then
@@ -161,7 +171,8 @@ c--             Ice shelf mask.
                         endif
                         wetlocal = grdchk_maskxz(i,k,bi,bj,iobcs)
 #endif
-                     else if ( grdchkvarindex .EQ. 12 ) then
+                     else if ( ncvarfname(grdchkvarindex)
+     &                       .eq.xx_obcss_file ) then
 #ifdef ALLOW_OBCSS_CONTROL
                         if (grdchk_maskxz(i,k,bi,bj,iobcs) .gt. 0.
      &                       .and. j.eq. OB_Js(I,bi,bj) ) then
@@ -169,15 +180,8 @@ c--             Ice shelf mask.
                         endif
                         wetlocal = grdchk_maskxz(i,k,bi,bj,iobcs)
 #endif
-                     else if ( grdchkvarindex .EQ. 13 ) then
-#ifdef ALLOW_OBCSW_CONTROL
-                        if ( grdchk_maskyz(j,k,bi,bj,iobcs) .gt. 0.
-     &                      .and. i.eq. OB_Iw(J,bi,bj) ) then
-                           icomptest = icomptest + 1
-                        endif
-                        wetlocal = grdchk_maskyz(j,k,bi,bj,iobcs)
-#endif
-                     else if ( grdchkvarindex .EQ. 14 ) then
+                     else if ( ncvarfname(grdchkvarindex)
+     &                       .eq.xx_obcse_file ) then
 #ifdef ALLOW_OBCSE_CONTROL
                         if (grdchk_maskyz(j,k,bi,bj,iobcs) .gt. 0.
      &                       .and. i.eq. OB_Ie(J,bi,bj) ) then
@@ -185,7 +189,17 @@ c--             Ice shelf mask.
                         endif
                         wetlocal = grdchk_maskyz(j,k,bi,bj,iobcs)
 #endif
+                     else if ( ncvarfname(grdchkvarindex)
+     &                       .eq.xx_obcsw_file ) then
+#ifdef ALLOW_OBCSW_CONTROL
+                        if ( grdchk_maskyz(j,k,bi,bj,iobcs) .gt. 0.
+     &                      .and. i.eq. OB_Iw(J,bi,bj) ) then
+                           icomptest = icomptest + 1
+                        endif
+                        wetlocal = grdchk_maskyz(j,k,bi,bj,iobcs)
+#endif
                      endif
+#endif /* ALLOW_OBCS_CONTROL */
                   endif
 c
                   if ( i     .EQ. itilepos .AND.

@@ -208,6 +208,10 @@ C-    Vertical viscosity parameters:
       CALL WRITE_0D_RL( bottomDragQuadratic, INDEX_NONE,
      & 'bottomDragQuadratic =',
      & ' /* quadratic bottom-drag coefficient (-) */')
+# ifdef ALLOW_BOTTOMDRAG_ROUGHNESS
+      CALL WRITE_0D_RL( zRoughBot, INDEX_NONE, 'zRoughBot =',
+     & ' /* roughness length for bottom friction (m) */')
+# endif
       CALL WRITE_0D_I( selectBotDragQuadr, INDEX_NONE,
      & 'selectBotDragQuadr =',
      & ' /* select quadratic bottom drag options */')
@@ -457,8 +461,8 @@ C-----
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       CALL PRINT_MESSAGE(endList, ioUnit, SQUEEZE_RIGHT, myThid )
 C-----
-      CALL WRITE_0D_L( metricTerms,  INDEX_NONE, 'metricTerms =',
-     &                '  /* metric-Terms on/off flag */')
+      CALL WRITE_0D_I( selectMetricTerms, INDEX_NONE,
+     & 'selectMetricTerms=', ' /* Metric-Terms on/off flag (=0/1) */')
       CALL WRITE_0D_L( useNHMTerms,  INDEX_NONE, 'useNHMTerms =',
      &              ' /* Non-Hydrostatic Metric-Terms on/off */')
       WRITE(msgBuf,'(2A)')
@@ -471,8 +475,8 @@ C-----
      &  ' 2= Spherical ; 3= read from file'
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       CALL PRINT_MESSAGE(endList, ioUnit, SQUEEZE_RIGHT, myThid )
-      CALL WRITE_0D_L( use3dCoriolis,  INDEX_NONE,
-     & 'use3dCoriolis =', ' /* 3-D Coriolis on/off flag */')
+      CALL WRITE_0D_I( select3dCoriScheme, INDEX_NONE,
+     & 'select3dCoriScheme=', ' /* 3-D Coriolis on/off flag (=0/1) */')
       CALL WRITE_0D_L( useCoriolis,  INDEX_NONE,
      & 'useCoriolis =', '  /* Coriolis on/off flag */')
       CALL WRITE_0D_L( useCDscheme,  INDEX_NONE,

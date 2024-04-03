@@ -1,9 +1,9 @@
 #include "CTRL_OPTIONS.h"
 
       subroutine ctrl_set_unpack_xy(
-     &     lxxadxx, cunit, ivartype, PrecondScalar,
+     &     lxxadxx, cunit, ivar, PrecondScalar,
      &     fname, masktype, weighttype,
-     &     nwetglobal, mythid )
+     &     nwetglobal, myThid )
 
 c     ==================================================================
 c     SUBROUTINE ctrl_set_unpack_xy
@@ -23,20 +23,21 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 
-#include "ctrl.h"
-#include "optim.h"
+#include "CTRL_SIZE.h"
+#include "CTRL.h"
+#include "OPTIMCYCLE.h"
 
 c     == routine arguments ==
 
       logical lxxadxx
       integer cunit
-      integer ivartype
+      integer ivar
       _RL precondScalar
-      character*( 80) fname
+      character*(MAX_LEN_FNAM) fname
       character*(  9) masktype
-      character*( 80) weighttype
+      character*(MAX_LEN_FNAM) weighttype
       integer nwetglobal(Nr)
-      integer mythid
+      integer myThid
 
 #ifndef EXCLUDE_CTRL_PACK
 c     == external ==
@@ -49,7 +50,14 @@ c     == local variables ==
       integer ii, irec
       integer cbuffindex
       real*4 cbuff( sNx*nSx*nPx*sNy*nSy*nPy )
-      character*(80) cfile2, cfile3
+      character*(MAX_LEN_FNAM) cfile2, cfile3
+C     These variables are read-in from file, but not used much
+      integer loc_ncbuffindex
+      integer loc_i
+      integer loc_j
+      integer loc_k
+      integer loc_ncvarindex
+
 C========================================================================
 # ifndef ALLOW_PACKUNPACK_METHOD2
       integer ip,jp
@@ -60,11 +68,6 @@ C========================================================================
       integer imin,imax
       _RL     globmsk  ( sNx,nSx,nPx,sNy,nSy,nPy,Nr )
       _RL     globfld3d( sNx,nSx,nPx,sNy,nSy,nPy,Nr )
-#ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
-      integer il
-      _RL     weightfld2d( sNx,nSx,nPx,sNy,nSy,nPy )
-      character*( 80) weightname
-#endif
       integer reclen, irectrue
       integer cunit2, cunit3
       real*4 globfldtmp2( sNx,nSx,nPx,sNy,nSy,nPy )
@@ -78,7 +81,6 @@ C========================================================================
       real*8 fld2d_buf_glo(Nx,Ny)
       _RL fld2dDim(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL fld2dNodim(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL wei2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL dummy
 # endif /* ALLOW_PACKUNPACK_METHOD2 */
 c     == end of interface ==
@@ -117,93 +119,68 @@ c     Initialise temporary file
       enddo
 
 c--   Only the master thread will do I/O.
-      _BEGIN_MASTER( mythid )
+      _BEGIN_MASTER( myThid )
 
       if ( doPackDiag ) then
-         write(cfile2(1:80),'(80a)') ' '
-         write(cfile3(1:80),'(80a)') ' '
          if ( lxxadxx ) then
-            write(cfile2(1:80),'(a,I3.3,a,I4.4,a)')
+            write(cfile2,'(a,I3.3,a,I4.4,a)')
      &           'diag_unpack_nondim_ctrl_',
-     &           ivartype, '_', optimcycle, '.bin'
-            write(cfile3(1:80),'(a,I3.3,a,I4.4,a)')
+     &           ivar, '_', optimcycle, '.bin'
+            write(cfile3,'(a,I3.3,a,I4.4,a)')
      &           'diag_unpack_dimens_ctrl_',
-     &           ivartype, '_', optimcycle, '.bin'
+     &           ivar, '_', optimcycle, '.bin'
          else
-            write(cfile2(1:80),'(a,I3.3,a,I4.4,a)')
+            write(cfile2,'(a,I3.3,a,I4.4,a)')
      &           'diag_unpack_nondim_grad_',
-     &           ivartype, '_', optimcycle, '.bin'
-            write(cfile3(1:80),'(a,I3.3,a,I4.4,a)')
+     &           ivar, '_', optimcycle, '.bin'
+            write(cfile3,'(a,I3.3,a,I4.4,a)')
      &           'diag_unpack_dimens_grad_',
-     &           ivartype, '_', optimcycle, '.bin'
+     &           ivar, '_', optimcycle, '.bin'
          endif
 
          reclen = FLOAT(sNx*nSx*nPx*sNy*nSy*nPy*4)
-         call mdsfindunit( cunit2, mythid )
+         call mdsfindunit( cunit2, myThid )
          open( cunit2, file=cfile2, status='unknown',
      &        access='direct', recl=reclen )
-         call mdsfindunit( cunit3, mythid )
+         call mdsfindunit( cunit3, myThid )
          open( cunit3, file=cfile3, status='unknown',
      &        access='direct', recl=reclen )
       endif
 
-#ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
-      if (weighttype.NE.' ') then
-       il=ilnblnk( weighttype)
-       write(weightname(1:80),'(80a)') ' '
-       write(weightname(1:80),'(a)') weighttype(1:il)
-       call MDSREADFIELD_2D_GL(
-     &     weightname, ctrlprec, 'RL',
-     &     1, weightfld2d, 1, mythid)
-      else
-        do jp = 1,nPy
-         do bj = jtlo,jthi
-          do j = jmin,jmax
-           do ip = 1,nPx
-            do bi = itlo,ithi
-             do i = imin,imax
-              weightfld2d(i,bi,ip,j,bj,jp) = 1. _d 0
-             enddo
-            enddo
-           enddo
-          enddo
-         enddo
-        enddo
-      endif
-#endif
-
       call MDSREADFIELD_3D_GL(
      &     masktype, ctrlprec, 'RL',
-     &     Nr, globmsk, 1, mythid)
+     &     Nr, globmsk, 1, myThid)
 
-      nrec_nl=int(ncvarrecs(ivartype)/Nr)
+      nrec_nl=int(ncvarrecs(ivar)/Nr)
       do irec = 1, nrec_nl
          do k = 1,Nr
          irectrue = (irec-1)*Nr + k
 #ifndef ALLOW_ADMTLM
-         read(cunit) filencvarindex(ivartype)
-         if (filencvarindex(ivartype) .NE. ncvarindex(ivartype))
-     &        then
-            print *, 'ctrl_set_unpack_xy:WARNING: wrong ncvarindex ',
-     &           filencvarindex(ivartype), ncvarindex(ivartype)
+         read(cunit) loc_ncvarindex
+         if (loc_ncvarindex .NE. ncvarindex(ivar)) then
+            IF ( irec.EQ.1 )
+     &      print *, 'ctrl_set_unpack_xy:WARNING: wrong ncvarindex ',
+     &           loc_ncvarindex, ncvarindex(ivar)
+# ifndef READ_OLD_CTRL_PACK_FILE
             STOP 'in S/R ctrl_set_unpack_xy'
+# endif
          endif
-         read(cunit) filej
-         read(cunit) filei
+         read(cunit) loc_j
+         read(cunit) loc_i
 #endif /* ndef ALLOW_ADMTLM */
             cbuffindex = nwetglobal(1)
             if ( cbuffindex .gt. 0 ) then
 #ifndef ALLOW_ADMTLM
-               read(cunit) filencbuffindex
-               if (filencbuffindex .NE. cbuffindex) then
+               read(cunit) loc_ncbuffindex
+               if (loc_ncbuffindex .NE. cbuffindex) then
                   print *, 'WARNING: wrong cbuffindex ',
-     &                 filencbuffindex, cbuffindex
+     &                 loc_ncbuffindex, cbuffindex
                   STOP 'in S/R ctrl_set_unpack_xy'
                endif
-               read(cunit) filek
-               if (filek .NE. 1) then
+               read(cunit) loc_k
+               if (loc_k .NE. 1) then
                   print *, 'WARNING: wrong k ',
-     &                 filek, 1
+     &                 loc_k, 1
                   STOP 'in S/R ctrl_set_unpack_xy'
                endif
 cph#endif /* ndef ALLOW_ADMTLM */
@@ -265,37 +242,39 @@ cph)
 
          call MDSWRITEFIELD_3D_GL( fname, ctrlprec, 'RL',
      &                             NR, globfld3d,
-     &                             irec,  optimcycle, mythid)
+     &                             irec,  optimcycle, myThid)
 
       enddo
 
-      do irec = nrec_nl*Nr+1,ncvarrecs(ivartype)
+      do irec = nrec_nl*Nr+1,ncvarrecs(ivar)
 #ifndef ALLOW_ADMTLM
-         read(cunit) filencvarindex(ivartype)
-         if (filencvarindex(ivartype) .NE. ncvarindex(ivartype))
-     &        then
-            print *, 'ctrl_set_unpack_xy:WARNING: wrong ncvarindex ',
-     &           filencvarindex(ivartype), ncvarindex(ivartype)
+         read(cunit) loc_ncvarindex
+         if (loc_ncvarindex .NE. ncvarindex(ivar)) then
+            IF ( irec.EQ.1 )
+     &      print *, 'ctrl_set_unpack_xy:WARNING: wrong ncvarindex ',
+     &           loc_ncvarindex, ncvarindex(ivar)
+# ifndef READ_OLD_CTRL_PACK_FILE
             STOP 'in S/R ctrl_set_unpack_xy'
+# endif
          endif
-         read(cunit) filej
-         read(cunit) filei
+         read(cunit) loc_j
+         read(cunit) loc_i
 #endif /* ALLOW_ADMTLM */
          do k = 1,1
             irectrue = irec
             cbuffindex = nwetglobal(k)
             if ( cbuffindex .gt. 0 ) then
 #ifndef ALLOW_ADMTLM
-               read(cunit) filencbuffindex
-               if (filencbuffindex .NE. cbuffindex) then
+               read(cunit) loc_ncbuffindex
+               if (loc_ncbuffindex .NE. cbuffindex) then
                   print *, 'WARNING: wrong cbuffindex ',
-     &                 filencbuffindex, cbuffindex
+     &                 loc_ncbuffindex, cbuffindex
                   STOP 'in S/R ctrl_set_unpack_xy'
                endif
-               read(cunit) filek
-               if (filek .NE. k) then
+               read(cunit) loc_k
+               if (loc_k .NE. k) then
                   print *, 'WARNING: wrong k ',
-     &                 filek, k
+     &                 loc_k, k
                   STOP 'in S/R ctrl_set_unpack_xy'
                endif
 cph#endif /* ALLOW_ADMTLM */
@@ -357,7 +336,7 @@ cph)
 
          call MDSWRITEFIELD_2D_GL( fname, ctrlprec, 'RL',
      &                             1, globfld3d(1,1,1,1,1,1,1),
-     &                             irec,  optimcycle, mythid)
+     &                             irec,  optimcycle, myThid)
 
       enddo
 
@@ -366,61 +345,52 @@ cph)
          close ( cunit3 )
       endif
 
-      _END_MASTER( mythid )
+      _END_MASTER( myThid )
 
 # else /* ALLOW_PACKUNPACK_METHOD2 */
 
 c-- part 1: preliminary reads and definitions
 
-#ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
-#ifdef ALLOW_AUTODIFF
-      call active_read_xy(weighttype, wei2d, 1,
-     &    .FALSE., .FALSE., 0 , mythid, dummy)
-#else
-      CALL READ_REC_XY_RL( weighttype, wei2d, 1, 1, myThid )
-#endif
-#endif
-
 #ifdef ALLOW_AUTODIFF
       call active_read_xyz(masktype, msk3d, 1,
-     &    .FALSE., .FALSE., 0 , mythid, dummy)
+     &    .FALSE., .FALSE., 0 , myThid, dummy)
 #else
       CALL READ_REC_XYZ_RL( masktype, msk3d, 1, 1, myThid )
 #endif
 
       if ( doPackDiag ) then
-         write(cfile2(1:80),'(80a)') ' '
-         write(cfile3(1:80),'(80a)') ' '
          il = ilnblnk( fname )
          if ( lxxadxx ) then
-            write(cfile2(1:80),'(2a)') fname(1:il),'.unpack_ctrl_adim'
-            write(cfile3(1:80),'(2a)') fname(1:il),'.unpack_ctrl_dim'
+            write(cfile2,'(2a)') fname(1:il),'.unpack_ctrl_adim'
+            write(cfile3,'(2a)') fname(1:il),'.unpack_ctrl_dim'
          else
-            write(cfile2(1:80),'(2a)') fname(1:il),'.unpack_grad_adim'
-            write(cfile3(1:80),'(2a)') fname(1:il),'.unpack_grad_dim'
+            write(cfile2,'(2a)') fname(1:il),'.unpack_grad_adim'
+            write(cfile3,'(2a)') fname(1:il),'.unpack_grad_dim'
          endif
       endif
 
 c-- part 2: loop over records
 
-      do irec = 1, ncvarrecs(ivartype)
+      do irec = 1, ncvarrecs(ivar)
 
 c-- 2.1: array <- buffer <- global buffer <- global file
 
 #ifndef ALLOW_ADMTLM
-      _BEGIN_MASTER( mythid )
+      _BEGIN_MASTER( myThid )
         IF ( myProcId .eq. 0 ) THEN
-         read(cunit) filencvarindex(ivartype)
-         if (filencvarindex(ivartype) .NE. ncvarindex(ivartype))
-     &        then
-            print *, 'ctrl_set_unpack_xy:WARNING: wrong ncvarindex ',
-     &           filencvarindex(ivartype), ncvarindex(ivartype)
+         read(cunit) loc_ncvarindex
+         if (loc_ncvarindex .NE. ncvarindex(ivar)) then
+            IF ( irec.EQ.1 )
+     &      print *, 'ctrl_set_unpack_xy:WARNING: wrong ncvarindex ',
+     &           loc_ncvarindex, ncvarindex(ivar)
+# ifndef READ_OLD_CTRL_PACK_FILE
             STOP 'in S/R ctrl_set_unpack_xy'
+# endif
          endif
-         read(cunit) filej
-         read(cunit) filei
+         read(cunit) loc_j
+         read(cunit) loc_i
         ENDIF
-      _END_MASTER( mythid )
+      _END_MASTER( myThid )
       _BARRIER
 #endif /* ALLOW_ADMTLM */
 
@@ -433,22 +403,22 @@ c-- 2.1: array <- buffer <- global buffer <- global file
      &                       Nx,Ny,.FALSE.,.TRUE.,myThid)
         CALL BAR2( myThid )
 
-        _BEGIN_MASTER( mythid )
+        _BEGIN_MASTER( myThid )
          cbuffindex = nwetglobal(k)
         IF ( myProcId .eq. 0 ) THEN
 
 #ifndef ALLOW_ADMTLM
         if ( cbuffindex .gt. 0) then
-          read(cunit) filencbuffindex
-          read(cunit) filek
-          if (filencbuffindex .NE. cbuffindex) then
+          read(cunit) loc_ncbuffindex
+          read(cunit) loc_k
+          if (loc_ncbuffindex .NE. cbuffindex) then
             print *, 'WARNING: wrong cbuffindex ',
-     &                 filencbuffindex, cbuffindex
+     &                 loc_ncbuffindex, cbuffindex
             STOP 'in S/R ctrl_unpack'
           endif
-          if (filek .NE. 1) then
+          if (loc_k .NE. 1) then
             print *, 'WARNING: wrong k ',
-     &                 filek, 1
+     &                 loc_k, 1
             STOP 'in S/R ctrl_set_unpack_xy'
           endif
           read(cunit) (cbuff(ii), ii=1,cbuffindex)
@@ -466,7 +436,7 @@ c-- 2.1: array <- buffer <- global buffer <- global file
         ENDDO
 
         ENDIF
-        _END_MASTER( mythid )
+        _END_MASTER( myThid )
         _BARRIER
 
         CALL BAR2( myThid )
@@ -507,16 +477,16 @@ c-- 2.2: normalize field if needed
 c-- 2.3:
       if ( doPackDiag ) then
       call WRITE_REC_3D_RL( cfile2, ctrlprec,
-     &        1, fld2dNodim, irec, 0, mythid)
+     &        1, fld2dNodim, irec, 0, myThid)
       call WRITE_REC_3D_RL( cfile3, ctrlprec,
-     &        1, fld2dDim, irec, 0, mythid)
+     &        1, fld2dDim, irec, 0, myThid)
       endif
 
 c-- 2.4:
       call WRITE_REC_3D_RL( fname, ctrlprec,
-     &        1, fld2dDim, irec, 0, mythid)
+     &        1, fld2dDim, irec, 0, myThid)
 
-      enddo !do irec = 1, ncvarrecs(ivartype)
+      enddo !do irec = 1, ncvarrecs(ivar)
 
 # endif /* ALLOW_PACKUNPACK_METHOD2 */
 # endif /* EXCLUDE_CTRL_PACK */

@@ -26,7 +26,6 @@ C     === Global variables ===
 #include "OBCS_FIELDS.h"
 #include "FFIELDS.h"
 
-
 C     !INPUT/OUTPUT PARAMETERS:
       _RL myTime
       INTEGER myIter
@@ -44,9 +43,15 @@ C     i,j,k        :: loop indices
 C     iB, jB       :: local index of open boundary
 C     msgBuf       :: Informational/error message buffer
       INTEGER bi, bj
-      INTEGER i, j, k, iB, jB
+      INTEGER i, j, k
+#if (defined ALLOW_OBCS_EAST ) || (defined ALLOW_OBCS_WEST )
+      INTEGER iB
+#endif
+#if (defined ALLOW_OBCS_NORTH) || (defined ALLOW_OBCS_SOUTH)
+      INTEGER jB
+#endif
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      _RL areaOB, areaE, areaW, areaN, areaS, tmpA
+      _RL areaOB, tmpA
       _RL inFlow, flowE, flowW, flowN, flowS
       _RL tileArea(nSx,nSy)
       _RL tileFlow(nSx,nSy)
@@ -55,6 +60,18 @@ C     msgBuf       :: Informational/error message buffer
       LOGICAL flag
       _RL netFreshWaterFlux
       _RL shelfIceNetMassFlux
+#ifdef ALLOW_OBCS_EAST
+      _RL areaE
+#endif
+#ifdef ALLOW_OBCS_WEST
+      _RL areaW
+#endif
+#ifdef ALLOW_OBCS_NORTH
+      _RL areaN
+#endif
+#ifdef ALLOW_OBCS_SOUTH
+      _RL areaS
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-- Old method (OBCS_balanceFac < 0): balance each OB separately

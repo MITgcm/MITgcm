@@ -56,9 +56,9 @@ c iron fluxes and benthic denitrification.
 c Note that the remineralization of particle flux intercepting the subgridscale
 c sediment is implicit in the reminp terms.
 
-#ifdef use_sgs_sed
+c#ifdef use_sgs_sed
 c!!
-#endif
+c#endif
 
 c ---------------------------------------------------------------------
 
