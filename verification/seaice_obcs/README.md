@@ -5,7 +5,7 @@ This verification experiment is used to test `pkg/seaice` with `pkg/obcs`
 and the set-up itself is carved out from `../lab_sea/input.salt_plume/`.
 
 The **primary** test uses input files from `input/` dir which have been generated using
-the matlab script `input/mk_input.m` together with the set of output files from running
+the matlab script [`input/mk_input.m`](input/mk_input.m) together with the set of output files from running
 test experiment `../lab_sea/input.salt_plume`.
 
 The **secondary** test `input.seaiceSponge/` uses OBCS sponge-layer for seaice fields
