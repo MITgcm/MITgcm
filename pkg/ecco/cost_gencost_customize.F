@@ -221,6 +221,9 @@ c    &     .TRUE.,.TRUE.,.TRUE.,1,myThid)
          elseif (gencost_barfile(k)(1:9).EQ.'m_sihsnow') then
            gencost_modfld(i,j,bi,bj,k) =
      &      hsnow(i,j,bi,bj)*maskC(i,j,1,bi,bj)
+         elseif (gencost_barfile(k)(1:11).EQ.'m_freeboard') then
+           gencost_modfld(i,j,bi,bj,k) =
+     &      gencost_storefld(i,j,bi,bj,k)*maskC(i,j,1,bi,bj)
 #endif
 #ifdef ALLOW_GENCOST3D
          elseif (gencost_barfile(k)(1:7).EQ.'m_theta') then
