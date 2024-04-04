@@ -1,3 +1,4 @@
+#include "CTRL_OPTIONS.h"
 
       subroutine optim_write_control(
      I                          nv,
@@ -26,6 +27,7 @@ c     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
+#include "CTRL_SIZE.h"
 #include "CTRL.h"
 
 c     == routine arguments ==

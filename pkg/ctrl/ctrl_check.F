@@ -33,11 +33,11 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "CTRL_SIZE.h"
 #include "CTRL.h"
 #ifdef ALLOW_EXF
 # include "EXF_PARAM.h"
 #endif
-#include "CTRL_SIZE.h"
 #include "CTRL_GENARR.h"
 
 C     !INPUT/OUTPUT PARAMETERS:

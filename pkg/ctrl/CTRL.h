@@ -8,26 +8,31 @@ C     *================================================================*
 C     | CTRL.h
 C     | o Header file defining control variables of the ECCO state
 C     |   estimation tool.
-C     | o Depending on the specific problem to be studied users will
+C     | o Depending on the specific problem to be studied users may
 C     |   have to modify this header file.
 C     | o started: Christian Eckert eckert@mit.edu  30-Jun-1999
 C     *================================================================*
 CEOP
 
+C--   set maximum number of control variables:
       INTEGER     maxcvars
-#if (defined (CTRL_SET_OLD_MAXCVARS_30))
-      PARAMETER ( maxcvars = 30 )
-#elif (defined (CTRL_SET_OLD_MAXCVARS_40))
-      PARAMETER ( maxcvars = 40 )
-#elif (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
-      PARAMETER ( maxcvars = 400 )
+#ifdef ALLOW_OBCS_CONTROL
+      PARAMETER( maxcvars = 4
 #else
-      PARAMETER ( maxcvars = 60 )
+      PARAMETER( maxcvars = 0
+#endif
+     &         + maxCtrlArr2D + maxCtrlArr3D + maxCtrlTim2D )
+
+#ifdef READ_OLD_CTRL_PACK_FILE
+C--   Just to enable to read-in old packed-ctrl file (specially the header):
+C     set "old_maxcvars" to previous maxcvars value that was used to write
+C     this specific old (prior to PR #796) packed-ctrl file
+      INTEGER old_maxcvars
+      PARAMETER( old_maxcvars = 400 )
 #endif
 
-cph ctrlprec will be set to 32 for ECCO to reduce I/O
-cph but jeopardizes some gradient checks, so should be
-cph set to 64 by default.
+C-  ctrlprec will be set to 32 for ECCO to reduce I/O but this jeopardizes
+C   gradient checks accuracy, so should be set to 64 by default.
       INTEGER     ctrlprec
       COMMON /controlparams_i/ ctrlprec
 
@@ -62,7 +67,7 @@ C                            ctrl_pack/ctrl_unpack
 C     doSinglePrecTapelev :: reduce precision of ad tape files to float32
 C                            (only used in pkg/autodiff ...)
 
-      COMMON /controlvars_l /
+      COMMON /controlparams_l/
      &                       doInitXX,
      &                       doAdmTlm,
      &                       doPackDiag,
@@ -83,6 +88,22 @@ C                            (only used in pkg/autodiff ...)
       LOGICAL doSinglePrecTapelev
       LOGICAL doAdmtlmBypassAD
 
+C--   parameters vectors, set in S/R CTRL_INIT_CTRLVAR, that describe
+C     the contorl variables, also used for identification across
+C     different parts of the code:
+C     ncvarfname    :: unique (and predefined) name of control variable
+C     ncvarindex    :: number to identify variable, depends specified ctrl-vars
+C     ncvarrecs     :: number of records for time dependent ctrl-variables;
+C     ncvarrecstart :: first and last record of time dependent ctrl-variables;
+C     ncvarrecsend  :: for constant-in-time variables all three are 1
+C     ncvargrd      :: type or/and position on the grid, possible values:
+C                      'c' (cell Center), 'w' (West face) ,'s' (South face),
+C                      'i' (shelfice), 'm' (obcs)
+C     ncvartype     :: shape of the grid: Arr3D, Arr2D, Tim2D, SecXZ, SecYZ
+C     ncvarx/y/nrmax:: i,j,k-dimensions of ctrl-variable (on tile)
+
+C--   holds control-variable setting and params as maxcvars long vector
+C     in following "controlvar_*" common blocks:
       COMMON /controlvars_i/
      &                       nvartype,
      &                       nvarlength,
@@ -123,71 +144,22 @@ C                            (only used in pkg/autodiff ...)
 
 #ifdef ALLOW_SHELFICE
       COMMON /controlvars_i_shifwflx/
-     &     nwetitile, nwetiglobal, filenWetiGlobal
+     &     nwetitile, nwetiglobal
       INTEGER nwetitile     ( nSx,nSy,Nr )
       INTEGER nwetiglobal     ( Nr )
-      INTEGER filenWetiGlobal(Nr)
 #endif /* ALLOW_SHELFICE */
 
       COMMON /controlvars_c/
-     &                       ncvargrd
-     &                     , yadprefix
-      CHARACTER*(1) ncvargrd(maxcvars)
-      CHARACTER*(2) yadprefix
+     &                       ncvargrd,
+     &                       ncvartype,
+     &                       ncvarfname,
+     &                       yadprefix
+      CHARACTER*(1)            ncvargrd  ( maxcvars )
+      CHARACTER*(5)            ncvartype ( maxcvars )
+      CHARACTER*(MAX_LEN_FNAM) ncvarfname( maxcvars )
+      CHARACTER*(2)            yadprefix
 
-      COMMON /controlvec_header_i/
-     &        filenvartype,
-     &        filenvarlength,
-     &        fileOptimCycle,
-     &        filencbuffindex,
-     &        fileIg,
-     &        fileJg,
-     &        fileI,
-     &        fileJ,
-     &        filensx,
-     &        filensy,
-     &        filek,
-     &        filenWetcGlobal,
-     &        filenWetsGlobal,
-     &        filenWetwGlobal,
-     &        filenWetvGlobal,
-     &        filencvarindex,
-     &        filencvarrecs,
-     &        filencvarxmax,
-     &        filencvarymax,
-     &        filencvarnrmax
-      INTEGER filenvartype
-      INTEGER filenvarlength
-      INTEGER fileOptimCycle
-      INTEGER filencbuffindex
-      INTEGER fileIg
-      INTEGER fileJg
-      INTEGER fileI
-      INTEGER fileJ
-      INTEGER filensx
-      INTEGER filensy
-      INTEGER filek
-      INTEGER filenWetcGlobal(Nr)
-      INTEGER filenWetsGlobal(Nr)
-      INTEGER filenWetwGlobal(Nr)
-      INTEGER filenWetvGlobal(Nr)
-      INTEGER filencvarindex(maxcvars)
-      INTEGER filencvarrecs(maxcvars)
-      INTEGER filencvarxmax(maxcvars)
-      INTEGER filencvarymax(maxcvars)
-      INTEGER filencvarnrmax(maxcvars)
-
-      COMMON /controlvec_header_r/
-     &               filefc
-      _RL            filefc
-
-      COMMON /controlvec_header_c/
-     &        fileYctrlid,
-     &        filencvargrd
-      CHARACTER*(10) fileYctrlid
-      CHARACTER*( 1) filencvargrd(maxcvars)
-
-c     Define unit weight as a placeholder
+C     Define unit weight as a placeholder
       COMMON /ctrl_weights_unit_r/
      &                        wunit
       _RL wunit     (Nr,nSx,nSy)
@@ -223,11 +195,11 @@ c     Define unit weight as a placeholder
       DOUBLE PRECISION phtmpadmtlm(maxn)
 #endif
 
-c     Control variables:
-c     ==================
-c
+C     Control variables:
+C     ==================
+
 #ifdef ALLOW_OPENAD
-C
+
       COMMON /controlvars_r_openad/
      &        xx_place_holder
 # ifdef ALLOW_GENARR2D_CONTROL
@@ -236,9 +208,8 @@ C
 # ifdef ALLOW_GENARR3D_CONTROL
      &      , xx_genarr3d
 # endif
-C
-      _RL xx_place_holder
 
+      _RL xx_place_holder
 # ifdef ALLOW_GENARR2D_CONTROL
       _RL xx_genarr2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,
      &                maxCtrlArr2D)
@@ -248,6 +219,6 @@ C
      &                maxCtrlArr3D)
 # endif
 
-#endif
+#endif /* ALLOW_OPENAD */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

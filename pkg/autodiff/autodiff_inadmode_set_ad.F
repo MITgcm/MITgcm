@@ -26,6 +26,7 @@ C     == Global variables ===
 # include "SEAICE_PARAMS.h"
 #endif
 #ifdef ALLOW_CTRL
+# include "CTRL_SIZE.h"
 # include "CTRL.h"
 #endif
 #ifdef ALLOW_DIAGNOSTICS

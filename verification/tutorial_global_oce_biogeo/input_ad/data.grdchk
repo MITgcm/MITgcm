@@ -7,8 +7,8 @@
  nbeg             = 1,
  nstep            = 1,
  nend             = 4,
-# to test xx_tr1 set 204
- grdchkvarindex   = 201,
+#grdchkvarname    = "xx_ptr1",
+ grdchkvarname    = "xx_theta",
  iGloPos  =10,
  jGloPos  =10,
  kGloPos  =1,
