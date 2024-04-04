@@ -171,7 +171,9 @@ CADJ STORE DWNSLP_Transp  = comlev1, key = ikey_dynamics, kind = isbyte
 #endif
 
 #ifdef ALLOW_SHELFICE
-CADJ STORE kTopC           =comlev1, key = ikey_dynamics
+# ifdef ALLOW_SHELFICE_REMESHING
+CADJ STORE kTopC          = comlev1, key = ikey_dynamics
+# endif
 CADJ STORE shelficeForcingT=comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE shelficeForcingS=comlev1, key = ikey_dynamics, kind = isbyte
 #endif /* ALLOW_SHELFICE */

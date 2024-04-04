@@ -914,6 +914,14 @@ C--   Check Overlap size:
        ENDIF
 # endif /* SEAICE_ALLOW_EVP */
 
+#ifndef SEAICE_ALLOW_LSR_FLEX
+      IF ( SEAICEuseLSRflex ) THEN
+       WRITE(msgBuf,'(A)')
+     &   'SEAICE_ALLOW_LSR_FLEX needed for SEAICEuseLSRflex'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       errCount = errCount + 1
+      ENDIF
+#endif
 C     SEAICEuseDynamics
       ENDIF
 #endif /* SEAICE_CGRID */

@@ -1,7 +1,7 @@
 #include "CTRL_OPTIONS.h"
 
       subroutine ctrl_set_unpack_xz(
-     &     cunit, ivartype, fname, masktype, weighttype,
+     &     cunit, ivar, fname, masktype, weighttype,
      &     weightfld, nwetglobal, mythid)
 
 c     ==================================================================
@@ -29,6 +29,7 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 
+#include "CTRL_SIZE.h"
 #include "CTRL.h"
 #include "CTRL_OBCS.h"
 #include "OPTIMCYCLE.h"
@@ -36,10 +37,10 @@ c     == global variables ==
 c     == routine arguments ==
 
       integer cunit
-      integer ivartype
+      integer ivar
       character*(MAX_LEN_FNAM)   fname
       character*  (9) masktype
-      character*(MAX_LEN_FNAM) weighttype
+      character*  (*) weighttype
       _RL     weightfld( Nr,nobcs )
       integer nwetglobal(Nr,nobcs)
       integer mythid
@@ -71,6 +72,13 @@ c     == local variables ==
       integer reclen, irectrue
       integer cunit2, cunit3
       character*(MAX_LEN_FNAM) cfile2, cfile3
+
+C     These variables are read-in from file, but not used much
+      integer loc_ncbuffindex
+      integer loc_i
+      integer loc_j
+      integer loc_k
+      integer loc_ncvarindex
 
 #ifdef CTRL_UNPACK_PRECISE
       integer il
@@ -139,17 +147,17 @@ c--   Only the master thread will do I/O.
          if ( lxxadxx ) then
             write(cfile2,'(a,I2.2,a,I4.4,a)')
      &           'diag_unpack_nondim_ctrl_',
-     &           ivartype, '_', optimcycle, '.bin'
+     &           ivar, '_', optimcycle, '.bin'
             write(cfile3,'(a,I2.2,a,I4.4,a)')
      &           'diag_unpack_dimens_ctrl_',
-     &           ivartype, '_', optimcycle, '.bin'
+     &           ivar, '_', optimcycle, '.bin'
          else
             write(cfile2,'(a,I2.2,a,I4.4,a)')
      &           'diag_unpack_nondim_grad_',
-     &           ivartype, '_', optimcycle, '.bin'
+     &           ivar, '_', optimcycle, '.bin'
             write(cfile3,'(a,I2.2,a,I4.4,a)')
      &           'diag_unpack_dimens_grad_',
-     &           ivartype, '_', optimcycle, '.bin'
+     &           ivar, '_', optimcycle, '.bin'
          endif
 
          reclen = sNx*nSx*nPx*nSy*nPy*4
@@ -179,36 +187,38 @@ C     MDSWRITEFIELD_XZ_GL does not know about useSingleCPUio, so the faster
 C     method that works for .not.useSingleCPUio cannot be used
        nrec_nl = 0
       else
-       nrec_nl = int(ncvarrecs(ivartype)/Ny)
+       nrec_nl = int(ncvarrecs(ivar)/Ny)
       endif
       do irec = 1, nrec_nl
 c     And now back-calculate what iobcs should be.
          do j=1,sNy
             iobcs= mod((irec-1)*sNy+j-1,nobcs)+1
 
-            read(cunit) filencvarindex(ivartype)
-            if (filencvarindex(ivartype) .NE. ncvarindex(ivartype))
-     &           then
-               print *, 'ctrl-set_unpack:xz:WARNING: wrong ncvarindex ',
-     &              filencvarindex(ivartype), ncvarindex(ivartype)
+            read(cunit) loc_ncvarindex
+            if (loc_ncvarindex .NE. ncvarindex(ivar)) then
+               IF ( irec.EQ.1 )
+     &         print *, 'ctrl-set_unpack:xz:WARNING: wrong ncvarindex ',
+     &              loc_ncvarindex, ncvarindex(ivar)
+# ifndef READ_OLD_CTRL_PACK_FILE
                STOP 'in S/R ctrl_set_unpack_xz'
+# endif
             endif
-            read(cunit) filej
-            read(cunit) filei
+            read(cunit) loc_j
+            read(cunit) loc_i
             do k = 1, Nr
                irectrue = (irec-1)*nobcs*Nr + (iobcs-1)*Nr + k
                cbuffindex = nwetglobal(k,iobcs)
                if ( cbuffindex .gt. 0 ) then
-                  read(cunit) filencbuffindex
-                  if (filencbuffindex .NE. cbuffindex) then
+                  read(cunit) loc_ncbuffindex
+                  if (loc_ncbuffindex .NE. cbuffindex) then
                      print *, 'WARNING: wrong cbuffindex ',
-     &                    filencbuffindex, cbuffindex
+     &                    loc_ncbuffindex, cbuffindex
                      STOP 'in S/R ctrl_set_unpack_xz'
                   endif
-                  read(cunit) filek
-                  if (filek .NE. k) then
+                  read(cunit) loc_k
+                  if (loc_k .NE. k) then
                      print *, 'WARNING: wrong k ',
-     &                    filek, k
+     &                    loc_k, k
                      STOP 'in S/R ctrl_set_unpack_xz'
                   endif
                   read(cunit) (cbuff(ii), ii=1,cbuffindex)
@@ -269,33 +279,35 @@ c     -- end of j loop --
 c     -- end of irec loop --
       enddo
 
-      do irec = nrec_nl*ny+1, ncvarrecs(ivartype)
+      do irec = nrec_nl*ny+1, ncvarrecs(ivar)
 c     And now back-calculate what iobcs should be.
          iobcs= mod(irec-1,nobcs)+1
 
-         read(cunit) filencvarindex(ivartype)
-         if (filencvarindex(ivartype) .NE. ncvarindex(ivartype))
-     &        then
-            print *, 'ctrl-set_unpack:xz:WARNING: wrong ncvarindex ',
-     &           filencvarindex(ivartype), ncvarindex(ivartype)
+         read(cunit) loc_ncvarindex
+         if (loc_ncvarindex .NE. ncvarindex(ivar)) then
+            IF ( irec.EQ.1 )
+     &      print *, 'ctrl-set_unpack:xz:WARNING: wrong ncvarindex ',
+     &           loc_ncvarindex, ncvarindex(ivar)
+# ifndef READ_OLD_CTRL_PACK_FILE
             STOP 'in S/R ctrl_set_unpack_xz'
+# endif
          endif
-         read(cunit) filej
-         read(cunit) filei
+         read(cunit) loc_j
+         read(cunit) loc_i
          do k = 1, Nr
             irectrue = (irec-1)*nobcs*Nr + (iobcs-1)*Nr + k
             cbuffindex = nwetglobal(k,iobcs)
             if ( cbuffindex .gt. 0 ) then
-               read(cunit) filencbuffindex
-               if (filencbuffindex .NE. cbuffindex) then
+               read(cunit) loc_ncbuffindex
+               if (loc_ncbuffindex .NE. cbuffindex) then
                   print *, 'WARNING: wrong cbuffindex ',
-     &                 filencbuffindex, cbuffindex
+     &                 loc_ncbuffindex, cbuffindex
                   STOP 'in S/R ctrl_set_unpack_xz'
                endif
-               read(cunit) filek
-               if (filek .NE. k) then
+               read(cunit) loc_k
+               if (loc_k .NE. k) then
                   print *, 'WARNING: wrong k ',
-     &                 filek, k
+     &                 loc_k, k
                   STOP 'in S/R ctrl_set_unpack_xz'
                endif
                read(cunit) (cbuff(ii), ii=1,cbuffindex)
@@ -356,4 +368,3 @@ c     -- end of irec loop --
 
       return
       end
-

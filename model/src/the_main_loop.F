@@ -576,6 +576,9 @@ CADJ INIT comlev1_cg2d_iter = COMMON,nchklev_1*numItersMax
 #   endif
 #  endif /* ALLOW_AUTODIFF_TAMC */
 c--
+#  ifdef ALLOW_GENCOST_CONTRIBUTION
+CADJ INIT comlev1_ngencost = COMMON,nchklev_1*NGENCOST
+#  endif
 c**************************************
 
 #  ifdef STORE_LOADEDREC_TEST

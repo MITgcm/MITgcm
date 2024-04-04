@@ -31,14 +31,12 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
       INTEGER iL
-      CHARACTER*(MAX_LEN_FNAM) fName
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
       _BEGIN_MASTER( myThid )
 
-      CALL GRDCHK_CTRL_FNAME( fName, grdchkvarindex, myThid )
-      iL = ILNBLNK( fName )
+      iL = ILNBLNK( grdchkvarname )
 
       WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -64,7 +62,7 @@ CEOP
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(3A)')
-     &  '  matching CTRL xx_file:       "', fName(1:iL), '"'
+     &  '  matching CTRL xx_file:       "', grdchkvarname(1:iL), '"'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A,1PE10.3)')

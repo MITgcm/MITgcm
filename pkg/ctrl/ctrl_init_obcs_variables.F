@@ -23,6 +23,7 @@ c     == global variables ==
 #include "SIZE.h"
 #include "PARAMS.h"
 c#include "GRID.h"
+#include "CTRL_SIZE.h"
 #include "CTRL.h"
 #include "CTRL_OBCS.h"
 

@@ -24,6 +24,7 @@ C     ==================================================================
 C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
+#include "CTRL_SIZE.h"
 #include "CTRL.h"
 #ifdef ALLOW_OBCS_CONTROL
 C     CTRL_OBCS.h must be included before GRDCHK.h
@@ -93,14 +94,14 @@ C--   control variable on the current tile.
           ENDDO
          ENDDO
         ENDDO
-      ELSEIF ( ncvargrd(grdchkvarindex) .EQ. 'v' ) THEN
-        DO bj = jtlo,jthi
-         DO bi = itlo,ithi
-          DO k = 1,ncvarnrmax(grdchkvarindex)
-            nwettile(bi,bj,k,1) = nwetvtile(bi,bj,k)
-          ENDDO
-         ENDDO
-        ENDDO
+c     ELSEIF ( ncvargrd(grdchkvarindex) .EQ. 'v' ) THEN
+c       DO bj = jtlo,jthi
+c        DO bi = itlo,ithi
+c         DO k = 1,ncvarnrmax(grdchkvarindex)
+c           nwettile(bi,bj,k,1) = nwetvtile(bi,bj,k)
+c         ENDDO
+c        ENDDO
+c       ENDDO
 #ifdef ALLOW_SHELFICE
       ELSEIF ( ncvargrd(grdchkvarindex) .EQ. 'i' ) THEN
         DO bj = jtlo,jthi
@@ -111,32 +112,34 @@ C--   control variable on the current tile.
          ENDDO
         ENDDO
 #endif /* ALLOW_SHELFICE */
+#ifdef ALLOW_OBCS_CONTROL
       ELSEIF ( ncvargrd(grdchkvarindex) .EQ. 'm' ) THEN
-        DO bj = jtlo,jthi
+       DO bj = jtlo,jthi
          DO bi = itlo,ithi
           DO k = 1,ncvarnrmax(grdchkvarindex)
            DO iobcs = 1, nobcsmax
-             IF ( grdchkvarindex .EQ. 11 ) THEN
+             IF ( ncvarindex(grdchkvarindex).EQ.1 ) THEN
 #ifdef ALLOW_OBCSN_CONTROL
                nwettile(bi,bj,k,iobcs) = nwetobcsn(bi,bj,k,iobcs)
 #endif
-             ELSEIF ( grdchkvarindex .EQ. 12 ) THEN
+             ELSEIF ( ncvarindex(grdchkvarindex).EQ.2 ) THEN
 #ifdef ALLOW_OBCSS_CONTROL
                nwettile(bi,bj,k,iobcs) = nwetobcss(bi,bj,k,iobcs)
 #endif
-             ELSEIF ( grdchkvarindex .EQ. 13 ) THEN
-#ifdef ALLOW_OBCSW_CONTROL
-               nwettile(bi,bj,k,iobcs) = nwetobcsw(bi,bj,k,iobcs)
-#endif
-             ELSEIF ( grdchkvarindex .EQ. 14 ) THEN
+             ELSEIF ( ncvarindex(grdchkvarindex).EQ.3 ) THEN
 #ifdef ALLOW_OBCSE_CONTROL
                nwettile(bi,bj,k,iobcs) = nwetobcse(bi,bj,k,iobcs)
+#endif
+             ELSEIF ( ncvarindex(grdchkvarindex).EQ.4 ) THEN
+#ifdef ALLOW_OBCSW_CONTROL
+               nwettile(bi,bj,k,iobcs) = nwetobcsw(bi,bj,k,iobcs)
 #endif
              ENDIF
            ENDDO
           ENDDO
          ENDDO
         ENDDO
+#endif /* ALLOW_OBCS_CONTROL */
       ELSE
 Ce        --> wrong grid specification for the control variable.
       ENDIF
