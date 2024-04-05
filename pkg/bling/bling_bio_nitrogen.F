@@ -439,6 +439,16 @@ C  avoid negative nutrient concentrations that can result from
 C  advection when low concentrations
 
 #ifdef BLING_NO_NEG
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE PTR_O2, PTR_FE, PTR_PO4, PTR_DOP, PTR_NO3, PTR_DON
+#  ifdef USE_SIBLING
+CADJ &   , PTR_SI
+#  endif
+#  ifdef ADVECT_PHYTO
+CADJ &   , PTR_PHY
+#  endif
+CADJ &     = comlev1_bibj, key=tkey, kind=isbyte
+# endif /* ALLOW_AUTODIFF_TAMC */
       CALL BLING_MIN_VAL(PTR_O2,  1. _d -11, o2_adj, bi, bj)
       CALL BLING_MIN_VAL(PTR_FE,  1. _d -11, fe_adj, bi, bj)
       CALL BLING_MIN_VAL(PTR_PO4, 1. _d -8, po4_adj, bi, bj)
@@ -942,6 +952,12 @@ C     avoid recomputation warnings
         ENDDO
        ENDDO
       ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC
+C     These stores avoid some recomputations, but may not be worth it.
+cCADJ STORE Phy_sm_local   = comlev1_bibj, key=tkey, kind=isbyte
+cCADJ STORE Phy_lg_local   = comlev1_bibj, key=tkey, kind=isbyte
+cCADJ STORE Phy_diaz_local = comlev1_bibj, key=tkey, kind=isbyte
+#endif
       DO k=1,Nr
        DO j=jmin,jmax
         DO i=imin,imax
@@ -954,19 +970,19 @@ C     avoid recomputation warnings
         ENDDO
        ENDDO
       ENDDO
-#ifdef ALLOW_AUTODIFF_TAMC
+
+#if ( defined SIZE_DEP_LIM || defined USE_SIBLING )
+# ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE Phy_sm_local   = comlev1_bibj, key=tkey, kind=isbyte
 CADJ STORE Phy_lg_local   = comlev1_bibj, key=tkey, kind=isbyte
 CADJ STORE Phy_diaz_local = comlev1_bibj, key=tkey, kind=isbyte
-#endif
-
-#if ( ( defined SIZE_DEP_LIM ) || ( defined USE_SIBLING ) )
+# endif
       DO k=1,Nr
        DO j=jmin,jmax
         DO i=imin,imax
          IF ( maskC(i,j,k,bi,bj).EQ.oneRS ) THEN
 CAV(
-#ifdef SIZE_DEP_LIM
+# ifdef SIZE_DEP_LIM
 
           Phy_lg_local(i,j,k) = Phy_lg_local(i,j,k) +
      &                Phy_lg_local(i,j,k)*(mu_lg(i,j,k) - lambda_0
@@ -979,10 +995,10 @@ CAV(
      &                * expkT(i,j,k) * (Phy_sm_local(i,j,k)/pivotal))
      &                * PTRACERS_dTLev(k)
 
-#endif
+# endif
 CAV)
 
-#ifdef USE_SIBLING
+# ifdef USE_SIBLING
 C  For now: assuming that all large phyto are diatoms
 C  Another option would be to have a separate diatom population and give
 C  them a higher growth rate to be competitive. Would also need to add
@@ -993,7 +1009,7 @@ c          Phy_diatom_local(i,j,k) = Phy_diatom_local(i,j,k) +
 c     &                Phy_diatom_local(i,j,k)*(mu_diatom(i,j,k)-lambda_0
 c     &                * expkT(i,j,k) * (Phy_diatom_local(i,j,k)/pivotal))
 c     &                * PTRACERS_dTLev(k)
-#endif
+# endif
 
          ENDIF
         ENDDO
