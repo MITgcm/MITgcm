@@ -1,7 +1,7 @@
 #include "CTRL_OPTIONS.h"
 
       subroutine ctrl_set_pack_xyz(
-     &     cunit, ivartype, fname, masktype, weighttype,
+     &     cunit, ivar, fname, masktype, weighttype,
      &     weightfld, lxxadxx, myThid )
 
 c     ==================================================================
@@ -27,13 +27,14 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 
+#include "CTRL_SIZE.h"
 #include "CTRL.h"
 #include "OPTIMCYCLE.h"
 
 c     == routine arguments ==
 
       integer cunit
-      integer ivartype
+      integer ivar
       character*(MAX_LEN_FNAM) fname
       character*(  9) masktype
       character*(MAX_LEN_FNAM) weighttype
@@ -133,17 +134,17 @@ c--   Only the master thread will do I/O.
          if ( lxxadxx ) then
             write(cfile2,'(a,I3.3,a,I4.4,a)')
      &           'diag_pack_nonout_ctrl_',
-     &           ivartype, '_', optimcycle, '.bin'
+     &           ivar, '_', optimcycle, '.bin'
             write(cfile3,'(a,I3.3,a,I4.4,a)')
      &           'diag_pack_dimout_ctrl_',
-     &           ivartype, '_', optimcycle, '.bin'
+     &           ivar, '_', optimcycle, '.bin'
          else
             write(cfile2,'(a,I3.3,a,I4.4,a)')
      &           'diag_pack_nonout_grad_',
-     &           ivartype, '_', optimcycle, '.bin'
+     &           ivar, '_', optimcycle, '.bin'
             write(cfile3,'(a,I3.3,a,I4.4,a)')
      &           'diag_pack_dimout_grad_',
-     &           ivartype, '_', optimcycle, '.bin'
+     &           ivar, '_', optimcycle, '.bin'
          endif
 
          reclen = FLOAT(sNx*nSx*nPx*sNy*nSy*nPy*4)
@@ -185,13 +186,13 @@ c--   Only the master thread will do I/O.
      &     masktype, ctrlprec, 'RL',
      &     Nr, globmsk, 1, myThid)
 
-      do irec = 1, ncvarrecs(ivartype)
+      do irec = 1, ncvarrecs(ivar)
 
        call MDSREADFIELD_3D_GL( fname, ctrlprec, 'RL',
      &      Nr, globfld3d, irec, myThid)
 
 #ifndef ALLOW_ADMTLM
-       write(cunit) ncvarindex(ivartype)
+       write(cunit) ncvarindex(ivar)
        write(cunit) 1
        write(cunit) 1
 #endif
@@ -287,7 +288,7 @@ c-- part 1: preliminary reads and definitions
 
 c-- part 2: loop over records
 
-      do irec = 1, ncvarrecs(ivartype)
+      do irec = 1, ncvarrecs(ivar)
 
 c-- 2.1:
        CALL READ_REC_3D_RL( fname, ctrlprec,
@@ -330,7 +331,7 @@ c-- 2.4: array -> buffer -> global buffer -> global file
 #ifndef ALLOW_ADMTLM
        _BEGIN_MASTER( myThid )
        IF ( myProcId .eq. 0 ) THEN
-        write(cunit) ncvarindex(ivartype)
+        write(cunit) ncvarindex(ivar)
         write(cunit) 1
         write(cunit) 1
        ENDIF

@@ -7,11 +7,8 @@ CBOP
 C     !ROUTINE: COST_OBCSS
 C     !INTERFACE:
       subroutine cost_obcss(
-     I                       myiter,
-     I                       mytime,
-     I                       startrec,
-     I                       endrec,
-     I                       mythid )
+     I                       startrec, endrec,
+     I                       myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 c     ==================================================================
@@ -50,23 +47,19 @@ c#endif
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
-c     == routine arguments ==
-      integer myiter
-      _RL     mytime
-      integer startrec
-      integer endrec
-      integer mythid
+      integer startrec, endrec
+      _RL     myTime
+      integer myIter
+      integer myThid
 
 #if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
 
 #ifdef ALLOW_OBCSS_COST_CONTRIBUTION
-
-c     == external functions ==
+C     !FUNCTIONS:
       integer  ilnblnk
       external ilnblnk
 
 C     !LOCAL VARIABLES:
-c     == local variables ==
       integer bi,bj
       integer i,k
       integer imin,imax
@@ -88,7 +81,6 @@ c     == local variables ==
 #ifdef ECCO_VERBOSE
       character*(MAX_LEN_MBUF) msgbuf
 #endif
-c     == end of interface ==
 CEOP
 
       imin = 1
@@ -105,21 +97,21 @@ c     jp1 = 1
       fcthread = 0. _d 0
 
 #ifdef ECCO_VERBOSE
-      _BEGIN_MASTER( mythid )
+      _BEGIN_MASTER( myThid )
       write(msgbuf,'(a)') ' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+      call print_message( msgbuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)') ' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+      call print_message( msgbuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,i9.8)')
      &  ' cost_obcss: number of records to process: ',nrec
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+      call print_message( msgbuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)') ' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      _END_MASTER( mythid )
+      call print_message( msgbuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      _END_MASTER( myThid )
 #endif
 
       if (optimcycle .ge. 0) then
@@ -131,20 +123,28 @@ c     jp1 = 1
 c--   Loop over records.
       do irec = 1,nrec
 
-        call active_read_xz( fnamefld, tmpfield, irec, doglobalread,
-     &                       ladinit, optimcycle, mythid
-     &        , xx_obcss_dummy )
+#ifdef ALLOW_AUTODIFF
+        call active_read_xz( fnamefld, tmpfield, irec,
+     &                       doglobalread, ladinit, optimcycle,
+     &                       myThid, xx_obcss_dummy )
+#else
+        CALL READ_REC_XZ_RL( fnamefld, ctrlprec, Nr,
+     &                       tmpfield, irec, 1, myThid )
+#endif
 
-cgg    Need to solve for iobcs would have been.
-          gg    = (irec-1)/nobcs
-          igg   = int(gg)
-          iobcs = irec - igg*nobcs
-cgg          print*,'S IREC, IOBCS',irec, iobcs
+cgg     Need to solve for iobcs would have been.
+        gg    = (irec-1)/nobcs
+        igg   = int(gg)
+        iobcs = irec - igg*nobcs
 
-          call active_read_xz( 'maskobcss', maskxz,
-     &                         iobcs,
-     &                         doglobalread, ladinit, 0,
-     &                         mythid, dummy )
+#ifdef ALLOW_AUTODIFF
+        call active_read_xz( 'maskobcss', maskxz, iobcs,
+     &                       doglobalread, ladinit, 0,
+     &                       myThid, dummy )
+#else
+        CALL READ_REC_XZ_RL( 'maskobcss', ctrlprec, Nr,
+     &                       maskxz, iobcs, 1, myThid )
+#endif
 
 c--     Loop over this thread s tiles.
         do bj = myByLo(myThid), myByHi(myThid)
@@ -178,20 +178,20 @@ cgg                print*,'S fctile',fctile
 c--     Print cost function for all tiles.
         _GLOBAL_SUM_RL( fcthread , myThid )
         write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
+        call print_message( msgbuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
         write(msgbuf,'(a,i8.8)')
      &    ' cost_obcss: irec = ',irec
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
+        call print_message( msgbuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
         write(msgbuf,'(a,a,d22.15)')
      &    ' global cost function value',
      &    ' (obcss) = ',fcthread
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
+        call print_message( msgbuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
         write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
+        call print_message( msgbuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
 #endif
 
       enddo
