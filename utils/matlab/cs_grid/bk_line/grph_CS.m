@@ -15,7 +15,7 @@ function [fac]=grph_CS(var,xcs,ycs,xcg,ycg,c1,c2,shift,cbV,AxBx,kEnv)
 
 % Written by jmc@mit.edu, 2005.
 
-%- ifor debugging, switch to > 0:
+%- for debugging, switch to > 0:
 dBug=0;
 %- small number (relative to lon,lat in degree)
 epsil=1.e-6;
