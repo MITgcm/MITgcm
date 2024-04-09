@@ -82,8 +82,8 @@ C     mask2dSHI at i,j is one.
          ENDDO
         ENDDO
 
-        DO J = 1-OLy,sNy+OLy
-         DO I = 1-OLx,sNx+OLx
+        DO j = 1-OLy,sNy+OLy
+         DO i = 1-OLx,sNx+OLx
           sticfLength(i,j,bi,bj) = 0. _d 0
           DO SI = 1,4
            CURI_ARR(i,j,bi,bj,SI) = -9999
@@ -99,11 +99,11 @@ C     mask2dSHI at i,j is one.
 C--  STEEP_ICECAVITY parameters (BEGIN)
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO J = 1-OLy, sNy+OLy
-         DO I = 1-OLx, sNx+OLx
+        DO j = 1-OLy, sNy+OLy
+         DO i = 1-OLx, sNx+OLx
           kIcf(i,j,bi,bj) = 0
           DO k = 1 , Nr
-           IF ( R_stic(i,j,bi,bj) .GT. ABS(rF(k))) kIcf(i,j,bi,bj) = K
+           IF ( R_stic(i,j,bi,bj) .GT. ABS(rF(k))) kIcf(i,j,bi,bj) = k
           ENDDO
           fK_icefront(i,j,bi,bj) = FLOAT(kIcf(i,j,bi,bj))
          ENDDO
@@ -142,7 +142,7 @@ C--   The four laterally neighboring point are at (CURI,CURJ)
 C--   Looking to right
               CURI = i+1
               CURJ = j
-              iceFrontWidth = dyG(i+1,J,bi,bj)
+              iceFrontWidth = dyG(i+1,j,bi,bj)
              ELSEIF (SI .EQ. 2) THEN
 C--   Looking to LEFT
               CURI = i-1
@@ -258,8 +258,8 @@ C--   is in contact with some water in the neighboring grid cell.
               ENDIF /* iceFrontVertContactFrac */
              ENDIF /* hFacC(CURI,CURJ,k,bi,bj) */
             ENDDO /* SI loop for adjacent cells */
-           ENDDO /* k LOOP */
-          ENDIF /* FRONT K */
+           ENDDO /* k loop */
+          ENDIF /* FRONT_K */
 
 C--   ice shelf
           k = kTopC(i,j,bi,bj)

@@ -66,9 +66,9 @@ C---- ICEFRONT BEGIN
 C     Make sure that R_stic is positive
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO J = 1-OLy, sNy+OLy
-         DO I = 1-OLx, sNx+OLx
-          R_stic(I,J,bi,bj) = ABS(R_stic(I,J,bi,bj))
+        DO j = 1-OLy, sNy+OLy
+         DO i = 1-OLx, sNx+OLx
+          R_stic(i,j,bi,bj) = ABS(R_stic(i,j,bi,bj))
          ENDDO
         ENDDO
        ENDDO

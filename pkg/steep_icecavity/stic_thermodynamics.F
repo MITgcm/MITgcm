@@ -47,8 +47,8 @@ C     === Global variables ===
 #include "STIC.h"
 #ifdef ALLOW_CTRL
 # include "CTRL_SIZE.h"
-# include "ctrl.h"
-# include "ctrl_dummy.h"
+# include "CTRL.h"
+# include "CTRL_DUMMY.h"
 # ifdef ALLOW_GENTIM2D_CONTROL
 #  include "CTRL_GENARR.h"
 # endif
@@ -108,24 +108,24 @@ C     iceFrontWidth    :: the width of the ice front.  unit meters.
       _RL uStarDiag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 # endif
 #ifdef NONLIN_FRSURF
-      _RL tmpDiag(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL tmpDiagT(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL tmpDiag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL tmpDiagT(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
-      _RL tmpDiagIcfForcingT(1-olx:snx+olx,
-     & 1-oly:sny+oly,nr,nsx,nsy)
-      _RL tmpDiagIcfForcingS(1-olx:snx+olx,
-     & 1-oly:sny+oly,nr,nsx,nsy)
-      _RL tmpDiagShelficeForcingT(1-olx:snx+olx,
-     & 1-oly:sny+oly,nsx,nsy)
-      _RL tmpDiagShelficeForcingS(1-olx:snx+olx,
-     & 1-oly:sny+oly,nsx,nsy)
+      _RL tmpDiagIcfForcingT(1-OLx:sNx+OLx,
+     & 1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL tmpDiagIcfForcingS(1-OLx:sNx+OLx,
+     & 1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL tmpDiagShelficeForcingT(1-OLx:sNx+OLx,
+     & 1-OLy:sNy+OLy,nSx,nSy)
+      _RL tmpDiagShelficeForcingS(1-OLx:sNx+OLx,
+     & 1-OLy:sNy+OLy,nSx,nSy)
 #endif /* ALLOW_DIAGNOSTICS */
 
       _RL epsilon_H
 
 #ifdef ALLOW_GENTIM2D_CONTROL
       INTEGER iarr
-      _RL xx_shifwflx_loc(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL xx_shifwflx_loc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -218,8 +218,8 @@ C     (Holland and Jenkins, 1999, eq.21)
         IF (xx_gentim2d_file(iarr)(1:11).EQ.'xx_shifwflx') THEN
          DO bj = myByLo(myThid),myByHi(myThid)
           DO bi = myBxLo(myThid),myBxHi(myThid)
-           DO J = 1,sNy
-            DO I = 1,sNx
+           DO j = 1,sNy
+            DO i = 1,sNx
              xx_shifwflx_loc(i,j,bi,bj)=xx_gentim2d(i,j,bi,bj,iarr)
             ENDDO
            ENDDO
@@ -349,7 +349,6 @@ C--   the fraction of the grid cell height that has ice draft in contact
 C--   with water in the neighboring cell.
                       iceFrontVertContactFrac =
      &                  (wet_top_Z_N - iceFrontWetContact_Z_max)/ drF(k)
-
 
 C--   Only proceed if iceFrontVertContactFrac is > 0, the
 C--   ice draft at (i,j)
@@ -484,11 +483,11 @@ C     In units of kg /s
                       ENDIF /* iceFrontVertContactFrac */
                     ENDIF /* hFacC(CURI,CURJ,k,bi,bj) */
                   ENDDO /* SI loop for adjacent cells */
-                ENDDO /* K LOOP */
-              ENDIF /* FRONT K */
+                ENDDO /* k Loop */
+              ENDIF /* FRONT_K */
 
 C--   ice shelf
-              K = kTopC(i,j,bi,bj)
+              k = kTopC(i,j,bi,bj)
 
 C--   If there is an ice front at this (i,j) continue
 C--   I am assuming K is only .GT. when there is at least some
@@ -568,7 +567,7 @@ C     In units of kg/s  -- multiplication of area required first
 #endif /* NONLIN_FRSURF */
                 ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
-              ENDIF /* SHELF K > 0 */
+              ENDIF /* Shelf k > 0 */
             ENDDO /* i */
           ENDDO /* j */
         ENDDO /* bi */
@@ -598,7 +597,7 @@ c     ENDIF
      &         .AND. useRealFreshWaterFlux ) THEN
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO K = 1, NR
+          DO k = 1, Nr
            DO j=1,sNy
             DO i=1,sNx
              tmpDiag(i,j,k,bi,bj) =
@@ -613,7 +612,7 @@ c     ENDIF
 
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO K = 1, NR
+          DO k = 1, Nr
            DO j=1,sNy
             DO i=1,sNx
              tmpDiag(i,j,k,bi,bj) =

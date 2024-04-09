@@ -44,8 +44,8 @@ C     === Global variables ===
 #include "STIC.h"
 #ifdef ALLOW_AUTODIFF
 # include "CTRL_SIZE.h"
-# include "ctrl.h"
-# include "ctrl_dummy.h"
+# include "CTRL.h"
+# include "CTRL_DUMMY.h"
 #endif /* ALLOW_AUTODIFF */
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef SHI_ALLOW_GAMMAFRICT
@@ -79,7 +79,7 @@ C----------
       INTEGER i, j, bi, bj
       _RL     myTime
       INTEGER myIter, myThid
-      character*200 msgBuf
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
 #ifndef ALLOW_OPENAD
