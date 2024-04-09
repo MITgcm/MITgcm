@@ -1,7 +1,7 @@
 #include "CTRL_OPTIONS.h"
 
       subroutine ctrl_set_unpack_xyz(
-     &     lxxadxx, cunit, ivartype, fname, masktype, weighttype,
+     &     lxxadxx, cunit, ivar, fname, masktype, weighttype,
      &     weightfld, nwetglobal, myThid )
 
 c     ==================================================================
@@ -26,6 +26,7 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 
+#include "CTRL_SIZE.h"
 #include "CTRL.h"
 #include "OPTIMCYCLE.h"
 
@@ -33,7 +34,7 @@ c     == routine arguments ==
 
       logical lxxadxx
       integer cunit
-      integer ivartype
+      integer ivar
       character*(MAX_LEN_FNAM)   fname
       character*(  9) masktype
       character*(MAX_LEN_FNAM) weighttype
@@ -53,6 +54,12 @@ c     == local variables ==
       integer cbuffindex
       real*4 cbuff( sNx*nSx*nPx*sNy*nSy*nPy )
       character*(MAX_LEN_FNAM) cfile2, cfile3
+C     These variables are read-in from file, but not used much
+      integer loc_ncbuffindex
+      integer loc_i
+      integer loc_j
+      integer loc_k
+      integer loc_ncvarindex
 C========================================================================
 # ifndef ALLOW_PACKUNPACK_METHOD2
       integer ip,jp
@@ -141,17 +148,17 @@ c--   Only the master thread will do I/O.
        if ( lxxadxx ) then
         write(cfile2,'(a,I3.3,a,I4.4,a)')
      &           'diag_unpack_nondim_ctrl_',
-     &           ivartype, '_', optimcycle, '.bin'
+     &           ivar, '_', optimcycle, '.bin'
         write(cfile3,'(a,I3.3,a,I4.4,a)')
      &           'diag_unpack_dimens_ctrl_',
-     &           ivartype, '_', optimcycle, '.bin'
+     &           ivar, '_', optimcycle, '.bin'
        else
         write(cfile2,'(a,I3.3,a,I4.4,a)')
      &           'diag_unpack_nondim_grad_',
-     &           ivartype, '_', optimcycle, '.bin'
+     &           ivar, '_', optimcycle, '.bin'
         write(cfile3,'(a,I3.3,a,I4.4,a)')
      &           'diag_unpack_dimens_grad_',
-     &           ivartype, '_', optimcycle, '.bin'
+     &           ivar, '_', optimcycle, '.bin'
        endif
 
        reclen = FLOAT(sNx*nSx*nPx*sNy*nSy*nPy*4)
@@ -193,16 +200,19 @@ c--   Only the master thread will do I/O.
      &     masktype, ctrlprec, 'RL',
      &     Nr, globmsk, 1, myThid)
 
-      do irec = 1, ncvarrecs(ivartype)
+      do irec = 1, ncvarrecs(ivar)
 #ifndef ALLOW_ADMTLM
-       read(cunit) filencvarindex(ivartype)
-       if (filencvarindex(ivartype) .NE. ncvarindex(ivartype)) then
-        print *, 'ctrl_set_unpack_xyz:WARNING: wrong ncvarindex ',
-     &           filencvarindex(ivartype), ncvarindex(ivartype)
+       read(cunit) loc_ncvarindex
+       if (loc_ncvarindex .NE. ncvarindex(ivar)) then
+        IF ( irec.EQ.1 )
+     &  print *, 'ctrl_set_unpack_xyz:WARNING: wrong ncvarindex ',
+     &           loc_ncvarindex, ncvarindex(ivar)
+# ifndef READ_OLD_CTRL_PACK_FILE
         STOP 'in S/R ctrl_set_unpack_xyz'
+# endif
        endif
-       read(cunit) filej
-       read(cunit) filei
+       read(cunit) loc_j
+       read(cunit) loc_i
 #endif /* ALLOW_ADMTLM */
        do k = 1, Nr
         irectrue = (irec-1)*Nr + k
@@ -214,16 +224,16 @@ c--   Only the master thread will do I/O.
         cbuffindex = nwetglobal(k)
         if ( cbuffindex .gt. 0 ) then
 #ifndef ALLOW_ADMTLM
-         read(cunit) filencbuffindex
-         if (filencbuffindex .NE. cbuffindex) then
+         read(cunit) loc_ncbuffindex
+         if (loc_ncbuffindex .NE. cbuffindex) then
           print *, 'WARNING: wrong cbuffindex ',
-     &             filencbuffindex, cbuffindex
+     &             loc_ncbuffindex, cbuffindex
           STOP 'in S/R ctrl_set_unpack_xyz'
          endif
-         read(cunit) filek
-         if (filek .NE. k) then
+         read(cunit) loc_k
+         if (loc_k .NE. k) then
           print *, 'WARNING: wrong k ',
-     &             filek, k
+     &             loc_k, k
           STOP 'in S/R ctrl_set_unpack_xyz'
          endif
 cph#endif /* ALLOW_ADMTLM */
@@ -318,21 +328,24 @@ c-- part 1: preliminary reads and definitions
 
 c-- part 2: loop over records
 
-      do irec = 1, ncvarrecs(ivartype)
+      do irec = 1, ncvarrecs(ivar)
 
 c-- 2.1: array <- buffer <- global buffer <- global file
 
 #ifndef ALLOW_ADMTLM
        _BEGIN_MASTER( myThid )
        IF ( myProcId .eq. 0 ) THEN
-        read(cunit) filencvarindex(ivartype)
-        if (filencvarindex(ivartype) .NE. ncvarindex(ivartype)) then
-         print *, 'ctrl_set_unpack_xyz:WARNING: wrong ncvarindex ',
-     &            filencvarindex(ivartype), ncvarindex(ivartype)
+        read(cunit) loc_ncvarindex
+        if (loc_ncvarindex .NE. ncvarindex(ivar)) then
+         IF ( irec.EQ.1 )
+     &   print *, 'ctrl_set_unpack_xyz:WARNING: wrong ncvarindex ',
+     &            loc_ncvarindex, ncvarindex(ivar)
+# ifndef READ_OLD_CTRL_PACK_FILE
          STOP 'in S/R ctrl_set_unpack_xyz'
+# endif
         endif
-        read(cunit) filej
-        read(cunit) filei
+        read(cunit) loc_j
+        read(cunit) loc_i
        ENDIF
        _END_MASTER( myThid )
        _BARRIER
@@ -353,15 +366,15 @@ c-- 2.1: array <- buffer <- global buffer <- global file
 
 #ifndef ALLOW_ADMTLM
          if ( cbuffindex .gt. 0) then
-          read(cunit) filencbuffindex
-          read(cunit) filek
-          if (filencbuffindex .NE. cbuffindex) then
+          read(cunit) loc_ncbuffindex
+          read(cunit) loc_k
+          if (loc_ncbuffindex .NE. cbuffindex) then
            print *, 'WARNING: wrong cbuffindex ',
-     &              filencbuffindex, cbuffindex
+     &              loc_ncbuffindex, cbuffindex
            STOP 'in S/R ctrl_set_unpack_xyz'
           endif
-          if (filek .NE. k) then
-           print *, 'WARNING: wrong k ', filek, k
+          if (loc_k .NE. k) then
+           print *, 'WARNING: wrong k ', loc_k, k
            STOP 'in S/R ctrl_set_unpack_xyz'
           endif
           read(cunit) (cbuff(ii), ii=1,cbuffindex)
@@ -431,7 +444,7 @@ c-- 2.4:
        call WRITE_REC_3D_RL( fname, ctrlprec,
      &      Nr, fld3dDim, irec, 0, myThid)
 
-      enddo !do irec = 1, ncvarrecs(ivartype)
+      enddo !do irec = 1, ncvarrecs(ivar)
 
 # endif /* ALLOW_PACKUNPACK_METHOD2 */
 # endif /* EXCLUDE_CTRL_PACK */

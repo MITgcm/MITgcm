@@ -84,6 +84,12 @@ C     GM_slopeSqCutoff :: slope^2 cut-off value
      &          GM_Bates_surfMinDepth, GM_Bates_vecFreq,
      &          GM_Bates_minRenorm, GM_Bates_maxRenorm,
      &          GM_useLeithQG,
+     &          GM_useGEOM,
+     &          GEOM_lmbda, GEOM_alpha,
+     &          GEOM_ini_EKE, GEOM_diffKh_EKE,
+     &          GEOM_vert_struc,
+     &          GEOM_vert_struc_min, GEOM_vert_struc_max,
+     &          GEOM_minval_K, GEOM_maxval_K,
      &          GM_MNC
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -150,6 +156,18 @@ C--   Default values Visbeck
       GM_Visbeck_maxSlope = UNSET_RL
       GM_Visbeck_minVal_K =    0. _d 0
       GM_Visbeck_maxVal_K = 2500. _d 0
+
+C--   Default values GEOMETRIC
+      GM_useGEOM              = .FALSE.
+      GEOM_lmbda              = 2. _d -7
+      GEOM_alpha              = 0. _d  0
+      GEOM_ini_EKE            = 1. _d -3
+      GEOM_diffKh_EKE         = 1. _d +3
+      GEOM_vert_struc         = .FALSE.
+      GEOM_vert_struc_min     = 1. _d -1
+      GEOM_vert_struc_max     = 1. _d 0
+      GEOM_minVal_K           = 0. _d 0
+      GEOM_maxVal_K           = 2500. _d 0
 
 C--   Default values for BatesK3d
       GM_useBatesK3d     = .FALSE.
@@ -246,6 +264,7 @@ C     Set (or reset) some switches:
 #if (defined ALLOW_KAPREDI_CONTROL || defined ALLOW_KAPGM_CONTROL )
         IF ( useCTRL ) GM_ExtraDiag = .TRUE.
 #endif
+        GM_ExtraDiag = GM_ExtraDiag .OR. GM_useGEOM
       ENDIF
       IF ( GM_isoFac_calcK .NE. GM_skewflx .AND.
      &     ( GM_Visbeck_alpha.NE.zeroRL .OR.
