@@ -90,6 +90,7 @@ C     == Routine arguments ==
 C     == Local variables ==
       INTEGER J, K, I_obc
       _RL CL, ab1, ab2, fracCVEL, f1, f2
+      _RL denom
 
       ab1   =  1.5 _d 0 + abEps /* Adams-Bashforth coefficients */
       ab2   = -0.5 _d 0 - abEps
@@ -106,16 +107,14 @@ C     Eastern OB (Orlanski Radiation Condition)
             I_obc=OB_Ie(J,bi,bj)
             IF ( I_obc.NE.OB_indexNone ) THEN
 C              uVel
-               IF ((UE_STORE_2(J,K,bi,bj).eq.0.).and.
-     &            (UE_STORE_3(J,K,bi,bj).eq.0.)) THEN
-                  CL=0.
-               ELSE
-                  CL=-(uVel(I_obc-1,J,K,bi,bj)-UE_STORE_1(J,K,bi,bj))/
+               denom = 
      &          (ab1*UE_STORE_2(J,K,bi,bj) + ab2*UE_STORE_3(J,K,bi,bj))
-               ENDIF
-               IF (CL.lt.0.) THEN
-                  CL=0.
-               ELSEIF (CL.gt.CMAX) THEN
+               IF ( denom .NE. 0 _d 0 ) THEN
+                  CL=-(uVel(I_obc-1,J,K,bi,bj)-UE_STORE_1(J,K,bi,bj))/
+     &          denom
+                  CL=MAX(CL, 0. _d 0)
+                  CL=MIN(CL, CMAX)
+               ELSE
                   CL=CMAX
                ENDIF
                IF (useFixedCEast) THEN
@@ -132,16 +131,14 @@ C              update OBC to next timestep
      &           (ab1*(uVel(I_obc,J,K,bi,bj)-uVel(I_obc-1,J,K,bi,bj)) +
      &           ab2*(UE_STORE_4(J,K,bi,bj)-UE_STORE_1(J,K,bi,bj)))
 C              vVel
-               IF ((VE_STORE_2(J,K,bi,bj).eq.0.).and.
-     &            (VE_STORE_3(J,K,bi,bj).eq.0.)) THEN
-                  CL=0.
-               ELSE
-                  CL=-(vVel(I_obc-1,J,K,bi,bj)-VE_STORE_1(J,K,bi,bj))/
+               denom =
      &          (ab1*VE_STORE_2(J,K,bi,bj) + ab2*VE_STORE_3(J,K,bi,bj))
-               ENDIF
-               IF (CL.lt.0.) THEN
-                  CL=0.
-               ELSEIF (CL.gt.CMAX) THEN
+               IF ( denom .NE. 0 _d 0 ) THEN
+                  CL=-(vVel(I_obc-1,J,K,bi,bj)-VE_STORE_1(J,K,bi,bj))/
+     &          denom
+                  CL=MAX(CL, 0. _d 0)
+                  CL=MIN(CL, CMAX)
+               ELSE
                   CL=CMAX
                ENDIF
                IF (useFixedCEast) THEN
@@ -158,16 +155,14 @@ C              update OBC to next timestep
      &           (ab1*(vVel(I_obc,J,K,bi,bj)-vVel(I_obc-1,J,K,bi,bj)) +
      &           ab2*(VE_STORE_4(J,K,bi,bj)-VE_STORE_1(J,K,bi,bj)))
 C              Temperature
-               IF ((TE_STORE_2(J,K,bi,bj).eq.0.).and.
-     &            (TE_STORE_3(J,K,bi,bj).eq.0.)) THEN
-                  CL=0.
-               ELSE
-                  CL=-(theta(I_obc-1,J,K,bi,bj)-TE_STORE_1(J,K,bi,bj))/
+               denom =
      &          (ab1*TE_STORE_2(J,K,bi,bj) + ab2*TE_STORE_3(J,K,bi,bj))
-               ENDIF
-               IF (CL.lt.0.) THEN
-                  CL=0.
-               ELSEIF (CL.gt.CMAX) THEN
+               IF ( denom .NE. 0 _d 0 ) THEN
+                  CL=-(theta(I_obc-1,J,K,bi,bj)-TE_STORE_1(J,K,bi,bj))/
+     &          denom
+                  CL=MAX(CL, 0. _d 0)
+                  CL=MIN(CL, CMAX)
+               ELSE
                   CL=CMAX
                ENDIF
                IF (useFixedCEast) THEN
@@ -184,18 +179,17 @@ C              update OBC to next timestep
      &           (ab1*(theta(I_obc,J,K,bi,bj)-theta(I_obc-1,J,K,bi,bj))+
      &           ab2*(TE_STORE_4(J,K,bi,bj)-TE_STORE_1(J,K,bi,bj)))
 C              Salinity
-               IF ((SE_STORE_2(J,K,bi,bj).eq.0.).and.
-     &            (SE_STORE_3(J,K,bi,bj).eq.0.)) THEN
-                  CL=0.
-               ELSE
-                  CL=-(salt(I_obc-1,J,K,bi,bj)-SE_STORE_1(J,K,bi,bj))/
+               denom =
      &          (ab1*SE_STORE_2(J,K,bi,bj) + ab2*SE_STORE_3(J,K,bi,bj))
-               ENDIF
-               IF (CL.lt.0.) THEN
-                  CL=0.
-               ELSEIF (CL.gt.CMAX) THEN
+               IF ( denom .NE. 0 _d 0 ) THEN
+                  CL=-(salt(I_obc-1,J,K,bi,bj)-SE_STORE_1(J,K,bi,bj))/
+     &          denom
+                  CL=MAX(CL, 0. _d 0)
+                  CL=MIN(CL, CMAX)
+               ELSE
                   CL=CMAX
                ENDIF
+
                IF (useFixedCEast) THEN
 C                Fixed phase speed (ignoring all of that painstakingly
 C                saved data...)

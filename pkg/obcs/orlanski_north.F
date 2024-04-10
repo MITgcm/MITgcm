@@ -80,6 +80,7 @@ C     == Routine arguments ==
 C     == Local variables ==
       INTEGER  I, K, J_obc
       _RL CL, ab1, ab2, fracCVEL, f1, f2
+      _RL denom
 
       ab1   =  1.5 _d 0 + abEps /* Adams-Bashforth coefficients */
       ab2   = -0.5 _d 0 - abEps
@@ -96,18 +97,18 @@ C     Northern OB (Orlanski Radiation Condition)
             J_obc=OB_Jn(I,bi,bj)
             IF ( J_obc.NE.OB_indexNone ) THEN
 C              uVel
-               IF ((UN_STORE_2(I,K,bi,bj).eq.0.).and.
-     &            (UN_STORE_3(I,K,bi,bj).eq.0.)) THEN
-                  CL=0.
-               ELSE
-                  CL=-(uVel(I,J_obc-1,K,bi,bj)-UN_STORE_1(I,K,bi,bj))/
+
+               denom = 
      &          (ab1*UN_STORE_2(I,K,bi,bj) + ab2*UN_STORE_3(I,K,bi,bj))
-               ENDIF
-               IF (CL.lt.0.) THEN
-                  CL=0.
-               ELSEIF (CL.gt.CMAX) THEN
+               IF ( denom .NE. 0 _d 0 ) THEN
+                  CL=-(uVel(I,J_obc-1,K,bi,bj)-UN_STORE_1(I,K,bi,bj))/
+     &          denom
+                  CL=MAX(CL, 0. _d 0)
+                  CL=MIN(CL, CMAX)
+               ELSE 
                   CL=CMAX
                ENDIF
+
                CVEL_UN(I,K,bi,bj) = f1*(CL*dyU(I,J_obc-1,bi,bj)/deltaT)+
      &                f2*CVEL_UN(I,K,bi,bj)
 C              update OBC to next timestep
@@ -116,18 +117,18 @@ C              update OBC to next timestep
      &           (ab1*(uVel(I,J_obc,K,bi,bj)-uVel(I,J_obc-1,K,bi,bj)) +
      &           ab2*(UN_STORE_4(I,K,bi,bj)-UN_STORE_1(I,K,bi,bj)))
 C              vVel
-               IF ((VN_STORE_2(I,K,bi,bj).eq.0.).and.
-     &            (VN_STORE_3(I,K,bi,bj).eq.0.)) THEN
-                  CL=0.
-               ELSE
-                  CL=-(vVel(I,J_obc-1,K,bi,bj)-VN_STORE_1(I,K,bi,bj))/
+
+               denom = 
      &          (ab1*VN_STORE_2(I,K,bi,bj) + ab2*VN_STORE_3(I,K,bi,bj))
-               ENDIF
-               IF (CL.lt.0.) THEN
-                  CL=0.
-               ELSEIF (CL.gt.CMAX) THEN
+               IF ( denom .NE. 0 _d 0 ) THEN
+                  CL=-(vVel(I,J_obc-1,K,bi,bj)-VN_STORE_1(I,K,bi,bj))/
+     &          denom
+                  CL=MAX(CL, 0. _d 0)
+                  CL=MIN(CL, CMAX)
+               ELSE
                   CL=CMAX
                ENDIF
+
                CVEL_VN(I,K,bi,bj) = f1*(CL*dyF(I,J_obc-2,bi,bj)/deltaT)+
      &                f2*CVEL_VN(I,K,bi,bj)
 C              update OBC to next timestep
@@ -136,16 +137,14 @@ C              update OBC to next timestep
      &           (ab1*(vVel(I,J_obc,K,bi,bj)-vVel(I,J_obc-1,K,bi,bj)) +
      &           ab2*(VN_STORE_4(I,K,bi,bj)-VN_STORE_1(I,K,bi,bj)))
 C              Temperature
-               IF ((TN_STORE_2(I,K,bi,bj).eq.0.).and.
-     &            (TN_STORE_3(I,K,bi,bj).eq.0.)) THEN
-                  CL=0.
-               ELSE
-                  CL=-(theta(I,J_obc-1,K,bi,bj)-TN_STORE_1(I,K,bi,bj))/
+               denom = 
      &          (ab1*TN_STORE_2(I,K,bi,bj) + ab2*TN_STORE_3(I,K,bi,bj))
-               ENDIF
-               IF (CL.lt.0.) THEN
-                  CL=0.
-               ELSEIF (CL.gt.CMAX) THEN
+               IF ( denom .NE. 0 _d 0 ) THEN
+                  CL=-(theta(I,J_obc-1,K,bi,bj)-TN_STORE_1(I,K,bi,bj))/
+     &          denom
+                  CL=MAX(CL, 0. _d 0)
+                  CL=MIN(CL, CMAX)
+               ELSE
                   CL=CMAX
                ENDIF
                CVEL_TN(I,K,bi,bj) = f1*(CL*dyC(I,J_obc-1,bi,bj)/deltaT)+
@@ -156,16 +155,14 @@ C              update OBC to next timestep
      &          (ab1*(theta(I,J_obc,K,bi,bj)-theta(I,J_obc-1,K,bi,bj))+
      &          ab2*(TN_STORE_4(I,K,bi,bj)-TN_STORE_1(I,K,bi,bj)))
 C              Salinity
-               IF ((SN_STORE_2(I,K,bi,bj).eq.0.).and.
-     &            (SN_STORE_3(I,K,bi,bj).eq.0.)) THEN
-                  CL=0.
-               ELSE
-                  CL=-(salt(I,J_obc-1,K,bi,bj)-SN_STORE_1(I,K,bi,bj))/
+               denom = 
      &          (ab1*SN_STORE_2(I,K,bi,bj) + ab2*SN_STORE_3(I,K,bi,bj))
-               ENDIF
-               IF (CL.lt.0.) THEN
-                  CL=0.
-               ELSEIF (CL.gt.CMAX) THEN
+               IF ( denom .NE. 0 _d 0 ) THEN
+                  CL=-(salt(I,J_obc-1,K,bi,bj)-SN_STORE_1(I,K,bi,bj))/
+     &          denom
+                  CL=MAX(CL, 0. _d 0)
+                  CL=MIN(CL, CMAX)
+               ELSE
                   CL=CMAX
                ENDIF
                CVEL_SN(I,K,bi,bj) = f1*(CL*dyC(I,J_obc-1,bi,bj)/deltaT)+

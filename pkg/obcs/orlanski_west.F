@@ -92,6 +92,7 @@ C     == Routine arguments ==
 C     == Local variables ==
       INTEGER J, K, I_obc
       _RL CL, ab1, ab2, fracCVEL, f1, f2
+      _RL denom
 
       ab1   =  1.5 _d 0 + abEps /* Adams-Bashforth coefficients */
       ab2   = -0.5 _d 0 - abEps
@@ -108,16 +109,14 @@ C      Western OB (Orlanski Radiation Condition)
             I_obc=OB_Iw(J,bi,bj)
             IF ( I_obc.NE.OB_indexNone ) THEN
 C              uVel (to be applied at I_obc+1)
-               IF ((UW_STORE_2(J,K,bi,bj).eq.0.).and.
-     &            (UW_STORE_3(J,K,bi,bj).eq.0.)) THEN
-                  CL=0.
-               ELSE
-                  CL=(uVel(I_obc+2,J,K,bi,bj)-UW_STORE_1(J,K,bi,bj))/
+                denom = 
      &          (ab1*UW_STORE_2(J,K,bi,bj) + ab2*UW_STORE_3(J,K,bi,bj))
-               ENDIF
-               IF (CL.lt.0.) THEN
-                  CL=0.
-               ELSEIF (CL.gt.CMAX) THEN
+               IF ( denom .NE. 0 _d 0 ) THEN
+                  CL=(uVel(I_obc+2,J,K,bi,bj)-UW_STORE_1(J,K,bi,bj))/
+     &          denom
+                  CL=MAX(CL, 0. _d 0)
+                  CL=MIN(CL, CMAX)
+               ELSE
                   CL=CMAX
                ENDIF
                IF (useFixedCWest) THEN
@@ -134,16 +133,14 @@ C              update OBC to next timestep
      &          (ab1*(uVel(I_obc+2,J,K,bi,bj)-uVel(I_obc+1,J,K,bi,bj))+
      &          ab2*(UW_STORE_1(J,K,bi,bj)-UW_STORE_4(J,K,bi,bj)))
 C              vVel
-               IF ((VW_STORE_2(J,K,bi,bj).eq.0.).and.
-     &            (VW_STORE_3(J,K,bi,bj).eq.0.)) THEN
-                  CL=0.
-               ELSE
-                  CL=(vVel(I_obc+1,J,K,bi,bj)-VW_STORE_1(J,K,bi,bj))/
+                denom = 
      &          (ab1*VW_STORE_2(J,K,bi,bj) + ab2*VW_STORE_3(J,K,bi,bj))
-               ENDIF
-               IF (CL.lt.0.) THEN
-                  CL=0.
-               ELSEIF (CL.gt.CMAX) THEN
+               IF ( denom .NE. 0 _d 0 ) THEN
+                  CL=(vVel(I_obc+1,J,K,bi,bj)-VW_STORE_1(J,K,bi,bj))/
+     &          denom
+                  CL=MAX(CL, 0. _d 0)
+                  CL=MIN(CL, CMAX)
+               ELSE
                   CL=CMAX
                ENDIF
                IF (useFixedCWest) THEN
@@ -160,16 +157,14 @@ C              update OBC to next timestep
      &           (ab1*(vVel(I_obc+1,J,K,bi,bj)-vVel(I_obc,J,K,bi,bj))+
      &           ab2*(VW_STORE_1(J,K,bi,bj)-VW_STORE_4(J,K,bi,bj)))
 C              Temperature
-               IF ((TW_STORE_2(J,K,bi,bj).eq.0.).and.
-     &            (TW_STORE_3(J,K,bi,bj).eq.0.)) THEN
-                  CL=0.
-               ELSE
-                  CL=(theta(I_obc+1,J,K,bi,bj)-TW_STORE_1(J,K,bi,bj))/
+                denom = 
      &          (ab1*TW_STORE_2(J,K,bi,bj) + ab2*TW_STORE_3(J,K,bi,bj))
-               ENDIF
-               IF (CL.lt.0.) THEN
-                  CL=0.
-               ELSEIF (CL.gt.CMAX) THEN
+               IF ( denom .NE. 0 _d 0 ) THEN
+                  CL=(theta(I_obc+1,J,K,bi,bj)-TW_STORE_1(J,K,bi,bj))/
+     &          denom
+                  CL=MAX(CL, 0. _d 0)
+                  CL=MIN(CL, CMAX)
+               ELSE
                   CL=CMAX
                ENDIF
                IF (useFixedCWest) THEN
@@ -186,16 +181,14 @@ C              update OBC to next timestep
      &          (ab1*(theta(I_obc+1,J,K,bi,bj)-theta(I_obc,J,K,bi,bj))+
      &          ab2*(TW_STORE_1(J,K,bi,bj)-TW_STORE_4(J,K,bi,bj)))
 C              Salinity
-               IF ((SW_STORE_2(J,K,bi,bj).eq.0.).and.
-     &            (SW_STORE_3(J,K,bi,bj).eq.0.)) THEN
-                  CL=0.
-               ELSE
-                  CL=(salt(I_obc+1,J,K,bi,bj)-SW_STORE_1(J,K,bi,bj))/
+                denom = 
      &          (ab1*SW_STORE_2(J,K,bi,bj) + ab2*SW_STORE_3(J,K,bi,bj))
-               ENDIF
-               IF (CL.lt.0.) THEN
-                  CL=0.
-               ELSEIF (CL.gt.CMAX) THEN
+               IF ( denom .NE. 0 _d 0 ) THEN
+                  CL=(salt(I_obc+1,J,K,bi,bj)-SW_STORE_1(J,K,bi,bj))/
+     &          denom
+                  CL=MAX(CL, 0. _d 0)
+                  CL=MIN(CL, CMAX)
+               ELSE
                   CL=CMAX
                ENDIF
                IF (useFixedCWest) THEN

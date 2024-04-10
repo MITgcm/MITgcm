@@ -80,6 +80,7 @@ C     == Routine arguments ==
 C     == Local variables ==
       INTEGER  I, K, J_obc
       _RL CL, ab1, ab2, fracCVEL, f1, f2
+      _RL denom
 
       ab1   =  1.5 _d 0 + abEps /* Adams-Bashforth coefficients */
       ab2   = -0.5 _d 0 - abEps
@@ -96,16 +97,14 @@ C     Southern OB (Orlanski Radiation Condition)
             J_obc=OB_Js(I,bi,bj)
             IF ( J_obc.NE.OB_indexNone ) THEN
 C              uVel
-               IF ((US_STORE_2(I,K,bi,bj).eq.0.).and.
-     &            (US_STORE_3(I,K,bi,bj).eq.0.)) THEN
-                  CL=0.
-               ELSE
-                  CL=(uVel(I,J_obc+1,K,bi,bj)-US_STORE_1(I,K,bi,bj))/
+                denom = 
      &          (ab1*US_STORE_2(I,K,bi,bj) + ab2*US_STORE_3(I,K,bi,bj))
-               ENDIF
-               IF (CL.lt.0.) THEN
-                  CL=0.
-               ELSEIF (CL.gt.CMAX) THEN
+               IF ( denom .NE. 0 _d 0 ) THEN
+                  CL=(uVel(I,J_obc+1,K,bi,bj)-US_STORE_1(I,K,bi,bj))/
+     &          denom
+                  CL=MAX(CL, 0. _d 0)
+                  CL=MIN(CL, CMAX)
+               ELSE
                   CL=CMAX
                ENDIF
                CVEL_US(I,K,bi,bj) = f1*(CL*dyU(I,J_obc+2,bi,bj)/deltaT)+
@@ -116,16 +115,14 @@ C              update OBC to next timestep
      &          (ab1*(uVel(I,J_obc+1,K,bi,bj)-uVel(I,J_obc,K,bi,bj)) +
      &         ab2*(US_STORE_1(I,K,bi,bj)-US_STORE_4(I,K,bi,bj)))
 C              vVel (to be applied at J_obc+1)
-               IF ((VS_STORE_2(I,K,bi,bj).eq.0.).and.
-     &            (VS_STORE_3(I,K,bi,bj).eq.0.)) THEN
-                  CL=0.
-               ELSE
-                  CL=(vVel(I,J_obc+2,K,bi,bj)-VS_STORE_1(I,K,bi,bj))/
+                denom = 
      &          (ab1*VS_STORE_2(I,K,bi,bj) + ab2*VS_STORE_3(I,K,bi,bj))
-               ENDIF
-               IF (CL.lt.0.) THEN
-                  CL=0.
-               ELSEIF (CL.gt.CMAX) THEN
+               IF ( denom .NE. 0 _d 0 ) THEN
+                  CL=(vVel(I,J_obc+2,K,bi,bj)-VS_STORE_1(I,K,bi,bj))/
+     &          denom
+                  CL=MAX(CL, 0. _d 0)
+                  CL=MIN(CL, CMAX)
+               ELSE
                   CL=CMAX
                ENDIF
                CVEL_VS(I,K,bi,bj) = f1*(CL*dyF(I,J_obc+2,bi,bj)/deltaT)+
@@ -136,16 +133,14 @@ C              update OBC to next timestep
      &          (ab1*(vVel(I,J_obc+2,K,bi,bj)-vVel(I,J_obc+1,K,bi,bj))+
      &          ab2*(VS_STORE_1(I,K,bi,bj)-VS_STORE_4(I,K,bi,bj)))
 C              Temperature
-               IF ((TS_STORE_2(I,K,bi,bj).eq.0.).and.
-     &            (TS_STORE_3(I,K,bi,bj).eq.0.)) THEN
-                  CL=0.
-               ELSE
-                  CL=(theta(I,J_obc+1,K,bi,bj)-TS_STORE_1(I,K,bi,bj))/
+                denom = 
      &          (ab1*TS_STORE_2(I,K,bi,bj) + ab2*TS_STORE_3(I,K,bi,bj))
-               ENDIF
-               IF (CL.lt.0.) THEN
-                  CL=0.
-               ELSEIF (CL.gt.CMAX) THEN
+               IF ( denom .NE. 0 _d 0 ) THEN
+                  CL=(theta(I,J_obc+1,K,bi,bj)-TS_STORE_1(I,K,bi,bj))/
+     &          denom
+                  CL=MAX(CL, 0. _d 0)
+                  CL=MIN(CL, CMAX)
+               ELSE
                   CL=CMAX
                ENDIF
                CVEL_TS(I,K,bi,bj) = f1*(CL*dyC(I,J_obc+2,bi,bj)/deltaT)+
@@ -156,16 +151,14 @@ C              update OBC to next timestep
      &          (ab1*(theta(I,J_obc+1,K,bi,bj)-theta(I,J_obc,K,bi,bj))+
      &          ab2*(TS_STORE_1(I,K,bi,bj)-TS_STORE_4(I,K,bi,bj)))
 C              Salinity
-               IF ((SS_STORE_2(I,K,bi,bj).eq.0.).and.
-     &            (SS_STORE_3(I,K,bi,bj).eq.0.)) THEN
-                  CL=0.
-               ELSE
-                  CL=(salt(I,J_obc+1,K,bi,bj)-SS_STORE_1(I,K,bi,bj))/
+                denom = 
      &          (ab1*SS_STORE_2(I,K,bi,bj) + ab2*SS_STORE_3(I,K,bi,bj))
-               ENDIF
-               IF (CL.lt.0.) THEN
-                  CL=0.
-               ELSEIF (CL.gt.CMAX) THEN
+               IF ( denom .NE. 0 _d 0 ) THEN
+                  CL=(salt(I,J_obc+1,K,bi,bj)-SS_STORE_1(I,K,bi,bj))/
+     &          denom
+                  CL=MAX(CL, 0. _d 0)
+                  CL=MIN(CL, CMAX)
+               ELSE
                   CL=CMAX
                ENDIF
                CVEL_SS(I,K,bi,bj) = f1*(CL*dyC(I,J_obc+2,bi,bj)/deltaT)+
