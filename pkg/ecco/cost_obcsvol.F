@@ -4,11 +4,8 @@
 #endif
 
       subroutine cost_obcsvol(
-     I                       myiter,
-     I                       mytime,
-     I                       startrec,
-     I                       endrec,
-     I                       mythid )
+     I                         startrec, endrec,
+     I                         mytime, myiter, mythid )
 
 c     ==================================================================
 c     SUBROUTINE cost_obcsvol
@@ -40,16 +37,15 @@ c     == global variables ==
 #endif
 #ifdef ALLOW_CTRL
 # include "CTRL_SIZE.h"
-# include "ctrl.h"
-# include "ctrl_dummy.h"
-# include "optim.h"
+# include "CTRL.h"
+# include "CTRL_DUMMY.h"
+# include "OPTIMCYCLE.h"
 #endif
 
 c     == routine arguments ==
-      integer myiter
+      integer startrec, endrec
       _RL     mytime
-      integer startrec
-      integer endrec
+      integer myiter
       integer mythid
 
 #if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
@@ -93,7 +89,6 @@ c     == local variables ==
 #ifdef ECCO_VERBOSE
       character*(MAX_LEN_MBUF) msgbuf
 #endif
-
 c     == end of interface ==
 
       stop 's/r cost_obcsvol needs to be fixed'
@@ -181,9 +176,14 @@ cgg    Need to solve for iobcs. Then only keep iobcs=3.or.4.
 cgg   Assume that nobcs=4, and V velocity is the 4th record. I cannot
 cgg   think of a more general way to do this.
         if (iobcs.eq.4) then
+#ifdef ALLOW_AUTODIFF
           call active_read_xz( fnamefldn, tmpfldxz, irec, doglobalread,
-     &                         ladinit, optimcycle, mythid
-     &                       , xx_obcsn_dummy )
+     &                         ladinit, optimcycle, mythid,
+     &                         xx_obcsn_dummy )
+#else
+          CALL READ_REC_XZ_RL( fnamefldn, ctrlprec, Nr,
+     &                         tmpfldxz, irec, 1, mythid )
+#endif
 
 cgg  At this point, do not be concerned with the overlap halos.
 cgg  From experience, there is no control contribution in the
@@ -224,9 +224,14 @@ cgg -- Positive is flux in.
 cgg   Assume that nobcs=4, and V velocity is the 4th record. I cannot
 cgg   think of a more general way to do this.
         if (iobcs.eq.4) then
+#ifdef ALLOW_AUTODIFF
           call active_read_xz( fnameflds, tmpfldxz, irec, doglobalread,
-     &                         ladinit, optimcycle, mythid
-     &                       , xx_obcss_dummy )
+     &                         ladinit, optimcycle, mythid,
+     &                         xx_obcss_dummy )
+#else
+          CALL READ_REC_XZ_RL( fnameflds, ctrlprec, Nr,
+     &                         tmpfldxz, irec, 1, mythid )
+#endif
 
 cgg  At this point, do not be concerned with the overlap halos.
 cgg  From experience, there is no control contribution in the
@@ -267,9 +272,14 @@ cgg -- Positive is flux in.
 cgg   Assume that nobcs=4, and V velocity is the 4th record. I cannot
 cgg   think of a more general way to do this.
         if (iobcs.eq.3) then
+#ifdef ALLOW_AUTODIFF
           call active_read_yz( fnamefldw, tmpfldyz, irec, doglobalread,
-     &                         ladinit, optimcycle, mythid
-     &                       , xx_obcsw_dummy )
+     &                         ladinit, optimcycle, mythid,
+     &                         xx_obcsw_dummy )
+#else
+          CALL READ_REC_YZ_RL( fnamefldw, ctrlprec, Nr,
+     &                         tmpfldyz, irec, 1, mythid )
+#endif
 
 cgg  At this point, do not be concerned with the overlap halos.
 cgg  From experience, there is no control contribution in the
@@ -310,9 +320,14 @@ cgg -- Positive is flux in.
 cgg   Assume that nobcs=4, and V velocity is the 4th record. I cannot
 cgg   think of a more general way to do this.
         if (iobcs.eq.3) then
+#ifdef ALLOW_AUTODIFF
           call active_read_yz( fnameflde, tmpfldyz, irec, doglobalread,
-     &                         ladinit, optimcycle, mythid
-     &                       , xx_obcse_dummy )
+     &                         ladinit, optimcycle, mythid,
+     &                         xx_obcse_dummy )
+#else
+          CALL READ_REC_YZ_RL( fnameflde, ctrlprec, Nr,
+     &                         tmpfldyz, irec, 1, mythid )
+#endif
 
 cgg  At this point, do not be concerned with the overlap halos.
 cgg  From experience, there is no control contribution in the

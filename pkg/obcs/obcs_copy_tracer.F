@@ -31,7 +31,6 @@ C     == Global variables ==
 #include "OBCS_GRID.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine Arguments ==
 C    trFld    :: tracer-field array which OBC applies to.
 C    kSiz     :: 3rd dim of tracer-field array "trFld"
 C    bi, bj   :: indices of current tile
@@ -45,9 +44,13 @@ CEOP
 #ifdef ALLOW_OBCS
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
       INTEGER i, j, k
-      INTEGER Iobc, Jobc
+#if (defined ALLOW_OBCS_EAST ) || (defined ALLOW_OBCS_WEST )
+      INTEGER Iobc
+#endif
+#if (defined ALLOW_OBCS_NORTH) || (defined ALLOW_OBCS_SOUTH)
+      INTEGER Jobc
+#endif
 
 C     Set model variables to OB values on North/South Boundaries
 #ifdef ALLOW_OBCS_NORTH

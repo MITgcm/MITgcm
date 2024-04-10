@@ -172,7 +172,8 @@ C     == Global variables ===
 # endif
 # ifdef ALLOW_EXF
 #  ifdef ALLOW_CTRL
-#   include "ctrl.h"
+#   include "CTRL_SIZE.h"
+#   include "CTRL.h"
 #  endif
 #  include "EXF_FIELDS.h"
 #  ifdef ALLOW_BULKFORMULAE

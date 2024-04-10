@@ -12,10 +12,15 @@ C     *============================================================*
 C     === Global variables ===
 #ifdef ALLOW_PETSC
 #ifdef STREAMICE_PETSC_3_8
-C assumes paths
-C {petsc_dir}/include/petsc/finclude/
-C {petsc_dir}/include
-C in the include statement
+
+C     THE FOLLOWING MODULES ARE PART OF THE PETSC
+C     LIBRARY, USED BY STREAMICE WHEN AVAILABLE TO ACCELERATE
+C     SOLVES OF LINEAR SYSTEMS
+
+C     assumes paths
+C     {petsc_dir}/include/petsc/finclude/
+C     {petsc_dir}/include
+C     in the include statement
 #include "petsc/finclude/petsc.h"
 #include "petsc/finclude/petscvec.h"
       use petscvec
@@ -25,12 +30,13 @@ C in the include statement
       use petscksp
 #include "petsc/finclude/petscpc.h"
       use petscpc
-      use STREAMICE_PETSC_mod
+#include "STREAMICE_PETSC_MOD.h"
       IMPLICIT NONE
 # else
       IMPLICIT NONE
 #include "finclude/petsc.h"
-#include "STREAMICE_PETSC.h"
+#include "STREAMICE_PETSC_MOD.h"
+
 #endif
 #endif
 
@@ -41,7 +47,7 @@ C in the include statement
 #include "STREAMICE.h"
 
 C     !INPUT/OUTPUT ARGUMENTS
-      INTEGER myThid
+c     INTEGER myThid
 
 #ifdef ALLOW_STREAMICE
 
@@ -58,4 +64,3 @@ C     !INPUT/OUTPUT ARGUMENTS
 #endif
       RETURN
       END
-

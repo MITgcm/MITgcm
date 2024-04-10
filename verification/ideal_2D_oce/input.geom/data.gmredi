@@ -1,0 +1,31 @@
+# from MOM
+# GM_background_K: 	isopycnal diffusion coefficien
+# GM_maxSlope:		max slope of isopycnals
+# GM_Scrit:		transition for scaling diffusion coefficient
+# GM_Sd:		half width scaling for diffusion coefficient
+# real background diff:	horizontal diffusion
+
+ &GM_PARM01
+  GM_AdvForm=.TRUE.,
+# GM_AdvSeparate=.TRUE.,
+# GM_background_K=1000.,
+  GM_background_K=10.,
+# GM_isopycK=1000.,
+# GM_taper_scheme    = 'clipping',
+  GM_taper_scheme    = 'linear',
+# GM_taper_scheme    = 'gkw91',
+# GM_taper_scheme    = 'ldd97',
+  GM_Small_Number    = 1.e-18,
+  GM_maxSlope        = 1.e-2,
+  GM_Scrit           = 4.e-3,
+  GM_Sd              = 1.e-3,
+# GEOM params (lmbda 1.16e-7 s-1 = 100 days-1)
+  GM_useGEOM         = .TRUE.,
+  GEOM_lmbda         = 1.16e-7,
+  GEOM_alpha         = 0.08,
+  GEOM_minval_K      = 50.,
+  GEOM_maxval_K      = 2.e+4,
+  GEOM_ini_EKE       = 1.e+1,
+  GEOM_diffKh_EKE    = 500.,
+  GEOM_vert_struc    = .TRUE.,
+ &
