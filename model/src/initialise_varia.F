@@ -112,7 +112,7 @@ C     == Global variables ==
 # include "FFIELDS.h"
 # if ( defined ALLOW_CTRL && defined ALLOW_GENTIM2D_CONTROL )
 #  include "CTRL_SIZE.h"
-#  include "ctrl_dummy.h"
+#  include "CTRL_DUMMY.h"
 # endif /* ALLOW_CTRL and ALLOW_GENTIM2D_CONTROL */
 #endif
 
