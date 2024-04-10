@@ -77,7 +77,7 @@ C     Northern boundary
           IF ( Jobc.NE.OB_indexNone ) THEN
 #  ifdef SEAICE_OBCS_NEUMANN
 C     Neumann boundary conditions
-           uFld(i,Jobc,bi,bj) = uFld(j,Jobc-1,bi,bj)
+           uFld(i,Jobc,bi,bj) = uFld(i,Jobc-1,bi,bj)
 #  else
            uFld(i,Jobc,bi,bj) = OBNuice(i,bi,bj)
 #  endif
@@ -95,7 +95,7 @@ C     Southern boundary
           IF ( Jobc.NE.OB_indexNone ) THEN
 #  ifdef SEAICE_OBCS_NEUMANN
 C     Neumann boundary conditions
-           uFld(i,Jobc,bi,bj) = uFld(j,Jobc+1,bi,bj)
+           uFld(i,Jobc,bi,bj) = uFld(i,Jobc+1,bi,bj)
 #  else
            uFld(i,Jobc,bi,bj) = OBSuice(i,bi,bj)
 #  endif
