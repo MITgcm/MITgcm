@@ -147,11 +147,11 @@ C     Neumann boundary conditions
             HSALT(Iobc,j,bi,bj) = HSALT(Iobc+1,j,bi,bj)
 #  endif
 # else /* not SEAICE_OBCS_NEUMANN (default) */
-            HEFF (Iobc,j,bi,bj) = OBEh (j,bi,bj)
-            AREA (Iobc,j,bi,bj) = OBEa (j,bi,bj)
-            HSNOW(Iobc,j,bi,bj) = OBEsn(j,bi,bj)
+            HEFF (Iobc,j,bi,bj) = OBWh (j,bi,bj)
+            AREA (Iobc,j,bi,bj) = OBWa (j,bi,bj)
+            HSNOW(Iobc,j,bi,bj) = OBWsn(j,bi,bj)
 #  ifdef SEAICE_VARIABLE_SALINITY
-            HSALT(Iobc,j,bi,bj) = OBEsl(j,bi,bj)
+            HSALT(Iobc,j,bi,bj) = OBWsl(j,bi,bj)
 #  endif
 #endif
           ENDIF
