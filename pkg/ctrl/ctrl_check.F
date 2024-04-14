@@ -278,7 +278,24 @@ C     doscaling must be true to do log10 ctrl
         ENDDO
       ENDDO
 # ifdef ALLOW_SHELFICE
-#  ifdef SHI_ALLOW_GAMMAFRICT
+#  ifdef ALLOW_SHITRANSCOEFF_3D   
+C     Cannot have 2d xx_shicoefft/s as control variables if 
+C     ALLOW_SHITRANSCOEFF_3D is defined. 
+      DO iarr = 1, maxCtrlArr2D
+        IF ( (xx_genarr2d_file(iarr)(1:11).EQ.'xx_shicoeff')) THEN
+          WRITE(msgBuf,'(2A,I2,A)')
+     &    'shiTransCoeffT or S set as 2d control variable for ',
+     &    'xx_genarr2d(', iarr,'). '
+          CALL PRINT_ERROR( msgBuf, myThid )
+          WRITE(msgBuf,'(2A)')
+     &    'Cannot use 2D shiTransCoeffT/S when ALLOW_SHITRANSCOEFF_3D ',
+     &    'is defined'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          errCount = errCount + 1
+        ENDIF
+      ENDDO
+#  else 
+#   ifdef SHI_ALLOW_GAMMAFRICT
 C     Cannot have shiTransCoeffT/S as control variables in gammafrict form
       DO iarr = 1, maxCtrlArr2D
         IF ( (xx_genarr2d_file(iarr)(1:11).EQ.'xx_shicoeff')) THEN
@@ -293,7 +310,7 @@ C     Cannot have shiTransCoeffT/S as control variables in gammafrict form
           errCount = errCount + 1
         ENDIF
       ENDDO
-#  else
+#   else
 C     Cannot have shiCDrag as control variable without gammafrict form
 C     this could be changed to control cdrag for momentum equation only,
 C     but is probably not what the user wants or expects.
@@ -310,7 +327,8 @@ C     but is probably not what the user wants or expects.
           errCount = errCount + 1
         ENDIF
       ENDDO
-#  endif /* SHI_ALLOW_GAMMAFRICT */
+#   endif /* SHI_ALLOW_GAMMAFRICT */
+#  endif /* ALLOW_SHITRANSCOEFF_3D */
 # endif /* ALLOW_SHELFICE */
 #endif /* ALLOW_GENARR2D_CONTROL */
 
