@@ -70,10 +70,10 @@ C     kIcf           :: index of the bottommost ice front cell (2D)
       INTEGER CURJ_ARR(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,4)
 
       COMMON /STIC_FIELDS_RL/
-     &     icfForcingT, icfForcingS,
+     &     stic_front_gT, stic_front_gS,
      &     sticfWidth_arr
-      _RL icfForcingT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL icfForcingS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL stic_front_gT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL stic_front_gS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL sticfWidth_arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,4)
 
 #ifdef ALLOW_SHITRANSCOEFF_3D

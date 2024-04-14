@@ -40,8 +40,8 @@ C     3-dim.
           DO i=1-OLx,sNx+OLx
            icfHeatFlux      (i,j,k,bi,bj) = 0. _d 0
            icfFreshWaterFlux(i,j,k,bi,bj) = 0. _d 0
-           icfForcingT      (i,j,k,bi,bj) = 0. _d 0
-           icfForcingS      (i,j,k,bi,bj) = 0. _d 0
+           stic_front_gT    (i,j,k,bi,bj) = 0. _d 0
+           stic_front_gS    (i,j,k,bi,bj) = 0. _d 0
           ENDDO
          ENDDO
         ENDDO
