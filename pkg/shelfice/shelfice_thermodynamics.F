@@ -137,28 +137,6 @@ C     drKp1, recip_drLoc
 CEOP
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-#ifdef ALLOW_STEEP_ICECAVITY
-# ifdef ALLOW_AUTODIFF_TAMC
-#  ifdef ALLOW_SHITRANSCOEFF_3D
-CADJ STORE shiTransCoeffS3d  = comlev1, key=ikey_dynamics, kind=isbyte
-#  else
-CADJ STORE shiTransCoeffS    = comlev1, key=ikey_dynamics, kind=isbyte
-#  endif
-# endif
-      IF ( useSTIC ) THEN
-# ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('STIC_THERMODYNAMICS',myThid)
-# endif
-C     use alternative thermodynamics that includes icefront melt processes
-       CALL TIMER_START('STIC_THERMODYNAMICS [SHELFICE_THERMODYNAMICS]',
-     &        myThid)
-       CALL STIC_THERMODYNAMICS( myTime, myIter, myThid )
-       CALL TIMER_STOP( 'STIC_THERMODYNAMICS [SHELFICE_THERMODYNAMICS]',
-     &       myThid)
-      ELSE
-#else
-      IF ( .TRUE. ) THEN
-#endif /* ALLOW_STEEP_ICECAVITY */
 #ifdef SHI_ALLOW_GAMMAFRICT
 #ifdef ALLOW_AUTODIFF
 C     re-initialize here again, curtesy to TAF
@@ -758,8 +736,6 @@ C     Friction velocity
 #endif
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
-C     not useSTIC
-      ENDIF
 
 #endif /* ALLOW_SHELFICE */
       RETURN
