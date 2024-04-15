@@ -106,7 +106,7 @@ C--   print cost parameters to stdout for better debugging
      &'// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
-      WRITE(msgBuf,'(A)') '// cost configuration'
+      WRITE(msgBuf,'(a)') '// cost configuration  >>> START <<<'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)')
@@ -124,7 +124,7 @@ C
      &'// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
-      WRITE(msgBuf,'(A)') '// End of cost config. summary'
+      WRITE(msgBuf,'(A)') '// cost configuration  >>> END <<<'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)')
