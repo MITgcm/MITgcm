@@ -660,13 +660,9 @@ Flow chart
 OBCS diagnostics
 ++++++++++++++++
 
-Diagnostics output is available via the diagnostics package (see :numref:`sub_outp_pkg_diagnostics`). Available output fields are summarized below:
-
-::
-
-    ------------------------------------------------------
-     <-Name->|Levs|grid|<--  Units   -->|<- Tile (max=80c)
-    ------------------------------------------------------
+Diagnostics output is available via the diagnostics package (see
+:numref:`sub_outp_pkg_diagnostics`). Currently there are no OBCS-specific
+diagnostics available.
 
 
 .. _ssub_phys_pkg_obcs_experiments:
