@@ -1,6 +1,19 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/generic_advdiff:
+  - adjust 2 SOM (Prather advection) store directives to reduce memory overhead
+  - include OS7MP (advScheme 7) in AD code ; switch AD test experiment
+    isomip.htd to use this advection scheme for Temp and Salt.
+o pkg/ecco, ctrl:
+  - put active_read calls within #ifdef ALLOW_AUTODIFF (missing in few places)
+    and fall back to non-active read (from pkg/rw) if undef;
+  - change argument order in few obcs related pkg/ecco S/R.
+o pkg/seaice:
+  - for seaice-dynamics, add missing mapping of (pkg/thsice) snowHeight to HSNOW
+  - this affects results (unless SEAICEaddSnowMass=F); update seaice parameters
+    in test global_ocean.cs32x15.icedyn and update reference output.
+
 checkpoint68w (2024/03/05)
 o pkg/ctrl, grdchk & optim:
   - clean and improve list of ctrl-var settings (in common blocks) and update

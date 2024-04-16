@@ -5,7 +5,7 @@
 # endif
 #endif
 
-      subroutine ecco_cost_driver(  myTime, myIter, myThid  )
+      subroutine ecco_cost_driver( myTime, myIter, myThid )
 
 c     ==================================================================
 c     SUBROUTINE ecco_cost_driver
@@ -33,18 +33,18 @@ c     == global variables ==
 #endif
 
 c     == routine arguments ==
-      integer myThid
-      integer myIter
       _RL     myTime
+      integer myIter
+      integer myThid
 
 #ifdef ALLOW_OBCS_COST_CONTRIBUTION
-#ifdef ALLOW_DEBUG
+# ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('cost_obcs',myThid)
-#endif
+# endif
       call timer_start('cost_obcs          [ECCO SPIN-DOWN]', myThid)
-      call cost_obcs( myIter, myTime, myThid )
+      call cost_obcs( myTime, myIter, myThid )
       call timer_stop ('cost_obcs          [ECCO SPIN-DOWN]', myThid)
-#endif
+#endif /* ALLOW_OBCS_COST_CONTRIBUTION */
 
 c--   Compute user defined cost function contributions (elaborate)
       call timer_start('cost_gencost_all    [ECCO SPIN-DOWN]', myThid)
@@ -53,14 +53,14 @@ c--   Compute user defined cost function contributions (elaborate)
 
 #ifdef ALLOW_CTRL
       IF (useCTRL) THEN
-#ifdef ALLOW_DEBUG
+# ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('ctrl_cost_driver',myThid)
-#endif
-      call timer_start('ctrl_cost_driver [ECCO SPIN-DOWN]', myThid)
-      call ctrl_cost_driver( myThid )
-      call timer_stop ('ctrl_cost_driver [ECCO SPIN-DOWN]', myThid)
+# endif
+       call timer_start('ctrl_cost_driver [ECCO SPIN-DOWN]', myThid)
+       call ctrl_cost_driver( myThid )
+       call timer_stop ('ctrl_cost_driver [ECCO SPIN-DOWN]', myThid)
       ENDIF
-#endif
+#endif /* ALLOW_CTRL */
 
       RETURN
       END
