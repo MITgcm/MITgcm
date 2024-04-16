@@ -18,10 +18,12 @@ C seaiceSpongeThickness  :: number grid points that make up the sponge layer (de
      & seaiceSpongeThickness
       INTEGER seaiceSpongeThickness
 
-C useSeaiceSponge :: turns on seaice sponge layer along boundary (def=false)
+C useSeaiceSponge  :: turns on seaice sponge layer along boundary (def=false)
+C useSeaiceNeumann :: use Neumann conditions for sea ice variables (def=false)
       COMMON /OBC_SEAICE_PARM_L/
-     & useSeaiceSponge
+     & useSeaiceSponge, useSeaiceNeumann
       LOGICAL useSeaiceSponge
+      LOGICAL useSeaiceNeumann
 
 C [A,H,SL,SN]relaxobcs[inner,bound] :: relaxation time scale (in seconds) on the
 C                            boundary (bound) and at the innermost grid point of the
