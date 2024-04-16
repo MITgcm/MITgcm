@@ -115,7 +115,7 @@ C              uVel
                   CL=MAX(CL, 0. _d 0)
                   CL=MIN(CL, CMAX)
                ELSE
-                  CL=CMAX
+                  CL=0
                ENDIF
                IF (useFixedCEast) THEN
 C                Fixed phase speed (ignoring all of that painstakingly
@@ -139,7 +139,7 @@ C              vVel
                   CL=MAX(CL, 0. _d 0)
                   CL=MIN(CL, CMAX)
                ELSE
-                  CL=CMAX
+                  CL=0
                ENDIF
                IF (useFixedCEast) THEN
 C                Fixed phase speed (ignoring all of that painstakingly
@@ -163,7 +163,7 @@ C              Temperature
                   CL=MAX(CL, 0. _d 0)
                   CL=MIN(CL, CMAX)
                ELSE
-                  CL=CMAX
+                  CL=0
                ENDIF
                IF (useFixedCEast) THEN
 C                Fixed phase speed (ignoring all of that painstakingly
@@ -187,7 +187,7 @@ C              Salinity
                   CL=MAX(CL, 0. _d 0)
                   CL=MIN(CL, CMAX)
                ELSE
-                  CL=CMAX
+                  CL=0
                ENDIF
 
                IF (useFixedCEast) THEN
@@ -206,18 +206,17 @@ C              update OBC to next timestep
 #ifdef ALLOW_NONHYDROSTATIC
              IF ( nonHydrostatic ) THEN
 C              wVel
-               IF ((WE_STORE_2(J,K,bi,bj).eq.0.).and.
-     &            (WE_STORE_3(J,K,bi,bj).eq.0.)) THEN
-                  CL=0.
-               ELSE
-                  CL=-(wVel(I_obc-1,J,K,bi,bj)-WE_STORE_1(J,K,bi,bj))/
+               denom =
      &          (ab1*WE_STORE_2(J,K,bi,bj)+ab2*WE_STORE_3(J,K,bi,bj))
+               IF ( denom .NE. 0 _d 0 ) THEN
+                  CL=-(wVel(I_obc-1,J,K,bi,bj)-WE_STORE_1(J,K,bi,bj))/
+     &          denom
+                  CL=MAX(CL, 0. _d 0)
+                  CL=MIN(CL, CMAX)
+               ELSE
+                  CL=0
                ENDIF
-               IF (CL.lt.0.) THEN
-                  CL=0.
-               ELSEIF (CL.gt.CMAX) THEN
-                  CL=CMAX
-               ENDIF
+
                IF (useFixedCEast) THEN
 C                Fixed phase speed (ignoring all of that painstakingly
 C                saved data...)

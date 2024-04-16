@@ -106,7 +106,7 @@ C              uVel
                   CL=MAX(CL, 0. _d 0)
                   CL=MIN(CL, CMAX)
                ELSE 
-                  CL=CMAX
+                  CL=0
                ENDIF
 
                CVEL_UN(I,K,bi,bj) = f1*(CL*dyU(I,J_obc-1,bi,bj)/deltaT)+
@@ -126,7 +126,7 @@ C              vVel
                   CL=MAX(CL, 0. _d 0)
                   CL=MIN(CL, CMAX)
                ELSE
-                  CL=CMAX
+                  CL=0
                ENDIF
 
                CVEL_VN(I,K,bi,bj) = f1*(CL*dyF(I,J_obc-2,bi,bj)/deltaT)+
@@ -145,7 +145,7 @@ C              Temperature
                   CL=MAX(CL, 0. _d 0)
                   CL=MIN(CL, CMAX)
                ELSE
-                  CL=CMAX
+                  CL=0
                ENDIF
                CVEL_TN(I,K,bi,bj) = f1*(CL*dyC(I,J_obc-1,bi,bj)/deltaT)+
      &                f2*CVEL_TN(I,K,bi,bj)
@@ -163,7 +163,7 @@ C              Salinity
                   CL=MAX(CL, 0. _d 0)
                   CL=MIN(CL, CMAX)
                ELSE
-                  CL=CMAX
+                  CL=0
                ENDIF
                CVEL_SN(I,K,bi,bj) = f1*(CL*dyC(I,J_obc-1,bi,bj)/deltaT)+
      &                f2*CVEL_SN(I,K,bi,bj)
@@ -175,17 +175,15 @@ C              update OBC to next timestep
 #ifdef ALLOW_NONHYDROSTATIC
              IF ( nonHydrostatic ) THEN
 C              wVel
-               IF ((WN_STORE_2(I,K,bi,bj).eq.0.).and.
-     &            (WN_STORE_3(I,K,bi,bj).eq.0.)) THEN
-                  CL=0.
-               ELSE
-                 CL=-(wVel(I,J_obc-1,K,bi,bj)-WN_STORE_1(I,K,bi,bj))/
+               denom = 
      &          (ab1*WN_STORE_2(I,K,bi,bj)+ab2*WN_STORE_3(I,K,bi,bj))
-               ENDIF
-               IF (CL.lt.0.) THEN
-                  CL=0.
-               ELSEIF (CL.gt.CMAX) THEN
-                  CL=CMAX
+               IF ( denom .NE. 0 _d 0 ) THEN
+                 CL=-(wVel(I,J_obc-1,K,bi,bj)-WN_STORE_1(I,K,bi,bj))/
+     &          denom
+                  CL=MAX(CL, 0. _d 0)
+                  CL=MIN(CL, CMAX)
+               ELSE
+                  CL=0
                ENDIF
                CVEL_WN(I,K,bi,bj)=f1*(CL*dyC(I,J_obc-1,bi,bj)/deltaT)
      &                + f2*CVEL_WN(I,K,bi,bj)
