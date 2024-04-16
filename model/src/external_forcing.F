@@ -380,8 +380,7 @@ C--   Forcing term
 #endif /* ALLOW_FIZHI */
 
 #ifdef ALLOW_ADDFLUID
-      IF ( selectAddFluid.NE.0 .AND. temp_addMass.NE.UNSET_RL .AND.
-     &     .NOT.useSTIC ) THEN
+      IF ( selectAddFluid.NE.0 .AND. temp_addMass.NE.UNSET_RL ) THEN
        IF ( ( selectAddFluid.GE.1 .AND. nonlinFreeSurf.GT.0 )
      &      .OR. convertFW2Salt.EQ.-1. _d 0 ) THEN
          DO j=1,sNy
@@ -703,8 +702,7 @@ C--   Forcing term
 #endif /* ALLOW_FIZHI */
 
 #ifdef ALLOW_ADDFLUID
-      IF ( selectAddFluid.NE.0 .AND. salt_addMass.NE.UNSET_RL .AND.
-     &     .NOT.useSTIC ) THEN
+      IF ( selectAddFluid.NE.0 .AND. salt_addMass.NE.UNSET_RL ) THEN
        IF ( ( selectAddFluid.GE.1 .AND. nonlinFreeSurf.GT.0 )
      &      .OR. convertFW2Salt.EQ.-1. _d 0 ) THEN
          DO j=1,sNy
