@@ -245,15 +245,9 @@ C     kSrf          :: surface index
 #endif /* ALLOW_AUTODIFF */
 #ifdef ALLOW_AUTODIFF_TAMC
 C     tkey :: tape key (tile dependent)
-C     kkey :: tape key (level and tile dependent)
-      INTEGER kkey, tkey
+      INTEGER tkey
 #endif
 CEOP
-
-#ifdef ALLOW_AUTODIFF_TAMC
-C--   dummy statement to end declaration part
-      tkey = 1
-#endif /* ALLOW_AUTODIFF_TAMC */
 
       kSrf = 1
       IF ( usingPCoords ) kSrf = Nr
@@ -730,9 +724,10 @@ C     needed here, will be used anyway in calc_phi_hyd (data flow easier this wa
 #endif /* ALLOW_DOWN_SLOPE */
 #ifdef ALLOW_BBL
          IF ( useBBL ) THEN
-C     pkg/bbl requires in-situ bbl density for depths equal to and deeper than the bbl.
-C     To reduce computation and storage requirement, these densities are stored in the
-C     dry grid boxes of rhoInSitu.  See BBL_CALC_RHO for details.
+C     pkg/bbl requires in-situ bbl density for depths equal to and deeper
+C     than the bbl. To reduce computation and storage requirement,
+C     these densities are stored in the dry grid boxes of rhoInSitu.
+C     See BBL_CALC_RHO for details.
            DO k=Nr,1,-1
             CALL BBL_CALC_RHO(
      I                  theta, salt,
@@ -773,10 +768,6 @@ C-    horizontally uniform (tRef) reference state
            ENDDO
           ENDDO
         ENDIF
-# ifdef ALLOW_AUTODIFF_TAMC
-C     Avoid recomputing rhoInSitu in AD routine.
-CADJ STORE rhoInSitu(:,:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
-# endif
 #endif /* ALLOW_AUTODIFF */
 
 #ifdef ALLOW_DEBUG
@@ -790,21 +781,6 @@ CADJ STORE rhoInSitu(:,:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
 C--     Start of diagnostic loop
         DO k=Nr,1,-1
 
-#ifdef ALLOW_AUTODIFF_TAMC
-C? Patrick, is this formula correct now that we change the loop range?
-C? Do we still need this?
-cph kkey formula corrected.
-cph Needed for rhoK, rhoKm1, in the case useGMREDI.
-          kkey = k + (tkey-1)*Nr
-#endif /* ALLOW_AUTODIFF_TAMC */
-
-c#ifdef ALLOW_AUTODIFF_TAMC
-cCADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey,
-cCADJ &     kind = isbyte
-cCADJ STORE salt(:,:,k,bi,bj)  = comlev1_bibj_k, key=kkey,
-cCADJ &     kind = isbyte
-c#endif /* ALLOW_AUTODIFF_TAMC */
-
 C--       Calculate gradients of potential density for isoneutral
 C         slope terms (e.g. GM/Redi tensor or IVDC diffusivity)
           IF ( calcGMRedi .OR. (k.GT.1 .AND. calcConvect)
@@ -812,11 +788,6 @@ C         slope terms (e.g. GM/Redi tensor or IVDC diffusivity)
      &         .OR. useMY82 .OR. useGGL90
      &         .OR. useSALT_PLUME .OR. doDiagsRho.GE.1 ) THEN
             IF (k.GT.1) THEN
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE theta(:,:,k-1,bi,bj) = comlev1_bibj_k, key=kkey,kind=isbyte
-CADJ STORE salt (:,:,k-1,bi,bj) = comlev1_bibj_k, key=kkey,kind=isbyte
-CADJ STORE rhokm1 (bi,bj)       = comlev1_bibj_k, key=kkey,kind=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
              IF ( usingZCoords ) THEN
               DO j=jMin,jMax
                DO i=iMin,iMax
