@@ -165,7 +165,7 @@ C--   generic 2D control variables
         IF (temp_genarr_fnam(1:9).EQ.'xx_siheff')
      &     igen_siheff=iarr
 #endif
-#if (defined ALLOW_SHELFICE && !defined ALLOW_SHITRANSCOEFF_3D)
+#ifdef ALLOW_SHELFICE
 # ifndef SHI_ALLOW_GAMMAFRICT
         IF (temp_genarr_fnam(1:12).EQ.'xx_shicoefft')
      &     igen_shiCoeffT=iarr
@@ -215,7 +215,7 @@ C--   generic 2D control variables
       IF (igen_siheff.GT.0)
      &  CALL CTRL_MAP_GENARR2D(HEFF,igen_siheff,myThid)
 #endif
-#if (defined ALLOW_SHELFICE && !defined ALLOW_SHITRANSCOEFF_3D)
+#ifdef ALLOW_SHELFICE
 # ifndef SHI_ALLOW_GAMMAFRICT
       IF (igen_shiCoeffT.GT.0)
      &  CALL CTRL_MAP_GENARR2D(shiTransCoeffT,igen_shiCoeffT,myThid)
@@ -271,7 +271,7 @@ C--      u* drag coefficient
        ENDDO
       ENDIF
 # endif /* SHI_ALLOW_GAMMAFRICT */
-#endif /* ALLOW_SHELFICE and not ALLOW_SHITRANSCOEFF_3D */
+#endif /* ALLOW_SHELFICE */
 
 #ifdef ALLOW_STREAMICE
       IF (igen_bdot_max_streamice.GT.0) THEN
