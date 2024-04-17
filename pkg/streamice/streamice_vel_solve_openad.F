@@ -134,8 +134,7 @@ C     LOCAL VARIABLES
 
 #ifdef ALLOW_STREAMICE_TAP_FP
 #ifdef STREAMICE_HYBRID_STRESS
-!$AD FP-LOOP
-!"u_streamice,v_streamice,streamice_taubx,streamice_tauby,visc_streamice_full" adj_reduction=2.e-8
+!$AD FP-LOOP "u_streamice,v_streamice,streamice_taubx,streamice_tauby,visc_streamice_full" adj_reduction=1.e-9
 #else
 !$AD FP-LOOP "u_streamice,v_streamice" adj_reduction=2.e-8
 #endif      
