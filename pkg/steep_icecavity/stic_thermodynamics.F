@@ -523,9 +523,6 @@ C--   base of the ice shelf, top of the cavity.
      O            tmpForcingT, tmpForcingS,
      O            insituT,
      I            bi, bj, myTime, myIter, myThid )
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE tmpForcingT, tmpForcingS = comlev1_stic_bibj_ij, key = ikey
-#endif
 C     In units of W/m^2
                 shelficeHeatFlux(i,j,bi,bj) = tmpHeatFlux
 #ifdef ALLOW_GENTIM2D_CONTROL
