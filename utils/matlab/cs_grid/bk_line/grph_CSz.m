@@ -12,7 +12,8 @@ function grph_CSz(var,xcs,ycs,xcg,ycg,c1,c2,shift,cbV,AxBx,kEnv)
 % kEnv = 0 : standard ; =odd : do not draw the mesh ; >1 : no min,Max written.
 % AxBx = do axis(AxBx) to zoom in Box "AxBx" ; only if shift=-1 ;
 %-----------------------
-% Written by jmc@ocean.mit.edu, 2005.
+% Written by jmc@mit.edu, 2005.
+
 %- small number (relative to lon,lat in degree)
 epsil=1.e-6;
 %- mid-longitude of the grid (truncated @ epsil level):
@@ -24,11 +25,18 @@ if nargin < 10, AxBx=[xMid-180 xMid+180 -90 90] ; end
 if nargin < 11, kEnv=0 ; end
 
 %------------------------------
-ncx=size(xcs,1); nc=size(xcs,2) ; ncp=nc+1 ; nPt2=size(var,1);
-nPts=ncx*nc;
-%- check dim
- if ncx ~= 6*nc | nPt2 ~= nPts+2,
-  fprintf('Bad dim (input fields): nc,ncx,nPts,nPt2= %i %i %i %i\n',nc,ncx,nPts,nPt2);
+ n1h=size(xcs,1); n2h=size(xcs,2);
+ if n1h == 6*n2h, nc=n2h;
+ elseif n1h*6 == n2h, nc=n1h;
+ else
+  error([' input xcs size: ',int2str(n1h),' x ',int2str(n2h),' does not fit regular cube !']);
+ end
+ ncp=nc+1 ; nPg=nc*nc*6;
+ nPp2=size(var,1);
+%- check input "var" size: assumes it includes the 2 missing corner (nPg+2 lenth) and,
+%  as a long-vector, always in "compact-format" shape (i.e., 1 face after the other)
+ if nPp2 ~= nPg+2,
+  fprintf('Bad dim (input fields): n1h,n2h,nPg,nPp2= %i %i %i %i\n',n1h,n2h,nPg,nPp2);
   error(' wrong dimensions ');
  end
  mnV=min(var);
@@ -70,9 +78,10 @@ else
 end
 %---
 nbsf = 0 ; ic = 0 ; jc = 0 ;
-vv0=permute(reshape(var(1:nPts,1),[nc 6 nc]),[1 3 2]);
-[xx2]=split_C_cub(xcs,1);
-[yy2]=split_C_cub(ycs,1);
+ %- long-vector input "var" always in "compact-format" style (i.e., 1 face after the other)
+ vv0=reshape(var(1:nPg,1),[nc nc 6]);
+ [xx2]=split_C_cub(xcs,1);
+ [yy2]=split_C_cub(ycs,1);
 %---
 for n=1:6,
 %if n > 2 & n < 4,
@@ -135,8 +144,8 @@ end ; end
 %- add isolated point:
  vvI=zeros(2,2); xxI=vvI; yyI=vvI;
 
-%- 1rst missing corner (N.W corner of 1rst face): nPts+1
- vvI(1,1)=var(nPts+1);
+%- 1rst missing corner (N.W corner of 1rst face): nPg+1
+ vvI(1,1)=var(nPg+1);
  for l=0:2,
   xxI(1+rem(l,2),1+fix(l/2))=xx2(2,ncp,1+2*l);
   yyI(1+rem(l,2),1+fix(l/2))=yy2(2,ncp,1+2*l);
@@ -144,8 +153,8 @@ end ; end
  xxI(2,2)=xxI(1,2); yyI(2,2)=yyI(1,2);
  [nbsf,S(nbsf)]=part_surf(nbsf,fac,xxI,yyI,vvI,1,2,1,2,c1,c2) ;
 
-%- 2nd missing corner (S.E corner of 2nd face): nPts+2
- vvI(1,1)=var(nPts+2);
+%- 2nd missing corner (S.E corner of 2nd face): nPg+2
+ vvI(1,1)=var(nPg+2);
  for l=0:2,
   xxI(1+rem(l,2),1+fix(l/2))=xx2(ncp,2,2+2*l);
   yyI(1+rem(l,2),1+fix(l/2))=yy2(ncp,2,2+2*l);
@@ -154,12 +163,12 @@ end ; end
  [nbsf,S(nbsf)]=part_surf(nbsf,fac,xxI,yyI,vvI,1,2,1,2,c1,c2) ;
 
 %- N pole:
- vvI(1,1)=var(1+nc/2+2*nc+nc/2*ncx);
+ vvI(1,1)=var(1+nc/2+nc/2*nc+2*nc*nc);
  xxI(1,:)=xMid-180; xxI(2,:)=xMid+180;
  yyI(:,1)=max(ycs(:)); yyI(:,2)=+90;
  [nbsf,S(nbsf)]=part_surf(nbsf,fac,xxI,yyI,vvI,1,2,1,2,c1,c2) ;
 %- S pole:
- vvI(1,1)=var(1+nc/2+5*nc+nc/2*ncx);
+ vvI(1,1)=var(1+nc/2+nc/2*nc+5*nc*nc);
  xxI(1,:)=xMid-180; xxI(2,:)=xMid+180;
  yyI(:,2)=min(ycs(:)); yyI(:,1)=-90;
  [nbsf,S(nbsf)]=part_surf(nbsf,fac,xxI,yyI,vvI,1,2,1,2,c1,c2) ;
@@ -182,15 +191,16 @@ else
 end
 
 %--
- if cbV < 2, scalHV_colbar([10-cbV/2 10 7-5*cbV 7+2*cbV]/10,cbV); end
+ if cbV < 2, bV=fix(cbV); moveHV_colbar([10+bV*2.2 10 7-5*bV 7+2*bV]/10,cbV); end
 if mnV < MxV & kEnv < 2,
  ytxt=min(1,cbV);
  if shift == 1 | shift == -1,
-  xtxt=mean(AxBx(1:2)) ; ytxt=AxBx(3)-(AxBx(4)-AxBx(3))*(10+1*ytxt)/100;
-  text(xtxt*fac,ytxt*fac,sprintf('min,Max= %9.5g  , %9.5g', mnV, MxV))
-  %set(gca,'position',[-.1 0.2 0.8 0.75]); % xmin,ymin,xmax,ymax in [0,1]
- else text(0,(30*cbV-120)*fac,sprintf('min,Max= %9.5g  , %9.5g', mnV, MxV))
+  pos=get(gca,'position');
+  xtxt=mean(AxBx(1:2)) ; ytxt=AxBx(3)-(AxBx(4)-AxBx(3))*(16-pos(4)*7.4)/100;
+ %fprintf(' pp= %9.6f , ytxt= %7.2f\n',pos(4),ytxt);
+ else xtxt=0; ytxt=(30*cbV-120)*fac;
  end
+ text(xtxt*fac,ytxt*fac,sprintf('min,Max= %9.5g  , %9.5g', mnV, MxV))
 else fprintf('Uniform field: min,Max= %g \n',MxV); end
 return
 %----------------------------------------------------------------------

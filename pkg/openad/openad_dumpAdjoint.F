@@ -78,8 +78,9 @@ c They provide the fields to be stored.
 #  include "KPP_PARAMS.h"
 # endif
 
-# include "ctrl.h"
-# include "ctrl_dummy.h"
+# include "CTRL_SIZE.h"
+# include "CTRL.h"
+# include "CTRL_DUMMY.h"
 # include "cost.h"
 
 #endif /* ALLOW_AUTODIFF */

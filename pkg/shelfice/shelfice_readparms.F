@@ -42,7 +42,7 @@ CEOP
      &     SHELFICEsaltToHeatRatio,
      &     SHELFICEheatTransCoeff,
      &     SHELFICEsaltTransCoeff,
-     &     SHELFICEMassStepping,
+     &     SHELFICEMassStepping, SHI_update_kTopC,
      &     rhoShelfice, SHELFICEkappa,
      &     SHELFICElatentHeat, SHELFICEHeatCapacity_Cp,
      &     no_slip_shelfice, SHELFICEDragLinear,
@@ -97,6 +97,11 @@ C Set defaults values for parameters in SHELFICE.h
       SHI_withBL_realFWflux    = .FALSE.
       SHI_withBL_uStarTopDz    = .FALSE.
       SHELFICEMassStepping     = .FALSE.
+#ifdef ALLOW_SHELFICE_REMESHING
+      SHI_update_kTopC         = .TRUE.
+#else
+      SHI_update_kTopC         = .FALSE.
+#endif
       SHELFICEDynMassOnly      = .FALSE.
       SHELFICEtopoFile         = ' '
       SHELFICEmassFile         = ' '
@@ -192,6 +197,9 @@ C Set quadratic bottom drag depending on choices:
       ELSEIF ( SHELFICEselectDragQuadr.EQ.-1 ) THEN
         SHELFICEselectDragQuadr = MAX( 0, selectBotDragQuadr )
       ENDIF
+
+C-    reset SHI_update_kTopC to avoid having to test for both:
+      SHI_update_kTopC = SHI_update_kTopC .AND. SHELFICEMassStepping
 
 C-    Set Output type flags :
       SHELFICE_tave_mdsio = .TRUE.

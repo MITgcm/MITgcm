@@ -36,8 +36,9 @@ c     == global variables ==
 #include "GRID.h"
 
 #ifdef ALLOW_CTRL
-# include "ctrl.h"
-# include "optim.h"
+# include "CTRL_SIZE.h"
+# include "CTRL.h"
+# include "OPTIMCYCLE.h"
 #endif
 
 c     == routine arguments ==
@@ -207,8 +208,9 @@ c     == global variables ==
 #include "GRID.h"
 
 #ifdef ALLOW_CTRL
-# include "ctrl.h"
-# include "optim.h"
+# include "CTRL_SIZE.h"
+# include "CTRL.h"
+# include "OPTIMCYCLE.h"
 #endif
 
 c     == routine arguments ==

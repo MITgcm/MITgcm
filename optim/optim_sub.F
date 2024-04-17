@@ -1,4 +1,4 @@
-
+#include "CTRL_OPTIONS.h"
 
       subroutine optim_sub(
      I                 nn
@@ -23,14 +23,15 @@ c     ==================================================================
 c     SUBROUTINE optim_sub
 c     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
 c     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
 
-#include "ctrl.h"
+#include "CTRL_SIZE.h"
+#include "CTRL.h"
 #include "optim.h"
 
 c     == routine arguments ==
@@ -114,6 +115,10 @@ c--   variables.
       itmax    = numiter
 
 c--   Large scale optimization --> Gilbert & Lemarechal.
+#ifdef EXCLUDE_LSOPT_TO_CHECK
+      ifail = 0
+      call simul( ifail, nn, xx, objf, adxx )
+#else /* EXCLUDE_LSOPT_TO_CHECK */
       call lsopt_top( nn, xx, objf, adxx
      &              , simul, lsline
      &              , epsx, fmin, epsg
@@ -122,6 +127,7 @@ c--   Large scale optimization --> Gilbert & Lemarechal.
      &              , dd, gold, xdiff
      &              , loffline
      &              , ifail )
+#endif /* EXCLUDE_LSOPT_TO_CHECK */
 
-      return
-      end
+      RETURN
+      END

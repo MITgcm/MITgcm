@@ -754,8 +754,13 @@ C    REAL ARRAYS
      &     v_bdry_values_SI,
      &     STREAMICE_dummy_array,
      &     C_basal_friction, C_basal_fric_init,
-     &     B_glen, B_glen_init, B_glen0,
-     &     BDOT_streamice, ADOT_streamice,BDOT_pert,ADOT_pert, ! mass balances in meters per year
+     &     B_glen, B_glen_init, B_glen0
+
+C     Spit common block, because it lead to memory problem on some
+C     platform/compiler combinations (e.g. PowerBook with MacOS and
+C     gfortran)
+      COMMON /STREAMICE_FIELDS_RL_2/
+     &     BDOT_streamice, ADOT_streamice,BDOT_pert,ADOT_pert,
      &     streamice_bdot_depth_maxmelt_v, streamice_bdot_maxmelt_v,
      &     streamice_sigma_coord, streamice_delsigma,
      &     H_streamice_prev,

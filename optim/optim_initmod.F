@@ -1,3 +1,4 @@
+#include "CTRL_OPTIONS.h"
 
       subroutine optim_initmod(
      I                    nn,
@@ -31,7 +32,8 @@ c     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#include "ctrl.h"
+#include "CTRL_SIZE.h"
+#include "CTRL.h"
 #include "optim.h"
 
 c     == routine arguments ==
@@ -56,11 +58,11 @@ c--   Read the scaling for the control vector.
 c     --> Presently not implemented, since the control vector and the
 c         gradient of the cost function can already be non-dimensionalized
 c         by *ecco_ControlPack* and *ecco_ControlUnPack*.
-c 
+c
 c         To do this set:
-c 
+c
 c           #define  USE_NONDIMENSIONAL_CONTROL_IO
-c 
+c
 c         in CPP_OPTIONS.h. The subroutine *ecco_ControlPack* will then
 c         non-dimensionalize its output and *ecco_ControlUnPack* will
 c         dimensionalize its input.
