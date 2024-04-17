@@ -46,9 +46,6 @@ C     === Global variables ===
 #endif /* ALLOW_CTRL */
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
-#ifdef ALLOW_STEEP_ICECAVITY
-# include "STIC.h"
-#endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     !INPUT/OUTPUT PARAMETERS:
