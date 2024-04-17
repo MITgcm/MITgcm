@@ -572,8 +572,6 @@ CADJ &    nchklev_1*nSx*nSy*(MaxTsf+1)*niter_bulk*sNx*sNy
 #   endif /* ALLOW_THSICE */
 c--
 #   ifdef ALLOW_STEEP_ICECAVITY
-CADJ INIT comlev1_stic_bibj_ij = COMMON,
-CADJ &    nchklev_1*nSx*nSy*(2*OLy+sNy)*(2*OLx+sNx)
 CADJ INIT comlev1_stic_bibj_ijk = COMMON,
 CADJ &    nchklev_1*nSx*nSy*Nr*(2*OLy+sNy)*(2*OLx+sNx)
 #   endif
