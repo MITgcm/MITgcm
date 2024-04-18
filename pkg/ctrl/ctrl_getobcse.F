@@ -27,7 +27,7 @@ c     == global variables ==
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "GRID.h"
-c#include "OBCS_PARAMS.h"
+#include "OBCS_PARAMS.h"
 #include "OBCS_GRID.h"
 #include "OBCS_FIELDS.h"
 #include "CTRL_SIZE.h"
