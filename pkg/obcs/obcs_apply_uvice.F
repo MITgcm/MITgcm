@@ -87,7 +87,7 @@ C     Southern boundary
            Jobc = OB_Js(i,bi,bj)
            IF ( Jobc.NE.OB_indexNone ) THEN
             OBSuice(i,bi,bj) = uFld(i,Jobc+1,bi,bj)
-            OBNvice(i,bi,bj) = vFld(i,Jobc+2,bi,bj)
+            OBSvice(i,bi,bj) = vFld(i,Jobc+2,bi,bj)
            ENDIF
           ENDDO
          ENDIF
@@ -112,7 +112,7 @@ C     Western boundary
           DO j=1-OLy,sNy+OLy
            Iobc = OB_Iw(j,bi,bj)
            IF ( Iobc.NE.OB_indexNone ) THEN
-            OBEuice(j,bi,bj) = uFld(Iobc+2,j,bi,bj)
+            OBWuice(j,bi,bj) = uFld(Iobc+2,j,bi,bj)
             OBWvice(j,bi,bj) = vFld(Iobc+1,j,bi,bj)
            ENDIF
           ENDDO
