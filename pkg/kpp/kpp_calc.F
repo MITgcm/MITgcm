@@ -505,6 +505,10 @@ c-----------------------------------------------------------------------
 c     solve for viscosity, diffusivity, ghat, and hbl on "t-grid"
 c-----------------------------------------------------------------------
 
+#if ( !defined EXCLUDE_PCELL_MIX_CODE && defined  ALLOW_AUTODIFF_TAMC )
+CADJ STORE KPPdiffKzS(:,:,:,bi,bj) = comlev1_kpp, key = ikey
+CADJ STORE KPPdiffKzT(:,:,:,bi,bj) = comlev1_kpp, key = ikey
+#endif
 c     precompute background vertical diffusivities, which are needed for
 c     matching diffusivities at bottom of KPP PBL
       CALL CALC_3D_DIFFUSIVITY(
@@ -703,6 +707,9 @@ C !USES: ===============================================================
 #include "KPP_PARAMS.h"
 #include "GRID.h"
 #include "GAD.h"
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C !INPUT PARAMETERS: ===================================================
 c     bi, bj :: Current tile indices
@@ -717,6 +724,9 @@ c     myThid :: My Thread Id. number
 #ifdef ALLOW_KPP
 C !LOCAL VARIABLES: ====================================================
       INTEGER i, j, k
+#if ( !defined EXCLUDE_PCELL_MIX_CODE && defined  ALLOW_AUTODIFF_TAMC )
+      INTEGER ikey
+#endif
 CEOP
 
       DO j=1-OLy,sNy+OLy
@@ -733,6 +743,11 @@ CEOP
          ENDDO
       ENDDO
 
+#if ( !defined EXCLUDE_PCELL_MIX_CODE && defined  ALLOW_AUTODIFF_TAMC )
+      ikey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+CADJ STORE KPPdiffKzS(:,:,:,bi,bj) = comlev1_kpp, key = ikey
+CADJ STORE KPPdiffKzT(:,:,:,bi,bj) = comlev1_kpp, key = ikey
+#endif
       CALL CALC_3D_DIFFUSIVITY(
      I     bi,bj,1-OLx,sNx+OLx,1-OLy,sNy+OLy,
      I     GAD_SALINITY, .FALSE., .FALSE.,
