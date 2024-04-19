@@ -2830,6 +2830,10 @@ fi
 rm -f $TMP.links/foo
 
 if test "x$TAPENADE" != x ; then
+    XTRATAPFILE=
+    if [[ "$PACKAGES" =~ streamice ]]; then 
+     XTRATAPFILE=" streamice_cg_solve.f"
+    fi
     TAP_DONT_COMPILE="/dev/null"
     TAP_DONT_TRANSFORM="/dev/null"
     TAP_KEEP_ORIGINAL="/dev/null"
@@ -3674,9 +3678,9 @@ TAP_TLM_FILES: \$(AD_FILES) f95_test_mods.f90
 	\$(TAPENADECMD) -d -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
 #
 .PHONY: TAP_ADJ_FILES
-TAP_ADJ_FILES: \$(AD_FILES) f95_test_mods.f90 streamice_cg_solve.f
+TAP_ADJ_FILES: \$(AD_FILES) f95_test_mods.f90 ${XTRATAPFILE}
 	touch \$(AD_FILES_ADJ)
-	\$(TAPENADECMD) -b -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90  streamice_cg_solve.f
+	\$(TAPENADECMD) -b -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90  ${XTRATAPFILE}
 
 tap_adj: ad_exe_target
 ad_exe_target:
