@@ -327,9 +327,9 @@ C       = 1/(rho_prime + rho_Cst) - 1/rho_Cst
 C       = - (rho_prime/rho_Cst) / ( 1 + rho_prime/rho_Cst ) / rho_Cst
         DO j=jMin,jMax
           DO i=iMin,iMax
-            locBuoy = -alphaRho(i,j)*recip_rhoConst
-            alphaRho(i,j) = maskC(i,j,k,bi,bj)*recip_rhoConst
-     &                    * locBuoy/( oneRL - locBuoy )
+            locBuoy = alphaRho(i,j)*recip_rhoConst
+            alphaRho(i,j) = -maskC(i,j,k,bi,bj)*recip_rhoConst
+     &                    * locBuoy/( oneRL + locBuoy )
           ENDDO
         ENDDO
 
