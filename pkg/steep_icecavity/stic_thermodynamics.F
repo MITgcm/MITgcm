@@ -162,8 +162,6 @@ C     (Holland and Jenkins, 1999, eq.21)
           shelfIceFreshWaterFlux  (i,j,bi,bj) = 0. _d 0
           sticfHeatFlux           (i,j,bi,bj) = 0. _d 0
           sticfFreshWaterFlux     (i,j,bi,bj) = 0. _d 0
-          shelficeForcingT        (i,j,bi,bj) = 0. _d 0
-          shelficeForcingS        (i,j,bi,bj) = 0. _d 0
 #ifdef ALLOW_GENTIM2D_CONTROL
           xx_shifwflx_loc         (i,j,bi,bj) = 0. _d 0
 #endif /* ALLOW_GENTIM2D_CONTROL */
@@ -182,8 +180,8 @@ C     (Holland and Jenkins, 1999, eq.21)
 #endif
            icfHeatFlux(i,j,k,bi,bj)       = 0. _d 0
            icfFreshWaterFlux(i,j,k,bi,bj) = 0. _d 0
-           stic_front_gT(i,j,k,bi,bj)     = 0. _d 0
-           stic_front_gS(i,j,k,bi,bj)     = 0. _d 0
+           stic_gT(i,j,k,bi,bj)     = 0. _d 0
+           stic_gS(i,j,k,bi,bj)     = 0. _d 0
           ENDDO
          ENDDO
         ENDDO
@@ -421,7 +419,7 @@ C ow - Verticallly sum up the 3D icefront heat and freshwater fluxes to
 C ow -  compute the total flux for the water column. The shelfice fluxes,
 C ow -  which are 2D, will be added later. NOTE that only
 C ow -  ice-front melts below shelf-ice are included to be consistent
-C ow -  with Rignot s data
+C ow -  with Rignot's data
                   if(k.GE.kTopC(i,j,bi,bj))then
                    if(RA(CURI,CURJ,bi,bj).NE.0. _d 0)then
                         sticfHeatFlux(CURI,CURJ,bi,bj) =
@@ -432,7 +430,8 @@ C ow -  with Rignot s data
      &                   tmpFWFLXscaled
                    endif
                   endif
-C     stic_front_g[T,S] X m/s but these rates only apply to the
+C     stic_g[T,S] are tendency contributions due to ice front melt,
+C--   but these constributions only apply to the
 C--   fraction of the grid cell that has ice in contact with seawater.
 C--   we must scale by iceFrontVertContactFrac to get to the average
 C--   fluxes in this grid cell.  We must also divide the by the length
@@ -440,8 +439,8 @@ C--   of the grid cell perpendicular to the face.
 
                        IF (iceFrontCellThickness .NE. 0. _d 0) THEN
 C     In units of K / s
-                        stic_front_gT(CURI,CURJ,k,bi,bj) =
-     &                    stic_front_gT(CURI,CURJ,k,bi,bj) +
+                        stic_gT(CURI,CURJ,k,bi,bj) =
+     &                    stic_gT(CURI,CURJ,k,bi,bj) +
      &                    tmpForcingT/iceFrontCellThickness*
      &                    iceFrontVertContactFrac*
      &                    _recip_hFacC(CURI,CURJ,k,bi,bj)
@@ -451,8 +450,8 @@ C     In units of K / s
      &                    iceFrontVertContactFrac*
      &                    drF(k)
 C     In units of psu /s
-                        stic_front_gS(CURI,CURJ,k,bi,bj) =
-     &                    stic_front_gS(CURI,CURJ,k,bi,bj) +
+                        stic_gS(CURI,CURJ,k,bi,bj) =
+     &                    stic_gS(CURI,CURJ,k,bi,bj) +
      &                    tmpForcingS/iceFrontCellThickness*
      &                    iceFrontVertContactFrac*
      &                    _recip_hFacC(CURI,CURJ,k,bi,bj)
@@ -541,14 +540,14 @@ C ow - Now add shelfice heat and freshwater fluxes
                         sticfFreshWaterFlux(i,j,bi,bj) =
      &                   sticfFreshWaterFlux(i,j,bi,bj) +
      &                   shelfIceFreshWaterFlux(i,j,bi,bj)
-C     In units of K.m/s
-                shelficeForcingT(i,j,bi,bj) = tmpForcingT
-                tmpDiagShelficeForcingT(i,j,bi,bj) = tmpForcingT*
-     &              recip_drF(k)* _recip_hFacC(i,j,k,bi,bj)
-C     In units of psu.m/s
-                shelficeForcingS(i,j,bi,bj) = tmpForcingS
-                tmpDiagShelficeForcingS(i,j,bi,bj) = tmpForcingS*
-     &              recip_drF(k)* _recip_hFacC(i,j,k,bi,bj)
+C     In units of K/s
+                stic_gT(i,j,k,bi,bj) = stic_gT(i,j,k,bi,bj) +
+     &              tmpForcingT*recip_drF(k)* _recip_hFacC(i,j,k,bi,bj)
+                tmpDiagShelficeForcingT(i,j,bi,bj) = tmpForcingT
+C     In units of psu/s
+                stic_gS(i,j,k,bi,bj) = stic_gS(i,j,k,bi,bj) +
+     &              tmpForcingS*recip_drF(k)* _recip_hFacC(i,j,k,bi,bj)
+                tmpDiagShelficeForcingS(i,j,bi,bj) = tmpForcingS
 C     In units of kg/s  -- multiplication of area required first
                 addMass(i,j,k,bi,bj) = addMass(i,j,k,bi,bj) -
      &              tmpFWFLX*RA(i,j,bi,bj)

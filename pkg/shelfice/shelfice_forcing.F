@@ -101,13 +101,8 @@ C                         }/[drF(k+1)*hFacC(k+1)]
       IF ( useSTIC ) THEN
        DO j=1,sNy
         DO i=1,sNx
-C--     TENDENCY FROM ICE FRONT
-         gT_arr(i,j) = gT_arr(i,j) + stic_front_gT(i,j,kLev,bi,bj)
-C--     TENDENCY FROM ICE SHELF
-         IF ( kLev .EQ. kTopC(I,J,bi,bj) ) THEN
-          gT_arr(i,j) = gT_arr(i,j) + shelficeForcingT(i,j,bi,bj)
-     &         * recip_drF(kLev)* _recip_hFacC(i,j,kLev,bi,bj)
-         ENDIF
+C--     TENDENCY FROM STEEP ICECAVITY (BOTH ICE SHELF AND ICE FRONT)
+         gT_arr(i,j) = gT_arr(i,j) + stic_gT(i,j,kLev,bi,bj)
         ENDDO
        ENDDO
       ENDIF
@@ -212,13 +207,8 @@ C                         }/[drF(k+1)*hFacC(k+1)]
       IF ( useSTIC ) THEN
        DO j=1,sNy
         DO i=1,sNx
-C--     TENDENCY FROM ICE FRONT
-         gS_arr(i,j) = gS_arr(i,j) + stic_front_gS(i,j,kLev,bi,bj)
-C--     TENDENCY FROM ICE SHELF
-         IF ( kLev .EQ. kTopC(I,J,bi,bj) ) THEN
-          gS_arr(i,j) = gS_arr(i,j)  + shelficeForcingS(i,j,bi,bj)
-     &         * recip_drF(kLev)* _recip_hFacC(i,j,kLev,bi,bj)
-         ENDIF
+C--     TENDENCY FROM STEEP ICECAVITY (BOTH ICE SHELF AND ICE FRONT)
+         gS_arr(i,j) = gS_arr(i,j) + stic_gS(i,j,kLev,bi,bj)
         ENDDO
        ENDDO
       ENDIF
