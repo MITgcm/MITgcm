@@ -259,16 +259,16 @@ C--   front at (i,j) then calculate ice-ocean exchanges.
 C--   The four laterally neighboring point are at (CURI,CURJ)
 
                   DO SI = 1,4
-                     CURI=CURI_ARR(i,j,bi,bj,SI)
-                     CURJ=CURJ_ARR(i,j,bi,bj,SI)
-                     iceFrontWidth=sticfWidth_arr(i,j,bi,bj,SI)
+                    CURI=CURI_ARR(i,j,bi,bj,SI)
+                    CURJ=CURJ_ARR(i,j,bi,bj,SI)
+                    iceFrontWidth=sticfWidth_arr(i,j,bi,bj,SI)
 
 C--                 cell depth describes the average distance
 C--                 perpendicular to the ice front fact
 
                     iceFrontCellThickness = 0. _d 0
                     IF(iceFrontWidth.NE.0. _d 0)
-     &              iceFrontCellThickness = RA(CURI,CURJ,bi,bj)
+     &                iceFrontCellThickness = RA(CURI,CURJ,bi,bj)
      &                                  /iceFrontWidth
                     iceFrontFaceArea  = drF(k)*iceFrontWidth
 

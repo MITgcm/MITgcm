@@ -167,7 +167,9 @@ C--   Looking to south
 C--   cell depth describes the average distance perpendicular to the ice
 C--   front fact
 
-             iceFrontCellThickness = RA(CURI,CURJ,bi,bj)/iceFrontWidth
+             iceFrontCellThickness = 0. _d 0
+             IF(iceFrontWidth.NE.0. _d 0)
+     &         iceFrontCellThickness = RA(CURI,CURJ,bi,bj)/iceFrontWidth
              iceFrontFaceArea  = drF(k)*iceFrontWidth
 
 C--   First, make sure the adjacent point has at least some water in it.
