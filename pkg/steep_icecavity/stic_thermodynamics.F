@@ -122,6 +122,7 @@ C     iceFrontWidth    :: the width of the ice front.  unit meters.
 #endif /* ALLOW_DIAGNOSTICS */
 
       _RL epsilon_H
+      _RL stic_addMass(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 #ifdef ALLOW_GENTIM2D_CONTROL
       INTEGER iarr
@@ -180,8 +181,9 @@ C     (Holland and Jenkins, 1999, eq.21)
 #endif
            icfHeatFlux(i,j,k,bi,bj)       = 0. _d 0
            icfFreshWaterFlux(i,j,k,bi,bj) = 0. _d 0
-           stic_gT(i,j,k,bi,bj)     = 0. _d 0
-           stic_gS(i,j,k,bi,bj)     = 0. _d 0
+           stic_gT(i,j,k,bi,bj)           = 0. _d 0
+           stic_gS(i,j,k,bi,bj)           = 0. _d 0
+           stic_addMass(i,j,k,bi,bj)      = 0. _d 0
           ENDDO
          ENDDO
         ENDDO
@@ -462,8 +464,8 @@ C     In units of psu /s
      &                    drF(k)
                        ENDIF /* iceFrontCellThickness */
 C     In units of kg /s
-                         addMass(CURI,CURJ,k,bi,bj) =
-     &                     addMass(CURI,CURJ,k,bi,bj) -
+                         stic_addMass(CURI,CURJ,k,bi,bj) =
+     &                     stic_addMass(CURI,CURJ,k,bi,bj) -
      &                     tmpFWFLX*iceFrontFaceArea*
      &                     iceFrontVertContactFrac
 #ifdef ALLOW_DIAGNOSTICS
@@ -472,7 +474,7 @@ C     In units of kg /s
                         IF ( (nonlinFreeSurf.GT.0 .OR. usingPCoords)
      &                   .AND. useRealFreshWaterFlux ) THEN
                          tmpDiagT(CURI,CURJ,k,bi,bj) =
-     &                     addMass(CURI,CURJ,k, bi,bj)/
+     &                     stic_addMass(CURI,CURJ,k, bi,bj)/
      &                     RA(CURI,CURJ,bi,bj)*
      &                     insituT*HeatCapacity_Cp
                         ENDIF
@@ -549,7 +551,7 @@ C     In units of psu/s
      &              tmpForcingS*recip_drF(k)* _recip_hFacC(i,j,k,bi,bj)
                 tmpDiagShelficeForcingS(i,j,bi,bj) = tmpForcingS
 C     In units of kg/s  -- multiplication of area required first
-                addMass(i,j,k,bi,bj) = addMass(i,j,k,bi,bj) -
+                stic_addMass(i,j,k,bi,bj) = stic_addMass(i,j,k,bi,bj) -
      &              tmpFWFLX*RA(i,j,bi,bj)
 #ifdef ALLOW_DIAGNOSTICS
                 IF ( useDiagnostics ) THEN
@@ -557,7 +559,7 @@ C     In units of kg/s  -- multiplication of area required first
                  IF ( (nonlinFreeSurf.GT.0 .OR. usingPCoords)
      &            .AND. useRealFreshWaterFlux ) THEN
                   tmpDiagT(i,j,k,bi,bj) =
-     &                 addMass(i,j,k,bi,bj) / rA(i,j,bi,bj)*
+     &                 stic_addMass(i,j,k,bi,bj) / rA(i,j,bi,bj)*
      &                 insituT*HeatCapacity_Cp
                  ENDIF
 #endif /* NONLIN_FRSURF */
@@ -568,6 +570,72 @@ C     In units of kg/s  -- multiplication of area required first
           ENDDO /* j */
         ENDDO /* bi */
       ENDDO /* bj */
+
+      DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j = 1-OLy+1,sNy+OLy-1
+            DO i = 1-OLx+1,sNx+OLx-1
+              DO k = 1,Nr
+                 addMass(i,j,k,bi,bj) = addMass(i,j,k,bi,bj) +
+     &               stic_addMass(i,j,k,bi,bj)
+              ENDDO /* k */
+            ENDDO /* i */
+          ENDDO /* j */
+        ENDDO /* bi */
+      ENDDO /* bj */
+
+#ifdef ALLOW_ADDFLUID
+      IF ( selectAddFluid.NE.0 .AND. salt_addMass.NE.UNSET_RL ) THEN
+        IF ( ( selectAddFluid.GE.1 .AND. nonlinFreeSurf.GT.0 )
+     &       .OR. convertFW2Salt.EQ.-1. _d 0 ) THEN
+          DO bj = myByLo(myThid), myByHi(myThid)
+            DO bi = myBxLo(myThid), myBxHi(myThid)
+              DO j=0,sNy+1
+                DO i=0,sNx+1
+                  DO k=1,Nr
+                    stic_gT(i,j,k,bi,bj) = stic_gT(i,j,k,bi,bj)
+     &                - stic_addMass(i,j,k,bi,bj)*mass2rUnit
+     &                  *( temp_addMass - theta(i,j,k,bi,bj) )
+     &                  *recip_rA(i,j,bi,bj)
+     &                  *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
+C    &                  *recip_deepFac2C(k)*recip_rhoFacC(k)
+                    stic_gS(i,j,k,bi,bj) = stic_gS(i,j,k,bi,bj)
+     &                - stic_addMass(i,j,k,bi,bj)*mass2rUnit
+     &                  *( salt_addMass - salt(i,j,k,bi,bj) )
+     &                  *recip_rA(i,j,bi,bj)
+     &                  *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
+C    &                  *recip_deepFac2C(k)*recip_rhoFacC(k)
+                  ENDDO /* k */
+                ENDDO /* i */
+              ENDDO /* j */
+            ENDDO /* bi */
+          ENDDO /* bj */
+        ELSE
+          DO bj = myByLo(myThid), myByHi(myThid)
+            DO bi = myBxLo(myThid), myBxHi(myThid)
+              DO j=0,sNy+1
+                DO i=0,sNx+1
+                  DO k=1,Nr
+                    stic_gT(i,j,k,bi,bj) = stic_gT(i,j,k,bi,bj)
+     &                - stic_addMass(i,j,k,bi,bj)*mass2rUnit
+     &                  *( temp_addMass - tRef(k) )
+     &                  *recip_rA(i,j,bi,bj)
+     &                  *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
+C    &                  *recip_deepFac2C(k)*recip_rhoFacC(k)
+                    stic_gS(i,j,k,bi,bj) = stic_gS(i,j,k,bi,bj)
+     &                - stic_addMass(i,j,k,bi,bj)*mass2rUnit
+     &                  *( salt_addMass - sRef(k) )
+     &                  *recip_rA(i,j,bi,bj)
+     &                  *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
+C    &                  *recip_deepFac2C(k)*recip_rhoFacC(k)
+                  ENDDO /* k */
+                ENDDO /* i */
+              ENDDO /* j */
+            ENDDO /* bi */
+          ENDDO /* bj */
+        ENDIF
+      ENDIF
+#endif /* ALLOW_ADDFLUID */
 
 C--  Calculate new loading anomaly (in case the ice-shelf mass was updated)
 #ifndef ALLOW_AUTODIFF
@@ -597,7 +665,7 @@ c     ENDIF
            DO j=1,sNy
             DO i=1,sNx
              tmpDiag(i,j,k,bi,bj) =
-     &        addMass(i,j,k,bi,bj)/RA(i,j,bi,bj)*
+     &        stic_addMass(i,j,k,bi,bj)/RA(i,j,bi,bj)*
      &        theta(i,j,k,bi,bj)*HeatCapacity_Cp
             ENDDO
            ENDDO
@@ -612,7 +680,7 @@ c     ENDIF
            DO j=1,sNy
             DO i=1,sNx
              tmpDiag(i,j,k,bi,bj) =
-     &        addMass(i,j,k,bi,bj)/RA(i,j,bi,bj)*salt(i,j,k,bi,bj)
+     &        stic_addMass(i,j,k,bi,bj)/RA(i,j,bi,bj)*salt(i,j,k,bi,bj)
             ENDDO
            ENDDO
           ENDDO
