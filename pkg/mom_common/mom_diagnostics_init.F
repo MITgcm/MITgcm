@@ -392,23 +392,7 @@ c [Um_diss_bihar,Vm_diss_bihar].
 c
 c These new diags are not need for momentum budget closure, but are
 c useful for decomposing (and better understanding) existing momentum diagnostics
-c
-c note that the sfc pressure gradient [Um_dPSdx,Vm_dPSdy] is required for budget closure
-c if NOT using NLFS (it will not be in the PGF tendency) but is added to the 2D diagnostics elsewhere
 c -----------------------------------------------------------------------------------------------------
-      diagName  = 'Um_dPsdx'
-      diagTitle = 'U momentum tendency from sfc PGF'
-      diagCode  = 'UUR     MR      '
-      diagMate  = diagNum + 2
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-      diagName  = 'Vm_dPsdy'
-      diagTitle = 'V momentum tendency from sfc PGF'
-      diagCode  = 'VVR     MR      '
-      diagMate  = diagNum
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-
       diagName  = 'Um_Wind '
       diagTitle = 'U momentum tendency from wind'
       diagCode  = 'UUR     MR      '
