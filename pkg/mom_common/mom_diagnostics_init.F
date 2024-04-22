@@ -387,7 +387,7 @@ cHP: adding new diagnostics for full momentum budget analysis
 c
 c new momentum diags are
 c [Um_wind,Vm_wind],[Um_Cori_nontrad,Vm_Cori_nontrad],
-c [Um_dKEdx,Vm_dKEdx],[Um_Diss_laplac,Vm_Diss_laplac],
+c [Um_Diss_laplac,Vm_Diss_laplac],
 c [Um_diss_bihar,Vm_diss_bihar].
 c
 c These new diags are not need for momentum budget closure, but are
@@ -430,19 +430,6 @@ c ------------------------------------------------------------------------------
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
       diagName  = 'Vm_CorNL'
       diagTitle = 'V momentum tendency from nontrad (cosine) Coriolis'
-      diagCode  = 'VVR     MR      '
-      diagMate  = diagNum
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-
-      diagName  = 'Um_dKEdx'
-      diagTitle = 'U momentum tendency from grad KE'
-      diagCode  = 'UUR     MR      '
-      diagMate  = diagNum + 2
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-      diagName  = 'Vm_dKEdy'
-      diagTitle = 'V momentum tendency from grad KE'
       diagCode  = 'VVR     MR      '
       diagMate  = diagNum
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,

@@ -915,13 +915,6 @@ C--   Bernoulli term
      &          offsets, myThid)
          ENDIF
 #endif /*  ALLOW_MNC  */
-C HP:  add call to write KE gradient to diagnostics
-#ifdef ALLOW_DIAGNOSTICS
-        IF ( useDiagnostics ) THEN
-         CALL DIAGNOSTICS_FILL(uCf,'Um_dKEdx',k,1,2,bi,bj,myThid)
-         CALL DIAGNOSTICS_FILL(vCf,'Vm_dKEdy',k,1,2,bi,bj,myThid)
-        ENDIF
-#endif /* ALLOW_DIAGNOSTICS */
        ENDIF
 
 C--   end if momAdvection
