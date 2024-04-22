@@ -35,7 +35,7 @@ C balance barotropic velocity
 #undef ALLOW_OBCS_BALANCE
 
 C add tidal contributions to normal OB flow (does not work TAF-AD)
-#undef ALLOW_OBCS_TIDES
+#define ALLOW_OBCS_TIDES
 
 C Use older implementation of obcs in seaice-dynamics
 C note: most of the "experimental" options listed below have not yet

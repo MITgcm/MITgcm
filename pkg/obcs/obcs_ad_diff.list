@@ -23,6 +23,7 @@ obcs_read_pickup.f
 obcs_sponge.f
 obcs_seaice_sponge.f
 obcs_balance_flow.f
+obcs_add_tides.f
 obcs_adjust.f
 orlanski_east.f
 orlanski_north.f
