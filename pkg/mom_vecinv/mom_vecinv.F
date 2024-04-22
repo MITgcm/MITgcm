@@ -937,12 +937,6 @@ C-     presently, non zero angleSinC array only supported with Curvilinear-Grid
          ENDDO
         ENDDO
        ENDIF
-#ifdef ALLOW_DIAGNOSTICS
-        IF ( useDiagnostics ) THEN
-         CALL DIAGNOSTICS_FILL(uCf,'Um_CorNL',k,1,2,bi,bj,myThid)
-         CALL DIAGNOSTICS_FILL(vCf,'Vm_CorNL',k,1,2,bi,bj,myThid)
-        ENDIF
-#endif /* ALLOW_DIAGNOSTICS */
       ENDIF
 
 C--   Non-Hydrostatic (spherical) metric terms
