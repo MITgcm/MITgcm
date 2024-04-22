@@ -38,7 +38,6 @@ C     == Global data ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     gU_arr    :: the tendency array
-C     gU_Wind   :: the local wind-driven tendency array (diagnostic)
 C     iMin,iMax :: Working range of x-index for applying forcing.
 C     jMin,jMax :: Working range of y-index for applying forcing.
 C     k         :: Current vertical level index
@@ -47,7 +46,6 @@ C     myTime    :: Current time in simulation
 C     myIter    :: Current iteration number
 C     myThid    :: my Thread Id number
       _RL     gU_arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL     gU_Wind(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER iMin, iMax, jMin, jMax
       INTEGER k, bi, bj
       _RL     myTime
@@ -65,13 +63,6 @@ C     kSurface  :: index of surface level
       INTEGER kSurface
 #endif /* USE_OLD_EXTERNAL_FORCING */
 CEOP
-
-C     Initialize local wind-driven tendency array
-      DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-          gU_Wind(i,j) = 0. _d 0
-        ENDDO
-      ENDDO
 
 #ifdef USE_OLD_EXTERNAL_FORCING
 
@@ -153,10 +144,6 @@ C-jmc: Without CD-scheme, this is OK ; but with CD-scheme, needs to cover [0:sNy
           gU_arr(i,j) = gU_arr(i,j)
      &      +foFacMom*surfaceForcingU(i,j,bi,bj)
      &      *recip_drF(k)*_recip_hFacW(i,j,k,bi,bj)
-C HP: ADDING NEW WIND DIAGNOSTIC
-          gU_Wind(i,j) =  gU_Wind(i,j)
-     &      +foFacMom*surfaceForcingU(i,j,bi,bj)
-     &      *recip_drF(k)*_recip_hFacW(i,j,k,bi,bj)
         ENDDO
        ENDDO
       ELSEIF ( kSurface.EQ.-1 ) THEN
@@ -164,10 +151,6 @@ C HP: ADDING NEW WIND DIAGNOSTIC
         DO i=1,sNx+1
          IF ( kSurfW(i,j,bi,bj).EQ.k ) THEN
           gU_arr(i,j) = gU_arr(i,j)
-     &      +foFacMom*surfaceForcingU(i,j,bi,bj)
-     &      *recip_drF(k)*_recip_hFacW(i,j,k,bi,bj)
-C HP: ADDING NEW WIND DIAGNOSTIC
-          gU_Wind(i,j) = gU_Wind(i,j)
      &      +foFacMom*surfaceForcingU(i,j,bi,bj)
      &      *recip_drF(k)*_recip_hFacW(i,j,k,bi,bj)
          ENDIF
@@ -212,13 +195,6 @@ C HP: ADDING NEW WIND DIAGNOSTIC
 
 #endif /* USE_OLD_EXTERNAL_FORCING */
 
-C HP: ADD CALL TO FILL WIND-DRIVEN MOMENTUM TENDENCY
-#ifdef ALLOW_DIAGNOSTICS
-      IF ( momForcing .AND. useDiagnostics ) THEN
-        CALL DIAGNOSTICS_FILL( gU_Wind,'Um_Wind ',k,1,2,bi,bj,myThid )
-      ENDIF
-#endif /* ALLOW_DIAGNOSTICS */
-
       RETURN
       END
 
@@ -252,7 +228,6 @@ C     == Global data ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     gV_arr    :: the tendency array
-C     gV_Wind   :: the local wind-driven tendency array (diagnostic)
 C     iMin,iMax :: Working range of x-index for applying forcing.
 C     jMin,jMax :: Working range of y-index for applying forcing.
 C     k         :: Current vertical level index
@@ -261,7 +236,6 @@ C     myTime    :: Current time in simulation
 C     myIter    :: Current iteration number
 C     myThid    :: my Thread Id number
       _RL     gV_arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL     gV_Wind(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER iMin, iMax, jMin, jMax
       INTEGER k, bi, bj
       _RL     myTime
@@ -279,13 +253,6 @@ C     kSurface  :: index of surface level
       INTEGER kSurface
 #endif /* USE_OLD_EXTERNAL_FORCING */
 CEOP
-
-C     Initialize local wind-driven tendency array
-      DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-          gV_Wind(i,j) = 0. _d 0
-        ENDDO
-      ENDDO
 
 #ifdef USE_OLD_EXTERNAL_FORCING
 
@@ -367,10 +334,6 @@ C-jmc: Without CD-scheme, this is OK ; but with CD-scheme, needs to cover [0:sNx
           gV_arr(i,j) = gV_arr(i,j)
      &      +foFacMom*surfaceForcingV(i,j,bi,bj)
      &      *recip_drF(k)*_recip_hFacS(i,j,k,bi,bj)
-C HP   ADDING NEW WIND DIAGNOSTIC
-          gV_Wind(i,j) = gV_Wind(i,j)
-     &      +foFacMom*surfaceForcingV(i,j,bi,bj)
-     &      *recip_drF(k)*_recip_hFacS(i,j,k,bi,bj)
         ENDDO
        ENDDO
       ELSEIF ( kSurface.EQ.-1 ) THEN
@@ -378,10 +341,6 @@ C HP   ADDING NEW WIND DIAGNOSTIC
         DO i=0,sNx+1
          IF ( kSurfS(i,j,bi,bj).EQ.k ) THEN
           gV_arr(i,j) = gV_arr(i,j)
-     &      +foFacMom*surfaceForcingV(i,j,bi,bj)
-     &      *recip_drF(k)*_recip_hFacS(i,j,k,bi,bj)
-C HP   ADDING NEW WIND DIAGNOSTIC
-          gV_Wind(i,j) = gV_Wind(i,j)
      &      +foFacMom*surfaceForcingV(i,j,bi,bj)
      &      *recip_drF(k)*_recip_hFacS(i,j,k,bi,bj)
          ENDIF
@@ -424,13 +383,6 @@ C HP   ADDING NEW WIND DIAGNOSTIC
 #endif /* ALLOW_MYPACKAGE */
 
 #endif /* USE_OLD_EXTERNAL_FORCING */
-
-C-- HP 31/08/2018 ADD CALL TO FILL WIND-DRIVEN MOMENTUM TENDENCY
-#ifdef ALLOW_DIAGNOSTICS
-      IF ( momForcing .AND. useDiagnostics ) THEN
-        CALL DIAGNOSTICS_FILL( gV_Wind,'Vm_Wind ',k,1,2,bi,bj,myThid )
-      ENDIF
-#endif /* ALLOW_DIAGNOSTICS */
 
       RETURN
       END
