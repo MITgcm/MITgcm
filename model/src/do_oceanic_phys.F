@@ -459,7 +459,9 @@ CADJ STORE vIce  = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
 # ifdef ALLOW_AUTODIFF
       ELSEIF ( SEAICEadjMODE .EQ. -1 ) THEN
+#  ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE area = comlev1, key=ikey_dynamics, kind=isbyte
+#  endif
         CALL SEAICE_FAKE( myTime, myIter, myThid )
 # endif /* ALLOW_AUTODIFF */
       ENDIF
@@ -698,10 +700,6 @@ CADJ STORE totphihyd(:,:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
 CADJ STORE uvel (:,:,:,bi,bj)     = comlev1_bibj, key=tkey, kind=isbyte
 CADJ STORE vvel (:,:,:,bi,bj)     = comlev1_bibj, key=tkey, kind=isbyte
 # endif
-# ifdef ALLOW_SALT_PLUME
-CADJ STORE saltplumedepth(:,:,bi,bj)= comlev1_bibj,key=tkey,kind=isbyte
-CADJ STORE saltplumeflux(:,:,bi,bj) = comlev1_bibj,key=tkey,kind=isbyte
-# endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Always compute density (stored in common block) here; even when it is not
@@ -768,6 +766,9 @@ C-    horizontally uniform (tRef) reference state
            ENDDO
           ENDDO
         ENDIF
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE rhoInSitu(:,:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
+# endif
 #endif /* ALLOW_AUTODIFF */
 
 #ifdef ALLOW_DEBUG
@@ -901,6 +902,10 @@ C-- need to call this S/R from here to apply just before kpp
      I              myTime, myIter, myThid )
 #endif /* SALT_PLUME_VOLUME */
         ENDIF
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE saltplumedepth(:,:,bi,bj)= comlev1_bibj,key=tkey,kind=isbyte
+CADJ STORE saltplumeflux(:,:,bi,bj) = comlev1_bibj,key=tkey,kind=isbyte
+# endif /* ALLOW_AUTODIFF_TAMC */
 #endif /* ALLOW_SALT_PLUME */
 
 #ifdef ALLOW_DIAGNOSTICS
