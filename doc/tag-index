@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - more precise specific-volume anomaly expression for Ocean in P-coord;
+    update reference output of all 3 Ocean in P test experiments.
 o pkg/generic_advdiff:
   - adjust 2 SOM (Prather advection) store directives to reduce memory overhead
   - include OS7MP (advScheme 7) in AD code ; switch AD test experiment
