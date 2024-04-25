@@ -80,7 +80,7 @@ C     pKappaC    :: (p/Po)^kappa at cell center k
       _RL pKappaU (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL pKappaC, locDepth, fullDepth
 #endif /* DISABLE_SIGMA_CODE */
-      _RL thetaRef, locAlpha
+      _RL thetaRef, locBuoy
       _RL dRlocM,dRlocP, ddRloc
       _RL ddPIm, ddPIp, rec_dRm, rec_dRp
       _RL surfPhiFac
@@ -322,12 +322,14 @@ CADJ STORE salt (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, kind = isbyte
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE alphaRho = comlev1_bibj_k, key = kkey, kind = isbyte
 #endif
-C--     Calculate specific volume anomaly : alpha_prime = 1/rho - alpha_Cst
+C--     Calculate specific volume anomaly "alpha_prime":
+C       = 1/(rho_prime + rho_Cst) - 1/rho_Cst
+C       = - (rho_prime/rho_Cst) / ( 1 + rho_prime/rho_Cst ) / rho_Cst
         DO j=jMin,jMax
           DO i=iMin,iMax
-            locAlpha=alphaRho(i,j)+rhoConst
-            alphaRho(i,j)=maskC(i,j,k,bi,bj)*
-     &              (oneRL/locAlpha - recip_rhoConst)
+            locBuoy = alphaRho(i,j)*recip_rhoConst
+            alphaRho(i,j) = -maskC(i,j,k,bi,bj)*recip_rhoConst
+     &                    * locBuoy/( oneRL + locBuoy )
           ENDDO
         ENDDO
 
