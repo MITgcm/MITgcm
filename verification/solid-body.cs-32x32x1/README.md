@@ -2,8 +2,9 @@ Simple solid-body rotation test on cubed-sphere grid
 ========================================================
 
 ### Overview:
-This is a single level, steady-state example on cubed-sphere (cs-32) grid with
-initial zonal wind field $U(\phi)$ and surface pressure anomaly $\eta(\phi)$,
+This is a single level, steady-state atmospheric example
+(`bouyancyRelation='ATMOSPHERIC'`) on cubed-sphere (cs-32) grid with initial
+zonal wind field $U(\phi)$ and surface pressure anomaly $\eta(\phi)$,
 both dependent on latitude $\phi$ only, that corresponds to an additional
 relative rotation ($\omega\'$) on top of the solid-planet rotation ($\Omega$)
 and around the same axis:
@@ -20,7 +21,7 @@ zonal wind $U_{eq} = 80 m/s$ which corresponds to a 5 day revolution time.
 The set-up uses linear free-surface with uniform density $\rho_{const} = 1$,
 no viscosity and no bottom friction so that the solution is expected to remain
 unchanged over time.
-A bell-shape patch of passive tracer (here salinity) centered at mid-latide
+A bell-shape patch of passive tracer centered at mid-latide
 ($\phi_{0} = 45^{o}$) is advected with the simulated wind field.
 
 ## Instructions
@@ -75,6 +76,7 @@ This set-up uses the "compact format" for all I/O (i.e., one facet after the
 other, stacked along the second dimension, as opposed to the default old format
 with all 6 facets stacked along the first dimension) by setting `W2_mapIO = 1`
 in `data.exch2`.
-The initial passive tracer (here "salinity") input file is `real*8` and
-generated using the MATLAB script gendata.m. Note that `gendata.m` uses scripts
+The initial passive tracer (here "salinity") input file
+(`hydrogSaltFile='S_init.bin'`) is `real*8` and generated using the MATLAB
+script `gendata.m`. Note that `gendata.m` uses scripts
 from `MITgcm/utils/matlab/` and `MITgcm/utils/matlab/cs_grid/`.
