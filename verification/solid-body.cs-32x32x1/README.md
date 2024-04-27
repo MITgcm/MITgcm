@@ -13,7 +13,7 @@ $$ U(\phi) = U_{eq} ~ \cos( \phi ) ~~~ \mathrm{with:} ~~~ U_{eq} = \omega' \time
 
 $$ \eta(\phi) = \rho_{const} ~ U_{eq} ~ ( \Omega R + U_{eq} / 2 ) ~~ ( \cos^{2}(\phi) - 2/3 ) $$
 
-The parameters used here are slightly different from Earth (an oportunity to
+The parameters used here are slightly different from Earth (an opportunity to
 test this capability) with a smaller planet radius (`rSphere`) $R = 5500 km$,
 a slower rotation ( 30 h period, `rotationPeriod=108000.`) and an equatorial
 zonal wind $U_{eq} = 80 m/s$ which corresponds to a 5 day revolution time.
@@ -21,7 +21,7 @@ zonal wind $U_{eq} = 80 m/s$ which corresponds to a 5 day revolution time.
 The set-up uses linear free-surface with uniform density $\rho_{const} = 1$,
 no viscosity and no bottom friction so that the solution is expected to remain
 unchanged over time.
-A bell-shape patch of passive tracer centered at mid-latide
+A bell-shape patch of passive tracer centered at mid-latitude
 ($\phi_{0} = 45^{o}$) is advected with the simulated wind field.
 
 ## Instructions
