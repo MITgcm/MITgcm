@@ -8,8 +8,7 @@
  sRef = 15*35.,
  viscAr=1.E-3,
  diffKhT=0.,
-#- diffKrT unused when compiled with ALLOW_3D_DIFFKR
-#diffKrT=3.E-5,
+ diffKrT=3.E-5,
  diffKhS=0.,
  diffKrS=3.E-5,
 #ph(
