@@ -16,6 +16,7 @@ C     !USES:
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DIAGNOSTICS_SIZE.h"
+#include "DIAGNOSTICS_P2SHARE.h"
 #include "DIAGNOSTICS.h"
 #include "DIAGNOSTICS_CALC.h"
 #include "DIAGSTATS_REGIONS.h"

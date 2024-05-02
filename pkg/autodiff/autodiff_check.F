@@ -1,10 +1,5 @@
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
 #include "AUTODIFF_OPTIONS.h"
 #include "AD_CONFIG.h"
-#ifdef ALLOW_DIAGNOSTICS
-# include "DIAG_OPTIONS.h"
-#endif
 
 CBOP
 C     !ROUTINE: AUTODIFF_CHECK
@@ -23,8 +18,7 @@ C     \ev
 # include "tamc.h"
 #endif
 #ifdef ALLOW_DIAGNOSTICS
-# include "DIAGNOSTICS_SIZE.h"
-# include "DIAGNOSTICS.h"
+# include "DIAGNOSTICS_P2SHARE.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -33,6 +27,8 @@ C     myThid -  Number of this instances
 C     msgBuf :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_AUTODIFF_TAMC
 

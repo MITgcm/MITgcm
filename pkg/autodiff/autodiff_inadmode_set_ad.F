@@ -30,8 +30,7 @@ C     == Global variables ===
 # include "CTRL.h"
 #endif
 #ifdef ALLOW_DIAGNOSTICS
-# include "DIAGNOSTICS_SIZE.h"
-# include "DIAGNOSTICS.h"
+# include "DIAGNOSTICS_P2SHARE.h"
 #endif /* ALLOW_DIAGNOSTICS */
 
 C     !INPUT/OUTPUT PARAMETERS:

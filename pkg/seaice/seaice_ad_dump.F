@@ -3,9 +3,6 @@
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
 #endif
-#ifdef ALLOW_DIAGNOSTICS
-# include "DIAG_OPTIONS.h"
-#endif
 
 CBOP
 C     !ROUTINE: SEAICE_AD_DUMP
@@ -44,8 +41,7 @@ C     == Global variables ===
 # include "AUTODIFF.h"
 # include "adcommon.h"
 # ifdef ALLOW_DIAGNOSTICS
-#  include "DIAGNOSTICS_SIZE.h"
-#  include "DIAGNOSTICS.h"
+#  include "DIAGNOSTICS_P2SHARE.h"
 # endif
 #endif
 
