@@ -3,9 +3,6 @@
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
 #endif
-#ifdef ALLOW_DIAGNOSTICS
-# include "DIAG_OPTIONS.h"
-#endif
 
 CBOP
 C     !ROUTINE: ADEXF_ADJOINT_SNAPSHOTS
@@ -44,10 +41,6 @@ C     == Global variables ===
 # include "AUTODIFF_PARAMS.h"
 # include "AUTODIFF.h"
 # include "adcommon.h"
-# ifdef ALLOW_DIAGNOSTICS
-#  include "DIAGNOSTICS_SIZE.h"
-#  include "DIAGNOSTICS.h"
-# endif
 #endif
 #endif /* ALLOW_AUTODIFF */
 
