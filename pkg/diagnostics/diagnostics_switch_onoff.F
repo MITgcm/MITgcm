@@ -59,7 +59,7 @@ c     INTEGER newIter
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      dBugFlag = debugLevel.GE.debLevE .AND. myThid.EQ.1
+      dBugFlag = diag_dBugLevel.GE.debLevE .AND. myThid.EQ.1
       dBugUnit = errorMessageUnit
 
 C--   Track diagnostics pkg activation status:
@@ -167,7 +167,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        IF ( diagSt_freq(n).LT.0. ) THEN
 C--    Select diagnostics list that uses instantaneous output
 
-        dBugFlag = debugLevel.GE.debLevE
+        dBugFlag = diag_dBugLevel.GE.debLevE
 
         freqSec = diagSt_freq(n)
         phiSec = diagSt_phase(n)

@@ -177,7 +177,7 @@ C-    Normalise Matrice & RHS :
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO j = 1,sNy
             DO i = 1,sNx
-              rhsMax = MAX(ABS(b2d(I,J,bi,bj)),rhsMax)
+              rhsMax = MAX(ABS(b2d(i,j,bi,bj)),rhsMax)
             ENDDO
            ENDDO
           ENDDO
@@ -217,7 +217,7 @@ c             x2d(i,j,bi,bj) =  x2d(i,j,bi,bj) /x2dNorm
           ENDDO
         ENDIF
 
-        IF ( debugLevel.GE.debLevA .AND. k.EQ.1 ) THEN
+        IF ( diag_dBugLevel.GE.debLevA .AND. k.EQ.1 ) THEN
           _BEGIN_MASTER( myThid )
           WRITE(standardMessageUnit,'(A,I9,2(A,1P1E13.6),A,1P1E9.2)')
      &     ' diag_cg2d (it=', myIter,') a2dNorm,x2dNorm=', a2dNorm,
@@ -234,7 +234,7 @@ c             x2d(i,j,bi,bj) =  x2d(i,j,bi,bj) /x2dNorm
      O                nIterMin,
      I                diagCG_prtResFrq, myThid )
 
-        IF ( debugLevel.GE.debLevA ) THEN
+        IF ( diag_dBugLevel.GE.debLevA ) THEN
           _BEGIN_MASTER( myThid )
           WRITE(standardMessageUnit,'(A,I4,A,2I6,A,1P3E14.7)')
      &    ' diag_cg2d : k=', k, ' , it=', nIterMin, numIters,

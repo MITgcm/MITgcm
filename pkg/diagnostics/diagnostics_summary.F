@@ -44,7 +44,7 @@ C     !LOCAL VARIABLES:
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      IF ( debugLevel.GE.debLevB ) THEN
+      IF ( diag_dBugLevel.GE.debLevB ) THEN
        IF ( myIter.EQ.nIter0 ) THEN
         outpSummary = .TRUE.
         dUnit = standardMessageUnit
@@ -67,7 +67,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        outpSummary = .FALSE.
       ENDIF
 
-      IF ( outpSummary .AND. debugLevel.GE.debLevB ) THEN
+      IF ( outpSummary .AND. diag_dBugLevel.GE.debLevB ) THEN
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     write a summary diagnostics state:
 

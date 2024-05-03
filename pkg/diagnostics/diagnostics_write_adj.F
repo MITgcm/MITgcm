@@ -103,7 +103,7 @@ C--- No Statistics Diag. Output for adjoint variables
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       IF ( write2file ) THEN
-        IF ( debugLevel.GE.debLevC ) THEN
+        IF ( diag_dBugLevel.GE.debLevC ) THEN
           CALL DIAGNOSTICS_SUMMARY( myTime, myIter, myThid )
         ENDIF
 C-    wait for everyone before setting arrays to zero:
