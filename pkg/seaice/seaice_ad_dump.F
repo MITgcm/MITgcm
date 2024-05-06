@@ -109,14 +109,7 @@ C--   need to all the correct OpenAD EXCH S/R ; left empty for now
 
 C-----------------------------------------------------------------------
 C--- Turn diagnostics on/off
-C-----------------------------------------------------------------------
-#ifdef ALLOW_DIAGNOSTICS
-C     This has already been done in addummy_in_stepping,
-C     from where this is called
-CML      IF ( useDiag4AdjOutp ) THEN
-CML        CALL DIAGNOSTICS_SWITCH_ONOFF( myTime, myIter, myThid )
-CML      ENDIF
-#endif
+C    <-- This has already been done in autodiff_inadmode_set_ad.F
 
 C-----------------------------------------------------------------------
 C--- do dump?
