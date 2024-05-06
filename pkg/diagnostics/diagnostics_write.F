@@ -1,8 +1,8 @@
 #include "DIAG_OPTIONS.h"
 
-      SUBROUTINE DIAGNOSTICS_WRITE (
-     I                               modelEnd,
-     I                               myTime, myIter, myThid )
+      SUBROUTINE DIAGNOSTICS_WRITE(
+     I                              modelEnd,
+     I                              myTime, myIter, myThid )
 C***********************************************************************
 C  Purpose
 C  -------
@@ -149,7 +149,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
         IF ( write2file ) THEN
           IF ( diag_dBugLevel.GE.debLevC ) THEN
-            CALL DIAGNOSTICS_SUMMARY( myTime, myIter, myThid )
+            CALL DIAGNOSTICS_SUMMARY( 1, myTime, myIter, myThid )
           ENDIF
 C-      wait for everyone before setting arrays to zero:
           _BARRIER
