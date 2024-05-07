@@ -65,7 +65,7 @@ C  scalingFactor :: scaling factor (from acceleration to density)
       _RL scalingFactor
 CEOP
 
-      IF ( use3dCoriolis .OR. useNHMTerms ) THEN
+      IF ( select3dCoriScheme.GE.1 .OR. useNHMTerms ) THEN
 
         IF ( usingZCoords ) THEN
 C--   Z-coordinate case: Input is density anomaly
@@ -96,7 +96,7 @@ C     (see White & Bromley, QJRMS 1995)
          ENDDO
         ENDDO
 
-        IF ( use3dCoriolis ) THEN
+        IF ( select3dCoriScheme.GE.1 ) THEN
          DO j=jMin,jMax
           DO i=iMin,iMax
            gWinBuoy(i,j) = fCoriCos(i,j,bi,bj)*

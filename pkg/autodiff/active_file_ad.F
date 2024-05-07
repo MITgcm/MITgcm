@@ -92,11 +92,12 @@ C                       variable and write to active file
       INTEGER myIter, myThid
       LOGICAL doglobalread
       LOGICAL lAdInit
-      _RL  dummy, addummy ! Tags for IO: ctrl input and adjoint (gradient) output
+C Tags for IO: ctrl input and adjoint (gradient) output
+      _RL  dummy, addummy
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
-      CHARACTER*(80) fname
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER myNr
       LOGICAL useCurrentDir
 CEOP
@@ -174,11 +175,12 @@ C                       variable and write to active file
       INTEGER myIter, myThid
       LOGICAL doglobalread
       LOGICAL lAdInit
-      _RL  dummy, addummy ! Tags for IO: ctrl input and adjoint (gradient) output
+C Tags for IO: ctrl input and adjoint (gradient) output
+      _RL  dummy, addummy
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
-      CHARACTER*(80) fname
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER myNr
       LOGICAL useCurrentDir
 CEOP
@@ -256,11 +258,12 @@ C                       variable and write to active file
       INTEGER myIter, myThid
       LOGICAL doglobalread
       LOGICAL lAdInit
-      _RL  dummy, addummy ! Tags for IO: ctrl input and adjoint (gradient) output
+C Tags for IO: ctrl input and adjoint (gradient) output
+      _RL  dummy, addummy
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
-      CHARACTER*(80) fname
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER myNr
       LOGICAL useCurrentDir
 CEOP
@@ -338,11 +341,12 @@ C                       variable and write to active file
       INTEGER myIter, myThid
       LOGICAL doglobalread
       LOGICAL lAdInit
-      _RL  dummy, addummy ! Tags for IO: ctrl input and adjoint (gradient) output
+C Tags for IO: ctrl input and adjoint (gradient) output
+      _RL  dummy, addummy
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
-      CHARACTER*(80) fname
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER myNr
       LOGICAL useCurrentDir
 CEOP
@@ -419,7 +423,8 @@ C                       variable and write to active file
       INTEGER iRec
       INTEGER myIter, myThid
       LOGICAL lAdInit
-      _RL  dummy, addummy ! Tags for IO: ctrl input and adjoint (gradient) output
+C Tags for IO: ctrl input and adjoint (gradient) output
+      _RL  dummy, addummy
 
 C     !FUNCTIONS:
       INTEGER  ILNBLNK
@@ -427,14 +432,13 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
-      CHARACTER*(80) fname
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER il
 CEOP
 
       adpref = 'ad'
       il   = ILNBLNK( active_var_file )
-      WRITE(fname(1:80),'(A)') ' '
-      WRITE(fname(1:2+il),'(2A)') adpref, active_var_file(1:il)
+      WRITE(fname,'(2A)') adpref, active_var_file(1:il)
 
       CALL ACTIVE_READ_1D_RL(
      &                 fname, adactive_var, active_var_length,
@@ -498,7 +502,7 @@ C     myThid         :: thread number for this instance
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
-      CHARACTER*(80) fname
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
@@ -572,7 +576,7 @@ C     myThid         :: thread number for this instance
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
-      CHARACTER*(80) fname
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
@@ -646,7 +650,7 @@ C     myThid         :: thread number for this instance
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
-      CHARACTER*(80) fname
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
@@ -720,7 +724,7 @@ C     myThid         :: thread number for this instance
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
-      CHARACTER*(80) fname
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
@@ -802,14 +806,13 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
-      CHARACTER*(80) fname
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER il
 CEOP
 
       adpref = 'ad'
       il   = ILNBLNK( active_var_file )
-      WRITE(fname(1:80),'(A)') ' '
-      WRITE(fname(1:2+il),'(2A)') adpref, active_var_file(1:il)
+      WRITE(fname,'(2A)') adpref, active_var_file(1:il)
 
       CALL ACTIVE_WRITE_1D_RL(
      &                 fname, adactive_var, active_var_length,

@@ -41,9 +41,9 @@ c     == global variables ==
 #endif
 #ifdef ALLOW_CTRL
 # include "CTRL_SIZE.h"
-# include "ctrl.h"
-# include "ctrl_dummy.h"
-# include "optim.h"
+# include "CTRL.h"
+# include "CTRL_DUMMY.h"
+# include "OPTIMCYCLE.h"
 # include "CTRL_OBCS.h"
 #endif
 
@@ -89,10 +89,10 @@ c     == local variables ==
       _RL maskyzageos   (1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL dummy
 
-      character*(80) fnametheta
-      character*(80) fnamesalt
-      character*(80) fnameuvel
-      character*(80) fnamevvel
+      character*(MAX_LEN_FNAM) fnametheta
+      character*(MAX_LEN_FNAM) fnamesalt
+      character*(MAX_LEN_FNAM) fnameuvel
+      character*(MAX_LEN_FNAM) fnamevvel
 
       logical doglobalread
       logical ladinit
@@ -136,16 +136,16 @@ c--   Read tiled data.
 
       if (optimcycle .ge. 0) then
         iltheta = ilnblnk( tbarfile )
-        write(fnametheta(1:80),'(2a,i10.10)')
+        write(fnametheta,'(2a,i10.10)')
      &    tbarfile(1:iltheta),'.',optimcycle
         ilsalt = ilnblnk( sbarfile )
-        write(fnamesalt(1:80),'(2a,i10.10)')
+        write(fnamesalt,'(2a,i10.10)')
      &    sbarfile(1:ilsalt),'.',optimcycle
         iluvel = ilnblnk( ubarfile )
-        write(fnameuvel(1:80),'(2a,i10.10)')
+        write(fnameuvel,'(2a,i10.10)')
      &    ubarfile(1:iluvel),'.',optimcycle
         ilvvel = ilnblnk( vbarfile )
-        write(fnamevvel(1:80),'(2a,i10.10)')
+        write(fnamevvel,'(2a,i10.10)')
      &    vbarfile(1:ilvvel),'.',optimcycle
       endif
 
@@ -186,28 +186,35 @@ c--   Loop over records.
       do irec = 1,nmonsrec
 
 c--     Read time averages and the monthly mean data.
+#ifdef ALLOW_AUTODIFF
         call active_read_xyz( fnametheta, tbar, irec,
      &                        doglobalread, ladinit,
      &                        optimcycle, mythid,
      &                        xx_tbar_mean_dummy )
 
-c--     Read time averages and the monthly mean data.
         call active_read_xyz( fnamesalt, sbar, irec,
      &                        doglobalread, ladinit,
      &                        optimcycle, mythid,
      &                        xx_sbar_mean_dummy )
 
-c--     Read time averages and the monthly mean data.
         call active_read_xyz( fnameuvel, ubar, irec,
      &                        doglobalread, ladinit,
      &                        optimcycle, mythid,
      &                        xx_ubar_mean_dummy )
 
-c--     Read time averages and the monthly mean data.
         call active_read_xyz( fnamevvel, vbar, irec,
      &                        doglobalread, ladinit,
      &                        optimcycle, mythid,
      &                        xx_vbar_mean_dummy )
+#else
+        call read_rec_xyz_rl( fnametheta, tbar, irec, 1, myThid )
+
+        call read_rec_xyz_rl( fnamesalt, sbar, irec, 1, myThid )
+
+        call read_rec_xyz_rl( fnameuvel, ubar, irec, 1, myThid )
+
+        call read_rec_xyz_rl( fnamevvel, vbar, irec, 1, myThid )
+#endif
 
 cgg     Minor problem : grad T,S needs overlap values.
         _BARRIER
@@ -460,7 +467,7 @@ cgg   Compute centered difference horizontal gradient on bdy.
                 if ( i.eq.OB_indexNone ) i = 1
 cgg             Negative sign due to geostrophy.
                 yzgrdrho(j,k,bi,bj) =
-     &            (rholoc(i+ip1,,j+1,bi,bj)-rholoc(i+ip1,j-1,bi,bj))
+     &            (rholoc(i+ip1,j+1,bi,bj)-rholoc(i+ip1,j-1,bi,bj))
      &            /(2.*dyc(i+ip1,j,bi,bj))
               enddo
             enddo

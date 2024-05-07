@@ -1,114 +1,117 @@
 #include "GRDCHK_OPTIONS.h"
 
-      subroutine grdchk_Summary(
-     I                           mythid
-     &                         )
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C !ROUTINE: GRDCHK_SUMMARY
 
-c     ==================================================================
-c     SUBROUTINE grdchk_Summary
-c     ==================================================================
-c
-c     o Summarize the settings for doing gradient checks.
-c
-c     started: Christian Eckert eckert@mit.edu 06-Mar-2000
-c     continued: heimbach@mit.edu: 13-Jun-2001
-c
-c     ==================================================================
-c     SUBROUTINE grdchk_Summary
-c     ==================================================================
+C !INTERFACE:
+      SUBROUTINE GRDCHK_SUMMARY( myThid )
 
-      implicit none
+C     !DESCRIPTION:
+C     o Summarize the settings for doing gradient checks.
+C
+C     started: Christian Eckert eckert@mit.edu 06-Mar-2000
+C     continued: heimbach@mit.edu: 13-Jun-2001
 
-c     == global variables ==
-
+C     !USES:
+      IMPLICIT NONE
+C     == Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#include "GRID.h"
-#include "grdchk.h"
+#include "GRDCHK.h"
 
-c     == routine arguments ==
-
-      integer mythid
+C     !INPUT/OUTPUT PARAMETERS:
+C     myThid     :: my Thread Id number
+      INTEGER myThid
 
 #ifdef ALLOW_GRDCHK
-c     == local variables ==
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 
-      character*(max_len_mbuf) msgbuf
+C     !LOCAL VARIABLES:
+      INTEGER iL
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+CEOP
 
-c     == end of interface ==
+      _BEGIN_MASTER( myThid )
 
-      write(msgbuf,'(a)')
-     &' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)')
-     &'// ======================================================='
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)')
-     &'// Gradient check configuration  >>> START <<<'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)')
-     &'// ======================================================='
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)')
-     &' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+      iL = ILNBLNK( grdchkvarname )
 
-      write(msgbuf,'(a,i10)')
-     &'  grdchkvarindex :                 ',grdchkvarindex
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,e10.3)')
-     &'  eps:                             ',grdchk_eps
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i10)')
-     &'  First location:                  ',nbeg
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i10)')
-     &'  Last location:                   ',nend
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i10)')
-     &'  Increment:                       ',nstep
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i10)')
-     &'  grdchkWhichProc:                 ',grdchkwhichproc
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(2(A,I8))') '  iLocTile =', iLocTile,
-     &                     '  ,    jLocTile =', jLocTile
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+      WRITE(msgBuf,'(A)') ' '
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)')
+     &  '// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid )
+      WRITE(msgBuf,'(A)')
+     &  '// Gradient check configuration  >>> START <<<'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)')
+     &  '// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)') ' '
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
 
-      write(msgbuf,'(a)')
-     &' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)')
-     &'// ======================================================='
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)')
-     &'// Gradient check configuration  >>> END <<<'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)')
-     &'// ======================================================='
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)')
-     &' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+      WRITE(msgBuf,'(A,I8)')
+     &  '  grdchkvarindex :               ', grdchkvarindex
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(3A)')
+     &  '  matching CTRL xx_file:       "', grdchkvarname(1:iL), '"'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A,1PE10.3)')
+     &  '  eps =                        ', grdchk_eps
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A,I8)')
+     &  '  First location:                ', nbeg
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A,I8)')
+     &  '  Last location:                 ', nend
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A,I8)')
+     &  '  Increment:                     ', nstep
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A,I8)')
+     &  '  grdchkWhichProc:               ', grdchkwhichproc
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(2(A,I7))') '  iLocTile =', iLocTile,
+     &                       ' ,   jLocTile =', jLocTile
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+
+      WRITE(msgBuf,'(A)') ' '
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid )
+      WRITE(msgBuf,'(A)')
+     &  '// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)')
+     &  '// Gradient check configuration  >>> END <<<'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)')
+     &  '// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid )
+      WRITE(msgBuf,'(A)') ' '
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+
+      _END_MASTER( myThid )
 
 #endif /* ALLOW_GRDCHK */
 
-      return
-      end
+      RETURN
+      END

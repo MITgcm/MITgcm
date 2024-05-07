@@ -65,7 +65,7 @@ C        CALL STREAMICE_MNC_INIT( myThid )
       ENDIF
 #endif
 
-!     CALVING MASK - LIMIT OF ICE SHELF FRONT ADVANCE
+c     CALVING MASK - LIMIT OF ICE SHELF FRONT ADVANCE
 
       IF ( STREAMICE_calve_to_mask ) THEN
        IF ( STREAMICEcalveMaskFile .NE. ' ') THEN
@@ -91,7 +91,7 @@ C       The 0 is the "iteration" argument. The ' ' is an empty suffix
        ENDIF
       ENDIF
 
-!  INITIALIZE SIGMA COORD
+c  INITIALIZE SIGMA COORD
       IF (STREAMICEsigcoordInit.eq.'FILE') THEN
        WRITE(msgBuf,'(A)') 'SIG FROM FILE - NOT IMPLENTED'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -127,11 +127,32 @@ C       The 0 is the "iteration" argument. The ' ' is an empty suffix
           ENDDO
          ENDDO
         ENDDO
+       ENDIF
+#endif
+#ifdef ALLOW_STREAMICE_TC_COST
+       IF ( STREAMICEBglenCostMaskFile .NE. ' ') THEN
+        _BARRIER
+C       The 0 is the "iteration" argument. The ' ' is an empty suffix
+        CALL READ_FLD_XY_RS( STREAMICEBglenCostMaskFile, ' ',
+     &   B_glen0, 0, myThid )
+       ELSE
+        WRITE(msgBuf,'(A)') 'BGLEN COST MASK - NOT IMPLENTED'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
 
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j=1,sNy
+           DO i=1,sNx
+            b_glen0 (i,j,bi,bj) = 0.0
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
        ENDIF
 #endif
 
-!    READ IN FILES FOR BOUNDARY MASKS AND DIRICH VALUES
+c    READ IN FILES FOR BOUNDARY MASKS AND DIRICH VALUES
 #ifdef STREAMICE_GEOM_FILE_SETUP
 
       IF ( STREAMICEuFaceBdryFile .NE. ' ') THEN
@@ -239,10 +260,10 @@ C       The 0 is the "iteration" argument. The ' ' is an empty suffix
 
 #endif
 
-! with this setup hmask is initialized here rather than in init_varia,
-! because it is needed to set no-flow boundaries, even though the field
-! could potentially change due to ice shelf front advance and calving
-! (POTENTIAL PROBLEMS WITH TAF ? USE TEMP FIELD HERE AND SET HMASK IN INIT_VARIA ?)
+c with this setup hmask is initialized here rather than in init_varia,
+c because it is needed to set no-flow boundaries, even though the field
+c could potentially change due to ice shelf front advance and calving
+c (POTENTIAL PROBLEMS WITH TAF ? USE TEMP FIELD HERE AND SET HMASK IN INIT_VARIA ?)
 
       IF ( STREAMICEhMaskFile .NE. ' ') THEN
         _BARRIER
@@ -288,7 +309,7 @@ C       The 0 is the "iteration" argument. The ' ' is an empty suffix
 
 #endif /* STREAMICE_GEOM_FILE_SETUP */
 
-!!!!!!!!!!!!!!!!!!!!!!!!!
+c!!!!!!!!!!!!!!!!!!!!!!!!
 
 C- fill in the overlap (+ BARRIER):
       _EXCH_XY_RS(STREAMICE_calve_mask, myThid )
@@ -435,13 +456,13 @@ C         INITIALIZE BOUNDARY CONDS AT NORTH
           ENDIF
 
 #else /* ifndef STREAMICE_GEOM_FILE_SETUP */
-! BOUNDARY MASK CONFIGURED FROM FILES
+c BOUNDARY MASK CONFIGURED FROM FILES
 
           IF (temp_hmask(i,j,bi,bj).eq.1.0 .or.
      &        temp_hmask(i,j,bi,bj).eq.0.0 .or.
      &        temp_hmask(i-1,j,bi,bj).eq.1.0) THEN
 
-          ! WEST FACE OF CELL
+C          WEST FACE OF CELL
            maskFlag=INT(temp_ufacemask(i,j,bi,bj))
            IF (maskFlag.eq.2) THEN
             STREAMICE_ufacemask_bdry (i,j,bi,bj) = 2.0
@@ -466,7 +487,7 @@ C         INITIALIZE BOUNDARY CONDS AT NORTH
           IF (temp_hmask(i,j,bi,bj).eq.1.0 .or.
      &        temp_hmask(i,j,bi,bj).eq.0.0) THEN
 
-           ! EAST FACE OF CELL
+C          EAST FACE OF CELL
            maskFlag=INT(temp_ufacemask(i+1,j,bi,bj))
            IF (maskFlag.eq.2) THEN
             STREAMICE_ufacemask_bdry (i+1,j,bi,bj) = 2.0
@@ -490,7 +511,7 @@ C         INITIALIZE BOUNDARY CONDS AT NORTH
      &        temp_hmask(i,j,bi,bj).eq.0.0 .or.
      &        temp_hmask(i,j-1,bi,bj).eq.1.0) THEN
 
-           ! SOUTH FACE OF CELL
+C          SOUTH FACE OF CELL
            maskFlag=INT(temp_vfacemask(i,j,bi,bj))
            IF (maskFlag.eq.2) THEN
             STREAMICE_vfacemask_bdry (i,j,bi,bj) = 2.0
@@ -515,7 +536,7 @@ C         INITIALIZE BOUNDARY CONDS AT NORTH
           IF (temp_hmask(i,j,bi,bj).eq.1.0 .or.
      &        temp_hmask(i,j,bi,bj).eq.0.0) THEN
 
-           ! NORTH FACE OF CELL
+C          NORTH FACE OF CELL
            maskFlag=INT(temp_vfacemask(i,j+1,bi,bj))
            IF (maskFlag.eq.2) THEN
             STREAMICE_vfacemask_bdry (i,j+1,bi,bj) = 2.0
@@ -548,7 +569,7 @@ C         INITIALIZE BOUNDARY CONDS AT NORTH
 #endif
 
 #ifdef ALLOW_COST
-!      _EXCH_XY_RL(STREAMICE_ctrl_mask, myThid )
+c      _EXCH_XY_RL(STREAMICE_ctrl_mask, myThid )
       CALL WRITE_FLD_XY_RS ( 'maskCost', '',
      & STREAMICE_cost_mask, 0, myThid )
 #endif
