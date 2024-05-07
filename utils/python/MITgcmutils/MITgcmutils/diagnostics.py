@@ -5,7 +5,7 @@ nstats = 5
 
 def readstats(fname):
     '''
-    locals,totals,itrs = readstats(fname)
+    statsPerLayer,statsVertInt,itrs = readstats(fname)
 
     Read a diagstats text file into record arrays (or dictionaries).
 
@@ -16,17 +16,19 @@ def readstats(fname):
 
     Returns
     -------
-    locals : record array or dict of arrays
-        local statistics, shape (len(itrs), Nr, 5)
-    totals : record array or dict of arrays
-        column integrals, shape (len(itrs), 5)
+    statsPerLayer : record array or dict of arrays
+        statistics per layer, shape (len(itrs), len(nReg), Nr, 5)
+    statsVertInt  : record array or dict of arrays
+        column integrals, shape (len(itrs), len(nReg), 5)
     itrs : list of int
         iteration numbers found in the file
 
     Notes
     -----
-    - The 5 columns of the resulting arrays are average, std.dev, min, max and total volume.
+    - The 5 columns of the resulting arrays are
+      average, std.dev, min, max and total volume.
     - There is a record (or dictionary key) for each field found in the file.
+    - Regional axis is omitted if nReg == 1
 
     '''
     flds = []
@@ -93,7 +95,8 @@ def readstats(fname):
     for fld in itrs:
         itrs[fld] = itrs[fld][0]
 
-    # if shapes differ between fields, we return dictionaries instead of record array
+    # if shapes differ between fields, we return dictionaries instead
+    # of record array
     asdict = False
     shp = None
     for fld in res:
@@ -116,11 +119,11 @@ def readstats(fname):
                 asdict = True
 
     if asdict:
-        tots = dict((fld,res[fld][...,0,:]) for fld in flds)
-        locs = dict((fld,res[fld][...,1:,:]) for fld in flds)
+        statsVertInt  = dict((fld,res[fld][...,0,:]) for fld in flds)
+        statsPerLayer = dict((fld,res[fld][...,1:,:]) for fld in flds)
     else:
         ra = np.rec.fromarrays([res[fld] for fld in flds], names=flds)
-        tots = ra[...,0,:]
-        locs = ra[...,1:,:]
+        statsVertInt  = ra[...,0,:]
+        statsPerLayer = ra[...,1:,:]
 
-    return locs,tots,itrs
+    return statsPerLayer,statsVertInt,itrs
