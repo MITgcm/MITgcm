@@ -8,7 +8,7 @@ import warnings
 __doc__ = """
 Density of Sea Water using linear EOS and POLY3 method.
 Density of Sea Water using the Jackett and McDougall 1995 (JAOT 12) polynomial
-Density of Sea Water using the UNESCO equation of state formula (IES80) 
+Density of Sea Water using the UNESCO equation of state formula (IES80)
 of Fofonoff and Millard (1983) [FRM83].
 Density of Sea Water using the EOS-10 48-term polynomial.
 """
@@ -33,8 +33,38 @@ eosJMDCSw = [   8.244930e-01,
               - 1.654600e-06,
                 4.831400e-04,
             ]
-            
-def linear(salt,theta,sref=30,tref=20,sbeta=7.4e-04,talpha=2.0e-04,rhonil=9.998e+02):
+
+def _check_salinity(s):
+
+    sneg = s<0
+    if not np.any(sneg):
+        warnings.warn('found negative salinity values, reset them to NaN')
+        # s[sneg] = np.NaN
+
+    return s
+
+def _check_dimensions(s,t,p=np.zeros(())):
+    """
+    Check compatibility of dimensions of input variables and
+
+    Parameters
+    ----------
+    salt : array_like
+        salinity [psu (PSS-78)]
+    theta : array_like
+        potential temperature [degree C (IPTS-68)]
+        same shape as salt
+    p  : pressure [dBar]
+    """
+
+    if s.shape != t.shape or s.shape != p.shape:
+        print('trying to broadcast shapes')
+        np.broadcast(s,t,p)
+
+    return
+
+def linear(salt,theta,
+           sref=30,tref=20,sbeta=7.4e-04,talpha=2.0e-04,rhonil=9.998e+02):
     """
     Computes in-situ density of water
 
@@ -47,7 +77,7 @@ def linear(salt,theta,sref=30,tref=20,sbeta=7.4e-04,talpha=2.0e-04,rhonil=9.998e
     theta : array_like
         potential temperature [degree C (IPTS-68)]
         same shape as salt
-    sref  : reference  salinity 
+    sref  : reference  salinity
             default 30 [psu (PSS-78)]
     tref  : reference potential temperature
             default 20 [degree C (IPTS-68)]
@@ -76,34 +106,20 @@ def linear(salt,theta,sref=30,tref=20,sbeta=7.4e-04,talpha=2.0e-04,rhonil=9.998e
     # make sure arguments are floating point
     s = np.asfarray(salt)
     t = np.asfarray(theta)
-    
-    if s.ndim > 2:
-      dims = np.shape(s)
-      dimt = np.shape(t)
-      assert len(dims)==len(dimt),('for more than two dimensions, s and t must'
-                                 + ' have the same number of dimensions')
-      for k in range(0,len(dims)):
-        assert dims[k]==dimt[k],('for more than two dimensions, s and t must'
-                            +' have the same dimensions')
-    else: 
-      
-      # CHECK THAT S & T HAVE SAME SHAPE
-      assert s.shape==t.shape,'check_stp: S & T must have same dimensions'
-        
-        
-    if not np.all(s>=0):         
-      warnings.warn('found negative salinity values, reset them to NaN')
-      sneg = np.where(s < 0 ); s[sneg] = np.nan    
+
+    _check_dimensions(s,t)
+
+    s = _check_salinity(s)
 
     rho = rhonil*(sbeta *(s-sref)-talpha*(t-tref))+rhonil
 
     return rho
-    
+
 def poly3(poly3,salt,theta):
     """
     Calculates in-situ density as approximated by the POLY3 method
     based on the Knudsen formula (see Bryan and Cox 1972).
-    
+
     Parameters
     ----------
     salt : array_like
@@ -111,9 +127,9 @@ def poly3(poly3,salt,theta):
     theta : array_like
             potential temperature [degree C (IPTS-68)];
             same shape as salt
-    P  :  coefficients read from file 
-          'POLY3.COEFFS' using INI_POLY3   
-          
+    P  :  coefficients read from file
+          'POLY3.COEFFS' using INI_POLY3
+
     Returns
     -------
     dens : array
@@ -124,40 +140,38 @@ def poly3(poly3,salt,theta):
     >> p=ini_poly3()
     >> T=rdmds('T',100)
     >> S=rdmds('S',100)
-    >> D=dens.poly3(p,salt,theta)
+    >> D=poly3(p,salt,theta)
     >> or to work within a single model level
-    >> D=dens.poly3(P[3,:],S[3,:,:],T[3,:,:])
-    
-    
+    >> D=poly3(P[3,:],S[3,:,:],T[3,:,:])
+
+
     Notes
     -----
     AUTHOR:     Martin Losch 2002-08-09  (mlosch@mit.edu)
-    """            
+    """
     # make sure arguments are floating point
     s = np.asfarray(salt)
     t = np.asfarray(theta)
     coeffs=poly3[:,3:]
-    
 
-    dims = np.shape(s)
-    dimt = np.shape(t)
-    if s.ndim > 2:
-      dims = np.shape(s)
-      dimt = np.shape(t)
-      assert len(dims)==len(dimt),('for more than two dimensions, s and t must'
-                                 + ' have the same number of dimensions')
-      for k in range(0,len(dims)):
-        assert dims[k]==dimt[k],('for more than two dimensions, s and t must'
-                               + ' have the same dimensions')
-    else: 
-      
-      # CHECK THAT S & T HAVE SAME SHAPE
-      assert s.shape==t.shape,'check_stp: S & T must have same dimensions'
-        
-        
-    if not np.all(s>=0):         
-      warnings.warn('found negative salinity values, reset them to NaN')
-      sneg = np.where(s < 0 ); s[sneg] = np.nan
+
+    _check_dimensions(s,t)
+    # dims = np.shape(s)
+    # dimt = np.shape(t)
+    # if s.ndim > 2:
+    #   dims = np.shape(s)
+    #   dimt = np.shape(t)
+    #   assert len(dims)==len(dimt),('for more than two dimensions, s and t must'
+    #                              + ' have the same number of dimensions')
+    #   for k in range(0,len(dims)):
+    #     assert dims[k]==dimt[k],('for more than two dimensions, s and t must'
+    #                            + ' have the same dimensions')
+    # else:
+
+    #   # CHECK THAT S & T HAVE SAME SHAPE
+    #   assert s.shape==t.shape,'check_stp: S & T must have same dimensions'
+
+    s = _check_salinity(s)
 
     Nr=poly3.shape[0]
 
@@ -165,61 +179,51 @@ def poly3(poly3,salt,theta):
     s=np.reshape(s,[Nr,np.prod(np.shape(s))//Nr])
     rho=np.zeros([Nr,np.prod(np.shape(s))//Nr])
     for k in range(0,Nr):
-     tRef=poly3[k,0]
-     sRef=poly3[k,1]
-     dRef=poly3[k,2]+1000
-     tp=t[k,:]-tRef;
-     sp=s[k,:]-sRef;
-     
-     tp2=tp*tp
-     sp2=sp*sp
+        tRef=poly3[k,0]
+        sRef=poly3[k,1]
+        dRef=poly3[k,2]+1000
+        tp=t[k,:]-tRef;
+        sp=s[k,:]-sRef;
 
-     deltaSig = ( coeffs[k,0]*tp
-                + coeffs[k,1]*sp
-                + coeffs[k,2]*tp2
-                + coeffs[k,3]*tp*sp 
-                + coeffs[k,4]*sp2
-                + coeffs[k,5]*tp2*tp
-                + coeffs[k,6]*tp2*sp
-                + coeffs[k,7]*tp*sp2
-                + coeffs[k,8]*sp2*sp
-                )
-  
-     rho[k,:]=deltaSig+dRef
+        tp2=tp*tp
+        sp2=sp*sp
 
-    rho=np.reshape(rho,dims)
-    return rho
+        deltaSig = (   coeffs[k,0]*tp
+                     + coeffs[k,1]*sp
+                     + coeffs[k,2]*tp2
+                     + coeffs[k,3]*tp*sp
+                     + coeffs[k,4]*sp2
+                     + coeffs[k,5]*tp2*tp
+                     + coeffs[k,6]*tp2*sp
+                     + coeffs[k,7]*tp*sp2
+                     + coeffs[k,8]*sp2*sp
+                    )
 
-  
-def ini_poly3():
-    # Reads the file 'POLY3.COEFFS' and returns coefficients in P
+        rho[k,:]=deltaSig+dRef
 
-    with open('POLY3.COEFFS','r') as fid:
-     poly_data=fid.readlines()
-  
-    Nr=int(poly_data[0])    # Number of vertical levels
-  
-    # Split and chunk data depending on number of vertical levels
- 
-    poly_split=[i.split() for i in poly_data]
-    poly_chunked = [poly_split[i:i+Nr] for i in range(1, len(poly_split), Nr)] 
- 
-    #Create poly matrix with all the data
- 
+    return np.reshape(rho,s.shape)
+
+
+def ini_poly3(fpath='POLY3.COEFFS'):
+    """Reads the file fpath (default 'POLY3.COEFFS') and returns
+    coefficients in poly
+    """
+
+    with open(fpath,'r') as fid:
+        poly_data=fid.readlines()
+
+    Nr=int(poly_data.pop(0))    # Number of vertical levels
+
     poly=np.zeros([Nr,12])
- 
-    # reference temperature, salinity and (dens-1)x10e3 at k level
- 
-    poly[:,0], poly[:,1], poly[:,2] = zip(*[i for i in poly_chunked[0]])
- 
-    # Coeff 1-9
- 
-    poly[:,3], poly[:,4], poly[:,5] = zip(*[i for i in poly_chunked[1]]) 
-    poly[:,6], poly[:,7], poly[:,8] = zip(*[i for i in poly_chunked[2]]) 
-    poly[:,9], poly[:,10], poly[:,11] = zip(*[i for i in poly_chunked[3]]) 
- 
+
+    poly_split = [i.split() for i in poly_data[:Nr]]
+    poly[:,:3] = np.asarray(poly_split)
+
+    poly_split = [i.split() for i in poly_data[Nr:]]
+    poly[:,3:] = np.asarray(poly_split).reshape((Nr,9))
+
     return poly
- 
+
 def jmd95(salt,theta,p):
     """
     Computes in-situ density of sea water
@@ -260,59 +264,16 @@ def jmd95(salt,theta,p):
     t = np.asfarray(theta)
     p = np.asfarray(p)
 
-    if s.ndim > 2:
-      dims = np.shape(s)
-      dimt = np.shape(t)
-      dimp = np.shape(p)
-      assert len(dims)==len(dimt),('for more than two dimensions, s and t must'
-                                 + ' have the same number of dimensions')
-      assert len(dims)==len(dimp),('for more than two dimensions, s and p must'
-                                 + ' have the same number of dimensions')
-      assert len(dimt)==len(dimp),('for more than two dimensions, t and p must'
-                                 + ' have the same number of dimensions')  
-      for k in range(0,len(dims)):
-        assert dims[k]==dimt[k],('for more than two dimensions, s and t must'
-                                   + ' have the same dimensions')
-        assert dims[k]==dimp[k],('for more than two dimensions, s and p must'
-                                   + ' have the same dimensions')
-        assert dimt[k]==dimp[k],('for more than two dimensions, t and p must'
-                                   + ' have the same dimensions')  
-    else:           
-     
-      # CHECK THAT S & T HAVE SAME SHAPE
-      assert s.shape==t.shape,'check_stp: S & T must have same dimensions'
+    _check_dimensions(s,t,p)
 
-      # CHECK OPTIONAL SHAPES FOR P                  
-      if s.shape!=p.shape:           
-       if p.size==1:                           # P is a scalar.     Fill to size of S
-         p = p*np.ones(np.shape(s))
-       elif p.size>1 and s.ndim==1:
-         assert s.shape==p.shape,'check_stp: p has wrong row dimensions' 
-       else:
-        p=np.atleast_2d(p)    
-        [ys,xs] = np.shape(s)  
-        [yp,xp] = np.shape(p) 
-        if yp==ys and xp==1:                    # P is row vector 
-         p = np.repeat(p, repeats=ys, axis=0)    # Copy across each col
-        elif xp==xs and yp==1:                    # P is column vector
-         p = np.repeat(p, repeats=xs, axis=1);    # Copy across each row
-        elif xp==xs and yp==ys:                    # P is a matrix size(S)
-         pass                                    # shape ok 
-        else:
-         assert xp==xs,'check_stp: p has wrong row dimensions'
-         assert yp==ys,'check_stp: p has wrong column dimensions'
-       
-    if not np.all(s>=0):         
-      warnings.warn('found negative salinity values, reset them to NaN')
-      if s.size==1: s[s<0]=np.nan
-      else: sneg = np.where(s < 0 ); s[sneg] = np.nan
-      
+    s = _check_salinity(s)
+
     # convert pressure to bar
     p = .1*p
     t2 = t*t
     t3 = t2*t
     t4 = t3*t
-            
+
     s3o2 = s*np.sqrt(s)
 
     # density of freshwater at the surface
@@ -387,52 +348,7 @@ def bulkmodjmd95(salt,theta,p):
                     6.207323e-10
                 ]
 
-    if s.ndim > 2:
-      dims = np.shape(s)
-      dimt = np.shape(t)
-      dimp = np.shape(p)
-      assert len(dims)==len(dimt),('for more than two dimensions, s and t must'
-                                 + ' have the same number of dimensions')
-      assert len(dims)==len(dimp),('for more than two dimensions, s and p must'
-                                 + ' have the same number of dimensions')
-      assert len(dimt)==len(dimp),('for more than two dimensions, t and p must'
-                                 + ' have the same number of dimensions')  
-      for k in range(0,len(dims)):
-        assert dims[k]==dimt[k],('for more than two dimensions, s and t must'
-                                   + ' have the same dimensions')
-        assert dims[k]==dimp[k],('for more than two dimensions, s and p must'
-                                   + ' have the same dimensions')
-        assert dimt[k]==dimp[k],('for more than two dimensions, t and p must'
-                                   + ' have the same dimensions')  
-    else:           
-     
-      # CHECK THAT S & T HAVE SAME SHAPE
-      assert s.shape==t.shape,'check_stp: S & T must have same dimensions'
-
-      # CHECK OPTIONAL SHAPES FOR P                  
-      if s.shape!=p.shape:           
-       if p.size==1:                           # P is a scalar.     Fill to size of S
-         p = p*np.ones(np.shape(s))
-       elif p.size>1 and s.ndim==1:
-         assert s.shape==p.shape,'check_stp: p has wrong row dimensions' 
-       else:
-        p=np.atleast_2d(p)   
-        [ys,xs] = np.shape(s)  
-        [yp,xp] = np.shape(p) 
-        if yp==ys and xp==1:                    # P is row vector 
-         p = np.repeat(p, repeats=ys, axis=0)    # Copy across each col
-        elif xp==xs and yp==1:                    # P is column vector
-         p = np.repeat(p, repeats=xs, axis=1);    # Copy across each row
-        elif xp==xs and yp==ys:                    # P is a matrix size(S)
-         pass                                    # shape ok 
-        else:
-         assert xp==xs,'check_stp: p has wrong row dimensions'
-         assert yp==ys,'check_stp: p has wrong column dimensions'
-       
-    if not np.all(s>=0):         
-      warnings.warn('found negative salinity values, reset them to NaN')
-      if s.size==1: s[s<0]=np.nan
-      else: sneg = np.where(s < 0 ); s[sneg] = np.nan     
+    _check_dimensions(s,t,p)
 
     t2 = t*t
     t3 = t2*t
@@ -522,53 +438,10 @@ def unesco(salt,theta,p):
     s = np.asfarray(salt)
     t = np.asfarray(theta)
     p = np.asfarray(p)
-    
-    if s.ndim > 2:
-      dims = np.shape(s)
-      dimt = np.shape(t)
-      dimp = np.shape(p)
-      assert len(dims)==len(dimt),('for more than two dimensions, s and t must'
-                                 + ' have the same number of dimensions')
-      assert len(dims)==len(dimp),('for more than two dimensions, s and p must'
-                                 + ' have the same number of dimensions')
-      assert len(dimt)==len(dimp),('for more than two dimensions, t and p must'
-                                 + ' have the same number of dimensions')  
-      for k in range(0,len(dims)):
-        assert dims[k]==dimt[k],('for more than two dimensions, s and t must'
-                                   + ' have the same dimensions')
-        assert dims[k]==dimp[k],('for more than two dimensions, s and p must'
-                                   + ' have the same dimensions')
-        assert dimt[k]==dimp[k],('for more than two dimensions, t and p must'
-                                   + ' have the same dimensions')  
-    else:           
-     
-      # CHECK THAT S & T HAVE SAME SHAPE
-      assert s.shape==t.shape,'check_stp: S & T must have same dimensions'
 
-      # CHECK OPTIONAL SHAPES FOR P                  
-      if s.shape!=p.shape:           
-       if p.size==1:                           # P is a scalar.     Fill to size of S
-         p = p*np.ones(np.shape(s))
-       elif p.size>1 and s.ndim==1:
-         assert s.shape==p.shape,'check_stp: p has wrong row dimensions' 
-       else:
-        p=np.atleast_2d(p)    
-        [ys,xs] = np.shape(s)  
-        [yp,xp] = np.shape(p) 
-        if yp==ys and xp==1:                    # P is row vector 
-         p = np.repeat(p, repeats=ys, axis=0)    # Copy across each col
-        elif xp==xs and yp==1:                    # P is column vector
-         p = np.repeat(p, repeats=xs, axis=1);    # Copy across each row
-        elif xp==xs and yp==ys:                    # P is a matrix size(S)
-         pass                                    # shape ok 
-        else:
-         assert xp==xs,'check_stp: p has wrong row dimensions'
-         assert yp==ys,'check_stp: p has wrong column dimensions'
-       
-    if not np.all(s>=0):         
-      warnings.warn('found negative salinity values, reset them to NaN')
-      if s.size==1: s[s<0]=np.nan
-      else: sneg = np.where(s < 0 ); s[sneg] = np.nan     
+    _check_dimensions(s,t,p)
+
+    s = _check_salinity(s)
 
     # convert pressure to bar
     p = .1*p
@@ -648,52 +521,7 @@ def bulkmodunesco(salt,theta,p):
                     9.169700e-10
                 ]
 
-    if s.ndim > 2:
-      dims = np.shape(s)
-      dimt = np.shape(t)
-      dimp = np.shape(p)
-      assert len(dims)==len(dimt),('for more than two dimensions, s and t must'
-                                 + ' have the same number of dimensions')
-      assert len(dims)==len(dimp),('for more than two dimensions, s and p must'
-                                 + ' have the same number of dimensions')
-      assert len(dimt)==len(dimp),('for more than two dimensions, t and p must'
-                                 + ' have the same number of dimensions')  
-      for k in range(0,len(dims)):
-        assert dims[k]==dimt[k],('for more than two dimensions, s and t must'
-                                   + ' have the same dimensions')
-        assert dims[k]==dimp[k],('for more than two dimensions, s and p must'
-                                   + ' have the same dimensions')
-        assert dimt[k]==dimp[k],('for more than two dimensions, t and p must'
-                                   + ' have the same dimensions')  
-    else:           
-     
-      # CHECK THAT S & T HAVE SAME SHAPE
-      assert s.shape==t.shape,'check_stp: S & T must have same dimensions'
-
-      # CHECK OPTIONAL SHAPES FOR P                  
-      if s.shape!=p.shape:           
-       if p.size==1:                           # P is a scalar.     Fill to size of S
-         p = p*np.ones(np.shape(s))
-       elif p.size>1 and s.ndim==1:
-         assert s.shape==p.shape,'check_stp: p has wrong row dimensions' 
-       else:
-        p=np.atleast_2d(p)    
-        [ys,xs] = np.shape(s)  
-        [yp,xp] = np.shape(p) 
-        if yp==ys and xp==1:                    # P is row vector 
-         p = np.repeat(p, repeats=ys, axis=0)    # Copy across each col
-        elif xp==xs and yp==1:                    # P is column vector
-         p = np.repeat(p, repeats=xs, axis=1);    # Copy across each row
-        elif xp==xs and yp==ys:                    # P is a matrix size(S)
-         pass                                    # shape ok 
-        else:
-         assert xp==xs,'check_stp: p has wrong row dimensions'
-         assert yp==ys,'check_stp: p has wrong column dimensions'
-       
-    if not np.all(s>=0):         
-      warnings.warn('found negative salinity values, reset them to NaN')
-      if s.size==1: s[s<0]=np.nan
-      else: sneg = np.where(s < 0 ); s[sneg] = np.nan    
+    _check_dimensions(s,t,p)
 
     t2 = t*t
     t3 = t2*t
@@ -788,54 +616,10 @@ def mdjwf(salt,theta,p,epsln=0):
     t = np.asfarray(theta)
     p = np.asfarray(p)
 
-    if s.ndim > 2:
-      dims = np.shape(s)
-      dimt = np.shape(t)
-      dimp = np.shape(p)
-      assert len(dims)==len(dimt),('for more than two dimensions, s and t must'
-                                 + ' have the same number of dimensions')
-      assert len(dims)==len(dimp),('for more than two dimensions, s and p must'
-                                 + ' have the same number of dimensions')
-      assert len(dimt)==len(dimp),('for more than two dimensions, t and p must'
-                                 + ' have the same number of dimensions')  
-      for k in range(0,len(dims)):
-        assert dims[k]==dimt[k],('for more than two dimensions, s and t must'
-                                   + ' have the same dimensions')
-        assert dims[k]==dimp[k],('for more than two dimensions, s and p must'
-                                   + ' have the same dimensions')
-        assert dimt[k]==dimp[k],('for more than two dimensions, t and p must'
-                                   + ' have the same dimensions')  
-    else:           
-     
-      # CHECK THAT S & T HAVE SAME SHAPE
-      assert s.shape==t.shape,'check_stp: S & T must have same dimensions'
+    _check_dimensions(s,t,p)
 
-      # CHECK OPTIONAL SHAPES FOR P                  
-      if s.shape!=p.shape:           
-       if p.size==1:                           # P is a scalar.     Fill to size of S
-         p = p*np.ones(np.shape(s))
-       elif p.size>1 and s.ndim==1:
-         assert s.shape==p.shape,'check_stp: p has wrong row dimensions' 
-       else:
-        p=np.atleast_2d(p)    
-        [ys,xs] = np.shape(s)  
-        [yp,xp] = np.shape(p) 
-        if yp==ys and xp==1:                    # P is row vector 
-         p = np.repeat(p, repeats=ys, axis=0)    # Copy across each col
-        elif xp==xs and yp==1:                    # P is column vector
-         p = np.repeat(p, repeats=xs, axis=1);    # Copy across each row
-        elif xp==xs and yp==ys:                    # P is a matrix size(S)
-         pass                                    # shape ok 
-        else:
-         assert xp==xs,'check_stp: p has wrong row dimensions'
-         assert yp==ys,'check_stp: p has wrong column dimensions'
-       
-    if not np.all(s>0):         
-      warnings.warn('found negative salinity values, reset them to NaN')
-      if s.size==1: s[s<0]=np.nan
-      else: sneg = np.where(s < 0 ); s[sneg] = np.nan     
-      
-    
+    s = _check_salinity(s)
+
     eosMDJWFnum = [   7.35212840e+00,
                     - 5.45928211e-02,
                       3.98476704e-04,
@@ -850,7 +634,7 @@ def mdjwf(salt,theta,p,epsln=0):
                       9.99843699e+02
                   ]
 
-    
+
     eosMDJWFden = [   7.28606739e-03,
                     - 4.60835542e-05,
                       3.68390573e-07,
@@ -865,17 +649,17 @@ def mdjwf(salt,theta,p,epsln=0):
                     - 1.27934137e-17,
                       1.00000000e+00
                   ]
-    
-    
-    
+
+
+
     t1    = t
     t2    = t1*t1
     s1    = s
     p1    = p
-    
-    
+
+
     sp5 = np.sqrt(s1)
-    p1t1=p1*t1 
+    p1t1=p1*t1
 
     rhoNum = (eosMDJWFnum[11]  +  t1*(eosMDJWFnum[0]
              +    t1*(eosMDJWFnum[1]     +    eosMDJWFnum[2]*t1) )
@@ -884,7 +668,7 @@ def mdjwf(salt,theta,p,epsln=0):
              +    p1*(eosMDJWFnum[6]    +  eosMDJWFnum[7]*t2
              +        eosMDJWFnum[8]    *  s1
              +    p1*(eosMDJWFnum[9] +  eosMDJWFnum[10]*t2) ))
-      
+
     den = (eosMDJWFden[12]
           + t1    * (eosMDJWFden[0] + t1 * (eosMDJWFden[1]
           + t1    * (eosMDJWFden[2] + t1 *  eosMDJWFden[3]) ) )
@@ -892,12 +676,12 @@ def mdjwf(salt,theta,p,epsln=0):
           + t1    * (eosMDJWFden[5] + eosMDJWFden[6]*t2)
           + sp5 * (eosMDJWFden[7] + eosMDJWFden[8]*t2) )
           + p1    * (eosMDJWFden[9]
-          + p1t1* (eosMDJWFden[10]*t2 + eosMDJWFden[11]*p1) ) ) 
-       
-    denom = 1.0/(epsln+den) 
+          + p1t1* (eosMDJWFden[10]*t2 + eosMDJWFden[11]*p1) ) )
+
+    denom = 1.0/(epsln+den)
     rho = rhoNum*denom
 
-    return rho      
+    return rho
 
 def teos10(salt,theta,p,epsln=0):
     """
@@ -936,6 +720,10 @@ def teos10(salt,theta,p,epsln=0):
     sa = np.asfarray(salt)
     ct = np.asfarray(theta)
     p = np.asfarray(p)
+
+    _check_dimensions(sa,ct,p)
+
+    sa = _check_salinity(sa)
 
     teos = [   9.998420897506056e+02,
                2.839940833161907e00,
@@ -987,52 +775,6 @@ def teos10(salt,theta,p,epsln=0):
                6.057902487546866e-17,
            ]
 
-    if sa.ndim > 2:
-      dims = np.shape(sa)
-      dimt = np.shape(ct)
-      dimp = np.shape(p)
-      assert len(dims)==len(dimt),('for more than two dimensions, s and t must'
-                                 + ' have the same number of dimensions')
-      assert len(dims)==len(dimp),('for more than two dimensions, s and p must'
-                                 + ' have the same number of dimensions')
-      assert len(dimt)==len(dimp),('for more than two dimensions, t and p must'
-                                 + ' have the same number of dimensions')  
-      for k in range(0,len(dims)):
-        assert dims[k]==dimt[k],('for more than two dimensions, s and t must'
-                                   + ' have the same dimensions')
-        assert dims[k]==dimp[k],('for more than two dimensions, s and p must'
-                                   + ' have the same dimensions')
-        assert dimt[k]==dimp[k],('for more than two dimensions, t and p must'
-                                   + ' have the same dimensions')  
-    else:           
-     
-      # CHECK THAT S & T HAVE SAME SHAPE
-      assert sa.shape==ct.shape,'check_stp: S & T must have same dimensions'
-
-      # CHECK OPTIONAL SHAPES FOR P                  
-      if sa.shape!=p.shape:            
-       if p.size==1:                           # P is a scalar.     Fill to size of S
-         p = p*np.ones(np.shape(sa))
-       elif p.size>1 and sa.ndim==1:
-         assert sa.shape==p.shape,'check_stp: p has wrong row dimensions' 
-       else:
-        [ys,xs] = np.shape(sa)    
-        [yp,xp] = np.shape(p) 
-        if yp==ys and xp==1:                    # P is row vector 
-         p = np.repeat(p, repeats=ys, axis=0)    # Copy across each col
-        elif xp==xs and yp==1:                    # P is column vector
-         p = np.repeat(p, repeats=xs, axis=1);    # Copy across each row
-        elif xp==xs and yp==ys:                    # P is a matrix size(S)
-         pass                                    # shape ok 
-        else:
-         assert xp==xs,'check_stp: p has wrong row dimensions'
-         assert yp==ys,'check_stp: p has wrong column dimensions'
-       
-    if not np.all(sa>0):      
-      warnings.warn('found negative salinity values, reset them to NaN')
-      if sa.size==1: sa[sa<0]=np.nan
-      else: sneg = np.where(sa < 0 ); sa[sneg] = np.nan          
-    
     sqrtsa = np.sqrt(sa)
 
     rhoNum = (teos[0]
