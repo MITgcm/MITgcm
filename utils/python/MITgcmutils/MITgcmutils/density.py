@@ -156,20 +156,6 @@ def poly3(poly3,salt,theta):
 
 
     _check_dimensions(s,t)
-    # dims = np.shape(s)
-    # dimt = np.shape(t)
-    # if s.ndim > 2:
-    #   dims = np.shape(s)
-    #   dimt = np.shape(t)
-    #   assert len(dims)==len(dimt),('for more than two dimensions, s and t must'
-    #                              + ' have the same number of dimensions')
-    #   for k in range(0,len(dims)):
-    #     assert dims[k]==dimt[k],('for more than two dimensions, s and t must'
-    #                            + ' have the same dimensions')
-    # else:
-
-    #   # CHECK THAT S & T HAVE SAME SHAPE
-    #   assert s.shape==t.shape,'check_stp: S & T must have same dimensions'
 
     s = _check_salinity(s)
 
@@ -634,7 +620,6 @@ def mdjwf(salt,theta,p,epsln=0):
                       9.99843699e+02
                   ]
 
-
     eosMDJWFden = [   7.28606739e-03,
                     - 4.60835542e-05,
                       3.68390573e-07,
@@ -650,13 +635,10 @@ def mdjwf(salt,theta,p,epsln=0):
                       1.00000000e+00
                   ]
 
-
-
     t1    = t
     t2    = t1*t1
     s1    = s
     p1    = p
-
 
     sp5 = np.sqrt(s1)
     p1t1=p1*t1
