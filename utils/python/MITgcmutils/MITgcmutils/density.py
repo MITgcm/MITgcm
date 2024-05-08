@@ -122,13 +122,13 @@ def poly3(poly3,salt,theta):
 
     Parameters
     ----------
+    poly3 : coefficients read from file
+            'POLY3.COEFFS' using INI_POLY3
     salt : array_like
            salinity [psu (PSS-78)]
     theta : array_like
             potential temperature [degree C (IPTS-68)];
             same shape as salt
-    P  :  coefficients read from file
-          'POLY3.COEFFS' using INI_POLY3
 
     Returns
     -------

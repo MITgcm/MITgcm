@@ -193,10 +193,10 @@ def readbin(fname, ndims, dataprec='float32', machineformat='b'):
     fname : string
             name of file to read
     dims  : dimension of the file
+    dataprec : string
+               precision of resulting file ('float32' or 'float64')
     machineformat : int endianness
                     ('b' or 'l', default 'b')
-    astype :    dataprec : string
-    precision of resulting file ('float32' or 'float64')
 
     Returns
     -------
@@ -229,8 +229,6 @@ def tilecmap(arr,sNx, sNy, tilen=None, sel_zoom=5, fill_value=0):
     arr        : 2D array_like
     sNx        : x point in each tile
     sNy        : y point in each tile
-    nPx        : Total Tiles in x dir
-    nPy        : Total Tiles in y dir
     tilen      : plot a specific tile
                : default None
     sel_zoom   : zooming range
