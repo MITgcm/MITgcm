@@ -133,11 +133,12 @@ def hfac(depth,rF,hFacMin=0.3,hFacMinDr=50,htype='C'):
     hFacMinDr  : float
                  Min depth for partial vertical levels.
     htype      : string
-                 Type of hfac: ['C','S','W'], default='C'.
+                 Types of hfac: one or more of 'C','S','W', default='C'.
 
     Returns
     -------
-    hFacC,hFacW,hFacS : array like
+    hFacC,W,S : tuple of array_like
+                The hfac arrays requested in htype.
 
     Example
     -------
