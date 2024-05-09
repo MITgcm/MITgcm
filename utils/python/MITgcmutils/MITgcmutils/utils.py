@@ -30,16 +30,21 @@ def gen_blanklist(depth, sNx, sNy, tilemap=False,fill_value=0):
     Parameters
     ----------
     depth      : 2D array_like
-                 depth [m]
-    sNx        : x point in each tile
-    sNy        : y point in each tile
-    tilemap=True : output tile contourplot
-                 : default tilemap=False
+                 depth [m].
+    sNx        : int
+                 x point in each tile.
+    sNy        : int
+                 y point in each tile.
+    tilemap    : bool
+                 True : output tile contourplot,
+                 default False.
 
     Returns
     -------
-    blank         :empty tiles numbers
-    fig(optional) :tile colormap
+    blank         : list of int
+                    empty tiles numbers
+    fig(optional) : matplotlib figure
+                    tile plot
 
     Examples
     --------
@@ -120,20 +125,19 @@ def hfac(depth,rF,hFacMin=0.3,hFacMinDr=50,htype='C'):
     Parameters
     ----------
     depth      : 2D array_like
-                 depth [m]
+                 Depth [m].
     rF         : 1D array_like
-                 depth at the f point
-    hFacMin    : min fraction for
-                 partial vertical levels
-    hFacMinDr  : min depth for
-               : partial vertical levels
-    htype      : list_like
-               : type of hfac: ['C','S','W']
-               : default='C'
+                 Depth at the f point.
+    hFacMin    : float
+                 Min fraction for partial vertical levels.
+    hFacMinDr  : float
+                 Min depth for partial vertical levels.
+    htype      : string
+                 Type of hfac: ['C','S','W'], default='C'.
 
     Returns
     -------
-    hFacC,W,S
+    hFacC,hFacW,hFacS : array like
 
     Example
     -------
@@ -191,12 +195,13 @@ def readbin(fname, ndims, dataprec='float32', machineformat='b'):
     Parameters
     ----------
     fname : string
-            name of file to read
-    dims  : dimension of the file
+        name of file to read
+    ndims : int
+        dimension of the file
     dataprec : string
-               precision of resulting file ('float32' or 'float64')
-    machineformat : int endianness
-                    ('b' or 'l', default 'b')
+        precision of resulting file ('float32' or 'float64')
+    machineformat : string
+        endianness ('b' or 'l', default 'b')
 
     Returns
     -------
@@ -219,27 +224,30 @@ def readbin(fname, ndims, dataprec='float32', machineformat='b'):
 
     return arr
 
-def tilecmap(arr,sNx, sNy, tilen=None, sel_zoom=5, fill_value=0):
+def tilecmap(arr, sNx, sNy, tilen=None, sel_zoom=5, fill_value=0):
     """
-    Computes tile map
-
+    Pseudocolor plot of land mask with tiles superimposed, optionally
+    showing the values of arr for a single tile.
 
     Parameters
     ----------
     arr        : 2D array_like
-    sNx        : x point in each tile
-    sNy        : y point in each tile
-    tilen      : plot a specific tile
-               : default None
-    sel_zoom   : zooming range
-               : default 5
-    fill_value : default 0
-
+                 values to plot, land mask is taken as arr==fill_value
+    sNx        : int
+                 number of x points in each tile
+    sNy        : int
+                 number of y points in each tile
+    tilen      : int or None
+                 plot a specific tile, default None
+    sel_zoom   : int
+                 zooming range, default 5
+    fill_value : float
+                 default 0
 
     Returns
     -------
-    figure     : colormap of tiles
-               : distribution
+    figure     : matplotlib figure
+                 Plot of land mask, tiles and arr values
 
     Examples
     --------
@@ -284,7 +292,7 @@ def tilecmap(arr,sNx, sNy, tilen=None, sel_zoom=5, fill_value=0):
         ax.annotate(str(c), (a, b), color='black',
                     ha='center', va='center')
 
-    if tilen!=None:
+    if tilen is not None:
 
      [Tind]=np.argwhere(tile_order==tilen)
 
@@ -345,7 +353,7 @@ def writebin(fname, arr, dataprec='float32', machineformat='b'):
     dataprec : string
                precision of resulting file ('float32' or 'float64')
     machineformat : string
-                   'b' or 'l' for big or little endian
+                    'b' or 'l' for big or little endian
 
     Example
     -------

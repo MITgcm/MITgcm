@@ -137,12 +137,12 @@ def poly3(poly3,salt,theta):
 
     Example
     -------
-    >> p=ini_poly3()
-    >> T=rdmds('T',100)
-    >> S=rdmds('S',100)
-    >> D=poly3(p,salt,theta)
-    >> or to work within a single model level
-    >> D=poly3(P[3,:],S[3,:,:],T[3,:,:])
+    >>> p=ini_poly3()
+    >>> T=rdmds('T',100)
+    >>> S=rdmds('S',100)
+    >>> D=poly3(p,salt,theta)
+    >>> or to work within a single model level
+    >>> D=poly3(P[3,:],S[3,:,:],T[3,:,:])
 
 
     Notes

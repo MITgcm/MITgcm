@@ -5,37 +5,34 @@ import numpy as np
 
 # Global constants
 deg2rad = np.pi/180
-def pfromz(rC, rF0=0.0, lat=None, rhoConst=1.0275e+03, eosRefP0=1.01325e+05,
-           top_Pres=0.0, surf_pRef=1.01325e+05):
+def pfromz(rC, rF0=0.0, lat=None, rhoConst=1.0275e+3, eosRefP0=1.01325e+5,
+           top_Pres=0.0, surf_pRef=1.01325e+5):
     """
     Computes pressure (dbar) of sea water from depth.
 
     Parameters
     ----------
-    rC    : depth at
-          : c point [m]
-          : rC may have dims 1x1,
-          : kx1, or kxnxm
-    rF0   : depth at rF[k=0]
-          : default=0
-    lat   : latitude to compute
-          : unesco gravity
-          : lat may have dims 1x1,
-          : nx1, nxm or kxnxm
-          : default=None
-    rhoConst  : Density of seawater
-              : default=1027.5
-    eosRefP0  : EOS reference pressure (Pa)
-              : default=1.013250e+05
-    top_Pres  : reference pressure at the top
-               default=0
-    surf_pRef : Surface pressure (Pa)
-              : default=1.013250e+05
+    rC : array_like
+        Depth at c point [m].
+    rF0 : float or array_like
+        Depth at rF[k=0], default 0.
+    lat : array_like or None
+        Latitude to compute unesco gravity.  If None, use gravity = 9.81.
+        Default None.
+    rhoConst : float
+        Density of seawater, default 1027.5.
+    eosRefP0 : float
+        EOS reference pressure (Pa), default 1.01325e+5.
+    top_Pres : float
+        Reference pressure at the top, default 0.
+    surf_pRef : float
+        Surface pressure (Pa), default 1.01325e+5.
 
     Returns
     -------
     p : array_like
-        pressure [dbar]
+        Pressure [dbar].  If rC and lat are both 1-dimensional, a 2-dimensional
+        array corresponding to the outer product will be returned.
 
     Example
     -------
