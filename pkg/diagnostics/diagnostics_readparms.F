@@ -16,6 +16,7 @@ C     !USES:
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DIAGNOSTICS_SIZE.h"
+#include "DIAGNOSTICS_P2SHARE.h"
 #include "DIAGNOSTICS.h"
 #include "DIAGNOSTICS_CALC.h"
 #include "DIAGSTATS_REGIONS.h"
@@ -91,7 +92,7 @@ C--   full level output:
      &     averagingFreq, averagingPhase, repeatCycle,
      &     missing_value, missing_value_int,
      &     levels, fields, fileName, fileFlags,
-     &     dumpAtLast, diag_mnc, useMissingValue,
+     &     dumpAtLast, diag_dBugLevel, diag_mnc, useMissingValue,
      &     diagCG_maxIters, diagCG_resTarget,
      &     diagCG_pcOffDFac, diagCG_prtResFrq, xPsi0, yPsi0,
      &     diag_pickup_read,     diag_pickup_write,
@@ -148,6 +149,7 @@ c       missing_value(l)     = UNSET_RL
         ENDDO
       ENDDO
       diagLoc_ioUnit = 0
+      diag_dBugLevel = debugLevel
       dumpAtLast   = .FALSE.
       diag_mnc     = useMNC
       useMissingValue = .FALSE.
@@ -520,8 +522,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     Echo History List Data Structure
       stdUnit = standardMessageUnit
       WRITE(msgBuf,'(A)')
+     & '-----------------------------------------------------'
+      CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
+      WRITE(msgBuf,'(A)')
      &     ' DIAGNOSTICS_READPARMS: global parameter summary:'
       CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
+      CALL WRITE_0D_I( diag_dBugLevel, INDEX_NONE,
+     & ' diag_dBugLevel =', ' /* level of printed debug messages */')
       CALL WRITE_0D_L( dumpAtLast, INDEX_NONE,
      & ' dumpAtLast =',' /* always write time-ave diags at the end */')
       CALL WRITE_0D_L( diag_mnc,   INDEX_NONE,

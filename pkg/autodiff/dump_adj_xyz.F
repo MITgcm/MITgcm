@@ -1,7 +1,4 @@
 #include "AUTODIFF_OPTIONS.h"
-#ifdef ALLOW_DIAGNOSTICS
-# include "DIAG_OPTIONS.h"
-#endif
 #include "AD_CONFIG.h"
 
 CBOP
@@ -26,8 +23,7 @@ C     == Global variables ===
 #include "AUTODIFF_PARAMS.h"
 #ifdef ALLOW_AUTODIFF_MONITOR
 # ifdef ALLOW_DIAGNOSTICS
-#  include "DIAGNOSTICS_SIZE.h"
-#  include "DIAGNOSTICS.h"
+#  include "DIAGNOSTICS_P2SHARE.h"
 # endif
 #endif /* ALLOW_AUTODIFF_MONITOR */
 

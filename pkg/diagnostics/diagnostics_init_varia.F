@@ -5,8 +5,7 @@ CBOP 0
 C     !ROUTINE: DIAGNOSTICS_INIT_VARIA
 
 C     !INTERFACE:
-      SUBROUTINE DIAGNOSTICS_INIT_VARIA(
-     I     myThid )
+      SUBROUTINE DIAGNOSTICS_INIT_VARIA( myThid )
 
 C     !DESCRIPTION:
 C     Initialize the qdiag array which accumulates during integration
@@ -68,7 +67,7 @@ C--   Zero out the qSdiag array (statistics) which accumulates during integratio
 
       CALL DIAGNOSTICS_READ_PICKUP( myThid )
 
-      CALL DIAGNOSTICS_SUMMARY( startTime, nIter0, myThid )
+      CALL DIAGNOSTICS_SUMMARY( 0, startTime, nIter0, myThid )
 
       RETURN
       END

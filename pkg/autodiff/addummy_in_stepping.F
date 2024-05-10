@@ -5,9 +5,6 @@
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
-#ifdef ALLOW_DIAGNOSTICS
-# include "DIAG_OPTIONS.h"
-#endif
 #ifdef ALLOW_GMREDI
 # include "GMREDI_OPTIONS.h"
 #endif
@@ -72,8 +69,7 @@ C- Note: Since OpenAD uses modules, the ordering of included headers matters
 #  include "MNC_PARAMS.h"
 # endif
 # ifdef ALLOW_DIAGNOSTICS
-#  include "DIAGNOSTICS_SIZE.h"
-#  include "DIAGNOSTICS.h"
+#  include "DIAGNOSTICS_P2SHARE.h"
 # endif
 #endif /* ALLOW_AUTODIFF_MONITOR */
 
