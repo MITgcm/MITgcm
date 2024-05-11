@@ -3,8 +3,6 @@
 
 import numpy as np
 
-# Global constants
-deg2rad = np.pi/180
 def pfromz(rC, rF0=0.0, lat=None, rhoConst=1.0275e+3, eosRefP0=1.01325e+5,
            top_Pres=0.0, surf_pRef=1.01325e+5):
     """
@@ -61,7 +59,7 @@ def pfromz(rC, rF0=0.0, lat=None, rhoConst=1.0275e+3, eosRefP0=1.01325e+5,
             np.broadcast(lat, z)
 
         # Redefine gravity (UNESCO Tech. Pap. in Mar. Sci., 1983, eq 27)
-        sinsqlat = np.sin(lat*deg2rad)**2
+        sinsqlat = np.sin(np.deg2rad(lat))**2
         gravity = 9.780318*(1.0 + (5.2788e-3 + 2.36e-5*sinsqlat)*sinsqlat)
 
     pref = surf_pRef - eosRefP0
