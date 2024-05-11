@@ -7,7 +7,7 @@ from .conversion import *
 from .utils import *
 from . import cs
 from . import llc
-from . import tests
+from . import examples
 from . import density as dens
 from . import mds
 

@@ -68,40 +68,57 @@ bathy=[-1026, -1051, -1323, -1070,  -518,  -212,  -247,  -215,  -177,  -176,  -1
  -1340, -1405, -1333, -1325, -1303, -1384, -1496, -1459, -1300, -1185, -1268, -1316, -1337, -1362, -1363, -1241,  -947,  -600,  -605,  -662,  -717,  -564,  -421,  -730, -1047,  -968,  -787,  -662,  -385,  -206,  -153,  -135,  -127,  -133,  -154,   -92,   -96,   -93,   -53,   -79,     0,   -32,  -106,  -117,  -116,  -131,  -131,  -140,  -140,  -117,  -109,  -101,   -98,  -104,  -106,  -155,  -263,  -298,  -295,  -290,
  -1285, -1258, -1333, -1229, -1154, -1016, -1175, -1223, -1159, -1135, -1130, -1134, -1235, -1324, -1317,  -767,  -687,  -687,  -687,  -569,  -628, -1021, -1166, -1166, -1166, -1007, -1007,  -914,  -682,  -595,  -468,  -249,  -169,  -167,  -154,  -154,  -134,  -115,   -58,   -53,     0,   -20,   -69,   -91,  -113,  -129,  -113,  -138,  -140,  -125,  -108,  -102,  -102,   -96,  -102,  -153,  -279,  -300,  -299,  -296]
 
+rF=[0, -10, -20, -30, -40, -50, -60, -70, -80.01, -90.04, -100.15, -110.47, -121.27, -133.03, -146.45, -162.49, -182.31,
+  -207.16,  -238.26,  -276.68,  -323.18,  -378.18,  -441.68,  -513.26,  -592.16,  -677.31,  -767.49,  -861.45, -958.03, 
+ -1056.28, -1155.53, -1255.54, -1356.87, -1461.43, -1572.76, -1695.59, -1834.68, -1993.62, -2174.45, -2378.00, -2604.5, 
+ -2854, -3126.5]
 
 
 bathy=np.array(bathy).astype('f4').reshape([60,60])
-
-def test_blanklist():
-    """Test blanklist generator
+rF=np.array(rF).astype('f4')
+def eg_blanklist():
+    """Example blanklist generator
     """
 
-    # Test
+    # Example
 
-    print('Test 1: Output blanklist without tilemap')
+    print('Example 1: Output blanklist without tilemap')
     print('gen_blanklist(bathy, 5, 5, tilemap=False)')
 
     blank=mit.gen_blanklist(bathy, 5, 5, tilemap=False)
     print(*blank[0:3],'..',blank[-1],sep=',')
 
-    print('Test 2: Output blanklist with tilemap')
+    print('Example 2: Output blanklist with tilemap')
     print('mit.gen_blanklist(bathy, 5,5, tilemap=True)')
 
     [blank,fig1]=mit.gen_blanklist(bathy, 5, 5, tilemap=True)
     print(*blank[0:3],'..',blank[-1],sep=',')
 
-def test_tilemap():
-    """Test tilemap plot distribution
+def eg_tilemap():
+    """Example tilemap plot distribution
     """
 
-    # Test
+    # Example
 
-    print('Test 1: Output tilemap without specific tile')
+    print('Example 1: Output tilemap without specific tile')
     print('mit.tilecmap(bathy, 5, 5)')
 
     mit.tilecmap(bathy, 5, 5)
 
-    print('Test 2: Output tilemap without specific tile')
+    print('Example 2: Output tilemap without specific tile')
     print('mit.tilecmap(bathy, 5, 5, 66, sel_zoom=4)')
 
     mit.tilecmap(bathy, 5, 5, 66, sel_zoom=4)
+
+def eg_hfac():
+    """Example grid mask generator
+    """
+
+    # Example
+
+    print('Example: Output vertical grid mask for the C grid')
+    print('mit.hfac(depth,rF,0.3,50,'C')')
+
+    [hFacC]=mit.hfac(depth,rF,0.3,50,'C')
+
+

@@ -1,8 +1,9 @@
 Version 0.2, 2023-04-17
-- Add folder tests
-  o test_utils.py
-    > test_blanklist
-    > test_tilemap
+- Add folder examples
+  o eg_utils.py
+    > eg_blanklist
+    > eg_tilemap
+    > eg_hfac
 - Add module utils.py
   o gen_blanklist computes blanklist
   o hfac computes hfacc,W,S masks
@@ -23,7 +24,7 @@ Version 0.2, 2023-04-17
   o teos10 computes rho from teos 48 polynomia
 - Edit modules:
   o llc.py moved to the llc folder
-  o __init__.py llc is load as cs
+  o llc was added to __init__.py 
 - Delete modules:
   o mdjwf.py moved to density
   o jmd95.py moved to density

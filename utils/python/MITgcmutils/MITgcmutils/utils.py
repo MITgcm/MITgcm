@@ -46,15 +46,16 @@ def gen_blanklist(depth, sNx, sNy, tilemap=False,fill_value=0):
     fig(optional) : matplotlib figure
                     tile plot
 
-    Examples
-    --------
+    Usage
+    -----
     >>> blank=gen_blanklist(bathy, 5, 5, tilemap=False)
     10,11,12,..,103
     >>> [blank,fig]=gen_blanklist(bathy, 5, 5, tilemap=True)
     10,11,12,..,103
-    >>> test_blanklist()
-    10,11,12,..,103
-    >>> test_blanklist()
+
+    Example
+    -------
+    >>> eg_blanklist()
     10,11,12,..,103
 
     """
@@ -87,7 +88,7 @@ def gen_blanklist(depth, sNx, sNy, tilemap=False,fill_value=0):
       p0 = 0
       fig = plt.figure()
       ax = fig.add_subplot(111)
-      ax.pcolor(mland,cmap=cmap_lm)
+      ax.pcolormesh(mland,cmap=cmap_lm)
       major_xticks = np.arange(0, Nx+sNx, sNx)
       major_yticks = np.arange(0, Ny+sNy, sNy)
       for a, b, c in zip(cn_x.flat, cn_y.flat, tile_order.flat):
@@ -139,11 +140,13 @@ def hfac(depth,rF,hFacMin=0.3,hFacMinDr=50,htype='C'):
     -------
     hFacC,W,S : tuple of array_like
                 The hfac arrays requested in htype.
+    Usage
+    -----
+    >>> [hFacC]=mit.hfac(depth,rF,0.3,50,'C')
 
     Example
     -------
-    >>> [hFacC]=hfac(depth,rF,0.3,50,'C')
-    >>> [hFacC,hFacS]=hfac(depth,rF,0.3,50,['C','S'])
+    >>> [hFacC]=eg_hfac()
 
     Notes
     -----
@@ -209,10 +212,11 @@ def readbin(fname, ndims, dataprec='float32', machineformat='b'):
     arr : array_like
           numpy array of the data read
 
-    Example
-    -------
+    Usage
+    -----
     >>> arr=readbin('bathy.bin',[Y,X])
     """
+
     tp = _typeprefixes[machineformat]
     try:
         tp = tp + _typesuffixes[dataprec]
@@ -250,11 +254,14 @@ def tilecmap(arr, sNx, sNy, tilen=None, sel_zoom=5, fill_value=0):
     figure     : matplotlib figure
                  Plot of land mask, tiles and arr values
 
-    Examples
-    --------
+    Usage
+    -----
     >>> [fig]=tilecmap(bathy, 5, 5)
     >>> [fig]=tilecmap(bathy, 5, 5, 66, sel_zoom=4)
-    >>> test_tilemap()
+
+    Example
+    -------
+    >>> eg_tilemap()
 
 
     """
@@ -287,7 +294,7 @@ def tilecmap(arr, sNx, sNy, tilen=None, sel_zoom=5, fill_value=0):
 
     fig = plt.figure()
     ax = fig.add_subplot(111)
-    ax.pcolor(mland,cmap=cmap_lm)
+    ax.pcolormesh(mland,cmap=cmap_lm)
 
     for a, b, c in zip(cn_x.flat, cn_y.flat, tile_order.flat):
         ax.annotate(str(c), (a, b), color='black',
@@ -311,7 +318,7 @@ def tilecmap(arr, sNx, sNy, tilen=None, sel_zoom=5, fill_value=0):
      arrmax = np.nanmax(arr[Tiy:Tiy+sNy,Tix:Tix+sNx])
 
      ax2 = zoomed_inset_axes(ax, zoom=sel_zoom, loc=locz, borderpad=-1)
-     pc=ax2.pcolor(arr,vmin=arrmin,vmax=arrmax,cmap=plt.cm.jet)
+     pc=ax2.pcolormesh(arr,vmin=arrmin,vmax=arrmax,cmap=plt.cm.jet)
 
      ax2.set_xlim([major_xticks[Tind[1]],major_xticks[Tind[1]]+sNx])
      ax2.set_ylim([major_yticks[Tind[0]],major_xticks[Tind[0]]+sNy])
@@ -353,12 +360,13 @@ def writebin(fname, arr, dataprec='float32', machineformat='b'):
           Numpy array to write
     dataprec : string
                precision of resulting file ('float32' or 'float64')
+               ('float32' by default)
     machineformat : string
                     'b' or 'l' for big or little endian
-
-    Example
-    -------
-    >>> writebin('bathy.bin',bathy)
+                    ('b' by default)  
+    Usage
+    -----
+    >>> writebin('data.bin',arr)
     '''
 
     tp = _typeprefixes[machineformat]

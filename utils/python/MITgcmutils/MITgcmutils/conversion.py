@@ -12,7 +12,7 @@ def pfromz(rC, rF0=0.0, lat=None, rhoConst=1.0275e+3, eosRefP0=1.01325e+5,
 
     Parameters
     ----------
-    rC : array_like
+    rC : float or array_like
         Depth at c point [m].
     rF0 : float or array_like
         Depth at rF[k=0], default 0.
@@ -69,4 +69,3 @@ def pfromz(rC, rF0=0.0, lat=None, rhoConst=1.0275e+3, eosRefP0=1.01325e+5,
     p = (top_Pres - rhoConst*dz*gravity + pref)*1e-4
 
     return p
-

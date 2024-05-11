@@ -240,7 +240,6 @@ def jmd95(salt,theta,p):
 
     Notes
     -----
-    AUTHOR:     Martin Losch 2002-08-09  (mlosch@mit.edu)
 
     Jackett and McDougall, 1995, JAOT 12(4), pp. 381-388
     """
@@ -590,10 +589,6 @@ def mdjwf(salt,theta,p,epsln=0):
     >>> dens.mdjwf(35.5, 3., 3000.)
     1041.83305
 
-    Notes
-    -----
-    AUTHOR:     Martin Losch 2002-08-09  (mlosch@mit.edu)
-
     McDougall et al., 2003, JAOT 20(5), pp. 730-741
     """
 
@@ -692,9 +687,6 @@ def teos10(salt,theta,p,epsln=0):
     >>> dens.teos10(35.5, 3., 3000.)
     1041.70578
 
-    Notes
-    -----
-    AUTHOR:     Martin Losch 2002-08-09  (mlosch@mit.edu)
 
     """
 
