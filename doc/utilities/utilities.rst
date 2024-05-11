@@ -84,10 +84,10 @@ llc
 .. automodule:: MITgcmutils.llc
     :members:
 
-tests
------
+examples
+--------
 
-.. automodule:: MITgcmutils.tests
+.. automodule:: MITgcmutils.examples
     :members:
 
 .. _gluemncbig:
