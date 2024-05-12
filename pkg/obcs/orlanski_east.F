@@ -1,18 +1,14 @@
-cc
-
 #include "OBCS_OPTIONS.h"
 
       SUBROUTINE ORLANSKI_EAST( bi, bj, futureTime,
      I                      uVel, vVel, wVel, theta, salt,
      I                      myThid )
-C     /==========================================================\
+C     *==========================================================*
 C     | SUBROUTINE ORLANSKI_EAST                                 |
 C     | o Calculate future boundary data at open boundaries      |
 C     |   at time = futureTime by applying Orlanski radiation    |
 C     |   conditions.                                            |
-C     |==========================================================|
-C     |                                                          |
-C     \==========================================================/
+C     *==========================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -86,11 +82,11 @@ C     == Routine arguments ==
 
 #ifdef ALLOW_ORLANSKI
 #ifdef ALLOW_OBCS_EAST
-
 C     == Local variables ==
       INTEGER J, K, I_obc
       _RL CL, ab1, ab2, fracCVEL, f1, f2
       _RL denom
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       ab1   =  1.5 _d 0 + abEps /* Adams-Bashforth coefficients */
       ab2   = -0.5 _d 0 - abEps
@@ -106,16 +102,15 @@ C     Eastern OB (Orlanski Radiation Condition)
          DO J=1-OLy,sNy+OLy
             I_obc=OB_Ie(J,bi,bj)
             IF ( I_obc.NE.OB_indexNone ) THEN
-C              uVel
-               denom = 
+C-             uVel
+               denom =
      &          (ab1*UE_STORE_2(J,K,bi,bj) + ab2*UE_STORE_3(J,K,bi,bj))
                IF ( denom .NE. 0 _d 0 ) THEN
-                  CL=-(uVel(I_obc-1,J,K,bi,bj)-UE_STORE_1(J,K,bi,bj))/
-     &          denom
-                  CL=MAX(CL, 0. _d 0)
-                  CL=MIN(CL, CMAX)
+                 CL =-(uVel(I_obc-1,J,K,bi,bj)-UE_STORE_1(J,K,bi,bj))
+     &              / denom
+                 CL = MIN( MAX( CL, zeroRL ), CMAX )
                ELSE
-                  CL=0
+                 CL = 0. _d 0
                ENDIF
                IF (useFixedCEast) THEN
 C                Fixed phase speed (ignoring all of that painstakingly
@@ -130,16 +125,16 @@ C              update OBC to next timestep
      &           CVEL_UE(J,K,bi,bj)*(deltaT*recip_dxF(I_obc-1,J,bi,bj))*
      &           (ab1*(uVel(I_obc,J,K,bi,bj)-uVel(I_obc-1,J,K,bi,bj)) +
      &           ab2*(UE_STORE_4(J,K,bi,bj)-UE_STORE_1(J,K,bi,bj)))
-C              vVel
+
+C-             vVel
                denom =
      &          (ab1*VE_STORE_2(J,K,bi,bj) + ab2*VE_STORE_3(J,K,bi,bj))
                IF ( denom .NE. 0 _d 0 ) THEN
-                  CL=-(vVel(I_obc-1,J,K,bi,bj)-VE_STORE_1(J,K,bi,bj))/
-     &          denom
-                  CL=MAX(CL, 0. _d 0)
-                  CL=MIN(CL, CMAX)
+                 CL =-(vVel(I_obc-1,J,K,bi,bj)-VE_STORE_1(J,K,bi,bj))
+     &              / denom
+                 CL = MIN( MAX( CL, zeroRL ), CMAX )
                ELSE
-                  CL=0
+                 CL = 0. _d 0
                ENDIF
                IF (useFixedCEast) THEN
 C                Fixed phase speed (ignoring all of that painstakingly
@@ -154,16 +149,16 @@ C              update OBC to next timestep
      &           CVEL_VE(J,K,bi,bj)*(deltaT*recip_dxV(I_obc,J,bi,bj))*
      &           (ab1*(vVel(I_obc,J,K,bi,bj)-vVel(I_obc-1,J,K,bi,bj)) +
      &           ab2*(VE_STORE_4(J,K,bi,bj)-VE_STORE_1(J,K,bi,bj)))
-C              Temperature
+
+C-             Temperature
                denom =
      &          (ab1*TE_STORE_2(J,K,bi,bj) + ab2*TE_STORE_3(J,K,bi,bj))
                IF ( denom .NE. 0 _d 0 ) THEN
-                  CL=-(theta(I_obc-1,J,K,bi,bj)-TE_STORE_1(J,K,bi,bj))/
-     &          denom
-                  CL=MAX(CL, 0. _d 0)
-                  CL=MIN(CL, CMAX)
+                 CL =-(theta(I_obc-1,J,K,bi,bj)-TE_STORE_1(J,K,bi,bj))
+     &              / denom
+                 CL = MIN( MAX( CL, zeroRL ), CMAX )
                ELSE
-                  CL=0
+                 CL = 0. _d 0
                ENDIF
                IF (useFixedCEast) THEN
 C                Fixed phase speed (ignoring all of that painstakingly
@@ -178,18 +173,17 @@ C              update OBC to next timestep
      &           CVEL_TE(J,K,bi,bj)*(deltaT*recip_dxC(I_obc,J,bi,bj))*
      &           (ab1*(theta(I_obc,J,K,bi,bj)-theta(I_obc-1,J,K,bi,bj))+
      &           ab2*(TE_STORE_4(J,K,bi,bj)-TE_STORE_1(J,K,bi,bj)))
-C              Salinity
+
+C-             Salinity
                denom =
      &          (ab1*SE_STORE_2(J,K,bi,bj) + ab2*SE_STORE_3(J,K,bi,bj))
                IF ( denom .NE. 0 _d 0 ) THEN
-                  CL=-(salt(I_obc-1,J,K,bi,bj)-SE_STORE_1(J,K,bi,bj))/
-     &          denom
-                  CL=MAX(CL, 0. _d 0)
-                  CL=MIN(CL, CMAX)
+                 CL =-(salt(I_obc-1,J,K,bi,bj)-SE_STORE_1(J,K,bi,bj))
+     &              / denom
+                 CL = MIN( MAX( CL, zeroRL ), CMAX )
                ELSE
-                  CL=0
+                 CL = 0. _d 0
                ENDIF
-
                IF (useFixedCEast) THEN
 C                Fixed phase speed (ignoring all of that painstakingly
 C                saved data...)
@@ -203,20 +197,19 @@ C              update OBC to next timestep
      &           CVEL_SE(J,K,bi,bj)*(deltaT*recip_dxC(I_obc,J,bi,bj))*
      &           (ab1*(salt(I_obc,J,K,bi,bj)-salt(I_obc-1,J,K,bi,bj))+
      &           ab2*(SE_STORE_4(J,K,bi,bj)-SE_STORE_1(J,K,bi,bj)))
+
 #ifdef ALLOW_NONHYDROSTATIC
              IF ( nonHydrostatic ) THEN
-C              wVel
+C-             wVel
                denom =
      &          (ab1*WE_STORE_2(J,K,bi,bj)+ab2*WE_STORE_3(J,K,bi,bj))
                IF ( denom .NE. 0 _d 0 ) THEN
-                  CL=-(wVel(I_obc-1,J,K,bi,bj)-WE_STORE_1(J,K,bi,bj))/
-     &          denom
-                  CL=MAX(CL, 0. _d 0)
-                  CL=MIN(CL, CMAX)
+                 CL =-(wVel(I_obc-1,J,K,bi,bj)-WE_STORE_1(J,K,bi,bj))
+     &              / denom
+                 CL = MIN( MAX( CL, zeroRL ), CMAX )
                ELSE
-                  CL=0
+                 CL = 0. _d 0
                ENDIF
-
                IF (useFixedCEast) THEN
 C                Fixed phase speed (ignoring all of that painstakingly
 C                saved data...)
@@ -232,7 +225,8 @@ C              update OBC to next timestep
      &           ab2*(WE_STORE_4(J,K,bi,bj)-WE_STORE_1(J,K,bi,bj)))
              ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
-C              update/save storage arrays
+
+C-             update/save storage arrays
 C              uVel
 C              copy t-1 to t-2 array
                UE_STORE_3(J,K,bi,bj)=UE_STORE_2(J,K,bi,bj)
@@ -281,7 +275,7 @@ C              copy (current time) t to t-1 arrays
          ENDDO
       ENDDO
 
-#endif
+#endif /* ALLOW_OBCS_EAST */
 #endif /* ALLOW_ORLANSKI */
       RETURN
       END
