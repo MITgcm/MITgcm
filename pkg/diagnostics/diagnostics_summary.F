@@ -4,7 +4,8 @@ CBOP 0
 C     !ROUTINE: DIAGNOSTICS_SUMMARY
 
 C     !INTERFACE:
-      SUBROUTINE DIAGNOSTICS_SUMMARY( myTime, myIter, myThid )
+      SUBROUTINE DIAGNOSTICS_SUMMARY(
+     I                       seqFlag, myTime, myIter, myThid )
 
 C     !DESCRIPTION:
 C     Write a summary of diagnostics state to ASCII file unit "dUnit"
@@ -21,10 +22,20 @@ C     !USES:
 #include "DIAGNOSTICS.h"
 
 C     !INPUT PARAMETERS:
-C     myThid :: my Thread Id number
+C     seqFlag  :: flag that indicates where this S/R is called from:
+C              :: = 0 : called from DIAGNOSTICS_INIT_VARIA
+C              :: = 1 : called from DIAGNOSTICS_WRITE, forward sweep
+C              :: =-1 : called from DIAGNOSTICS_WRITE_ADJ, backward sweep
+C     myTime   :: current Time of simulation ( s )
+C     myIter   :: current Iteration number
+C     myThid   :: my Thread Id number
+      INTEGER seqFlag
       _RL     myTime
       INTEGER myIter, myThid
-CEOP
+
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
       INTEGER md, ld, ndId, ipt, im
@@ -36,16 +47,18 @@ C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(72) ccLine, ccFlds, ccList
       LOGICAL  outpSummary
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
+#ifdef ALLOW_AUTODIFF
+      CHARACTER*(3) sfx3c
+#endif
+CEOP
 
       _BEGIN_MASTER( myThid )
       stdUnit = standardMessageUnit
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      IF ( debugLevel.GE.debLevB ) THEN
-       IF ( myIter.EQ.nIter0 ) THEN
+      IF ( diag_dBugLevel.GE.debLevB ) THEN
+       IF ( seqFlag.EQ.0 ) THEN
         outpSummary = .TRUE.
         dUnit = standardMessageUnit
         WRITE(msgBuf,'(A,I6)')
@@ -54,7 +67,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        ELSE
         outpSummary = ( myXGlobalLo.EQ.1 .AND. myYGlobalLo.EQ.1 )
         IF ( outpSummary ) THEN
-         WRITE(fn,'(A,I10.10,A)') 'diagnostics_status.',myIter,'.txt'
+#ifdef ALLOW_AUTODIFF
+         sfx3c = 'fwd'
+         IF ( seqFlag.EQ.-1 ) sfx3c = 'adm'
+         WRITE(fn,'(3A,I10.10,A)') 'diagnostics_status.',
+     %                              sfx3c, '.', myIter, '.txt'
+#else /* ALLOW_AUTODIFF */
+         WRITE(fn,'(A,I10.10,A)') 'diagnostics_status.', myIter, '.txt'
+#endif /* ALLOW_AUTODIFF */
          iLen = ILNBLNK(fn)
          CALL MDSFINDUNIT( dUnit, myThid )
          OPEN(dUnit,file=fn(1:iLen),status='unknown',form='formatted')
@@ -67,7 +87,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        outpSummary = .FALSE.
       ENDIF
 
-      IF ( outpSummary .AND. debugLevel.GE.debLevB ) THEN
+      IF ( outpSummary .AND. diag_dBugLevel.GE.debLevB ) THEN
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     write a summary diagnostics state:
 
