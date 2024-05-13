@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/obcs:
+  - fix unusual division by zero in all 4 (N,S,E,W) orlanski main S/R.
 o pkg/diagnostics:
   - new header file "DIAGNOSTICS_P2SHARE.h" (for now, just for useDiag4AdjOutp),
     and remove DIAGNOSTICS.h in any src code outside pkg/diagnostics;
