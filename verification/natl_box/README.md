@@ -1,22 +1,31 @@
 Example: Subtropical North Atlantic Subduction area
 ====================================================
+This experiment has been moved (PR #830) inside `lab_sea` and is now run there
+as secondary tests ("lab_sea.natl_box" and "lab_sea.longstep") 
+using `input.natl_box/` and `input.longstep/`.
+
+Original Description:
+=====================
 - with KPP & shortwave heating
 - no GMRedi
 
 Configure and compile the code:
+```
   cd build
   ../../../tools/genmake2 -mods ../code [-of my_platform_optionFile]
   make depend
   make
   cd ..
-
+```
 To run:
+```
   cd run
   ln -s ../input/* .
   ../input/prepare_run
   ln -s ../build/mitgcmuv .
   ./mitgcmuv > output.txt
   cd ..
+```
 
 There is comparison output in the directory:
   results/output.txt
@@ -28,10 +37,12 @@ It is based on the boundary layer depth and will either issue:
 or:
 'North Atlantic test failed.  KPPhbl file has changed.'
 
+```
   cd run
   ln -sf ../output/KPPhbl.001.001.data KPPhbl_orig
   f77 ../results/comp_orig.F -o comp_orig
   comp_orig
+```
 
 N.B.: On ORIGIN 2000 use f77 -bytereclen
 
