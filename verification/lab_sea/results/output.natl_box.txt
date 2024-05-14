@@ -1,1 +1,1 @@
-../../natl_box/results/output.txt
+../../natl_box/results/output.natl_box.txt
