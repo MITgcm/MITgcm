@@ -112,7 +112,7 @@ C-          Check for empty Diag (= not filled or using empty mask)
              _END_MASTER( myThid )
             ENDIF
 
-            IF ( debugLevel .GE. debLevB ) THEN
+            IF ( diag_dBugLevel .GE. debLevB ) THEN
              _BEGIN_MASTER( myThid )
               WRITE(ioUnit,'(A,I6,3A,I4,A,1PE10.3,2A)')
      &         ' Compute Stats, Diag. # ',ndId, '  ', cdiag(ndId),
