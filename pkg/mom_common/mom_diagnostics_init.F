@@ -476,6 +476,7 @@ C-    vertical momentum tendencies
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 #endif /* ALLOW_NONHYDROSTATIC */
 
+#ifdef ALLOW_MOM_TEND_EXTRA_DIAGS
 cHP putting this back in
       diagName  = 'UBotDrag'
       diagTitle = 'U momentum tendency from Bottom Drag'
@@ -503,6 +504,7 @@ cHP adding diagnostic for drag from ice shelf to allow exp. dissip decomp
       diagMate  = diagNum
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+#endif
 
 C--   add diagnostics of advective & viscous flux :
 C-    bottom fluxes:

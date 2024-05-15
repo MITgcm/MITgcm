@@ -137,12 +137,14 @@ C     vort3BC  :: same as vort3  but account for no-slip BC
       _RL viscAh_D(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_Z(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_D(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#if ( defined ALLOW_MOM_COMMON && defined ALLOW_MOM_COMMON )
 #ifdef ALLOW_DIAGNOSTICS
       _RL tmpDragU(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tmpDragV(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tmpDragU2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tmpDragV2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-#endif
+#endif /* ALLOW_DIAGNOSTICS */
+#endif /* defined ALLOW_MOM_COMMON && defined ALLOW_MOM_COMMON */
 C     i,j    :: Loop counters
       INTEGER i,j
 C     xxxFac :: On-off tracer parameters used for switching terms off.
@@ -211,13 +213,15 @@ C--   Initialise intermediate terms
         zStar(i,j) = 0.
         guDiss(i,j)= 0.
         gvDiss(i,j)= 0.
+#if ( defined ALLOW_MOM_COMMON && defined ALLOW_MOM_COMMON )
 #ifdef ALLOW_DIAGNOSTICS
 cHP initialize arrays for explicit bottom drag & shelf ice drag tendencies
         tmpDragU(i,j)= 0.
         tmpDragV(i,j)= 0.
         tmpDragU2(i,j)= 0.
         tmpDragV2(i,j)= 0.
-#endif
+#endif /* ALLOW_DIAGNOSTICS */
+#endif /* defined ALLOW_MOM_COMMON && defined ALLOW_MOM_COMMON */
 #if ( defined ALLOW_GGL90 && defined ALLOW_GGL90_LANGMUIR )
 c       uRes(i,j)  = 0.
 c       vRes(i,j)  = 0.
@@ -267,6 +271,7 @@ C       vorticity at a no-slip boundary by a factor of 2 = sideDragFactor
        bottomDragTerms=.FALSE.
       ENDIF
 
+#if ( defined ALLOW_MOM_COMMON && defined ALLOW_MOM_COMMON )
 cHP compute tendency from bottom and ice shelf drag only if we ask for it
 #ifdef ALLOW_DIAGNOSTICS
       botdragDiagIsOn = .FALSE.
@@ -277,7 +282,8 @@ cHP compute tendency from bottom and ice shelf drag only if we ask for it
        shelfdragDiagIsOn = DIAGNOSTICS_IS_ON( 'UShIDrag', myThid )
      &            .OR. DIAGNOSTICS_IS_ON( 'VShIDrag', myThid )
       ENDIF
-#endif
+#endif /* ALLOW_DIAGNOSTICS */
+#endif /* defined ALLOW_MOM_COMMON && defined ALLOW_MOM_COMMON */
 
 C--   Calculate open water fraction at vorticity points
       CALL MOM_CALC_HFACZ(bi,bj,k,hFacZ,r_hFacZ,myThid)
@@ -524,21 +530,25 @@ CADJ STORE cDrag(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
           DO i=iMin,iMax
            botDragU(i,j,bi,bj) = botDragU(i,j,bi,bj)
      &                         - cDrag(i,j)*uFld(i,j)*rUnit2mass
+#if ( defined ALLOW_MOM_COMMON && defined ALLOW_MOM_COMMON )
 #ifdef ALLOW_DIAGNOSTICS
 cHP store bottom drag tendency: cDrag (m/s) * uFld (m/s) * _recip_hFacW * recip_drF (1/m) = m/s^2
            IF ( botdragDiagIsOn ) THEN
             tmpDragU(i,j) = tmpDragU(i,j) - cDrag(i,j)*uFld(i,j)
      &                  *_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
            ENDIF
-#endif
+#endif /* ALLOW_DIAGNOSTICS */
+#endif /* defined ALLOW_MOM_COMMON && defined ALLOW_MOM_COMMON */
           ENDDO
          ENDDO
+#if ( defined ALLOW_MOM_COMMON && defined ALLOW_MOM_COMMON )
 #ifdef ALLOW_DIAGNOSTICS
 cHP writing out explicit bottomdrag diags
          IF ( botdragDiagIsOn ) THEN
           CALL DIAGNOSTICS_FILL(tmpDragU,'UBotDrag',k,1,2,bi,bj,myThid)
          ENDIF
-#endif
+#endif /* ALLOW_DIAGNOSTICS */
+#endif /* defined ALLOW_MOM_COMMON && defined ALLOW_MOM_COMMON */
         ENDIF
        ENDIF
 #ifdef ALLOW_SHELFICE
@@ -558,21 +568,25 @@ CADJ STORE cDrag(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
            gUdiss(i,j) = gUdiss(i,j)
      &                 - cDrag(i,j)*uFld(i,j)
      &                 *_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
+#if ( defined ALLOW_MOM_COMMON && defined ALLOW_MOM_COMMON )
 #ifdef ALLOW_DIAGNOSTICS
 cHP store shelf ice drag tendency
            IF ( useDiagnostics .AND. shelfdragDiagIsOn ) THEN
             tmpDragU2(i,j) = tmpDragU2(i,j) - cDrag(i,j)*uFld(i,j)
      &                  *_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
            ENDIF
-#endif
+#endif /* ALLOW_DIAGNOSTICS */
+#endif /* defined ALLOW_MOM_COMMON && defined ALLOW_MOM_COMMON */
          ENDDO
         ENDDO
+#if ( defined ALLOW_MOM_COMMON && defined ALLOW_MOM_COMMON )
 #ifdef ALLOW_DIAGNOSTICS
 cHP writing out explicit shelf ice drag diags
         IF ( useDiagnostics .AND. shelfdragDiagIsOn ) THEN
          CALL DIAGNOSTICS_FILL(tmpDragU2,'UShIDrag',k,1,2,bi,bj,myThid)
         ENDIF
-#endif
+#endif /* ALLOW_DIAGNOSTICS */
+#endif /* defined ALLOW_MOM_COMMON && defined ALLOW_MOM_COMMON */
        ENDIF
 #endif /* ALLOW_SHELFICE */
 
@@ -644,21 +658,25 @@ CADJ STORE cDrag(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
           DO i=iMin,iMax
            botDragV(i,j,bi,bj) = botDragV(i,j,bi,bj)
      &                         - cDrag(i,j)*vFld(i,j)*rUnit2mass
+#if ( defined ALLOW_MOM_COMMON && defined ALLOW_MOM_COMMON )
 #ifdef ALLOW_DIAGNOSTICS
 cHP store bottom drag tendency: cDrag (m/s) * vFld (m/s) * _recip_hFacS * recip_drF (1/m) = m/s^2
            IF ( botdragDiagIsOn ) THEN
             tmpDragV(i,j) = tmpDragV(i,j) - cDrag(i,j)*vFld(i,j)
      &                  *_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
            ENDIF
-#endif
+#endif /* ALLOW_DIAGNOSTICS */
+#endif /* defined ALLOW_MOM_COMMON && defined ALLOW_MOM_COMMON */
           ENDDO
          ENDDO
+#if ( defined ALLOW_MOM_COMMON && defined ALLOW_MOM_COMMON )
 #ifdef ALLOW_DIAGNOSTICS
 cHP writing out explicit bottomdrag diags
          IF ( botdragDiagIsOn ) THEN
           CALL DIAGNOSTICS_FILL(tmpDragV,'VBotDrag',k,1,2,bi,bj,myThid)
          ENDIF
-#endif
+#endif /* ALLOW_DIAGNOSTICS */
+#endif /* defined ALLOW_MOM_COMMON && defined ALLOW_MOM_COMMON */
         ENDIF
        ENDIF
 #ifdef ALLOW_SHELFICE
@@ -678,21 +696,25 @@ CADJ STORE cDrag(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
            gvDiss(i,j) = gvDiss(i,j)
      &                 - cDrag(i,j)*vFld(i,j)
      &                 *_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
+#if ( defined ALLOW_MOM_COMMON && defined ALLOW_MOM_COMMON )
 #ifdef ALLOW_DIAGNOSTICS
 cHP store shelf ice drag tendency
           IF ( useDiagnostics .AND. shelfdragDiagIsOn ) THEN
            tmpDragV2(i,j) = tmpDragV2(i,j) - cDrag(i,j)*vFld(i,j)
      &                 *_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
           ENDIF
-#endif
+#endif /* ALLOW_DIAGNOSTICS */
+#endif /* defined ALLOW_MOM_COMMON && defined ALLOW_MOM_COMMON */
          ENDDO
         ENDDO
+#if ( defined ALLOW_MOM_COMMON && defined ALLOW_MOM_COMMON )
 #ifdef ALLOW_DIAGNOSTICS
 cHP writing out shelf ice drage tendency
         IF ( useDiagnostics .AND. shelfdragDiagIsOn ) THEN
          CALL DIAGNOSTICS_FILL(tmpDragV2,'VShIDrag',k,1,2,bi,bj,myThid)
         ENDIF
-#endif
+#endif /* ALLOW_DIAGNOSTICS */
+#endif /* defined ALLOW_MOM_COMMON && defined ALLOW_MOM_COMMON */
        ENDIF
 #endif /* ALLOW_SHELFICE */
 
