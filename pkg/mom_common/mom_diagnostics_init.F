@@ -490,20 +490,6 @@ cHP putting this back in
       diagMate  = diagNum
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-
-cHP adding diagnostic for drag from ice shelf to allow exp. dissip decomp
-      diagName  = 'UShIDrag'
-      diagTitle = 'U momentum tendency from ice shelf Drag'
-      diagCode  = 'UUR     MR      '
-      diagMate  = diagNum + 2
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-      diagName  = 'VShIDrag'
-      diagTitle = 'V momentum tendency from ice shelf Drag'
-      diagCode  = 'VVR     MR      '
-      diagMate  = diagNum
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 #endif
 
 C--   add diagnostics of advective & viscous flux :
