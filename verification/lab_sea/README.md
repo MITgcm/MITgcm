@@ -5,14 +5,14 @@ Labrador Sea Region with Sea-Ice
 This example sets up a small (20x16x23) Labrador Sea experiment
 coupled to a dynamic thermodynamic sea-ice model (MITgcm Documentation 8.6.2).
 
-The domain of integration spans $[280, 320]^\circ$E and $[46, 78]^\circ$N.
+The domain of integration spans $`[280, 320]^\circ`$E and $`[46, 78]^\circ`$N.
 Horizontal grid spacing is 2 degrees.
 The 23 vertical levels and the bathymetry file
 
 ```
   bathyFile      = 'bathy.labsea1979'
 ```
-are obtained from the the 2$^\circ$ ECCO configuration.
+are obtained from the the 2$`^\circ`$ ECCO configuration.
 
 Integration is initialized from annual-mean Levitus climatology
 
