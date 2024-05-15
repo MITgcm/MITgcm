@@ -1,7 +1,7 @@
 Example: Subtropical North Atlantic Subduction area
 ====================================================
 This experiment has been moved (PR #830) inside `lab_sea` and is now run there
-as secondary tests ("lab_sea.natl_box" and "lab_sea.longstep") 
+as secondary tests (`lab_sea.natl_box` and `lab_sea.longstep`) 
 using `input.natl_box/` and `input.longstep/`.
 
 Original Description:
@@ -10,6 +10,7 @@ Original Description:
 - no GMRedi
 
 Configure and compile the code:
+
 ```
   cd build
   ../../../tools/genmake2 -mods ../code [-of my_platform_optionFile]
@@ -17,7 +18,9 @@ Configure and compile the code:
   make
   cd ..
 ```
+
 To run:
+
 ```
   cd run
   ln -s ../input/* .
@@ -28,14 +31,17 @@ To run:
 ```
 
 There is comparison output in the directory:
-  results/output.txt
+  `results/output.txt`
 
 ----------------------------------------------------
 A FORTRAN program provides a verification procedure.
 It is based on the boundary layer depth and will either issue:
-'North Atlantic test passed.  KPPhbl file is unchanged.'
+
+```'North Atlantic test passed.  KPPhbl file is unchanged.'```
+
 or:
-'North Atlantic test failed.  KPPhbl file has changed.'
+
+```'North Atlantic test failed.  KPPhbl file has changed.'```
 
 ```
   cd run
@@ -44,12 +50,12 @@ or:
   comp_orig
 ```
 
-N.B.: On ORIGIN 2000 use f77 -bytereclen
+N.B.: On ORIGIN 2000 use `f77 -bytereclen`
 
-A matlab script, matlab/comp_output.m, creates plots for
+A matlab script, `matlab/comp_output.m`, creates plots for
 reference (c32) and new surface temperature, boundary layer depth,
 meridional section of tracer diffusivities, and
 corresponding differences.
 
 Comments:
-The input data is real*4.
+The input data is `real*4`.

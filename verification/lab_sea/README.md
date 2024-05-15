@@ -5,14 +5,14 @@ Labrador Sea Region with Sea-Ice
 This example sets up a small (20x16x23) Labrador Sea experiment
 coupled to a dynamic thermodynamic sea-ice model (MITgcm Documentation 8.6.2).
 
-The domain of integration spans $`[280, 320]^\circ`$E and $`[46, 78]^\circ`$N.
+The domain of integration spans $[280, 320]^\circ$E and $[46, 78]^\circ$N.
 Horizontal grid spacing is 2 degrees.
 The 23 vertical levels and the bathymetry file
 
 ```
   bathyFile      = 'bathy.labsea1979'
 ```
-are obtained from the the 2$`^\circ`$ ECCO configuration.
+are obtained from the the 2$^\circ$ ECCO configuration.
 
 Integration is initialized from annual-mean Levitus climatology
 
@@ -28,7 +28,7 @@ Surface salinity relaxation is to the monthly mean Levitus climatology
 ```
 
 Forcing files are a 1979-1999 monthly climatology computed from the
-NCEP reanalysis (see [SEAICE_PARAMS.h](https://github.com/MITgcm/MITgcm/blob/master/pkg/seaice/SEAICE_PARAMS.h) for units and signs)
+NCEP reanalysis (see [`SEAICE_PARAMS.h`](https://github.com/MITgcm/MITgcm/blob/master/pkg/seaice/SEAICE_PARAMS.h) for units and signs)
 
 ```
   uwindFile      = 'u10m.labsea1979'  # 10-m zonal wind
@@ -41,7 +41,7 @@ NCEP reanalysis (see [SEAICE_PARAMS.h](https://github.com/MITgcm/MITgcm/blob/mas
 ```
 
 The experiment uses `pkg/gmredi`, `pkg/kpp`, `pkg/seaice`, and `pkg/exf`.
-The test is a 1-cpu, 10-hour integration.   Both the atmospheric
+The test is a 1-cpu, 10-hour integration. Both the atmospheric
 state and the open-water surface fluxes are provided by `pkg/exf`.
 
 More `pkg/seaice` test experiments, configured for low and
