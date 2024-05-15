@@ -1,6 +1,24 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification:
+  - changing domain decomposition (more tiles) in global_with_exf experiment
+    (both FWD & AD) and update ref. output ;
+  - use correct CD-Scheme time-stepping in FWD exp. global_ocean_ebm and update
+    ref. output ;
+  - simplify global_ocean.90x40x15/code_ad (undef ALLOW_GENTIM2D_CONTROL, 
+    ALLOW_DIFFKR_CONTROL & ALLOW_3D_DIFFKR); remove kpp from global_oce_latlon
+    (from both TAF & Tapenade code) ;
+  - after adjusting new host experiment code, merge forward test:
+      flt_example            --> exp4.with_flt
+      global_with_exf        --> global_ocean_ebm.w_exf
+      global_with_exf.yearly --> global_ocean_ebm.yearly
+      natl_box               --> lab_sea.natl_box
+      natl_box.longstep      --> lab_sea.longstep
+    and TAF & Tapenade tests:
+      global_with_exf        --> global_oce_latlon.w_exf
+    For now, keep original set-up in place and add symbolic links into new
+    host exp. for input dir and ref. output to run these as secondary test.
 o pkg/obcs:
   - fix unusual division by zero in all 4 (N,S,E,W) orlanski main S/R.
 o pkg/diagnostics:
