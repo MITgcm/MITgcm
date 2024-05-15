@@ -1,13 +1,11 @@
 Global ocean on Lat-Lon grid using forcing from pkg/exf
 =========================================================
 This experiment has been moved (PR #830):
-
-1. inside `global_ocean_ebm` (Forward set-up) and is now run there 
-   as secondary tests (`global_ocean_ebm.w_exf` & `global_ocean_ebm.yearly`)
+1. inside `global_ocean_ebm` (Forward set-up) and is now run there
+   as secondary tests ("global_ocean_ebm.w_exf" & "global_ocean_ebm.yearly")
    using `input.w_exf/` and `input.yearly/`.
-
-2. inside `global_oce_latlon` (Adjoint set-ups) and is now run there 
-   as a secondary test (`global_oce_latlon.w_exf`) 
+2. inside `global_oce_latlon` (Adjoint set-ups) and is now run there
+   as a secondary test ("global_oce_latlon.w_exf")
    using `input_ad.w_exfs/` and `input_tap.w_exf/`.
 
 Original Description:
@@ -20,7 +18,6 @@ the `exf` (and `cal`) package instead of the
 external_fields_load routine.
 To obtain identical results between the two experiments,
 the following 2 modifications are necessary:
-
 1. in `external_fields_load.F`:
    replace the line
       `Imytm=int(myTime*rdt+0.5)`
@@ -52,9 +49,9 @@ non-periodic domain, make sure there is sufficient padding
 at the edges, i.e., two points for bicubic and one for bilinear
 interpolation.
 
-The `verification/global_with_exf` experiment has been modified to use 
-the `USE_EXF_INTERPOLATION` option, the input grids being defined by variables 
-`*_lon0`, `*_lon_inc`, `*_lat0`, `*_lat_inc`, `*_nlon` and `*_nlat` 
+The `verification/global_with_exf` experiment has been modified to use
+the `USE_EXF_INTERPOLATION` option, the input grids being defined by variables
+`*_lon0`, `*_lon_inc`, `*_lat0`, `*_lat_inc`, `*_nlon` and `*_nlat`
 in `input/dat.exf` and `input/data.exf_clim`
 
 ```

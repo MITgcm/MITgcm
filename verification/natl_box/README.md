@@ -1,7 +1,7 @@
 Example: Subtropical North Atlantic Subduction area
 ====================================================
 This experiment has been moved (PR #830) inside `lab_sea` and is now run there
-as secondary tests (`lab_sea.natl_box` and `lab_sea.longstep`) 
+as secondary tests ("lab_sea.natl_box" and "lab_sea.longstep")
 using `input.natl_box/` and `input.longstep/`.
 
 Original Description:
@@ -10,7 +10,6 @@ Original Description:
 - no GMRedi
 
 Configure and compile the code:
-
 ```
   cd build
   ../../../tools/genmake2 -mods ../code [-of my_platform_optionFile]
@@ -20,7 +19,6 @@ Configure and compile the code:
 ```
 
 To run:
-
 ```
   cd run
   ln -s ../input/* .

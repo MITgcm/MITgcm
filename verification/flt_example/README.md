@@ -23,9 +23,6 @@ To run:
 There is comparison output in the directory:
   `results/output.txt`
 
-There is comparison output in the directory:
- `../verification/flt_example/results`
-
 Comments:
 The input data is `real*8`.
 
