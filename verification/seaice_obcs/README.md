@@ -16,5 +16,7 @@ at the open-boundaries (`useOBCStides=.TRUE.`) in addition to prescribed OBCS fr
 primary test. The additional tidal component binary input files have been generated using
 the matlab script `mk_tides.m` (see comments inside).
 
-Note: specification of tidal components have been updated in PR [#752](https://github.com/MITgcm/MITgcm/pull/752)
- (see [`input.tides/update_TideFileName.sed`](input.tides/update_TideFileName.sed) on how to update `data.obcs`)
+Note: naming of tidal input files ("OB\*File") has been changed and augmented to include
+Open-Boundary tangential flows in PR [#752](https://github.com/MITgcm/MITgcm/pull/752)
+ (see [`input.tides/update_TideFileName.sed`](input.tides/update_TideFileName.sed) on how
+to update `data.obcs`)
