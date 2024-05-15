@@ -28,7 +28,7 @@ Surface salinity relaxation is to the monthly mean Levitus climatology
 ```
 
 Forcing files are a 1979-1999 monthly climatology computed from the
-NCEP reanalysis (see [`SEAICE_PARAMS.h`](https://github.com/MITgcm/MITgcm/blob/master/pkg/seaice/SEAICE_PARAMS.h) for units and signs)
+NCEP reanalysis (see [SEAICE_PARAMS.h](https://github.com/MITgcm/MITgcm/blob/master/pkg/seaice/SEAICE_PARAMS.h) for units and signs)
 
 ```
   uwindFile      = 'u10m.labsea1979'  # 10-m zonal wind
@@ -41,7 +41,7 @@ NCEP reanalysis (see [`SEAICE_PARAMS.h`](https://github.com/MITgcm/MITgcm/blob/m
 ```
 
 The experiment uses `pkg/gmredi`, `pkg/kpp`, `pkg/seaice`, and `pkg/exf`.
-The test is a 1-cpu, 10-hour integration. Both the atmospheric
+The test is a 1-cpu, 10-hour integration.   Both the atmospheric
 state and the open-water surface fluxes are provided by `pkg/exf`.
 
 More `pkg/seaice` test experiments, configured for low and
