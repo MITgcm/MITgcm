@@ -3,14 +3,12 @@
       SUBROUTINE ORLANSKI_SOUTH( bi, bj, futureTime,
      I                      uVel, vVel, wVel, theta, salt,
      I                      myThid )
-C     /==========================================================\
+C     *==========================================================*
 C     | SUBROUTINE ORLANSKI_SOUTH                                |
 C     | o Calculate future boundary data at open boundaries      |
 C     |   at time = futureTime by applying Orlanski radiation    |
 C     |   conditions.                                            |
-C     |==========================================================|
-C     |                                                          |
-C     \==========================================================/
+C     *==========================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -76,10 +74,11 @@ C     == Routine arguments ==
 
 #ifdef ALLOW_ORLANSKI
 #ifdef ALLOW_OBCS_SOUTH
-
 C     == Local variables ==
       INTEGER  I, K, J_obc
       _RL CL, ab1, ab2, fracCVEL, f1, f2
+      _RL denom
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       ab1   =  1.5 _d 0 + abEps /* Adams-Bashforth coefficients */
       ab2   = -0.5 _d 0 - abEps
@@ -95,18 +94,15 @@ C     Southern OB (Orlanski Radiation Condition)
          DO I=1-OLx,sNx+OLx
             J_obc=OB_Js(I,bi,bj)
             IF ( J_obc.NE.OB_indexNone ) THEN
-C              uVel
-               IF ((US_STORE_2(I,K,bi,bj).eq.0.).and.
-     &            (US_STORE_3(I,K,bi,bj).eq.0.)) THEN
-                  CL=0.
-               ELSE
-                  CL=(uVel(I,J_obc+1,K,bi,bj)-US_STORE_1(I,K,bi,bj))/
+C-             uVel
+                denom =
      &          (ab1*US_STORE_2(I,K,bi,bj) + ab2*US_STORE_3(I,K,bi,bj))
-               ENDIF
-               IF (CL.lt.0.) THEN
-                  CL=0.
-               ELSEIF (CL.gt.CMAX) THEN
-                  CL=CMAX
+               IF ( denom .NE. 0 _d 0 ) THEN
+                 CL = (uVel(I,J_obc+1,K,bi,bj)-US_STORE_1(I,K,bi,bj))
+     &              / denom
+                 CL = MIN( MAX( CL, zeroRL ), CMAX )
+               ELSE
+                 CL = 0. _d 0
                ENDIF
                CVEL_US(I,K,bi,bj) = f1*(CL*dyU(I,J_obc+2,bi,bj)/deltaT)+
      &                f2*CVEL_US(I,K,bi,bj)
@@ -115,18 +111,16 @@ C              update OBC to next timestep
      &          CVEL_US(I,K,bi,bj)*deltaT*recip_dyU(I,J_obc+1,bi,bj)*
      &          (ab1*(uVel(I,J_obc+1,K,bi,bj)-uVel(I,J_obc,K,bi,bj)) +
      &         ab2*(US_STORE_1(I,K,bi,bj)-US_STORE_4(I,K,bi,bj)))
-C              vVel (to be applied at J_obc+1)
-               IF ((VS_STORE_2(I,K,bi,bj).eq.0.).and.
-     &            (VS_STORE_3(I,K,bi,bj).eq.0.)) THEN
-                  CL=0.
-               ELSE
-                  CL=(vVel(I,J_obc+2,K,bi,bj)-VS_STORE_1(I,K,bi,bj))/
+
+C-             vVel (to be applied at J_obc+1)
+                denom =
      &          (ab1*VS_STORE_2(I,K,bi,bj) + ab2*VS_STORE_3(I,K,bi,bj))
-               ENDIF
-               IF (CL.lt.0.) THEN
-                  CL=0.
-               ELSEIF (CL.gt.CMAX) THEN
-                  CL=CMAX
+               IF ( denom .NE. 0 _d 0 ) THEN
+                 CL = (vVel(I,J_obc+2,K,bi,bj)-VS_STORE_1(I,K,bi,bj))
+     &              / denom
+                 CL = MIN( MAX( CL, zeroRL ), CMAX )
+               ELSE
+                 CL = 0. _d 0
                ENDIF
                CVEL_VS(I,K,bi,bj) = f1*(CL*dyF(I,J_obc+2,bi,bj)/deltaT)+
      &                f2*CVEL_VS(I,K,bi,bj)
@@ -135,18 +129,16 @@ C              update OBC to next timestep
      &          CVEL_VS(I,K,bi,bj)*deltaT*recip_dyF(I,J_obc+1,bi,bj)*
      &          (ab1*(vVel(I,J_obc+2,K,bi,bj)-vVel(I,J_obc+1,K,bi,bj))+
      &          ab2*(VS_STORE_1(I,K,bi,bj)-VS_STORE_4(I,K,bi,bj)))
-C              Temperature
-               IF ((TS_STORE_2(I,K,bi,bj).eq.0.).and.
-     &            (TS_STORE_3(I,K,bi,bj).eq.0.)) THEN
-                  CL=0.
-               ELSE
-                  CL=(theta(I,J_obc+1,K,bi,bj)-TS_STORE_1(I,K,bi,bj))/
+
+C-             Temperature
+                denom =
      &          (ab1*TS_STORE_2(I,K,bi,bj) + ab2*TS_STORE_3(I,K,bi,bj))
-               ENDIF
-               IF (CL.lt.0.) THEN
-                  CL=0.
-               ELSEIF (CL.gt.CMAX) THEN
-                  CL=CMAX
+               IF ( denom .NE. 0 _d 0 ) THEN
+                 CL = (theta(I,J_obc+1,K,bi,bj)-TS_STORE_1(I,K,bi,bj))
+     &              / denom
+                 CL = MIN( MAX( CL, zeroRL ), CMAX )
+               ELSE
+                 CL = 0. _d 0
                ENDIF
                CVEL_TS(I,K,bi,bj) = f1*(CL*dyC(I,J_obc+2,bi,bj)/deltaT)+
      &                f2*CVEL_TS(I,K,bi,bj)
@@ -155,18 +147,16 @@ C              update OBC to next timestep
      &          CVEL_TS(I,K,bi,bj)*deltaT*recip_dyC(I,J_obc+1,bi,bj)*
      &          (ab1*(theta(I,J_obc+1,K,bi,bj)-theta(I,J_obc,K,bi,bj))+
      &          ab2*(TS_STORE_1(I,K,bi,bj)-TS_STORE_4(I,K,bi,bj)))
-C              Salinity
-               IF ((SS_STORE_2(I,K,bi,bj).eq.0.).and.
-     &            (SS_STORE_3(I,K,bi,bj).eq.0.)) THEN
-                  CL=0.
-               ELSE
-                  CL=(salt(I,J_obc+1,K,bi,bj)-SS_STORE_1(I,K,bi,bj))/
+
+C-             Salinity
+                denom =
      &          (ab1*SS_STORE_2(I,K,bi,bj) + ab2*SS_STORE_3(I,K,bi,bj))
-               ENDIF
-               IF (CL.lt.0.) THEN
-                  CL=0.
-               ELSEIF (CL.gt.CMAX) THEN
-                  CL=CMAX
+               IF ( denom .NE. 0 _d 0 ) THEN
+                 CL = (salt(I,J_obc+1,K,bi,bj)-SS_STORE_1(I,K,bi,bj))
+     &              / denom
+                 CL = MIN( MAX( CL, zeroRL ), CMAX )
+               ELSE
+                 CL = 0. _d 0
                ENDIF
                CVEL_SS(I,K,bi,bj) = f1*(CL*dyC(I,J_obc+2,bi,bj)/deltaT)+
      &                f2*CVEL_SS(I,K,bi,bj)
@@ -175,20 +165,18 @@ C              update OBC to next timestep
      &          CVEL_SS(I,K,bi,bj)*deltaT*recip_dyC(I,J_obc+1,bi,bj)*
      &          (ab1*(salt(I,J_obc+1,K,bi,bj)-salt(I,J_obc,K,bi,bj)) +
      &         ab2*(SS_STORE_1(I,K,bi,bj)-SS_STORE_4(I,K,bi,bj)))
+
 #ifdef ALLOW_NONHYDROSTATIC
              IF ( nonHydrostatic ) THEN
-C              wVel
-               IF ((WS_STORE_2(I,K,bi,bj).eq.0.).and.
-     &            (WS_STORE_3(I,K,bi,bj).eq.0.)) THEN
-                  CL=0.
-               ELSE
-                  CL=(wVel(I,J_obc+1,K,bi,bj)-WS_STORE_1(I,K,bi,bj))/
+C-             wVel
+                denom =
      &          (ab1*WS_STORE_2(I,K,bi,bj)+ab2*WS_STORE_3(I,K,bi,bj))
-               ENDIF
-               IF (CL.lt.0.) THEN
-                  CL=0.
-               ELSEIF (CL.gt.CMAX) THEN
-                  CL=CMAX
+               IF ( denom .NE. 0 _d 0 ) THEN
+                 CL = (wVel(I,J_obc+1,K,bi,bj)-WS_STORE_1(I,K,bi,bj))
+     &              / denom
+                 CL = MIN( MAX( CL, zeroRL ), CMAX )
+               ELSE
+                 CL = 0. _d 0
                ENDIF
                CVEL_WS(I,K,bi,bj)=f1*(CL*dyC(I,J_obc+2,bi,bj)/deltaT)
      &                   + f2*CVEL_WS(I,K,bi,bj)
@@ -199,6 +187,7 @@ C              update OBC to next timestep
      &           ab2*(WS_STORE_1(I,K,bi,bj)-WS_STORE_4(I,K,bi,bj)))
              ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
+
 C              update/save storage arrays
 C              uVel
 C              copy t-1 to t-2 array

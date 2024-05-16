@@ -200,7 +200,7 @@ C--     Start processing 1 Fld :
 C-        Post-Processed diag from an other Post-Processed diag -and-
 C         both of them have just been calculated and are still stored in qtmp:
 C         => skip computation and just write qtmp2
-            IF ( debugLevel.GE.debLevB .AND. myThid.EQ.1 ) THEN
+            IF ( diag_dBugLevel.GE.debLevB .AND. myThid.EQ.1 ) THEN
                WRITE(ioUnit,'(A,I6,3A,I6)')
      &         '  get Post-Proc. Diag # ', ndId, '  ', cdiag(ndId),
      &         ' from previous computation of Diag # ', isComputed
@@ -252,7 +252,7 @@ C-        Empty diagnostics case :
 C-        diagnostics is not empty :
             isComputed = 0
 
-            IF ( debugLevel.GE.debLevB .AND. myThid.EQ.1 ) THEN
+            IF ( diag_dBugLevel.GE.debLevB .AND. myThid.EQ.1 ) THEN
               IF ( ppFld.GE.1 ) THEN
                WRITE(ioUnit,'(A,I6,7A,I8,2A)')
      &         ' Post-Processing Diag # ', ndId, '  ', cdiag(ndId),

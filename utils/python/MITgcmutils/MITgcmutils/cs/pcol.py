@@ -180,7 +180,7 @@ def pcol( x, y, data, projection=None, vmin=None, vmax=None, **kwargs):
         # add a reasonable colormap
         m = cm.ScalarMappable(cmap=colmap)
         m.set_array(data)
-        plt.colorbar(m)
+        plt.colorbar(m, ax=ax)
     elif mapit == 0:
         ax = fig.axes[-1]
         ax.axis('image')
