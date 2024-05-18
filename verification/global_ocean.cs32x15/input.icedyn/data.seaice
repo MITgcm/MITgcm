@@ -1,20 +1,6 @@
 # SEAICE parameters
  &SEAICE_PARM01
-#SEAICE_monFreq = 2592000.,
-#SEAICEwriteState   = .TRUE.,
-#SEAICE_clipVelocities=.FALSE.,
-#SEAICE_maskRHS   = .TRUE.,
  LSR_ERROR        = 1.E-12,
-#SEAICE_deltaTevp = 60.,
-#SEAICEuseDynamics = .FALSE.,
-# for backward compatibility only
- SEAICE_clipVelocities = .TRUE.,
- SEAICEuseFlooding  = .FALSE.,
-# old defaults
- SEAICEscaleSurfStress = .FALSE.,
- SEAICE_Olx = 0,
- SEAICE_Oly = 0,
- SEAICEetaZmethod = 0,
- SEAICE_drag = 0.002,
- SEAICE_waterDrag = 0.005314009661835749,
+#SEAICEwriteState = .TRUE.,
+#SEAICE_monFreq   = 2592000.,
  &

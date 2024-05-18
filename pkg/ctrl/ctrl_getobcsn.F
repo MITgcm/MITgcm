@@ -109,10 +109,15 @@ c--   Get the counters, flags, and the interpolation factor.
       do iobcs = 1,nobcs
 
        if ( obcsnfirst ) then
+#ifdef ALLOW_AUTODIFF
         call active_read_xz( fnameobcsn, tmpfldxz,
      &                       (obcsncount0-1)*nobcs+iobcs,
      &                       doglobalread, ladinit, optimcycle,
      &                       myThid, xx_obcsn_dummy )
+#else
+        CALL READ_REC_XZ_RL( fnameobcsn, ctrlprec, Nr, tmpfldxz,
+     &                       (obcsncount0-1)*nobcs+iobcs, 1, myThid )
+#endif
 
         do bj = jtlo,jthi
          do bi = itlo,ithi
@@ -178,10 +183,15 @@ cgg   &                                    *   maskxz (i,k,bi,bj)
          enddo
         enddo
 
+#ifdef ALLOW_AUTODIFF
         call active_read_xz( fnameobcsn, tmpfldxz,
      &                       (obcsncount1-1)*nobcs+iobcs,
      &                       doglobalread, ladinit, optimcycle,
      &                       myThid, xx_obcsn_dummy )
+#else
+        CALL READ_REC_XZ_RL( fnameobcsn, ctrlprec, Nr, tmpfldxz,
+     &                       (obcsncount1-1)*nobcs+iobcs, 1, myThid )
+#endif
 
         do bj = jtlo,jthi
          do bi = itlo,ithi
