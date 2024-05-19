@@ -5,7 +5,7 @@ CBOP 0
 C     !ROUTINE: DIAGNOSTICS_SWITCH_ONOFF
 
 C     !INTERFACE:
-      SUBROUTINE DIAGNOSTICS_SWITCH_ONOFF( 
+      SUBROUTINE DIAGNOSTICS_SWITCH_ONOFF(
      I                       seqFlag, myTime, myIter, myThid )
 
 C     !DESCRIPTION:
@@ -68,8 +68,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       dBugUnit = errorMessageUnit
 
 C--   Track diagnostics pkg activation status:
-      IF ( myIter.EQ.nIter0 ) THEN
+      IF ( seqFlag.EQ.1 .AND. myIter.EQ.nIter0 ) THEN
 c       IF ( diag_pkgStatus.NE.10 ) STOP
+        _BARRIER
+        _BEGIN_MASTER(myThid)
+        diag_pkgStatus = ready2fillDiags
+        _END_MASTER(myThid)
+        _BARRIER
+      ELSEIF ( seqFlag.EQ.-1 .AND. (myIter+1).EQ.nEndIter ) THEN
         _BARRIER
         _BEGIN_MASTER(myThid)
         diag_pkgStatus = ready2fillDiags
