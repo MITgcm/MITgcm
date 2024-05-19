@@ -43,12 +43,10 @@ C--   Define region-mask for regional statistics diagnostics
 C--   Calculate pointers for statistics-diags set to non-zero frequency
       CALL DIAGSTATS_SET_POINTERS( myThid )
 
-      CALL DIAGSTATS_INI_IO( myThid )
-
 #ifdef ALLOW_FIZHI
-      if( useFIZHI) then
-      call fizhi_diagalarms(myThid)
-      endif
+      IF ( useFIZHI ) THEN
+        CALL FIZHI_DIAGALARMS( myThid )
+      ENDIF
 #endif
 
       RETURN
