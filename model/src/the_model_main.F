@@ -689,7 +689,7 @@ C-- The following assumes the TAF option '-pure'
         CALL TIMER_START('MDTHE_MAIN_LOOP            [MD RUN]', myThid)
         CALL MDTHE_MAIN_LOOP ( myTime, myIter, myThid )
         CALL TIMER_STOP ('MDTHE_MAIN_LOOP            [MD RUN]', myThid)
-        CALL COST_FINAL_STORE ( myThid, lastdiva )
+        CALL COST_FINAL_STORE ( lastdiva, myThid )
       ELSE
 C-- for DIVA, avoid forward-related output in adjoint part
         CALL TURNOFF_MODEL_IO( 1, myThid )
@@ -699,7 +699,7 @@ C-- for DIVA, avoid forward-related output in adjoint part
         CALL TIMER_START('ADTHE_MAIN_LOOP       [ADJOINT RUN]', myThid)
         CALL ADTHE_MAIN_LOOP (  myThid )
         CALL TIMER_STOP ('ADTHE_MAIN_LOOP       [ADJOINT RUN]', myThid)
-        CALL COST_FINAL_RESTORE ( myThid, lastdiva )
+        CALL COST_FINAL_RESTORE ( lastdiva, myThid )
       ENDIF
 
 #   else /* ALLOW_DIVIDED_ADJOINT undef */
