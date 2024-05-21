@@ -768,7 +768,6 @@ C  Fe-limitation.
      &                  *theta_Fe_max
      &                  *irr_mem(i,j,k,bi,bj)/(epsln + 2. _d 0*Pc_m))
 
-
 C ---------------------------------------------------------------------
 C  Nutrient-limited efficiency of algal photosystems, irrk, is calculated
 C  with the iron limitation term included as a multiplier of the
