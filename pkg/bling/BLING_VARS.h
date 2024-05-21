@@ -244,6 +244,8 @@ C ==========================================================
 C ==========================================================
 C   Ecosystem variables and parameters
 C ==========================================================
+C   chlsat_locTimWindow(1:2) :: local-time window (in h) for
+C          satellite-equivalent chlorophyll diagnostic (and cost)
 
       COMMON /BIOTIC_NEEDS/
      &                     InputFe,
@@ -346,8 +348,7 @@ C ==========================================================
      &                     alpfe,
      &                     k0,
      &                     MLmix_max,
-     &                     chlsat_tbegin,
-     &                     chlsat_tend
+     &                     chlsat_locTimWindow
 
       _RL InputFe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL omegaC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -449,8 +450,7 @@ C ==========================================================
       _RL alpfe
       _RL k0
       _RL MLmix_max
-      INTEGER chlsat_tbegin
-      INTEGER chlsat_tend
+      _RL chlsat_locTimWindow(2)
 
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***

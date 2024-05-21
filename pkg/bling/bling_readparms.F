@@ -169,8 +169,7 @@ C ==========================================================
      &                     alpfe,
      &                     k0,
      &                     MLmix_max,
-     &                     chlsat_tbegin,
-     &                     chlsat_tend,
+     &                     chlsat_locTimWindow,
      &                     river_conc_po4,
      &                     river_dom_to_nut
 
@@ -287,9 +286,8 @@ C   k0               :: Light attentuation coefficient
 C   MLmix_max        :: Maximum depth over which light and biomass can be mixed
 C   river_conc_po4   :: Phosphate concentration in river runoff
 C   river_dom_to_nut :: DOM to PO4 ratio in river runoff
-C   chlsat_tbegin    :: Initial time of day for satellite-equiv chl calculation
-C   chlsat_tend      :: Final time of day for satellite-equiv chl calculation
-
+C   chlsat_locTimWindow(1:2) :: local-time window (in h) for
+C                       satellite-equivalent chlorophyll diagnostic (and cost)
 
       _RL secperday
 #ifdef ALLOW_EXF
@@ -404,8 +402,8 @@ C     Default values
       alpfe                = 0.01 _d 0
       k0                   = 0.04 _d 0
       MLmix_max            = 200.0 _d 0
-      chlsat_tbegin        = 120000
-      chlsat_tend          = 133000
+      chlsat_locTimWindow(1) = 12.0 _d 0
+      chlsat_locTimWindow(2) = 13.5 _d 0
 
       bling_windFile         = ' '
       bling_atmospFile       = ' '
