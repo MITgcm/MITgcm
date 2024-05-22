@@ -100,8 +100,16 @@ C     tkey :: tape key (tile dependent)
       INTEGER tkey
 #endif
 #endif /* PHYTO_SELF_SHADING */
+      _RL localTime
+      _RL utcTime, diffutc
+      _RL sat_atten
+      _RL sat_atten_sum
+      _RL chl_sat_sum
       INTEGER i,j,k
       LOGICAL QSW_underice
+#ifdef ALLOW_CAL
+      INTEGER mydate(4)
+#endif
 CEOP
 
 #ifdef PHYTO_SELF_SHADING
@@ -173,6 +181,20 @@ C convert to sfac
 
 #endif /* ndef USE_QSW */
 
+C get time (in h) within the day:
+      utcTime = MOD( myTime/3600. _d 0, 24. _d 0 )
+#ifdef ALLOW_CAL
+c mydate is utc time
+      IF ( useCAL ) THEN
+        CALL CAL_GETDATE( myIter, myTime, mydate, myThid )
+        i = mydate(2)/10000
+        j = mydate(2)/100
+        j = MOD(j,100)
+        k = MOD(mydate(2),100)
+        utcTime = i + j/60. _d 0 + k/3600. _d 0
+      ENDIF
+#endif
+
 c ---------------------------------------------------------------------
 c  instantaneous light, mixed layer averaged light
 
@@ -204,6 +226,19 @@ c  taken into account
         tmp_ML     = 0. _d 0
 #endif
 
+C Satellite chlorophyll
+        IF ( usingSphericalPolarGrid .OR. usingCurvilinearGrid ) THEN
+C       local-time difference (in h) from UTC time (note: 15 = 360/24)
+          diffutc = XC(i,j,bi,bj)/15. _d 0
+        ELSE
+C       for other grid (e.g., cartesian), assumes no difference in time
+          diffutc = 0. _d 0
+        ENDIF
+        localTime = utcTime + diffutc + 24. _d 0
+        localTime = MOD( localTime, 24. _d 0 )
+        chl_sat_sum = 0. _d 0
+        sat_atten_sum = 0. _d 0
+
         DO k=1,Nr
 
 #ifdef PHYTO_SELF_SHADING
@@ -213,7 +248,7 @@ CADJ STORE irr_rd = comlev1_bibj, key=tkey, kind=isbyte
 # endif /* ALLOW_AUTODIFF_TAMC */
 #endif /* PHYTO_SELF_SHADING */
 
-         IF (hFacC(i,j,k,bi,bj).gt.0) THEN
+         IF ( maskC(i,j,k,bi,bj).EQ.oneRS ) THEN
 #ifdef PHYTO_SELF_SHADING
 
 c  Use bio-optical model of Manizza et al. (2005) to account for
@@ -274,6 +309,19 @@ c  Attenuation from one more layer
 
 #endif /* if BLING_USE_SHADING */
 
+C Satellite chl
+         IF (irr_surf(i,j).gt.0) THEN
+c           sat_atten = irr_inst(i,j,k)/irr_surf(i,j)
+#ifdef BLING_USE_SHADING
+           sat_atten = exp(-2. _d 0 * k0_bg * (-RC(k)))
+#else
+           sat_atten = exp(-2. _d 0 * k0 * (-RC(k)))
+#endif
+           chl_sat_sum = chl_sat_sum
+     &                 + chl(i,j,k,bi,bj)*sat_atten
+           sat_atten_sum = sat_atten_sum + sat_atten
+         ENDIF
+
 #ifdef ML_MEAN_LIGHT
 c  Mean irradiance in the mixed layer
          IF ((-rf(k+1) .le. mld(i,j)).and.
@@ -287,6 +335,11 @@ c  Mean irradiance in the mixed layer
          ENDIF
 
         ENDDO
+C Update diagnostic only if ~13:30 local time, when satellite observes
+        IF ( localTime.GT.chlsat_locTimWindow(1) .AND.
+     &       localTime.LT.chlsat_locTimWindow(2) ) THEN
+          chl_sat(i,j,bi,bj) = chl_sat_sum/(sat_atten_sum + epsln)
+        ENDIF
        ENDDO
       ENDDO
 
@@ -294,12 +347,12 @@ c  Mean irradiance in the mixed layer
        DO j=jmin,jmax
         DO i=imin,imax
 
-         IF (hFacC(i,j,k,bi,bj) .gt. 0. _d 0) THEN
+         IF ( maskC(i,j,k,bi,bj).EQ.oneRS ) THEN
           irr_eff(i,j,k) = irr_inst(i,j,k)
 
 #ifdef ML_MEAN_LIGHT
 c  Inside mixed layer, effective light is set to mean mixed layer light
-         IF ((-rf(k+1) .le. mld(i,j)).and.
+          IF ((-rf(k+1) .le. mld(i,j)).and.
      &               (-rf(k+1).lt.MLmix_max)) THEN
            irr_eff(i,j,k) = irr_mix(i,j)
           ENDIF
@@ -310,6 +363,12 @@ c  Inside mixed layer, effective light is set to mean mixed layer light
         ENDDO
        ENDDO
       ENDDO
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+        CALL DIAGNOSTICS_FILL(chl_sat,'BLGCHLSA',0,1,1,bi,bj,myThid)
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
       RETURN
       END
