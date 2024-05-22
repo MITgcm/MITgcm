@@ -1,6 +1,11 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/bling:
+  - fix/improve initialization of biomass for the 3 phytoplankton groups ;
+  - add 2D diagnostics of optically integrated chlorophyll concentration
+    within local-time window to be compared with satellite observation ;
+  - improve TAF store directives (reduce recomputations).
 o pkg/obcs (tides):
   - more efficient implementation of OB barotropic tidal velocity components,
     with both Cos & Sin of phase times Amplitude stored in common block ;
