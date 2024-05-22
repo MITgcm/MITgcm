@@ -110,7 +110,8 @@ c           ENDIF
            ENDDO
           ENDDO
          ENDIF
-C        .NOT. useSTIC
+
+C-      end-if not useSTIC
         ENDIF
 
 #ifdef EXACT_CONSERV
@@ -140,7 +141,7 @@ C        .NOT. useSTIC
              shelficeDragV(i,j,bi,bj) = 0.
            ENDDO
           ENDDO
-         ENDIF
+        ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
 c      ENDDO

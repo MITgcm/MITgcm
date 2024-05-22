@@ -226,12 +226,12 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       _RL shiCDragFld           (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL shiDragQuadFld        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-       COMMON /SHELFICE_GAMMA_RL/
+      COMMON /SHELFICE_GAMMA_RL/
      &     shiTransCoeffT, shiTransCoeffS
        _RL shiTransCoeffT       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
        _RL shiTransCoeffS       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-       COMMON /SHELFICE_FIELDS_RS/
+      COMMON /SHELFICE_FIELDS_RS/
      &     R_shelfIce,
      &     shelficeHeatFlux,
      &     shelfIceFreshWaterFlux,

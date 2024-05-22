@@ -1,4 +1,7 @@
 #include "SHELFICE_OPTIONS.h"
+#ifdef ALLOW_STEEP_ICECAVITY
+# include "STIC_OPTIONS.h"
+#endif
 
 C--  File shelfice_forcing.F:
 C--   Contents

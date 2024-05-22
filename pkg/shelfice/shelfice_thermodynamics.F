@@ -597,9 +597,9 @@ c           bqe = eps1*eps6 + eps3*eps7 - eps2
      &                   + ( c0 - SHELFICEthetaSurface )/pLoc(I,J) )
      &           - eps2
      &           + eps8*( a0*sLoc(I,J) - eps7 )
-     &           + (eps1*a0*dFac + (1.-dFac)*aqe) * SHELFICEsalinity
+     &           + (eps1*a0*dFac + (oneRL-dFac)*aqe) * SHELFICEsalinity
             cqe = ( eps2 + eps8*eps7 )*sLoc(I,J)
-     &           - (eps1*dFac + (1.-dFac)*(eps1*eps6+eps3*eps7))
+     &           - (eps1*dFac + (oneRL-dFac)*(eps1*eps6+eps3*eps7))
      &           * SHELFICEsalinity
             discrim = bqe*bqe - 4. _d 0*aqe*cqe
 #undef ALLOW_SHELFICE_DEBUG
