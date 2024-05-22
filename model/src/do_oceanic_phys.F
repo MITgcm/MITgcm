@@ -65,6 +65,7 @@ C       |-- SEAICE_COST_SENSI
 C       |
 C       |-- OCN_EXPORT_DATA
 C       |
+C       |-- STIC_THERMODYNAMICS
 C       |-- SHELFICE_THERMODYNAMICS
 C       |
 C       |-- ICEFRONT_THERMODYNAMICS
@@ -460,11 +461,9 @@ CADJ STORE uvel, vvel        = comlev1, key=ikey_dynamics, kind=isbyte
         IF (debugMode) CALL DEBUG_CALL('STIC_THERMODYNAMICS',myThid)
 # endif
 C     use stic_thermodynamics that includes icefront melt processes
-        CALL TIMER_START
-     &       ('STIC_THERMODYNAMICS [SHELFICE_THERMODYNAMICS]', myThid)
+        CALL TIMER_START('STIC_THERMODYNAMICS [DO_OCEANIC_PHYS]',myThid)
         CALL STIC_THERMODYNAMICS( myTime, myIter, myThid )
-        CALL TIMER_STOP
-     &       ('STIC_THERMODYNAMICS [SHELFICE_THERMODYNAMICS]', myThid)
+        CALL TIMER_STOP ('STIC_THERMODYNAMICS [DO_OCEANIC_PHYS]',myThid)
        ELSE
 #else
        IF ( .TRUE. ) THEN

@@ -62,7 +62,6 @@ C--   Modify  ocean upper boundary position according to ice-shelf topography
       IF ( useSTIC ) CALL STIC_INIT_DEPTHS( myThid )
 #endif /* ALLOW_STEEP_ICECAVITY */
 
-
       IF ( selectSigmaCoord.EQ.0 ) THEN
 C---  r-coordinate with partial-cell or full cell mask
 
