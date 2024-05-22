@@ -1858,7 +1858,7 @@ C ---------------------------------------------------------------------
        DO j=jmin,jmax
         DO i=imin,imax
 
-         IF (hFacC(i,j,k,bi,bj) .gt. 0. _d 0) THEN
+         IF ( maskC(i,j,k,bi,bj).EQ.oneRS ) THEN
 
           NPP(i,j,k) = (N_uptake(i,j,k) + N_fix(i,j,k)) * CtoN
 
@@ -1874,19 +1874,19 @@ c  Carbon flux diagnostic
 
 c  C:Chl ratio in g C / g Chl
 
-          IF ( theta_Fe(i,j,k) .EQ.0. ) THEN
-             theta_Fe_inv(i,j,k) = 0.
+          IF ( theta_Fe(i,j,k).EQ.zeroRL ) THEN
+             theta_Fe_inv(i,j,k) = 0. _d 0
           ELSE
-             theta_Fe_inv(i,j,k) = 1./theta_Fe(i,j,k)
+             theta_Fe_inv(i,j,k) = oneRL/theta_Fe(i,j,k)
           ENDIF
 
          ELSE
-             NPP(i,j,k) = 0.
-             Phy_lg_local(i,j,k) = 0.
-             Phy_sm_local(i,j,k) = 0.
-             Phy_diaz_local(i,j,k) = 0.
-             POC_flux(i,j,k) = 0.
-             theta_Fe_inv(i,j,k) = 0.
+             NPP(i,j,k) = 0. _d 0
+             Phy_lg_local(i,j,k) = 0. _d 0
+             Phy_sm_local(i,j,k) = 0. _d 0
+             Phy_diaz_local(i,j,k) = 0. _d 0
+             POC_flux(i,j,k) = 0. _d 0
+             theta_Fe_inv(i,j,k) = 0. _d 0
          ENDIF
 
         ENDDO
