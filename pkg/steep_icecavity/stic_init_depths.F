@@ -23,11 +23,7 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     rLowC     :: base of fluid column in r_unit at grid-cell center
-C     rSurfC    :: surface reference position (r_unit) at grid-cell center
 C     myThid    :: my Thread Id number
-      _RS rLowC  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS rSurfC (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER myThid
 
 C     !LOCAL VARIABLES:

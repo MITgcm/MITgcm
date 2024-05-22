@@ -57,7 +57,6 @@ C     !INPUT PARAMETERS:
 C     tLoc         ::
 C     sLoc         ::
 C     pLoc         ::
-C     insitutLoc   ::
 C     gammaT ::
 C     gammaS ::
 C     bi,bj      :: tile indices
@@ -70,16 +69,16 @@ C     heatFlux       ::
 C     fwFlux ::
 C     forcingT       ::
 C     forcingS       ::
+C     insitutLoc   ::
 C----------
 
-      _RL tLoc, sLoc, pLoc, insitutLoc
+      _RL tLoc, sLoc, pLoc
       _RL gammaT, gammaS
       _RL iceConductionDistance, thetaIceConduction
-      _RL heatFlux, fwFlux, forcingS, forcingT
-      INTEGER i, j, bi, bj
+      _RL heatFlux, fwFlux, forcingT, forcingS, insitutLoc
+      INTEGER bi, bj
       _RL     myTime
       INTEGER myIter, myThid
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
 #ifndef ALLOW_OPENAD
@@ -90,10 +89,11 @@ CEOP
 C     !LOCAL VARIABLES:
 C     === Local variables ===
       _RL thetaFreeze, saltFreeze
-      _RL eps1, eps2, eps3, eps4, eps5, eps6, eps7, eps8
+      _RL eps1, eps2, eps3, eps4, eps6, eps7, eps8
       _RL aqe, bqe, cqe, discrim, recip_aqe
-      _RL a0, a1, a2, b0, c0
+      _RL a0, b0, c0
       _RL w_B
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C     === Useful Units ===
 C--   gammaT, m s^-1
