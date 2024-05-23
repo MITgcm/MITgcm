@@ -131,12 +131,16 @@ C
       CALL WRITE_0D_I( OBCS_monSelect, INDEX_NONE, 'OBCS_monSelect =',
      &                  ' /* select group of variables to monitor */')
       CALL WRITE_0D_L( OBCSprintDiags,   INDEX_NONE,
-     & 'OBCSprintDiags =', '  /* print some OBCS diagnostics. */')
+     &   'OBCSprintDiags =', '  /* print some OBCS diagnostics. */')
 C
       CALL WRITE_0D_L( useOBCStides, INDEX_NONE,
      &   'useOBCStides =', ' /* apply tidal forcing through OB */')
-      CALL WRITE_1D_RL( tidalPeriod, tidalComponents, INDEX_I,
-     &   'tidalPeriod = ', ' /* (s) */')
+      IF ( useOBCStides ) THEN
+       CALL WRITE_0D_I( OBCS_nTidalComp, INDEX_NONE,
+     &   'OBCS_nTidalComp =', ' /* number of tidal-Comp to use */')
+       CALL WRITE_1D_RL( OBCS_tidalPeriod, OBCS_tideCompSize, INDEX_K,
+     &   'OBCS_tidalPeriod = ', ' /* (s) */')
+      ENDIF
 C
       CALL WRITE_0D_L( useOrlanskiNorth,   INDEX_NONE,
      & 'useOrlanskiNorth =', '  /* use Orlanski for northern bound. */')
@@ -728,6 +732,8 @@ C-    Southern boundary
          _BEGIN_MASTER(myThid)
          WRITE(msgBuf,'(2A)') 'OBCS_CHECK: ',
      &              'check Inside Mask and OB locations: OK'
+         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+         WRITE(msgBuf,'(A)') ' '
          CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
          _END_MASTER(myThid)
        ENDIF
