@@ -3,10 +3,3 @@ C subroutine BLING_READ_PICKUP
 C----------------------------------------
 CADJ SUBROUTINE BLING_READ_PICKUP  INPUT  = 1,2,3
 CADJ SUBROUTINE BLING_READ_PICKUP  OUTPUT = 1
-
-C----------------------------------------
-C subroutine BLING_MIN_VAL
-C----------------------------------------
-CADJ SUBROUTINE BLING_MIN_VAL  INPUT  = 1,2,3,4,5
-CADJ SUBROUTINE BLING_MIN_VAL  OUTPUT =
-
