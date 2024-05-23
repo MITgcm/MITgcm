@@ -5,7 +5,8 @@ CBOP 0
 C     !ROUTINE: DIAGNOSTICS_SWITCH_ONOFF
 
 C     !INTERFACE:
-      SUBROUTINE DIAGNOSTICS_SWITCH_ONOFF( myTime, myIter, myThid )
+      SUBROUTINE DIAGNOSTICS_SWITCH_ONOFF( 
+     I                       seqFlag, myTime, myIter, myThid )
 
 C     !DESCRIPTION:
 C-----
@@ -27,9 +28,13 @@ C     !USES:
 #include "DIAGNOSTICS.h"
 
 C     !INPUT PARAMETERS:
-C     myTime     :: current Time of simulation ( s )
-C     myIter     :: current Iteration number
-C     myThid     :: my Thread Id number
+C     seqFlag  :: flag that indicates where this S/R is called from:
+C              :: = 1 : called from the top of FORWARD_STEP, forward sweep
+C              :: =-1 : called from AUTODIFF_INADMODE_SET_AD, backward sweep
+C     myTime   :: current Time of simulation ( s )
+C     myIter   :: current Iteration number
+C     myThid   :: my Thread Id number
+      INTEGER seqFlag
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
@@ -59,7 +64,7 @@ c     INTEGER newIter
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      dBugFlag = debugLevel.GE.debLevE .AND. myThid.EQ.1
+      dBugFlag = diag_dBugLevel.GE.debLevE .AND. myThid.EQ.1
       dBugUnit = errorMessageUnit
 
 C--   Track diagnostics pkg activation status:
@@ -167,7 +172,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        IF ( diagSt_freq(n).LT.0. ) THEN
 C--    Select diagnostics list that uses instantaneous output
 
-        dBugFlag = debugLevel.GE.debLevE
+        dBugFlag = diag_dBugLevel.GE.debLevE
 
         freqSec = diagSt_freq(n)
         phiSec = diagSt_phase(n)

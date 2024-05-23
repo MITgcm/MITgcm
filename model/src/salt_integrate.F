@@ -220,13 +220,13 @@ C-    Tracer tendency needs to be set to zero (moved here from gad_calc_rhs):
       ENDDO
 #endif /* ALLOW_AUTODIFF */
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE wFld(:,:,:)         = comlev1_bibj, key=tkey, byte=isbyte
-CADJ STORE salt(:,:,:,bi,bj)   = comlev1_bibj, key=tkey, byte=isbyte
+CADJ STORE wFld(:,:,:)         = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE salt(:,:,:,bi,bj)   = comlev1_bibj, key=tkey, kind=isbyte
 # ifdef ALLOW_ADAMSBASHFORTH_3
-CADJ STORE gsNm(:,:,:,bi,bj,1) = comlev1_bibj, key=tkey, byte=isbyte
-CADJ STORE gsNm(:,:,:,bi,bj,2) = comlev1_bibj, key=tkey, byte=isbyte
+CADJ STORE gsNm(:,:,:,bi,bj,1) = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE gsNm(:,:,:,bi,bj,2) = comlev1_bibj, key=tkey, kind=isbyte
 # else
-CADJ STORE gsNm1(:,:,:,bi,bj)  = comlev1_bibj, key=tkey, byte=isbyte
+CADJ STORE gsNm1(:,:,:,bi,bj)  = comlev1_bibj, key=tkey, kind=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -237,7 +237,7 @@ CADJ STORE gsNm1(:,:,:,bi,bj)  = comlev1_bibj, key=tkey, byte=isbyte
      O         kappaRk,
      I         myThid )
 # ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE kappaRk = comlev1_bibj, key = tkey, byte = isbyte
+CADJ STORE kappaRk = comlev1_bibj, key = tkey, kind = isbyte
 # endif
 #endif /* INCLUDE_CALC_DIFFUSIVITY_CALL */
 
@@ -254,8 +254,8 @@ C Edit GAD_OPTIONS.h and #define DISABLE_MULTIDIM_ADVECTION to
 C disable this section of code.
 #ifdef GAD_ALLOW_TS_SOM_ADV
 # ifdef ALLOW_AUTODIFF_TAMC
-C- Note: inefficient storage, storing nSx*nSy times the full som_S array
-CADJ STORE som_S = comlev1_bibj, key=tkey, byte=isbyte
+C This looks awkward from an F77 point of view, but TAF does the right thing.
+CADJ STORE som_S(:,:,:,bi,bj,:) = comlev1_bibj, key=tkey, kind=isbyte
 # endif
       IF ( saltSOM_Advection ) THEN
 # ifdef ALLOW_DEBUG
@@ -492,16 +492,16 @@ C-    Integrate forward in time, storing in gS_loc:  gS <= S + dt*gS
 C--   Implicit vertical advection & diffusion
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE gS_loc(:,:,:)     = comlev1_bibj, key = tkey, byte = isbyte
+CADJ STORE gS_loc(:,:,:)     = comlev1_bibj, key = tkey, kind = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 #ifdef INCLUDE_IMPLVERTADV_CODE
       IF ( saltImplVertAdv .OR. implicitDiffusion ) THEN
 C     to recover older (prior to 2016-10-05) results:
 c     IF ( saltImplVertAdv ) THEN
 # ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE wFld(:,:,:)       = comlev1_bibj, key = tkey, byte = isbyte
-CADJ STORE salt(:,:,:,bi,bj) = comlev1_bibj, key = tkey, byte = isbyte
-CADJ STORE recip_hFac(:,:,:) = comlev1_bibj, key = tkey, byte = isbyte
+CADJ STORE wFld(:,:,:)       = comlev1_bibj, key = tkey, kind = isbyte
+CADJ STORE salt(:,:,:,bi,bj) = comlev1_bibj, key = tkey, kind = isbyte
+CADJ STORE recip_hFac(:,:,:) = comlev1_bibj, key = tkey, kind = isbyte
 # endif /* ALLOW_AUTODIFF_TAMC */
         CALL GAD_IMPLICIT_R(
      I         saltImplVertAdv, saltVertAdvScheme, GAD_SALINITY,

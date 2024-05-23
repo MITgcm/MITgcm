@@ -1,6 +1,66 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/bling:
+  - fix/improve initialization of biomass for the 3 phytoplankton groups ;
+  - add 2D diagnostics of optically integrated chlorophyll concentration
+    within local-time window to be compared with satellite observation ;
+  - improve TAF store directives (reduce recomputations).
+o pkg/obcs (tides):
+  - more efficient implementation of OB barotropic tidal velocity components,
+    with both Cos & Sin of phase times Amplitude stored in common block ;
+  - more flexible specification of OB tidal-components (only read-in components
+    with non-zero tidal period) ;
+  - allows to specify tangential component of barotropic tidal velocity at OB ;
+  - rename all OBC tidal component input parameter (period, amplitude and
+    phase of each OB barotropic tidal velocity component input files) ;
+  - upgrade OB tidal example (in seaice_obcs/input.tides) with fewer tidal
+    components (only 4) but including few tangential components.
+o verification:
+  - changing domain decomposition (more tiles) in global_with_exf experiment
+    (both FWD & AD) and update ref. output ;
+  - use correct CD-Scheme time-stepping in FWD exp. global_ocean_ebm and update
+    ref. output ;
+  - simplify global_ocean.90x40x15/code_ad (undef ALLOW_GENTIM2D_CONTROL,
+    ALLOW_DIFFKR_CONTROL & ALLOW_3D_DIFFKR); remove kpp from global_oce_latlon
+    (from both TAF & Tapenade code) ;
+  - after adjusting new host experiment code, merge forward test:
+      flt_example            --> exp4.with_flt
+      global_with_exf        --> global_ocean_ebm.w_exf
+      global_with_exf.yearly --> global_ocean_ebm.yearly
+      natl_box               --> lab_sea.natl_box
+      natl_box.longstep      --> lab_sea.longstep
+    and TAF & Tapenade tests:
+      global_with_exf        --> global_oce_latlon.w_exf
+    For now, keep original set-up in place and add symbolic links into new
+    host exp. for input dir and ref. output to run these as secondary test.
+o pkg/obcs:
+  - fix unusual division by zero in all 4 (N,S,E,W) orlanski main S/R.
+o pkg/diagnostics:
+  - new header file "DIAGNOSTICS_P2SHARE.h" (for now, just for useDiag4AdjOutp),
+    and remove DIAGNOSTICS.h in any src code outside pkg/diagnostics;
+  - new params "diag_dBugLevel" (default = main model "debugLevel");
+  - add new arg "seqFlag" to DIAGNOSTICS_SWITCH_ONOFF and DIAGNOSTICS_SUMMARY
+    and prevent "diagnostics_status" to be overwritten when using ADJ-diags.
+
+checkpoint68x (2024/04/30)
+o model/src:
+  - more precise specific-volume anomaly expression for Ocean in P-coord;
+    update reference output of all 3 Ocean in P test experiments.
+o pkg/generic_advdiff:
+  - adjust 2 SOM (Prather advection) store directives to reduce memory overhead
+  - include OS7MP (advScheme 7) in AD code ; switch AD test experiment
+    isomip.htd to use this advection scheme for Temp and Salt.
+o pkg/ecco, ctrl:
+  - put active_read calls within #ifdef ALLOW_AUTODIFF (missing in few places)
+    and fall back to non-active read (from pkg/rw) if undef;
+  - change argument order in few obcs related pkg/ecco S/R.
+o pkg/seaice:
+  - for seaice-dynamics, add missing mapping of (pkg/thsice) snowHeight to HSNOW
+  - this affects results (unless SEAICEaddSnowMass=F); update seaice parameters
+    in test global_ocean.cs32x15.icedyn and update reference output.
+
+checkpoint68w (2024/03/05)
 o pkg/ctrl, grdchk & optim:
   - clean and improve list of ctrl-var settings (in common blocks) and update
     ctrl-pack header files:
