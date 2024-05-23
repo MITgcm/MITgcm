@@ -17,6 +17,7 @@ C     !USES:
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DIAGNOSTICS_SIZE.h"
+#include "DIAGNOSTICS_P2SHARE.h"
 #include "DIAGNOSTICS.h"
 
 C     !INPUT PARAMETERS:
