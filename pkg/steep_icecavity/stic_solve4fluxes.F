@@ -2,9 +2,6 @@
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE_OPTIONS.h"
 #endif
-#ifdef ALLOW_AUTODIFF
-# include "AUTODIFF_OPTIONS.h"
-#endif
 
 CBOP
 C     !ROUTINE: STIC_SOLVE4FLUXES
