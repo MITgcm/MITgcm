@@ -107,7 +107,7 @@ C     == Global variables ==
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "SURFACE.h"
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 # include "GRID.h"
 # include "FFIELDS.h"
 # if ( defined ALLOW_CTRL && defined ALLOW_GENTIM2D_CONTROL )
