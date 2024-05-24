@@ -316,7 +316,7 @@ c     ENDIF
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-#if ( defined ALLOW_MOM_COMMON && defined ALLOW_MOM_COMMON )
+#if ( defined ALLOW_MOM_COMMON && defined ALLOW_MOM_TEND_EXTRA_DIAGS )
 cHP adding diagnostic for drag from ice shelf to allow exp. dissip decomp
       diagName  = 'UShIDrag'
       diagTitle = 'U momentum tendency from ice shelf Drag'
