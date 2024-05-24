@@ -5,9 +5,6 @@
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
 #endif
-#ifdef ALLOW_CTRL
-# include "CTRL_OPTIONS.h"
-#endif
 
 CBOP
 C     !ROUTINE: STIC_SOLVE4FLUXES
@@ -35,23 +32,9 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "GRID.h"
-#include "DYNVARS.h"
-#include "FFIELDS.h"
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE.h"
 #endif
-#include "STIC.h"
-#ifdef ALLOW_AUTODIFF
-# include "CTRL_SIZE.h"
-# include "CTRL.h"
-# include "CTRL_DUMMY.h"
-#endif /* ALLOW_AUTODIFF */
-#ifdef ALLOW_AUTODIFF_TAMC
-# ifdef SHI_ALLOW_GAMMAFRICT
-#  include "tamc.h"
-# endif /* SHI_ALLOW_GAMMAFRICT */
-#endif /* ALLOW_AUTODIFF_TAMC */
 
 C     !INPUT PARAMETERS:
 C     tLoc         ::
