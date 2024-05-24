@@ -8,6 +8,9 @@
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE_OPTIONS.h"
 #endif
+#ifdef ALLOW_STEEP_ICECAVITY
+# include "STIC_OPTIONS.h"
+#endif
 #ifdef ALLOW_STREAMICE
 # include "STREAMICE_OPTIONS.h"
 #endif
@@ -58,6 +61,9 @@ C     == global variables ==
 #endif
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE.h"
+#endif
+#ifdef ALLOW_STEEP_ICECAVITY
+# include "STIC.h"
 #endif
 #ifdef ALLOW_STREAMICE
 # include "STREAMICE.h"
@@ -351,6 +357,13 @@ C--   generic 3D control variables
      &     igen_kapredi=iarr
         IF (xx_genarr3d_file(iarr)(1:9).EQ.'xx_diffkr')
      &     igen_diffkr=iarr
+#if ( defined ALLOW_SHELFICE && defined ALLOW_SHITRANSCOEFF_3D )
+# ifndef SHI_ALLOW_GAMMAFRICT
+        IF (xx_genarr3d_file(iarr)(1:17).EQ.'xx_shiTransCoeffT')
+     &     igen_shiCoeffT=iarr
+# endif
+#endif
+
 # if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
         IF (xx_genarr3d_file(iarr)(1:7).EQ.'xx_uvel')
      &     igen_uvel0=iarr
@@ -387,6 +400,10 @@ C--   generic 3D control variables
       IF (igen_diffkr.GT.0)
      &  CALL CTRL_MAP_GENARR3D( diffKr, igen_diffkr, myThid )
 # endif
+#if ( defined ALLOW_SHELFICE && defined ALLOW_SHITRANSCOEFF_3D )
+      IF (igen_shiCoeffT.GT.0)
+     &  CALL CTRL_MAP_GENARR3D(shiTransCoeffT3d, igen_shiCoeffT, myThid)
+#endif
 
 # ifdef ALLOW_PTRACERS
 CADJ loop = parallel

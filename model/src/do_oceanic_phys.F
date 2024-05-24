@@ -65,6 +65,7 @@ C       |-- SEAICE_COST_SENSI
 C       |
 C       |-- OCN_EXPORT_DATA
 C       |
+C       |-- STIC_THERMODYNAMICS
 C       |-- SHELFICE_THERMODYNAMICS
 C       |
 C       |-- ICEFRONT_THERMODYNAMICS
@@ -450,20 +451,34 @@ CADJ STORE area              = comlev1, key=ikey_dynamics, kind=isbyte
 
 #ifdef ALLOW_SHELFICE
       IF ( useShelfIce .AND. fluidIsWater ) THEN
-#ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('SHELFICE_THERMODYNAMICS',myThid)
-#endif
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE salt, theta       = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE uvel, vvel        = comlev1, key=ikey_dynamics, kind=isbyte
 #endif
+#ifdef ALLOW_STEEP_ICECAVITY
+       IF ( useSTIC ) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('STIC_THERMODYNAMICS',myThid)
+# endif
+C     use stic_thermodynamics that includes icefront melt processes
+        CALL TIMER_START('STIC_THERMODYNAMICS [DO_OCEANIC_PHYS]',myThid)
+        CALL STIC_THERMODYNAMICS( myTime, myIter, myThid )
+        CALL TIMER_STOP ('STIC_THERMODYNAMICS [DO_OCEANIC_PHYS]',myThid)
+       ELSE
+#else
+       IF ( .TRUE. ) THEN
+#endif
+#ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('SHELFICE_THERMODYNAMICS',myThid)
+#endif
 C     compute temperature and (virtual) salt flux at the
 C     shelf-ice ocean interface
-       CALL TIMER_START('SHELFICE_THERMODYNAMICS [DO_OCEANIC_PHYS]',
+        CALL TIMER_START('SHELFICE_THERMODYNAMICS [DO_OCEANIC_PHYS]',
      &       myThid)
-       CALL SHELFICE_THERMODYNAMICS( myTime, myIter, myThid )
-       CALL TIMER_STOP( 'SHELFICE_THERMODYNAMICS [DO_OCEANIC_PHYS]',
-     &      myThid)
+        CALL SHELFICE_THERMODYNAMICS( myTime, myIter, myThid )
+        CALL TIMER_STOP ('SHELFICE_THERMODYNAMICS [DO_OCEANIC_PHYS]',
+     &       myThid)
+       ENDIF
       ENDIF
 #endif /* ALLOW_SHELFICE */
 
