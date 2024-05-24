@@ -51,15 +51,10 @@ C    i, j     :: Loop counters
       _RL uvIceApplyFac
 CEOP
 
-C--   Set model variables to OB values on North/South Boundaries:
-C     2 steps: 1) set tangential component ; 2) set normal component.
-C     This ensures that the normal component is set correctly even
-C     when it conficts with tangential setting from an other OB.
-
       uvIceApplyFac = OBCS_uvApplyFac
 c     IF ( OBCS_monitorFreq.EQ.1. ) uvIceApplyFac =  -1.
-c     IF ( OBCS_monitorFreq.EQ.deltaTmom*0.5 ) uvIceApplyFac = 0.
-c     IF ( OBCS_monitorFreq.EQ.deltaTmom ) uvIceApplyFac = 1.
+c     IF ( OBCS_monitorFreq.EQ.deltaTMom*0.5 ) uvIceApplyFac = 0.
+c     IF ( OBCS_monitorFreq.EQ.deltaTMom ) uvIceApplyFac = 1.
 c     WRITE(standardMessageUnit,*)
 c          'OBCS_APPLY_UVICE: uvIceApplyFac=', uvIceApplyFac
 
@@ -67,6 +62,9 @@ c          'OBCS_APPLY_UVICE: uvIceApplyFac=', uvIceApplyFac
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
         IF ( useSeaiceNeumann ) THEN
+C--   Neumann BC for seaice: before applying OB-value to ice-velocity, copy
+C     interior ice-velocity field (next to OB) to OB-array: OB[N,S,E,W][u,v]ice
+
 # ifdef ALLOW_OBCS_NORTH
          IF ( tileHasOBN(bi,bj) ) THEN
 C     Northern boundary
@@ -118,7 +116,14 @@ C     Western boundary
           ENDDO
          ENDIF
 # endif /* ALLOW_OBCS_WEST */
+
+C-      end if useSeaiceNeumann block
         ENDIF
+
+C--   Set model variables to OB values on N/S/E/W Boundaries:
+C     2 steps: 1) set tangential component ; 2) set normal component.
+C     This ensures that the normal component is set correctly even
+C     when it conficts with tangential setting from an other OB.
 
 C--   Set Tangential component first:
 
