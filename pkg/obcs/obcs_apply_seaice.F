@@ -55,7 +55,7 @@ C     == Local variables ==
         IF ( tileHasOBN(bi,bj) ) THEN
 C     Set model variables to OB values on Northern Boundary
          DO i=1-OLx,sNx+OLx
-          Jobc = OB_Jn(I,bi,bj)
+          Jobc = OB_Jn(i,bi,bj)
           IF ( Jobc.NE.OB_indexNone ) THEN
            IF ( useSeaiceNeumann ) THEN
 C     Neumann boundary conditions
@@ -82,7 +82,7 @@ C     Neumann boundary conditions
         IF ( tileHasOBS(bi,bj) ) THEN
 C     Set model variables to OB values on Southern Boundary
          DO i=1-OLx,sNx+OLx
-          Jobc = OB_Js(I,bi,bj)
+          Jobc = OB_Js(i,bi,bj)
           IF ( Jobc.NE.OB_indexNone ) THEN
            IF ( useSeaiceNeumann ) THEN
 C     Neumann boundary conditions
@@ -109,7 +109,7 @@ C     Neumann boundary conditions
         IF ( tileHasOBE(bi,bj) ) THEN
 C     Set model variables to OB values on Eastern Boundary
          DO j=1-OLy,sNy+OLy
-          Iobc = OB_Ie(J,bi,bj)
+          Iobc = OB_Ie(j,bi,bj)
           IF ( Iobc.NE.OB_indexNone ) THEN
            IF ( useSeaiceNeumann ) THEN
 C     Neumann boundary conditions
@@ -168,7 +168,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         IF ( tileHasOBN(bi,bj) ) THEN
 C     Northern Boundary
          DO i=1-OLx,sNx+OLx
-          Jobc = OB_Jn(I,bi,bj)
+          Jobc = OB_Jn(i,bi,bj)
           IF ( Jobc.NE.OB_indexNone ) THEN
            IF ( _maskS(i,Jobc-1,k,bi,bj) .NE. 0. ) THEN
             IF ( SEAICEadvHeff .AND. OBNhfile .NE. ' ' ) THEN
@@ -207,7 +207,7 @@ C     Northern Boundary
         IF ( tileHasOBS(bi,bj) ) THEN
 C     Southern Boundary
          DO i=1-OLx,sNx+OLx
-          Jobc = OB_Js(I,bi,bj)
+          Jobc = OB_Js(i,bi,bj)
           IF ( Jobc.NE.OB_indexNone ) THEN
            IF ( _maskS(i,Jobc+2,k,bi,bj) .NE. 0. ) THEN
             IF ( SEAICEadvHeff .AND. OBNhfile .NE. ' ' ) THEN
@@ -246,7 +246,7 @@ C     Southern Boundary
         IF ( tileHasOBE(bi,bj) ) THEN
 C     Eastern Boundary
          DO j=1-OLy,sNy+OLy
-          Iobc = OB_Ie(J,bi,bj)
+          Iobc = OB_Ie(j,bi,bj)
           IF ( Iobc.NE.OB_indexNone ) THEN
            IF ( _maskW(Iobc-1,j,k,bi,bj) .NE. 0. ) THEN
             IF ( SEAICEadvHeff .AND. OBNhfile .NE. ' ' ) THEN
