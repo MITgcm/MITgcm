@@ -23,7 +23,7 @@ C     |   shelf-ice ocean interface
 C     |
 C     | stresses at the ice/water interface are computed in separate
 C     | routines that are called from mom_fluxform/mom_vecinv
-
+C     |
 CIGF  | ASSUMES
 C---  |   * SHELFICEconserve = true
 C     *=============================================================*
@@ -59,8 +59,8 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     myIter :: iteration counter for this thread
 C     myTime :: time counter for this thread
+C     myIter :: iteration counter for this thread
 C     myThid :: thread number for this instance of the routine.
       _RL  myTime
       INTEGER myIter
@@ -80,8 +80,8 @@ C                         column perpendicular to the ice front extended
 C                         to the far side of the tracer cell.
 C     iceFrontWidth    :: the width of the ice front.  unit meters.
 
-      INTEGER i,j,k
-      INTEGER bi,bj
+      INTEGER i, j, k
+      INTEGER bi, bj
       INTEGER CURI, CURJ, FRONT_K
 
       _RL tLoc
@@ -654,8 +654,8 @@ c     ENDIF
 #endif /* ndef ALLOW_AUTODIFF */
 
 #ifdef ALLOW_DIAGNOSTICS
-
       IF ( useDiagnostics ) THEN
+
 #ifdef NONLIN_FRSURF
        IF ( (nonlinFreeSurf.GT.0 .OR. usingPCoords)
      &         .AND. useRealFreshWaterFlux ) THEN
@@ -698,9 +698,9 @@ c     ENDIF
      &      0,1,0,1,1,myThid)
 
 #ifdef ALLOW_STEEP_ICECAVITY
-       CALL DIAGNOSTICS_FILL_RS(sticfFreshWaterFlux,'SHIICFfw',
+       CALL DIAGNOSTICS_FILL( sticfFreshWaterFlux, 'SHIICFfw',
      &      0,1,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL_RS(sticfHeatFlux,      'SHIICFht',
+       CALL DIAGNOSTICS_FILL( sticfHeatFlux,       'SHIICFht',
      &      0,1,0,1,1,myThid)
 #endif
 
@@ -746,7 +746,7 @@ C     Friction velocity
 #endif /* SHI_ALLOW_GAMMAFRICT */
 
       ENDIF
-#endif
+#endif /* ALLOW_DIAGNOSTICS */
 
       RETURN
       END
