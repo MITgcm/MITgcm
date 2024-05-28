@@ -841,7 +841,7 @@ C  phytoplankton, which gave a reasonably good fit to the global
 C  observational synthesis of Dunne (2009). This is consistent
 C  with the findings of Jin et al. (GBC,2006).
 
-#ifdef SIZE_NUT_LIM
+#ifdef SIZE_DEP_LIM
           CaCO3_uptake(i,j,k) = mu_sm(i,j,k) * Phy_sm_local(i,j,k)
      &                          * phi_sm_2d(i,j,bi,bj) * CatoN
 #else
