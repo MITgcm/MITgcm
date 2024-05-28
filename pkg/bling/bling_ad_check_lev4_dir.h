@@ -11,10 +11,7 @@ cCADJ STORE akf               = tapelev4, key = ilev_4
 cCADJ STORE ft                = tapelev4, key = ilev_4
 
 CADJ STORE irr_mem           = tapelev4, key = ilev_4
-#ifdef ALLOW_SELF_SHADING
 CADJ STORE chl               = tapelev4, key = ilev_4
-#endif
-cCADJ STORE poc               = tapelev4, key = ilev_4
 CADJ STORE phyto_sm          = tapelev4, key = ilev_4
 CADJ STORE phyto_lg          = tapelev4, key = ilev_4
 # ifndef USE_BLING_V1
