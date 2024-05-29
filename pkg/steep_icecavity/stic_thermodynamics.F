@@ -188,7 +188,7 @@ C     (Holland and Jenkins, 1999, eq.21)
          ENDDO
         ENDDO
 #ifdef ALLOW_DIAGNOSTICS
-        IF ( useDiagnostics ) THEN
+c       IF ( useDiagnostics ) THEN
          DO j = 1-OLy,sNy+OLy
           DO i = 1-OLx,sNx+OLx
            tmpDiagShelficeForcingT(i,j,bi,bj) = 0. _d 0
@@ -207,7 +207,7 @@ C     (Holland and Jenkins, 1999, eq.21)
            ENDDO
           ENDDO
          ENDDO
-        ENDIF
+c       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
        ENDDO
       ENDDO
