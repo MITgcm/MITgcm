@@ -85,8 +85,7 @@ C  selectPHsolver :: sets the pH solver to use:
 C     =1 :: use the GENERAL solver ;  =2 :: use SEC solver ;
 C     =3 :: use FAST solver routine.
 
-       COMMON /CARBONCHEM_SOLVESAPHE_ARIANE/
-cav     &                     cat, akn, akhs, aphscale, Ksp_TP_Arag,
+       COMMON /CARBONCHEM_SOLVESAPHE/
      &                     cat, akn, akhs, aphscale,
      &                     at_maxniter,
      &                     selectBTconst,selectFTconst,
@@ -97,7 +96,6 @@ cav     &                     cat, akn, akhs, aphscale, Ksp_TP_Arag,
       _RL  akn(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  akhs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  aphscale(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-cav      _RL  Ksp_TP_Arag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       INTEGER at_maxniter
       INTEGER selectBTconst
@@ -139,13 +137,31 @@ C      Schmidt number coefficients
 #ifdef ALLOW_EXF
       integer apco2startdate1
       integer apco2startdate2
+      integer silicastartdate1
+      integer silicastartdate2
+      integer ironstartdate1
+      integer ironstartdate2
       _RL     apco2StartTime
       _RL     apco2period
       _RL     apco2RepCycle
       _RL     apco2const
       _RL     apco2_exfremo_intercept
       _RL     apco2_exfremo_slope
+      _RL     silicaStartTime
+      _RL     silicaperiod
+      _RL     silicaRepCycle
+      _RL     silicaconst
+      _RL     silica_exfremo_intercept
+      _RL     silica_exfremo_slope
+      _RL     ironStartTime
+      _RL     ironperiod
+      _RL     ironRepCycle
+      _RL     ironconst
+      _RL     iron_exfremo_intercept
+      _RL     iron_exfremo_slope
       CHARACTER*1 apco2mask
+      CHARACTER*1 silicamask
+      CHARACTER*1 ironmask
 #endif
 
 C ==========================================================
@@ -165,12 +181,25 @@ C ==========================================================
      &        bling_gamma_POM2dFile, bling_wsink0_2dFile,
      &        bling_phi_lg2dFile, bling_phi_sm2dFile
 #ifdef ALLOW_EXF
-     &       ,apco2startdate1,apco2startdate2,
+     &       ,apco2startdate1, apco2startdate2,
+     &        silicastartdate1, silicastartdate2,
+     &        ironstartdate1, ironstartdate2,
      &        apco2StartTime, apco2period, apco2RepCycle,
      &        apco2const,
      &        apco2_exfremo_intercept,
      &        apco2_exfremo_slope,
-     &        apco2file, apco2mask
+     &        silicaStartTime, silicaperiod, silicaRepCycle,
+     &        silicaconst,
+     &        silica_exfremo_intercept,
+     &        silica_exfremo_slope,
+     &        ironStartTime, ironperiod, ironRepCycle,
+     &        ironconst,
+     &        iron_exfremo_intercept,
+     &        iron_exfremo_slope,
+     &        apco2file, 
+     &        apco2mask,
+     &        silicamask,
+     &        ironmask
 #endif
 
 C      bling_windFile      :: file name of wind speeds
@@ -220,9 +249,17 @@ C ==========================================================
 #ifdef ALLOW_EXF
       _RL     exf_inscal_apco2
       _RL     exf_outscal_apco2
+      _RL     exf_inscal_silica
+      _RL     exf_outscal_silica
+      _RL     exf_inscal_iron
+      _RL     exf_outscal_iron
       COMMON /BLG_PARAM_SCAL/
      &                    exf_inscal_apco2,
-     &                    exf_outscal_apco2
+     &                    exf_outscal_apco2,
+     &                    exf_inscal_silica,
+     &                    exf_outscal_silica,
+     &                    exf_inscal_iron,
+     &                    exf_outscal_iron
 #endif
 
 C ==========================================================
@@ -233,11 +270,23 @@ C ==========================================================
       _RL apco2_lon0, apco2_lon_inc
       _RL apco2_lat0, apco2_lat_inc(MAX_LAT_INC)
       INTEGER apco2_nlon, apco2_nlat, apco2_interpMethod
+      _RL silica_lon0, silica_lon_inc
+      _RL silica_lat0, silica_lat_inc(MAX_LAT_INC)
+      INTEGER silica_nlon, silica_nlat, silica_interpMethod
+      _RL iron_lon0, iron_lon_inc
+      _RL iron_lat0, iron_lat_inc(MAX_LAT_INC)
+      INTEGER iron_nlon, iron_nlat, iron_interpMethod
 
       COMMON /BLG_EXF_INTERPOLATION/
      &        apco2_lon0, apco2_lon_inc,
      &        apco2_lat0, apco2_lat_inc,
-     &        apco2_nlon, apco2_nlat,apco2_interpMethod
+     &        apco2_nlon, apco2_nlat, apco2_interpMethod,
+     &        silica_lon0, silica_lon_inc,
+     &        silica_lat0, silica_lat_inc,
+     &        silica_nlon, silica_nlat, silica_interpMethod,
+     &        iron_lon0, iron_lon_inc,
+     &        iron_lat0, iron_lat_inc,
+     &        iron_nlon, iron_nlat, iron_interpMethod
 #endif
 #endif
 

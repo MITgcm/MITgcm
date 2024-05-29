@@ -30,27 +30,26 @@ C nutrient limitations to calculate maximum phyto growth rate
 #define MIN_NUT_LIM
 
 C Allow different phytoplankton groups to have different growth rates and
-C nutrient/light limitations. Parameters implemented have yet to be tuned.
-#undef SIZE_NUT_LIM
+C nutrient/light limitations. Parameters implemented have yet to be tuned
+#undef SIZE_DEP_LIM
 
 C Assume that phytoplankton in the mixed layer experience
 C the average light over the mixed layer (as in original BLING model)
 #undef ML_MEAN_LIGHT
 
 C Assume that phytoplankton are homogenized in the mixed layer
-#define ML_MEAN_PHYTO
+#undef ML_MEAN_PHYTO
 
 C Calculate MLD using a threshold criterion. If undefined,
 C MLD is calculated using the second derivative of rho(z)
 #undef BLING_USE_THRESHOLD_MLD
 
-C Determine PAR from shortwave radiation Qsw;
-C otherwise determined from date and latitude
-#define USE_QSW
-
 C Light absorption scheme from Manizza et al. (2005),
 C with self shading from phytoplankton
 #undef PHYTO_SELF_SHADING
+
+C Note: shortwave radiation from PKG/EXF is always used if available; 
+C otherwise insolation is calculated from time and latitude
 
 C Note: atm pressure from PKG/EXF is always used for air-sea flux calculation
 C if available; otherwise read from file or set to constant value (1 atm)
@@ -84,16 +83,8 @@ C NOTE: Has NO effect when CARBONCHEM_SOLVESAPHE is defined (different
 C  coeffs are used).
 #undef CARBONCHEM_TOTALPHSCALE
 
-C When calculating the fraction of sinking organic matter, use model biomass diagnostics.
+C When calculating the fraction of sinking organic matter, use model biomass diagnostics
 #define NEW_FRAC_EXP
-
-C Assume different nutrient limitations for small and large phytoplankton.
-#define SIZE_DEP_LIM
-
-C-- Undocumented Options:
-#undef MULT_NUT_LIM
-#undef USE_ATMOSCO2
-#undef USE_EXFCO2
 
 #endif /* ALLOW_BLING */
 #endif /* BLING_OPTIONS_H */

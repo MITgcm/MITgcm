@@ -45,8 +45,9 @@ C     irr_mem       :: Phyto irradiance memory
 #include "PARAMS.h"
 #include "GRID.h"
 #include "BLING_VARS.h"
-#ifdef USE_QSW
+#ifdef ALLOW_EXF
 #include "FFIELDS.h"
+#include "EXF_PARAM.h"
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -79,13 +80,13 @@ C     === Local variables ===
       _RL SumMLIrr
       _RL tmp_ML
 #endif
-#ifndef USE_QSW
+c#ifndef USE_QSW
       _RL solar, albedo
       _RL dayfrac, yday, delta
       _RL lat, sun1, dayhrs
       _RL cosz, frac, fluxi
       _RL sfac      (1-OLy:sNy+OLy)
-#endif
+c#endif
 #ifdef PHYTO_SELF_SHADING
       _RL k0_rd, chi_rd, e_rd
       _RL k0_bg, chi_bg, e_bg
@@ -112,6 +113,10 @@ C     tkey :: tape key (tile dependent)
 #endif
 CEOP
 
+#ifndef ALLOW_EXF
+      CHARACTER*(128) swdownfile
+#endif
+
 #ifdef PHYTO_SELF_SHADING
 # ifdef ALLOW_AUTODIFF_TAMC
       tkey = bi + (bj - 1)*nSx + (ikey_dynamics - 1)*nSx*nSy
@@ -130,13 +135,18 @@ CEOP
         ENDDO
        ENDDO
 
-c ---------------------------------------------------------------------
-c  Surface insolation
+C ---------------------------------------------------------------------
+C  Surface insolation
 
-#ifndef USE_QSW
-c  From pkg/dic/dic_insol
-c  find light as function of date and latitude
-c  based on paltridge and parson
+#ifndef ALLOW_EXF
+      swdownfile = ' '
+#endif
+
+C If no EXF shortwave, calculate from time and latitude
+      IF (swdownfile.EQ.' ') THEN
+C  From pkg/dic/dic_insol
+C  find light as function of date and latitude
+C  based on paltridge and parson
 
       solar  = 1360. _d 0   !solar constant
       albedo = 0.6 _d 0     !planetary albedo
@@ -178,8 +188,7 @@ C daily average photosynthetically active solar radiation just below surface
 C convert to sfac
           sfac(j) = MAX(1. _d -5,fluxi)
        ENDDO !j
-
-#endif /* ndef USE_QSW */
+      ENDIF
 
 C get time (in h) within the day:
       utcTime = MOD( myTime/3600. _d 0, 24. _d 0 )
@@ -195,28 +204,30 @@ c mydate is utc time
       ENDIF
 #endif
 
-c ---------------------------------------------------------------------
-c  instantaneous light, mixed layer averaged light
+C ---------------------------------------------------------------------
+C Instantaneous light, mixed layer averaged light
 
       DO j=jmin,jmax
        DO i=imin,imax
 
 c  Photosynthetically-available radiations (PAR)
-#ifdef USE_QSW
-        irr_surf(i,j) = max(epsln,
+        IF (swdownfile.EQ.' ') THEN
+         irr_surf(i,j) = sfac(j)
+        ELSE
+#ifdef ALLOW_EXF
+         irr_surf(i,j) = max(epsln,
      &                 -parfrac*Qsw(i,j,bi,bj)*maskC(i,j,1,bi,bj))
-#else
-        irr_surf(i,j) = sfac(j)
 #endif
+        ENDIF
 
 c  Remove light under ice
 c  If using Qsw and seaice/thsice, then ice fraction is already
 c  taken into account
         QSW_underice = .FALSE.
-#ifdef USE_QSW
+c#ifdef USE_QSW
         IF ( useSEAICE ) QSW_underice = .TRUE.
         IF ( useThSIce ) QSW_underice = .TRUE.
-#endif
+c#endif
         IF ( .NOT. QSW_underice ) THEN
          irr_surf(i,j) = irr_surf(i,j)*(1. _d 0 - FIce(i,j,bi,bj))
         ENDIF

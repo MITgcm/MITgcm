@@ -8,7 +8,9 @@
  &BLING_FORCING
   BLING_windFile='tren_speed.bin',
   BLING_iceFile='fice.bin',
-  BLING_silicaFile='sillev1.bin',
   BLING_ironFile='mah_flux_smooth.bin',
+  ironperiod = -12,
   BLING_pCO2=380.5E-6,
+  BLING_silicafile = 'sillev1.bin',
+  silicaperiod = -12,
  &
