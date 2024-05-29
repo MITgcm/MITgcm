@@ -911,7 +911,7 @@ c for surface exchange coeffs
             pressc = 1.0d0 + 0.1d0*cdepth
         end do
 
-        bigR = 83.145
+        bigR = 83.145 _d 0
         P1atm = 1.01325 _d 0 ! bars
         Rgas = 83.1451 _d 0 ! bar*cm3/(mol*K)
 
