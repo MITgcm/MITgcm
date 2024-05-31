@@ -13,7 +13,7 @@
 # SST
  gencost_avgperiod(1) = 'day',
  gencost_startdate1(1) = 20070101,
- gencost_startdate2(1) = 021130,
+ gencost_startdate2(1) = 000000,
  gencost_barfile(1) = 'm_sst_day',
  gencost_datafile(1) = 'lev_clim_temp.bin',
  gencost_errfile(1) = 'ones_32b.bin',
