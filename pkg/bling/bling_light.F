@@ -224,10 +224,8 @@ c  Remove light under ice
 c  If using Qsw and seaice/thsice, then ice fraction is already
 c  taken into account
         QSW_underice = .FALSE.
-c#ifdef USE_QSW
         IF ( useSEAICE ) QSW_underice = .TRUE.
         IF ( useThSIce ) QSW_underice = .TRUE.
-c#endif
         IF ( .NOT. QSW_underice ) THEN
          irr_surf(i,j) = irr_surf(i,j)*(1. _d 0 - FIce(i,j,bi,bj))
         ENDIF
