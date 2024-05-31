@@ -440,7 +440,7 @@ C     Default values
       bling_pCO2             = 278. _d -6
       river_conc_po4         = 0.007 _d 0
       river_dom_to_nut       = 0. _d 0
-
+      print*,'CAV',silicastartdate1,silicastartdate2
 #ifdef ALLOW_EXF
       apco2startdate1         = 0
       apco2startdate2         = 0
@@ -507,6 +507,7 @@ C     model grid cell-center position (leading to trivial interpolation)
       iron_interpMethod = 1
 #endif /* USE_EXF_INTERPOLATION */
 #endif /* ALLOW_EXF */
+      print*,'CAV2',silicastartdate1,silicastartdate2
 
 C     default periodic forcing to same as for physics
       bling_forcingPeriod = externForcingPeriod
@@ -529,6 +530,7 @@ C-    BLING parameters
 
 C-    forcing filenames and parameters
       READ(UNIT=iUnit,NML=BLING_FORCING)
+      print*,'CAV3',silicastartdate1,silicastartdate2
 
       WRITE(msgBuf,'(A)')
      &   ' BLING_READPARMS: finished reading data.BLING'

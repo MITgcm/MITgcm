@@ -269,23 +269,23 @@ C ==========================================================
 #ifdef USE_EXF_INTERPOLATION
       _RL apco2_lon0, apco2_lon_inc
       _RL apco2_lat0, apco2_lat_inc(MAX_LAT_INC)
-      INTEGER apco2_nlon, apco2_nlat, apco2_interpMethod
       _RL silica_lon0, silica_lon_inc
       _RL silica_lat0, silica_lat_inc(MAX_LAT_INC)
-      INTEGER silica_nlon, silica_nlat, silica_interpMethod
       _RL iron_lon0, iron_lon_inc
       _RL iron_lat0, iron_lat_inc(MAX_LAT_INC)
+      INTEGER apco2_nlon, apco2_nlat, apco2_interpMethod
+      INTEGER silica_nlon, silica_nlat, silica_interpMethod
       INTEGER iron_nlon, iron_nlat, iron_interpMethod
 
       COMMON /BLG_EXF_INTERPOLATION/
      &        apco2_lon0, apco2_lon_inc,
      &        apco2_lat0, apco2_lat_inc,
-     &        apco2_nlon, apco2_nlat, apco2_interpMethod,
      &        silica_lon0, silica_lon_inc,
      &        silica_lat0, silica_lat_inc,
-     &        silica_nlon, silica_nlat, silica_interpMethod,
      &        iron_lon0, iron_lon_inc,
      &        iron_lat0, iron_lat_inc,
+     &        apco2_nlon, apco2_nlat, apco2_interpMethod,
+     &        silica_nlon, silica_nlat, silica_interpMethod,
      &        iron_nlon, iron_nlat, iron_interpMethod
 #endif
 #endif
