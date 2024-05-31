@@ -296,7 +296,6 @@ C Get silica concentration and surface iron flux from PKG/EXF
       IF ( useEXF ) THEN
 C     Silica concentration
        IF ( BLING_silicaFile .NE. ' '  ) THEN
-        print*,'CAV',silicaStartTime,silicaperiod
         CALL EXF_SET_FLD(
      I     'silica', BLING_silicafile, silicamask,
      I     silicaStartTime, silicaperiod, silicaRepCycle,
