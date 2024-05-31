@@ -8,9 +8,24 @@
  &BLING_FORCING
   BLING_windFile='tren_speed.bin',
   BLING_iceFile='fice.bin',
+#
+# Silica climatololgy
+  BLING_silicaFile='sillev1.bin',
+  silicaperiod=-12,
+#
+# Iron dust seposition climatology
   BLING_ironFile='mah_flux_smooth.bin',
-  ironperiod = -12,
-  BLING_pCO2=380.5E-6,
-  BLING_silicafile = 'sillev1.bin',
-  silicaperiod = -12,
+  ironperiod=-12,
+#
+# Atmospheric pCO2 monthly values
+  apco2file        = 'atmospco2_monthly',
+  apco2startdate1  = 20070101,
+  apco2startdate2  = 000000,
+  apco2period      = 2629800,
+  apco2_lon0       = 0,
+  apco2_lon_inc    = 360,
+  apco2_lat0       = -90,
+  apco2_lat_inc    = 180,
+  apco2_nlon       = 2,
+  apco2_nlat       = 2,
  &

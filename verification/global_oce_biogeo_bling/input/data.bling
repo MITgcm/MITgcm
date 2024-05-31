@@ -18,7 +18,7 @@
   ironperiod=-12,
 #
 # Atmospheric pCO2 monthly values
-  apco2file        = 'atmospco2_2007.bin',
+  apco2file        = 'atmospco2_monthly',
   apco2startdate1  = 20070101,
   apco2startdate2  = 000000,
   apco2period      = 2629800,
