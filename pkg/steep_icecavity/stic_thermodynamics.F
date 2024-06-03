@@ -188,7 +188,7 @@ C     (Holland and Jenkins, 1999, eq.21)
          ENDDO
         ENDDO
 #ifdef ALLOW_DIAGNOSTICS
-c       IF ( useDiagnostics ) THEN
+        IF ( useDiagnostics ) THEN
          DO j = 1-OLy,sNy+OLy
           DO i = 1-OLx,sNx+OLx
            tmpDiagShelficeForcingT(i,j,bi,bj) = 0. _d 0
@@ -207,7 +207,7 @@ c       IF ( useDiagnostics ) THEN
            ENDDO
           ENDDO
          ENDDO
-c       ENDIF
+        ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
        ENDDO
       ENDDO
@@ -446,22 +446,26 @@ C     In units of K / s
      &                    tmpForcingT/iceFrontCellThickness*
      &                    iceFrontVertContactFrac*
      &                    _recip_hFacC(CURI,CURJ,k,bi,bj)
-                        tmpDiagIcfForcingT(CURI,CURJ,k,bi,bj) =
-     &                    tmpDiagIcfForcingT(CURI,CURJ,k,bi,bj) +
-     &                    tmpForcingT/iceFrontCellThickness*
-     &                    iceFrontVertContactFrac*
-     &                    drF(k)
 C     In units of psu /s
                         stic_gS(CURI,CURJ,k,bi,bj) =
      &                    stic_gS(CURI,CURJ,k,bi,bj) +
      &                    tmpForcingS/iceFrontCellThickness*
      &                    iceFrontVertContactFrac*
      &                    _recip_hFacC(CURI,CURJ,k,bi,bj)
-                        tmpDiagIcfForcingS(CURI,CURJ,k,bi,bj) =
-     &                    tmpDiagIcfForcingS(CURI,CURJ,k,bi,bj) +
-     &                    tmpForcingS/iceFrontCellThickness*
-     &                    iceFrontVertContactFrac*
-     &                    drF(k)
+#ifdef ALLOW_DIAGNOSTICS
+                        IF ( useDiagnostics ) THEN
+                         tmpDiagIcfForcingT(CURI,CURJ,k,bi,bj) =
+     &                     tmpDiagIcfForcingT(CURI,CURJ,k,bi,bj) +
+     &                     tmpForcingT/iceFrontCellThickness*
+     &                     iceFrontVertContactFrac*
+     &                     drF(k)
+                         tmpDiagIcfForcingS(CURI,CURJ,k,bi,bj) =
+     &                     tmpDiagIcfForcingS(CURI,CURJ,k,bi,bj) +
+     &                     tmpForcingS/iceFrontCellThickness*
+     &                     iceFrontVertContactFrac*
+     &                     drF(k)
+                        ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
                        ENDIF /* iceFrontCellThickness */
 C     In units of kg /s
                          stic_addMass(CURI,CURJ,k,bi,bj) =
@@ -545,16 +549,16 @@ C ow - Now add shelfice heat and freshwater fluxes
 C     In units of K/s
                 stic_gT(i,j,k,bi,bj) = stic_gT(i,j,k,bi,bj) +
      &              tmpForcingT*recip_drF(k)* _recip_hFacC(i,j,k,bi,bj)
-                tmpDiagShelficeForcingT(i,j,bi,bj) = tmpForcingT
 C     In units of psu/s
                 stic_gS(i,j,k,bi,bj) = stic_gS(i,j,k,bi,bj) +
      &              tmpForcingS*recip_drF(k)* _recip_hFacC(i,j,k,bi,bj)
-                tmpDiagShelficeForcingS(i,j,bi,bj) = tmpForcingS
 C     In units of kg/s  -- multiplication of area required first
                 stic_addMass(i,j,k,bi,bj) = stic_addMass(i,j,k,bi,bj) -
      &              tmpFWFLX*RA(i,j,bi,bj)
 #ifdef ALLOW_DIAGNOSTICS
                 IF ( useDiagnostics ) THEN
+                 tmpDiagShelficeForcingT(i,j,bi,bj) = tmpForcingT
+                 tmpDiagShelficeForcingS(i,j,bi,bj) = tmpForcingS
 #ifdef NONLIN_FRSURF
                  IF ( (nonlinFreeSurf.GT.0 .OR. usingPCoords)
      &            .AND. useRealFreshWaterFlux ) THEN
