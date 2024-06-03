@@ -194,8 +194,8 @@ C     problem occurs
 #  endif
 # endif
 # if ( defined ALLOW_SHELFICE && defined ALLOW_SHITRANSCOEFF_3D )
-        CALL ADEXCH_3D_RL( adshiTransCoeffT3d, myThid )
-        CALL ADEXCH_3D_RL( adshiTransCoeffS3d, myThid )
+        CALL ADEXCH_3D_RL( adshiTransCoeffT3d, Nr, myThid )
+        CALL ADEXCH_3D_RL( adshiTransCoeffS3d, Nr, myThid )
 # endif
 
 #endif /* AUTODIFF_TAMC_COMPATIBILITY */
