@@ -12,10 +12,12 @@
 # Silica climatololgy
   BLING_silicaFile='sillev1.bin',
   silicaperiod=-12,
+  silica_interpMethod=0,
 #
 # Iron dust seposition climatology
   BLING_ironFile='mah_flux_smooth.bin',
   ironperiod=-12,
+  iron_interpMethod=0,
 #
 # Atmospheric pCO2 monthly values
   apco2file        = 'atmospco2_monthly',
