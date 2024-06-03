@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/bling:
+  - fix bigR setting when option CARBONCHEM_TOTALPHSCALE is defined.
 o pkg/steep_icecavity + shelfice:
   - new package to be used together with pkg/shelfice to also account for
     melting at the vertical faces of a steep ice-shelf interface ;
