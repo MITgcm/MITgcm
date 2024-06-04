@@ -103,8 +103,8 @@ C     tkey :: tape key (tile dependent)
       _RL localTime
       _RL utcTime, diffutc
       _RL sat_atten
-      _RL sat_atten_sum
-      _RL chl_sat_sum
+      _RL sat_atten_sum(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL chl_sat_sum(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER i,j,k
       LOGICAL QSW_underice
 #ifdef ALLOW_CAL
@@ -220,14 +220,13 @@ CADJ STORE tmp_ML = comlev1_bibj, key=tkey, kind=isbyte
 # endif /* ML_MEAN_LIGHT */
 #endif /* ALLOW_AUTODIFF_TAMC */
 
+C Top layer
+       IF ( k.EQ.1) THEN
 
-       DO j=jmin,jmax
-        DO i=imin,imax
+        DO j=jmin,jmax
+         DO i=imin,imax
 
          IF ( maskC(i,j,k,bi,bj).EQ.oneRS ) THEN
-
-C Top layer
-        IF ( k.EQ.1) THEN
 
 c  Photosynthetically-available radiations (PAR)
 #ifdef USE_QSW
@@ -292,8 +291,17 @@ c  Light attenuation in middle of top layer
 
 #endif /* if BLING_USE_SHADING */
 
+            ENDIF
+           ENDDO
+          ENDDO
+
 C k>1: below surface layer
          ELSE
+
+          DO j=jmin,jmax
+           DO i=imin,imax
+
+            IF ( maskC(i,j,k,bi,bj).EQ.oneRS ) THEN
 
 #ifdef PHYTO_SELF_SHADING
 c  Attenuation coefficient adjusted to chlorophyll in kth layer
@@ -319,19 +327,28 @@ c  Attenuation from one more layer
 
 #endif /* if BLING_USE_SHADING */
 
+           ENDIF
+          ENDDO
+         ENDDO
+
         ENDIF /* if k.EQ.1 */
 
 C Satellite chl
-         IF (irr_surf(i,j).gt.0) THEN
+        DO j=jmin,jmax
+         DO i=imin,imax
+
+         IF ( maskC(i,j,k,bi,bj).EQ.oneRS ) THEN
+
+          IF (irr_surf(i,j).gt.0) THEN
 c           sat_atten = irr_inst(i,j,k)/irr_surf(i,j)
 #ifdef BLING_USE_SHADING
            sat_atten = exp(-2. _d 0 * k0_bg * (-RC(k)))
 #else
            sat_atten = exp(-2. _d 0 * k0 * (-RC(k)))
 #endif
-           chl_sat_sum = chl_sat_sum
+           chl_sat_sum(i,j) = chl_sat_sum(i,j)
      &                 + chl(i,j,k,bi,bj)*sat_atten
-           sat_atten_sum = sat_atten_sum + sat_atten
+           sat_atten_sum(i,j) = sat_atten_sum(i,j) + sat_atten
          ENDIF
 
 #ifdef ML_MEAN_LIGHT
@@ -344,22 +361,13 @@ c  Mean irradiance in the mixed layer
          ENDIF
 #endif
 
-         ENDIF
-
 C Update diagnostic only if ~13:30 local time, when satellite observes
          IF ( localTime.GT.chlsat_locTimWindow(1) .AND.
      &       localTime.LT.chlsat_locTimWindow(2) ) THEN
-          chl_sat(i,j,bi,bj) = chl_sat_sum/(sat_atten_sum + epsln)
+          chl_sat(i,j,bi,bj) = chl_sat_sum(i,j)/
+     &        (sat_atten_sum(i,j) + epsln)
          ENDIF
-        ENDDO
-       ENDDO
-      ENDDO
 
-      DO k=1,Nr
-       DO j=jmin,jmax
-        DO i=imin,imax
-
-         IF ( maskC(i,j,k,bi,bj).EQ.oneRS ) THEN
           irr_eff(i,j,k) = irr_inst(i,j,k)
 
 #ifdef ML_MEAN_LIGHT
