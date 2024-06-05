@@ -11,7 +11,10 @@ cCADJ STORE akf               = tapelev3, key = ilev_3
 cCADJ STORE ft                = tapelev3, key = ilev_3
 
 CADJ STORE irr_mem           = tapelev3, key = ilev_3
+# ifdef PHYTO_SELF_SHADING
 CADJ STORE chl               = tapelev3, key = ilev_3
+# endif
+cCADJ STORE poc               = tapelev3, key = ilev_3
 CADJ STORE phyto_sm          = tapelev3, key = ilev_3
 CADJ STORE phyto_lg          = tapelev3, key = ilev_3
 # ifndef USE_BLING_V1

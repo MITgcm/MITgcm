@@ -95,11 +95,12 @@ C     === Local variables ===
       _RL atten_bg
       _RL irr_rd    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL irr_bg    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+#endif /* PHYTO_SELF_SHADING */
 #ifdef ALLOW_AUTODIFF_TAMC
 C     tkey :: tape key (tile dependent)
-      INTEGER tkey
+C     kkey :: tape key (tile and level dependent)
+      INTEGER tkey, kkey
 #endif
-#endif /* PHYTO_SELF_SHADING */
       _RL localTime
       _RL utcTime, diffutc
       _RL sat_atten
@@ -111,12 +112,6 @@ C     tkey :: tape key (tile dependent)
       INTEGER mydate(4)
 #endif
 CEOP
-
-#ifdef PHYTO_SELF_SHADING
-# ifdef ALLOW_AUTODIFF_TAMC
-      tkey = bi + (bj - 1)*nSx + (ikey_dynamics - 1)*nSx*nSy
-# endif /* ALLOW_AUTODIFF_TAMC */
-#endif /* PHYTO_SELF_SHADING */
 
        DO k=1,Nr
         DO j=jmin,jmax
@@ -208,17 +203,18 @@ c mydate is utc time
 c ---------------------------------------------------------------------
 c  instantaneous light, mixed layer averaged light
 
+#ifdef ALLOW_AUTODIFF_TAMC
+      tkey = bi + (bj - 1)*nSx + (ikey_dynamics - 1)*nSx*nSy
+#endif /* ALLOW_AUTODIFF_TAMC */
+
       DO k=1,Nr
 
 #ifdef ALLOW_AUTODIFF_TAMC
-# ifdef PHYTO_SELF_SHADING
-CADJ STORE irr_bg = comlev1_bibj, key=tkey, kind=isbyte
-CADJ STORE irr_rd = comlev1_bibj, key=tkey, kind=isbyte
-# endif /* PHYTO_SELF_SHADING */
+       kkey = k + (tkey-1)*Nr
 # ifdef ML_MEAN_LIGHT
-CADJ STORE tmp_ML = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE tmp_ML = comlev1_bibj_k, key=kkey, kind=isbyte
 # endif /* ML_MEAN_LIGHT */
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif
 
 C Top layer
        IF ( k.EQ.1) THEN
@@ -226,7 +222,7 @@ C Top layer
         DO j=jmin,jmax
          DO i=imin,imax
 
-         IF ( maskC(i,j,k,bi,bj).EQ.oneRS ) THEN
+          IF ( maskC(i,j,k,bi,bj).EQ.oneRS ) THEN
 
 c  Photosynthetically-available radiations (PAR)
 #ifdef USE_QSW
@@ -274,8 +270,17 @@ c  of shortwave radiation calculated in the physical model, which
 c  is instead calculated in the subroutine swfrac
 
 c  Attenuation coefficient adjusted to chlorophyll in top layer
+#ifdef ALLOW_AUTODIFF
+           IF ( chl(i,j,1,bi,bj) .GT. 0. _d 0 ) THEN
+#endif
           kChl_rd(i,j,1) = k0_rd + chi_rd*(chl(i,j,1,bi,bj)**e_rd)
           kChl_bg(i,j,1) = k0_bg + chi_bg*(chl(i,j,1,bi,bj)**e_bg)
+#ifdef ALLOW_AUTODIFF
+           ELSE
+            kChl_rd(i,j,1) = k0_rd
+            kChl_bg(i,j,1) = k0_bg
+           ENDIF
+#endif
 c  Light attenuation in middle of top layer
           atten_rd = kChl_rd(i,j,1)*drF(1)/2. _d 0*hFacC(i,j,1,bi,bj)
           atten_bg = kChl_bg(i,j,1)*drF(1)/2. _d 0*hFacC(i,j,1,bi,bj)
@@ -291,22 +296,37 @@ c  Light attenuation in middle of top layer
 
 #endif /* if BLING_USE_SHADING */
 
-            ENDIF
-           ENDDO
-          ENDDO
-
+          ENDIF
+         ENDDO
+        ENDDO
 C k>1: below surface layer
-         ELSE
+       ELSE
 
-          DO j=jmin,jmax
-           DO i=imin,imax
+#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef PHYTO_SELF_SHADING
+CADJ STORE irr_bg(:,:,k-1) = comlev1_bibj_k, key=kkey, kind=isbyte
+CADJ STORE irr_rd(:,:,k-1) = comlev1_bibj_k, key=kkey, kind=isbyte
+# endif
+#endif
 
-            IF ( maskC(i,j,k,bi,bj).EQ.oneRS ) THEN
+        DO j=jmin,jmax
+         DO i=imin,imax
+
+          IF ( maskC(i,j,k,bi,bj).EQ.oneRS ) THEN
 
 #ifdef PHYTO_SELF_SHADING
 c  Attenuation coefficient adjusted to chlorophyll in kth layer
+#ifdef ALLOW_AUTODIFF
+           IF ( chl(i,j,k,bi,bj) .GT. 0. _d 0 ) THEN
+#endif
           kChl_rd(i,j,k) = k0_rd + chi_rd*(chl(i,j,k,bi,bj)**e_rd)
           kChl_bg(i,j,k) = k0_bg + chi_bg*(chl(i,j,k,bi,bj)**e_bg)
+#ifdef ALLOW_AUTODIFF
+           ELSE
+            kChl_rd(i,j,k) = k0_rd
+            kChl_bg(i,j,k) = k0_bg
+           ENDIF
+#endif
 c  Light attenuation from one more layer
           atten_rd = kChl_rd(i,j,k)*drF(k)/2. _d 0*hFacC(i,j,k,bi,bj)
      &       + kChl_rd(i,j,k-1)*drF(k-1)/2. _d 0*hFacC(i,j,k-1,bi,bj)
@@ -327,15 +347,15 @@ c  Attenuation from one more layer
 
 #endif /* if BLING_USE_SHADING */
 
-           ENDIF
-          ENDDO
+          ENDIF
          ENDDO
+        ENDDO
 
-        ENDIF /* if k.EQ.1 */
+       ENDIF /* if k.EQ.1 */
 
 C Satellite chl
-        DO j=jmin,jmax
-         DO i=imin,imax
+       DO j=jmin,jmax
+        DO i=imin,imax
 
          IF ( maskC(i,j,k,bi,bj).EQ.oneRS ) THEN
 
