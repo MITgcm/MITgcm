@@ -17,23 +17,23 @@ C fld2d_procbuff_rx :: Heap storage buffer to which master thread
 C                   read-in/write-from data which all threads copy from
 C                   (during read) or copy to (during write).
       COMMON /MDS_WH_BUFFERS/
-#ifndef EXCLUDE_WHIO_GLOBUFF_2D
+# ifndef EXCLUDE_WHIO_GLOBUFF_2D
      &                        fld2d_globuff_r8, fld2d_globuff_r4,
-#endif
+# endif
      &                        fld2d_procbuff_r8, fld2d_procbuff_r4
       Real*8 fld2d_procbuff_r8( (sNx+2*Olx)*(sNy+2*Oly)*nSx*nSy )
       Real*4 fld2d_procbuff_r4( (sNx+2*Olx)*(sNy+2*Oly)*nSx*nSy )
-#ifndef EXCLUDE_WHIO_GLOBUFF_2D
+# ifndef EXCLUDE_WHIO_GLOBUFF_2D
       Real*4 fld2d_globuff_r4( (sNx+2*Olx)*(sNy+2*Oly)*nSx*nSy*nPx*nPy )
       Real*8 fld2d_globuff_r8( (sNx+2*Olx)*(sNy+2*Oly)*nSx*nSy*nPx*nPy )
-#endif
+# endif
 
-#ifdef ALLOW_WHIO_3D
+# ifdef ALLOW_WHIO_3D
       COMMON /MDS_WH_BUFFERS_3D_L/ writeWh
       logical writeWh
       COMMON /MDS_WH_BUFFERS_3D_I/ iWh, jWh
       integer nWh, iWh, jWh
-      PARAMETER (nWh=663)
+      PARAMETER (nWh=633)
       COMMON /MDS_WH_BUFFERS_3D_RL/
 #  ifdef INCLUDE_WHIO_GLOBUFF_3D
      &                        fld3d_globuff_r8, fld3d_globuff_r4,
@@ -49,7 +49,7 @@ C                   (during read) or copy to (during write).
       Real*8 fld3d_globuff_r8
      &       ( (sNx+2*Olx)*(sNy+2*Oly)*nSx*nSy*nPx*nPy*nWh )
 #  endif
-#endif
+# endif
 
 #endif
 
