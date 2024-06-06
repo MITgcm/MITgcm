@@ -1,6 +1,14 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint68y (2024/06/05)
+o pkg/bling:
+  - fix bigR setting when option CARBONCHEM_TOTALPHSCALE is defined.
+o pkg/steep_icecavity + shelfice:
+  - new package to be used together with pkg/shelfice to also account for
+    melting at the vertical faces of a steep ice-shelf interface ;
+  - allows to use non-zero (but constant) ice-shelf salinity ;
+  - new FWD and (TAF) AD secondary test exp. (in isomip) using new pkg.
 o pkg/bling:
   - fix/improve initialization of biomass for the 3 phytoplankton groups ;
   - add 2D diagnostics of optically integrated chlorophyll concentration

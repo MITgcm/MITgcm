@@ -82,22 +82,23 @@ C-    just for consistent diagnostics, also reset Qnet:
          ENDDO
         ENDDO
 
+        IF ( .NOT. useSTIC ) THEN
 C--   Forcing term
 
-        IF ( .NOT.SHELFICEboundaryLayer ) THEN
+         IF ( .NOT.SHELFICEboundaryLayer ) THEN
 C-    for now, forcing using SHELFICEboundaryLayer is done separately
 C     (calling SHELFICE_FORCING_T & _S from APPLY_FORCING_T & _S)
-         DO j=1,sNy
-          DO i=1,sNx
-           IF ( kTopC(i,j,bi,bj).NE.0 ) THEN
-            surfaceForcingT(i,j,bi,bj) = shelficeForcingT(i,j,bi,bj)
-            surfaceForcingS(i,j,bi,bj) = shelficeForcingS(i,j,bi,bj)
-           ENDIF
+          DO j=1,sNy
+           DO i=1,sNx
+            IF ( kTopC(i,j,bi,bj).NE.0 ) THEN
+             surfaceForcingT(i,j,bi,bj) = shelficeForcingT(i,j,bi,bj)
+             surfaceForcingS(i,j,bi,bj) = shelficeForcingS(i,j,bi,bj)
+            ENDIF
+           ENDDO
           ENDDO
-         ENDDO
-        ENDIF
+         ENDIF
 
-        IF ( SHI_useRealFWflux ) THEN
+         IF ( SHI_useRealFWflux ) THEN
 C-    Allows PmE to be used even if boundary layer is being used,
 C     as long as SHI_withBL_realFWflux is set to account for advective flux
           DO j=1-OLy,sNy+OLy
@@ -108,6 +109,9 @@ c           IF ( kTopC(i,j,bi,bj).NE.0 ) THEN
 c           ENDIF
            ENDDO
           ENDDO
+         ENDIF
+
+C-      end-if not useSTIC
         ENDIF
 
 #ifdef EXACT_CONSERV
@@ -137,7 +141,7 @@ c           ENDIF
              shelficeDragV(i,j,bi,bj) = 0.
            ENDDO
           ENDDO
-         ENDIF
+        ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
 c      ENDDO
