@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint68y (2024/06/05)
 o pkg/bling:
   - fix bigR setting when option CARBONCHEM_TOTALPHSCALE is defined.
 o pkg/steep_icecavity + shelfice:
