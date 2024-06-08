@@ -28,21 +28,17 @@ C     *==========================================================*
 CEOP
 
       COMMON / GSUM_COMMON_R8 / phiGSR8, shareBufGSR8
-c    &                        , phiVGSR8
       Real*8  phiGSR8 (lShare8, 0:MAX_NO_THREADS )
       Real*8  shareBufGSR8 ( nSx, nSy )
-c     Real*8  phivGSR8(MAX_VGS, 0:MAX_NO_THREADS )
 
       COMMON / GSUM_COMMON_R4 / phiGSR4
-c    &                        , phiVGSR4
       Real*4  phiGSR4 (lShare4, 0:MAX_NO_THREADS )
-c     Real*4  phivGSR4(MAX_VGS, 0:MAX_NO_THREADS )
 
       COMMON / GSUM_COMMON_I  / phiGSI
-c    &                        , phiVGSI
       INTEGER phiGSI  (lShare4, 0:MAX_NO_THREADS )
-c     INTEGER phivGSI (MAX_VGS, 0:MAX_NO_THREADS )
 
-CEH3 ;;; Local Variables: ***
-CEH3 ;;; mode:fortran ***
-CEH3 ;;; End: ***
+      COMMON / GLBSUM_VECTOR_RL / shareBufGSVec, shareGSVector
+      Real*8  shareBufGSVec( nSx, nSy, GSVec_size )
+      Real*8  shareGSVector( GSVec_size )
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

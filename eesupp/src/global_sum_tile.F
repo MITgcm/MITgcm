@@ -2,9 +2,9 @@
 
 C--   File global_sum_tile.F: Routines that perform global sum
 C                             on a tile array
-C      Contents
-C      o GLOBAL_SUM_TILE_RL
-C      o GLOBAL_SUM_TILE_RS <- not yet coded
+C--    Contents
+C--    o GLOBAL_SUM_TILE_RL
+C--    o GLOBAL_SUM_TILE_RS <- not yet coded
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -32,6 +32,7 @@ C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
+#include "EEBUFF_SIZE.h"
 #include "GLOBAL_SUM.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -82,7 +83,7 @@ C--   Master thread cannot start until everyone is ready:
       CALL BAR2( myThid )
       _BEGIN_MASTER( myThid )
 
-#if (defined (GLOBAL_SUM_SEND_RECV) && defined (ALLOW_USE_MPI) )
+#if (defined GLOBAL_SUM_SEND_RECV && defined ALLOW_USE_MPI )
       IF ( usingMPI ) THEN
 
         lbuff = nSx*nSy
@@ -158,7 +159,7 @@ C       End if/else mpiMyId = 0
         ENDIF
 
       ELSE
-#elif (defined (GLOBAL_SUM_ORDER_TILES) && defined (ALLOW_USE_MPI) )
+#elif (defined GLOBAL_SUM_ORDER_TILES && defined ALLOW_USE_MPI )
       IF ( usingMPI ) THEN
 
 C--   Initialise local buffer
