@@ -8,6 +8,7 @@ C--    o GLOBAL_SUM_VECTOR_RL  - Global-Sum vector (input: nSx,nSy,nVec)
 C--    o GLOBAL_SUM_VECTOR_RS  - Global-Sum vector (input: nSx,nSy,nVec)
 C--    o GLOBAL_SUM_VEC_ALT_RL - Global-Sum vector (input: nDim,nSx,nSy)
 C--    o GLOBAL_SUM_VEC_ALT_RS - Global-Sum vector (input: nDim,nSx,nSy)
+C--    o GLOBAL_SUM_VECTOR_INT - Global-Sum vector (input: nSx,nSy,nVec)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -507,6 +508,128 @@ C--   set result for every threads (+ convert back r8 to _RS)
       ENDDO
 
 C--   Barrier was needed here to prevent thread 1 to modify shareBufGSVec(1,1,n)
+C     (as it would in the following call to this S/R) before all threads get
+C     their global-sum result out.
+C     No longer needed since a dedicated shared var. is used to share the output
+c     CALL BAR2( myThid )
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: GLOBAL_SUM_VECTOR_INT
+
+C     !INTERFACE:
+      SUBROUTINE GLOBAL_SUM_VECTOR_INT(
+     I                       nVec, tiledVec,
+     O                       sumVec,
+     I                       myThid )
+
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | SUBROUTINE GLOBAL\_SUM\_VECTOR\_INT
+C     | o Handle sum for Integer vector.
+C     *==========================================================*
+C     | Apply sum on an array of tiled vector (input: nSx,nSy,nVec)
+C     |  and operate over all tiles & all the processes.
+C     *==========================================================*
+
+C     !USES:
+      IMPLICIT NONE
+
+C     == Global data ==
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "EESUPPORT.h"
+#include "EEBUFF_SIZE.h"
+#include "GLOBAL_SUM.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     nVec     :: length of input/output vector
+C     tiledVec :: Input tiled vector (dims: nSx,nSy,nVec)
+C     sumVec   :: Result of sum over all tiles, threads & procs
+C     myThid   :: My thread id.
+      INTEGER nVec
+      INTEGER tiledVec(nSx,nSy,nVec)
+      INTEGER sumVec(nVec)
+      INTEGER myThid
+
+C     !LOCAL VARIABLES:
+C     n, bi,bj :: Loop counters
+C     mpiRC    :: MPI return code
+C     msgBuf   :: Informational/error message buffer
+      INTEGER n, bi, bj
+      INTEGER sumMyPr(GSVec_size)
+C- type declaration of: sumMyPr & shareGSVectInt need to have
+C                       the same length as MPI_INTEGER
+#ifdef ALLOW_USE_MPI
+      INTEGER mpiRC
+#endif /* ALLOW_USE_MPI */
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+CEOP
+
+      IF ( nVec.GT.GSVec_size ) THEN
+        WRITE(msgBuf,'(A,2(A,I7))') 'GLOBAL_SUM_VECTOR_INT: ',
+     &       'nVec=', nVec, ' > GSVec_size=', GSVec_size
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'GLOBAL_SUM_VECTOR_INT: ',
+     &       'increase "GSVec_size" from EEBUFF_SIZE.h and recompile'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R GLOBAL_SUM_VECTOR_INT'
+      ENDIF
+
+C--   write local sum into shared-buffer array
+      DO n = 1,nVec
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         shareBufGSVecI(bi,bj,n) = tiledVec(bi,bj,n)
+        ENDDO
+       ENDDO
+      ENDDO
+
+C--   Master thread cannot start until everyone is ready:
+      CALL BAR2( myThid )
+      _BEGIN_MASTER( myThid )
+
+C--   Sum over all tiles (of the same process) first
+       DO n = 1,nVec
+        sumMyPr(n) = 0
+       ENDDO
+       DO bj = 1,nSy
+        DO bi = 1,nSx
+         DO n = 1,nVec
+          sumMyPr(n) = sumMyPr(n) + shareBufGSVecI(bi,bj,n)
+         ENDDO
+        ENDDO
+       ENDDO
+
+#ifdef ALLOW_USE_MPI
+       IF ( usingMPI ) THEN
+C--   sum over all procs and put result into shared buffer:
+        CALL MPI_Allreduce( sumMyPr, shareGSVectInt, nVec,
+     &           MPI_INTEGER, MPI_SUM, MPI_COMM_MODEL, mpiRC )
+       ELSE
+#else /* ALLOW_USE_MPI */
+       IF ( .TRUE. ) THEN
+#endif /* ALLOW_USE_MPI */
+C--   in case MPI is not used, put result directly in shared buffer:
+        DO n = 1,nVec
+         shareGSVectInt(n) = sumMyPr(n)
+        ENDDO
+       ENDIF
+
+      _END_MASTER( myThid )
+
+C--   Everyone wait for Master thread to be ready
+      CALL BAR2( myThid )
+
+C--   set result for every threads
+      DO n = 1,nVec
+       sumVec(n) = shareGSVectInt(n)
+      ENDDO
+
+C--   Barrier was needed to prevent thread 1 to modify shareBufGSVecI(1,1,n)
 C     (as it would in the following call to this S/R) before all threads get
 C     their global-sum result out.
 C     No longer needed since a dedicated shared var. is used to share the output

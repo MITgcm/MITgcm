@@ -41,4 +41,7 @@ CEOP
       Real*8  shareBufGSVec( nSx, nSy, GSVec_size )
       Real*8  shareGSVector( GSVec_size )
 
+      COMMON / GLBSUM_VECTOR_I / shareBufGSVecI, shareGSVectInt
+      INTEGER shareBufGSVecI( nSx, nSy, GSVec_size )
+      INTEGER shareGSVectInt( GSVec_size )
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
