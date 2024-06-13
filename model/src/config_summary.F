@@ -419,8 +419,6 @@ C-----
      & 'convertFW2Salt =',
      & ' /* convert F.W. Flux to Salt Flux (-1=use local S)(g/kg)*/')
       ENDIF
-      CALL WRITE_0D_RL( sstExtrapol, INDEX_NONE, 'sstExtrapol =',
-     &  ' /* extrapolation coeff from lev. 1 & 2 to surf [-] */')
 
       CALL WRITE_0D_L( use3Dsolver, INDEX_NONE,
      & 'use3Dsolver =', ' /* use 3-D pressure solver on/off flag */')

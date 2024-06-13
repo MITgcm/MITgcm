@@ -783,7 +783,6 @@ C     externForcingPeriod :: Is the period of which forcing varies (eg. 1 month)
 C     externForcingCycle :: Is the repeat time of the forcing (eg. 1 year)
 C                          (note: externForcingCycle must be an integer
 C                           number times externForcingPeriod)
-C     sstExtrapol    :: extrapolation coeff from 1rst 2 levels up to surface
 C     convertFW2Salt :: salinity, used to convert Fresh-Water Flux to Salt Flux
 C                       (use model surface (local) value if set to -1)
 C     temp_EvPrRn :: temperature of Rain & Evap.
@@ -853,7 +852,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
      & afFacMom, vfFacMom, pfFacMom, cfFacMom, foFacMom, mtFacMom,
      & cosPower, cAdjFreq,
      & tauThetaClimRelax, tauSaltClimRelax, latBandClimRelax,
-     & externForcingCycle, externForcingPeriod, sstExtrapol,
+     & externForcingCycle, externForcingPeriod,
      & convertFW2Salt, temp_EvPrRn, salt_EvPrRn,
      & temp_addMass, salt_addMass, hFacMinDr, hFacMinDp,
      & ivdc_kappa, hMixCriteria, dRhoSmall, hMixSmooth,
@@ -988,7 +987,6 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL latBandClimRelax
       _RL externForcingCycle
       _RL externForcingPeriod
-      _RL sstExtrapol
       _RL convertFW2Salt
       _RL temp_EvPrRn
       _RL salt_EvPrRn

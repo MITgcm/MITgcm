@@ -155,6 +155,8 @@ C--   Print general parameters:
      &  ' /* reduction of Qsat over salty water [-] */')
       CALL WRITE_0D_L( noNegativeEvap,INDEX_NONE,'noNegativeEvap =',
      &  ' /* prevent negative Evaporation */')
+      CALL WRITE_0D_RL( sstExtrapol, INDEX_NONE, 'sstExtrapol =',
+     &  ' /* extrapolation coeff from lev. 1 & 2 to surf [-] */')
       CALL WRITE_0D_RL( cdrag_1, INDEX_NONE, 'cDrag_1 =',
      &  ' /* coef used in drag calculation [m/s] */')
       CALL WRITE_0D_RL( cdrag_2, INDEX_NONE, 'cDrag_2 =',

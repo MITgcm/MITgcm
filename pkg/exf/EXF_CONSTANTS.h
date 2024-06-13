@@ -103,6 +103,7 @@ C     humid_fac    :: constant entering the evaluation of the virtual
 C                     temperature
 C     gamma_blk    :: adiabatic lapse rate
 C     saltsat      :: reduction of saturation vapor pressure over salt water
+C     sstExtrapol  :: extrapolation coeff from 1rst 2 levels up to surface
 C  snow_emissivity :: longwave  snow  emissivity [-] (with pkg thsice/seaice)
 C-- to evaluate turbulent transfert coefficients:
 C     cdrag_[n]    :: n = 1,2,3 coefficients used to evaluate
@@ -140,6 +141,7 @@ C  snow_emissivity :: longwave  snow  emissivity [-] (with pkg thsice/seaice)
       _RL    humid_fac
       _RL    gamma_blk
       _RL    saltsat
+      _RL    sstExtrapol
       _RL    cdrag_1, cdrag_2, cdrag_3, cdrag_8, cdragMax, umax
       _RL    cstanton_1, cstanton_2
       _RL    cdalton
@@ -170,6 +172,7 @@ C  snow_emissivity :: longwave  snow  emissivity [-] (with pkg thsice/seaice)
      &       humid_fac,
      &       gamma_blk,
      &       saltsat,
+     &       sstExtrapol,
      &       cdrag_1, cdrag_2, cdrag_3, cdrag_8, cdragMax, umax,
      &       cstanton_1, cstanton_2,
      &       cdalton,

@@ -63,7 +63,7 @@ C   dependency.
       _RL delRDefault(Nr)
 C-- Variables used to select between different coordinate systems:
 C   zCoordInputData :: The vertical coordinate system in the rest of the  model
-C   pCoordInputData :: is written in terms of r. In the model "data" file,
+C   pCoordInputData :: is written in terms of r. In the model "data" file, 
 C   rCoordInputData :: input params can be in terms of z, p or r.
 C   coordsSet       :: e.g. delZ or delP or delR for the vertical grid spacing.
 C                   :: The following rules apply:
@@ -251,7 +251,7 @@ C--   Continuous equation parameters
      & temp_addMass, salt_addMass, zonal_filt_lat,
      & smoothAbsFuncRange, sIceLoadFac,
      & selectBalanceEmPmR, balanceEmPmR, balanceQnet, balancePrintMean,
-     & balanceThetaClimRelax, balanceSaltClimRelax, sstExtrapol,
+     & balanceThetaClimRelax, balanceSaltClimRelax,
      & readBinaryPrec, writeBinaryPrec, writeStatePrec, globalFiles,
      & useSingleCpuIO, useSingleCpuInput, usePickupBeforeC54,
      & usePickupBeforeC35, debugMode, debugLevel, plotLevel

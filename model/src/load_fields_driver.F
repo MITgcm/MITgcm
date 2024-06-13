@@ -97,6 +97,11 @@ C     !LOCAL VARIABLES:
 #endif
       INTEGER ks, kl
       INTEGER i,j,bi,bj
+#ifndef ALLOW_EXF
+C     sstExtrapol :: extrapolation coeff from 1rst 2 levels up to surface
+C                    defined in EXF_CONSTANTS.h
+      _RL    sstExtrapol
+#endif
       _RL    sstTmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 CEOP
 
@@ -140,6 +145,10 @@ C--   Initialise forcing arrays that may receive multiple contributions
 C--   Determine surface temperature, usually just a copy of the surface
 C     level of theta, but for eosType='TEOS10', we need to convert from
 C     conservative temperature to in-situ surface temperature
+#ifndef ALLOW_EXF
+C     Default of exf_readparms.F
+      sstExtrapol = 0. _d 0
+#endif
       IF ( usingPCoords ) THEN
        ks = Nr
        kl = Nr-1

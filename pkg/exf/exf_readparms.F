@@ -82,7 +82,7 @@ C     Surface flux data.
      & cstanton_1, cstanton_2, cdalton,
      & flamb, flami, zolmin, zref,
      & cvapor_fac, cvapor_exp, cvapor_fac_ice, cvapor_exp_ice,
-     & humid_fac, gamma_blk, saltsat, psim_fac
+     & humid_fac, gamma_blk, saltsat, sstExtrapol, psim_fac
 
       NAMELIST /EXF_NML_02/
      &          hfluxfile,     hfluxstartdate1,     hfluxstartdate2,
@@ -339,6 +339,7 @@ c     humid_fac   =  atm_Rq     <- default is zero !!!
       humid_fac      =        0.606  _d 0
       gamma_blk      =        0.010  _d 0
       saltsat        =        0.980  _d 0
+      sstExtrapol    =        0.0    _d 0
       cdrag_1        =        0.0027000 _d 0
       cdrag_2        =        0.0001420 _d 0
       cdrag_3        =        0.0000764 _d 0
