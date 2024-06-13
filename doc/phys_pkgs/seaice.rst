@@ -71,7 +71,7 @@ automatically undefines more recent features, see :filelink:`SEAICE_OPTIONS.h
    :varlink:`SEAICE_ALLOW_FREEDRIFT`, #undef, enable solve approximate sea ice momentum equation and bypass solving for sea ice internal stress
    :varlink:`SEAICE_EXTERNAL_FLUXES`, #define, use :filelink:`pkg/exf`-computed fluxes as starting point
    :varlink:`SEAICE_ZETA_SMOOTHREG`, #define, use differentiable regularization for viscosities
-   :varlink:`SEAICE_DELTA_SMOOTHREG`, #undef, use differentiable regularization :math:`\Delta_\mathrm{reg}=\sqrt{\Delta^2+\Delta_\min}` instead of :math:`\max`-function for :math:`1/\Delta_\mathrm{reg}`
+   :varlink:`SEAICE_DELTA_SMOOTHREG`, #undef, use differentiable regularization :math:`\Delta_{\mathrm{reg}}=\sqrt{\Delta^2+\Delta_{\min}}` instead of :math:`\max`-function for :math:`1/\Delta_{\mathrm{reg}}`
    :varlink:`SEAICE_ALLOW_BOTTOMDRAG`, #undef, enable grounding parameterization for improved fastice in shallow seas
    :varlink:`SEAICE_BGRID_DYNAMICS`, #undef, use sea ice dynamics code on legacy B-grid; most of the previous flags are not available with B-grid
    :varlink:`SEAICE_BICE_STRESS`, #undef, B-grid only for backward compatiblity: turn on ice-stress on ocean; defined by default if :varlink:`SEAICE_BGRID_DYNAMICS` is defined
@@ -592,10 +592,11 @@ where :math:`f_{r}` is a run-time parameter :varlink:`SEAICEpressReplFac`
 :math:`\Delta = \left[ \left(\dot{\epsilon}_{11}+\dot{\epsilon}_{22}\right)^2 +
 e^{-2}\left( \left(\dot{\epsilon}_{11}-\dot{\epsilon}_{22} \right)^2 +
 4\,\dot{\epsilon}_{12}^2 \right) \right]^{\frac{1}{2}}`. By default
-:math:`\Delta_\mathrm{reg}=\max(\Delta,\Delta_\min)`. If CPP-flag
+:math:`\Delta_{\mathrm{reg}}=\max(\Delta,\Delta_{\min})`. If CPP-flag
 :varlink:`SEAICE_DELTA_SMOOTHREG` is defined,
-:math:`\Delta_\mathrm{reg}=\sqrt{\Delta^2+\Delta^2_\min}`. Run-time parameter
-:varlink:`SEAICE_deltaMin` :math:`= \Delta_\min = 10^{-10}` by default.
+:math:`\Delta_{\mathrm{reg}}=\sqrt{\Delta^2+\Delta^2_{\min}}`. Run-time
+parameter :varlink:`SEAICE_deltaMin` :math:`= \Delta_{\min} = 10^{-10}` by
+default.
 
 
 
