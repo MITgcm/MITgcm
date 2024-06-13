@@ -65,38 +65,14 @@ C     Loop over tiles.
        DO bj = myByLo(myThid),myByHi(myThid)
         DO bi = myBxLo(myThid),myBxHi(myThid)
 
-         IF ( Nr.GE.2 .AND. sstExtrapol.GT.0. _d 0 ) THEN
-          DO j = 1,sNy
-           DO i = 1,sNx
-            Tsf = seaSurfTemp(i,j,bi,bj) + cen2kel
-            SSTtmp = sstExtrapol
-     &             *( seaSurfTemp(i,j,bi,bj)-theta(i,j,kl,bi,bj) )
-     &             *  maskC(i,j,kl,bi,bj)
-            Tsf = Tsf + MAX( SSTtmp, 0. _d 0 )
-            TsfSq = Tsf*Tsf
-            lwflux(i,j,bi,bj) =
-     &          ocean_emissivity*stefanBoltzmann*TsfSq*TsfSq
-     &          - lwdown(i,j,bi,bj)
-#ifdef EXF_LWDOWN_WITH_EMISSIVITY
-     &           *ocean_emissivity
-C     the lw exitance (= out-going long wave radiation) is
-C     emissivity*stefanBoltzmann*T^4 + rho*lwdown, where the
-C     reflectivity rho = 1-emissivity for conservation reasons:
-C     the sum of emissivity, reflectivity, and transmissivity must be
-C     one, and transmissivity is zero in our case (long wave radiation
-C     does not penetrate the ocean surface)
-#endif /* EXF_LWDOWN_WITH_EMISSIVITY */
-           ENDDO
-          ENDDO
-         ELSE
-          DO j = 1,sNy
-           DO i = 1,sNx
-            lwflux(i,j,bi,bj) =
+         DO j = 1,sNy
+          DO i = 1,sNx
+           lwflux(i,j,bi,bj) =
      &          ocean_emissivity*stefanBoltzmann*
-     &          ((seaSurfTemp(i,j,bi,bj)+cen2kel)**4)
+     &          exf_Tsf(i,j,bi,bj)**4
      &          - lwdown(i,j,bi,bj)
 #ifdef EXF_LWDOWN_WITH_EMISSIVITY
-     &           *ocean_emissivity
+     &          *ocean_emissivity
 C     the lw exitance (= out-going long wave radiation) is
 C     emissivity*stefanBoltzmann*T^4 + rho*lwdown, where the
 C     reflectivity rho = 1-emissivity for conservation reasons:
@@ -104,9 +80,8 @@ C     the sum of emissivity, reflectivity, and transmissivity must be
 C     one, and transmissivity is zero in our case (long wave radiation
 C     does not penetrate the ocean surface)
 #endif /* EXF_LWDOWN_WITH_EMISSIVITY */
-           ENDDO
           ENDDO
-         ENDIF
+         ENDDO
 
 C--   end bi,bj loops
         ENDDO
@@ -122,7 +97,7 @@ c        DO j = 1,sNy
 c         DO i = 1,sNx
 c          lwdown(i,j,bi,bj) =
 c    &          ocean_emissivity*stefanBoltzmann*
-c    &          ((seaSurfTemp(i,j,bi,bj)+cen2kel)**4)
+c    &          ((surfLevTemp(i,j,bi,bj)+cen2kel)**4)
 c    &          - lwflux(i,j,bi,bj)
 c         ENDDO
 c        ENDDO

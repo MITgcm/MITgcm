@@ -280,14 +280,7 @@ C--- Compute turbulent surface fluxes
 C-   Pot. Temp and saturated specific humidity
           IF ( atemp(i,j,bi,bj) .NE. 0. _d 0 ) THEN
 C-   Surface Temp.
-           Tsf = seaSurfTemp(i,j,bi,bj) + cen2kel
-           IF ( Nr.GE.2 .AND. sstExtrapol.GT.0. _d 0 ) THEN
-            SSTtmp = sstExtrapol
-     &              *( seaSurfTemp(i,j,bi,bj)-theta(i,j,kl,bi,bj) )
-     &              *  maskC(i,j,kl,bi,bj)
-            Tsf = Tsf + MAX( SSTtmp, 0. _d 0 )
-           ENDIF
-
+           Tsf = exf_Tsf(i,j,bi,bj)
            tmpbulk = cvapor_fac*exp(-cvapor_exp/Tsf)
 #ifdef EXF_CALC_ATMRHO
            atmrho_loc(i,j) = apressure(i,j,bi,bj) /

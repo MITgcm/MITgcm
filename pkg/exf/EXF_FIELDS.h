@@ -336,3 +336,11 @@ C     zen_fsol_daily     :: incoming solar radiation (daily mean)
       _RL climvstr0      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL climvstr1      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
+
+#if ( defined ALLOW_DOWNWARD_RADIATION ) || \
+      ( defined ALLOW_ATM_TEMP && defined ALLOW_BULKFORMULAE )
+C     exf_Tsf :: local copy of global field surfLevTemp or extrapolated
+C                surface temperature (in deg Celsius)
+      COMMON /exf_surfLevTemp/ exf_Tsf
+      _RL exf_Tsf        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif

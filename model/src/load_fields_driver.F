@@ -148,13 +148,13 @@ C--   conservative temperature to in-situ surface temperature
           CALL CONVERT_CT2PT(
      I         theta(1-OLx,1-OLy,ks,bi,bj),
      I         salt(1-OLx,1-OLy,ks,bi,bj),
-     O         seaSurfTemp(1-OLx,1-OLy,bi,bj),
+     O         surfLevTemp(1-OLx,1-OLy,bi,bj),
      I         myTime, myIter, myThid )
-C     appy mask (because theta=0 will lead to seaSurfTemp<0)
+C     appy mask (because theta=0 will lead to surfLevTemp<0)
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-            seaSurfTemp(i,j,bi,bj) =
-     &           seaSurfTemp(i,j,bi,bj)*maskInC(i,j,bi,bj)
+            surfLevTemp(i,j,bi,bj) =
+     &           surfLevTemp(i,j,bi,bj)*maskInC(i,j,bi,bj)
            ENDDO
           ENDDO
          ENDDO
@@ -164,7 +164,7 @@ C     appy mask (because theta=0 will lead to seaSurfTemp<0)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-            seaSurfTemp(i,j,bi,bj) = theta(i,j,ks,bi,bj)
+            surfLevTemp(i,j,bi,bj) = theta(i,j,ks,bi,bj)
            ENDDO
           ENDDO
          ENDDO

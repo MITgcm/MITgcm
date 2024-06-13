@@ -76,9 +76,9 @@ C           implicDiv2DFlow=1 => etaH=etaN ; =0 => etaH=etaN^(n-1);
      &                   etaH
       _RL  etaH  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-      COMMON /DYNVARS_R_SEASURFTEMP/
-     &                  SEASURFTEMP
-      _RL  seaSurfTemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      COMMON /DYNVARS_R_SURFLEVTEMP/
+     &                  SURFLEVTEMP
+      _RL  surfLevTemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #if (defined (ALLOW_3D_DIFFKR) || defined (ALLOW_DIFFKR_CONTROL))
 C     diffKr :: full 3D specification of Laplacian diffusion coeff.

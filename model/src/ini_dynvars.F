@@ -112,7 +112,7 @@ C-      2D arrays
           etaH(i,j,bi,bj) = 0. _d 0
           phiHydLow(i,j,bi,bj) = 0. _d 0
           hMixLayer(i,j,bi,bj) = 0. _d 0
-          seaSurfTemp(i,j,bi,bj) = 0. _d 0
+          surfLevTemp(i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
 
