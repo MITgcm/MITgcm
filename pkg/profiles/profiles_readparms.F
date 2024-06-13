@@ -61,7 +61,8 @@ C number of independent samples
 #endif
      &                   prof_itracer,
      &                   profilesDoNcOutput,
-     &                   profilesDoGenGrid
+     &                   profilesDoGenGrid,
+     &                   prof_make_nc
 
       IF ( .NOT.usePROFILES ) THEN
 C-    pkg PROFILES is not used
@@ -104,6 +105,7 @@ c--     Set default values.
       enddo
 
       profilesDoNcOutput=.false.
+      prof_make_nc=.false.
 
       IF ( (.NOT.usingSphericalPolarGrid .OR. rotateGrid) ) THEN
         profilesDoGenGrid=.true.

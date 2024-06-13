@@ -192,23 +192,10 @@ C ==========================================================
      &         ,apco2file, apco2startdate1, apco2startdate2,
      &          apco2RepCycle, apco2period, apco2StartTime,
      &          exf_inscal_apco2, exf_outscal_apco2, apco2const,
-     &          apco2_exfremo_intercept, apco2_exfremo_slope,
-     &          BLING_silicafile, silicastartdate1, silicastartdate2,
-     &          silicaRepCycle, silicaperiod, silicaStartTime,
-     &          exf_inscal_silica, exf_outscal_silica, silicaconst,
-     &          silica_exfremo_intercept, silica_exfremo_slope,
-     &          BLING_ironfile, ironstartdate1, ironstartdate2,
-     &          ironRepCycle, ironperiod, ironStartTime,
-     &          exf_inscal_iron, exf_outscal_iron, ironconst,
-     &          iron_exfremo_intercept, iron_exfremo_slope
+     &          apco2_exfremo_intercept, apco2_exfremo_slope
 #ifdef USE_EXF_INTERPOLATION
      &         ,apco2_lon0, apco2_lon_inc, apco2_lat0, apco2_lat_inc,
-     &          apco2_nlon, apco2_nlat, apco2_interpMethod,
-     &          silica_lon0, silica_lon_inc, 
-     &          silica_lat0, silica_lat_inc,
-     &          silica_nlon, silica_nlat, silica_interpMethod,
-     &          iron_lon0, iron_lon_inc, iron_lat0, iron_lat_inc,
-     &          iron_nlon, iron_nlat, iron_interpMethod
+     &          apco2_nlon, apco2_nlat, apco2_interpMethod
 #endif /* USE_EXF_INTERPOLATION */
 #endif /* ALLOW_EXF */
 
@@ -448,28 +435,6 @@ C     Default values
       apco2file               = ' '
       exf_inscal_apco2        =  1. _d 0
       exf_outscal_apco2       =  1. _d 0
-      silicastartdate1        = 0
-      silicastartdate2        = 0
-      silicaStartTime         = UNSET_RL
-      silicaperiod            = 0.0 _d 0
-      silicaRepCycle          = repeatPeriod
-      silicaconst             = 0.0 _d 0
-      silica_exfremo_intercept = 0.0 _d 0
-      silica_exfremo_slope    = 0.0 _d 0
-      BLING_silicafile        = ' '
-      exf_inscal_silica       =  1. _d 0
-      exf_outscal_silica      =  1. _d 0
-      ironstartdate1          = 0
-      ironstartdate2          = 0
-      ironStartTime           = UNSET_RL
-      ironperiod              = 0.0 _d 0
-      ironRepCycle            = repeatPeriod
-      ironconst               = 0.0 _d 0
-      iron_exfremo_intercept  = 0.0 _d 0
-      iron_exfremo_slope      = 0.0 _d 0
-      BLING_ironfile          = ' '
-      exf_inscal_iron         =  1. _d 0
-      exf_outscal_iron        =  1. _d 0
 #ifdef USE_EXF_INTERPOLATION
 C--   set default input location to match (in case of simple Lat-Long grid)
 C     model grid cell-center position (leading to trivial interpolation)
@@ -482,27 +447,9 @@ C     model grid cell-center position (leading to trivial interpolation)
         apco2_lat_inc(j) = inp_dLat(j)
       ENDDO
       apco2_interpMethod = 1
-      silica_lon0        = inp_lon0
-      silica_lat0        = inp_lat0
-      silica_nlon        = inp_gNx
-      silica_nlat        = inp_gNy
-      silica_lon_inc     = inp_dLon
-      DO j=1,MAX_LAT_INC
-        silica_lat_inc(j) = inp_dLat(j)
-      ENDDO
-      silica_interpMethod = 1
-      iron_lon0          = inp_lon0
-      iron_lat0          = inp_lat0
-      iron_nlon          = inp_gNx
-      iron_nlat          = inp_gNy
-      iron_lon_inc       = inp_dLon
-      DO j=1,MAX_LAT_INC
-        iron_lat_inc(j) = inp_dLat(j)
-      ENDDO
-      iron_interpMethod = 1
 #endif /* USE_EXF_INTERPOLATION */
 #endif /* ALLOW_EXF */
-      print*,'CAV parms1',apco2startdate1,apco2startdate2
+
 C     default periodic forcing to same as for physics
       bling_forcingPeriod = externForcingPeriod
       bling_forcingCycle  = externForcingCycle
@@ -524,7 +471,7 @@ C-    BLING parameters
 
 C-    forcing filenames and parameters
       READ(UNIT=iUnit,NML=BLING_FORCING)
-      print*,'CAV parms2',apco2startdate1,apco2startdate2
+
       WRITE(msgBuf,'(A)')
      &   ' BLING_READPARMS: finished reading data.BLING'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
