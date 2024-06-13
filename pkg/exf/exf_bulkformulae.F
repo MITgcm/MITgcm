@@ -195,6 +195,7 @@ C     these need to be 2D-arrays for vectorizing code
 #ifdef ALLOW_BULK_LARGEYEAGER04
       _RL dzTmp
 #endif
+      _RL SSTtmp
       _RL ssq
       _RL re                    ! = Ce / sqrt(Cd)     [-]
       _RL rh                    ! = Ch / sqrt(Cd)     [-]
@@ -212,7 +213,7 @@ C     these need to be 2D-arrays for vectorizing code
       _RL ztln                  ! = log(zth/zref)
       _RL tmpbulk
       _RL recip_rhoConstFresh
-      INTEGER ks
+      INTEGER ks, kl
       INTEGER iter
 C     solve4Stress :: if F, by-pass momentum turb. flux (wind-stress) calculation
       LOGICAL solve4Stress
@@ -236,8 +237,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       IF ( usingPCoords ) THEN
        ks = Nr
+       kl = Nr-1
       ELSE
        ks = 1
+       kl = 2
       ENDIF
 
 C--   Set surface parameters :
@@ -277,7 +280,14 @@ C--- Compute turbulent surface fluxes
 C-   Pot. Temp and saturated specific humidity
           IF ( atemp(i,j,bi,bj) .NE. 0. _d 0 ) THEN
 C-   Surface Temp.
-           Tsf = MAX( seaSurfTemp(i,j,bi,bj) + cen2kel, 0. _d 0 )
+           Tsf = seaSurfTemp(i,j,bi,bj) + cen2kel
+           IF ( Nr.GE.2 .AND. sstExtrapol.GT.0. _d 0 ) THEN
+            SSTtmp = sstExtrapol
+     &              *( seaSurfTemp(i,j,bi,bj)-theta(i,j,kl,bi,bj) )
+     &              *  maskC(i,j,kl,bi,bj)
+            Tsf = Tsf + MAX( SSTtmp, 0. _d 0 )
+           ENDIF
+
            tmpbulk = cvapor_fac*exp(-cvapor_exp/Tsf)
 #ifdef EXF_CALC_ATMRHO
            atmrho_loc(i,j) = apressure(i,j,bi,bj) /
