@@ -587,15 +587,15 @@ which is :math:`c\,h` with our definitions. By default, :math:`P` (variable
     P = (1-k_t)\,P_{\max} \left( (1 - f_{r})
     + f_{r} \frac{\Delta}{\Delta_{\rm reg}}  \right)
 
-where :math:`f_{r}` is run-time parameter :varlink:`SEAICEpressReplFac`
+where :math:`f_{r}` is a run-time parameter :varlink:`SEAICEpressReplFac`
 (default = 1.0), and :math:`\Delta_{\rm reg}` is a regularized form of
 :math:`\Delta = \left[ \left(\dot{\epsilon}_{11}+\dot{\epsilon}_{22}\right)^2 +
 e^{-2}\left( \left(\dot{\epsilon}_{11}-\dot{\epsilon}_{22} \right)^2 +
 4\,\dot{\epsilon}_{12}^2 \right) \right]^{\frac{1}{2}}`. By default
-:math:`\Delta_\mathrm{reg}=\max(\Delta,\Delta_\min)`; if CPP-flag
+:math:`\Delta_\mathrm{reg}=\max(\Delta,\Delta_\min)`. If CPP-flag
 :varlink:`SEAICE_DELTA_SMOOTHREG` is defined,
-:math:`\Delta_\mathrm{reg}=\sqrt{\Delta^2+\Delta^2_\min}`
-(:varlink:`SEAICE_deltaMin`).
+:math:`\Delta_\mathrm{reg}=\sqrt{\Delta^2+\Delta^2_\min}`. Run-time parameter
+:varlink:`SEAICE_deltaMin` :math:`= \Delta_\min = 10^{-10}` by default.
 
 
 
