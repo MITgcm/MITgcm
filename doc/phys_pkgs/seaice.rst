@@ -71,7 +71,7 @@ automatically undefines more recent features, see :filelink:`SEAICE_OPTIONS.h
    :varlink:`SEAICE_ALLOW_FREEDRIFT`, #undef, enable solve approximate sea ice momentum equation and bypass solving for sea ice internal stress
    :varlink:`SEAICE_EXTERNAL_FLUXES`, #define, use :filelink:`pkg/exf`-computed fluxes as starting point
    :varlink:`SEAICE_ZETA_SMOOTHREG`, #define, use differentiable regularization for viscosities
-   :varlink:`SEAICE_DELTA_SMOOTHREG`, #undef, use differentiable regularization for :math:`1/\Delta`
+   :varlink:`SEAICE_DELTA_SMOOTHREG`, #undef, use differentiable regularization :math:`\Delta_\mathrm{reg}=\sqrt{\Delta^2+\Delta_\min}` instead of :math:`\max`-function for :math:`1/\Delta_\mathrm{reg}`
    :varlink:`SEAICE_ALLOW_BOTTOMDRAG`, #undef, enable grounding parameterization for improved fastice in shallow seas
    :varlink:`SEAICE_BGRID_DYNAMICS`, #undef, use sea ice dynamics code on legacy B-grid; most of the previous flags are not available with B-grid
    :varlink:`SEAICE_BICE_STRESS`, #undef, B-grid only for backward compatiblity: turn on ice-stress on ocean; defined by default if :varlink:`SEAICE_BGRID_DYNAMICS` is defined
@@ -320,6 +320,8 @@ General flags and parameters
   | :varlink:`IMAX_TICE`               | 10                           | number of iterations for ice surface temperature solution               |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICE_EPS`              | 1.0E-10                      | a "small number" used in various routines                               |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`SEAICE_deltaMin`         | :varlink:`SEAICE_EPS`        | minimum to regularize :math:`\Delta`                                    |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICE_area_reg`         | 1.0E-5                       | minimum concentration to regularize ice thickness                       |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
@@ -589,8 +591,13 @@ where :math:`f_{r}` is run-time parameter :varlink:`SEAICEpressReplFac`
 (default = 1.0), and :math:`\Delta_{\rm reg}` is a regularized form of
 :math:`\Delta = \left[ \left(\dot{\epsilon}_{11}+\dot{\epsilon}_{22}\right)^2 +
 e^{-2}\left( \left(\dot{\epsilon}_{11}-\dot{\epsilon}_{22} \right)^2 +
-4\,\dot{\epsilon}_{12}^2 \right) \right]^{\frac{1}{2}}`, for example
-:math:`\Delta_{\rm reg} = \max(\Delta,\Delta_{\min})`.
+4\,\dot{\epsilon}_{12}^2 \right) \right]^{\frac{1}{2}}`. By default
+:math:`\Delta_\mathrm{reg}=\max(\Delta,\Delta_\min)`; if CPP-flag
+:varlink:`SEAICE_DELTA_SMOOTHREG` is defined,
+:math:`\Delta_\mathrm{reg}=\sqrt{\Delta^2+\Delta^2_\min}`
+(:varlink:`SEAICE_deltaMin`).
+
+
 
 The tensile strength factor :math:`k_t` (run-time parameter
 :varlink:`SEAICE_tensilFac`) determines the ice tensile strength :math:`T =
@@ -664,7 +671,7 @@ with the ratio of major to minor axis :math:`e = 2.0` (run-time parameter
 
 .. math::
    \begin{aligned}
-     \zeta =& \min\left(\frac{(1+k_t)P_{\max}}{2\max(\Delta,\Delta_{\min})},
+     \zeta =& \min\left(\frac{(1+k_t)P_{\max}}{2\Delta_\mathrm{reg}},
       \zeta_{\max}\right) \\
      \eta =& \frac{\zeta}{e^2}
    \end{aligned}
@@ -681,12 +688,14 @@ with the abbreviation
     \right]^{\frac{1}{2}}
 
 The bulk viscosities are bounded above by imposing both a minimum
-:math:`\Delta_{\min}` (for numerical reasons, run-time parameter
+:math:`\Delta_{\min}` and replacing :math:`\Delta` by the regularized version
+:math:`\Delta_\mathrm{reg}` (for historical reasons, run-time parameter
 :varlink:`SEAICE_deltaMin` is set to a default value of
 :math:`10^{-10}\,\text{s}^{-1}`, the value of :varlink:`SEAICE_EPS`) and a
 maximum :math:`\zeta_{\max} = P_{\max}/(2\Delta^\ast)`, where
 :math:`\Delta^\ast=(2\times10^4/5\times10^{12})\,\text{s}^{-1} =
-2\times10^{-9}\,\text{s}^{-1}`.  Obviously, this corresponds to regularizing
+2\times10^{-9}\,\text{s}^{-1}` (:varlink:`SEAICE_zetaMaxFac`
+:math:`=\frac{1}{2\Delta^\ast}`). Obviously, this corresponds to regularizing
 :math:`\Delta` with the typical value of :varlink:`SEAICE_deltaMin` :math:`=
 2\times10^{-9}`. Clearly, some of this regularization is redundant.  (There is
 also the option of bounding :math:`\zeta` from below by setting run-time
@@ -703,9 +712,9 @@ expression:
 .. math::
    \begin{split}
    \zeta &= \zeta_{\max}\tanh\left(\frac{(1+k_t)P_{\max}}{2\,
-         \min(\Delta,\Delta_{\min}) \,\zeta_{\max}}\right)\\
+         \Delta_\mathrm{reg} \,\zeta_{\max}}\right)\\
    &= \frac{(1+k_t)P_{\max}}{2\Delta^\ast}
-   \tanh\left(\frac{\Delta^\ast}{\min(\Delta,\Delta_{\min})}\right)
+   \tanh\left(\frac{\Delta^\ast}{\Delta_\mathrm{reg}}\right)
    \end{split}
    :label: eq_zetaregsmooth
 
