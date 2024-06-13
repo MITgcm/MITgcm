@@ -61,6 +61,13 @@ c biology
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+      diagName  = 'BLGCHLSA'
+      diagTitle = 'Chlorophyll concentration as seen by satellite'
+      diagUnits = 'mg/m3           '
+      diagCode  = 'SM P    M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
       diagName  = 'BLGCHL2C'
       diagTitle = 'Chlorophyll to Carbon ratio'
       diagUnits = 'mol Chl/mol C   '
