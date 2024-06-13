@@ -18,12 +18,15 @@ C     == Global variables ===
 
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
-      INTEGER bi, bj
       INTEGER myThid
 
 #ifdef ALLOW_COST
 C     == Local variables
       INTEGER i, j, k
+      INTEGER bi, bj
+      _RL     deltaTfrac
+
+      deltaTfrac = deltaTClock/lastinterval
 
 C--   Calculate cost function on tile of this instance
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -32,27 +35,24 @@ C--   Calculate cost function on tile of this instance
             DO j=1,sNy
               DO i=1,sNx
                 cMeanTheta(i,j,k,bi,bj) = cMeanTheta(i,j,k,bi,bj)
-     &                + theta(i,j,k,bi,bj)
-     &                /lastinterval*deltaTClock
+     &                + theta(i,j,k,bi,bj) * deltaTfrac
                 cMeanUVel(i,j,k,bi,bj) = cMeanUVel(i,j,k,bi,bj)
-     &               + uVel(i,j,k,bi,bj)
-     &               /lastinterval*deltaTClock
+     &               + uVel(i,j,k,bi,bj) * deltaTfrac
                 cMeanVVel(i,j,k,bi,bj) = cMeanVVel(i,j,k,bi,bj)
-     &               + vVel(i,j,k,bi,bj)
-     &               /lastinterval*deltaTClock
+     &               + vVel(i,j,k,bi,bj) * deltaTfrac
 
                 cMeanThetaUVel(i,j,k,bi,bj) =
      &               cMeanThetaUVel(i,j,k,bi,bj)
-     &               + (theta(i,j,k,bi,bj)+theta(i-1,j,k,bi,bj))
-     &                 /2.*uvel(i,j,k,bi,bj)
+     &               + halfRL*(theta(i,j,k,bi,bj)+theta(i-1,j,k,bi,bj))
+     &                 *uvel(i,j,k,bi,bj)
      &                 *maskW(i,j,k,bi,bj)*maskC(i,j,k,bi,bj)
-     &                 /lastinterval*deltaTClock
+     &                 *deltaTfrac
                 cMeanThetaVVel(i,j,k,bi,bj) =
      &               cMeanThetaVVel(i,j,k,bi,bj)
-     &               + (theta(i,j,k,bi,bj)+theta(i,j-1,k,bi,bj))
-     &                 /2.*vvel(i,j,k,bi,bj)
+     &               + halfRL*(theta(i,j,k,bi,bj)+theta(i,j-1,k,bi,bj))
+     &                 *vvel(i,j,k,bi,bj)
      &                 *maskS(i,j,k,bi,bj)*maskC(i,j,k,bi,bj)
-     &                 /lastinterval*deltaTClock
+     &                 *deltaTfrac
               ENDDO
             ENDDO
           ENDDO
