@@ -3,7 +3,8 @@
  useGMRedi=.TRUE.,
  usePTRACERS=.TRUE.,
  useGCHEM=.TRUE.,
-#useMNC=.TRUE.,
+ useCAL=.TRUE.,
+ useEXF=.TRUE.,
  useDiagnostics=.TRUE.,
  &
   
