@@ -518,9 +518,9 @@ vector; :math:`\hat{\mathbf{i}}`, :math:`\hat{\mathbf{j}}`, and
 the wind-ice and ocean-ice stresses, respectively; :math:`g` is the gravity
 accelation; :math:`\nabla\phi(0)` is the gradient (or tilt) of the sea surface
 height; :math:`\phi(0) = g\eta + p_{a}/\rho_{0} + mg/\rho_{0}` is the sea
-surface height potential in response to ocean dynamics (:math:`g\eta`), to
+surface height potential in response to ocean dynamics (:math:`g\eta`),
 atmospheric pressure loading (:math:`p_{a}/\rho_{0}`, where :math:`\rho_{0}` is
-a reference density) and a term due to snow and ice loading ; and
+a reference density), and a term due to snow and ice loading; and
 :math:`\mathbf{F}= \nabla \cdot\sigma` is the divergence of the internal ice
 stress tensor :math:`\sigma_{ij}`.  Advection of sea-ice momentum is
 neglected. The wind and ice-ocean stress terms are given by
@@ -597,8 +597,6 @@ e^{-2}\left( \left(\dot{\epsilon}_{11}-\dot{\epsilon}_{22} \right)^2 +
 :math:`\Delta_{\mathrm{reg}}=\sqrt{\Delta^2+\Delta^2_{\min}}`. Run-time
 parameter :varlink:`SEAICE_deltaMin` :math:`= \Delta_{\min} = 10^{-10}` by
 default.
-
-
 
 The tensile strength factor :math:`k_t` (run-time parameter
 :varlink:`SEAICE_tensilFac`) determines the ice tensile strength :math:`T =
@@ -1551,13 +1549,13 @@ velocities:
 where :math:`\Gamma_X` are the thermodynamic source terms and :math:`D_{X}` the
 diffusive terms for quantities :math:`X= c h, c, c h_s` or any other tracer,
 such as sea ice salinity. From the various advection schemes that are available
-in MITgcm, we recommend flux-limited schemes to preserve sharp gradients and
-edges that are typical of sea ice distributions and to rule out unphysical
-over- and undershoots (negative thickness or concentration). These schemes
-conserve volume and horizontal area and are unconditionally stable, so that we
-can set :math:`D_{X}=0`. Run-time flags: :varlink:`SEAICEadvScheme`
-(default=77, is a 2nd-order flux limited scheme), :varlink:`DIFF1` =
-:math:`D_{X}/\Delta{x}` (default=0).
+in MITgcm, we recommend flux-limited schemes (runtime flag
+:varlink:`SEAICEadvScheme`; default=77, a 2nd-order flux limited scheme) to
+preserve sharp gradients and edges that are typical of sea ice distributions
+and to rule out unphysical over- and undershoots (negative thickness or
+concentration). These schemes conserve volume and horizontal area and are
+unconditionally stable, so that we can set :math:`D_{X}=0` (runtime flag
+:varlink:`DIFF1` = :math:`D_{X}/\Delta{x}`; default=0).
 
 The MITgcm sea ice model provides the option to use the thermodynamics model of
 Winton (2000) :cite:`winton:00`, which in turn is based on the 3-layer model of
