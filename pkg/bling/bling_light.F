@@ -302,7 +302,7 @@ c  Light attenuation in middle of top layer
            atten = k0*drF(1)/2. _d 0*hFacC(i,j,1,bi,bj)
            irr_inst(i,j,1) = irr_surf(i,j)*exp(-atten)
 
-#endif /* if BLING_USE_SHADING */
+#endif /* if PHYTO_SELF_SHADING */
 
           ENDIF
          ENDDO
@@ -353,7 +353,7 @@ c  Attenuation from one more layer
            irr_inst(i,j,k) =
      &          irr_inst(i,j,k-1)*exp(-atten)
 
-#endif /* if BLING_USE_SHADING */
+#endif /* if PHYTO_SELF_SHADING */
 
           ENDIF
          ENDDO
@@ -369,7 +369,7 @@ C Satellite chl
 
           IF (irr_surf(i,j).gt.0) THEN
 c           sat_atten = irr_inst(i,j,k)/irr_surf(i,j)
-#ifdef BLING_USE_SHADING
+#ifdef PHYTO_SELF_SHADING
            sat_atten = exp(-2. _d 0 * k0_bg * (-RC(k)))
 #else
            sat_atten = exp(-2. _d 0 * k0 * (-RC(k)))
