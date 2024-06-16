@@ -1,4 +1,8 @@
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 C--  File seawater.F: routines that compute quantities related to seawater.
 C--   Contents
@@ -224,7 +228,7 @@ C     square root (nondim)
        DO i=1-OLx,sNx+OLx
         x2 = MAX(I_S0 * Sa(i,j), 0.0)
 #ifdef ALLOW_AUTODIFF
-        x = 0. _ d 0
+        x = 0. _d 0
         IF ( x2 .GT. 0. _d 0 ) x = SQRT(x2)
 #else
         x = SQRT(x2)
@@ -293,7 +297,7 @@ C     The difference between an estimate of conservative temperature and
 C     its target (degC)
       _RL Tc_diff(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C     A previous estimate of the potential tempearture (degC)
-      _RL Tp_old
+      _RL Tp_old(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C     The partial derivative of potential temperature with conservative
 C     temperature and inverse (nondim)
       _RL dTp_dTc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -354,19 +358,29 @@ C     salinities.
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
         Tc_diff(i,j) = Tc_diff(i,j) - Tc(i,j)
-        Tp_old = Tp(i,j)
-        Tp(i,j) = Tp_old - Tc_diff(i,j)*dTp_dTc(i,j)
-
+        Tp_old(i,j) = Tp(i,j)
+#ifdef ALLOW_AUTODIFF
+       ENDDO
+      ENDDO
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ INIT loctape_cp2ct = COMMON, 1
+CADJ STORE Tc_diff = loctape_cp2ct
+CADJ STORE dTp_dTc = loctape_cp2ct
+# endif
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+#endif
+        Tp(i,j) = Tp_old(i,j) - Tc_diff(i,j)*dTp_dTc(i,j)
 C--   Estimate the potential temperature and its derivative from an C
 C     approximate rational function fit.
         x2 = MAX(I_S0 * Sa(i,j), 0.0)
 #ifdef ALLOW_AUTODIFF
-        x = 0. _ d 0
+        x = 0. _d 0
         IF ( x2 .GT. 0. _d 0 ) x = SQRT(x2)
 #else
         x = SQRT(x2)
 #endif
-        Tmp = 0.5*(Tp(i,j) + Tp_old)
+        Tmp = 0.5*(Tp(i,j) + Tp_old(i,j))
         dTc_dTp = (     H01 + Tmp*(2.*H02 + Tmp*(3.*H03 + Tmp*(4.*H04
      &       + Tmp*(5.*H05 + Tmp*(6.*H06 + Tmp*(7.*H07)))))) )
      &       + x2*(     (H21 + Tmp*(2.*H22 + Tmp*(3.*H23 + Tmp*(4.*H24
@@ -375,8 +389,16 @@ C     approximate rational function fit.
      &       + x*(H41 + Tmp*(2.*H42 + Tmp*(3.*H43
      &       + Tmp*(4.*H44 + Tmp*(5.*H45))))) ) )
         dTp_dTc(i,j) = 1.0 / dTc_dTp
-
-        Tp(i,j) = Tp_old - Tc_diff(i,j)*dTp_dTc(i,j)
+#ifdef ALLOW_AUTODIFF
+       ENDDO
+      ENDDO
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE dTp_dTc = loctape_cp2ct
+# endif
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+#endif
+        Tp(i,j) = Tp_old(i,j) - Tc_diff(i,j)*dTp_dTc(i,j)
        ENDDO
       ENDDO
       CALL CONVERT_PT2CT (
@@ -386,8 +408,7 @@ C     approximate rational function fit.
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
         Tc_diff(i,j) = Tc_diff(i,j) - Tc(i,j)
-        Tp_old = Tp(i,j)
-        Tp(i,j) = Tp_old - Tc_diff(i,j)*dTp_dTc(i,j)
+        Tp(i,j) = Tp(i,j) - Tc_diff(i,j)*dTp_dTc(i,j)
        ENDDO
       ENDDO
 
