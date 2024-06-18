@@ -215,11 +215,9 @@ CADJ STORE OBWsn1 = tapelev3, key = ilev_3
 #
 # endif /* ALLOW_SEAICE */
 
-# if (defined ALLOW_SEAICE || defined ALLOW_SHELFICE)
-#  if (defined NONLIN_FRSURF && defined ALLOW_OBCS_PRESCRIBE)
+#if (defined NONLIN_FRSURF && defined ALLOW_OBCS_PRESCRIBE)
 CADJ STORE obneta0,obneta1 = tapelev3, key = ilev_3
 CADJ STORE obseta0,obseta1 = tapelev3, key = ilev_3
 CADJ STORE obeeta0,obeeta1 = tapelev3, key = ilev_3
 CADJ STORE obweta0,obweta1 = tapelev3, key = ilev_3
-#  endif
-# endif
+#endif

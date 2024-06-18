@@ -1,8 +1,8 @@
 #include "DIAG_OPTIONS.h"
 
-      SUBROUTINE DIAGNOSTICS_WRITE (
-     I                               modelEnd,
-     I                               myTime, myIter, myThid )
+      SUBROUTINE DIAGNOSTICS_WRITE(
+     I                              modelEnd,
+     I                              myTime, myIter, myThid )
 C***********************************************************************
 C  Purpose
 C  -------
@@ -18,8 +18,9 @@ C***********************************************************************
        IMPLICIT NONE
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#include "DIAGNOSTICS_SIZE.h"
 #include "PARAMS.h"
+#include "DIAGNOSTICS_SIZE.h"
+#include "DIAGNOSTICS_P2SHARE.h"
 #include "DIAGNOSTICS.h"
 
 C     !INPUT PARAMETERS:
@@ -147,8 +148,8 @@ C-      end loop on list id number n
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
         IF ( write2file ) THEN
-          IF ( debugLevel.GE.debLevC ) THEN
-            CALL DIAGNOSTICS_SUMMARY( myTime, myIter, myThid )
+          IF ( diag_dBugLevel.GE.debLevC ) THEN
+            CALL DIAGNOSTICS_SUMMARY( 1, myTime, myIter, myThid )
           ENDIF
 C-      wait for everyone before setting arrays to zero:
           _BARRIER
