@@ -16,23 +16,26 @@ C     |   can be safely included without OBCS_OPTIONS.h
 C     *==========================================================*
 CEOP
 
-C tidalComponents  :: number of tidal components to be applied
-C OBCS_maxConnect  :: maximum number of connected parts
-      INTEGER tidalComponents
+C OBCS_tideCompSize :: size of tidal components arrays
+C                      (not smaller than OBCS_nTidalComp)
+C OBCS_maxConnect   :: maximum number of connected parts
+      INTEGER OBCS_tideCompSize
       INTEGER OBCS_maxConnect
-      PARAMETER ( tidalComponents = 10 )
+      PARAMETER ( OBCS_tideCompSize = 10 )
       PARAMETER ( OBCS_maxConnect = sNx+sNy )
 
 C--   COMMON /OBC_PARM_I/ OBCS integer-type parameter
 C OBCS_u1_adv_T    :: >0: use 1rst O. upwind adv-scheme @ OB (=1: only if outflow)
 C OBCS_u1_adv_S    :: >0: use 1rst O. upwind adv-scheme @ OB (=1: only if outflow)
+C OBCS_nTidalComp  :: number of tidal components to be applied
 C OBCS_monSelect   :: select group of variables to monitor
 C spongeThickness  :: number grid points that make up the sponge layer (def=0)
       COMMON /OBC_PARM_I/
      & OBCS_u1_adv_T, OBCS_u1_adv_S,
-     & OBCS_monSelect,
+     & OBCS_nTidalComp, OBCS_monSelect,
      & spongeThickness
       INTEGER OBCS_u1_adv_T, OBCS_u1_adv_S
+      INTEGER OBCS_nTidalComp
       INTEGER OBCS_monSelect
       INTEGER spongeThickness
 
@@ -49,6 +52,9 @@ C useStevensAdvection
 C                  :: use advective contribution for open boundary
 C                     computations following Stevens (1990), default = true
 C
+C useOBCSprescribe :: read boundary conditions from a file
+C                      (overrides Orlanski and other boundary values)
+C useOBCStides     :: modify OB velocity by adding barotropic tidal component
 C useOBCSsponge    :: turns on sponge layer along boundaries (def=false)
 C OBCSsponge_N     :: turns on sponge layer along North boundary (def=true)
 C OBCSsponge_S     :: turns on sponge layer along South boundary (def=true)
@@ -65,11 +71,6 @@ C
 C useOBCSbalance   :: balance the volume flux through boundary
 C                     at every time step
 C OBCSbalanceSurf  :: also include surface flux of mass into balance
-C useOBCStides     :: modify OB normal flow to add tidal forcing
-C                     NOTE that at the moment tidal forcing is applied
-C                     only to "normal" flow.                                                     
-C useOBCSprescribe :: read boundary conditions from a file
-C                      (overrides Orlanski and other boundary values)
 C OBCSprintDiags   :: print boundary values to STDOUT (def=true)
 C OBCSfixTopo      :: check and adjust topography for problematic gradients
 C                     across boundaries (def=true)
@@ -80,13 +81,13 @@ C                     across boundaries (def=true)
      & useStevensNorth,useStevensSouth,
      & useStevensEast,useStevensWest,
      & useStevensPhaseVel, useStevensAdvection,
-     & useOBCSsponge,
+     & useOBCSprescribe, useOBCStides, useOBCSsponge,
      & OBCSsponge_N, OBCSsponge_S,
      & OBCSsponge_E, OBCSsponge_W,
      & OBCSsponge_UatNS, OBCSsponge_UatEW,
      & OBCSsponge_VatNS, OBCSsponge_VatEW,
      & OBCSsponge_Theta, OBCSsponge_Salt, useLinearSponge,
-     & useOBCSbalance, OBCSbalanceSurf, useOBCStides, useOBCSprescribe,
+     & useOBCSbalance, OBCSbalanceSurf,
      & OBCSprintDiags,
      & OBCSfixTopo
       LOGICAL useOrlanskiNorth
@@ -99,6 +100,8 @@ C                     across boundaries (def=true)
       LOGICAL useStevensWest
       LOGICAL useStevensPhaseVel
       LOGICAL useStevensAdvection
+      LOGICAL useOBCSprescribe
+      LOGICAL useOBCStides
       LOGICAL useOBCSsponge
       LOGICAL OBCSsponge_N
       LOGICAL OBCSsponge_S
@@ -113,12 +116,11 @@ C                     across boundaries (def=true)
       LOGICAL useLinearSponge
       LOGICAL useOBCSbalance
       LOGICAL OBCSbalanceSurf
-      LOGICAL useOBCStides
-      LOGICAL useOBCSprescribe
       LOGICAL OBCSprintDiags
       LOGICAL OBCSfixTopo
 
 C--   COMMON /OBC_PARM_R/ OBCS real-type parameter
+C OBCS_tidalPeriod        :: tidal period (s) for each tidal component
 C OBCS_balanceFacN/S/E/W  :: weighting factor for balancing OB normal flow
 C OBCS_uvApplyFac         :: multiplying factor to U,V normal comp. when applying
 C                            OBC to 2nd column/row (for backward compatibility).
@@ -129,21 +131,20 @@ C                            layer (inner); relaxation time scales in-between
 C                            are linearly interpolated from these values
 C T/SrelaxStevens         :: relaxation time scale (in seconds) for T/S-points
 C                            for Stevens boundary conditions
-C tidalPeriod             :: tidal period (s)
       COMMON /OBC_PARM_R/
+     &     OBCS_tidalPeriod,
      &     OBCS_balanceFacN, OBCS_balanceFacS,
      &     OBCS_balanceFacE, OBCS_balanceFacW,
      &     OBCS_uvApplyFac,
      &     OBCS_monitorFreq,
-     &     tidalPeriod,
-     & Urelaxobcsinner,Urelaxobcsbound,
-     & Vrelaxobcsinner,Vrelaxobcsbound,
+     & Urelaxobcsinner, Urelaxobcsbound,
+     & Vrelaxobcsinner, Vrelaxobcsbound,
      & TrelaxStevens, SrelaxStevens
+      _RL OBCS_tidalPeriod(OBCS_tideCompSize)
       _RL OBCS_balanceFacN, OBCS_balanceFacS
       _RL OBCS_balanceFacE, OBCS_balanceFacW
       _RL OBCS_uvApplyFac
       _RL OBCS_monitorFreq
-      _RL tidalPeriod(tidalComponents)
       _RS Urelaxobcsinner
       _RS Urelaxobcsbound
       _RS Vrelaxobcsinner
@@ -152,12 +153,13 @@ C tidalPeriod             :: tidal period (s)
       _RS SrelaxStevens
 
 C--   COMMON /OBC_FILES/ OBCS character-type parameter
-C OB[N,S,E,W][u,v,w,t,s,eta,am,ph]File :: Files with boundary conditions,
+C OB[N,S,E,W][u,v,w,t,s,eta]File  :: Files with boundary conditions,
 C                                         the letter combinations mean:
 C                     N/S/E/W   :: northern/southern/eastern/western boundary
 C                     u/v/w/t/s :: ocean u/v/w velocities, temperature/salinity
 C                     eta       :: sea surface height
-C                     am/ph     :: tidal amplitude (m/s) / phase (s)
+C OB[N,S,E,W]_[u,v]Tid[Am,Ph]File :: Files with barotropic tidal components
+C                      Am/Ph      :: Amplitude (m/s) / Phase (s)
 C OB[N,S,E,W]connectFile :: Files with connected piece Id for N/S/E/W OB grid pt
 C insideOBmaskFile   :: File to specify Inside OB region mask (zero beyond OB)
       COMMON /OBC_FILES/
@@ -166,9 +168,11 @@ C insideOBmaskFile   :: File to specify Inside OB region mask (zero beyond OB)
      &      OBNwFile,  OBSwFile,  OBEwFile,  OBWwFile,
      &      OBNtFile,  OBStFile,  OBEtFile,  OBWtFile,
      &      OBNsFile,  OBSsFile,  OBEsFile,  OBWsFile,
-     &      OBNetaFile,OBSetaFile,OBEetaFile,OBWetaFile,
-     &      OBNamFile, OBSamFile, OBEamFile, OBWamFile,
-     &      OBNphFile, OBSphFile, OBEphFile, OBWphFile,
+     &      OBNetaFile, OBSetaFile, OBEetaFile, OBWetaFile,
+     &  OBN_uTidAmFile, OBS_uTidAmFile, OBE_uTidAmFile, OBW_uTidAmFile,
+     &  OBN_vTidAmFile, OBS_vTidAmFile, OBE_vTidAmFile, OBW_vTidAmFile,
+     &  OBN_uTidPhFile, OBS_uTidPhFile, OBE_uTidPhFile, OBW_uTidPhFile,
+     &  OBN_vTidPhFile, OBS_vTidPhFile, OBE_vTidPhFile, OBW_vTidPhFile,
      &      OBNconnectFile, OBSconnectFile,
      &      OBEconnectFile, OBWconnectFile,
      &      insideOBmaskFile
@@ -178,9 +182,11 @@ C insideOBmaskFile   :: File to specify Inside OB region mask (zero beyond OB)
      &      OBNwFile,  OBSwFile,  OBEwFile,  OBWwFile,
      &      OBNtFile,  OBStFile,  OBEtFile,  OBWtFile,
      &      OBNsFile,  OBSsFile,  OBEsFile,  OBWsFile,
-     &      OBNetaFile,OBSetaFile,OBEetaFile,OBWetaFile,
-     &      OBNamFile, OBSamFile, OBEamFile, OBWamFile,
-     &      OBNphFile, OBSphFile, OBEphFile, OBWphFile,
+     &      OBNetaFile, OBSetaFile, OBEetaFile, OBWetaFile,
+     &  OBN_uTidAmFile, OBS_uTidAmFile, OBE_uTidAmFile, OBW_uTidAmFile,
+     &  OBN_vTidAmFile, OBS_vTidAmFile, OBE_vTidAmFile, OBW_vTidAmFile,
+     &  OBN_uTidPhFile, OBS_uTidPhFile, OBE_uTidPhFile, OBW_uTidPhFile,
+     &  OBN_vTidPhFile, OBS_vTidPhFile, OBE_vTidPhFile, OBW_vTidPhFile,
      &      OBNconnectFile, OBSconnectFile,
      &      OBEconnectFile, OBWconnectFile,
      &      insideOBmaskFile

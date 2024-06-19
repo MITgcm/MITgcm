@@ -375,7 +375,6 @@ C  Initialize output and diagnostics
               light_lim(i,j,k)      = 0. _d 0
               expkT(i,j,k)          = 0. _d 0
               theta_Fe(i,j,k)       = 0. _d 0
-              theta_Fe_inv(i,j,k)   = 0. _d 0
               irrk(i,j,k)           = 0. _d 0
               irr_inst(i,j,k)       = 0. _d 0
               irr_eff(i,j,k)        = 0. _d 0
@@ -412,8 +411,6 @@ C  Initialize output and diagnostics
               N_remindvm(i,j,k)     = 0. _d 0
               P_remindvm(i,j,k)     = 0. _d 0
               Fe_remindvm(i,j,k)    = 0. _d 0
-              POC_flux(i,j,k)       = 0. _d 0
-              NPP(i,j,k)            = 0. _d 0
               NCP(i,j,k)            = 0. _d 0
               Fe_sed(i,j,k)         = 0. _d 0
               Fe_ads_org(i,j,k)     = 0. _d 0
@@ -442,6 +439,16 @@ C  avoid negative nutrient concentrations that can result from
 C  advection when low concentrations
 
 #ifdef BLING_NO_NEG
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE PTR_O2, PTR_FE, PTR_PO4, PTR_DOP, PTR_NO3, PTR_DON
+#  ifdef USE_SIBLING
+CADJ &   , PTR_SI
+#  endif
+#  ifdef ADVECT_PHYTO
+CADJ &   , PTR_PHY
+#  endif
+CADJ &     = comlev1_bibj, key=tkey, kind=isbyte
+# endif /* ALLOW_AUTODIFF_TAMC */
       CALL BLING_MIN_VAL(PTR_O2,  1. _d -11, o2_adj, bi, bj)
       CALL BLING_MIN_VAL(PTR_FE,  1. _d -11, fe_adj, bi, bj)
       CALL BLING_MIN_VAL(PTR_PO4, 1. _d -8, po4_adj, bi, bj)
@@ -501,11 +508,11 @@ C  This has not been thoroughly tested, and care should be
 C  taken with its interpretation.
 
 #ifdef ML_MEAN_PHYTO
-#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE Phy_sm_local   = comlev1_bibj, key=tkey, kind=isbyte
 CADJ STORE Phy_lg_local   = comlev1_bibj, key=tkey, kind=isbyte
 CADJ STORE Phy_diaz_local = comlev1_bibj, key=tkey, kind=isbyte
-#endif
+# endif
       DO j=jmin,jmax
        DO i=imin,imax
 
@@ -547,7 +554,11 @@ CADJ STORE Phy_diaz_local = comlev1_bibj, key=tkey, kind=isbyte
         ENDDO
        ENDDO
       ENDDO
-
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE Phy_sm_local   = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE Phy_lg_local   = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE Phy_diaz_local = comlev1_bibj, key=tkey, kind=isbyte
+# endif
 #endif
 
 #ifdef USE_SIBLING
@@ -592,15 +603,37 @@ C  timescale is set by gamma_irr_mem.
        ENDDO
       ENDDO
 
-C ---------------------------------------------------------------------
+C     some constants (should be runtime parameters)
+CAV Darwin (uM)
+C kPO4: sm/lg 2.4e-2 4.5e-2
+C kNO3: 0.4, 0.73
+C kSi: 0, 2
+C kFe: 3e-5, 5.6e-5
+
+CAV Topaz (mol/kg)
+C kPO4: 2e-7, 6e-7
+C kNO3: 2e-6, 6e-6
+C kFe: 3e-9, 9e-9
+
+CAV BLING (mol/kg)
+C kPO4: 1e-8
+C kNO3: 2e-6
+C kFe: 1.6e-10
+      k_NO3_sm = 2.0 _d -6 / permil
+      k_NO3_lg = 6.0 _d -6 / permil
+      k_PO4_sm = 1.0 _d -8 / permil
+      k_PO4_lg = 3.0 _d -8 / permil
+      k_Fe_sm = 1.6 _d -10 / permil
+      k_Fe_lg = 4.8 _d -10 / permil
+
 C  Nutrient uptake and partitioning between organic pools
 
       DO k=1,Nr
        DO j=jmin,jmax
         DO i=imin,imax
-
          IF ( maskC(i,j,k,bi,bj).EQ.oneRS ) THEN
 
+C--   Compute 3d fields that used more than once.
 C ---------------------------------------------------------------------
 C  First, calculate the limitation terms for NUT and Fe, and the
 C  Fe-limited Chl:C maximum. The light-saturated maximal photosynthesis
@@ -628,6 +661,24 @@ C  Iron limitation
 #ifdef USE_SIBLING
           Si_lim(i,j,k) = PTR_Si(i,j,k)/(PTR_Si(i,j,k)+k_Si)
 #endif
+
+          NO3_lim_sm(i,j,k) = PTR_NO3(i,j,k)/(PTR_NO3(i,j,k)+k_NO3_sm)
+
+          PO4_lim_sm(i,j,k) = PTR_PO4(i,j,k)/(PTR_PO4(i,j,k)+k_PO4_sm)
+
+          Fe_lim_sm(i,j,k) = PTR_FE(i,j,k)/(PTR_FE(i,j,k)+k_Fe_sm)
+
+          NO3_lim_lg(i,j,k) = PTR_NO3(i,j,k)/(PTR_NO3(i,j,k)+k_NO3_lg)
+
+          PO4_lim_lg(i,j,k) = PTR_PO4(i,j,k)/(PTR_PO4(i,j,k)+k_PO4_lg)
+
+          Fe_lim_lg(i,j,k) = PTR_FE(i,j,k)/(PTR_FE(i,j,k)+k_Fe_lg)
+C  NB The temperature function of Eppley (1972) is used to represent the
+C  effects of temperature on uptake, synthesis and ecosystem function.
+C  The reference value is 0 C. Note that this differs slightly from the
+C  more common Arrhenius form of the equation, but by a tiny amount (less
+C  than 4% difference over the range -2 to 32 C for an Arrhenius constant
+C  (Ae) of 5150).
 
 C ---------------------------------------------------------------------
 C  Temperature functionality of growth and grazing
@@ -717,14 +768,6 @@ C  Fe-limitation.
      &                  *theta_Fe_max
      &                  *irr_mem(i,j,k,bi,bj)/(epsln + 2. _d 0*Pc_m))
 
-C  for diagnostics: C:Chl ratio in g C / g Chl
-
-          IF ( theta_Fe(i,j,k) .EQ.0. ) THEN
-             theta_Fe_inv(i,j,k) = 0.
-          ELSE
-             theta_Fe_inv(i,j,k) = 1./theta_Fe(i,j,k)
-          ENDIF
-
 C ---------------------------------------------------------------------
 C  Nutrient-limited efficiency of algal photosystems, irrk, is calculated
 C  with the iron limitation term included as a multiplier of the
@@ -803,25 +846,6 @@ C kPO4: 1e-8
 C kNO3: 2e-6
 C kFe: 1.6e-10
 
-          k_NO3_sm = 2.0 _d -6 / permil
-          k_NO3_lg = 6.0 _d -6 / permil
-          k_PO4_sm = 1.0 _d -8 / permil
-          k_PO4_lg = 3.0 _d -8 / permil
-          k_Fe_sm = 1.6 _d -10 / permil
-          k_Fe_lg = 4.8 _d -10 / permil
-
-          NO3_lim_sm(i,j,k) = PTR_NO3(i,j,k)/(PTR_NO3(i,j,k)+k_NO3_sm)
-
-          PO4_lim_sm(i,j,k) = PTR_PO4(i,j,k)/(PTR_PO4(i,j,k)+k_PO4_sm)
-
-          Fe_lim_sm(i,j,k) = PTR_FE(i,j,k)/(PTR_FE(i,j,k)+k_Fe_sm)
-
-          NO3_lim_lg(i,j,k) = PTR_NO3(i,j,k)/(PTR_NO3(i,j,k)+k_NO3_lg)
-
-          PO4_lim_lg(i,j,k) = PTR_PO4(i,j,k)/(PTR_PO4(i,j,k)+k_PO4_lg)
-
-          Fe_lim_lg(i,j,k) = PTR_FE(i,j,k)/(PTR_FE(i,j,k)+k_Fe_lg)
-
           Pc_m_sm = Pc_0_2d(i,j,bi,bj) * expkT(i,j,k)
      &           * min(NO3_lim_sm(i,j,k), PO4_lim_sm(i,j,k),
      &           Fe_lim_sm(i,j,k)) * maskC(i,j,k,bi,bj)
@@ -864,12 +888,12 @@ C  phytoplankton, which gave a reasonably good fit to the global
 C  observational synthesis of Dunne (2009). This is consistent
 C  with the findings of Jin et al. (GBC,2006).
 
-          CaCO3_uptake(i,j,k) = mu(i,j,k) * Phy_sm_local(i,j,k)
-     &                          * phi_sm_2d(i,j,bi,bj) * CatoN
-
 CAV(
 #ifdef SIZE_NUT_LIM
           CaCO3_uptake(i,j,k) = mu_sm(i,j,k) * Phy_sm_local(i,j,k)
+     &                          * phi_sm_2d(i,j,bi,bj) * CatoN
+#else
+          CaCO3_uptake(i,j,k) = mu(i,j,k) * Phy_sm_local(i,j,k)
      &                          * phi_sm_2d(i,j,bi,bj) * CatoN
 #endif
 CAV)
@@ -917,26 +941,47 @@ C  biomass, which is required to calculate the uptake fluxes.
      &                * PTRACERS_dTLev(k)
 
           Phy_diaz_local(i,j,k) = Phy_diaz_local(i,j,k) +
-     &                Phy_diaz_local(i,j,k)*(mu_diaz(i,j,k) - lambda_0
+     &                Phy_diaz_local(i,j,k)*(mu_diaz(i,j,k)-20*lambda_0
      &                * expkT(i,j,k) * (Phy_diaz_local(i,j,k)/pivotal))
      &                * PTRACERS_dTLev(k)
 
+#ifdef ALLOW_AUTODIFF
+C     avoid recomputation warnings
          ENDIF
         ENDDO
        ENDDO
       ENDDO
-
-#if ( ( defined SIZE_DEP_LIM ) || ( defined USE_SIBLING ) )
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE Phy_sm_local   = comlev1_bibj, key=tkey, kind=isbyte
-CADJ STORE Phy_lg_local   = comlev1_bibj, key=tkey, kind=isbyte
+C     These stores avoid some recomputations, but may not be worth it.
+cCADJ STORE Phy_sm_local   = comlev1_bibj, key=tkey, kind=isbyte
+cCADJ STORE Phy_lg_local   = comlev1_bibj, key=tkey, kind=isbyte
+cCADJ STORE Phy_diaz_local = comlev1_bibj, key=tkey, kind=isbyte
 #endif
       DO k=1,Nr
        DO j=jmin,jmax
         DO i=imin,imax
          IF ( maskC(i,j,k,bi,bj).EQ.oneRS ) THEN
+#endif
+           Phy_lg_local(i,j,k) =  max( epsln, Phy_lg_local(i,j,k) )
+           Phy_sm_local(i,j,k) =  max( epsln, Phy_sm_local(i,j,k) )
+           Phy_diaz_local(i,j,k) =  max( epsln, Phy_diaz_local(i,j,k) )
+         ENDIF
+        ENDDO
+       ENDDO
+      ENDDO
+
+#if ( defined SIZE_DEP_LIM || defined USE_SIBLING )
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE Phy_sm_local   = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE Phy_lg_local   = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE Phy_diaz_local = comlev1_bibj, key=tkey, kind=isbyte
+# endif
+      DO k=1,Nr
+       DO j=jmin,jmax
+        DO i=imin,imax
+         IF ( maskC(i,j,k,bi,bj).EQ.oneRS ) THEN
 CAV(
-#ifdef SIZE_DEP_LIM
+# ifdef SIZE_DEP_LIM
 
           Phy_lg_local(i,j,k) = Phy_lg_local(i,j,k) +
      &                Phy_lg_local(i,j,k)*(mu_lg(i,j,k) - lambda_0
@@ -949,10 +994,10 @@ CAV(
      &                * expkT(i,j,k) * (Phy_sm_local(i,j,k)/pivotal))
      &                * PTRACERS_dTLev(k)
 
-#endif
+# endif
 CAV)
 
-#ifdef USE_SIBLING
+# ifdef USE_SIBLING
 C  For now: assuming that all large phyto are diatoms
 C  Another option would be to have a separate diatom population and give
 C  them a higher growth rate to be competitive. Would also need to add
@@ -963,7 +1008,7 @@ c          Phy_diatom_local(i,j,k) = Phy_diatom_local(i,j,k) +
 c     &                Phy_diatom_local(i,j,k)*(mu_diatom(i,j,k)-lambda_0
 c     &                * expkT(i,j,k) * (Phy_diatom_local(i,j,k)/pivotal))
 c     &                * PTRACERS_dTLev(k)
-#endif
+# endif
 
          ENDIF
         ENDDO
@@ -1011,6 +1056,11 @@ C  in mg/m3 (carbon = 12.01 g/mol)
         ENDDO
        ENDDO
       ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE phyto_sm(:,:,:,bi,bj)   = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE phyto_lg(:,:,:,bi,bj)   = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE phyto_diaz(:,:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
+#endif
 
 C ---------------------------------------------------------------------
 C  Partitioning between organic pools
@@ -1058,7 +1108,6 @@ CAV e^kT * [phi_lg * B_lg/Btot + phi_sm * B_sm/Btot + phi_sm * Bdiaz/Bto]
 
 CAV this is from blingv1, where B_sm and B_lg are diagnosed from
 CAV the value of mu...
-
           frac_exp = (phi_sm_2d(i,j,bi,bj) + phi_lg_2d(i,j,bi,bj) *
      &           (mu(i,j,k)/(epsln + lambda_0*expkT(i,j,k)))**2)/
      &           (1. + (mu(i,j,k)/
@@ -1130,15 +1179,15 @@ C  long-lived dissolved organic matter.
        ENDDO
       ENDDO
 
-#ifdef ALLOW_AUTODIFF_TAMC
-C     these stores avoid recomputing the previous loop, but avoiding
-C     that may not be necessary
-CADJ STORE N_spm     = comlev1_bibj, key = tkey, kind = isbyte
-CADJ STORE P_spm     = comlev1_bibj, key = tkey, kind = isbyte
-CADJ STORE Fe_spm    = comlev1_bibj, key = tkey, kind = isbyte
-CADJ STORE don_prod  = comlev1_bibj, key = tkey, kind = isbyte
-CADJ STORE n_recycle = comlev1_bibj, key = tkey, kind = isbyte
-#endif
+CML#ifdef ALLOW_AUTODIFF_TAMC
+CMLC     these stores avoid recomputing the previous loop, but avoiding
+CMLC     that may not be necessary
+CMLCADJ STORE N_spm     = comlev1_bibj, key = tkey, kind = isbyte
+CMLCADJ STORE P_spm     = comlev1_bibj, key = tkey, kind = isbyte
+CMLCADJ STORE Fe_spm    = comlev1_bibj, key = tkey, kind = isbyte
+CMLCADJ STORE don_prod  = comlev1_bibj, key = tkey, kind = isbyte
+CMLCADJ STORE n_recycle = comlev1_bibj, key = tkey, kind = isbyte
+CML#endif
 
 C ---------------------------------------------------------------------
 C  Remineralization
@@ -1175,7 +1224,7 @@ CADJ STORE POPflux_u   = comlev1_bibj_ijk, key = ijkkey, kind = isbyte
 CADJ STORE PFEflux_u   = comlev1_bibj_ijk, key = ijkkey, kind = isbyte
 CADJ STORE CaCO3flux_u = comlev1_bibj_ijk, key = ijkkey, kind = isbyte
 # ifdef USE_SIBLING
-CADJ STORE PONflux_u   = comlev1_bibj_ijk, key = ijkkey, kind = isbyte
+CADJ STORE Siflux_u    = comlev1_bibj_ijk, key = ijkkey, kind = isbyte
 # endif
 #endif
 
@@ -1769,10 +1818,6 @@ C  (generate negative O2; proxy for HS-).
 
 C  Carbon flux diagnostic
 
-          POC_flux(i,j,k) = CtoN * N_spm(i,j,k)
-
-          NPP(i,j,k) = (N_uptake(i,j,k) + N_fix(i,j,k)) * CtoN
-
           NCP(i,j,k) = (N_uptake(i,j,k) + N_fix(i,j,k)
      &                   - N_recycle(i,j,k)
      &                   - (1. _d 0 - phi_DOM_2d(i,j,bi,bj))
@@ -1796,7 +1841,7 @@ C  for constraints determine POC, assuming that phytoplankton carbon
 C  is 30% of POC
 
           poc(i,j,k,bi,bj) = (Phy_lg_local(i,j,k) + Phy_sm_local(i,j,k)
-     &                     + Phy_diaz_local(i,j,k) ) * 3.33333 _d 0
+     &                 + Phy_diaz_local(i,j,k) ) * CtoN * 3.33333 _d 0
 
          ENDIF
 
@@ -1808,6 +1853,45 @@ C ---------------------------------------------------------------------
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
+
+      DO k=1,Nr
+       DO j=jmin,jmax
+        DO i=imin,imax
+
+         IF ( maskC(i,j,k,bi,bj).EQ.oneRS ) THEN
+
+          NPP(i,j,k) = (N_uptake(i,j,k) + N_fix(i,j,k)) * CtoN
+
+c  for diagnostics: convert biomass to mol C/m3
+
+          Phy_lg_local(i,j,k) = Phy_lg_local(i,j,k) * CtoN
+          Phy_sm_local(i,j,k) = Phy_sm_local(i,j,k) * CtoN
+          Phy_diaz_local(i,j,k) = Phy_diaz_local(i,j,k) * CtoN
+
+c  Carbon flux diagnostic
+
+          POC_flux(i,j,k) = CtoN * N_spm(i,j,k)
+
+c  C:Chl ratio in g C / g Chl
+
+          IF ( theta_Fe(i,j,k).EQ.zeroRL ) THEN
+             theta_Fe_inv(i,j,k) = 0. _d 0
+          ELSE
+             theta_Fe_inv(i,j,k) = oneRL/theta_Fe(i,j,k)
+          ENDIF
+
+         ELSE
+             NPP(i,j,k) = 0. _d 0
+             Phy_lg_local(i,j,k) = 0. _d 0
+             Phy_sm_local(i,j,k) = 0. _d 0
+             Phy_diaz_local(i,j,k) = 0. _d 0
+             POC_flux(i,j,k) = 0. _d 0
+             theta_Fe_inv(i,j,k) = 0. _d 0
+         ENDIF
+
+        ENDDO
+       ENDDO
+      ENDDO
 
 C 3d global variables
         CALL DIAGNOSTICS_FILL(chl,    'BLGCHL  ',0,Nr,1,bi,bj,myThid)
@@ -1896,7 +1980,7 @@ C 3d local variables
         CALL DIAGNOSTICS_FILL(P_reminp,  'BLGPREM ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(no3_adj,   'BLGNONEN',0,Nr,2,bi,bj,myThid)
 C 2d local variables
-        CALL DIAGNOSTICS_FILL(mld,       'BLGMLD  ',0,1,1,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(mld,       'BLGMLD  ',0,1,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(Fe_burial, 'BLGFEBUR',0,1,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(NO3_btmflx,'BLGNSED ',0,1,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(PO4_btmflx,'BLGPSED ',0,1,2,bi,bj,myThid)

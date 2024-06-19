@@ -76,6 +76,9 @@ C     maxgrdchecks :: maximum number of gradient checks done per tile.
       _RL ratioadmem  ( maxgrdchecks )
       _RL ratioftlmem ( maxgrdchecks )
 
+      common /grdchk_c/ grdchkvarname
+      character*(MAX_LEN_FNAM) grdchkvarname
+
       common /grdchk_i/
      &                  ncvarcomp, maxncvarcomps,
      &                  nwettile,

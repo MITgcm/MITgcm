@@ -22,7 +22,6 @@ C     == global variables ==
 #ifdef ALLOW_COST
 # include "THSICE_COST.h"
 # include "cost.h"
-# include "CTRL.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:

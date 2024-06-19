@@ -33,12 +33,6 @@ C***********************************************************************
 
 c Diagnostic Common
 c -----------------
-#ifdef ALLOW_DIAGNOSTICS
-#include "EEPARAMS.h"
-#include "SIZE.h"
-#include "DIAGNOSTICS_SIZE.h"
-#include "DIAGNOSTICS.h"
-#endif
 
 c Timers Common
 c -------------
