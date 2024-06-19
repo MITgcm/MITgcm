@@ -1,6 +1,13 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/bling:
+  - clean-up "bling_light.F" (fix typo related to PHYTO_SELF_SHADING option,
+    move k-loop outside) ; add CHL to bling_ad_check_lev{2,3,4}_dir.h and
+    fix TAF storage directives ;
+  - change "global_oce_biogeo_bling" AD test exp. (both TAF & Tapenade) to
+    use PHYTO_SELF_SHADING (with #undef USE_QSW) and update ref. output.
+  - also clean-up MDSIO_BUFF_WH.h (avoid common block that mixes r4 & r8 vars).
 o pkg/obcs:
   - Neumann boundary conditions for sea ice variables, activate by setting
     new runtime parameter useSeaiceNeumann=.TRUE. in data.obcs ;
