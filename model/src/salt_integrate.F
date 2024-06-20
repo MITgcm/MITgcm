@@ -270,11 +270,11 @@ CADJ STORE som_S(:,:,:,bi,bj,:) = comlev1_bibj, key=tkey, kind=isbyte
         IF (debugMode) CALL DEBUG_CALL('GAD_SOM_ADVECT',myThid)
 # endif
         CALL GAD_SOM_ADVECT(
-     I           saltImplVertAdv,
+     I           saltImplVertAdv, diagAdvVarE,
      I           saltAdvScheme, saltVertAdvScheme, GAD_SALINITY,
      I           dTtracerLev, uFld, vFld, wFld, salt,
      U           som_S,
-     O           gS_loc,
+     O           gS_loc, tracTmp,
      I           bi, bj, myTime, myIter, myThid )
       ELSEIF (saltMultiDimAdvec) THEN
 #else /* GAD_ALLOW_TS_SOM_ADV */

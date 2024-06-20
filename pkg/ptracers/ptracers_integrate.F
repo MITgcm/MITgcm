@@ -249,14 +249,14 @@ CADJ &      = comlev1_bibj_ptracers, key=ikey, byte=isbyte
          IF (debugMode) CALL DEBUG_CALL('GAD_SOM_ADVECT',myThid)
 # endif
           CALL GAD_SOM_ADVECT(
-     I             PTRACERS_ImplVertAdv(iTracer),
+     I             PTRACERS_ImplVertAdv(iTracer), diagAdvVarE,
      I             PTRACERS_advScheme(iTracer),
      I             PTRACERS_advScheme(iTracer),
      I             GAD_TR,
      I             PTRACERS_dTLev, uFld, vFld, wFld,
      I             pTracer(1-OLx,1-OLy,1,1,1,iTracer),
      U             _Ptracers_som(:,:,:,:,:,:,iTracer),
-     O             gTracer,
+     O             gTracer, tracTmp,
      I             bi, bj, myTime, myIter, myThid )
         ELSEIF ( PTRACERS_MultiDimAdv(iTracer) ) THEN
 #else /* PTRACERS_ALLOW_DYN_STATE */

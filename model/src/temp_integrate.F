@@ -278,11 +278,11 @@ CADJ STORE som_T(:,:,:,bi,bj,:) = comlev1_bibj, key=tkey, kind=isbyte
         IF (debugMode) CALL DEBUG_CALL('GAD_SOM_ADVECT',myThid)
 # endif
         CALL GAD_SOM_ADVECT(
-     I           tempImplVertAdv,
+     I           tempImplVertAdv, diagAdvVarE,
      I           tempAdvScheme, tempVertAdvScheme, GAD_TEMPERATURE,
      I           dTtracerLev, uFld, vFld, wFld, theta,
      U           som_T,
-     O           gT_loc,
+     O           gT_loc, tracTmp,
      I           bi, bj, myTime, myIter, myThid )
       ELSEIF (tempMultiDimAdvec) THEN
 #else /* GAD_ALLOW_TS_SOM_ADV */
