@@ -1,4 +1,7 @@
 #include "ECCO_OPTIONS.h"
+#ifdef ALLOW_SEAICE
+# include "SEAICE_OPTIONS.h"
+#endif
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE_OPTIONS.h"
 #endif
@@ -29,6 +32,11 @@ c     == global variables ==
 #ifdef ALLOW_ECCO
 # include "ECCO_SIZE.h"
 # include "ECCO.h"
+#endif
+#ifdef ALLOW_SEAICE
+# include "SEAICE_SIZE.h"
+# include "SEAICE.h"
+# include "SEAICE_PARAMS.h"
 #endif
 #ifdef ALLOW_PTRACERS
 # include "PTRACERS_SIZE.h"
@@ -82,16 +90,23 @@ C- note: defined with overlap here, not needed, but more efficient
 #ifdef ALLOW_PSBAR_STERIC
       _RL VOLsumTile(nSx,nSy), RHOsumTile(nSx,nSy)
       _RL VOLsumGlob_1, RHOsumGlob_1
-c     CHARACTER*(MAX_LEN_MBUF) msgBuf
+C     CHARACTER*(MAX_LEN_MBUF) msgBuf
 #endif
 C     Mload     :: total mass load (kg/m**2)
-c     _RL Mload(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     _RL Mload(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#ifdef ALLOW_SEAICE
+      _RL tmprecip_area,  tmphsnowact, tmpheffact
+      _RL area_reg_sq
+#endif
 #if ( defined ALLOW_AUTODIFF_TAMC && defined ALLOW_GENCOST_CONTRIBUTION )
 C     ikey   :: tape key (depends on kgen)
       INTEGER ikey
 #endif
 CEOP
 
+#ifdef ALLOW_SEAICE
+      area_reg_sq = SEAICE_area_reg * SEAICE_area_reg
+#endif
       tmpfac = recip_rhoConst*recip_gravity
       sIceLoadFacLoc = zeroRL
       IF ( useRealFreshWaterFlux ) sIceLoadFacLoc = recip_rhoConst
@@ -344,6 +359,28 @@ cts ---
         ENDDO
        ENDDO
        areavolGlob=0. _d 0
+
+#ifdef ALLOW_SEAICE
+       IF (gencost_barfile(kgen)(1:11).EQ.'m_freeboard') THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j = 1,sNy
+           DO i =  1,sNx
+            tmprecip_area = 1. _d 0/SQRT(area(i,j,bi,bj)*area(i,j,bi,bj)
+     &       + area_reg_sq)
+            tmphsnowact = hsnow(I,J,bi,bj) * tmprecip_area
+            tmpheffact  = heff(I,J,bi,bj) * tmprecip_area
+            gencost_storefld(i,j,bi,bj,kgen) =
+     &       ( ( tmphsnowact + tmpheffact ) -
+     &         ( tmphsnowact * SEAICE_rhoSnow +
+     &           tmpheffact * SEAICE_rhoIce ) * recip_rhoConst
+     &       ) * maskC(i,j,1,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
+#endif
 
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
