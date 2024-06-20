@@ -267,8 +267,8 @@ C       for other grid (e.g., cartesian), assumes no difference in time
            ENDIF
            localTime = utcTime + diffutc + 24. _d 0
            localTime = MOD( localTime, 24. _d 0 )
-           chl_sat_sum = 0. _d 0
-           sat_atten_sum = 0. _d 0
+           chl_sat_sum(i,j) = 0. _d 0
+           sat_atten_sum(i,j) = 0. _d 0
 
 #ifdef PHYTO_SELF_SHADING
 c  Use bio-optical model of Manizza et al. (2005) to account for
