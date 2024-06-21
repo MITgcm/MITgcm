@@ -1,34 +1,8 @@
 #!/bin/bash
 
-# Build options for gfortran compiler (GNU) on Linux AMD64 platform
+# Build options for gfortran compiler (GNU) on Linux ARM64 platform
 #
-#  Tested with gcc-gfortran v4.1.x  as shipped with Fedora Core 6,7,8
-#        up to gcc-gfortran v10.2.1 as shipped with Fedora Core 33
-#
-# OpenMP : Tested with gcc-gfortran v4.3.2  with FC 10         (on dickens)
-#                 with gcc-gfortran v4.4.5  with FC 13         (on baudelaire)
-#                 with gcc-gfortran v7.5.0  with Ubuntu 18 LTS (on villon)
-#                up to gcc-gfortran v10.2.1 with FC 33	       (on batsi)
-#
-# MPI : Tested on engaging, using:
-#       module load gcc                  (Version 4.8.4)
-#       module add mvapich2/gcc/64/2.0b
-# and on baudelaire.csail.mit.edu (FC13), using:
-#       export MPI_GCC_DIR=/srv/software/gcc/gcc-packages/gcc-4.4.5/mpich2/mpich2-1.3
-#       export MPI_INC_DIR=$MPI_GCC_DIR/include
-#       export PATH=$MPI_GCC_DIR/bin:$PATH
-# and with openmpi, on several platforms (e.g, with Ubuntu)
-
-#-------
-# run with OpenMP: needs to set environment var. OMP_NUM_THREADS
-#    and generally, needs to increase the thread stack-size:
-#   -  sh,bash:
-#     > export OMP_NUM_THREADS=2
-#     > export GOMP_STACKSIZE=400m
-#   - csh,tcsh:
-#     > setenv OMP_NUM_THREADS 2
-#     > setenv GOMP_STACKSIZE 400m
-#-------
+# MPI : Tested on Macbook air (M3 generation)
 
 if test "x$MPI" = xtrue ; then
   CC=${CC:=mpicc}
