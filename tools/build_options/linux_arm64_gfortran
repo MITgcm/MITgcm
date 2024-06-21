@@ -1,0 +1,176 @@
+#!/bin/bash
+
+# Build options for gfortran compiler (GNU) on Linux AMD64 platform
+#
+#  Tested with gcc-gfortran v4.1.x  as shipped with Fedora Core 6,7,8
+#        up to gcc-gfortran v10.2.1 as shipped with Fedora Core 33
+#
+# OpenMP : Tested with gcc-gfortran v4.3.2  with FC 10         (on dickens)
+#                 with gcc-gfortran v4.4.5  with FC 13         (on baudelaire)
+#                 with gcc-gfortran v7.5.0  with Ubuntu 18 LTS (on villon)
+#                up to gcc-gfortran v10.2.1 with FC 33	       (on batsi)
+#
+# MPI : Tested on engaging, using:
+#       module load gcc                  (Version 4.8.4)
+#       module add mvapich2/gcc/64/2.0b
+# and on baudelaire.csail.mit.edu (FC13), using:
+#       export MPI_GCC_DIR=/srv/software/gcc/gcc-packages/gcc-4.4.5/mpich2/mpich2-1.3
+#       export MPI_INC_DIR=$MPI_GCC_DIR/include
+#       export PATH=$MPI_GCC_DIR/bin:$PATH
+# and with openmpi, on several platforms (e.g, with Ubuntu)
+
+#-------
+# run with OpenMP: needs to set environment var. OMP_NUM_THREADS
+#    and generally, needs to increase the thread stack-size:
+#   -  sh,bash:
+#     > export OMP_NUM_THREADS=2
+#     > export GOMP_STACKSIZE=400m
+#   - csh,tcsh:
+#     > setenv OMP_NUM_THREADS 2
+#     > setenv GOMP_STACKSIZE 400m
+#-------
+
+if test "x$MPI" = xtrue ; then
+  CC=${CC:=mpicc}
+  FC=${FC:=mpif77}
+  F90C=${F90C:=mpif90}
+else
+  CC=gcc
+  FC=gfortran
+  F90C=gfortran
+fi
+
+DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR'
+EXTENDED_SRC_FLAG='-ffixed-line-length-132'
+F90FIXEDFORMAT='-ffixed-form'
+GET_FC_VERSION="--version"
+OMPFLAG='-fopenmp'
+
+NOOPTFLAGS='-O0'
+NOOPTFILES=''
+
+CFLAGS='-O0'
+
+#- for setting specific options, check compiler version:
+fcVers=`$CC -dumpversion | head -n 1 | sed 's/^[^0-9]* //;s/\..*$//'`
+if ! [[ $fcVers =~ ^[0-9]+$ ]] ; then
+  echo "    un-recognized Compiler-version '$fcVers' ; ignored (-> set to 0)" ; fcVers=0 ;
+else echo "    get Compiler-version: '$fcVers'" ; fi
+
+if [ $fcVers -ge 10 ] ; then
+  FFLAGS="$FFLAGS -fallow-argument-mismatch"
+fi
+#- Requires gfortran from 2006 onwards for -fconvert=big-endian
+FFLAGS="$FFLAGS -fconvert=big-endian -fimplicit-none"
+#- for big setups, compile & link with "-fPIC" or set memory-model to "small":
+#CFLAGS="$CFLAGS -fPIC"
+#FFLAGS="$FFLAGS -fPIC"
+#-  with FC 19, need to use this without -fPIC (which cancels -mcmodel option):
+ CFLAGS="$CFLAGS -mcmodel=small"
+ FFLAGS="$FFLAGS -mcmodel=small"
+#- might want to use '-fdefault-real-8' for fizhi pkg:
+#FFLAGS="$FFLAGS -fdefault-real-8 -fdefault-double-8"
+
+if test "x$IEEE" = x ; then     #- with optimisation:
+   #- full optimisation
+    FOPTIM='-O3 -funroll-loops'
+    NOOPTFILES="$NOOPTFILES ini_masks_etc.F"
+   #- can use -O2 (safe optimisation) to avoid Pb with some gcc version of -O3:
+   #FOPTIM='-O2 -funroll-loops'
+else
+   # these may also be useful, but require specific gfortran versions:
+   # -Wnonstd-intrinsics        for gfortran <= 4.3
+   # -Wintrinsics-std           for gfortran >= 4.4
+   # -Wno-tabs                  for gfortran >= 4.3
+   # -Wno-unused-dummy-argument for gfortran >= 4.6
+   #FFLAGS="$FFLAGS -Waliasing -Wampersand -Wsurprising -Wline-truncation"
+   #- or simply:
+    FFLAGS="$FFLAGS -Wall"
+    if [ $fcVers -ge 10 ] ; then
+      FFLAGS="$FFLAGS -Wno-unused-dummy-argument"
+    fi
+   #- to get plenty of warnings: -Wall -Wextra (older form: -Wall -W) or:
+   #FFLAGS="$FFLAGS -Wconversion -Wimplicit-interface -Wunused-labels"
+  if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
+    FOPTIM='-O0'
+  else                          #- development/check options:
+    FOPTIM='-O0 -g -fbounds-check'
+    FOPTIM="$FOPTIM -ffpe-trap=invalid,zero,overflow -finit-real=inf"
+  fi
+fi
+
+F90FLAGS=$FFLAGS
+F90OPTIM=$FOPTIM
+
+INCLUDEDIRS=''
+INCLUDES=''
+LIBS=''
+
+if [ "x$NETCDF_ROOT" != x ] ; then
+    INCLUDEDIR="${NETCDF_ROOT}/include"
+    INCLUDES="-I${NETCDF_ROOT}/include"
+    LIBDIR="${NETCDF_ROOT}/lib"
+    LIBS="-L${NETCDF_ROOT}/lib"
+elif [ "x$NETCDF_HOME" != x ]; then
+    INCLUDEDIR="${NETCDF_HOME}/include"
+    INCLUDES="-I${NETCDF_HOME}/include"
+    LIBDIR="${NETCDF_HOME}/lib"
+    LIBS="-L${NETCDF_HOME}/lib"
+elif [ "x$NETCDF_INC" != x -a "x$NETCDF_LIB" != x ]; then
+    NETCDF_INC=`echo $NETCDF_INC | sed 's/-I//g'`
+    NETCDF_LIB=`echo $NETCDF_LIB | sed 's/-L//g'`
+    INCLUDEDIR="${NETCDF_INC}"
+    INCLUDES="-I${NETCDF_INC}"
+    LIBDIR="${NETCDF_LIB}"
+    LIBS="-L${NETCDF_LIB}"
+elif [ "x$NETCDF_INCDIR" != x -a "x$NETCDF_LIBDIR" != x ]; then
+    INCLUDEDIR="${NETCDF_INCDIR}"
+    INCLUDES="-I${NETCDF_INCDIR}"
+    LIBDIR="${NETCDF_LIBDIR}"
+    LIBS="-L${NETCDF_LIBDIR}"
+elif [[ -n $( nf-config --includedir 2> /dev/null ) && ($? == 0) ]] ; then
+    # NETCDF env variables are not set, trying nf-config instead
+    INCLUDEDIR=$( nf-config --includedir )
+    INCLUDES="-I$INCLUDEDIR"
+    LIBS=$( nf-config --flibs )
+elif test -d /usr/include/netcdf-3 ; then
+    INCLUDES='-I/usr/include/netcdf-3'
+    LIBS='-L/usr/lib/netcdf-3 -L/usr/lib64/netcdf-3'
+elif test -d /usr/include/netcdf ; then
+    INCLUDES='-I/usr/include/netcdf'
+elif test -d /usr/local/netcdf ; then
+    INCLUDES='-I/usr/local/netcdf/include'
+    LIBS='-L/usr/local/netcdf/lib'
+elif test -d /usr/local/include/netcdf.inc ; then
+    INCLUDES='-I/usr/local/include'
+    LIBS='-L/usr/local/lib64'
+elif test -d /usr/include/netcdf.inc ; then
+    INCLUDES='-I/usr/include'
+    LIBS='-L/usr/lib64'
+fi
+
+if [ -n "$MPI_HOME" -a -z "$MPI_INC_DIR" ]; then
+    MPI_INC_DIR="$MPI_HOME/include"
+fi
+
+if [ "x$MPI" = xtrue ] ; then
+   if [ -z "$MPI_INC_DIR" ] ; then
+      # MPI env variables are not set, trying pkg-config insteal
+      if [[ -n $( pkg-config --cflags-only-I ompi ) && ($? == 0) ]] ; then
+         MPI_INC_DIR=$(pkg-config --cflags-only-I ompi | awk '{ print $1 }' | sed -e "s/-I//" )
+      else
+         echo MPI_HOME is not set and pkg-config not available, aborting
+         exit 1
+      fi
+   fi
+   if [ -n "$MPI_INC_DIR" ] ; then
+      # only fill this if we can find MPI, otherwise triggers netcdf error
+      INCLUDES+=" -I$MPI_INC_DIR"
+      INCLUDEDIRS+=" $MPI_INC_DIR"
+      #- used for parallel (MPI) DIVA
+      MPIINCLUDEDIR="$MPI_INC_DIR"
+   else
+      echo could not set MPI_INC_DIR, aborting
+      exit 1
+   fi
+fi
