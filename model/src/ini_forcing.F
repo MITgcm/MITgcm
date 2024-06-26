@@ -34,6 +34,10 @@ C     bi,bj  :: Tile indices
 C     i, j   :: Loop counters
       INTEGER bi, bj
       INTEGER  i, j
+#ifdef SHORTWAVE_HEATING
+      INTEGER  k
+      _RL SWFracK(Nr)
+#endif
 CEOP
 
 C-    Initialise all arrays in common blocks
@@ -123,6 +127,31 @@ C-     Qnet is now (after c54) the net Heat Flux (including SW)
         ENDDO
        ENDIF
       ENDIF
+C     For now SWFrac3D is held fixed throught the simulation, so it is
+C     initialised here instead of somewhere in S/R INITIALISE_VARIA
+      DO k=1,Nr
+       IF ( usingZCoords ) THEN
+        SWFracK(k) = rF(k)
+       ELSE
+C     this is the oceanic pressure coordinate case
+        SWFracK(k) = -rF(k+1)*recip_rhoConst*recip_gravity
+       ENDIF
+      ENDDO
+      CALL SWFRAC(
+     I            Nr, oneRL,
+     U            SWFracK,
+     I            zeroRL, 0, myThid )
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO k = 1,Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           SWFrac3D(i,j,k,bi,bj) = SWFracK(k)*maskC(i,j,k,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 #endif
 #ifdef ATMOSPHERIC_LOADING
       IF ( pLoadFile .NE. ' '  ) THEN
