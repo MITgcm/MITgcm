@@ -407,8 +407,6 @@ C       for other grid (e.g., cartesian), assumes no difference in time
      &       localTime.LT.chlsat_locTimWindow(2) ) THEN
          chl_sat(i,j,bi,bj) = chl_sat_sum(i,j)
      &                      / (sat_atten_sum(i,j) + epsln)
-        ELSE
-         chl_sat(i,j,bi,bj) = 0. _d 0
         ENDIF
        ENDDO
       ENDDO
