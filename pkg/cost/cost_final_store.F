@@ -3,7 +3,7 @@
 # include "AUTODIFF_OPTIONS.h"
 #endif
 
-      subroutine cost_final_store ( mythid, lastdiva )
+      SUBROUTINE COST_FINAL_STORE( lastdiva, myThid )
 
 c     ==================================================================
 c     SUBROUTINE cost_final_store
@@ -17,38 +17,34 @@ c     ==================================================================
 c     SUBROUTINE cost_final_store
 c     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
 c     == global variables ==
-
 #include "EEPARAMS.h"
 #include "SIZE.h"
-
 #include "cost.h"
 
 c     == routine arguments ==
+      LOGICAL lastdiva
+      INTEGER myThid
 
-      integer mythid
-      logical lastdiva
-
-# ifdef ALLOW_DIVIDED_ADJOINT
-
+#ifdef ALLOW_DIVIDED_ADJOINT
 c     == local variables ==
-
 c     == end of interface ==
 
 c--   Each process has calculated the global part for itself.
       lastdiva = .FALSE.
 
-      IF (myProcId .eq. 0) THEN
-         _BEGIN_MASTER( mythid )
-           open(unit=76,file='costfinal')
-           write(76,*) fc
-           close(76)
-         _END_MASTER( mythid )
+      IF ( myProcId .EQ. 0 ) THEN
+        _BEGIN_MASTER( myThid )
+        OPEN(UNIT=76,FILE='costfinal')
+        WRITE(76,*) fc
+        CLOSE(76)
+        _END_MASTER( myThid )
       ENDIF
       _BARRIER
 
-#endif
+#endif /* ALLOW_DIVIDED_ADJOINT */
 
-      end
+      RETURN
+      END

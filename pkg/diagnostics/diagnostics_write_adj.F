@@ -110,7 +110,20 @@ C-    wait for everyone before setting arrays to zero:
         _BARRIER
       ENDIF
 
-C--     Clear storage space:
+c     IF ( modelStart ) THEN
+C-    Track diagnostics pkg activation status:
+C  Note: switching off diag_pkgStatus does not work since few ADJ-diags
+C      are filled outside S/R FORWARD_STEP_AD (e.g., "ADJetan " from
+C      initialise_varia_ad -> integr_continuity_ad. -> addummy_for_etan )
+cc      IF ( diag_pkgStatus.NE.ready2fillDiags ) STOP
+c       _BARRIER
+c       _BEGIN_MASTER(myThid)
+c       diag_pkgStatus = 99
+c       _END_MASTER(myThid)
+c       _BARRIER
+c     ENDIF
+
+C--   Clear storage space:
       DO n = 1,nlists
         IF ( writeDiags(n) ) CALL DIAGNOSTICS_CLEAR(n,myThid)
       ENDDO

@@ -32,6 +32,7 @@ C         parse(3)  &     &  Used for Level Integrated output: cumulate levels \
 C                   &  r  &  same but cumulate product by model level thickness \\
 C                   &  R  &  same but cumulate product by hFac & level thickness \\
 C         parse(4)  &  P  &  positive definite  \\
+C                   &  A  &  Adjoint variable diagnostics \\
 C         parse(5 ) &  C  &  with counter array  \\
 C                   &  P  &  post-processed (not filled up) from other diags  \\
 C                   &  D  &  disable an array for output  \\

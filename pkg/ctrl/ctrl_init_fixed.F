@@ -53,7 +53,7 @@ C     msgBuf     :: Informational/error message buffer
       INTEGER bi, bj
       INTEGER i, j, k
       INTEGER ivar, iarr
-      LOGICAL costfinal_exists
+      LOGICAL costFinalExist
       _RL dummy
       _RL loctmp3d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
@@ -110,15 +110,12 @@ C     Set unit weight to 1
 #endif
 
 #ifdef CTRL_DO_PACK_UNPACK_ONLY
-      costfinal_exists=.FALSE.
-#else
+      costFinalExist = .FALSE.
+#else /* CTRL_DO_PACK_UNPACK_ONLY */
 c     _BEGIN_MASTER( myThid )
-      inquire( file='costfinal', exist=costfinal_exists )
+      INQUIRE( FILE='costfinal', EXIST=costFinalExist )
 c     _END_MASTER( myThid )
-
-C-- for DIVA, avoid forward-related output in adjoint part
-      IF ( costfinal_exists ) CALL TURNOFF_MODEL_IO( 1, myThid )
-#endif
+#endif /* CTRL_DO_PACK_UNPACK_ONLY */
 
       _BARRIER
 
@@ -139,7 +136,7 @@ C--   Northern obc.
       iarr = 1
       CALL ctrl_init_ctrlvar (
      I     xx_obcsn_file, ivar, iarr, diffrec, startrec, endrec,
-     I     sNx, 1, Nr, 'm', 'SecXZ', costfinal_exists, myThid )
+     I     sNx, 1, Nr, 'm', 'SecXZ', costFinalExist, myThid )
 #endif /* ALLOW_OBCSN_CONTROL */
 
 C----------------------------------------------------------------------
@@ -154,7 +151,7 @@ C--   Southern obc.
       iarr = 2
       CALL ctrl_init_ctrlvar (
      I     xx_obcss_file, ivar, iarr, diffrec, startrec, endrec,
-     I     sNx, 1, Nr, 'm', 'SecXZ', costfinal_exists, myThid )
+     I     sNx, 1, Nr, 'm', 'SecXZ', costFinalExist, myThid )
 #endif /* ALLOW_OBCSS_CONTROL */
 
 C----------------------------------------------------------------------
@@ -169,7 +166,7 @@ C--   Western obc.
       iarr = 4
       CALL ctrl_init_ctrlvar (
      I     xx_obcsw_file, ivar, iarr, diffrec, startrec, endrec,
-     I     1, sNy, Nr, 'm', 'SecYZ', costfinal_exists, myThid )
+     I     1, sNy, Nr, 'm', 'SecYZ', costFinalExist, myThid )
 #endif  /* ALLOW_OBCSW_CONTROL */
 
 C----------------------------------------------------------------------
@@ -184,7 +181,7 @@ C--   Eastern obc.
       iarr = 3
       CALL ctrl_init_ctrlvar (
      I     xx_obcse_file, ivar, iarr, diffrec, startrec, endrec,
-     I     1, sNy, Nr, 'm', 'SecYZ', costfinal_exists, myThid )
+     I     1, sNy, Nr, 'm', 'SecYZ', costFinalExist, myThid )
 #endif /* ALLOW_OBCSE_CONTROL */
 
 C----------------------------------------------------------------------
@@ -215,7 +212,7 @@ C     which are ideally the solution of planetary vertical mode equation
 C     using model mean dRho/dz, see
 C     MITgcm/verification/obcs_ctrl/input/gendata.m
 C    This code is compatible with partial cells
-#endif
+#endif /* ALLOW_OBCS_CONTROL_MODES */
 
 C----------------------------------------------------------------------
 
@@ -237,7 +234,7 @@ C      Under iceshelf, use maskSHI for these
         CALL ctrl_init_ctrlvar (
      I       xx_genarr2d_file(iarr),
      I       ivar, iarr, 1, 1, 1,
-     I       sNx, sNy, 1, ncvargrdtmp, 'Arr2D', costfinal_exists,
+     I       sNx, sNy, 1, ncvargrdtmp, 'Arr2D', costFinalExist,
      I       myThid )
 #ifndef ALLOW_OPENAD
        ENDIF
@@ -257,7 +254,7 @@ C----------------------------------------------------------------------
         CALL ctrl_init_ctrlvar (
      I       xx_genarr3d_file(iarr),
      I       ivar, iarr, 1, 1, 1,
-     I       sNx, sNy, Nr, ncvargrdtmp, 'Arr3D', costfinal_exists,
+     I       sNx, sNy, Nr, ncvargrdtmp, 'Arr3D', costFinalExist,
      I       myThid )
 #ifndef ALLOW_OPENAD
        ENDIF
@@ -327,7 +324,7 @@ C      Under iceshelf, use maskSHI for these
      I       fnamegen,
      I       0, iarr,
      I       diffrecFull, startrec, endrecFull,
-     I       sNx, sNy, 1, ncvargrdtmp, 'Tim2D', costfinal_exists,
+     I       sNx, sNy, 1, ncvargrdtmp, 'Tim2D', costFinalExist,
      I       myThid )
 
         WRITE(fnamegen,'(2a)')
@@ -336,7 +333,7 @@ C      Under iceshelf, use maskSHI for these
      I       fnamegen,
      I       0, iarr,
      I       diffrecFull, startrec, endrecFull,
-     I       sNx, sNy, 1, ncvargrdtmp, 'Tim2D', costfinal_exists,
+     I       sNx, sNy, 1, ncvargrdtmp, 'Tim2D', costFinalExist,
      I       myThid )
 
 C     The length of adxx-files needs to be 1:endrec
@@ -344,7 +341,7 @@ C     The length of adxx-files needs to be 1:endrec
      I       xx_gentim2d_file(iarr),
      I       ivar, iarr,
      I       endrec, 1, endrec,
-     I       sNx, sNy, 1, ncvargrdtmp, 'Tim2D', costfinal_exists,
+     I       sNx, sNy, 1, ncvargrdtmp, 'Tim2D', costFinalExist,
      I       myThid )
 
 #ifndef ALLOW_OPENAD

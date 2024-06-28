@@ -33,6 +33,9 @@ c      IF ( diag_pkgStatus.NE.3 ) STOP
       _END_MASTER( myThid )
       _BARRIER
 
+C--   Set I/O unit iand open diag-stats ASCII output file:
+      CALL DIAGSTATS_INI_IO( myThid )
+
 C--   Zero out the qdiag array which accumulates during integration
       DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
