@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# Build options for gfortran compiler (GNU) on Linux ARM64 platform
+# Build options for gfortran compiler (GNU) for Linux on ARM64 hardware (e.g., in VMs or containers)
 #
-# Tested on Macbook air (M3 generation) in a Ubuntu Docker container (ECCO-Docker v0.2.2)
+# Was tested on Macbook air (M3 generation) in a Ubuntu Docker container (ECCO-Docker v0.2.2)
 #
 # Gael Forget. (2024). gaelforget/ECCO-Docker: update to latest MITgcm.jl , Climatology.jl , 
 # and Dockerfile (v0.2.2). Zenodo. https://doi.org/10.5281/zenodo.12581248
