@@ -2,7 +2,11 @@
 
 # Build options for gfortran compiler (GNU) on Linux ARM64 platform
 #
-# MPI : Tested on Macbook air (M3 generation)
+# Tested on Macbook air (M3 generation) in a Ubuntu Docker container (ECCO-Docker v0.2.2)
+#
+# Gael Forget. (2024). gaelforget/ECCO-Docker: update to latest MITgcm.jl , Climatology.jl , 
+# and Dockerfile (v0.2.2). Zenodo. https://doi.org/10.5281/zenodo.12581248
+
 
 if test "x$MPI" = xtrue ; then
   CC=${CC:=mpicc}
