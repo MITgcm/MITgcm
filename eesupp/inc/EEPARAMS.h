@@ -58,10 +58,6 @@ C               one dimensional.
       PARAMETER ( lShare4 =  cacheLineSize/4 )
       PARAMETER ( lShare8 =  cacheLineSize/8 )
 
-CC    MAX_VGS  :: Maximum buffer size for Global Vector Sum
-c     INTEGER MAX_VGS
-c     PARAMETER ( MAX_VGS = 8192 )
-
 C     ========  EESIZE.h  ========================================
 
 C     Symbolic values

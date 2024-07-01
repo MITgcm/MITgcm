@@ -3,9 +3,9 @@
 
 C--   File global_sum_singlecpu.F: Routines that perform global sum
 C                                  on a single CPU
-C      Contents
-C      o GLOBAL_SUM_SINGLECPU_RL
-C      o GLOBAL_SUM_SINGLECPU_RS <- not yet coded
+C--    Contents
+C--    o GLOBAL_SUM_SINGLECPU_RL
+C--    o GLOBAL_SUM_SINGLECPU_RS <- not yet coded
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -32,6 +32,7 @@ C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
+#include "EEBUFF_SIZE.h"
 #include "GLOBAL_SUM.h"
 #ifdef ALLOW_EXCH2
 #include "W2_EXCH2_SIZE.h"
