@@ -21,8 +21,6 @@ C     - irr_mix is the same, but with the irr_inst averaged throughout
 C       the mixed layer. This quantity is intended to represent the
 C       light to which phytoplankton subject to turbulent transport in
 C       the mixed-layer would be exposed.
-C     - irr_mem is a temporally smoothed field carried between
-C       timesteps, to represent photoadaptation.
 C     - irr_eff is the effective irradiance for photosynthesis,
 C       given either by irr_inst or irr_mix, depending on model
 C       options and location.
@@ -38,8 +36,6 @@ C !USES: ===============================================================
       IMPLICIT NONE
 
 C     === Global variables ===
-C     irr_inst      :: Instantaneous irradiance
-C     irr_mem       :: Phyto irradiance memory
 #include "SIZE.h"
 #include "DYNVARS.h"
 #include "EEPARAMS.h"
@@ -67,8 +63,8 @@ C     myThid        :: thread Id. number
       _RL mld       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 C !OUTPUT PARAMETERS: ==================================================
-C      irr_inst     :: instantaneous light
-C      irr_eff      :: effective light for photosynthesis
+C     irr_inst      :: instantaneous light
+C     irr_eff       :: effective light for photosynthesis
       _RL irr_inst  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL irr_eff   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
