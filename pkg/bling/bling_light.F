@@ -21,8 +21,6 @@ C     - irr_mix is the same, but with the irr_inst averaged throughout
 C       the mixed layer. This quantity is intended to represent the
 C       light to which phytoplankton subject to turbulent transport in
 C       the mixed-layer would be exposed.
-C     - irr_mem is a temporally smoothed field carried between
-C       timesteps, to represent photoadaptation.
 C     - irr_eff is the effective irradiance for photosynthesis,
 C       given either by irr_inst or irr_mix, depending on model
 C       options and location.
@@ -38,8 +36,6 @@ C !USES: ===============================================================
       IMPLICIT NONE
 
 C     === Global variables ===
-C     irr_inst      :: Instantaneous irradiance
-C     irr_mem       :: Phyto irradiance memory
 #include "SIZE.h"
 #include "DYNVARS.h"
 #include "EEPARAMS.h"
@@ -67,12 +63,22 @@ C     myThid        :: thread Id. number
       _RL mld       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 C !OUTPUT PARAMETERS: ==================================================
-C      irr_inst     :: instantaneous light
-C      irr_eff      :: effective light for photosynthesis
+C     irr_inst      :: instantaneous light
+C     irr_eff       :: effective light for photosynthesis
       _RL irr_inst  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL irr_eff   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
 C !LOCAL VARIABLES: ====================================================
+      INTEGER i,j,k
+      LOGICAL QSW_underice
+#ifdef ALLOW_CAL
+      INTEGER mydate(4)
+#endif
+      _RL localTime
+      _RL utcTime, diffutc
+      _RL sat_atten
+      _RL sat_atten_sum(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL chl_sat_sum  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL atten
       _RL irr_surf  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef ML_MEAN_LIGHT
@@ -102,16 +108,6 @@ C     tkey :: tape key (tile dependent)
 C     kkey :: tape key (tile and level dependent)
       INTEGER tkey, kkey
 #endif
-      _RL localTime
-      _RL utcTime, diffutc
-      _RL sat_atten
-      _RL sat_atten_sum(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL chl_sat_sum  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      INTEGER i,j,k
-      LOGICAL QSW_underice
-#ifdef ALLOW_CAL
-      INTEGER mydate(4)
-#endif
 CEOP
 
 c  Remove light under ice
@@ -123,9 +119,19 @@ c  taken into account
       IF ( useThSIce ) QSW_underice = .TRUE.
 #endif
 
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+        chl_sat_sum(i,j)   = 0. _d 0
+        sat_atten_sum(i,j) = 0. _d 0
+#ifdef ML_MEAN_LIGHT
+        SumMLIrr(i,j) = 0. _d 0
+        tmp_ML(i,j)   = 0. _d 0
+#endif
+       ENDDO
+      ENDDO
       DO k=1,Nr
-       DO j=jmin,jmax
-        DO i=imin,imax
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          irr_eff(i,j,k) = 0. _d 0
 #ifdef PHYTO_SELF_SHADING
          irr_rd(i,j,k)        = 0. _d 0
@@ -134,6 +140,7 @@ c  taken into account
         ENDDO
        ENDDO
       ENDDO
+
 #ifdef PHYTO_SELF_SHADING
 c  Specify co-efficients for bio-optical model {kChl = k0 +chi[chl]^e}
 c  in red and blue-green fractions (Morel 1988; Foujols et al. 2000)
@@ -198,7 +205,6 @@ C daily average photosynthetically active solar radiation just below surface
 C convert to sfac
        sfac(j) = MAX(1. _d -5,fluxi)
       ENDDO !j
-
 #endif /* ndef USE_QSW */
 
 C get time (in h) within the day:
@@ -217,6 +223,22 @@ c mydate is utc time
 
 c ---------------------------------------------------------------------
 c  instantaneous light, mixed layer averaged light
+
+      DO j=jmin,jmax
+       DO i=imin,imax
+c  Photosynthetically-available radiations (PAR)
+#ifdef USE_QSW
+         irr_surf(i,j) = MAX( epsln,
+     &                 -parfrac*Qsw(i,j,bi,bj)*maskC(i,j,1,bi,bj))
+#else
+         irr_surf(i,j) = sfac(j)
+#endif
+c  Remove light under ice
+         IF ( .NOT. QSW_underice ) THEN
+          irr_surf(i,j) = irr_surf(i,j)*(1. _d 0 - FIce(i,j,bi,bj))
+         ENDIF
+       ENDDO
+      ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
       tkey = bi + (bj - 1)*nSx + (ikey_dynamics - 1)*nSx*nSy
@@ -238,37 +260,6 @@ C Top layer
          DO i=imin,imax
 
           IF ( maskC(i,j,k,bi,bj).EQ.oneRS ) THEN
-
-c  Photosynthetically-available radiations (PAR)
-#ifdef USE_QSW
-           irr_surf(i,j) = max(epsln,
-     &                 -parfrac*Qsw(i,j,bi,bj)*maskC(i,j,1,bi,bj))
-#else
-           irr_surf(i,j) = sfac(j)
-#endif
-
-c  Remove light under ice
-           IF ( .NOT. QSW_underice ) THEN
-            irr_surf(i,j) = irr_surf(i,j)*(1. _d 0 - FIce(i,j,bi,bj))
-           ENDIF
-
-#ifdef ML_MEAN_LIGHT
-           SumMLIrr(i,j) = 0. _d 0
-           tmp_ML(i,j)   = 0. _d 0
-#endif
-
-C Satellite chlorophyll
-           IF ( usingSphericalPolarGrid .OR. usingCurvilinearGrid ) THEN
-C       local-time difference (in h) from UTC time (note: 15 = 360/24)
-            diffutc = XC(i,j,bi,bj)/15. _d 0
-           ELSE
-C       for other grid (e.g., cartesian), assumes no difference in time
-            diffutc = 0. _d 0
-           ENDIF
-           localTime = utcTime + diffutc + 24. _d 0
-           localTime = MOD( localTime, 24. _d 0 )
-           chl_sat_sum = 0. _d 0
-           sat_atten_sum = 0. _d 0
 
 #ifdef PHYTO_SELF_SHADING
 c  Use bio-optical model of Manizza et al. (2005) to account for
@@ -296,17 +287,18 @@ c  Irradiance in middle of top layer
            irr_rd(i,j,1) = irr_surf(i,j) * exp(-atten_rd) * 0.5 _d 0
            irr_bg(i,j,1) = irr_surf(i,j) * exp(-atten_bg) * 0.5 _d 0
            irr_inst(i,j,1) = irr_rd(i,j,1) + irr_bg(i,j,1)
-#else
+#else /* PHYTO_SELF_SHADING */
 C SW radiation attenuated exponentially
 c  Light attenuation in middle of top layer
            atten = k0*drF(1)/2. _d 0*hFacC(i,j,1,bi,bj)
            irr_inst(i,j,1) = irr_surf(i,j)*exp(-atten)
 
-#endif /* if PHYTO_SELF_SHADING */
+#endif /* PHYTO_SELF_SHADING */
 
           ENDIF
          ENDDO
         ENDDO
+
 C k>1: below surface layer
        ELSE
 
@@ -345,34 +337,32 @@ c  Irradiance in middle of layer k
            irr_bg(i,j,k) = irr_bg(i,j,k-1)*exp(-atten_bg)
            irr_inst(i,j,k) = irr_rd(i,j,k) + irr_bg(i,j,k)
 
-#else
+#else /* PHYTO_SELF_SHADING */
 C SW radiation attenuated exponentially
 c  Attenuation from one more layer
            atten = k0*drF(k)/2. _d 0*hFacC(i,j,k,bi,bj)
      &           + k0*drF(k-1)/2. _d 0*hFacC(i,j,k-1,bi,bj)
-           irr_inst(i,j,k) =
-     &          irr_inst(i,j,k-1)*exp(-atten)
+           irr_inst(i,j,k) = irr_inst(i,j,k-1)*exp(-atten)
 
-#endif /* if PHYTO_SELF_SHADING */
+#endif /* PHYTO_SELF_SHADING */
 
           ENDIF
          ENDDO
         ENDDO
 
-       ENDIF /* if k.EQ.1 */
+       ENDIF /* if k=1 then, else */
 
 C Satellite chl
        DO j=jmin,jmax
         DO i=imin,imax
-
          IF ( maskC(i,j,k,bi,bj).EQ.oneRS ) THEN
 
-          IF (irr_surf(i,j).gt.0) THEN
+          IF ( irr_surf(i,j).GT.zeroRL ) THEN
 c           sat_atten = irr_inst(i,j,k)/irr_surf(i,j)
 #ifdef PHYTO_SELF_SHADING
-           sat_atten = exp(-2. _d 0 * k0_bg * (-RC(k)))
+           sat_atten = exp(-2. _d 0 * k0_bg * (-rC(k)))
 #else
-           sat_atten = exp(-2. _d 0 * k0 * (-RC(k)))
+           sat_atten = exp(-2. _d 0 * k0 * (-rC(k)))
 #endif
            chl_sat_sum(i,j) = chl_sat_sum(i,j)
      &                 + chl(i,j,k,bi,bj)*sat_atten
@@ -381,33 +371,57 @@ c           sat_atten = irr_inst(i,j,k)/irr_surf(i,j)
 
 #ifdef ML_MEAN_LIGHT
 c  Mean irradiance in the mixed layer
-          IF ((-rf(k+1) .le. mld(i,j)).and.
-     &        (-rf(k+1).lt.MLmix_max)) THEN
+          IF ( (-rF(k+1).LE. mld(i,j)) .AND.
+     &         (-rF(k+1).LT.MLmix_max) ) THEN
            SumMLIrr(i,j) = SumMLIrr(i,j)+drF(k)*irr_inst(i,j,k)
            tmp_ML(i,j) = tmp_ML(i,j) + drF(k)
            irr_mix(i,j) = SumMLIrr(i,j)/tmp_ML(i,j)
           ENDIF
 #endif
 
+         ENDIF
+        ENDDO
+       ENDDO
+
+C     end first k loop
+      ENDDO
+
+C Satellite chlorophyll
 C Update diagnostic only if ~13:30 local time, when satellite observes
-          IF ( localTime.GT.chlsat_locTimWindow(1) .AND.
-     &         localTime.LT.chlsat_locTimWindow(2) ) THEN
-           chl_sat(i,j,bi,bj) = chl_sat_sum(i,j)/
-     &          (sat_atten_sum(i,j) + epsln)
-          ENDIF
+      DO j=jmin,jmax
+       DO i=imin,imax
+        IF ( usingSphericalPolarGrid .OR. usingCurvilinearGrid ) THEN
+C       local-time difference (in h) from UTC time (note: 15 = 360/24)
+         diffutc = XC(i,j,bi,bj)/15. _d 0
+        ELSE
+C       for other grid (e.g., cartesian), assumes no difference in time
+         diffutc = 0. _d 0
+        ENDIF
+        localTime = utcTime + diffutc + 24. _d 0
+        localTime = MOD( localTime, 24. _d 0 )
+        IF ( localTime.GT.chlsat_locTimWindow(1) .AND.
+     &       localTime.LT.chlsat_locTimWindow(2) ) THEN
+         chl_sat(i,j,bi,bj) = chl_sat_sum(i,j)
+     &                      / (sat_atten_sum(i,j) + epsln)
+        ENDIF
+       ENDDO
+      ENDDO
+
+      DO k=1,Nr
+       DO j=jmin,jmax
+        DO i=imin,imax
+         IF ( maskC(i,j,k,bi,bj).EQ.oneRS ) THEN
 
           irr_eff(i,j,k) = irr_inst(i,j,k)
-
 #ifdef ML_MEAN_LIGHT
 c  Inside mixed layer, effective light is set to mean mixed layer light
-          IF ((-rf(k+1) .le. mld(i,j)).and.
-     &        (-rf(k+1).lt.MLmix_max)) THEN
+          IF ( (-rF(k+1).LE. mld(i,j)) .AND.
+     &         (-rF(k+1).LT.MLmix_max) ) THEN
            irr_eff(i,j,k) = irr_mix(i,j)
           ENDIF
 #endif
 
          ENDIF
-
         ENDDO
        ENDDO
       ENDDO
