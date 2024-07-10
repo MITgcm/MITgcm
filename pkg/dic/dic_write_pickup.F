@@ -77,13 +77,18 @@ c     IF ( DIC_pickup_write_mdsio ) THEN
         j = 0
 
 C     Firstly, write 3-D fields as consecutive records,
+C---    write DIC 3-D fields for restart
+#ifdef DIC_CALCITE_SAT
+        IF ( useCalciteSaturation ) THEN
+        j = j + 1
+        CALL WRITE_REC_3D_RL( fn, prec, Nr, pH3D,   -j, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'DIC_pH3d'
+        ENDIF
+#endif
 
 C-    switch to 2-D fields:
-        nj = -j*Nr
-
-C       record number < 0 : a hack not to write meta files now:
+        nj = -j*Nr-1
         j = j + 1
-        nj = nj-1
         CALL WRITE_REC_3D_RL( fn, prec, 1, pH, nj, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'DIC_pH2d'
 
