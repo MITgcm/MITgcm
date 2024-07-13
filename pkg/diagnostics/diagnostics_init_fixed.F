@@ -26,6 +26,9 @@ C     !INPUT PARAMETERS:
 CEOP
 
 C     !LOCAL VARIABLES:
+c#ifdef ALLOW_DIVIDED_ADJOINT
+      LOGICAL dummyBoolean
+c#endif
 
 C--   Set number of levels for all available diagnostics
 C     (cannot add diags to list anymore after this call)
@@ -48,6 +51,9 @@ C--   Calculate pointers for statistics-diags set to non-zero frequency
         CALL FIZHI_DIAGALARMS( myThid )
       ENDIF
 #endif
+c#ifdef ALLOW_DIVIDED_ADJOINT
+      CALL DIAGS_TRACK_DIVA( dummyBoolean, -2, myThid )
+c#endif
 
       RETURN
       END
