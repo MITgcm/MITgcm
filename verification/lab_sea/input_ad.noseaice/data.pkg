@@ -4,7 +4,7 @@
   useKPP    = .TRUE.,
   useEXF    = .TRUE.,
   useSEAICE = .FALSE.,
-  useDiagnostics = .FALSE.,
+  useDiagnostics = .TRUE.,
   useMNC    = .TRUE.,
   useECCO   = .TRUE.,
   useGrdchk = .TRUE.,
