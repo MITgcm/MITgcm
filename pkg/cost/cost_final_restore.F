@@ -3,36 +3,35 @@
 # include "AUTODIFF_OPTIONS.h"
 #endif
 
-      SUBROUTINE COST_FINAL_RESTORE( lastdiva, myThid )
+CBOP
+C     !ROUTINE: COST_FINAL_RESTORE
 
-c     ==================================================================
-c     SUBROUTINE cost_final_restore
-c     ==================================================================
-c
-c     Restore cost function value
-c     This is required in conjunction with DIVA
-c     heimbach@mit.edu 5-Mar-2003
-c
-c     ==================================================================
-c     SUBROUTINE cost_final_restore
-c     ==================================================================
+C     !INTERFACE:
+      SUBROUTINE COST_FINAL_RESTORE( lastDiva, myThid )
 
+C     !DESCRIPTION:
+C     Restore cost function value
+C     This is required in conjunction with DIVA
+C     heimbach@mit.edu 5-Mar-2003
+
+C     !USES:
       IMPLICIT NONE
-
-c     == global variables ==
+C     == Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "cost.h"
 
-c     == routine arguments ==
-      LOGICAL lastdiva
+C     !INPUT/OUTPUT PARAMETERS:
+C     lastDiva :: True if last AD run from DIVA sequence, False otherwise
+C     myThid   :: my Thread Id number
+      LOGICAL lastDiva
       INTEGER myThid
 
 #ifdef ALLOW_DIVIDED_ADJOINT
-c     == local variables ==
+C     !LOCAL VARIABLES:
       LOGICAL exst
       INTEGER idivbeg, idivend
-c     == end of interface ==
+CEOP
 
       _BEGIN_MASTER( myThid )
 
@@ -46,12 +45,12 @@ c     == end of interface ==
         ENDIF
 
         IF ( idivbeg .EQ. 0 ) THEN
-          lastdiva = .TRUE.
+          lastDiva = .TRUE.
           OPEN(UNIT=76,FILE='costfinal')
           READ(76,*) fc
           CLOSE(76)
         ELSE
-          lastdiva = .FALSE.
+          lastDiva = .FALSE.
         ENDIF
 
       _END_MASTER( myThid )
