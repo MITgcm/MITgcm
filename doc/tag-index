@@ -1,6 +1,13 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/diagnostics:
+  - to allow to use ADJ-diags in DIVA runs, change call sequence regarding
+    TURNOFF_MODEL_IO and DIAGSTATS_INI_IO and simplify (fewer tests for
+    "costfinal") the_model_main.F (+ shorten pkg/openad version) ;
+  - restore the use of "diag_pkgStatus" (switch & check) in AD backward sweep
+    with new small S/R for DIVA runs ;
+  - turn on FWD and ADJ-diags in secondary lab_sea AD test "noseaice".
 o pkg/bling:
   - clean-up "bling_light.F" (fix typo related to PHYTO_SELF_SHADING option,
     move k-loop outside) ; add CHL to bling_ad_check_lev{2,3,4}_dir.h and
