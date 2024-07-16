@@ -36,7 +36,7 @@
   frequency(2) = 21600.,
 
 #- With DIVA missing diagnostics-pickup, will loose some time-step
-#  in averaged output if Freq does not divide nchklev_1*nchklev_2*deltaT
+#  in averaged output if frequency does not divide nchklev_1*nchklev_2*deltaT
   fields(1:5,3)  = 'ADJuvel ','ADJvvel ','ADJwvel ',
                    'ADJtheta','ADJsalt ',
    fileName(3) = 'adjDiag',
