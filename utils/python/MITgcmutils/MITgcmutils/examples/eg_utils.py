@@ -117,8 +117,8 @@ def eg_hfac():
     # Example
 
     print('Example: Output vertical grid mask for the C grid')
-    print('mit.hfac(depth,rF,0.3,50,"C")')
+    print('mit.hfac(bathy,rF,0.3,50,"C")')
 
-    [hFacC]=mit.hfac(depth,rF,0.3,50,'C')
+    [hFacC]=mit.hfac(bathy,rF,0.3,50,'C')
 
 
