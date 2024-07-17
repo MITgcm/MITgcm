@@ -100,7 +100,7 @@ def linear(salt,theta,
 
     Notes
     -----
-    AUTHOR:     Martin Losch 2002-08-09  (mlosch@mit.edu)
+    AUTHOR:     Martin Losch 2002-08-09  (Martin.Losch@awi.de)
     """
 
     # make sure arguments are floating point
@@ -147,7 +147,7 @@ def poly3(poly3,salt,theta):
 
     Notes
     -----
-    AUTHOR:     Martin Losch 2002-08-09  (mlosch@mit.edu)
+    AUTHOR:     Martin Losch 2002-08-09  (Martin.Losch@awi.de)
     """
     # make sure arguments are floating point
     s = np.asfarray(salt)
@@ -415,7 +415,7 @@ def unesco(salt,theta,p):
 
     Notes
     -----
-    AUTHOR:     Martin Losch 2002-08-09  (mlosch@mit.edu)
+    AUTHOR:     Martin Losch 2002-08-09  (Martin.Losch@awi.de)
 
     """
 
@@ -664,7 +664,7 @@ def teos10(salt,theta,p,epsln=0):
     """
     Computes in-situ density of sea water
 
-    Density of Sea Water using TEOS 48-polynomial.
+    Density of Sea Water using TEOS-10.
 
     Parameters
     ----------
