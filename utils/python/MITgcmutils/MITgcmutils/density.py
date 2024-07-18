@@ -100,7 +100,8 @@ def linear(salt,theta,
 
     Notes
     -----
-    AUTHOR:     Martin Losch 2002-08-09  (Martin.Losch@awi.de)
+    - Source code written by Martin Losch 2002-08-09
+    - Converted to python by Gavilan on 2024-07-18
     """
 
     # make sure arguments are floating point
@@ -147,7 +148,8 @@ def poly3(poly3,salt,theta):
 
     Notes
     -----
-    AUTHOR:     Martin Losch 2002-08-09  (Martin.Losch@awi.de)
+    - Source code written by Martin Losch 2002-08-09
+    - Converted to python by Gavilan on 2024-07-18
     """
     # make sure arguments are floating point
     s = np.asfarray(salt)
@@ -241,7 +243,9 @@ def jmd95(salt,theta,p):
     Notes
     -----
 
-    Jackett and McDougall, 1995, JAOT 12(4), pp. 381-388
+    - Jackett and McDougall, 1995, JAOT 12(4), pp. 381-388
+    - Source code written by Martin Losch 2002-08-09
+    - Converted to python by jahn on 2010-04-29
     """
 
     # make sure arguments are floating point
@@ -415,8 +419,8 @@ def unesco(salt,theta,p):
 
     Notes
     -----
-    AUTHOR:     Martin Losch 2002-08-09  (Martin.Losch@awi.de)
-
+    - Source code written by Martin Losch 2002-08-09
+    - Converted to python by Gavilan on 2024-07-18
     """
 
     # make sure arguments are floating point
@@ -588,8 +592,11 @@ def mdjwf(salt,theta,p,epsln=0):
     -------
     >>> dens.mdjwf(35.5, 3., 3000.)
     1041.83305
-
-    McDougall et al., 2003, JAOT 20(5), pp. 730-741
+    
+    Notes
+    -----
+    - McDougall et al., 2003, JAOT 20(5), pp. 730-741
+    - Converted to python by Gavilan on 2024-07-18
     """
 
     # make sure arguments are floating point
@@ -687,7 +694,9 @@ def teos10(salt,theta,p,epsln=0):
     >>> dens.teos10(35.5, 3., 3000.)
     1041.70578
 
-
+    Notes
+    -----
+    - Converted to python by Gavilan on 2024-07-18
     """
 
     # make sure arguments are floating point
