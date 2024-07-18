@@ -397,6 +397,10 @@ CADJ STORE vicec = comlev1_dynsol, kind=isbyte, key = nlkey
      I     uIceC, vIceC, NcoastX, NcoastY, AREA,
      O     SideDragX, SideDragY,
      I     ipass, myTime, myIter, myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE SideDragX = comlev1_dynsol, kind=isbyte, key = nlkey
+CADJ STORE SideDragY = comlev1_dynsol, kind=isbyte, key = nlkey
+#endif /* ALLOW_AUTODIFF_TAMC */
 #endif /* SEAICE_ALLOW_SIDEDRAG */
 C
 C     some abbreviations

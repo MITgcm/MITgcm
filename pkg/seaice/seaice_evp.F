@@ -323,7 +323,9 @@ C
      I       iEVPstep, myTime, myIter, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE e11 = comlev1_evp,key = evpkey, byte = isbyte
 CADJ STORE e22 = comlev1_evp,key = evpkey, byte = isbyte
+CADJ STORE e12 = comlev1_evp,key = evpkey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
         DO bj=myByLo(myThid),myByHi(myThid)
@@ -759,6 +761,10 @@ C
 CADJ STORE DWATN = comlev1_evp, key = evpkey, byte=isbyte
 # ifdef SEAICE_ALLOW_BOTTOMDRAG
 CADJ STORE CbotC = comlev1_evp, key = evpkey, byte=isbyte
+# endif
+# ifdef SEAICE_ALLOW_SIDEDRAG
+CADJ STORE SideDragX = comlev1_evp, key = evpkey, byte=isbyte
+CADJ STORE SideDragY = comlev1_evp, key = evpkey, byte=isbyte
 # endif
 #endif
         DO bj=myByLo(myThid),myByHi(myThid)

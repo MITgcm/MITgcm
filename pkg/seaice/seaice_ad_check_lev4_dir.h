@@ -15,6 +15,10 @@ CADJ STORE VICE              = tapelev4, key = ilev_4
 CADJ STORE TICES             = tapelev4, key = ilev_4
 # ifdef SEAICE_CGRID
 CADJ STORE dwatn             = tapelev4, key = ilev_4
+# ifdef SEAICE_ALLOW_SIDEDRAG
+CADJ STORE SideDragX         = tapelev4, key = ilev_4
+CADJ STORE SideDragY         = tapelev4, key = ilev_4
+# endif
 CADJ STORE stressDivergenceX = tapelev4, key = ilev_4
 CADJ STORE stressDivergenceY = tapelev4, key = ilev_4
 #  ifdef SEAICE_ALLOW_EVP
