@@ -78,6 +78,8 @@ C       |-- STREAMICE_READPARMS
 C       |
 C       |-- SHELFICE_READPARMS
 C       |
+C       |-- STIC_READPARMS
+C       |
 C       |-- ICEFRONT_READPARMS
 C       |
 C       |-- SEAICE_READPARMS
@@ -275,6 +277,11 @@ C--   if useStreamIce=T, set STREAMICE parameters; otherwise just return
 #ifdef ALLOW_SHELFICE
 C--   if useShelfIce=T, set SHELFICE parameters; otherwise just return
       CALL SHELFICE_READPARMS( myThid )
+#endif
+
+#ifdef ALLOW_STEEP_ICECAVITY
+C--   if useSTIC=T, set STEEP_ICECAVITY parameters; otherwise just return
+      CALL STIC_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_ICEFRONT
