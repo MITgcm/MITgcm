@@ -115,6 +115,10 @@ C
 # ifdef SEAICE_ALLOW_BOTTOMDRAG
           CbotC(i,j,bi,bj)   = 0. _d 0
 # endif /* SEAICE_ALLOW_BOTTOMDRAG */
+# ifdef SEAICE_ALLOW_SIDEDRAG
+          SideDragx(i,j,bi,bj) = 0. _d 0
+          SideDragy(i,j,bi,bj) = 0. _d 0
+# endif /* SEAICE_ALLOW_SIDEDRAG */
 #endif /* SEAICE_CGRID */
 #ifdef SEAICE_BGRID_DYNAMICS
           uIceB(i,j,bi,bj)   = 0. _d 0
