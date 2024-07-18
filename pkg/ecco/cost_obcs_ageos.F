@@ -186,28 +186,35 @@ c--   Loop over records.
       do irec = 1,nmonsrec
 
 c--     Read time averages and the monthly mean data.
+#ifdef ALLOW_AUTODIFF
         call active_read_xyz( fnametheta, tbar, irec,
      &                        doglobalread, ladinit,
      &                        optimcycle, mythid,
      &                        xx_tbar_mean_dummy )
 
-c--     Read time averages and the monthly mean data.
         call active_read_xyz( fnamesalt, sbar, irec,
      &                        doglobalread, ladinit,
      &                        optimcycle, mythid,
      &                        xx_sbar_mean_dummy )
 
-c--     Read time averages and the monthly mean data.
         call active_read_xyz( fnameuvel, ubar, irec,
      &                        doglobalread, ladinit,
      &                        optimcycle, mythid,
      &                        xx_ubar_mean_dummy )
 
-c--     Read time averages and the monthly mean data.
         call active_read_xyz( fnamevvel, vbar, irec,
      &                        doglobalread, ladinit,
      &                        optimcycle, mythid,
      &                        xx_vbar_mean_dummy )
+#else
+        call read_rec_xyz_rl( fnametheta, tbar, irec, 1, myThid )
+
+        call read_rec_xyz_rl( fnamesalt, sbar, irec, 1, myThid )
+
+        call read_rec_xyz_rl( fnameuvel, ubar, irec, 1, myThid )
+
+        call read_rec_xyz_rl( fnamevvel, vbar, irec, 1, myThid )
+#endif
 
 cgg     Minor problem : grad T,S needs overlap values.
         _BARRIER
@@ -460,7 +467,7 @@ cgg   Compute centered difference horizontal gradient on bdy.
                 if ( i.eq.OB_indexNone ) i = 1
 cgg             Negative sign due to geostrophy.
                 yzgrdrho(j,k,bi,bj) =
-     &            (rholoc(i+ip1,,j+1,bi,bj)-rholoc(i+ip1,j-1,bi,bj))
+     &            (rholoc(i+ip1,j+1,bi,bj)-rholoc(i+ip1,j-1,bi,bj))
      &            /(2.*dyc(i+ip1,j,bi,bj))
               enddo
             enddo

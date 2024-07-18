@@ -88,15 +88,13 @@ C     GGL90 needs implicit vertical diffusion and viscosity
 
 C     Limitation of Langmuir Parameterization implementation:
       IF ( useLANGMUIR .AND. useAbsVorticity ) THEN
-c        WRITE(msgBuf,'(2A)') '** WARNING ** GGL90_CHECK: ',
          WRITE(msgBuf,'(2A)') 'GGL90_CHECK: ',
      &      'with useAbsVorticity, missing Coriolis'
          CALL PRINT_ERROR( msgBuf, myThid )
-c        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-c    &                       SQUEEZE_RIGHT, myThid )
          WRITE(msgBuf,'(2A)') 'GGL90_CHECK: ',
      &      ' contrib from Langmuir Parameterization'
          CALL PRINT_ERROR( msgBuf, myThid )
+         errCount = errCount + 1
       ENDIF
       IF ( useLANGMUIR .AND. useCDscheme ) THEN
          WRITE(msgBuf,'(2A)') 'GGL90_CHECK: ',
@@ -105,6 +103,7 @@ c    &                       SQUEEZE_RIGHT, myThid )
          WRITE(msgBuf,'(2A)') 'GGL90_CHECK: ',
      &      ' contrib from Langmuir Parameterization'
          CALL PRINT_ERROR( msgBuf, myThid )
+         errCount = errCount + 1
       ENDIF
 
 C     Compatibility with the use of other pkgs:

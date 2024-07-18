@@ -53,24 +53,16 @@ C     msgBuf      - Informational/error message buffer
       LOGICAL exst
       CHARACTER*(128) tempfile
       INTEGER icount_transp
+      INTEGER k
 #endif
-      INTEGER bi, bj, i, j, k
       INTEGER nRetired
 
-      DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO k = 1,Nr
-            DO j = 1-OLy,sNy+OLy
-              DO i = 1-OLx,sNx+OLx
-                eccoVol_0(i,j,k,bi,bj)=
-     &          hFacC(i,j,k,bi,bj)*drF(k)*rA(i,j,bi,bj)
-              ENDDO
-            ENDDO
-          ENDDO
-        ENDDO
-      ENDDO
-
       _BEGIN_MASTER(myThid)
+
+      WRITE(msgBuf,'(2A)') 'ECCO_CHECK: ',
+     &                     ' --> Starts to check ECCO set-up'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
 
 c ============ retired compile option checks
       nRetired = 0
@@ -686,10 +678,10 @@ c warn user as we override using_cost_altim
      &                      SQUEEZE_RIGHT, myThid )
       ELSE
 c print result to screen
-        WRITE(msgbuf,'(a,i3)')
-     &  'etagcm defined by gencost ',igen_etagcm
-        CALL print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , myThid)
+        WRITE(msgBuf,'(A,I3)')
+     &  'etagcm defined by gencost =',igen_etagcm
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
       ENDIF
 
 C If more than one within the data set [tp,ers,gfo] are present, they must have
@@ -746,6 +738,18 @@ C ============ other pkg/ecco related checks
          STOP 'ABNORMAL END: S/R ECCO_CHECK'
       ENDIF
 #endif
+
+C--   Summarize the ECCO cost function setup.
+      CALL ECCO_SUMMARY( myThid )
+
+      WRITE(msgBuf,'(2A)') 'ECCO_CHECK: ',
+     &                     ' <-- Ends Normally'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)') ' '
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+
       _END_MASTER(myThid)
 
       RETURN

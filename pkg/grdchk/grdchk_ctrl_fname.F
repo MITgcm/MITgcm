@@ -9,11 +9,13 @@ C !ROUTINE: GRDCHK_CTRL_FNAME
 
 C !INTERFACE:
       SUBROUTINE GRDCHK_CTRL_FNAME(
-     O                              fName,
-     I                              grdchk_index, myThid )
+     U                              fName,
+     U                              grdchk_index,
+     I                              myThid )
 
 C     !DESCRIPTION:
-C     Return the Control file-name corresponding to grdchk-index
+C     associate control file-name with the grdchk_index,
+C     depending on which one is set
 
 C     !USES:
       IMPLICIT NONE
@@ -35,69 +37,62 @@ C     myThid       :: my Thread Id number
       INTEGER grdchk_index
       INTEGER myThid
 
-#ifdef ALLOW_GRDCHK
 C     !FUNCTIONS:
-c     INTEGER  ILNBLNK
-c     EXTERNAL ILNBLNK
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
 C     msgBuf     :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER iarr
+      INTEGER il, jl, ivar
 CEOP
 
-      IF ( grdchk_index.LE.0 .OR. grdchk_index.GT.maxcvars ) THEN
+      IF ( grdchk_index .EQ. UNSET_I ) THEN
+C--   If not set, determine grdchk_index from fName (= grdchkvarname)
+       IF ( fName .NE. ' ' ) THEN
+        jl = ILNBLNK(fName)
+        DO ivar = 1, maxcvars
+         IF ( grdchk_index .EQ. UNSET_I ) THEN
+          il = ILNBLNK(ncvarfname(ivar))
+          IF ( il.EQ.jl .AND. ncvarfname(ivar)(1:il).EQ.fName(1:il) )
+     &      grdchk_index = ivar
+         ENDIF
+        ENDDO
+       ENDIF
+
+       IF ( grdchk_index .EQ. UNSET_I ) THEN
+        WRITE(msgBuf,'(3A)') 'S/R GRDCHK_CTRL_FNAME: ',
+     &       'grdchkvarindex is not set and could not be determined ',
+     &       'from grdchkvarname'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R GRDCHK_CTRL_FNAME'
+       ENDIF
+
+      ELSEIF ( grdchk_index.LE.0 .OR. grdchk_index.GT.maxcvars ) THEN
+C--   check for valid index value
+
         WRITE(msgBuf,'(2A,I8)') 'GRDCHK_CTRL_FNAME: ',
      &        'Invalid grdchk_index=', grdchk_index
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R GRDCHK_CTRL_FNAME'
 
-#ifdef ALLOW_OBCSN_CONTROL
-      ELSEIF ( grdchk_index .EQ. 11 ) THEN
-        fName = xx_obcsn_file
-#endif /* ALLOW_OBCSN_CONTROL */
-
-#ifdef ALLOW_OBCSS_CONTROL
-      ELSEIF ( grdchk_index .EQ. 12 ) THEN
-        fName = xx_obcss_file
-#endif /* ALLOW_OBCSS_CONTROL */
-
-#ifdef ALLOW_OBCSW_CONTROL
-      ELSEIF ( grdchk_index .EQ. 13 ) THEN
-        fName = xx_obcsw_file
-#endif /* ALLOW_OBCSW_CONTROL */
-
-#ifdef ALLOW_OBCSE_CONTROL
-      ELSEIF ( grdchk_index .EQ. 14 ) THEN
-        fName = xx_obcse_file
-#endif /* ALLOW_OBCSE_CONTROL */
-
-#ifdef ALLOW_GENARR2D_CONTROL
-      ELSEIF ( grdchk_index .GE. 101 .AND.
-     &         grdchk_index .LE. 100+maxCtrlArr2D ) THEN
-        iarr = grdchk_index - 100
-        fName = xx_genarr2d_file(iarr)
-#endif /* ALLOW_GENARR2D_CONTROL */
-
-#ifdef ALLOW_GENARR3D_CONTROL
-      ELSEIF ( grdchk_index .GE. 201 .AND.
-     &         grdchk_index .LE. 200+maxCtrlArr3D ) THEN
-        iarr = grdchk_index - 200
-        fName = xx_genarr3d_file(iarr)
-#endif /* ALLOW_GENARR3D_CONTROL */
-
-#ifdef ALLOW_GENTIM2D_CONTROL
-      ELSEIF ( grdchk_index .GE. 301 .AND.
-     &         grdchk_index .LE. 300+maxCtrlTim2D ) THEN
-        iarr = grdchk_index - 300
-        fName = xx_gentim2d_file(iarr)
-#endif /* ALLOW_GENTIM2D_CONTROL */
+      ELSEIF ( fName .NE. ' ' ) THEN
+C--   IF both grdchk_index and fName are set, check for consistency
+       jl = ILNBLNK(fName)
+       il = ILNBLNK(ncvarfname(grdchk_index))
+       IF ( il.NE.jl .OR.
+     &      fName(1:il) .NE. ncvarfname(grdchk_index)(1:il) ) THEN
+        WRITE(msgBuf,'(5A)') 'S/R GRDCHK_CTRL_FNAME: ',
+     &       'fName(grdchkvarindex) = ', fName(1:jl),
+     &       ' .NE. ncvarfname = ', ncvarfname(grdchk_index)(1:il)
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R GRDCHK_CTRL_FNAME'
+       ENDIF
 
       ELSE
-        WRITE(fName,'(A)') 'undefined'
+C--   set fName from grdchk_index:
+        fName = ncvarfname( grdchk_index )
       ENDIF
-
-#endif /* ALLOW_GRDCHK */
 
       RETURN
       END

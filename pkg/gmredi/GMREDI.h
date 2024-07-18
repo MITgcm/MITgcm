@@ -1,6 +1,15 @@
 #ifdef ALLOW_GMREDI
+CBOP
+C     !ROUTINE: GMREDI.h
+C     !INTERFACE:
+C     #include "GMREDI.h"
 
-C---  GM/Redi package parameters
+C     !DESCRIPTION:
+C     *================================================================*
+C     | GMREDI.h
+C     | o Header file defining GM/Redi parameters and variables
+C     *================================================================*
+CEOP
 
 C--   Numerical Constant
       _RL op5
@@ -27,6 +36,9 @@ C     GM_Bates_use_constK:: Imposes a constant K for the eddy transport
 C     GM_Bates_smooth    :: Expand PV closure in terms of baroclinic modes
 C                           (=.FALSE. for debugging only!)
 C     GM_useLeithQG    :: add Leith QG viscosity to GMRedi tensor
+C     GM_useGEOM       :: use the GEOME formulation to calculate kgm
+C     GEOM_vert_struc  :: allow for N2 structure function
+
       LOGICAL GM_AdvForm
       LOGICAL GM_AdvSeparate
       LOGICAL GM_useBVP
@@ -43,6 +55,8 @@ C     GM_useLeithQG    :: add Leith QG viscosity to GMRedi tensor
       LOGICAL GM_Bates_beta_eq_0
       LOGICAL GM_Bates_smooth
       LOGICAL GM_useLeithQG
+      LOGICAL GM_useGEOM
+      LOGICAL GEOM_vert_struc
       COMMON /GM_PARAMS_L/
      &                   GM_AdvForm, GM_AdvSeparate,
      &                   GM_useBVP,  GM_useSubMeso,
@@ -52,7 +66,8 @@ C     GM_useLeithQG    :: add Leith QG viscosity to GMRedi tensor
      &                   GM_Bates_use_constK, GM_Bates_beta_eq_0,
      &                   GM_Bates_ThickSheet, GM_Bates_surfK,
      &                   GM_Bates_constRedi,
-     &                   GM_useLeithQG
+     &                   GM_useLeithQG,
+     &                   GM_useGEOM, GEOM_vert_struc
 
 C--   GM/Redi Integer-type parameters
 C     GM_BVP_modeNumber :: vertical mode number used for speed "c" in BVP transport
@@ -107,6 +122,15 @@ C     subMeso_invTau :: inverse of mixing time-scale in sub-meso parameteriz. [s
 C     subMeso_LfMin  :: minimum value for length-scale "Lf" [m]
 C     subMeso_Lmax   :: maximum horizontal grid-scale length [m]
 C-    Variable K parameters for Visbeck etal (1997) scheme:
+C-    Variable K parameters for Marshall etal (2012) GEOM scheme:
+C     GEOM_alpha       :: non-dim eddy efficiency param (=<1 in QG)
+C     GEOM_lmbda       :: lin eddy energy dissipation rate
+C     GEOM_ini_EKE     :: initial value for depth-int eddy kinetic energy
+C     GEOM_diffKh_EKE  :: depth-int param eddy energy diffusion coeff
+C     GEOM_minval_K    :: lower bound on diffusivity
+C     GEOM_maxval_K    :: upper bound on diffusivity
+C     GEOM_vert_struc_min   :: lower bound on N2/Nref vertical structure func
+C     GEOM_vert_struc_max   :: upper bound on N2/Nref vertical structure func
 C-    Variable K parameters for PV diffusion based, Bates etal (2014) scheme:
 C     GM_Bates_gamma   :: mixing efficiency for 3D eddy diffusivity [-]
 C     GM_Bates_b1      :: an empirically determined constant of O(1)
@@ -149,6 +173,14 @@ C     GM_Bates_maxRenorm :: maximum value for the renormalisation factor
       _RL GM_Visbeck_maxSlope
       _RL GM_Visbeck_minVal_K
       _RL GM_Visbeck_maxVal_K
+      _RL GEOM_alpha
+      _RL GEOM_lmbda
+      _RL GEOM_ini_EKE
+      _RL GEOM_diffKh_EKE
+      _RL GEOM_minval_K
+      _RL GEOM_maxval_K
+      _RL GEOM_vert_struc_min
+      _RL GEOM_vert_struc_max
       _RL GM_Bates_gamma
       _RL GM_Bates_b1
       _RL GM_Bates_EadyMinDepth
@@ -179,6 +211,10 @@ C     GM_Bates_maxRenorm :: maximum value for the renormalisation factor
      &                 GM_Visbeck_depth,
      &                 GM_Visbeck_minDepth, GM_Visbeck_maxSlope,
      &                 GM_Visbeck_minVal_K, GM_Visbeck_maxVal_K,
+     &                 GEOM_alpha, GEOM_lmbda,
+     &                 GEOM_ini_EKE, GEOM_diffKh_EKE,
+     &                 GEOM_minval_K, GEOM_maxval_K,
+     &                 GEOM_vert_struc_min, GEOM_vert_struc_max,
      &                 GM_Bates_gamma, GM_Bates_b1,
      &                 GM_Bates_EadyMinDepth, GM_Bates_EadyMaxDepth,
      &                 GM_Bates_Lambda, GM_Bates_smallK, GM_Bates_maxK,
@@ -294,6 +330,31 @@ C     gradf       :: gradient of Coriolis paramater at a cell centre, 1/(m*s)
      &                 Rdef, gradf
 #endif
 
+#ifdef GM_GEOM_VARIABLE_K
+C     GEOM_K3d      :: mixing/stirring coefficient (spatially variable in
+C                      horizontal for Marshall et al. (2012) parameterization);
+C                      defined at cell interfaces (W-points)
+C     GEOM_EKE      :: parameterised total eddy energy in GEOMETRIC;
+C                      used to update GEOM_K3d; 2D field
+C     GEOM_gEKE_Nm1 :: 2D eddy energy tendency for AB time-stepping
+C     GEOM_startAB  :: controls time-stepping routine of parameterised
+C                      eddy energy in gmredi_calc_geom.F (=0/1)
+C     GEOM_taper    :: reduce GEOM_K3d based on some conditions (currently
+C                      depth); 2D field
+
+      _RL GEOM_K3d     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL GEOM_EKE     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL GEOM_gEKE_Nm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL GEOM_taper   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER GEOM_startAB
+
+      COMMON /GM_GEOM/ GEOM_K3d,
+     &                 GEOM_EKE,
+     &                 GEOM_gEKE_Nm1,
+     &                 GEOM_taper
+      COMMON /GM_GEOM_I/ GEOM_startAB
+#endif /* GM_GEOM_VARIABLE_K */
+
 #ifdef ALLOW_GM_LEITH_QG
 C     GM_LeithQG_K :: Horizontal LeithQG viscosity, to add to GM coefficient
       _RL GM_LeithQG_K(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -301,7 +362,3 @@ C     GM_LeithQG_K :: Horizontal LeithQG viscosity, to add to GM coefficient
 #endif /* ALLOW_GM_LEITH_QG */
 
 #endif /* ALLOW_GMREDI */
-
-CEH3 ;;; Local Variables: ***
-CEH3 ;;; mode:fortran ***
-CEH3 ;;; End: ***

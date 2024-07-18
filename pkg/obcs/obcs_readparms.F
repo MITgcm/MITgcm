@@ -35,13 +35,14 @@ C     === Global variables ===
 #endif /* ALLOW_EXCH2 */
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     === Routine arguments ===
       INTEGER myThid
 
 #ifdef ALLOW_OBCS
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
-C     === Local variables ===
 C     msgBuf       :: Informational/error message buffer
 C     iUnit        :: Work variable for IO unit number
 C  OB_indexUnset   :: OB index value for places where no OB is defined
@@ -127,51 +128,60 @@ C     OBEW_Ny :: height of global domain for OB_Ieast, OB_Iwest
       INTEGER OBEW_Nx, OBEW_Ny
 CEOP
 
-C     retired parameters
+C     Retired parameters:
       INTEGER nRetired
       LOGICAL useOBCSYearlyFields
+      _RL tidalPeriod(OBCS_tideCompSize)
+      CHARACTER*(MAX_LEN_FNAM)
+     &      OBNamFile, OBSamFile, OBEamFile, OBWamFile,
+     &      OBNphFile, OBSphFile, OBEphFile, OBWphFile
 
       NAMELIST /OBCS_PARM01/
      &          insideOBmaskFile,
      &          OBNconnectFile, OBSconnectFile,
      &          OBEconnectFile, OBWconnectFile,
-     &          OB_Jnorth,OB_Jsouth,OB_Ieast,OB_Iwest,
+     &          OB_Jnorth, OB_Jsouth, OB_Ieast, OB_Iwest,
      &          OB_singleJnorth, OB_singleJsouth,
-     &          OB_singleIeast, OB_singleIwest,
-     &          useOrlanskiNorth,useOrlanskiSouth,
-     &          useOrlanskiEast,useOrlanskiWest,
-     &          useStevensNorth,useStevensSouth,
-     &          useStevensEast,useStevensWest,
+     &          OB_singleIeast,  OB_singleIwest,
+     &          useOrlanskiNorth, useOrlanskiSouth,
+     &          useOrlanskiEast,  useOrlanskiWest,
+     &          useStevensNorth, useStevensSouth,
+     &          useStevensEast,  useStevensWest,
+     &          useOBCSprescribe, useOBCStides, OBCS_tidalPeriod,
      &          OBCS_u1_adv_T, OBCS_u1_adv_S,
-     &          OBNuFile,OBNvFile,OBNtFile,OBNsFile,OBNaFile,OBNhFile,
-     &          OBSuFile,OBSvFile,OBStFile,OBSsFile,OBSaFile,OBShFile,
-     &          OBEuFile,OBEvFile,OBEtFile,OBEsFile,OBEaFile,OBEhFile,
-     &          OBWuFile,OBWvFile,OBWtFile,OBWsFile,OBWaFile,OBWhFile,
-     &          OBNslFile,OBSslFile,OBEslFile,OBWslFile,
-     &          OBNsnFile,OBSsnFile,OBEsnFile,OBWsnFile,
-     &          OBNuiceFile,OBSuiceFile,OBEuiceFile,OBWuiceFile,
-     &          OBNviceFile,OBSviceFile,OBEviceFile,OBWviceFile,
-     &          OBNetaFile, OBSetaFile, OBEetaFile, OBWetaFile,
-     &          OBNwFile, OBSwFile, OBEwFile, OBWwFile,
-     &          OBNAmFile, OBSAmFile, OBEAmFile, OBWAmFile,
-     &          OBNPhFile, OBSPhFile, OBEPhFile, OBWPhFile,
+     &          OBNuFile, OBNvFile, OBNtFile, OBNsFile, OBNetaFile,
+     &          OBSuFile, OBSvFile, OBStFile, OBSsFile, OBSetaFile,
+     &          OBEuFile, OBEvFile, OBEtFile, OBEsFile, OBEetaFile,
+     &          OBWuFile, OBWvFile, OBWtFile, OBWsFile, OBWetaFile,
+     &          OBNwFile,  OBSwFile,  OBEwFile,  OBWwFile,
+     &  OBN_uTidAmFile, OBS_uTidAmFile, OBE_uTidAmFile, OBW_uTidAmFile,
+     &  OBN_vTidAmFile, OBS_vTidAmFile, OBE_vTidAmFile, OBW_vTidAmFile,
+     &  OBN_uTidPhFile, OBS_uTidPhFile, OBE_uTidPhFile, OBW_uTidPhFile,
+     &  OBN_vTidPhFile, OBS_vTidPhFile, OBE_vTidPhFile, OBW_vTidPhFile,
+     &          OBNaFile,  OBSaFile,  OBEaFile,  OBWaFile,
+     &          OBNhFile,  OBShFile,  OBEhFile,  OBWhFile,
+     &          OBNslFile, OBSslFile, OBEslFile, OBWslFile,
+     &          OBNsnFile, OBSsnFile, OBEsnFile, OBWsnFile,
+     &          OBNuiceFile, OBSuiceFile, OBEuiceFile, OBWuiceFile,
+     &          OBNviceFile, OBSviceFile, OBEviceFile, OBWviceFile,
 #ifdef ALLOW_PTRACERS
      &          OBCS_u1_adv_Tr,
-     &          OBNptrFile,OBSptrFile,OBEptrFile,OBWptrFile,
+     &          OBNptrFile, OBSptrFile, OBEptrFile, OBWptrFile,
 #endif
-     &          useOBCSsponge, useSeaiceSponge,
+     &          useOBCSsponge, useSeaiceSponge, useSeaiceNeumann,
      &          OBCSsponge_N , OBCSsponge_S,
      &          OBCSsponge_E, OBCSsponge_W,
      &          OBCSsponge_UatNS, OBCSsponge_UatEW,
      &          OBCSsponge_VatNS, OBCSsponge_VatEW,
      &          OBCSsponge_Theta, OBCSsponge_Salt, useLinearSponge,
      &          useOBCSbalance, OBCSbalanceSurf,
-     &          useOBCStides, useOBCSprescribe,
      &          OBCS_balanceFacN, OBCS_balanceFacS,
      &          OBCS_balanceFacE, OBCS_balanceFacW,
-     &          useOBCSYearlyFields, OBCSfixTopo,
-     &          OBCS_uvApplyFac,
+     &          OBCSfixTopo, OBCS_uvApplyFac,
      &          OBCS_monitorFreq, OBCS_monSelect, OBCSprintDiags,
+     &          useOBCSYearlyFields,
+     &          OBNAmFile, OBSAmFile, OBEAmFile, OBWAmFile,
+     &          OBNPhFile, OBSPhFile, OBEPhFile, OBWPhFile,
      &          tidalPeriod
 
 #ifdef ALLOW_ORLANSKI
@@ -254,8 +264,11 @@ C--   Default flags and values for OBCS
       useStevensWest     =.FALSE.
       useStevensPhaseVel =.TRUE.
       useStevensAdvection=.TRUE.
+      useOBCSprescribe   =.FALSE.
+      useOBCStides       =.FALSE.
       useOBCSsponge      =.FALSE.
       useSeaiceSponge    =.FALSE.
+      useSeaiceNeumann   =.FALSE.
       OBCSsponge_N       =.TRUE.
       OBCSsponge_S       =.TRUE.
       OBCSsponge_E       =.TRUE.
@@ -275,7 +288,6 @@ C--   Default flags and values for OBCS
       OBCS_balanceFacW   = 1. _d 0
       OBCS_u1_adv_T      = 0
       OBCS_u1_adv_S      = 0
-      useOBCSprescribe   =.FALSE.
       OBCSfixTopo        =.FALSE.
       OBCS_uvApplyFac    = 1. _d 0
       OBCS_monitorFreq   = monitorFreq
@@ -330,14 +342,22 @@ C--   Default flags and values for OBCS
       OBSwFile = ' '
       OBEwFile = ' '
       OBWwFile = ' '
-      OBNAmFile = ' '
-      OBSAmFile = ' '
-      OBEAmFile = ' '
-      OBWAmFile = ' '
-      OBNPhFile = ' '
-      OBSPhFile = ' '
-      OBEPhFile = ' '
-      OBWPhFile = ' '
+      OBN_uTidAmFile = ' '
+      OBN_uTidPhFile = ' '
+      OBN_vTidAmFile = ' '
+      OBN_vTidPhFile = ' '
+      OBS_uTidAmFile = ' '
+      OBS_uTidPhFile = ' '
+      OBS_vTidAmFile = ' '
+      OBS_vTidPhFile = ' '
+      OBE_uTidAmFile = ' '
+      OBE_uTidPhFile = ' '
+      OBE_vTidAmFile = ' '
+      OBE_vTidPhFile = ' '
+      OBW_uTidAmFile = ' '
+      OBW_uTidPhFile = ' '
+      OBW_vTidAmFile = ' '
+      OBW_vTidPhFile = ' '
 #ifdef ALLOW_PTRACERS
       DO iTracer = 1, PTRACERS_num
        OBCS_u1_adv_Tr(iTracer) = 0
@@ -347,14 +367,26 @@ C--   Default flags and values for OBCS
        OBWptrFile(iTracer) = ' '
       ENDDO
 #endif
-#ifdef ALLOW_OBCS_TIDES
-      DO i = 1, tidalComponents
-       tidalPeriod(i) = 0. _d 0
+c#ifdef ALLOW_OBCS_TIDES
+      OBCS_nTidalComp = 0
+      DO i = 1, OBCS_tideCompSize
+       OBCS_tidalPeriod(i) = 0. _d 0
       ENDDO
-#endif
+c#endif
 C-    retired parameters
       nRetired = 0
       useOBCSYearlyFields = .FALSE.
+      OBNamFile = 'retired-and-unset'
+      OBSamFile = 'retired-and-unset'
+      OBEamFile = 'retired-and-unset'
+      OBWamFile = 'retired-and-unset'
+      OBNphFile = 'retired-and-unset'
+      OBSphFile = 'retired-and-unset'
+      OBEphFile = 'retired-and-unset'
+      OBWphFile = 'retired-and-unset'
+      DO i = 1, OBCS_tideCompSize
+       tidalPeriod(i) = -1. _d 0
+      ENDDO
 
 C     Open and read the data.obcs file
       WRITE(msgBuf,'(A)') ' OBCS_READPARMS: opening data.obcs'
@@ -371,12 +403,104 @@ C--   Read parameters from open data file
 C-    retired parameter
       IF ( useOBCSYearlyFields ) THEN
        nRetired = nRetired + 1
-       WRITE(msgBuf,'(A,A)')
-     &  'OBCS_READPARMS: "useOBCSYearlyFields"',
-     &  ' no longer allowed in file "data.obcs"'
+       WRITE(msgBuf,'(A,A)') 'OBCS_READPARMS: ',
+     &  '"useOBCSYearlyFields" no longer allowed in file "data.obcs"'
        CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A,A)') 'OBCS_READPARMS: ',
      &  ' was moved to "data.exf", namelist: "EXF_NML_OBCS"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      errCount = 0
+      DO i = 1, OBCS_tideCompSize
+       IF ( tidalPeriod(i) .NE. -1. _d 0 ) errCount = errCount + 1
+      ENDDO
+      IF ( errCount.NE.0 ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)') 'OBCS_READPARMS: ',
+     &  '"tidalPeriod" no longer allowed in file "data.obcs"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A,A)') 'OBCS_READPARMS: ',
+     &  ' was replaced by "OBCS_tidalPeriod" in same namelist'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      i = ILNBLNK(OBNamFile)
+      IF ( i.NE.17 .OR. OBNamFile(1:17).NE.'retired-and-unset' ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)') 'OBCS_READPARMS: ',
+     &  '"OBNamFile" no longer allowed in file "data.obcs"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A,A)') 'OBCS_READPARMS: ',
+     &  ' was replaced by "OBN_vTidAmFile" in same namelist'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      i = ILNBLNK(OBSamFile)
+      IF ( i.NE.17 .OR. OBSamFile(1:17).NE.'retired-and-unset' ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)') 'OBCS_READPARMS: ',
+     &  '"OBSamFile" no longer allowed in file "data.obcs"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A,A)') 'OBCS_READPARMS: ',
+     &  ' was replaced by "OBS_vTidAmFile" in same namelist'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      i = ILNBLNK(OBEamFile)
+      IF ( i.NE.17 .OR. OBEamFile(1:17).NE.'retired-and-unset' ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)') 'OBCS_READPARMS: ',
+     &  '"OBEamFile" no longer allowed in file "data.obcs"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A,A)') 'OBCS_READPARMS: ',
+     &  ' was replaced by "OBE_uTidAmFile" in same namelist'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      i = ILNBLNK(OBWamFile)
+      IF ( i.NE.17 .OR. OBWamFile(1:17).NE.'retired-and-unset' ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)') 'OBCS_READPARMS: ',
+     &  '"OBWamFile" no longer allowed in file "data.obcs"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A,A)') 'OBCS_READPARMS: ',
+     &  ' was replaced by "OBW_uTidAmFile" in same namelist'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      i = ILNBLNK(OBNphFile)
+      IF ( i.NE.17 .OR. OBNphFile(1:17).NE.'retired-and-unset' ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)') 'OBCS_READPARMS: ',
+     &  '"OBNphFile" no longer allowed in file "data.obcs"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A,A)') 'OBCS_READPARMS: ',
+     &  ' was replaced by "OBN_vTidPhFile" in same namelist'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      i = ILNBLNK(OBSphFile)
+      IF ( i.NE.17 .OR. OBSphFile(1:17).NE.'retired-and-unset' ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)') 'OBCS_READPARMS: ',
+     &  '"OBSphFile" no longer allowed in file "data.obcs"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A,A)') 'OBCS_READPARMS: ',
+     &  ' was replaced by "OBS_vTidPhFile" in same namelist'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      i = ILNBLNK(OBEphFile)
+      IF ( i.NE.17 .OR. OBEphFile(1:17).NE.'retired-and-unset' ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)') 'OBCS_READPARMS: ',
+     &  '"OBEphFile" no longer allowed in file "data.obcs"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A,A)') 'OBCS_READPARMS: ',
+     &  ' was replaced by "OBE_uTidPhFile" in same namelist'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      i = ILNBLNK(OBWphFile)
+      IF ( i.NE.17 .OR. OBWphFile(1:17).NE.'retired-and-unset' ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)') 'OBCS_READPARMS: ',
+     &  '"OBWphFile" no longer allowed in file "data.obcs"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A,A)') 'OBCS_READPARMS: ',
+     &  ' was replaced by "OBW_uTidPhFile" in same namelist'
        CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
 
@@ -449,11 +573,32 @@ C-    retired parameter
        WRITE(msgBuf,'(A)')
      &  'OBCS_READPARMS: reading parameter file "data.obcs"'
        CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)')
-     &  'some out of date parameters were found in namelist'
+       WRITE(msgBuf,'(I4,A)') nRetired,
+     &  ' out of date parameters were found in namelist'
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R OBCS_READPARMS'
       ENDIF
+
+#ifdef ALLOW_OBCS_TIDES
+      IF ( useOBCStides ) THEN
+C--   Set OBCS_nTidalComp (= the number of tidal components to use)
+C     as the last non-zero tidalPeriod:
+       OBCS_nTidalComp = 0
+       DO i = 1, OBCS_tideCompSize
+        IF ( OBCS_tidalPeriod(i).NE.zeroRL ) OBCS_nTidalComp = i
+       ENDDO
+       WRITE(msgBuf,'(2A,I6)') '  Set number of tidal Components ',
+     &   'in use: OBCS_nTidalComp =', OBCS_nTidalComp
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+       IF ( OBCS_nTidalComp .EQ. 0 ) THEN
+        WRITE(msgBuf,'(2A)') 'OBCS_READPARMS: ',
+     &   'useOBCStides=T without any OBCS_tidalPeriod > 0'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R OBCS_READPARMS'
+       ENDIF
+      ENDIF
+#endif /* ALLOW_OBCS_TIDES */
 
 C-    Acount for single/uniform position OB setting:
       errCount = 0
@@ -583,7 +728,7 @@ C     valid interior indices) which is called before OBCS_INIT_FIXED.
 
         DO j=1-OLy,sNy+OLy
          OB_Ie(j,bi,bj) = OB_indexNone
-         OB_Iw(J,bi,bj) = OB_indexNone
+         OB_Iw(j,bi,bj) = OB_indexNone
         ENDDO
 
 #ifdef ALLOW_EXCH2

@@ -38,6 +38,9 @@ C Use old calculation (before 2007/05/24) of Visbeck etal K_GM+Redi
 C (which depends on tapering scheme)
 #undef OLD_VISBECK_CALC
 
+C This allows to use the GEOMETRIC formulation to compute K_GM
+#undef GM_GEOM_VARIABLE_K
+
 C This allows the Bates et al formulation to calculate the
 C bolus transport and K for Redi
 #undef GM_BATES_K3D

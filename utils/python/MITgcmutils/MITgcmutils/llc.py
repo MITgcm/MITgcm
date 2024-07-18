@@ -432,9 +432,9 @@ def pcol(*arguments, **kwargs):
     f0.append(faces(data))
     # fill holes in coordinate arrays
 #    for t in [0,1,3,4]:
-#        inan = f0[2][t]==0 # _sqCoord(f0[2][t])==np.NaN]
-#        f0[0][t][inan]=np.NaN
-#        f0[1][t][inan]=np.NaN
+#        inan = f0[2][t]==0 # _sqCoord(f0[2][t])==np.nan]
+#        f0[0][t][inan]=np.nan
+#        f0[1][t][inan]=np.nan
 
 #    for t in [0,1]:
 #        for i in range(nx):
@@ -452,11 +452,11 @@ def pcol(*arguments, **kwargs):
     fo = []
     fo.append( (f0[0][0][-1,0]+f0[0][2][-1,0]+f0[0][4][-1,0])/3. )
     fo.append( (f0[1][2][-1,0]+f0[1][2][-1,0]+f0[1][4][-1,0])/3. )
-    fo.append( np.NaN )
+    fo.append( np.nan )
     fe = []
     fe.append( (f0[0][1][0,-1]+f0[0][3][0,-1])/2. )
     fe.append( (f0[1][1][0,-1]+f0[1][3][0,-1])/2. )
-    fe.append( np.NaN )
+    fe.append( np.nan )
     f = np.array(f0, dtype=object)
     # fill some gaps at the face boundaries, but only for the coordinate arrays (k=0,1)
     for t in [0,2,4]:
@@ -642,7 +642,7 @@ def div(u, v, dxg=None, dyg=None, rac=None, hfw=None, hfs=None):
     hfw = hfw.reshape(nk,nj,ni)
     hfs = hfs.reshape(nk,nj,ni)
 
-    recip_racf = faces(1./np.where(rac==0.,np.Inf,rac))
+    recip_racf = faces(1./np.where(rac==0.,np.inf,rac))
     divergence = np.zeros(u.shape)
     for t in range(nt):
         for k in range(nk):
@@ -788,8 +788,8 @@ def grad(X, dxc=None, dyc=None, hfw=None, hfs=None):
     dXdx = np.zeros(X.shape)
     dXdy = np.zeros(X.shape)
 
-    rdxc = faces(1./np.where(dxc==0.,np.Inf,dxc))
-    rdyc = faces(1./np.where(dyc==0.,np.Inf,dyc))
+    rdxc = faces(1./np.where(dxc==0.,np.inf,dxc))
+    rdyc = faces(1./np.where(dyc==0.,np.inf,dyc))
     for t in range(nt):
         for k in range(nk):
             xf  = faces(X[t,k,:,:])

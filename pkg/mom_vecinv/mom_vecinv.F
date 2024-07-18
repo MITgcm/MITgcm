@@ -837,14 +837,14 @@ C--   end if momAdvection
       ENDIF
 
 C--   3.D Coriolis term (horizontal momentum, Eastward component: -fprime*w)
-      IF ( use3dCoriolis ) THEN
+      IF ( select3dCoriScheme.GE.1 ) THEN
         CALL MOM_U_CORIOLIS_NH(bi,bj,k,wVel,uCf,myThid)
         DO j=jMin,jMax
          DO i=iMin,iMax
           gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+uCf(i,j)
          ENDDO
         ENDDO
-       IF ( usingCurvilinearGrid ) THEN
+       IF ( usingCurvilinearGrid .OR. rotateGrid ) THEN
 C-     presently, non zero angleSinC array only supported with Curvilinear-Grid
         CALL MOM_V_CORIOLIS_NH(bi,bj,k,wVel,vCf,myThid)
         DO j=jMin,jMax

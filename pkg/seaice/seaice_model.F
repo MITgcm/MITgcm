@@ -92,7 +92,8 @@ C     (or elsewhere, not sure where it would be best)
       ENDIF
 #ifdef ALLOW_THSICE
       IF ( useThSice ) THEN
-C--   Map thSice-variables to HEFF and AREA
+C--   Map thSice-variables to HEFF, HSNOW, and AREA, because they are
+C     needed in S/R SEAICE_DYNSOLVER
        CALL SEAICE_MAP_THSICE( myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_THSICE */
