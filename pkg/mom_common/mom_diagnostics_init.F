@@ -382,44 +382,33 @@ C--   add diagnostics of tendencies from each terms
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
-c -----------------------------------------------------------------------------------------------------
-cHP: adding new diagnostics for full momentum budget analysis
-c
-c new momentum diags are
-c [Um_Diss_laplac,Vm_Diss_laplac],
-c [Um_diss_bihar,Vm_diss_bihar].
-c
-c These new diags are not need for momentum budget closure, but are
-c useful for decomposing (and better understanding) existing momentum diagnostics
-c -----------------------------------------------------------------------------------------------------
-      diagName  = 'Um_Diss2'
+#ifdef ALLOW_MOM_VECINV
+      diagName  = 'Um_hDis2'
       diagTitle = 'U momentum tendency from harmonic visc alone'
       diagCode  = 'UUR     MR      '
       diagMate  = diagNum + 2
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-      diagName  = 'Vm_Diss2'
+      diagName  = 'Vm_hDis2'
       diagTitle = 'V momentum tendency from harmonic visc alone'
       diagCode  = 'VVR     MR      '
       diagMate  = diagNum
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
-      diagName  = 'Um_Diss4'
+      diagName  = 'Um_hDis4'
       diagTitle = 'U momentum tendency from biharmonic visc alone'
       diagCode  = 'UUR     MR      '
       diagMate  = diagNum + 2
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-      diagName  = 'Vm_Diss4'
+      diagName  = 'Vm_hDis4'
       diagTitle = 'V momentum tendency from biharmonic visc alone'
       diagCode  = 'VVR     MR      '
       diagMate  = diagNum
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-c ------------------------ HP: END OF NEW DIAGNOSTICS ----------------------
 
-#ifdef ALLOW_MOM_VECINV
       diagName  = 'Um_AdvZ3'
       diagTitle = 'U momentum tendency from Vorticity Advection'
       diagCode  = 'UUR     MR      '

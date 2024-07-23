@@ -298,12 +298,12 @@ C HP: scaling for new diagnostic separately
       ENDIF
 
 C HP: call to fill harmonic and biharmonic diagnostics
-#ifdef ALLOW_DIAGNOSTICS
+#if ( defined ALLOW_MOM_VECINV && defined ALLOW_DIAGNOSTICS )
       IF (useDiagnostics) THEN
-       CALL DIAGNOSTICS_FILL(uDiss_lap,'Um_Diss2',k,1,2,bi,bj,myThid)
-       CALL DIAGNOSTICS_FILL(vDiss_lap,'Vm_Diss2',k,1,2,bi,bj,myThid)
-       CALL DIAGNOSTICS_FILL(uDiss_bih,'Um_Diss4',k,1,2,bi,bj,myThid)
-       CALL DIAGNOSTICS_FILL(vDiss_bih,'Vm_Diss4',k,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(uDiss_lap,'Um_hDis2',k,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(vDiss_lap,'Vm_hDis2',k,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(uDiss_bih,'Um_hDis4',k,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(vDiss_bih,'Vm_hDis4',k,1,2,bi,bj,myThid)
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
