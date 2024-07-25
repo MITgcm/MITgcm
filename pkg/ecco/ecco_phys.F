@@ -370,6 +370,14 @@ cts ---
      &       + area_reg_sq)
             tmphsnowact = hsnow(I,J,bi,bj) * tmprecip_area
             tmpheffact  = heff(I,J,bi,bj) * tmprecip_area
+C gencost_storefld is the total freeboard, which is the sum of snow 
+C thickness and sea-ice freeboard. Based on Archimedes' principle,
+C the total freeboard is equal to the sum of snow thickness and 
+C sea-ice thickness minus the sea-ice thickness below the water line
+C (see, e.g., Kwok & Markus, 2018, Advances in Space Research,
+C https://doi.org/10.1016/j.asr.2017.09.007; their equation for lidar). 
+C Note that snow thickness and sea-ice thickness are the actual,
+C not effective, thickness.
             gencost_storefld(i,j,bi,bj,kgen) =
      &       ( ( tmphsnowact + tmpheffact ) -
      &         ( tmphsnowact * SEAICE_rhoSnow +
