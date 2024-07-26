@@ -2776,35 +2776,26 @@ fi
 if test -f $TMP.adSrcFiles ; then
     rm -f $TMP.adSrcFiles
 fi
-if test -f $TMP.adF90Files ; then
-    rm -f $TMP.adF90Files
-fi
 echo "  Creating the list of files for the adjoint compiler."
-# first F77
 touch $TMP.adSrcFiles
 for i in $SOURCEDIRS ; do
     list_files=`( cd $i && ls -1 *.list 2>/dev/null )`
     for j in $list_files ; do
-	cat $i/$j >> $TMP.adSrcFiles
+	# sed command removes trailing blanks, important for the
+	# extension substitutions
+	cat $i/$j | sed 's/[[:blank:]]*$//' >> $TMP.adSrcFiles
     done
 done
 if test ! "x"$FS = "x.f" ; then
-    cat $TMP.adSrcFiles | sed -e "s/\.f/.$FS/g" > $TMP.adSrcFiles_f
+    # here we need to anchor the extension .f at the end of line with "$"
+    # so that f90 is not replaced by {$FS}90 (e.g. for90)
+    cat $TMP.adSrcFiles | sed -e "s/\.f$/.$FS/g" > $TMP.adSrcFiles_f
     mv -f $TMP.adSrcFiles_f $TMP.adSrcFiles
 fi
-# now F90
-touch $TMP.adF90Files
-for i in $SOURCEDIRS ; do
-    list_files=`( cd $i && ls -1 *.F90list 2>/dev/null )`
-    for j in $list_files ; do
-        cat $i/$j >> $TMP.adF90Files
-    done
-done
 if test ! "x"$FS90 = "x.f90" ; then
-    cat $TMP.adF90Files | sed -e "s/\.f90/.$FS90/g" > $TMP.adF90Files_f
-    mv -f $TMP.adF90Files_f $TMP.adF90Files
+    cat $TMP.adSrcFiles | sed -e "s/\.f90$/.$FS90/g" > $TMP.adSrcFiles_f90
+    mv -f $TMP.adSrcFiles_f90 $TMP.adSrcFiles
 fi
-
 
 echo
 echo "===  Creating the Makefile  ==="
@@ -2987,6 +2978,8 @@ for d in $alldirs ; do
 		esac
 		if test "x$ignore_f" = xf ; then
 		    extn=`echo $sf | $AWK -F. '{print $NF}'`
+# this is built-in bash and does not rely on $AWK
+#		    extn=${sf##*.}
 		    case $extn in
 		      F)
 			echo    " \\"  >> $TMP.F77srclist
@@ -3058,6 +3051,15 @@ for d in $alldirs ; do
 		    F90)
 			echo    " \\"  >> $TMP.F90srclist
 			printf " $sf" >> $TMP.F90srclist
+
+			if ( test "x$OPENAD" = x && test "x$TAPENADE" = x ) ; then
+			    basename=${sf%%.F90}
+			    isAD=`egrep ^$basename.$FS90'[ 	]*' $TMP.adSrcFiles`
+			    if test -z "$isAD" ; then
+				echo    " \\"  >> $TMP.nonADF90srclist
+				printf " $sf" >> $TMP.nonADF90srclist
+			    fi
+			fi
 			;;
 		    c)
 			echo    " \\"  >> $TMP.csrclist
@@ -3091,6 +3093,7 @@ done
 rm -rf $TMP.links
 echo "" >> $TMP.F77srclist
 echo "" >> $TMP.nonADF77srclist
+echo "" >> $TMP.nonADF90srclist
 echo "" >> $TMP.csrclist
 echo "" >> $TMP.F90srclist
 echo "" >> $TMP.hsrclist
@@ -3223,12 +3226,13 @@ EOF
 
 cat $TMP.F77srclist      >> $MAKEFILE
 cat $TMP.nonADF77srclist >> $MAKEFILE
+cat $TMP.nonADF90srclist >> $MAKEFILE
 cat $TMP.csrclist        >> $MAKEFILE
 cat $TMP.F90srclist      >> $MAKEFILE
 cat $TMP.hsrclist        >> $MAKEFILE
 cat $TMP.ad_flow_files   >> $MAKEFILE
 
-rm -f $TMP.F77srclist $TMP.nonADF77srclist $TMP.csrclist $TMP.F90srclist $TMP.hsrclist $TMP.ad_flow_files
+rm -f $TMP.F77srclist $TMP.nonADF77srclist $TMP.nonADF90srclist $TMP.csrclist $TMP.F90srclist $TMP.hsrclist $TMP.ad_flow_files
 
 echo >> $MAKEFILE
 
@@ -3434,19 +3438,21 @@ echo >> $MAKEFILE
 printf "AD_FILES = " >> $MAKEFILE
 AD_FILES=`cat $TMP.adSrcFiles`
 for i in $AD_FILES ; do
-    echo    " \\" >> $MAKEFILE
-    printf " $i" >> $MAKEFILE
+    if test "x${i##*.}" = x$FS ; then
+	echo    " \\" >> $MAKEFILE
+	printf " $i" >> $MAKEFILE
+    fi
+done
+echo >> $MAKEFILE
+printf "AD_F90FILES = " >> $MAKEFILE
+for i in $AD_FILES ; do
+    if test "x${i##*.}" = x$FS90 ; then
+	echo    " \\" >> $MAKEFILE
+	printf " $i" >> $MAKEFILE
+    fi
 done
 echo >> $MAKEFILE
 rm -f $TMP.adSrcFiles
-printf "AD_F90FILES = " >> $MAKEFILE
-AD_F90FILES=`cat $TMP.adF90Files`
-for i in $AD_F90FILES ; do
-    echo    " \\" >> $MAKEFILE
-    printf " $i" >> $MAKEFILE
-done
-echo >> $MAKEFILE
-rm -f $TMP.adF90Files
 
 
 if test $CAT_SRC_FOR_TAF = 0 ; then
