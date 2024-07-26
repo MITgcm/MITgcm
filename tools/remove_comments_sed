@@ -5,7 +5,6 @@
 /^c\ /d
 /^CC/d
 /^cc/d
-/^cC/d
 /^C-/d
 /^c-/d
 /^C+/d
@@ -38,7 +37,6 @@
 /^\!$/d
 /^\!\ /d
 /^\!\!/d
-/^CTRL/d
 
 # This is a growing list of which comments lines to remove from a file
 # in order to reduce the file size of ad_input_code.f. The first one is
