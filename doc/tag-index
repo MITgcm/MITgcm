@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint68z (2024/07/27)
 o pkg/diagnostics:
   - to allow to use ADJ-diags in DIVA runs, change call sequence regarding
     TURNOFF_MODEL_IO and DIAGSTATS_INI_IO and simplify (fewer tests for
