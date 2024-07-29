@@ -3037,13 +3037,13 @@ for d in $alldirs ; do
 			fi
 			;;
 		    F90)
-			echo    " \\"  >> $TMP.F90srclist
+			echo    " \\" >> $TMP.F90srclist
 			printf " $sf" >> $TMP.F90srclist
-			if test "x$TAPENADE" = x ; then
+			if ( test "x$OPENAD" = x && test "x$TAPENADE" = x ) ; then
 			    basename=${sf%%.F90}
 			    isAD=`egrep ^$basename.f90'[ 	]*' $TMP.adF90Files`
 			    if test -z "$isAD" ; then
-				echo    " \\"  >> $TMP.nonADF90srclist
+				echo    " \\" >> $TMP.nonADF90srclist
 				printf " $sf" >> $TMP.nonADF90srclist
 			    fi
 			fi
@@ -3423,11 +3423,7 @@ done
 echo "  Add the source list for AD code generation"
 echo >> $MAKEFILE
 printf "AD_FILES = " >> $MAKEFILE
-if test "x"$FS = "xf" ; then
-    AD_FILES=`cat $TMP.adSrcFiles`
-else
-    AD_FILES=`cat $TMP.adSrcFiles | sed -e "s/\.f/.$FS/g"`
-fi
+AD_FILES=`cat $TMP.adSrcFiles | sed -e "s/\.f/.$FS/g"`
 for i in $AD_FILES ; do
     echo    " \\" >> $MAKEFILE
     printf " $i" >> $MAKEFILE
@@ -3435,11 +3431,7 @@ done
 echo >> $MAKEFILE
 rm -f $TMP.adSrcFiles
 printf "AD_F90FILES = " >> $MAKEFILE
-if test "x"$FS90 = "xf90" ; then
-    AD_F90FILES=`cat $TMP.adF90Files`
-else
-    AD_F90FILES=`cat $TMP.adF90Files | sed -e "s/\.f90/.$FS90/g"`
-fi
+AD_F90FILES=`cat $TMP.adF90Files | sed -e "s/\.f90/.$FS90/g"`
 for i in $AD_F90FILES ; do
     echo    " \\" >> $MAKEFILE
     printf " $i" >> $MAKEFILE
@@ -3688,6 +3680,7 @@ for i in $AD_FILES ; do
 done
 echo >> $MAKEFILE
 rm -f $TMP.adSrcFiles
+rm -f $TMP.adF90Files
 
 cat >>$MAKEFILE <<EOF
 
@@ -3824,6 +3817,7 @@ for i in $AD_FILES ; do
 done
 echo >> $MAKEFILE
 rm -f $TMP.adSrcFiles
+rm -f $TMP.adF90Files
 
 cat >>$MAKEFILE <<EOF
 
@@ -3874,7 +3868,7 @@ CB2M_AD_FILES=\$(AD_FILES:.f=_cb2m.f$FS90)
 
 AD_OBJ_FILES_S1=\$(OPENAD_SUPPORT_F90_SRC_FILES:.F90=.o) \$(OPENAD_SUPPORT_C_SRC_FILES:.c=.o)  OAD_intrinsics_oad.o \$(CB2M_AD_FILES:.f$FS90=_oad.o)
 
-AD_OBJ_FILES_S2=\$(AD_OBJ_FILES_S1) \$(NON_AD_F77_SRC_FILES:.F=_cb2m.o) \$(C_SRC_FILES:.c=.o) \$(NON_AD_F90_SRC_FILES:.F90=.o)
+AD_OBJ_FILES_S2=\$(AD_OBJ_FILES_S1) \$(NON_AD_F77_SRC_FILES:.F=_cb2m.o) \$(C_SRC_FILES:.c=.o) \$(F90_SRC_FILES:.F90=.o)
 
 \$(EXE_ADJ): \$(ALL_LINKED_FILES) \$(addsuffix _mod.h, \$(CB2M_F90_SRC_NAMES)) postProcess.tag \$(AD_OBJ_FILES_S2)
 	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(AD_OBJ_FILES_S2) \$(LIBS)
