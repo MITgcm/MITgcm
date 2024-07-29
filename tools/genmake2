@@ -3423,7 +3423,7 @@ done
 echo "  Add the source list for AD code generation"
 echo >> $MAKEFILE
 printf "AD_FILES = " >> $MAKEFILE
-if test "x"$FS = "x.f" ; then
+if test "x"$FS = "xf" ; then
     AD_FILES=`cat $TMP.adSrcFiles`
 else
     AD_FILES=`cat $TMP.adSrcFiles | sed -e "s/\.f/.$FS/g"`
@@ -3435,7 +3435,7 @@ done
 echo >> $MAKEFILE
 rm -f $TMP.adSrcFiles
 printf "AD_F90FILES = " >> $MAKEFILE
-if test "x"$FS90 = "x.f90" ; then
+if test "x"$FS90 = "xf90" ; then
     AD_F90FILES=`cat $TMP.adF90Files`
 else
     AD_F90FILES=`cat $TMP.adF90Files | sed -e "s/\.f90/.$FS90/g"`
