@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 #
-#
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
 #   adapted  by aja 06/98
@@ -2785,14 +2784,6 @@ for i in $SOURCEDIRS ; do
 	grep '\.f90\>' $i/$j >> $TMP.adF90Files
     done
 done
-if test ! "x"$FS = "x.f" ; then
-    cat $TMP.adSrcFiles | sed -e "s/\.f/.$FS/g" > $TMP.adSrcFiles_f
-    mv -f $TMP.adSrcFiles_f $TMP.adSrcFiles
-fi
-if test ! "x"$FS90 = "x.f90" ; then
-    cat $TMP.adF90Files | sed -e "s/\.f90/.$FS90/g" > $TMP.adF90Files_f
-    mv -f $TMP.adF90Files_f $TMP.adF90Files
-fi
 
 echo
 echo "===  Creating the Makefile  ==="
@@ -3050,7 +3041,7 @@ for d in $alldirs ; do
 			printf " $sf" >> $TMP.F90srclist
 			if test "x$TAPENADE" = x ; then
 			    basename=${sf%%.F90}
-			    isAD=`egrep ^$basename.$FS90'[ 	]*' $TMP.adF90Files`
+			    isAD=`egrep ^$basename.f90'[ 	]*' $TMP.adF90Files`
 			    if test -z "$isAD" ; then
 				echo    " \\"  >> $TMP.nonADF90srclist
 				printf " $sf" >> $TMP.nonADF90srclist
@@ -3432,7 +3423,11 @@ done
 echo "  Add the source list for AD code generation"
 echo >> $MAKEFILE
 printf "AD_FILES = " >> $MAKEFILE
-AD_FILES=`cat $TMP.adSrcFiles`
+if test "x"$FS = "x.f" ; then
+    AD_FILES=`cat $TMP.adSrcFiles`
+else
+    AD_FILES=`cat $TMP.adSrcFiles | sed -e "s/\.f/.$FS/g"`
+fi
 for i in $AD_FILES ; do
     echo    " \\" >> $MAKEFILE
     printf " $i" >> $MAKEFILE
@@ -3440,7 +3435,11 @@ done
 echo >> $MAKEFILE
 rm -f $TMP.adSrcFiles
 printf "AD_F90FILES = " >> $MAKEFILE
-AD_F90FILES=`cat $TMP.adF90Files`
+if test "x"$FS90 = "x.f90" ; then
+    AD_F90FILES=`cat $TMP.adF90Files`
+else
+    AD_F90FILES=`cat $TMP.adF90Files | sed -e "s/\.f90/.$FS90/g"`
+fi
 for i in $AD_F90FILES ; do
     echo    " \\" >> $MAKEFILE
     printf " $i" >> $MAKEFILE
