@@ -1,8 +1,8 @@
 #include "MOM_VECINV_OPTIONS.h"
+#include "MOM_COMMON_OPTIONS.h"
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
 #endif
-#include "MOM_COMMON_OPTIONS.h"
 #ifdef ALLOW_GGL90
 # include "GGL90_OPTIONS.h"
 #endif
@@ -84,20 +84,19 @@ C     myThid  :: my Thread Id number
       INTEGER myThid
 
 #ifdef ALLOW_MOM_VECINV
-
 C     == Functions ==
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
 #ifdef ALLOW_DIAGNOSTICS
       LOGICAL  DIAGNOSTICS_IS_ON
       EXTERNAL DIAGNOSTICS_IS_ON
-      LOGICAL  botdragDiagIsOn
-      LOGICAL  shelfdragDiagIsOn
 #endif
 
 C     == Local variables ==
 C     strainBC :: same as strain but account for no-slip BC
 C     vort3BC  :: same as vort3  but account for no-slip BC
+C     i,j      :: Loop counters
+      INTEGER i,j
       _RL      vF (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL      vrF(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL      uCf(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -132,25 +131,20 @@ C     vort3BC  :: same as vort3  but account for no-slip BC
       _RL viscAh_D(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_Z(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_D(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-#if ( defined ALLOW_MOM_TEND_EXTRA_DIAGS && defined ALLOW_DIAGNOSTICS )
-      _RL tmpDragU(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL tmpDragV(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL tmpDragU2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL tmpDragV2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-#endif /* ALLOW_MOM_TEND_EXTRA_DIAGS && ALLOW_DIAGNOSTICS */
-C     i,j    :: Loop counters
-      INTEGER i,j
 C     xxxFac :: On-off tracer parameters used for switching terms off.
       _RL  ArDudrFac
       _RL  ArDvdrFac
       _RL  sideMaskFac
       LOGICAL bottomDragTerms
       LOGICAL writeDiag
+#if ( defined ALLOW_MOM_TEND_EXTRA_DIAGS && defined ALLOW_DIAGNOSTICS )
+      LOGICAL botDragDiagIsOn
+      LOGICAL shelfDragDiagIsOn
+#endif /* ALLOW_MOM_TEND_EXTRA_DIAGS && ALLOW_DIAGNOSTICS */
 #ifdef ALLOW_AUTODIFF_TAMC
 C     kkey :: tape key (depends on level and tile indices)
       INTEGER kkey
 #endif
-
 #ifdef ALLOW_MNC
       INTEGER offsets(9)
       CHARACTER*(1) pf
@@ -206,13 +200,6 @@ C--   Initialise intermediate terms
         zStar(i,j) = 0.
         guDiss(i,j)= 0.
         gvDiss(i,j)= 0.
-#if ( defined ALLOW_MOM_TEND_EXTRA_DIAGS && defined ALLOW_DIAGNOSTICS )
-cHP initialize arrays for explicit bottom drag & shelf ice drag tendencies
-        tmpDragU(i,j)= 0.
-        tmpDragV(i,j)= 0.
-        tmpDragU2(i,j)= 0.
-        tmpDragV2(i,j)= 0.
-#endif /* ALLOW_MOM_TEND_EXTRA_DIAGS && ALLOW_DIAGNOSTICS */
 #if ( defined ALLOW_GGL90 && defined ALLOW_GGL90_LANGMUIR )
 c       uRes(i,j)  = 0.
 c       vRes(i,j)  = 0.
@@ -263,13 +250,15 @@ C       vorticity at a no-slip boundary by a factor of 2 = sideDragFactor
       ENDIF
 
 #if ( defined ALLOW_MOM_TEND_EXTRA_DIAGS && defined ALLOW_DIAGNOSTICS )
-      botdragDiagIsOn = .FALSE.
-      shelfdragDiagIsOn = .FALSE.
+      botDragDiagIsOn = .FALSE.
+      shelfDragDiagIsOn = .FALSE.
       IF ( useDiagnostics ) THEN
-       botdragDiagIsOn = DIAGNOSTICS_IS_ON( 'UBotDrag', myThid )
-     &            .OR. DIAGNOSTICS_IS_ON( 'VBotDrag', myThid )
-       shelfdragDiagIsOn = DIAGNOSTICS_IS_ON( 'UShIDrag', myThid )
-     &            .OR. DIAGNOSTICS_IS_ON( 'VShIDrag', myThid )
+       IF ( bottomDragTerms ) botDragDiagIsOn =
+     &            DIAGNOSTICS_IS_ON( 'UBotDrag', myThid )
+     &       .OR. DIAGNOSTICS_IS_ON( 'VBotDrag', myThid )
+       IF ( useShelfIce ) shelfDragDiagIsOn =
+     &            DIAGNOSTICS_IS_ON( 'UShIDrag', myThid )
+     &       .OR. DIAGNOSTICS_IS_ON( 'VShIDrag', myThid )
       ENDIF
 #endif /* ALLOW_MOM_TEND_EXTRA_DIAGS && ALLOW_DIAGNOSTICS */
 
@@ -508,9 +497,9 @@ CADJ STORE cDrag(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
 #endif
         DO j=jMin,jMax
          DO i=iMin,iMax
-           gUdiss(i,j) = gUdiss(i,j)
-     &                 - cDrag(i,j)*uFld(i,j)
-     &                 *_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
+           vF(i,j) = -cDrag(i,j)*uFld(i,j)
+     &             *_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
+           gUdiss(i,j) = gUdiss(i,j) + vF(i,j)
          ENDDO
         ENDDO
         IF ( useDiagnostics ) THEN
@@ -518,21 +507,14 @@ CADJ STORE cDrag(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
           DO i=iMin,iMax
            botDragU(i,j,bi,bj) = botDragU(i,j,bi,bj)
      &                         - cDrag(i,j)*uFld(i,j)*rUnit2mass
-#if ( defined ALLOW_MOM_TEND_EXTRA_DIAGS && defined ALLOW_DIAGNOSTICS )
-cHP store bottom drag tendency: cDrag (m/s) * uFld (m/s) * _recip_hFacW * recip_drF (1/m) = m/s^2
-           IF ( botdragDiagIsOn ) THEN
-            tmpDragU(i,j) = tmpDragU(i,j) - cDrag(i,j)*uFld(i,j)
-     &                  *_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
-           ENDIF
-#endif /* ALLOW_MOM_TEND_EXTRA_DIAGS && ALLOW_DIAGNOSTICS */
           ENDDO
          ENDDO
-#if ( defined ALLOW_MOM_TEND_EXTRA_DIAGS && defined ALLOW_DIAGNOSTICS )
-         IF ( botdragDiagIsOn ) THEN
-          CALL DIAGNOSTICS_FILL(tmpDragU,'UBotDrag',k,1,2,bi,bj,myThid)
-         ENDIF
-#endif /* ALLOW_MOM_TEND_EXTRA_DIAGS && ALLOW_DIAGNOSTICS */
         ENDIF
+#if ( defined ALLOW_MOM_TEND_EXTRA_DIAGS && defined ALLOW_DIAGNOSTICS )
+        IF ( botDragDiagIsOn ) THEN
+         CALL DIAGNOSTICS_FILL( vF, 'UBotDrag', k,1,2, bi,bj, myThid )
+        ENDIF
+#endif /* ALLOW_MOM_TEND_EXTRA_DIAGS && ALLOW_DIAGNOSTICS */
        ENDIF
 #ifdef ALLOW_SHELFICE
        IF ( useShelfIce .AND. selectImplicitDrag.EQ.0 ) THEN
@@ -551,17 +533,17 @@ CADJ STORE cDrag(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
            gUdiss(i,j) = gUdiss(i,j)
      &                 - cDrag(i,j)*uFld(i,j)
      &                 *_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
-#if ( defined ALLOW_MOM_TEND_EXTRA_DIAGS && defined ALLOW_DIAGNOSTICS )
-           IF ( useDiagnostics .AND. shelfdragDiagIsOn ) THEN
-            tmpDragU2(i,j) = tmpDragU2(i,j) - cDrag(i,j)*uFld(i,j)
-     &                  *_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
-           ENDIF
-#endif /* ALLOW_MOM_TEND_EXTRA_DIAGS && ALLOW_DIAGNOSTICS */
          ENDDO
         ENDDO
 #if ( defined ALLOW_MOM_TEND_EXTRA_DIAGS && defined ALLOW_DIAGNOSTICS )
-        IF ( useDiagnostics .AND. shelfdragDiagIsOn ) THEN
-         CALL DIAGNOSTICS_FILL(tmpDragU2,'UShIDrag',k,1,2,bi,bj,myThid)
+        IF ( shelfDragDiagIsOn ) THEN
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           vrF(i,j) = -cDrag(i,j)*uFld(i,j)
+     &              *_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
+          ENDDO
+         ENDDO
+         CALL DIAGNOSTICS_FILL( vrF, 'UShIDrag', k,1,2,bi,bj, myThid )
         ENDIF
 #endif /* ALLOW_MOM_TEND_EXTRA_DIAGS && ALLOW_DIAGNOSTICS */
        ENDIF
@@ -625,9 +607,9 @@ CADJ STORE cDrag(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
 #endif
         DO j=jMin,jMax
          DO i=iMin,iMax
-           gvDiss(i,j) = gvDiss(i,j)
-     &                 - cDrag(i,j)*vFld(i,j)
-     &                 *_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
+           vF(i,j) = -cDrag(i,j)*vFld(i,j)
+     &             *_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
+           gvDiss(i,j) = gvDiss(i,j) + vF(i,j)
          ENDDO
         ENDDO
         IF ( useDiagnostics ) THEN
@@ -635,21 +617,14 @@ CADJ STORE cDrag(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
           DO i=iMin,iMax
            botDragV(i,j,bi,bj) = botDragV(i,j,bi,bj)
      &                         - cDrag(i,j)*vFld(i,j)*rUnit2mass
-#if ( defined ALLOW_MOM_TEND_EXTRA_DIAGS && defined ALLOW_DIAGNOSTICS )
-cHP store bottom drag tendency: cDrag (m/s) * vFld (m/s) * _recip_hFacS * recip_drF (1/m) = m/s^2
-           IF ( botdragDiagIsOn ) THEN
-            tmpDragV(i,j) = tmpDragV(i,j) - cDrag(i,j)*vFld(i,j)
-     &                  *_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
-           ENDIF
-#endif /* ALLOW_MOM_TEND_EXTRA_DIAGS && ALLOW_DIAGNOSTICS */
           ENDDO
          ENDDO
-#if ( defined ALLOW_MOM_TEND_EXTRA_DIAGS && defined ALLOW_DIAGNOSTICS )
-         IF ( botdragDiagIsOn ) THEN
-          CALL DIAGNOSTICS_FILL(tmpDragV,'VBotDrag',k,1,2,bi,bj,myThid)
-         ENDIF
-#endif /* ALLOW_MOM_TEND_EXTRA_DIAGS && ALLOW_DIAGNOSTICS */
         ENDIF
+#if ( defined ALLOW_MOM_TEND_EXTRA_DIAGS && defined ALLOW_DIAGNOSTICS )
+        IF ( botDragDiagIsOn ) THEN
+         CALL DIAGNOSTICS_FILL( vF, 'VBotDrag', k,1,2, bi,bj, myThid )
+        ENDIF
+#endif /* ALLOW_MOM_TEND_EXTRA_DIAGS && ALLOW_DIAGNOSTICS */
        ENDIF
 #ifdef ALLOW_SHELFICE
        IF ( useShelfIce .AND. selectImplicitDrag.EQ.0 ) THEN
@@ -668,17 +643,17 @@ CADJ STORE cDrag(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
            gvDiss(i,j) = gvDiss(i,j)
      &                 - cDrag(i,j)*vFld(i,j)
      &                 *_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
-#if ( defined ALLOW_MOM_TEND_EXTRA_DIAGS && defined ALLOW_DIAGNOSTICS )
-          IF ( useDiagnostics .AND. shelfdragDiagIsOn ) THEN
-           tmpDragV2(i,j) = tmpDragV2(i,j) - cDrag(i,j)*vFld(i,j)
-     &                 *_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
-          ENDIF
-#endif /* ALLOW_MOM_TEND_EXTRA_DIAGS && ALLOW_DIAGNOSTICS */
          ENDDO
         ENDDO
 #if ( defined ALLOW_MOM_TEND_EXTRA_DIAGS && defined ALLOW_DIAGNOSTICS )
-        IF ( useDiagnostics .AND. shelfdragDiagIsOn ) THEN
-         CALL DIAGNOSTICS_FILL(tmpDragV2,'VShIDrag',k,1,2,bi,bj,myThid)
+        IF ( shelfDragDiagIsOn ) THEN
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           vrF(i,j) = -cDrag(i,j)*vFld(i,j)
+     &              *_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
+          ENDDO
+         ENDDO
+         CALL DIAGNOSTICS_FILL( vrF, 'VShIDrag', k,1,2,bi,bj, myThid )
         ENDIF
 #endif /* ALLOW_MOM_TEND_EXTRA_DIAGS && ALLOW_DIAGNOSTICS */
        ENDIF
