@@ -3491,7 +3491,7 @@ cat >>$MAKEFILE <<EOF
 	cmp ad_config.template AD_CONFIG.h || cat ad_config.template > AD_CONFIG.h
 	@-rm -f ad_config.template
 	@\$(MAKE) -f \$(MAKEFILE) \$(F90_PP_SRC_FILES)
-	cat \$(AD_F90FILES) | sed -f \$(TOOLSDIR)/remove_comments_sed > ad_input_code_f90.$FS90
+	cat \$(AD_F90FILES) > ad_input_code_f90.$FS90
 EOF
 fi
 cat >>$MAKEFILE <<EOF
