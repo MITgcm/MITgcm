@@ -33,35 +33,21 @@ C     == Routine arguments ==
       LOGICAL harmonic, biharmonic, useVariableViscosity
       _RL uDissip(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vDissip(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-C HP: add tendency from laplacian viscosity [uDiss_lap,vDiss_bih]
-c--                and biharmonic viscosity [uDiss_bih,vDiss_bih]
-      _RL uDiss_lap(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL vDiss_lap(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL uDiss_bih(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL vDiss_bih(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
 C     == Local variables ==
       INTEGER i, j
-      _RL Zip, Zij, Zpj, Dim, Dij, Dmj, uD2, vD2, uD4, vD4
+      _RL Zip, Zij, Zpj, Dim, Dij, Dmj, uD2, vD2
       _RL Zip1, Zij1, Zpj1
-
-C HP: Initialize local arrays
-      DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-         uDiss_lap(i,j) = 0. _d 0
-         vDiss_lap(i,j) = 0. _d 0
-         uDiss_bih(i,j) = 0. _d 0
-         vDiss_bih(i,j) = 0. _d 0
-        ENDDO
-      ENDDO
+      _RL uD4(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL vD4(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 C     - Laplacian  terms
-      IF (harmonic) THEN
+      IF ( harmonic ) THEN
 C This bit scales the harmonic dissipation operator to be proportional
 C to the grid-cell area over the time-step. viscAh is then non-dimensional
 C and should be less than 1/8, for example viscAh=0.01
-       IF (useVariableViscosity) THEN
+       IF ( useVariableViscosity ) THEN
         DO j=2-OLy,sNy+OLy-1
          DO i=2-OLx,sNx+OLx-1
 
@@ -86,11 +72,8 @@ C and should be less than 1/8, for example viscAh=0.01
      &                                           *cosFacV(j,bi,bj)
 #endif /* ISOTROPIC_COS_SCALING */
 
-          uDissip(i,j) = uD2
-          vDissip(i,j) = vD2
-C HP: fill new diagnostic
-          uDiss_lap(i,j) = uDiss_lap(i,j) + uD2
-          vDiss_lap(i,j) = vDiss_lap(i,j) + vD2
+          uDissip(i,j) = uD2*maskW(i,j,k,bi,bj)*recip_deepFacC(k)
+          vDissip(i,j) = vD2*maskS(i,j,k,bi,bj)*recip_deepFacC(k)
 
          ENDDO
         ENDDO
@@ -119,15 +102,18 @@ C HP: fill new diagnostic
      &                                           *cosFacV(j,bi,bj)
 #endif /* ISOTROPIC_COS_SCALING */
 
-          uDissip(i,j) = uD2
-          vDissip(i,j) = vD2
-C HP: fill new diagnostic
-          uDiss_lap(i,j) = uDiss_lap(i,j) + uD2
-          vDiss_lap(i,j) = vDiss_lap(i,j) + vD2
+          uDissip(i,j) = uD2*maskW(i,j,k,bi,bj)*recip_deepFacC(k)
+          vDissip(i,j) = vD2*maskS(i,j,k,bi,bj)*recip_deepFacC(k)
 
          ENDDO
         ENDDO
        ENDIF
+#ifdef ALLOW_DIAGNOSTICS
+       IF ( useDiagnostics ) THEN
+        CALL DIAGNOSTICS_FILL( uDissip,'Um_hDis2', k,1,2,bi,bj, myThid )
+        CALL DIAGNOSTICS_FILL( vDissip,'Vm_hDis2', k,1,2,bi,bj, myThid )
+       ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
       ELSE
        DO j=2-OLy,sNy+OLy-1
         DO i=2-OLx,sNx+OLx-1
@@ -138,12 +124,19 @@ C HP: fill new diagnostic
       ENDIF
 
 C     - Bi-harmonic terms
-      IF (biharmonic) THEN
+      IF ( biharmonic ) THEN
+C--   initialize local arrays
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         uD4(i,j) = 0. _d 0
+         vD4(i,j) = 0. _d 0
+        ENDDO
+       ENDDO
 
 C This bit scales the harmonic dissipation operator to be proportional
 C to the grid-cell area over the time-step. viscAh is then non-dimensional
 C and should be less than 1/8, for example viscAh=0.01
-       IF (useVariableViscosity) THEN
+       IF ( useVariableViscosity ) THEN
         DO j=2-OLy,sNy+OLy-1
          DO i=2-OLx,sNx+OLx-1
 
@@ -172,41 +165,37 @@ C and should be less than 1/8, for example viscAh=0.01
           Zpj=Zpj1*viscA4_Z(i+1,j)
 
 #ifdef MOM_VI_ORIGINAL_VISCA4
-          uD4 = recip_rAw(i,j,bi,bj)*(
+          uD4(i,j) = recip_rAw(i,j,bi,bj)*(
      &                             ( (Dij-Dmj)*cosFacU(j,bi,bj) )
      &  -_recip_hFacW(i,j,k,bi,bj)*( Zip-Zij )
 # ifdef ISOTROPIC_COS_SCALING
      &                                        *cosFacU(j,bi,bj)
 # endif /* ISOTROPIC_COS_SCALING */
-     &         )
-          vD4 = recip_rAs(i,j,bi,bj)*(
+     &                                    )
+          vD4(i,j) = recip_rAs(i,j,bi,bj)*(
      &   _recip_hFacS(i,j,k,bi,bj)*( (Zpj-Zij)*cosFacV(j,bi,bj) )
      &   +                         ( Dij-Dim )
 # ifdef ISOTROPIC_COS_SCALING
      &                                        *cosFacV(j,bi,bj)
 # endif /* ISOTROPIC_COS_SCALING */
-     &         )
+     &                                    )
 #else /* MOM_VI_ORIGINAL_VISCA4 */
-          uD4 = (
+          uD4(i,j) = (
      &               cosFacU(j,bi,bj)*( Dij-Dmj )*recip_DXC(i,j,bi,bj)
-     &     -_recip_hFacW(i,j,k,bi,bj)*( Zip-Zij )*recip_DYG(i,j,bi,bj) )
+     &     -_recip_hFacW(i,j,k,bi,bj)*( Zip-Zij )*recip_DYG(i,j,bi,bj)
+     &               )
 # ifdef ISOTROPIC_COS_SCALING
      &                                           *cosFacU(j,bi,bj)
 # endif /* ISOTROPIC_COS_SCALING */
-          vD4 = (
+          vD4(i,j) = (
      &      _recip_hFacS(i,j,k,bi,bj)*( Zpj-Zij )*recip_DXG(i,j,bi,bj)
      &                                           *cosFacV(j,bi,bj)
-     &                               +( Dij-Dim )*recip_DYC(i,j,bi,bj) )
+     &                               +( Dij-Dim )*recip_DYC(i,j,bi,bj)
+     &               )
 # ifdef ISOTROPIC_COS_SCALING
      &                                           *cosFacV(j,bi,bj)
 # endif /* ISOTROPIC_COS_SCALING */
 #endif  /* MOM_VI_ORIGINAL_VISCA4 */
-
-          uDissip(i,j) = uDissip(i,j) - uD4
-          vDissip(i,j) = vDissip(i,j) - vD4
-C HP: fill new diagnostic
-          uDiss_bih(i,j) = uDiss_bih(i,j) - uD4
-          vDiss_bih(i,j) = vDiss_bih(i,j) - vD4
 
          ENDDO
         ENDDO
@@ -236,76 +225,54 @@ C HP: fill new diagnostic
           Zpj=Zpj1
 
 #ifdef MOM_VI_ORIGINAL_VISCA4
-          uD4 = recip_rAw(i,j,bi,bj)*(
+          uD4(i,j) = recip_rAw(i,j,bi,bj)*(
      &                             viscA4D*( Dij-Dmj )*cosFacU(j,bi,bj)
      &  -_recip_hFacW(i,j,k,bi,bj)*viscA4Z*( Zip-Zij )
 # ifdef ISOTROPIC_COS_SCALING
      &                                                *cosFacU(j,bi,bj)
 # endif /* ISOTROPIC_COS_SCALING */
-     &                               )
-          vD4 = recip_rAs(i,j,bi,bj)*(
+     &                                    )
+          vD4(i,j) = recip_rAs(i,j,bi,bj)*(
      &   _recip_hFacS(i,j,k,bi,bj)*viscA4Z*( Zpj-Zij )*cosFacV(j,bi,bj)
      &   +                         viscA4D*( Dij-Dim )
 # ifdef ISOTROPIC_COS_SCALING
      &                                                *cosFacV(j,bi,bj)
 # endif /* ISOTROPIC_COS_SCALING */
-     &                               )
+     &                                    )
 #else /* MOM_VI_ORIGINAL_VISCA4 */
-          uD4 = viscA4D*
+          uD4(i,j) = viscA4D*
      &               cosFacU(j,bi,bj)*( Dij-Dmj )*recip_DXC(i,j,bi,bj)
-     &        - viscA4Z*_recip_hFacW(i,j,k,bi,bj)*
+     &             - viscA4Z*_recip_hFacW(i,j,k,bi,bj)*
      &                                ( Zip-Zij )*recip_DYG(i,j,bi,bj)
 # ifdef ISOTROPIC_COS_SCALING
      &                                           *cosFacU(j,bi,bj)
 # endif /* ISOTROPIC_COS_SCALING */
-          vD4 = viscA4Z*_recip_hFacS(i,j,k,bi,bj)*
+          vD4(i,j) = viscA4Z*_recip_hFacS(i,j,k,bi,bj)*
      &               cosFacV(j,bi,bj)*( Zpj-Zij )*recip_DXG(i,j,bi,bj)
-     &        + viscA4D*              ( Dij-Dim )*recip_DYC(i,j,bi,bj)
+     &             + viscA4D*         ( Dij-Dim )*recip_DYC(i,j,bi,bj)
 # ifdef ISOTROPIC_COS_SCALING
      &                                           *cosFacV(j,bi,bj)
 # endif /* ISOTROPIC_COS_SCALING */
 #endif /* MOM_VI_ORIGINAL_VISCA4 */
 
-          uDissip(i,j) = uDissip(i,j) - uD4
-          vDissip(i,j) = vDissip(i,j) - vD4
-C HP: fill new diagnostic
-          uDiss_bih(i,j) = uDiss_bih(i,j) - uD4
-          vDiss_bih(i,j) = vDiss_bih(i,j) - vD4
-
          ENDDO
         ENDDO
        ENDIF
-      ENDIF
-
-      IF ( harmonic .OR. biharmonic ) THEN
-       DO j=1-OLy,sNy+OLy-1
-        DO i=1-OLx,sNx+OLx-1
-         uDissip(i,j) = uDissip(i,j)*maskW(i,j,k,bi,bj)
-     &                              *recip_deepFacC(k)
-         vDissip(i,j) = vDissip(i,j)*maskS(i,j,k,bi,bj)
-     &                              *recip_deepFacC(k)
-C HP: scaling for new diagnostic separately
-         uDiss_lap(i,j) = uDiss_lap(i,j)*maskW(i,j,k,bi,bj)
-     &                              *recip_deepFacC(k)
-         vDiss_lap(i,j) = vDiss_lap(i,j)*maskS(i,j,k,bi,bj)
-     &                              *recip_deepFacC(k)
-         uDiss_bih(i,j) = uDiss_bih(i,j)*maskW(i,j,k,bi,bj)
-     &                              *recip_deepFacC(k)
-         vDiss_bih(i,j) = vDiss_bih(i,j)*maskS(i,j,k,bi,bj)
-     &                              *recip_deepFacC(k)
+       DO j=2-OLy,sNy+OLy-1
+        DO i=2-OLx,sNx+OLx-1
+          uD4(i,j) = -uD4(i,j)*maskW(i,j,k,bi,bj)*recip_deepFacC(k)
+          vD4(i,j) = -vD4(i,j)*maskS(i,j,k,bi,bj)*recip_deepFacC(k)
+          uDissip(i,j) = uDissip(i,j) + uD4(i,j)
+          vDissip(i,j) = vDissip(i,j) + vD4(i,j)
         ENDDO
        ENDDO
-      ENDIF
-
-C HP: call to fill harmonic and biharmonic diagnostics
-#if ( defined ALLOW_MOM_VECINV && defined ALLOW_DIAGNOSTICS )
-      IF (useDiagnostics) THEN
-       CALL DIAGNOSTICS_FILL(uDiss_lap,'Um_hDis2',k,1,2,bi,bj,myThid)
-       CALL DIAGNOSTICS_FILL(vDiss_lap,'Vm_hDis2',k,1,2,bi,bj,myThid)
-       CALL DIAGNOSTICS_FILL(uDiss_bih,'Um_hDis4',k,1,2,bi,bj,myThid)
-       CALL DIAGNOSTICS_FILL(vDiss_bih,'Vm_hDis4',k,1,2,bi,bj,myThid)
-      ENDIF
+#ifdef ALLOW_DIAGNOSTICS
+       IF ( useDiagnostics ) THEN
+        CALL DIAGNOSTICS_FILL( uD4, 'Um_hDis4', k,1,2, bi,bj, myThid )
+        CALL DIAGNOSTICS_FILL( vD4, 'Vm_hDis4', k,1,2, bi,bj, myThid )
+       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
+      ENDIF
 
       RETURN
       END
