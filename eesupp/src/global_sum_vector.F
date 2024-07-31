@@ -36,7 +36,6 @@ C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
-#include "EEBUFF_SIZE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     nVec     :: length of input/output vector
@@ -72,7 +71,7 @@ CEOP
      &       'nVec=', nVec, ' > GSVec_size=', GSVec_size
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(2A)') 'GLB_SUM_VEC: ',
-     &       'increase "GSVec_size" from EEBUFF_SIZE.h and recompile'
+     &       'increase "GSVec_size" in EEPARAMS.h and recompile'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R GLB_SUM_VEC'
       ENDIF
@@ -185,7 +184,6 @@ C     !USES:
 C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EEBUFF_SIZE.h"
 #include "GLOBAL_SUM.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -275,7 +273,6 @@ C     !USES:
 C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EEBUFF_SIZE.h"
 #include "GLOBAL_SUM.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -365,7 +362,6 @@ C     !USES:
 C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EEBUFF_SIZE.h"
 #include "GLOBAL_SUM.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -465,7 +461,6 @@ C     !USES:
 C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EEBUFF_SIZE.h"
 #include "GLOBAL_SUM.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -566,7 +561,6 @@ C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
-#include "EEBUFF_SIZE.h"
 #include "GLOBAL_SUM.h"
 
 C     !INPUT/OUTPUT PARAMETERS:

@@ -32,7 +32,6 @@ C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
-#include "EEBUFF_SIZE.h"
 #include "GLOBAL_SUM.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
