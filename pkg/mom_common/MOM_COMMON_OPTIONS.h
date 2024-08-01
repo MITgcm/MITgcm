@@ -26,5 +26,10 @@ C as a function of grid cell thickness and roughness length
 C zRoughBot (order 0.01m), assuming a von Karman constant = 0.4.
 #undef ALLOW_BOTTOMDRAG_ROUGHNESS
 
+C-- Deep-Model: use the original vertical advection (with all NH metric terms)
+C   instead of updated version that advects the product deepFac x (u,v)
+C   thus removing the need for NH-metric terms: w.(u,v)/r
+#undef MOM_USE_OLD_DEEP_VERT_ADV
+
 #endif /* ALLOW_MOM_COMMON */
 #endif /* MOM_COMMON_OPTIONS_H */

@@ -449,7 +449,6 @@ C-----
      &                ' /* Momentum implicit vert. advection on/off*/')
       CALL WRITE_0D_L( implicitViscosity, INDEX_NONE,
      & 'implicitViscosity =', ' /* Implicit viscosity on/off flag */')
-C-----
       WRITE(msgBuf,'(2A)')
      & 'selectImplicitDrag=', ' /* Implicit bot Drag options (0,1,2)*/'
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
@@ -460,11 +459,33 @@ C-----
      &  ' 2= Fully Impl (with surf.P)'
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       CALL PRINT_MESSAGE(endList, ioUnit, SQUEEZE_RIGHT, myThid )
-C-----
-      CALL WRITE_0D_I( selectMetricTerms, INDEX_NONE,
-     & 'selectMetricTerms=', ' /* Metric-Terms on/off flag (=0/1) */')
+C---  report Metric-Term selection
+      IF ( .NOT.vectorInvariantMomentum ) THEN
+       WRITE(msgBuf,'(2A)') 'selectMetricTerms=',
+     &              ' /* Scheme selector for Horizontal Metric Terms */'
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+       buffI(1) = selectMetricTerms
+       CALL PRINT_LIST_I( buffI, 1, 1, INDEX_NONE,
+     &                    .FALSE., .TRUE., ioUnit )
+       WRITE(msgBuf,'(2A)') '   = 0 : Off (ignore ',
+     &                      'Spherical/Cylindrical Metric Terms)'
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(2A)') '   = 1 : original discretization'
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(2A)') '   = 2 : using (Spherical) grid-spacing'
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(2A)') '   = 3 : as 2 but gU-Metric',
+     &                      ' inside Advection'
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+       CALL PRINT_MESSAGE(endList, ioUnit, SQUEEZE_RIGHT, myThid )
+      ENDIF
       CALL WRITE_0D_L( useNHMTerms,  INDEX_NONE, 'useNHMTerms =',
      &              ' /* Non-Hydrostatic Metric-Terms on/off */')
+C---  report Coriolis selection
+      CALL WRITE_0D_L( useCoriolis,  INDEX_NONE,
+     & 'useCoriolis =', '  /* Coriolis on/off flag */')
+      CALL WRITE_0D_L( useCDscheme,  INDEX_NONE,
+     & 'useCDscheme =', '  /* CD scheme on/off flag */')
       WRITE(msgBuf,'(2A)')
      & 'selectCoriMap =', ' /* Coriolis Map options (0,1,2,3)*/'
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
@@ -475,13 +496,21 @@ C-----
      &  ' 2= Spherical ; 3= read from file'
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       CALL PRINT_MESSAGE(endList, ioUnit, SQUEEZE_RIGHT, myThid )
-      CALL WRITE_0D_I( select3dCoriScheme, INDEX_NONE,
-     & 'select3dCoriScheme=', ' /* 3-D Coriolis on/off flag (=0/1) */')
-      CALL WRITE_0D_L( useCoriolis,  INDEX_NONE,
-     & 'useCoriolis =', '  /* Coriolis on/off flag */')
-      CALL WRITE_0D_L( useCDscheme,  INDEX_NONE,
-     & 'useCDscheme =', '  /* CD scheme on/off flag */')
-C-----
+      WRITE(msgBuf,'(2A)') 'select3dCoriScheme=',
+     &              ' /* Scheme selector for 3-D Coriolis-Term */'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      buffI(1) = select3dCoriScheme
+      CALL PRINT_LIST_I( buffI, 1, 1, INDEX_NONE,
+     &                   .FALSE., .TRUE., ioUnit )
+      WRITE(msgBuf,'(2A)')  '   = 0 : Off (ignore 3-D Coriolis',
+     &                      ' Terms in Omega.Cos(Lat) )'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(2A)')  '   = 1 : original discretization',
+     &                      ' ; = 2 : using averaged Transport'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(2A)')  '   = 3 : same as 2 with hFac in gW_Cor'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      CALL PRINT_MESSAGE(endList, ioUnit, SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(2A)') 'selectCoriScheme=',
      &              ' /* Scheme selector for Coriolis-Term */'
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
@@ -508,13 +537,16 @@ C-----
        WRITE(msgBuf,'(2A)') '   = 3 : energy conserving scheme',
      &                      ' using Wet-point averaging'
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(2A)') '   = 4 : hFac weighted average',
+     &                      ' (Angular Mom. conserving)'
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       ENDIF
       CALL PRINT_MESSAGE( endList, ioUnit, SQUEEZE_RIGHT, myThid )
       IF ( vectorInvariantMomentum ) THEN
 C---  report here some vector-invariant parameters
        CALL WRITE_0D_L( useAbsVorticity,  INDEX_NONE,
      & 'useAbsVorticity=',' /* V.I Works with f+zeta in Coriolis */')
-      WRITE(msgBuf,'(2A)') 'selectVortScheme=',
+       WRITE(msgBuf,'(2A)') 'selectVortScheme=',
      &              ' /* V.I Scheme selector for Vorticity-Term */'
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
        buffI(1) = selectVortScheme
@@ -534,8 +566,9 @@ C---  report here some vector-invariant parameters
        WRITE(msgBuf,'(2A)') '         from Sadourny',
      &                     ' (Burridge & Haseler, ECMWF Rep.4, 1977)'
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-c      WRITE(msgBuf,'(2A)') '   = 4 : energy (general)',
-c    &             ' and enstrophy (2D, nonDiv.) conserving scheme'
+       WRITE(msgBuf,'(2A)') '   = 4 : shift 1/hFac from Vorticity',
+     &                      ' to gU,gV tend. (Ang.Mom. conserving)'
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
        CALL PRINT_MESSAGE(endList, ioUnit, SQUEEZE_RIGHT, myThid )
        CALL WRITE_0D_L( useJamartMomAdv,  INDEX_NONE,
      & 'useJamartMomAdv=',' /* V.I Non-linear terms Jamart flag */')
