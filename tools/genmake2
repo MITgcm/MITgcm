@@ -3480,7 +3480,7 @@ ad_input_code.$FS: \$(AD_FILES) \$(AD_FLOW_FILES)
 
 ad_input_code_f90.$FS90: \$(AD_F90FILES) \$(AD_FLOW_FILES)
 EOF
-if test -z $AD_F90FILES ; then
+if test -z "$AD_F90FILES" ; then
 # a hack to always have a ad_input_code_f90.$FS90
 cat >>$MAKEFILE <<EOF
 	touch ad_input_code_f90.$FS90
@@ -3505,7 +3505,7 @@ adtafonly: ad_input_code.$FS
 EOF
 
 if test $CAT_SRC_FOR_TAF = 1 ; then
-if test -z $AD_F90FILES ; then
+if test -z "$AD_F90FILES" ; then
 cat >>$MAKEFILE <<EOF
 # ... send 1 file to TAF ...
 ad_taf_output.$FS: ad_input_code.$FS
