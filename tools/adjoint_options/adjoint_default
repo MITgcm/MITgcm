@@ -48,6 +48,8 @@ if test $TAF_FORTRAN_VERS = 'F77' ; then
     TAF_COMMON_FLAGS="-f77 $TAF_COMMON_FLAGS"
 elif test $TAF_FORTRAN_VERS = 'F90' ; then
     TAF_COMMON_FLAGS="-f90 $TAF_COMMON_FLAGS"
+elif test $TAF_FORTRAN_VERS = 'F08' ; then
+    TAF_COMMON_FLAGS="-f08 $TAF_COMMON_FLAGS"
 else
     #- after Jan 14, 2016, TAF default is "-f95"
     TAF_COMMON_FLAGS="-f95 $TAF_COMMON_FLAGS"
