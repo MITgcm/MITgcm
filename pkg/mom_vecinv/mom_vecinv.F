@@ -512,7 +512,7 @@ CADJ STORE cDrag(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
         ENDIF
 #if ( defined ALLOW_MOM_TEND_EXTRA_DIAGS && defined ALLOW_DIAGNOSTICS )
         IF ( botDragDiagIsOn ) THEN
-         CALL DIAGNOSTICS_FILL( vF, 'UBotDrag', k,1,2, bi,bj, myThid )
+         CALL DIAGNOSTICS_FILL( vF, 'UBotDrag', k,1,2,bi,bj, myThid )
         ENDIF
 #endif /* ALLOW_MOM_TEND_EXTRA_DIAGS && ALLOW_DIAGNOSTICS */
        ENDIF
@@ -622,7 +622,7 @@ CADJ STORE cDrag(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
         ENDIF
 #if ( defined ALLOW_MOM_TEND_EXTRA_DIAGS && defined ALLOW_DIAGNOSTICS )
         IF ( botDragDiagIsOn ) THEN
-         CALL DIAGNOSTICS_FILL( vF, 'VBotDrag', k,1,2, bi,bj, myThid )
+         CALL DIAGNOSTICS_FILL( vF, 'VBotDrag', k,1,2,bi,bj, myThid )
         ENDIF
 #endif /* ALLOW_MOM_TEND_EXTRA_DIAGS && ALLOW_DIAGNOSTICS */
        ENDIF
