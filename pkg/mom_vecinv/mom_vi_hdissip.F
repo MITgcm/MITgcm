@@ -38,7 +38,6 @@ C     == Routine arguments ==
 C     == Local variables ==
       INTEGER i, j
       _RL Zip, Zij, Zpj, Dim, Dij, Dmj, uD2, vD2
-      _RL Zip1, Zij1, Zpj1
       _RL uD4(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vD4(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
@@ -145,24 +144,24 @@ C and should be less than 1/8, for example viscAh=0.01
           Dij=dyF( i , j ,bi,bj)*dStar( i , j )
           Dmj=dyF(i-1, j ,bi,bj)*dStar(i-1, j )
 
-          Zip1=dxV( i ,j+1,bi,bj)*hFacZ( i ,j+1)*zStar( i ,j+1)
-          Zij1=dxV( i , j ,bi,bj)*hFacZ( i , j )*zStar( i , j )
-          Zpj1=dxV(i+1, j ,bi,bj)*hFacZ(i+1, j )*zStar(i+1, j )
+          Zip=dxV( i ,j+1,bi,bj)*hFacZ( i ,j+1)*zStar( i ,j+1)
+          Zij=dxV( i , j ,bi,bj)*hFacZ( i , j )*zStar( i , j )
+          Zpj=dxV(i+1, j ,bi,bj)*hFacZ(i+1, j )*zStar(i+1, j )
 #else
           Dim=dStar( i ,j-1)
           Dij=dStar( i , j )
           Dmj=dStar(i-1, j )
 
-          Zip1=hFacZ( i ,j+1)*zStar( i ,j+1)
-          Zij1=hFacZ( i , j )*zStar( i , j )
-          Zpj1=hFacZ(i+1, j )*zStar(i+1, j )
+          Zip=hFacZ( i ,j+1)*zStar( i ,j+1)
+          Zij=hFacZ( i , j )*zStar( i , j )
+          Zpj=hFacZ(i+1, j )*zStar(i+1, j )
 #endif
           Dij=Dij*viscA4_D(i,j)
           Dim=Dim*viscA4_D(i,j-1)
           Dmj=Dmj*viscA4_D(i-1,j)
-          Zij=Zij1*viscA4_Z(i,j)
-          Zip=Zip1*viscA4_Z(i,j+1)
-          Zpj=Zpj1*viscA4_Z(i+1,j)
+          Zij=Zij*viscA4_Z(i,j)
+          Zip=Zip*viscA4_Z(i,j+1)
+          Zpj=Zpj*viscA4_Z(i+1,j)
 
 #ifdef MOM_VI_ORIGINAL_VISCA4
           uD4(i,j) = recip_rAw(i,j,bi,bj)*(
@@ -208,21 +207,18 @@ C and should be less than 1/8, for example viscAh=0.01
           Dij=dyF( i , j ,bi,bj)*dStar( i , j )
           Dmj=dyF(i-1, j ,bi,bj)*dStar(i-1, j )
 
-          Zip1=dxV( i ,j+1,bi,bj)*hFacZ( i ,j+1)*zStar( i ,j+1)
-          Zij1=dxV( i , j ,bi,bj)*hFacZ( i , j )*zStar( i , j )
-          Zpj1=dxV(i+1, j ,bi,bj)*hFacZ(i+1, j )*zStar(i+1, j )
+          Zip=dxV( i ,j+1,bi,bj)*hFacZ( i ,j+1)*zStar( i ,j+1)
+          Zij=dxV( i , j ,bi,bj)*hFacZ( i , j )*zStar( i , j )
+          Zpj=dxV(i+1, j ,bi,bj)*hFacZ(i+1, j )*zStar(i+1, j )
 #else
           Dim=dStar( i ,j-1)
           Dij=dStar( i , j )
           Dmj=dStar(i-1, j )
 
-          Zip1=hFacZ( i ,j+1)*zStar( i ,j+1)
-          Zij1=hFacZ( i , j )*zStar( i , j )
-          Zpj1=hFacZ(i+1, j )*zStar(i+1, j )
+          Zip=hFacZ( i ,j+1)*zStar( i ,j+1)
+          Zij=hFacZ( i , j )*zStar( i , j )
+          Zpj=hFacZ(i+1, j )*zStar(i+1, j )
 #endif
-          Zij=Zij1
-          Zip=Zip1
-          Zpj=Zpj1
 
 #ifdef MOM_VI_ORIGINAL_VISCA4
           uD4(i,j) = recip_rAw(i,j,bi,bj)*(
@@ -268,8 +264,8 @@ C and should be less than 1/8, for example viscAh=0.01
        ENDDO
 #ifdef ALLOW_DIAGNOSTICS
        IF ( useDiagnostics ) THEN
-        CALL DIAGNOSTICS_FILL( uD4, 'Um_hDis4', k,1,2, bi,bj, myThid )
-        CALL DIAGNOSTICS_FILL( vD4, 'Vm_hDis4', k,1,2, bi,bj, myThid )
+        CALL DIAGNOSTICS_FILL( uD4, 'Um_hDis4', k,1,2,bi,bj, myThid )
+        CALL DIAGNOSTICS_FILL( vD4, 'Vm_hDis4', k,1,2,bi,bj, myThid )
        ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
       ENDIF
