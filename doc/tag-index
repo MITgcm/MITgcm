@@ -1,6 +1,11 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/mom_vecinv:
+  - add more 3-D momentum tendency diagnostics (originally from Helen Pillar)
+    for harmonic/bi-harmonic dissipation and for bottom + top friction
+    tendency (under new CPP option: ALLOW_MOM_TEND_EXTRA_DIAGS).
+
 checkpoint68z (2024/07/27)
 o pkg/diagnostics:
   - to allow to use ADJ-diags in DIVA runs, change call sequence regarding
