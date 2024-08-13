@@ -26,11 +26,11 @@ C     == Global variables ===
 # include "SEAICE_PARAMS.h"
 #endif
 #ifdef ALLOW_CTRL
+# include "CTRL_SIZE.h"
 # include "CTRL.h"
 #endif
 #ifdef ALLOW_DIAGNOSTICS
-# include "DIAGNOSTICS_SIZE.h"
-# include "DIAGNOSTICS.h"
+# include "DIAGNOSTICS_P2SHARE.h"
 #endif /* ALLOW_DIAGNOSTICS */
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -57,7 +57,7 @@ C--   Set backward-sweep switch:
 C-    Consistent with S/R DIAGNOSTICS_WRITE_ADJ and where both S/R are called:
         wrIter = myIter - 1
         wrTime = myTime - deltaTClock
-        CALL DIAGNOSTICS_SWITCH_ONOFF( wrTime, wrIter, myThid )
+        CALL DIAGNOSTICS_SWITCH_ONOFF( -1, wrTime, wrIter, myThid )
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 

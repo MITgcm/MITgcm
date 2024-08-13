@@ -64,6 +64,9 @@ C     print shelfice summary here before checking the parameter combinations
        CALL WRITE_0D_L( SHELFICEMassStepping, INDEX_NONE,
      &   'SHELFICEMassStepping =',
      &   ' /* step forward ice shelf mass/thickness */')
+       CALL WRITE_0D_L( SHI_update_kTopC, INDEX_NONE,
+     &   'SHI_update_kTopC =',
+     &   ' /* update "kTopC" as ice shelf expand or retreat */')
        CALL WRITE_0D_L( no_slip_shelfice, INDEX_NONE,
      &   'no_slip_shelfice =', ' /* use no slip boundary conditions */')
        CALL WRITE_0D_RL( SHELFICEdragLinear, INDEX_NONE,
@@ -196,6 +199,15 @@ C-    Check that CPP option is "defined" when corresponding run-time parameter i
 #endif /* SHI_ALLOW_GAMMAFRICT */
 
 #ifndef ALLOW_SHELFICE_REMESHING
+      IF ( SHI_update_kTopC ) THEN
+       WRITE(msgBuf,'(2A)') 'SHELFICE_CHECK: ',
+     &      'SHI_update_kTopC only available with'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(2A)') 'SHELFICE_CHECK: ',
+     &      'CPP option ALLOW_SHELFICE_REMESHING defined'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       errCount = errCount + 1
+      ENDIF
       IF ( SHELFICEremeshFrequency.GT.zeroRL ) THEN
        WRITE(msgBuf,'(A,A,A)')
      &      'Run-time SHELFICEremeshFrequency was set ( > 0 )'
@@ -215,6 +227,13 @@ C     Consistent choice of parameter:
      &      ' SHELFICEmassFile and SHELFICEloadAnomalyFile'
          CALL PRINT_ERROR( msgBuf, myThid )
          errCount = errCount + 1
+      ENDIF
+      IF ( SHELFICEMassStepping .AND. SHELFICEmassFile.EQ.' '
+     &                   .AND. SHELFICEloadAnomalyFile.NE.' ' ) THEN
+        WRITE(msgBuf,'(2A)') '** Warning ** SHELFICE_CHECK: ',
+     &   'safer to set initial Mass when using SHELFICEMassStepping'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
       ENDIF
 
 C     So far, SHELFICE works only with oceanic z-coordinates
@@ -255,6 +274,12 @@ C        d.Eta/dt below Ice-Shelf.
         errCount = errCount + 1
        ENDIF
       ENDIF
+      IF ( SHI_update_kTopC .AND. nonlinFreeSurf.LE.0 ) THEN
+        WRITE(msgBuf,'(2A)') '** WARNING ** SHELFICE_CHECK: ',
+     &       'linear Free-Surf not consistent with SHI_update_kTopC'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+      ENDIF
 
 C     SHELFICE may not work with many other packages,
 C     e.g. vertical mixing schemes, in particular KPP will not work properly,
@@ -268,15 +293,14 @@ CML         CALL PRINT_ERROR( msgBuf , 1)
 CML         errCount = errCount + 1
 CML      ENDIF
 
-      IF ( SHELFICEMassStepping .AND. useSEAICE ) THEN
-        WRITE(msgBuf,'(2A)') '** WARNING ** SHELFICE_CHECK: ',
+      IF ( SHI_update_kTopC .AND. useSEAICE ) THEN
+        WRITE(msgBuf,'(2A)') 'SHELFICE_CHECK: ',
      &   'pkg/seaice IGNORES Ice-Shelf retreat/advance'
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-        WRITE(msgBuf,'(2A)') '** WARNING ** SHELFICE_CHECK: ',
-     &   ' that might occur with SHELFICEMassStepping'
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'SHELFICE_CHECK: ',
+     &   ' and does not work with SHI_update_kTopC=T'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
       ENDIF
 
 C     Currently cannot use SHELFICEMassStepping with OpenAD

@@ -17,13 +17,14 @@ c     ==================================================================
 c     SUBROUTINE grdchk_get_obcs_mask
 c     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
 c     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "GRID.h"
+#include "CTRL_SIZE.h"
 #include "CTRL.h"
 #ifdef ALLOW_OBCS_CONTROL
 C     CTRL_OBCS.h must be included before GRDCHK.h
@@ -65,94 +66,82 @@ c     == end of interface ==
 
       _BEGIN_MASTER( mythid )
 
-      if ( grdchkvarindex .EQ. 11 ) then
+      IF ( ncvargrd(grdchkvarindex) .EQ. 'm' ) THEN
+       IF ( ncvarindex(grdchkvarindex).EQ.1 ) THEN
 #ifdef ALLOW_OBCSN_CONTROL
-      write(fname,'(a)') 'maskobcsn'
-c
-      do iobcs = 1,nobcs
+        write(fname,'(a)') 'maskobcsn'
+        do iobcs = 1,nobcs
          call active_read_xz(  fname, tmpfldxz, iobcs,
      &        .false., .false., 0, mythid, dummy)
-c
          do bj = jtlo,jthi
-            do bi = itlo,ithi
-               do k = 1,nr
-                  do i = imin,imax
-                     grdchk_maskxz(i,k,bi,bj,iobcs) =
-     &                    tmpfldxz(i,k,bi,bj)
-                  enddo
-               enddo
+          do bi = itlo,ithi
+           do k = 1,nr
+            do i = imin,imax
+              grdchk_maskxz(i,k,bi,bj,iobcs) = tmpfldxz(i,k,bi,bj)
             enddo
+           enddo
+          enddo
          enddo
-c
-      enddo
+        enddo
 #endif
 
-      else if ( grdchkvarindex .EQ. 12 ) then
+       ELSEIF ( ncvarindex(grdchkvarindex).EQ.2 ) THEN
 #ifdef ALLOW_OBCSS_CONTROL
-      write(fname,'(a)') 'maskobcss'
+        write(fname,'(a)') 'maskobcss'
 c
-      do iobcs = 1,nobcs
+        do iobcs = 1,nobcs
          call active_read_xz(  fname, tmpfldxz, iobcs,
      &        .false., .false., 0, mythid, dummy)
-c
          do bj = jtlo,jthi
-            do bi = itlo,ithi
-               do k = 1,nr
-                  do i = imin,imax
-                     grdchk_maskxz(i,k,bi,bj,iobcs) =
-     &                    tmpfldxz(i,k,bi,bj)
-                  enddo
-               enddo
+          do bi = itlo,ithi
+           do k = 1,nr
+            do i = imin,imax
+              grdchk_maskxz(i,k,bi,bj,iobcs) = tmpfldxz(i,k,bi,bj)
             enddo
+           enddo
+          enddo
          enddo
-c
-      enddo
+        enddo
 #endif
 
-      else if ( grdchkvarindex .EQ. 13 ) then
-#ifdef ALLOW_OBCSW_CONTROL
-      write(fname,'(a)') 'maskobcsw'
-c
-      do iobcs = 1,nobcs
-         call active_read_yz(  fname, tmpfldyz, iobcs,
-     &        .false., .false., 0, mythid, dummy)
-c
-         do bj = jtlo,jthi
-            do bi = itlo,ithi
-               do k = 1,nr
-                  do j = jmin,jmax
-                     grdchk_maskyz(j,k,bi,bj,iobcs) =
-     &                    tmpfldyz(j,k,bi,bj)
-                  enddo
-               enddo
-            enddo
-         enddo
-c
-      enddo
-#endif
-
-      else if ( grdchkvarindex .EQ. 14 ) then
+       ELSEIF ( ncvarindex(grdchkvarindex).EQ.3 ) THEN
 #ifdef ALLOW_OBCSE_CONTROL
-      write(fname,'(a)') 'maskobcse'
-c
-      do iobcs = 1,nobcs
+        write(fname,'(a)') 'maskobcse'
+        do iobcs = 1,nobcs
          call active_read_yz(  fname, tmpfldyz, iobcs,
      &        .false., .false., 0, mythid, dummy)
-c
          do bj = jtlo,jthi
-            do bi = itlo,ithi
-               do k = 1,nr
-                  do j = jmin,jmax
-                     grdchk_maskyz(j,k,bi,bj,iobcs) =
-     &                    tmpfldyz(j,k,bi,bj)
-                  enddo
-               enddo
+          do bi = itlo,ithi
+           do k = 1,nr
+            do j = jmin,jmax
+               grdchk_maskyz(j,k,bi,bj,iobcs) = tmpfldyz(j,k,bi,bj)
             enddo
+           enddo
+          enddo
          enddo
-c
-      enddo
+        enddo
 #endif
-      endif
+
+       ELSEIF ( ncvarindex(grdchkvarindex).EQ.4 ) THEN
+#ifdef ALLOW_OBCSW_CONTROL
+        write(fname,'(a)') 'maskobcsw'
+        do iobcs = 1,nobcs
+         call active_read_yz(  fname, tmpfldyz, iobcs,
+     &        .false., .false., 0, mythid, dummy)
+         do bj = jtlo,jthi
+          do bi = itlo,ithi
+           do k = 1,nr
+            do j = jmin,jmax
+              grdchk_maskyz(j,k,bi,bj,iobcs) = tmpfldyz(j,k,bi,bj)
+            enddo
+           enddo
+          enddo
+         enddo
+        enddo
+#endif
+
+       ENDIF
+      ENDIF
 
       _END_MASTER( mythid )
 
@@ -160,5 +149,5 @@ c
 
 #endif /* ALLOW_GRDCHK */
 
-      return
-      end
+      RETURN
+      END

@@ -469,6 +469,18 @@ computed accordingly. In case #2 (‘m_horflux\*’) the ‘W’, ‘S’, and �
 masks should consists of +1, -1, and 0 values and an integrated
 horizontal transport (or overturn) will be computed accordingly.
 
+.. note::
+
+   By default, ``m_boxmean`` cost functions are sums of masked, weighted 
+   variables, where the weight of each cell is the current cell volume 
+   divided by the total masked *initial* volume (sum of masked 
+   ``eccoVol_0``). Note that cell volumes vary in time in the case of 
+   a non-linear free surface (see :numref:`nonlinear-freesurface` 
+   (:ref:`nonlinear-freesurface`)). To obtain a true weighted mean in 
+   the case of a non-linear free surface, please define 
+   ``ECCO_VARIABLE_AREAVOLGLOB`` in ``ECCO_OPTIONS.h``, which instead 
+   uses the total masked current volume to weight contributions.
+
 In order to define a control volume using both a depth range and a
 density range, use a ‘K’ mask and also set
 :varlink:`gencost_useDensityMask` ``=.TRUE.``. When the density range

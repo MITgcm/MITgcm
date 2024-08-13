@@ -72,9 +72,9 @@ def densmdjwf(s,theta,p):
     """
     
     # make sure arguments are floating point
-    s = np.asfarray(s)
-    t = np.asfarray(theta)
-    p = np.asfarray(p)
+    s = np.asarray(s, dtype=np.float64)
+    t = np.asarray(theta, dtype=np.float64)
+    p = np.asarray(p, dtype=np.float64)
 
     p1 = np.copy(p);
     

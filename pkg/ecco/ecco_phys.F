@@ -2,6 +2,9 @@
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE_OPTIONS.h"
 #endif
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -33,6 +36,9 @@ c     == global variables ==
 #endif
 #if (defined ALLOW_GENCOST_CONTRIBUTION) && (defined ALLOW_SHELFICE)
 # include "SHELFICE.h"
+#endif
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
 #endif
 
 C     !INPUT PARAMETERS:
@@ -80,6 +86,10 @@ c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 #endif
 C     Mload     :: total mass load (kg/m**2)
 c     _RL Mload(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#if ( defined ALLOW_AUTODIFF_TAMC && defined ALLOW_GENCOST_CONTRIBUTION )
+C     ikey   :: tape key (depends on kgen)
+      INTEGER ikey
+#endif
 CEOP
 
       tmpfac = recip_rhoConst*recip_gravity
@@ -418,7 +428,11 @@ cts ---
      &          gencost_storefld(i,j,bi,bj,kgen)
      &          +tmpmsk*tmpfld*tmpvol
             areavolTile(bi,bj)=areavolTile(bi,bj)
+#ifdef ECCO_VARIABLE_AREAVOLGLOB
+     &          +tmpmsk2*tmpvol
+#else
      &          +tmpmsk2*eccoVol_0(i,j,k,bi,bj)
+#endif
 
            ENDDO ! Ends do k=1,Nr
 
@@ -555,6 +569,12 @@ cts ---
      &      gencost_barfile(kgen)(11:13).NE.'shi' .AND.
      &      gencost_barfile(kgen)(11:13).NE.'vol' ) THEN
         CALL GLOBAL_SUM_TILE_RL( areavolTile, areavolGlob, myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
+C     avoid recomputing areavolGlob multiple times each time this
+C     routine is called
+        ikey = kgen + (ikey_dynamics-1)*NGENCOST
+CADJ STORE areavolGlob = comlev1_ngencost, key = ikey
+#endif
         CALL ECCO_DIV( gencost_storefld(1-OLx,1-OLy,1,1,kgen),
      &                 areavolGlob, 1, 1, myThid )
        ENDIF

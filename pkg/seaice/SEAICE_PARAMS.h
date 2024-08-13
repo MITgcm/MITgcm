@@ -27,6 +27,11 @@ C     SEAICEuseLSR      :: If true, use default Picard solver with Line-
 C                          Successive(-over)-Relaxation, can also be true
 C                          if LSR is used as a preconditioner for the
 C                          non-linear JFNK solver
+C     SEAICEuseLSRflex  :: If true, use default Picard solver with Line-
+C                          Successive(-over)-Relaxation, but determine the
+C                          number of non-linear iterations depends on the
+C                          residual resduction, similar to the Krylov and
+C                          JFNK solvers
 C     SEAICEusePicardAsPrecon :: If true, allow SEAICEuseLSR = .TRUE. as a
 C                          preconditioner for non-linear JFNK problem (def. = F)
 C     SEAICEuseKrylov   :: If true, use matrix-free Krylov solver with Picard
@@ -132,7 +137,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICEuseEVP, SEAICEuseEVPstar, SEAICEuseEVPrev,
      &     SEAICEuseEVPpickup,
      &     SEAICEuseMultiTileSolver,
-     &     SEAICEuseLSR, SEAICEuseKrylov,
+     &     SEAICEuseLSR, SEAICEuseLSRflex, SEAICEuseKrylov,
      &     SEAICEuseJFNK, SEAICEuseIMEX, SEAICEuseBDF2,
      &     SEAICEusePicardAsPrecon,
      &     useHibler79IceStrength, SEAICEsimpleRidging,
@@ -162,7 +167,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICEuseEVP, SEAICEuseEVPstar, SEAICEuseEVPrev,
      &     SEAICEuseEVPpickup,
      &     SEAICEuseMultiTileSolver,
-     &     SEAICEuseLSR, SEAICEuseKrylov,
+     &     SEAICEuseLSR, SEAICEuseLSRflex, SEAICEuseKrylov,
      &     SEAICEuseJFNK, SEAICEuseIMEX, SEAICEuseBDF2,
      &     SEAICEusePicardAsPrecon,
      &     useHibler79IceStrength, SEAICEsimpleRidging,

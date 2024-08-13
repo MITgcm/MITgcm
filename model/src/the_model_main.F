@@ -586,6 +586,7 @@ C     == Global variables ===
 # include "tamc.h"
 #endif
 #ifdef ALLOW_CTRL
+# include "CTRL_SIZE.h"
 # include "CTRL.h"
 # include "OPTIMCYCLE.h"
 #endif
@@ -605,19 +606,19 @@ C     myTime :: Time counter for this thread
 C     myIter :: Iteration counter for this thread
       INTEGER myIter
       _RL     myTime
-      LOGICAL exst
+      LOGICAL costFinalExist
       LOGICAL lastdiva
 CEOP
 
 C--   set default:
-      exst     = .TRUE.
+      costFinalExist = .TRUE.
       lastdiva = .TRUE.
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_ENTER('THE_MODEL_MAIN',myThid)
 #endif
 
-#if defined(USE_PAPI) || defined(USE_PCL_FLOPS_SFP) || defined(USE_PCL_FLOPS) || defined(USE_PCL)
+#if ( defined USE_PAPI || defined USE_PCL_FLOPS_SFP || defined USE_PCL_FLOPS || defined USE_PCL )
       CALL TIMER_CONTROL('','INIT','THE_MODEL_MAIN',myThid)
 #endif
 C--   This timer encompasses the whole code
@@ -634,81 +635,83 @@ C--   Set model configuration (fixed arrays)
       myTime = startTime
       myIter = nIter0
 
-#if ( defined (ALLOW_ADMTLM) )
+#ifdef ALLOW_ADMTLM
 
       STOP 'should never get here; ADMTLM_DSVD calls ADMTLM_DRIVER'
 
-#elif ( defined (ALLOW_AUTODIFF))
+#elif ( defined ALLOW_AUTODIFF )
 
 # ifdef ALLOW_CTRL
-# ifndef EXCLUDE_CTRL_PACK
       IF ( useCTRL ) THEN
-         inquire( file='costfinal', exist=exst )
-         IF ( .NOT. exst ) THEN
-            IF ( (optimcycle.NE.0 .OR. .NOT.doinitxx)
-     &           .AND. doMainUnpack ) THEN
-               CALL TIMER_START('CTRL_UNPACK   [THE_MODEL_MAIN]',myThid)
-               CALL CTRL_UNPACK( .TRUE. , myThid )
-               CALL TIMER_STOP ('CTRL_UNPACK   [THE_MODEL_MAIN]',myThid)
-            ENDIF
-         ENDIF
-       ENDIF
-# endif /* EXCLUDE_CTRL_PACK */
-# endif
+#  ifndef EXCLUDE_CTRL_PACK
+        INQUIRE( FILE='costfinal', EXIST=costFinalExist )
+        IF ( .NOT.costFinalExist ) THEN
+          IF ( (optimcycle.NE.0 .OR. .NOT.doinitxx)
+     &         .AND. doMainUnpack ) THEN
+            CALL TIMER_START('CTRL_UNPACK   [THE_MODEL_MAIN]',myThid)
+            CALL CTRL_UNPACK( .TRUE. , myThid )
+            CALL TIMER_STOP ('CTRL_UNPACK   [THE_MODEL_MAIN]',myThid)
+          ENDIF
+        ENDIF
+#  elif ( defined ALLOW_DIVIDED_ADJOINT )
+        INQUIRE( FILE='costfinal', EXIST=costFinalExist )
+#  endif /* EXCLUDE_CTRL_PACK & ALLOW_DIVIDED_ADJOINT */
+      ENDIF
+# endif /* ALLOW_CTRL */
 
 # ifdef ALLOW_COST
       CALL COST_DEPENDENT_INIT ( myThid )
 # endif
 
-# if defined( ALLOW_TANGENTLINEAR_RUN )
+# if ( defined ALLOW_TANGENTLINEAR_RUN )
 
-# ifndef ALLOW_TAPENADE
-
-#  ifdef ALLOW_DEBUG
+#  ifndef ALLOW_TAPENADE
+#   ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('G_THE_MAIN_LOOP',myThid)
-#  endif
+#   endif
       CALL TIMER_START('G_THE_MAIN_LOOP           [TANGENT RUN]',myThid)
       CALL G_THE_MAIN_LOOP ( myTime, myIter, myThid )
       CALL TIMER_STOP ('G_THE_MAIN_LOOP           [TANGENT RUN]',myThid)
+#  endif /* ndef ALLOW_TAPENADE */
 
-# endif /* ndef ALLOW_TAPENADE */
+# elif ( defined ALLOW_ADJOINT_RUN )
 
-# elif defined( ALLOW_ADJOINT_RUN )
+#  ifdef ALLOW_TAPENADE
+      CALL THE_MAIN_LOOP_B( myTime, myIter, myThid )
+#  else /* ALLOW_TAPENADE */
 
-# ifdef ALLOW_TAPENADE
-        CALL THE_MAIN_LOOP_B( myTime, myIter, myThid )
-# else /* ALLOW_TAPENADE */
-
-#  ifdef ALLOW_DIVIDED_ADJOINT
+#   ifdef ALLOW_DIVIDED_ADJOINT
 C-- The following assumes the TAF option '-pure'
-      inquire( file='costfinal', exist=exst )
-      IF ( .NOT. exst) THEN
-#   ifdef ALLOW_DEBUG
-         IF (debugMode) CALL DEBUG_CALL('MDTHE_MAIN_LOOP',myThid)
-#   endif
-         CALL TIMER_START('MDTHE_MAIN_LOOP            [MD RUN]', myThid)
-         CALL MDTHE_MAIN_LOOP ( myTime, myIter, myThid )
-         CALL TIMER_STOP ('MDTHE_MAIN_LOOP            [MD RUN]', myThid)
-         CALL COST_FINAL_STORE ( myThid, lastdiva )
+      IF ( .NOT.costFinalExist ) THEN
+#    ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('MDTHE_MAIN_LOOP',myThid)
+#    endif
+        CALL TIMER_START('MDTHE_MAIN_LOOP            [MD RUN]', myThid)
+        CALL MDTHE_MAIN_LOOP ( myTime, myIter, myThid )
+        CALL TIMER_STOP ('MDTHE_MAIN_LOOP            [MD RUN]', myThid)
+        CALL COST_FINAL_STORE ( lastdiva, myThid )
       ELSE
-#   ifdef ALLOW_DEBUG
-         IF (debugMode) CALL DEBUG_CALL('ADTHE_MAIN_LOOP',myThid)
-#   endif
-         CALL TIMER_START('ADTHE_MAIN_LOOP       [ADJOINT RUN]', myThid)
-         CALL ADTHE_MAIN_LOOP (  myThid )
-         CALL TIMER_STOP ('ADTHE_MAIN_LOOP       [ADJOINT RUN]', myThid)
-         CALL COST_FINAL_RESTORE ( myThid, lastdiva )
+C-- for DIVA, avoid forward-related output in adjoint part
+        CALL TURNOFF_MODEL_IO( 1, myThid )
+#    ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('ADTHE_MAIN_LOOP',myThid)
+#    endif
+        CALL TIMER_START('ADTHE_MAIN_LOOP       [ADJOINT RUN]', myThid)
+        CALL ADTHE_MAIN_LOOP (  myThid )
+        CALL TIMER_STOP ('ADTHE_MAIN_LOOP       [ADJOINT RUN]', myThid)
+        CALL COST_FINAL_RESTORE ( lastdiva, myThid )
       ENDIF
 
-#  else /* ALLOW_DIVIDED_ADJOINT undef */
-#   ifdef ALLOW_DEBUG
+#   else /* ALLOW_DIVIDED_ADJOINT undef */
+#    ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('ADTHE_MAIN_LOOP',myThid)
-#   endif
+#    endif
       CALL TIMER_START('ADTHE_MAIN_LOOP          [ADJOINT RUN]', myThid)
       CALL ADTHE_MAIN_LOOP ( myThid )
       CALL TIMER_STOP ('ADTHE_MAIN_LOOP          [ADJOINT RUN]', myThid)
-#  endif /* ALLOW_DIVIDED_ADJOINT */
-# endif /* ALLOW_TAPENADE */
+#   endif /* ALLOW_DIVIDED_ADJOINT */
+
+#  endif /* ALLOW_TAPENADE */
 
 # else /* forward run only within AD setting */
 
@@ -724,27 +727,25 @@ C--   Call time stepping loop of full model
 
 # ifdef ALLOW_CTRL
 #  ifndef EXCLUDE_CTRL_PACK
-      IF ( useCTRL ) THEN
-      IF ( lastdiva .AND. doMainPack ) THEN
-         CALL TIMER_START('CTRL_PACK           [THE_MODEL_MAIN]',myThid)
-         CALL CTRL_PACK( .FALSE. , myThid )
-         CALL TIMER_STOP ('CTRL_PACK           [THE_MODEL_MAIN]',myThid)
-         IF ( ( optimcycle.EQ.0 .OR. (.NOT. doMainUnpack) )
-     &        .AND. myIter.EQ.nIter0 ) THEN
-            CALL TIMER_START('CTRL_PACK     [THE_MODEL_MAIN]',myThid)
-            CALL CTRL_PACK( .TRUE. , myThid )
-            CALL TIMER_STOP ('CTRL_PACK     [THE_MODEL_MAIN]',myThid)
-         ENDIF
-      ENDIF
+      IF ( useCTRL .AND. lastdiva .AND. doMainPack ) THEN
+        CALL TIMER_START('CTRL_PACK           [THE_MODEL_MAIN]',myThid)
+        CALL CTRL_PACK( .FALSE. , myThid )
+        CALL TIMER_STOP ('CTRL_PACK           [THE_MODEL_MAIN]',myThid)
+        IF ( ( optimcycle.EQ.0 .OR. (.NOT. doMainUnpack) )
+     &       .AND. myIter.EQ.nIter0 ) THEN
+          CALL TIMER_START('CTRL_PACK     [THE_MODEL_MAIN]',myThid)
+          CALL CTRL_PACK( .TRUE. , myThid )
+          CALL TIMER_STOP ('CTRL_PACK     [THE_MODEL_MAIN]',myThid)
+        ENDIF
       ENDIF
 #  endif /* EXCLUDE_CTRL_PACK */
 # endif /* ALLOW_CTRL */
 
 # ifdef ALLOW_GRDCHK
       IF ( useGrdchk .AND. lastdiva ) THEN
-         CALL TIMER_START('GRDCHK_MAIN         [THE_MODEL_MAIN]',myThid)
-         CALL GRDCHK_MAIN( myThid )
-         CALL TIMER_STOP ('GRDCHK_MAIN         [THE_MODEL_MAIN]',myThid)
+        CALL TIMER_START('GRDCHK_MAIN         [THE_MODEL_MAIN]',myThid)
+        CALL GRDCHK_MAIN( myThid )
+        CALL TIMER_STOP ('GRDCHK_MAIN         [THE_MODEL_MAIN]',myThid)
       ENDIF
 # endif
 
@@ -761,13 +762,13 @@ C--   Call time stepping loop of full model
 #endif /* ALLOW_TANGENTLINEAR_RUN ALLOW_ADJOINT_RUN ALLOW_ADMTLM */
 
 #ifdef ALLOW_STREAMICE
-      IF (useStreamIce) THEN
+      IF ( useStreamIce ) THEN
         CALL STREAMICE_FINALIZE_PETSC
       ENDIF
 #endif
 
 #ifdef ALLOW_MNC
-      IF (useMNC) THEN
+      IF ( useMNC ) THEN
 C       Close all open NetCDF files
         _BEGIN_MASTER( myThid )
         CALL MNC_FILE_CLOSE_ALL( myThid )
@@ -780,8 +781,8 @@ C--   This timer encompasses the whole code
 
 C--   Write timer statistics
       IF ( myThid .EQ. 1 ) THEN
-       CALL TIMER_PRINTALL( myThid )
-       CALL COMM_STATS
+        CALL TIMER_PRINTALL( myThid )
+        CALL COMM_STATS
       ENDIF
 
 C--   Check threads synchronization :

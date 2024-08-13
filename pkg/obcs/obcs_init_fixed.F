@@ -23,6 +23,9 @@ C     === Global variables ===
 #include "GRID.h"
 #include "OBCS_PARAMS.h"
 #include "OBCS_GRID.h"
+#ifdef ALLOW_OBCS_TIDES
+# include "OBCS_FIELDS.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid   :: my Thread Id. number
@@ -45,6 +48,12 @@ C     i, j     :: Loop counters
       INTEGER iB, jB
       LOGICAL flag
       INTEGER ioUnit
+#ifdef ALLOW_OBCS_TIDES
+      LOGICAL inCurrentDir
+      INTEGER  k, fp
+      _RS dummyRS(1)
+      _RL recipPeriod, locPh
+#endif
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_ENTER('OBCS_INIT_FIXED',myThid)
@@ -399,6 +408,183 @@ C--   Set OB active tiles:
 
 C--   Set domain connected-piece Id for OB grid points:
       CALL OBCS_SET_CONNECT( myThid )
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+#ifdef ALLOW_OBCS_TIDES
+C==   Set-up OB Tidal forcing
+C     (kept fixed during simulation --> moved here from obcs_init_variables.F)
+
+C--   Initialise Tidal Component coeff:
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO k=1,OBCS_tideCompSize
+         DO i=1-OLx,sNx+OLx
+# ifdef ALLOW_OBCS_NORTH
+          OBN_uTideCs(i,k,bi,bj) = 0. _d 0
+          OBN_uTideSn(i,k,bi,bj) = 0. _d 0
+          OBN_vTideCs(i,k,bi,bj) = 0. _d 0
+          OBN_vTideSn(i,k,bi,bj) = 0. _d 0
+# endif
+# ifdef ALLOW_OBCS_SOUTH
+          OBS_uTideCs(i,k,bi,bj) = 0. _d 0
+          OBS_uTideSn(i,k,bi,bj) = 0. _d 0
+          OBS_vTideCs(i,k,bi,bj) = 0. _d 0
+          OBS_vTideSn(i,k,bi,bj) = 0. _d 0
+# endif
+         ENDDO
+         DO j=1-OLy,sNy+OLy
+# ifdef ALLOW_OBCS_EAST
+          OBE_uTideCs(j,k,bi,bj) = 0. _d 0
+          OBE_uTideSn(j,k,bi,bj) = 0. _d 0
+          OBE_vTideCs(j,k,bi,bj) = 0. _d 0
+          OBE_vTideSn(j,k,bi,bj) = 0. _d 0
+# endif
+# ifdef ALLOW_OBCS_WEST
+          OBW_uTideCs(j,k,bi,bj) = 0. _d 0
+          OBW_uTideSn(j,k,bi,bj) = 0. _d 0
+          OBW_vTideCs(j,k,bi,bj) = 0. _d 0
+          OBW_vTideSn(j,k,bi,bj) = 0. _d 0
+# endif
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+      _BARRIER
+
+      IF ( useOBCStides ) THEN
+C--   Read from files Barotropic Tidal Amplitude and Phase:
+       fp = readBinaryPrec
+       inCurrentDir = .FALSE.
+# ifdef ALLOW_MDSIO
+#  ifdef ALLOW_OBCS_NORTH
+       IF ( OBN_uTidAmFile .NE. ' '  )
+     &   CALL MDS_READ_SEC_XZ( OBN_uTidAmFile, fp, inCurrentDir, 'RL',
+     &                         OBCS_tideCompSize, 1, OBCS_nTidalComp,
+     &                         OBN_uTideCs, dummyRS, 1, myThid )
+       IF ( OBN_uTidPhFile .NE. ' '  )
+     &   CALL MDS_READ_SEC_XZ( OBN_uTidPhFile, fp, inCurrentDir, 'RL',
+     &                         OBCS_tideCompSize, 1, OBCS_nTidalComp,
+     &                         OBN_uTideSn, dummyRS, 1, myThid )
+       IF ( OBN_vTidAmFile .NE. ' '  )
+     &   CALL MDS_READ_SEC_XZ( OBN_vTidAmFile, fp, inCurrentDir, 'RL',
+     &                         OBCS_tideCompSize, 1, OBCS_nTidalComp,
+     &                         OBN_vTideCs, dummyRS, 1, myThid )
+       IF ( OBN_vTidPhFile .NE. ' '  )
+     &   CALL MDS_READ_SEC_XZ( OBN_vTidPhFile, fp, inCurrentDir, 'RL',
+     &                         OBCS_tideCompSize, 1, OBCS_nTidalComp,
+     &                         OBN_vTideSn, dummyRS, 1, myThid )
+#  endif
+#  ifdef ALLOW_OBCS_SOUTH
+       IF ( OBS_uTidAmFile .NE. ' '  )
+     &   CALL MDS_READ_SEC_XZ( OBS_uTidAmFile, fp, inCurrentDir, 'RL',
+     &                         OBCS_tideCompSize, 1, OBCS_nTidalComp,
+     &                         OBS_uTideCs, dummyRS, 1, myThid )
+       IF ( OBS_uTidPhFile .NE. ' '  )
+     &   CALL MDS_READ_SEC_XZ( OBS_uTidPhFile, fp, inCurrentDir, 'RL',
+     &                         OBCS_tideCompSize, 1, OBCS_nTidalComp,
+     &                         OBS_uTideSn, dummyRS, 1, myThid )
+       IF ( OBS_vTidAmFile .NE. ' '  )
+     &   CALL MDS_READ_SEC_XZ( OBS_vTidAmFile, fp, inCurrentDir, 'RL',
+     &                         OBCS_tideCompSize, 1, OBCS_nTidalComp,
+     &                         OBS_vTideCs, dummyRS, 1, myThid )
+       IF ( OBS_vTidPhFile .NE. ' '  )
+     &   CALL MDS_READ_SEC_XZ( OBS_vTidPhFile, fp, inCurrentDir, 'RL',
+     &                         OBCS_tideCompSize, 1, OBCS_nTidalComp,
+     &                         OBS_vTideSn, dummyRS, 1, myThid )
+#  endif
+#  ifdef ALLOW_OBCS_EAST
+       IF ( OBE_uTidAmFile .NE. ' '  )
+     &   CALL MDS_READ_SEC_YZ( OBE_uTidAmFile, fp, inCurrentDir, 'RL',
+     &                         OBCS_tideCompSize, 1, OBCS_nTidalComp,
+     &                         OBE_uTideCs, dummyRS, 1, myThid )
+       IF ( OBE_uTidPhFile .NE. ' '  )
+     &   CALL MDS_READ_SEC_YZ( OBE_uTidPhFile, fp, inCurrentDir, 'RL',
+     &                         OBCS_tideCompSize, 1, OBCS_nTidalComp,
+     &                         OBE_uTideSn, dummyRS, 1, myThid )
+       IF ( OBE_vTidAmFile .NE. ' '  )
+     &   CALL MDS_READ_SEC_YZ( OBE_vTidAmFile, fp, inCurrentDir, 'RL',
+     &                         OBCS_tideCompSize, 1, OBCS_nTidalComp,
+     &                         OBE_vTideCs, dummyRS, 1, myThid )
+       IF ( OBE_vTidPhFile .NE. ' '  )
+     &   CALL MDS_READ_SEC_YZ( OBE_vTidPhFile, fp, inCurrentDir, 'RL',
+     &                         OBCS_tideCompSize, 1, OBCS_nTidalComp,
+     &                         OBE_vTideSn, dummyRS, 1, myThid )
+#  endif
+#  ifdef ALLOW_OBCS_WEST
+       IF ( OBW_uTidAmFile .NE. ' '  )
+     &   CALL MDS_READ_SEC_YZ( OBW_uTidAmFile, fp, inCurrentDir, 'RL',
+     &                         OBCS_tideCompSize, 1, OBCS_nTidalComp,
+     &                         OBW_uTideCs, dummyRS, 1, myThid )
+       IF ( OBW_uTidPhFile .NE. ' '  )
+     &   CALL MDS_READ_SEC_YZ( OBW_uTidPhFile, fp, inCurrentDir, 'RL',
+     &                         OBCS_tideCompSize, 1, OBCS_nTidalComp,
+     &                         OBW_uTideSn, dummyRS, 1, myThid )
+       IF ( OBW_vTidAmFile .NE. ' '  )
+     &   CALL MDS_READ_SEC_YZ( OBW_vTidAmFile, fp, inCurrentDir, 'RL',
+     &                         OBCS_tideCompSize, 1, OBCS_nTidalComp,
+     &                         OBW_vTideCs, dummyRS, 1, myThid )
+       IF ( OBW_vTidPhFile .NE. ' '  )
+     &   CALL MDS_READ_SEC_YZ( OBW_vTidPhFile, fp, inCurrentDir, 'RL',
+     &                         OBCS_tideCompSize, 1, OBCS_nTidalComp,
+     &                         OBW_vTideSn, dummyRS, 1, myThid )
+#  endif
+# else /* ALLOW_MDSIO */
+       STOP 'ABNORMAL END: S/R OBCS_INIT_FIXED needs pkg/mdsio'
+# endif /* ALLOW_MDSIO */
+       _BARRIER
+
+C--   Set Tidal coeff (= Amplit x COS & SIN of Phase ) from Amplitude and Phase:
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO k=1,OBCS_nTidalComp
+          IF ( OBCS_tidalPeriod(k).NE.zeroRL ) THEN
+           recipPeriod = twoRL * PI / OBCS_tidalPeriod(k)
+           DO i=1-OLx,sNx+OLx
+# ifdef ALLOW_OBCS_NORTH
+            locPh = OBN_uTideSn(i,k,bi,bj)*recipPeriod
+            OBN_uTideSn(i,k,bi,bj) = OBN_uTideCs(i,k,bi,bj)*SIN(locPh)
+            OBN_uTideCs(i,k,bi,bj) = OBN_uTideCs(i,k,bi,bj)*COS(locPh)
+            locPh = OBN_vTideSn(i,k,bi,bj)*recipPeriod
+            OBN_vTideSn(i,k,bi,bj) = OBN_vTideCs(i,k,bi,bj)*SIN(locPh)
+            OBN_vTideCs(i,k,bi,bj) = OBN_vTideCs(i,k,bi,bj)*COS(locPh)
+# endif
+# ifdef ALLOW_OBCS_SOUTH
+            locPh = OBS_uTideSn(i,k,bi,bj)*recipPeriod
+            OBS_uTideSn(i,k,bi,bj) = OBS_uTideCs(i,k,bi,bj)*SIN(locPh)
+            OBS_uTideCs(i,k,bi,bj) = OBS_uTideCs(i,k,bi,bj)*COS(locPh)
+            locPh = OBS_vTideSn(i,k,bi,bj)*recipPeriod
+            OBS_vTideSn(i,k,bi,bj) = OBS_vTideCs(i,k,bi,bj)*SIN(locPh)
+            OBS_vTideCs(i,k,bi,bj) = OBS_vTideCs(i,k,bi,bj)*COS(locPh)
+# endif
+           ENDDO
+           DO j=1-OLy,sNy+OLy
+# ifdef ALLOW_OBCS_EAST
+            locPh = OBE_uTideSn(j,k,bi,bj)*recipPeriod
+            OBE_uTideSn(j,k,bi,bj) = OBE_uTideCs(j,k,bi,bj)*SIN(locPh)
+            OBE_uTideCs(j,k,bi,bj) = OBE_uTideCs(j,k,bi,bj)*COS(locPh)
+            locPh = OBE_vTideSn(j,k,bi,bj)*recipPeriod
+            OBE_vTideSn(j,k,bi,bj) = OBE_vTideCs(j,k,bi,bj)*SIN(locPh)
+            OBE_vTideCs(j,k,bi,bj) = OBE_vTideCs(j,k,bi,bj)*COS(locPh)
+# endif
+# ifdef ALLOW_OBCS_WEST
+            locPh = OBW_uTideSn(j,k,bi,bj)*recipPeriod
+            OBW_uTideSn(j,k,bi,bj) = OBW_uTideCs(j,k,bi,bj)*SIN(locPh)
+            OBW_uTideCs(j,k,bi,bj) = OBW_uTideCs(j,k,bi,bj)*COS(locPh)
+            locPh = OBW_vTideSn(j,k,bi,bj)*recipPeriod
+            OBW_vTideSn(j,k,bi,bj) = OBW_vTideCs(j,k,bi,bj)*SIN(locPh)
+            OBW_vTideCs(j,k,bi,bj) = OBW_vTideCs(j,k,bi,bj)*COS(locPh)
+# endif
+           ENDDO
+          ENDIF
+         ENDDO
+C-    end bi.bj loops:
+        ENDDO
+       ENDDO
+C-    end if useOBCStides
+      ENDIF
+
+#endif /* ALLOW_OBCS_TIDES */
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_LEAVE('OBCS_INIT_FIXED',myThid)

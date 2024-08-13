@@ -12,6 +12,11 @@ C     *============================================================*
 C     === Global variables ===
 #ifdef ALLOW_PETSC
 #ifdef STREAMICE_PETSC_3_8
+
+C     THE FOLLOWING MODULE AND HEADER FILE ARE PART OF THE PETSC
+C     LIBRARY, USED BY STREAMICE WHEN AVAILABLE TO ACCELERATE
+C     SOLVES OF LINEAR SYSTEMS
+
 #include "petsc/finclude/petsc.h"
 #include "petsc/finclude/petscvec.h"
       use petscvec

@@ -504,6 +504,7 @@ C     Avoid using both type of diffusion scheme (DIFF1 & SEAICEdiffKh)
 
 C--
 #ifdef ALLOW_AUTODIFF_TAMC
+      IF ( SEAICEuseLSR ) THEN
       IF ( SEAICEnonLinIterMax .GT. MPSEUDOTIMESTEPS ) THEN
        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
      &  ' need to increase MPSEUDOTIMESTEPS in SEAICE_PARAMS.h'
@@ -532,6 +533,8 @@ C--
      &  ' NMAX_TICE, MAX_TICE = ', NMAX_TICE, IMAX_TICE
        CALL PRINT_ERROR( msgBuf, myThid )
        errCount = errCount + 1
+      ENDIF
+C     endif SEAICEuseLSR
       ENDIF
       IF ( SEAICE_maskRHS ) THEN
        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICE_maskRHS not allowed'
@@ -914,6 +917,14 @@ C--   Check Overlap size:
        ENDIF
 # endif /* SEAICE_ALLOW_EVP */
 
+#ifndef SEAICE_ALLOW_LSR_FLEX
+      IF ( SEAICEuseLSRflex ) THEN
+       WRITE(msgBuf,'(A)')
+     &   'SEAICE_ALLOW_LSR_FLEX needed for SEAICEuseLSRflex'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       errCount = errCount + 1
+      ENDIF
+#endif
 C     SEAICEuseDynamics
       ENDIF
 #endif /* SEAICE_CGRID */
