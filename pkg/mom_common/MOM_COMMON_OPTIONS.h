@@ -31,5 +31,12 @@ C   instead of updated version that advects the product deepFac x (u,v)
 C   thus removing the need for NH-metric terms: w.(u,v)/r
 #undef MOM_USE_OLD_DEEP_VERT_ADV
 
+C Compute extra momentum tendency diagnostics for bottom and ice-shelf drag.
+C The code does not work with using implicit bottom or ice-shelf
+C drag (selectImplicitDrag = 2). For non-r* vertical coordinate, these
+C tendency diagnostics can be derived from existing diagnostics for
+C frictional stress (botTauX etc.) and therefore are not necessarily needed.
+#undef ALLOW_MOM_TEND_EXTRA_DIAGS
+
 #endif /* ALLOW_MOM_COMMON */
 #endif /* MOM_COMMON_OPTIONS_H */
