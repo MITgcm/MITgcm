@@ -33,7 +33,7 @@ C Global
 C     !INPUT/OUTPUT PARAMETERS:
 C Arguments
       CHARACTER*(*) fName
-      _RS field(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RS field(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER iRec
       INTEGER myIter
       INTEGER myThid
@@ -92,7 +92,7 @@ C Global
 C     !INPUT/OUTPUT PARAMETERS:
 C Arguments
       CHARACTER*(*) fName
-      _RL field(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL field(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER iRec
       INTEGER myIter
       INTEGER myThid
@@ -151,7 +151,7 @@ C Global
 C     !INPUT/OUTPUT PARAMETERS:
 C Arguments
       CHARACTER*(*) fName
-      _RS field(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RS field(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER iRec
       INTEGER myIter
       INTEGER myThid
@@ -168,7 +168,6 @@ C Local
 c     INTEGER IL
 c     CHARACTER*(MAX_LEN_FNAM) fullName
 CEOP
-
 
 c     IF (myIter.GE.0) THEN
 c      IL=ILNBLNK( fName )
@@ -211,7 +210,7 @@ C Global
 C     !INPUT/OUTPUT PARAMETERS:
 C Arguments
       CHARACTER*(*) fName
-      _RL field(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL field(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER iRec
       INTEGER myIter
       INTEGER myThid
@@ -228,7 +227,6 @@ C Local
 c     INTEGER IL
 c     CHARACTER*(MAX_LEN_FNAM) fullName
 CEOP
-
 
 c     IF (myIter.GE.0) THEN
 c      IL=ILNBLNK( fName )
@@ -277,7 +275,7 @@ C Arguments
       CHARACTER*(*) fName
       INTEGER fPrec
       INTEGER nNz
-      _RS field(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nNz,nSx,nSy)
+      _RS field(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nNz,nSx,nSy)
       INTEGER iRec
       INTEGER myIter
       INTEGER myThid
@@ -293,7 +291,6 @@ C Local
 c     INTEGER IL
 c     CHARACTER*(MAX_LEN_FNAM) fullName
 CEOP
-
 
 c     IF (myIter.GE.0) THEN
 c      IL=ILNBLNK( fName )
@@ -341,7 +338,7 @@ C Arguments
       CHARACTER*(*) fName
       INTEGER fPrec
       INTEGER nNz
-      _RL field(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nNz,nSx,nSy)
+      _RL field(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nNz,nSx,nSy)
       INTEGER iRec
       INTEGER myIter
       INTEGER myThid
@@ -357,7 +354,6 @@ C Local
 c     INTEGER IL
 c     CHARACTER*(MAX_LEN_FNAM) fullName
 CEOP
-
 
 c     IF (myIter.GE.0) THEN
 c      IL=ILNBLNK( fName )
@@ -406,7 +402,7 @@ C Arguments
       CHARACTER*(*) fName
       INTEGER fPrec
       INTEGER kSiz, kLo, kHi
-      _RS field(1-Olx:sNx+Olx,1-Oly:sNy+Oly,kSiz,nSx,nSy)
+      _RS field(1-OLx:sNx+OLx,1-OLy:sNy+OLy,kSiz,nSx,nSy)
       INTEGER iRec
       INTEGER myIter
       INTEGER myThid
@@ -422,7 +418,6 @@ C Local
 c     INTEGER IL
 c     CHARACTER*(MAX_LEN_FNAM) fullName
 CEOP
-
 
 c     IF (myIter.GE.0) THEN
 c      IL=ILNBLNK( fName )
@@ -471,7 +466,7 @@ C Arguments
       CHARACTER*(*) fName
       INTEGER fPrec
       INTEGER kSiz, kLo, kHi
-      _RL field(1-Olx:sNx+Olx,1-Oly:sNy+Oly,kSiz,nSx,nSy)
+      _RL field(1-OLx:sNx+OLx,1-OLy:sNy+OLy,kSiz,nSx,nSy)
       INTEGER iRec
       INTEGER myIter
       INTEGER myThid
@@ -487,7 +482,6 @@ C Local
 c     INTEGER IL
 c     CHARACTER*(MAX_LEN_FNAM) fullName
 CEOP
-
 
 c     IF (myIter.GE.0) THEN
 c      IL=ILNBLNK( fName )
@@ -533,7 +527,7 @@ C Arguments
       CHARACTER*(*) fName
       INTEGER fPrec
       INTEGER nNz
-      _RS field(1-Olx:sNx+Olx,nNz,nSx,nSy)
+      _RS field(1-OLx:sNx+OLx,nNz,nSx,nSy)
       INTEGER iRec
       INTEGER myIter
       INTEGER myThid
@@ -562,7 +556,7 @@ c     ENDIF
 #ifdef ALLOW_MDSIO
       CALL MDS_READ_SEC_XZ(
      I                      fName, fPrec, useCurrentDir,
-     I                      fType, nNz,
+     I                      fType, nNz, 1, nNz,
      O                      dummyRL, field,
      I                      iRec, myThid )
 #endif
@@ -595,7 +589,7 @@ C Arguments
       CHARACTER*(*) fName
       INTEGER fPrec
       INTEGER nNz
-      _RL field(1-Olx:sNx+Olx,nNz,nSx,nSy)
+      _RL field(1-OLx:sNx+OLx,nNz,nSx,nSy)
       INTEGER iRec
       INTEGER myIter
       INTEGER myThid
@@ -624,7 +618,7 @@ c     ENDIF
 #ifdef ALLOW_MDSIO
       CALL MDS_READ_SEC_XZ(
      I                      fName, fPrec, useCurrentDir,
-     I                      fType, nNz,
+     I                      fType, nNz, 1, nNz,
      O                      field, dummyRS,
      I                      iRec, myThid )
 #endif
@@ -657,7 +651,7 @@ C Arguments
       CHARACTER*(*) fName
       INTEGER fPrec
       INTEGER nNz
-      _RS field(1-Oly:sNy+Oly,nNz,nSx,nSy)
+      _RS field(1-OLy:sNy+OLy,nNz,nSx,nSy)
       INTEGER iRec
       INTEGER myIter
       INTEGER myThid
@@ -674,7 +668,6 @@ c     INTEGER IL
 c     CHARACTER*(MAX_LEN_FNAM) fullName
 CEOP
 
-
 c     IF (myIter.GE.0) THEN
 c      IL=ILNBLNK( fName )
 c      WRITE(fullName,'(2a,i10.10)') fName(1:IL),'.',myIter
@@ -687,7 +680,7 @@ c     ENDIF
 #ifdef ALLOW_MDSIO
       CALL MDS_READ_SEC_YZ(
      I                      fName, fPrec, useCurrentDir,
-     I                      fType, nNz,
+     I                      fType, nNz, 1, nNz,
      O                      dummyRL, field,
      I                      iRec, myThid )
 #endif
@@ -720,7 +713,7 @@ C Arguments
       CHARACTER*(*) fName
       INTEGER fPrec
       INTEGER nNz
-      _RL field(1-Oly:sNy+Oly,nNz,nSx,nSy)
+      _RL field(1-OLy:sNy+OLy,nNz,nSx,nSy)
       INTEGER iRec
       INTEGER myIter
       INTEGER myThid
@@ -737,7 +730,6 @@ c     INTEGER IL
 c     CHARACTER*(MAX_LEN_FNAM) fullName
 CEOP
 
-
 c     IF (myIter.GE.0) THEN
 c      IL=ILNBLNK( fName )
 c      WRITE(fullName,'(2a,i10.10)') fName(1:IL),'.',myIter
@@ -750,7 +742,7 @@ c     ENDIF
 #ifdef ALLOW_MDSIO
       CALL MDS_READ_SEC_YZ(
      I                      fName, fPrec, useCurrentDir,
-     I                      fType, nNz,
+     I                      fType, nNz, 1, nNz,
      O                      field, dummyRS,
      I                      iRec, myThid )
 #endif

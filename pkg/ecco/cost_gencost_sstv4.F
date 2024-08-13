@@ -72,8 +72,8 @@ c     == local variables ==
 
       integer k2, k2_lsc
 
-      character*(80) fname
-      character*(80) fname2
+      character*(MAX_LEN_FNAM) fname
+      character*(MAX_LEN_FNAM) fname2
 
 #ifdef ALLOW_ECCO_DEBUG
       character*(MAX_LEN_MBUF) msgBuf
@@ -153,9 +153,8 @@ c--   First, read tiled data.
       doglobalread = .false.
       ladinit      = .false.
 
-      write(fname(1:80),'(80a)') ' '
       ilps=ilnblnk( gencost_barfile(kgen) )
-      write(fname(1:80),'(2a,i10.10)')
+      write(fname,'(2a,i10.10)')
      &     gencost_barfile(kgen)(1:ilps),'.',eccoiter
 
       spval = gencost_spmin(kgen)
@@ -219,7 +218,7 @@ c             localrec = floor(diffsecs/86400.) + 1
              localrec = int(diffsecs/86400.) + 1
 
              il=ilnblnk(gencost_datafile(kgen))
-             write(fname2(1:80),'(2a,i4)')
+             write(fname2,'(2a,i4)')
      &         gencost_datafile(kgen)(1:il), '_', yday
              inquire( file=fname2, exist=exst )
 
@@ -289,10 +288,10 @@ c PART 1.2: smooth anom_sst in space
 c ----------------------------------------
 
 #ifdef ALLOW_GENCOST_SSTV4_OUTPUT
-         write(fname2(1:80),'(1a)') 'sstdiff_raw'
+         write(fname2,'(1a)') 'sstdiff_raw'
          CALL WRITE_REC_3D_RL( fname2, precFloat32, 1,
      &                         anom_sst, irec, 1, myThid )
-         write(fname2(1:80),'(1a)') 'sstobs_raw'
+         write(fname2,'(1a)') 'sstobs_raw'
          CALL WRITE_REC_3D_RL( fname2, precFloat32, 1,
      &                         obs_sst, irec, 1, myThid )
 #endif
@@ -308,10 +307,10 @@ c ----------------------------------------
      &     gencost_posproc_c(k2_lsc,kgen_lsc),
      &     gencost_posproc_i(k2_lsc,kgen_lsc),myThid)
 
-         write(fname2(1:80),'(1a)') 'sstdiff_smooth'
+         write(fname2,'(1a)') 'sstdiff_smooth'
          CALL WRITE_REC_3D_RL( fname2, precFloat32, 1,
      &                         anom_sst, irec, 1, myThid )
-         write(fname2(1:80),'(1a)') 'sstobs_smooth'
+         write(fname2,'(1a)') 'sstobs_smooth'
          CALL WRITE_REC_3D_RL( fname2, precFloat32, 1,
      &                         obs_sst, irec, 1, myThid )
 #endif
@@ -374,7 +373,7 @@ c             localrec = floor(diffsecs/86400.) + 1
              localrec = int(diffsecs/86400.) + 1
 
              il=ilnblnk(gencost_datafile(kgen))
-             write(fname2(1:80),'(2a,i4)')
+             write(fname2,'(2a,i4)')
      &         gencost_datafile(kgen)(1:il), '_', yday
              inquire( file=fname2, exist=exst )
 
@@ -423,7 +422,7 @@ c compute misfit:
          enddo
 
 #ifdef ALLOW_GENCOST_SSTV4_OUTPUT
-         write(fname2(1:80),'(1a)') 'sstdiff_point'
+         write(fname2,'(1a)') 'sstdiff_point'
          CALL WRITE_REC_3D_RL( fname2, precFloat32, 1,
      &                         anom_sst, irec, 1, myThid )
 #endif

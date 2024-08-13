@@ -57,7 +57,6 @@ C     myThid :: My Thread Id. number
 CEOP
 
 #ifdef SEAICE_CGRID
-#ifdef SEAICE_ALLOW_DYNAMICS
 C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     i,j,bi,bj :: Loop counters
@@ -199,7 +198,6 @@ cgf zero out adjoint fields to stabilize pkg/seaice dyna. adjoint
 #endif
 #endif /* ALLOW_AUTODIFF */
 
-#endif /* SEAICE_ALLOW_DYNAMICS */
 #endif /* SEAICE_CGRID */
       RETURN
       END

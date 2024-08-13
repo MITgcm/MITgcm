@@ -67,7 +67,6 @@ C   myThid (inp) :: my Thread Id. number
       INTEGER myThid
 CEOP
 
-#ifdef SEAICE_CGRID
 C     !LOCAL VARIABLES:
 C     i,j,bi,bj :: Loop counters
 C     ks        :: vertical index of surface layer
@@ -277,8 +276,6 @@ C--   end bi,bj loops
        ENDIF
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
-
-#endif /* SEAICE_CGRID */
 
       RETURN
       END

@@ -67,9 +67,8 @@ c      CHARACTER*(MAX_LEN_MBUF) msgBuf
 c     == end of interface ==
 CEOP
 
-      write(fname1(1:128),'(80a)') ' '
       il=ilnblnk( localbarfile )
-      write(fname1(1:128),'(2a,i10.10)')
+      write(fname1,'(2a,i10.10)')
      &     localbarfile(1:il),'.',eccoiter
 
         if ( localperiod.EQ.dTtracerLev(1) ) then
@@ -107,12 +106,12 @@ c-- assume monthly fields
         endif
 
         il=ilnblnk(localobsfile)
-        write(fname2(1:128),'(2a,i4)')
+        write(fname2,'(2a,i4)')
      &       localobsfile(1:il), '_', yday
         inquire( file=fname2, exist=exst )
         if (.NOT. exst) then
 c          assume that the data set is cyclic
-           write(fname2(1:128),'(a)') localobsfile(1:il)
+           write(fname2,'(a)') localobsfile(1:il)
            inquire( file=fname2, exist=exst )
         endif
 
@@ -120,4 +119,3 @@ c          assume that the data set is cyclic
 
       RETURN
       END
-

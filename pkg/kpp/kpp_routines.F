@@ -648,6 +648,10 @@ CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
       ENDDO
 
 #ifdef ALLOW_SALT_PLUME
+# ifdef ALLOW_AUTODIFF_TAMC
+C     suppress a TAF warning
+CADJ incomplete worka
+# endif
       IF ( useSALT_PLUME ) THEN
 #ifndef SALT_PLUME_VOLUME
         DO i = 1, imt
@@ -1169,15 +1173,11 @@ C--   dummy assignment to end declaration part for TAMC
       i = 0
 C--   HPF directive to help TAMC
 CHPF$ INDEPENDENT
-CADJ INIT z121tape = common, Nr
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       DO i = 1, imt
 
          k = 1
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE v(i,k) = z121tape
-#endif
          v(i,Nrp1) = v(i,Nr)
 
          DO k = 1, Nr
@@ -1193,9 +1193,6 @@ CADJ STORE v(i,k) = z121tape
          v(i,1) = v(i,1) / zflag
 
          DO k = 2, Nr
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE v(i,k), zwork = z121tape
-#endif
             km1 = k - 1
             kp1 = k + 1
             zflag = v(i,k)

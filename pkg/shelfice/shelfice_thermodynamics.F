@@ -38,8 +38,8 @@ C     === Global variables ===
 #include "SHELFICE_COST.h"
 #ifdef ALLOW_CTRL
 # include "CTRL_SIZE.h"
-# include "ctrl.h"
-# include "ctrl_dummy.h"
+# include "CTRL.h"
+# include "CTRL_DUMMY.h"
 # ifdef ALLOW_GENTIM2D_CONTROL
 #  include "CTRL_GENARR.h"
 # endif
@@ -136,8 +136,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     re-initialize here again, curtesy to TAF
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO J = 1-OLy,sNy+OLy
-         DO I = 1-OLx,sNx+OLx
+        DO j = 1-OLy,sNy+OLy
+         DO i = 1-OLx,sNx+OLx
           shiTransCoeffT(i,j,bi,bj) = SHELFICEheatTransCoeff
           shiTransCoeffS(i,j,bi,bj) = SHELFICEsaltTransCoeff
          ENDDO
@@ -237,12 +237,13 @@ C     where this value is part of the protocol
       ENDIF
 #endif
 
+#ifdef ALLOW_SHELFICE_REMESHING
+      IF ( SHI_update_kTopC ) THEN
 C--   Deal with ice-shelf edge advance or retreat when allowing ice-shelf
 C     mass to change. Since current ice-shelf representation is missing
 C     a fractional ice-shelf cover representation, this turns into making
 C     or removing a "thin ice-shelf" grid-cell. Here we update "kTopC"
 C     as ice-shelf mass appears or vanishes in any surface grid-cell.
-      IF ( SHELFICEMassStepping ) THEN
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j = 1-OLy,sNy+OLy
@@ -258,8 +259,11 @@ C     as ice-shelf mass appears or vanishes in any surface grid-cell.
          ENDDO
         ENDDO
       ENDIF
-#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE kTopC        = comlev1, key=ikey_dynamics
+# endif
+#endif /* ALLOW_SHELFICE_REMESHING */
+#ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE shelficeMass = comlev1, key=ikey_dynamics, kind=isbyte
 #endif
 
@@ -572,10 +576,10 @@ C     solve quadratic equation for salinity at shelfice-ocean interface
 C     note: this part of the code is not very intuitive as it involves
 C     many arbitrary abbreviations that were introduced to derive the
 C     correct form of the quadratic equation for salinity. The abbreviations
-C     only make sense in connection with my notes on this (M.Losch)
+C     are explained in the documentation.
 C
 C     eps3a was introduced as a constant variant of eps3 to avoid AD of
-C     code of typ (pLoc-const)/pLoc
+C     code of type (pLoc-const)/pLoc
             eps3a = rhoShelfIce*SHELFICEheatCapacity_Cp
      &           * SHELFICEkappa *  ( 1. _d 0 - dFac )
             eps3 = eps3a/pLoc(I,J)
@@ -593,7 +597,10 @@ c           bqe = eps1*eps6 + eps3*eps7 - eps2
      &                   + ( c0 - SHELFICEthetaSurface )/pLoc(I,J) )
      &           - eps2
      &           + eps8*( a0*sLoc(I,J) - eps7 )
+     &           + (eps1*a0*dFac + (oneRL-dFac)*aqe) * SHELFICEsalinity
             cqe = ( eps2 + eps8*eps7 )*sLoc(I,J)
+     &           - (eps1*dFac + (oneRL-dFac)*(eps1*eps6+eps3*eps7))
+     &           * SHELFICEsalinity
             discrim = bqe*bqe - 4. _d 0*aqe*cqe
 #undef ALLOW_SHELFICE_DEBUG
 #ifdef ALLOW_SHELFICE_DEBUG
@@ -679,6 +686,11 @@ C     endif (not) useISOMIPTD
 C     end bi,bj loops
        ENDDO
       ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC
+C     Avoid recomputing most of the routine body in the AD-code
+CADJ STORE shelfIceFreshWaterFlux
+CADJ &     = comlev1, key=ikey_dynamics, kind=isbyte
+#endif
 
       IF (SHELFICEMassStepping) THEN
        CALL SHELFICE_STEP_ICEMASS( myTime, myIter, myThid )

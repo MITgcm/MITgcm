@@ -42,12 +42,12 @@ CEOP
      &     SHELFICEsaltToHeatRatio,
      &     SHELFICEheatTransCoeff,
      &     SHELFICEsaltTransCoeff,
-     &     SHELFICEMassStepping,
+     &     SHELFICEMassStepping, SHI_update_kTopC,
      &     rhoShelfice, SHELFICEkappa,
      &     SHELFICElatentHeat, SHELFICEHeatCapacity_Cp,
      &     no_slip_shelfice, SHELFICEDragLinear,
      &     SHELFICEDragQuadratic, SHELFICEselectDragQuadr,
-     &     SHELFICEthetaSurface,
+     &     SHELFICEthetaSurface, SHELFICEsalinity,
      &     useISOMIPTD,
      &     SHELFICEconserve, SHELFICEboundaryLayer,
      &     SHI_withBL_realFWflux, SHI_withBL_uStarTopDz,
@@ -97,6 +97,11 @@ C Set defaults values for parameters in SHELFICE.h
       SHI_withBL_realFWflux    = .FALSE.
       SHI_withBL_uStarTopDz    = .FALSE.
       SHELFICEMassStepping     = .FALSE.
+#ifdef ALLOW_SHELFICE_REMESHING
+      SHI_update_kTopC         = .TRUE.
+#else
+      SHI_update_kTopC         = .FALSE.
+#endif
       SHELFICEDynMassOnly      = .FALSE.
       SHELFICEtopoFile         = ' '
       SHELFICEmassFile         = ' '
@@ -109,8 +114,10 @@ C Set defaults values for parameters in SHELFICE.h
       SHELFICEsaltToHeatRatio  =   5.05 _d -03
       SHELFICEheatTransCoeff   =    1.0 _d -04
       SHELFICEsaltTransCoeff   = UNSET_RL
+C--   Molecular thermal conductivity ice shelf (m^2/s)
       SHELFICEkappa            =   1.54 _d -06
       SHELFICEthetaSurface     = - 20.0 _d 0
+      SHELFICEsalinity         = 0.0 _d 0
       no_slip_shelfice         = no_slip_bottom
       SHELFICEDragLinear       = bottomDragLinear
       SHELFICEDragQuadratic    = UNSET_RL
@@ -192,6 +199,9 @@ C Set quadratic bottom drag depending on choices:
       ELSEIF ( SHELFICEselectDragQuadr.EQ.-1 ) THEN
         SHELFICEselectDragQuadr = MAX( 0, selectBotDragQuadr )
       ENDIF
+
+C-    reset SHI_update_kTopC to avoid having to test for both:
+      SHI_update_kTopC = SHI_update_kTopC .AND. SHELFICEMassStepping
 
 C-    Set Output type flags :
       SHELFICE_tave_mdsio = .TRUE.

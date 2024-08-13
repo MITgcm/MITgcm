@@ -59,7 +59,7 @@ cnew(
       integer  il
       integer mody, modm
       integer iyear, imonth
-      character*(80) fnametmp
+      character*(MAX_LEN_FNAM) fnametmp
       logical exst
 cnew)
 
@@ -86,11 +86,11 @@ ce    --> there is certainly a better place for this.
       imonth = 1 + MOD(modm-1+irec-1,12)
 
       il=ilnblnk(localobsfile)
-      write(fnametmp(1:80),'(2a,i4)')
+      write(fnametmp,'(2a,i4)')
      &     localobsfile(1:il), '_', iyear
       inquire( file=fnametmp, exist=exst )
       if (.NOT. exst) then
-         write(fnametmp(1:80),'(a)') localobsfile(1:il)
+         write(fnametmp,'(a)') localobsfile(1:il)
          imonth = obsrec
       endif
 

@@ -8,7 +8,7 @@ function [del] = griddata_preprocess(x,y,xi,yi,method)
 %   Clay M. Thompson 8-21-95
 %   Copyright 1984-2001 The MathWorks, Inc. 
 
-error(nargchk(4,5,nargin))
+narginchk(4,5)
 
 %- To interpolate to a section (with position vector xi,yi), skip the
 %  ndgrid call hereafter. However, since this is poorly documented, 

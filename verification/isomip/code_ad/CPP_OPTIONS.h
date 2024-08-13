@@ -29,7 +29,7 @@ C o Allow to account for heating due to friction (and momentum dissipation)
 
 C o Allow mass source or sink of Fluid in the interior
 C   (3-D generalisation of oceanic real-fresh water flux)
-#undef ALLOW_ADDFLUID
+#define ALLOW_ADDFLUID
 
 C o Include pressure loading code
 #define ATMOSPHERIC_LOADING
@@ -71,7 +71,7 @@ C o Exclude/allow partial-cell effect (physical or enhanced) in vertical mixing
 C   this allows to account for partial-cell in vertical viscosity and diffusion,
 C   either from grid-spacing reduction effect or as artificially enhanced mixing
 C   near surface & bottom for too thin grid-cell
-#define EXCLUDE_PCELL_MIX_CODE
+#undef EXCLUDE_PCELL_MIX_CODE
 
 C-- Time-stepping code options:
 

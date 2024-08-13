@@ -41,35 +41,28 @@ C     myThid -  Number of this instances
       INTEGER myThid
 
 c     == external functions ==
-      INTEGER  ILNBLNk
+      INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
 
 C     === Local variables ===
 C     msgBuf      - Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_GENCOST_CONTRIBUTION
-      INTEGER igen_etaday, il
+      INTEGER igen_etagcm, il
+      INTEGER igen_tp, igen_ers, igen_gfo, use_mon_int, use_day_int
       LOGICAL exst
       CHARACTER*(128) tempfile
       INTEGER icount_transp
+      INTEGER k
 #endif
-      INTEGER bi, bj, i, j, k
       INTEGER nRetired
 
-      DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO k = 1,Nr
-            DO j = 1-OLy,sNy+OLy
-              DO i = 1-OLx,sNx+OLx
-                eccoVol_0(i,j,k,bi,bj)=
-     &          hFacC(i,j,k,bi,bj)*drF(k)*rA(i,j,bi,bj)
-              ENDDO
-            ENDDO
-          ENDDO
-        ENDDO
-      ENDDO
-
       _BEGIN_MASTER(myThid)
+
+      WRITE(msgBuf,'(2A)') 'ECCO_CHECK: ',
+     &                     ' --> Starts to check ECCO set-up'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
 
 c ============ retired compile option checks
       nRetired = 0
@@ -292,6 +285,9 @@ c ============ generic cost function related checks
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       icount_transp=0
+      igen_tp = 0
+      igen_ers = 0
+      igen_gfo = 0
       DO k=1,NGENCOST
 
          IF (gencost_pointer3d(k).GT.NGENCOST3D) THEN
@@ -340,9 +336,18 @@ c--
 
 c altimetry related checks
 
-         IF (gencost_name(k).EQ.'sshv4-tp') using_tpj=using_gencost(k)
-         IF (gencost_name(k).EQ.'sshv4-ers') using_ers=using_gencost(k)
-         IF (gencost_name(k).EQ.'sshv4-gfo') using_gfo=using_gencost(k)
+         IF (gencost_name(k).EQ.'sshv4-tp') THEN
+           igen_tp = k
+           using_tpj = using_gencost(k)
+         ENDIF
+         IF (gencost_name(k).EQ.'sshv4-ers') THEN
+           igen_ers = k
+           using_ers = using_gencost(k)
+         ENDIF
+         IF (gencost_name(k).EQ.'sshv4-gfo') THEN
+           igen_gfo = k
+           using_gfo = using_gencost(k)
+         ENDIF
          IF (gencost_name(k).EQ.'sshv4-mdt') using_mdt=using_gencost(k)
 
 c seaice related checks
@@ -653,17 +658,17 @@ c-- final report to make sure using_cost_transp is set correctly
          ENDIF !if ( gencost_datafile(k) .NE. ' ' ) THEN
       ENDDO
 
-c check that one of the used gencost term defines etaday (needed in sshv4)
+c check that one of the used gencost term defines etagcm (needed in sshv4)
       IF ( (using_tpj ).OR.(using_ers).OR.(using_gfo)
      &     .OR.(using_mdt) ) using_cost_altim = .TRUE.
 
-      igen_etaday=0
+      igen_etagcm=0
       DO k=1,NGENCOST
         IF ( (gencost_barfile(k)(1:5).EQ.'m_eta').AND.
-     &       (using_gencost(k)) )  igen_etaday=k
+     &       (using_gencost(k)) )  igen_etagcm=k
       ENDDO
 
-      IF ((igen_etaday.EQ.0).AND.(using_cost_altim)) THEN
+      IF ((igen_etagcm.EQ.0).AND.(using_cost_altim)) THEN
 c warn user as we override using_cost_altim
         using_cost_altim = .FALSE.
         WRITE(msgBuf,'(2A)')
@@ -673,10 +678,50 @@ c warn user as we override using_cost_altim
      &                      SQUEEZE_RIGHT, myThid )
       ELSE
 c print result to screen
-        WRITE(msgbuf,'(a,i3)')
-     &  'etaday defined by gencost ',igen_etaday
-        CALL print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , myThid)
+        WRITE(msgBuf,'(A,I3)')
+     &  'etagcm defined by gencost =',igen_etagcm
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+      ENDIF
+
+C If more than one within the data set [tp,ers,gfo] are present, they must have
+C the same avgperiod, e.g., day or month. Here we check for inconsistency:
+      IF (using_cost_altim) THEN
+       use_mon_int = 0
+       use_day_int = 0
+       IF ( using_tpj ) THEN
+        IF (gencost_avgperiod(igen_tp) .EQ.'month' .OR.
+     &      gencost_avgperiod(igen_tp) .EQ.'MONTH') THEN
+          use_mon_int = use_mon_int + 1
+        ELSE
+          use_day_int = use_day_int + 1
+        ENDIF
+       ENDIF
+       IF ( using_ers ) THEN
+        IF (gencost_avgperiod(igen_ers) .EQ.'month' .OR.
+     &      gencost_avgperiod(igen_ers) .EQ.'MONTH') THEN
+          use_mon_int = use_mon_int + 1
+        ELSE
+          use_day_int = use_day_int + 1
+        ENDIF
+       ENDIF
+       IF ( using_gfo ) THEN
+        IF (gencost_avgperiod(igen_gfo).EQ.'month' .OR.
+     &      gencost_avgperiod(igen_gfo).EQ.'MONTH' ) THEN
+          use_mon_int = use_mon_int + 1
+        ELSE
+          use_day_int = use_day_int + 1
+        ENDIF
+       ENDIF
+       IF ( use_mon_int .GT. 0 .AND. use_day_int .GT. 0 ) THEN
+         WRITE(msgBuf,'(2A)')
+     &    'ECCO_CHECK: cost sshv4: data set TP/ERS/GFO must be all ',
+     &    'daily or monthly, but cannot be mixed.'
+         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R ECCO_CHECK'
+       ENDIF
       ENDIF
 
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
@@ -693,6 +738,18 @@ C ============ other pkg/ecco related checks
          STOP 'ABNORMAL END: S/R ECCO_CHECK'
       ENDIF
 #endif
+
+C--   Summarize the ECCO cost function setup.
+      CALL ECCO_SUMMARY( myThid )
+
+      WRITE(msgBuf,'(2A)') 'ECCO_CHECK: ',
+     &                     ' <-- Ends Normally'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)') ' '
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+
       _END_MASTER(myThid)
 
       RETURN

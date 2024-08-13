@@ -4,11 +4,8 @@
 #endif
 
       subroutine cost_obcsvol(
-     I                       myiter,
-     I                       mytime,
-     I                       startrec,
-     I                       endrec,
-     I                       mythid )
+     I                         startrec, endrec,
+     I                         mytime, myiter, mythid )
 
 c     ==================================================================
 c     SUBROUTINE cost_obcsvol
@@ -40,16 +37,15 @@ c     == global variables ==
 #endif
 #ifdef ALLOW_CTRL
 # include "CTRL_SIZE.h"
-# include "ctrl.h"
-# include "ctrl_dummy.h"
-# include "optim.h"
+# include "CTRL.h"
+# include "CTRL_DUMMY.h"
+# include "OPTIMCYCLE.h"
 #endif
 
 c     == routine arguments ==
-      integer myiter
+      integer startrec, endrec
       _RL     mytime
-      integer startrec
-      integer endrec
+      integer myiter
       integer mythid
 
 #if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
@@ -78,10 +74,10 @@ c     == local variables ==
       _RL tmpx
       _RL tmpy
       _RL wobcsvol
-      character*(80) fnamefldn
-      character*(80) fnameflds
-      character*(80) fnamefldw
-      character*(80) fnameflde
+      character*(MAX_LEN_FNAM) fnamefldn
+      character*(MAX_LEN_FNAM) fnameflds
+      character*(MAX_LEN_FNAM) fnamefldw
+      character*(MAX_LEN_FNAM) fnameflde
 #if (defined ALLOW_OBCSN_CONTROL || defined ALLOW_OBCSS_CONTROL)
       _RL tmpfldxz (1-OLx:sNx+OLx,Nr,nSx,nSy)
 #endif
@@ -93,7 +89,6 @@ c     == local variables ==
 #ifdef ECCO_VERBOSE
       character*(MAX_LEN_MBUF) msgbuf
 #endif
-
 c     == end of interface ==
 
       stop 's/r cost_obcsvol needs to be fixed'
@@ -143,22 +138,22 @@ cgg   Added a factor of 1000 because its very important to me.
       if (optimcycle .ge. 0) then
 #ifdef ALLOW_OBCSN_CONTROL
         ilfld=ilnblnk( xx_obcsn_file )
-        write(fnamefldn(1:80),'(2a,i10.10)')
+        write(fnamefldn,'(2a,i10.10)')
      &        xx_obcsn_file(1:ilfld),'.', optimcycle
 #endif
 #ifdef ALLOW_OBCSS_CONTROL
         ilfld=ilnblnk( xx_obcss_file )
-        write(fnameflds(1:80),'(2a,i10.10)')
+        write(fnameflds,'(2a,i10.10)')
      &        xx_obcss_file(1:ilfld),'.',optimcycle
 #endif
 #ifdef ALLOW_OBCSW_CONTROL
         ilfld=ilnblnk( xx_obcsw_file )
-        write(fnamefldw(1:80),'(2a,i10.10)')
+        write(fnamefldw,'(2a,i10.10)')
      &        xx_obcsw_file(1:ilfld),'.',optimcycle
 #endif
 #ifdef ALLOW_OBCSE_CONTROL
         ilfld=ilnblnk( xx_obcse_file )
-        write(fnameflde(1:80),'(2a,i10.10)')
+        write(fnameflde,'(2a,i10.10)')
      &        xx_obcse_file(1:ilfld),'.',optimcycle
 #endif
       else
@@ -181,9 +176,14 @@ cgg    Need to solve for iobcs. Then only keep iobcs=3.or.4.
 cgg   Assume that nobcs=4, and V velocity is the 4th record. I cannot
 cgg   think of a more general way to do this.
         if (iobcs.eq.4) then
+#ifdef ALLOW_AUTODIFF
           call active_read_xz( fnamefldn, tmpfldxz, irec, doglobalread,
-     &                         ladinit, optimcycle, mythid
-     &                       , xx_obcsn_dummy )
+     &                         ladinit, optimcycle, mythid,
+     &                         xx_obcsn_dummy )
+#else
+          CALL READ_REC_XZ_RL( fnamefldn, ctrlprec, Nr,
+     &                         tmpfldxz, irec, 1, mythid )
+#endif
 
 cgg  At this point, do not be concerned with the overlap halos.
 cgg  From experience, there is no control contribution in the
@@ -224,9 +224,14 @@ cgg -- Positive is flux in.
 cgg   Assume that nobcs=4, and V velocity is the 4th record. I cannot
 cgg   think of a more general way to do this.
         if (iobcs.eq.4) then
+#ifdef ALLOW_AUTODIFF
           call active_read_xz( fnameflds, tmpfldxz, irec, doglobalread,
-     &                         ladinit, optimcycle, mythid
-     &                       , xx_obcss_dummy )
+     &                         ladinit, optimcycle, mythid,
+     &                         xx_obcss_dummy )
+#else
+          CALL READ_REC_XZ_RL( fnameflds, ctrlprec, Nr,
+     &                         tmpfldxz, irec, 1, mythid )
+#endif
 
 cgg  At this point, do not be concerned with the overlap halos.
 cgg  From experience, there is no control contribution in the
@@ -267,9 +272,14 @@ cgg -- Positive is flux in.
 cgg   Assume that nobcs=4, and V velocity is the 4th record. I cannot
 cgg   think of a more general way to do this.
         if (iobcs.eq.3) then
+#ifdef ALLOW_AUTODIFF
           call active_read_yz( fnamefldw, tmpfldyz, irec, doglobalread,
-     &                         ladinit, optimcycle, mythid
-     &                       , xx_obcsw_dummy )
+     &                         ladinit, optimcycle, mythid,
+     &                         xx_obcsw_dummy )
+#else
+          CALL READ_REC_YZ_RL( fnamefldw, ctrlprec, Nr,
+     &                         tmpfldyz, irec, 1, mythid )
+#endif
 
 cgg  At this point, do not be concerned with the overlap halos.
 cgg  From experience, there is no control contribution in the
@@ -310,9 +320,14 @@ cgg -- Positive is flux in.
 cgg   Assume that nobcs=4, and V velocity is the 4th record. I cannot
 cgg   think of a more general way to do this.
         if (iobcs.eq.3) then
+#ifdef ALLOW_AUTODIFF
           call active_read_yz( fnameflde, tmpfldyz, irec, doglobalread,
-     &                         ladinit, optimcycle, mythid
-     &                       , xx_obcse_dummy )
+     &                         ladinit, optimcycle, mythid,
+     &                         xx_obcse_dummy )
+#else
+          CALL READ_REC_YZ_RL( fnameflde, ctrlprec, Nr,
+     &                         tmpfldyz, irec, 1, mythid )
+#endif
 
 cgg  At this point, do not be concerned with the overlap halos.
 cgg  From experience, there is no control contribution in the

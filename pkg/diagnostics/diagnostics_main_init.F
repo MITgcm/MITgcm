@@ -1,7 +1,7 @@
 #include "DIAG_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP 0
+CBOP
 C     !ROUTINE: DIAGNOSTICS_MAIN_INIT
 
 C     !INTERFACE:
@@ -16,39 +16,39 @@ C            since they get filled-in with S/R FILL_DIAGNOSTICS
 C            2) GDIAG is defined as character*16 and can be to character*1
 C            parse(16) with the following codes currently defined:
 
-C     \begin{center}
-C       \begin{tabular}[h]{|c|c|}\hline
-C         \textbf{Positions}  &  \textbf{Characters}
-C         &  \textbf{Meanings} \\\hline
-C         parse(1)  &  S  &  scalar \\
-C                   &  U  &  vector component in X direction \\
-C                   &  V  &  vector component in Y direction \\
-C                   &  W  &  vector component in vertical direction \\
-C         parse(2)  &  U  &  C-grid U-Point  \\
-C                   &  V  &  C-grid V-Point  \\
-C                   &  M  &  C-grid Mass Point  \\
-C                   &  Z  &  C-grid Corner Point  \\
-C         parse(3)  &     &  Used for Level Integrated output: cumulate levels \\
-C                   &  r  &  same but cumulate product by model level thickness \\
-C                   &  R  &  same but cumulate product by hFac & level thickness \\
-C         parse(4)  &  P  &  positive definite  \\
-C         parse(5 ) &  C  &  with counter array  \\
-C                   &  P  &  post-processed (not filled up) from other diags  \\
-C                   &  D  &  disable an array for output  \\
-C         parse(6--8) & '123'  &  retired, formerly: 3-digit mate number \\
-C         parse(9)  &  U  &  model-level plus 1/2  \\
-C                   &  M  &  model-level middle  \\
-C                   &  L  &  model-level minus 1/2  \\
-C         parse(10) &  0  &  levels = 0  \\
-C                   &  1  &  levels = 1  \\
-C                   &  R  &  levels = Nr  \\
-C                   &  L  &  levels = MAX(Nr,NrPhys)  \\
-C                   &  M  &  levels = MAX(Nr,NrPhys) - 1  \\
-C                   &  G  &  levels = Ground_level Number \\
-C                   &  I  &  levels = sea-Ice_level Number \\
-C                   &  X  &  free levels option (need to be set explicitly) \\
-C       \end{tabular}
-C     \end{center}
+C \begin{center}
+C   \begin{tabular}[h]{|c|c|}\hline
+C     \textbf{Positions} & \textbf{Characters} & \textbf{Meanings} \\\hline
+C     parse(1)  &  S  &  scalar \\
+C               &  U  &  vector component in X direction \\
+C               &  V  &  vector component in Y direction \\
+C               &  W  &  vector component in vertical direction \\
+C     parse(2)  &  U  &  C-grid U-Point  \\
+C               &  V  &  C-grid V-Point  \\
+C               &  M  &  C-grid Mass Point  \\
+C               &  Z  &  C-grid Corner Point  \\
+C     parse(3)  &     &  Used for Level Integrated output: cumulate levels \\
+C               &  r  &  same but cumulate product by model level thickness \\
+C               &  R  &  same but cumulate product by hFac & level thickness \\
+C     parse(4)  &  P  &  positive definite  \\
+C               &  A  &  Adjoint variable diagnostics \\
+C     parse(5 ) &  C  &  with counter array  \\
+C               &  P  &  post-processed (not filled up) from other diags  \\
+C               &  D  &  disable an array for output  \\
+C     parse(6--8) & '123'  &  retired, formerly: 3-digit mate number \\
+C     parse(9)  &  U  &  model-level plus 1/2  \\
+C               &  M  &  model-level middle  \\
+C               &  L  &  model-level minus 1/2  \\
+C     parse(10) &  0  &  levels = 0  \\
+C               &  1  &  levels = 1  \\
+C               &  R  &  levels = Nr  \\
+C               &  L  &  levels = MAX(Nr,NrPhys)  \\
+C               &  M  &  levels = MAX(Nr,NrPhys) - 1  \\
+C               &  G  &  levels = Ground_level Number \\
+C               &  I  &  levels = sea-Ice_level Number \\
+C               &  X  &  free levels option (need to be set explicitly) \\
+C   \end{tabular}
+C \end{center}
 
 C     !USES:
       IMPLICIT NONE
@@ -992,8 +992,8 @@ C--   surface fluxes:
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
       diagName  = 'ADJempmr'
-      diagTitle = 'dJ/dEmPmR: Sensitivity to net surface Fresh-Water'
-     &          //' flux into the ocean'
+      diagTitle = 'dJ/dEmPmR: Sensitivity to net surface freshwater'
+     &          //' flux'
       diagUnits = 'dJ/(kg/m^2/s)   '
       diagCode  = 'SM A    U1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -1001,7 +1001,6 @@ C--   surface fluxes:
 
       diagName  = 'ADJqnet'
       diagTitle = 'dJ/dQnet: Sensitivity to net surface heat flux'
-     &          //'into the ocean'
       diagUnits = 'dJ/(W/m^2)      '
       diagCode  = 'SM A    U1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,

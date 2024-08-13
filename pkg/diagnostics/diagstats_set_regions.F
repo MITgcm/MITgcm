@@ -38,7 +38,7 @@ C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) tmpBuf
       INTEGER ioUnit
       INTEGER k, nbReg
-      _RS     tmpVar(1-OLx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RS     tmpVar(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       COMMON / SET_REGIONS_LOCAL / tmpVar
 #else
       LOGICAL flag
@@ -52,8 +52,8 @@ C--   Initialize region-mask array to zero:
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO k=1,sizRegMsk
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            diagSt_regMask(i,j,k,bi,bj) = 0.
           ENDDO
          ENDDO
@@ -100,8 +100,8 @@ C       _END_MASTER( myThid )
         _EXCH_XY_RS( tmpVar, myThid )
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
             diagSt_regMask(i,j,k,bi,bj) = tmpVar(i,j,bi,bj)
            ENDDO
           ENDDO
@@ -150,7 +150,7 @@ c         ELSE
 c           tmpVar(i,j,bi,bj) = 0.
 c         ELSE
 C-      print region mask:
-c         IF ( debugLevel.GE.debLevA ) THEN
+c         IF ( diag_dBugLevel.GE.debLevA ) THEN
 c           WRITE(msgBuf,'(A,I3,A)') 'DIAGSTAT Region',j,' mask:'
 c           iLen = ILNBLNK(msgBuf)
 c           CALL PLOT_FIELD_XYRS( tmpVar, msgBuf(1:iLen), -1, myThid )
@@ -161,7 +161,6 @@ c         ENDIF
 C-    Global statistics (region # 0) <- done in diagnostics_readparams
 c     diagSt_kRegMsk(0) = 1
 c     diagSt_vRegMsk(0) = 0.
-
 
       WRITE(msgBuf,'(A,I4,A)') 'DIAGSTATS_SET_REGIONS: define',
      &                         nbReg,' regions:'
@@ -190,8 +189,8 @@ C--   Initialize region-mask array to zero:
        DO bi = myBxLo(myThid), myBxHi(myThid)
 c        DO j=1-Oly,sNy+Oly
 c         DO i=1-Olx,sNx+Olx
-         DO j=1-Oly,1-Oly
-          DO i=1-Olx,1-Olx
+         DO j=1-OLy,1-OLy
+          DO i=1-OLx,1-OLx
            diagSt_regMask(i,j,1,bi,bj) = 0.
           ENDDO
          ENDDO

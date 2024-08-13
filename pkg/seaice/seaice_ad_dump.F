@@ -3,9 +3,6 @@
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
 #endif
-#ifdef ALLOW_DIAGNOSTICS
-# include "DIAG_OPTIONS.h"
-#endif
 
 CBOP
 C     !ROUTINE: SEAICE_AD_DUMP
@@ -44,8 +41,7 @@ C     == Global variables ===
 # include "AUTODIFF.h"
 # include "adcommon.h"
 # ifdef ALLOW_DIAGNOSTICS
-#  include "DIAGNOSTICS_SIZE.h"
-#  include "DIAGNOSTICS.h"
+#  include "DIAGNOSTICS_P2SHARE.h"
 # endif
 #endif
 
@@ -113,14 +109,7 @@ C--   need to all the correct OpenAD EXCH S/R ; left empty for now
 
 C-----------------------------------------------------------------------
 C--- Turn diagnostics on/off
-C-----------------------------------------------------------------------
-#ifdef ALLOW_DIAGNOSTICS
-C     This has already been done in addummy_in_stepping,
-C     from where this is called
-CML      IF ( useDiag4AdjOutp ) THEN
-CML        CALL DIAGNOSTICS_SWITCH_ONOFF( myTime, myIter, myThid )
-CML      ENDIF
-#endif
+C    <-- This has already been done in autodiff_inadmode_set_ad.F
 
 C-----------------------------------------------------------------------
 C--- do dump?
@@ -140,14 +129,14 @@ C-----------------------------------------------------------------------
      &     12, doDump, dumpAdRecSi, myTime, myIter, myThid )
       CALL DUMP_ADJ_XY( dumRS, adhsnow, 'ADJhsnow', 'ADJhsnow.',
      &     12, doDump, dumpAdRecSi, myTime, myIter, myThid )
-# ifdef SEAICE_ALLOW_DYNAMICS
+# if ( defined SEAICE_CGRID || defined SEAICE_BGRID_DYNAMICS )
 C     IF (SEAICEuseDYNAMICS) THEN
       CALL DUMP_ADJ_XY_UV(
      &     dumRS, aduice, 'ADJuice ', 'ADJuice.',
      &     dumRS, advice, 'ADJvice ', 'ADJvice.',
      &     34, doDump, dumpAdRecSi, myTime, myIter, myThid)
 C     ENDIF
-# endif /* SEAICE_ALLOW_DYNAMICS */
+# endif
 
       IF ( doDump ) THEN
 #ifdef ALLOW_MNC
@@ -170,7 +159,7 @@ c
           CALL COPY_ADVAR_OUTP( dumRS, adhsnow, var2Du, 1 , 12, myThid )
           CALL MNC_CW_RL_W('D','adseaice',0,0,'adhsnow',
      &         var2Du, myThid)
-# ifdef SEAICE_ALLOW_DYNAMICS
+# if ( defined SEAICE_CGRID || defined SEAICE_BGRID_DYNAMICS )
 C          IF (SEAICEuseDYNAMICS) THEN
           CALL COPY_AD_UV_OUTP( dumRS, dumRS, aduice, advice,
      &         var2Du, var2Dv, 1, 34, myThid )
@@ -187,7 +176,7 @@ C          ENDIF
      &         adheff, myThid)
           CALL MNC_CW_RL_W('D','adseaice',0,0,'adhsnow',
      &         adhsnow, myThid)
-# ifdef SEAICE_ALLOW_DYNAMICS
+# if ( defined SEAICE_CGRID || defined SEAICE_BGRID_DYNAMICS )
 C          IF (SEAICEuseDYNAMICS) THEN
           CALL MNC_CW_RL_W('D','adseaice',0,0,'aduice',
      &         aduice, myThid)

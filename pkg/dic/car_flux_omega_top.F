@@ -49,7 +49,6 @@ C flux_u, flux_l          :: flux through upper and lower interfaces
        INTEGER i,j,k, ko, kBottom
        _RL flux_u, flux_l
 C variables for calcium carbonate dissolution
-       _RL KierRate
        _RL DissolutionRate
        _RL dumrate
 
@@ -85,7 +84,7 @@ c        exp_tot=0
      &           (1. _d 0-DOPfraction)*drF(k)*hFacC(i,j,k,bi,bj)
 c          exp_tot=exp_tot+caexport(i,j)
 C calculate flux to each layer from base of k
-           Do ko=k+1,Nr
+           DO ko=k+1,Nr
             if (hFacC(i,j,ko,bi,bj).gt.0. _d 0) then
               if (ko .eq. k+1) then
                 flux_u = caexport(i,j)
@@ -110,27 +109,55 @@ C ... at bottom
                   endif
                 endif
               else
-C if dissolution, then use rate from Kier (1980) Geochem. Cosmochem. Acta
-C Kiers dissolution rate in %  per day
-                 KierRate = KierRateK*
-     &             ((1. _d 0-omegaC(i,j,ko,bi,bj))**KierRateExp)
-C convert to per s
-C Karsten finds Kier value not in 0/0 after all... therefore drop 100 factor
-c                DissolutionRate = KierRate/(100.0*86400.0)
-                 DissolutionRate = KierRate/(86400. _d 0)
-c                flux_l = flux_u*(1.0-DissolutionRate*drF(k)/WsinkPIC)
-C Karstens version
-C - gives NaNs (because using kierrate, not dissolution rate)???
-c                flux_l = flux_u*(1.0-KierRate)**(drF(k)/WsinkPIC)
-C MICKS NEW VERSION... based on vertical sinking/remin balance
-                 dumrate = -1. _d 0*DissolutionRate*drF(ko)*
+C if dissolution
+               IF (selectCalciteDissolution .eq. 0) THEN
+C Use constant dissolution rate
+                flux_l = flux_u
+     &                 *(1.0-calciteDissolRate(1)*drF(k)/WsinkPIC)
+               ELSEIF (selectCalciteDissolution .eq. 1) THEN
+C Use Micks version of dissolution rate based on vertical sinking/remin balance
+                DissolutionRate = calciteDissolRate(1)*(
+     &             (
+     &              1. _d 0-omegaC(i,j,ko,bi,bj)
+     &             )**calciteDissolExp(1)
+     &             )/(86400. _d 0)
+
+                dumrate = -1. _d 0*DissolutionRate*drF(ko)*
      &                       hFacC(i,j,ko,bi,bj)/WsinkPIC
-                 flux_l = flux_u*exp(dumrate)
+                flux_l = flux_u*exp(dumrate)
+               ELSEIF (selectCalciteDissolution .eq. 2) THEN
+C Use Karstens version of dissolution rate based on from Keir (1980) Geochem.
+C  Cosmochem. Acta, and bugfix H/T Oliver Jahn (Keir,s dissolution rate in log(%))
+                DissolutionRate = EXP(calciteDissolRate(1))*(
+     &             (
+     &              1. _d 0-omegaC(i,j,ko,bi,bj)
+     &             )**calciteDissolExp(1)
+     &             )/(100. _d 0 * 86400. _d 0)
+
+                flux_l = flux_u*(1.0-DissolutionRate*drF(k)/WsinkPIC)
+               ELSEIF (selectCalciteDissolution .eq. 3) THEN
+C Use Naviaux et al. 2019, Marine Chemistry dissolution rates
+C  The value of 0.8272 differs slightly from the paper (0.8)), but reduces the
+C  large discontinuity in dissolution rates between the two states.
+                IF (omegaC(i,j,ko,bi,bj) .GT. 0.8272 _d 0) THEN
+                 DissolutionRate = calciteDissolRate(1) * (
+     &             (
+     &              1. _d 0-omegaC(i,j,ko,bi,bj)
+     &             )**calciteDissolExp(1))
+                ELSE
+                 DissolutionRate = calciteDissolRate(2) * (
+     &             (
+     &              1. _d 0-omegaC(i,j,ko,bi,bj)
+     &             )**calciteDissolExp(2))
+                ENDIF
+                flux_l = flux_u*(1.0-DissolutionRate*drF(k)/WsinkPIC)
+               ENDIF
+
 C TEST ............................
 c           if(i .eq. 76 .and. j .eq. 36)then
 c            write(6,*)'k,flux_l/flux_u',ko,(flux_l/flux_u)
-c            write(6,*)'K, KierRate, drF(k), drF(ko), WsinkPIC,OmegaC'
-c            write(6,*)ko,KierRate,drF(k),drF(ko),WsinkPIC,
+c            write(6,*)'K, DissolutionRate, drF(k), drF(ko), WsinkPIC,OmegaC'
+c            write(6,*)ko,DissolutionRate,drF(k),drF(ko),WsinkPIC,
 c    &            omegaC(i,j,ko,bi,bj)
 c           endif
 C TEST ............................
@@ -140,7 +167,7 @@ C no flux to ocean bottom
               endif
 
 C flux divergence
-             cflux(i,j,ko)=cflux(i,j,ko) +
+              cflux(i,j,ko)=cflux(i,j,ko) +
      &          ( (flux_u-flux_l)/(drF(ko)*hFacC(i,j,ko,bi,bj)) )
 C TEST ............................
 c            if(i .eq. 76 .and. j .eq. 36)then
@@ -148,7 +175,7 @@ c               write(6,*)'k,flux_l/flux_u',ko,(flux_l/flux_u)
 c              write(6,*)'k,flux_l,cflux ',ko,flux_l,cflux(i,j,ko)
 c            endif
 C TEST ............................
-           else
+            else
 C if no layer below initial layer, remineralize
                if (ko.eq.k+1) then
                 if ( selectCalciteBottomRemin.EQ.1 .AND.
@@ -166,8 +193,8 @@ C ... at bottom
      &                    R_CP*rain_ratio(i,j,bi,bj)
                 endif
                endif
-           endif
-          ENDDO
+            endif
+           ENDDO
 
           endif
          ENDDO

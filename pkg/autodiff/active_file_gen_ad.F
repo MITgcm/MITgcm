@@ -90,7 +90,7 @@ C     dummy          :: (needed for 2nd derivative code)
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2)  pref
-      CHARACTER*(80) fName
+      CHARACTER*(MAX_LEN_FNAM) fName
 CEOP
 
       pref = 'ad'
@@ -200,7 +200,7 @@ C     dummy          :: (needed for 2nd derivative code)
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2)  pref
-      CHARACTER*(80) fName
+      CHARACTER*(MAX_LEN_FNAM) fName
 CEOP
 
       pref = 'ad'
@@ -301,7 +301,7 @@ C     dummy          :: (needed for 2nd derivative code)
 C     !LOCAL VARIABLES:
 C     globalFile     :: used for writing global (if =T) or tiled files
       CHARACTER*(2)  pref
-      CHARACTER*(80) fName
+      CHARACTER*(MAX_LEN_FNAM) fName
       LOGICAL globalFile
 CEOP
 
@@ -404,7 +404,7 @@ C     dummy          :: (needed for 2nd derivative code)
 C     !LOCAL VARIABLES:
 C     globalFile     :: used for writing global (if =T) or tiled files
       CHARACTER*(2)  pref
-      CHARACTER*(80) fName
+      CHARACTER*(MAX_LEN_FNAM) fName
       LOGICAL globalFile
 CEOP
 

@@ -1,18 +1,20 @@
 #ifdef ALLOW_BLING
 
 CADJ STORE pH                = tapelev4, key = ilev_4
-CADJ STORE fice              = tapelev4, key = ilev_4
-CADJ STORE atmosP            = tapelev4, key = ilev_4
-CADJ STORE wind              = tapelev4, key = ilev_4
-CADJ STORE silica            = tapelev4, key = ilev_4
-CADJ STORE ak1               = tapelev4, key = ilev_4
-CADJ STORE ak2               = tapelev4, key = ilev_4
-CADJ STORE akf               = tapelev4, key = ilev_4
-CADJ STORE ft                = tapelev4, key = ilev_4
+cCADJ STORE fice              = tapelev4, key = ilev_4
+cCADJ STORE atmosP            = tapelev4, key = ilev_4
+cCADJ STORE wind              = tapelev4, key = ilev_4
+cCADJ STORE silica            = tapelev4, key = ilev_4
+cCADJ STORE ak1               = tapelev4, key = ilev_4
+cCADJ STORE ak2               = tapelev4, key = ilev_4
+cCADJ STORE akf               = tapelev4, key = ilev_4
+cCADJ STORE ft                = tapelev4, key = ilev_4
 
 CADJ STORE irr_mem           = tapelev4, key = ilev_4
+# ifdef PHYTO_SELF_SHADING
 CADJ STORE chl               = tapelev4, key = ilev_4
-CADJ STORE poc               = tapelev4, key = ilev_4
+# endif
+cCADJ STORE poc               = tapelev4, key = ilev_4
 CADJ STORE phyto_sm          = tapelev4, key = ilev_4
 CADJ STORE phyto_lg          = tapelev4, key = ilev_4
 # ifndef USE_BLING_V1
@@ -38,4 +40,3 @@ CADJ STORE apco21            = tapelev4, key = ilev_4
 # endif
 
 #endif /* ALLOW_BLING */
-

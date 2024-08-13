@@ -26,7 +26,7 @@ Cgf for now I focus on the simpler smooth3DtypeH=1 case
       INTEGER myThid
 
       INTEGER i, j, k, bi, bj
-      CHARACTER*(80) fnamegeneric
+      CHARACTER*(MAX_LEN_FNAM) fnamegeneric
       _RL smooth3D_KzMax
 
       INTEGER IL

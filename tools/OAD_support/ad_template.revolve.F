@@ -60,10 +60,10 @@ c we may need these for the checkpointing
       use SURFACE_mod
       use cost_mod
       use g_cost_mod
-      use ctrl_mod
-      use ctrl_dummy_mod
-      use optim_mod
-      use grdchk_mod
+      use CTRL_mod
+      use CTRL_DUMMY_mod
+      use OPTIMCYCLE_mod
+      use GRDCHK_mod
 
 !$TEMPLATE_PRAGMA_DECLARATIONS
       LOGICAL :: initialized=.FALSE.

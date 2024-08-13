@@ -51,7 +51,7 @@ C     HEFFMLoc  :: local copy of land-sea masks
 C     CwatC     :: drag coefficients
       _RL CwatC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-#if ( (defined SEAICE_CGRID) && (defined SEAICE_ALLOW_DYNAMICS) )
+#ifdef SEAICE_CGRID
 C     === local variables ===
 C     i,j,bi,bj,ksrf :: loop indices
       INTEGER i,j,bi,bj
@@ -110,7 +110,7 @@ C     I like this better:
        ENDDO
       ENDDO
 
-#endif /* SEAICE_ALLOW_DYNAMICS and SEAICE_CGRID */
+#endif /* SEAICE_CGRID */
 
       RETURN
       END

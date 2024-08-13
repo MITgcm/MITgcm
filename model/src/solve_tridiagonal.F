@@ -1,4 +1,8 @@
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: SOLVE_TRIDIAGONAL
@@ -69,6 +73,10 @@ C     == Local variables ==
       _RL c3d_prime(Nr)
       _RL y3d_prime(Nr)
       _RL y3d_update(Nr)
+#  ifdef ALLOW_AUTODIFF_TAMC
+C     kkey :: tape key, depends on i,j,k
+      INTEGER kkey
+#  endif
 # else
       _RL c3d_prime(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL y3d_prime(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -142,6 +150,9 @@ C--   backward sweep (starting from bottom)
       errCode = 0
 
 #ifdef SOLVE_DIAGONAL_KINNER
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ INIT loctape_solvetri = COMMON, Nr*(sNy+2*OLy)*(sNx+2*OLx)
+#endif
 C--   Temporary array
       DO k=1,Nr
        DO j=1-OLy,sNy+OLy
@@ -164,6 +175,11 @@ C--   Main loop
 
 C--   Forward sweep
         DO k=1,Nr
+#ifdef ALLOW_AUTODIFF_TAMC
+          kkey = k + Nr*(i-1+OLx) + Nr*(sNx+2*OLx)*(j-1+OLy)
+CADJ STORE c3d_prime(k) = loctape_solvetri, key = kkey
+CADJ STORE y3d_prime(k) = loctape_solvetri, key = kkey
+#endif
          IF ( k.EQ.1 ) THEN
            IF ( b3d(i,j,1).NE.0. _d 0 ) THEN
              c3d_prime(1) = c3d_m1(i,j,1) / b3d(i,j,1)

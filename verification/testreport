@@ -1851,6 +1851,28 @@ for dir in $TESTDIRS ; do
 		fi
 		grep ' set FC_CHECK=' $gmkLog	>> $DRESULTS/genmake_state
 	    fi
+	    if test $KIND = 1 -o  $KIND = 2 ; then
+	      gmkLog=$dir/$builddir/taf_ad.log
+	      if test $KIND = 1 ; then gmkLog=$dir/$builddir/taf_ftl.log ; fi
+	      if test -f $gmkLog ; then
+		echo -n "from '$gmkLog', get: " >> $DRESULTS/genmake_state
+		head -1 $gmkLog | sed 's/^.*Algorithms in Fortran //' \
+						>> $DRESULTS/genmake_state
+		ADvers=`head -1 $gmkLog | awk '{print $7,$8}'`
+		sed "s/ by TAF/ by TAF $ADvers/" $SUMMARY > tmp.tr_log
+		mv -f tmp.tr_log $SUMMARY
+	      fi
+	    fi
+	    if test $KIND = 4 -o  $KIND = 5 ; then
+	      gmkLog=$dir/$builddir/make.tr_log
+	      if test -f $gmkLog ; then
+		ADtool=`grep '^Tapenade ' $gmkLog | tail -n 1`
+		echo "from '$gmkLog', get: $ADtool" >> $DRESULTS/genmake_state
+		ADvers=`echo $ADtool | awk '{print $1,$2,$3}'`
+		sed "s/ by Tapenade/ by $ADvers/" $SUMMARY > tmp.tr_log
+		mv -f tmp.tr_log $SUMMARY
+	      fi
+	    fi
 	    gmkLog=$dir/$builddir/genmake_state
 	    if test -r $gmkLog ; then
 		echo -n "from '$gmkLog', "	>> $DRESULTS/genmake_state

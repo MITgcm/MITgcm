@@ -21,7 +21,7 @@ Cgf the choices of smooth2Dtype and smooth2Dsize need comments...
       INTEGER myThid
 
       INTEGER i, j, bi, bj
-      CHARACTER*( 80) fnamegeneric
+      CHARACTER*(MAX_LEN_FNAM) fnamegeneric
 
       INTEGER IL
 

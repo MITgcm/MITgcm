@@ -30,21 +30,21 @@ C     !FUNCTIONS:
       EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
-      INTEGER il, ll, l
+      INTEGER il, ic, l
 CEOP
 
       il = ILNBLNK( actvarf )
-      ll = 0
-      IF ( il .GT. 0 .AND. il .LE. 80 ) THEN
+      ic = 0
+      IF ( il .GT. 0 .AND. (il+2) .LE. LEN(fname) ) THEN
         l = il
-        DO WHILE ( ll .EQ. 0 .AND. l .GE. 1 )
-          IF ( actvarf(l:l) .EQ. '/' ) ll = l
+        DO WHILE ( ic .EQ. 0 .AND. l .GE. 1 )
+          IF ( actvarf(l:l) .EQ. '/' ) ic = l
           l = l -1
         ENDDO
       ELSE
         STOP 'ABNORMAL END: S/R ADD_PREFIX'
       ENDIF
-      WRITE(fname,'(3A)') actvarf(1:ll), prefix, actvarf(ll+1:il)
+      WRITE(fname,'(3A)') actvarf(1:ic), prefix, actvarf(ic+1:il)
 
       RETURN
       END

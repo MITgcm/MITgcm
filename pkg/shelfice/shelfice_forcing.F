@@ -1,4 +1,7 @@
 #include "SHELFICE_OPTIONS.h"
+#ifdef ALLOW_STEEP_ICECAVITY
+# include "STIC_OPTIONS.h"
+#endif
 
 C--  File shelfice_forcing.F:
 C--   Contents
@@ -34,6 +37,9 @@ C     == Global data ==
 c#include "DYNVARS.h"
 c#include "FFIELDS.h"
 #include "SHELFICE.h"
+#ifdef ALLOW_STEEP_ICECAVITY
+# include "STIC.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     gT_arr    :: the tendency array
@@ -94,6 +100,17 @@ C                         }/[drF(k+1)*hFacC(k+1)]
        ENDDO
       ENDIF
 
+# ifdef ALLOW_STEEP_ICECAVITY
+      IF ( useSTIC ) THEN
+       DO j=1,sNy
+        DO i=1,sNx
+C--     TENDENCY FROM STEEP ICECAVITY (BOTH ICE SHELF AND ICE FRONT)
+         gT_arr(i,j) = gT_arr(i,j) + stic_gT(i,j,kLev,bi,bj)
+        ENDDO
+       ENDDO
+      ENDIF
+# endif /* ALLOW_STEEP_ICECAVITY */
+
 #endif /* ALLOW_SHELFICE */
       RETURN
       END
@@ -127,6 +144,9 @@ C     == Global data ==
 c#include "DYNVARS.h"
 c#include "FFIELDS.h"
 #include "SHELFICE.h"
+#ifdef ALLOW_STEEP_ICECAVITY
+# include "STIC.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     gS_arr    :: the tendency array
@@ -185,6 +205,17 @@ C                         }/[drF(k+1)*hFacC(k+1)]
         ENDDO
        ENDDO
       ENDIF
+
+# ifdef ALLOW_STEEP_ICECAVITY
+      IF ( useSTIC ) THEN
+       DO j=1,sNy
+        DO i=1,sNx
+C--     TENDENCY FROM STEEP ICECAVITY (BOTH ICE SHELF AND ICE FRONT)
+         gS_arr(i,j) = gS_arr(i,j) + stic_gS(i,j,kLev,bi,bj)
+        ENDDO
+       ENDDO
+      ENDIF
+# endif /* ALLOW_STEEP_ICECAVITY */
 
 #endif /* ALLOW_SHELFICE */
       RETURN

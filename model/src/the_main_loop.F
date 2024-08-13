@@ -204,8 +204,8 @@ C     it is important that this file is included after SEAICE_SIZE.h
 
 # ifdef ALLOW_CTRL
 # include "CTRL_SIZE.h"
-# include "ctrl.h"
-# include "ctrl_dummy.h"
+# include "CTRL.h"
+# include "CTRL_DUMMY.h"
 # include "CTRL_GENARR.h"
 # include "CTRL_OBCS.h"
 # endif
@@ -223,9 +223,6 @@ C     it is important that this file is included after SEAICE_SIZE.h
 # ifdef ALLOW_KPP
 #  include "KPP.h"
 c#  include "KPP_PARAMS.h"
-# endif
-# ifdef ALLOW_CTRL
-#  include "optim.h"
 # endif
 # ifdef ALLOW_TIMEAVE
 #  include "TIMEAVE_STATV.h"
@@ -290,7 +287,7 @@ CEOP
 c--   Initialize storage for the cost function evaluation.
 c---------------------------------------------------------
 c--   Initialize storage for the initialisation phase.
-# ifdef ALLOW_AUTODIFF_WHTAPEIO
+# if ( defined ALLOW_AUTODIFF_WHTAPEIO && !defined ALLOW_DIVIDED_ADJOINT )
 CADJ INIT tapelev_init       = COMMON, 1
 # else
 CADJ INIT tapelev_init       = USER
@@ -299,9 +296,13 @@ c--   this tape is never used
 cCADJ INIT tapelev_ini_bibj   = USER
 # ifdef INCLUDE_CONVECT_INI_CALL
 c--   currently only used in convective_adjustement_ini.F
+#  if ( defined ALLOW_AUTODIFF_WHTAPEIO && !defined ALLOW_DIVIDED_ADJOINT )
 CADJ INIT tapelev_ini_bibj_k = COMMON, nSx*nSy*Nr
+#  else
+CADJ INIT tapelev_ini_bibj_k = USER
+#  endif
 # endif
-# if (defined ALLOW_GENTIM2D_CONTROL || defined ALLOW_ECCO)
+# ifdef ALLOW_GENTIM2D_CONTROL
 c--   exclusive tape for variables with suffix "_dummy"
 CADJ INIT dummytape          = COMMON, 1
 # endif
@@ -327,19 +328,25 @@ CADJ  INIT tapelvi3 = USER,'adi'
 
 #ifdef ALLOW_AUTODIFF_TAMC
       ikey_dynamics = 1
+# if ( defined ALLOW_AUTODIFF_WHTAPEIO && defined ALLOW_DIVIDED_ADJOINT )
+C     this needs to happen before any store directive to taplev_init
+      CALL AUTODIFF_WHTAPEIO_SYNC( 1 , 0, myThid )
+# endif
 # ifdef ALLOW_GENTIM2D_CONTROL
 CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
-# endif
-# ifdef NONLIN_FRSURF
-CADJ STORE hFacC       = tapelev_init, key = 1
-CADJ STORE recip_hFacC = tapelev_init, key = 1
 # endif
 # ifdef ALLOW_SHELFICE
 CADJ STORE shelficeLoadAnomaly = tapelev_init, key=1, kind=isbyte
 # endif
 # ifdef ALLOW_STREAMICE
-CADJ STORE H_streamice = tapelev_init, key=1
-CADJ STORE B_glen      = tapelev_init, key=1
+CADJ STORE H_streamice              = tapelev_init, key=1
+CADJ STORE B_glen                   = tapelev_init, key=1
+CADJ STORE bdot_streamice           = tapelev_init, key=1
+CADJ STORE c_basal_friction         = tapelev_init, key=1
+CADJ STORE streamice_bdot_maxmelt_v = tapelev_init, key=1
+#  ifdef USE_ALT_RLOW
+CADJ STORE r_low_si                 = tapelev_init, key=1
+#  endif
 # endif
 # ifdef ALLOW_DIC
 CADJ STORE co2atmos = tapelev_init, key = 1
@@ -348,12 +355,6 @@ CADJ STORE alpha    = tapelev_init, key = 1
 #endif
 
 #ifdef ALLOW_OPENAD
-# ifdef ALLOW_DIFFKR_CONTROL
-c$openad INDEPENDENT(xx_diffkr_dummy)
-# endif
-# ifdef ALLOW_KAPGM_CONTROL
-c$openad INDEPENDENT(xx_kapgm)
-# endif
 # ifdef ALLOW_GENARR2D_CONTROL
 cphc$openad INDEPENDENT(xx_genarr2d)
 c$openad INDEPENDENT(xx_genarr2d_dummy)
@@ -393,6 +394,11 @@ c     Initialize PDAF
       CALL TIMER_START('INIT_PDAF           [THE_MAIN_LOOP]', myThid)
       CALL INIT_PDAF( nIter0, myTime, myIter, myThid )
       CALL TIMER_STOP ('INIT_PDAF           [THE_MAIN_LOOP]', myThid)
+#endif
+
+#if ( defined ALLOW_AUTODIFF_WHTAPEIO && defined ALLOW_DIVIDED_ADJOINT )
+C     end of initialisation and use of tapelev_init: write buffer to disk
+      CALL AUTODIFF_WHTAPEIO_SYNC( 1 , 1, myThid )
 #endif
 
 c++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -512,7 +518,7 @@ CADJ INIT comlev1_exf_2 = COMMON,niter_bulk*nchklev_1*sNx*nSx*sNy*nSy
 #   endif /* ALLOW_BULKFORMULAE */
 c--
 #   ifdef ALLOW_SEAICE
-#    ifdef SEAICE_ALLOW_DYNAMICS
+#    ifdef SEAICE_CGRID
 CADJ INIT comlev1_dynsol = COMMON,nchklev_1*MPSEUDOTIMESTEPS
 #     ifdef SEAICE_LSR_ADJOINT_ITER
 CADJ INIT comlev1_lsr = COMMON,nchklev_1*MPSEUDOTIMESTEPS*SOLV_MAX_FIXED
@@ -522,10 +528,10 @@ CADJ &  nchklev_1*nSx*nSy*MPSEUDOTIMESTEPS*SOLV_MAX_FIXED
 CADJ INIT comlev1_lsr      = COMMON,        nchklev_1*MPSEUDOTIMESTEPS
 CADJ INIT comlev1_bibj_lsr = COMMON,nSx*nSy*nchklev_1*MPSEUDOTIMESTEPS
 #     endif
-#    endif
-#    ifdef SEAICE_ALLOW_EVP
+#     ifdef SEAICE_ALLOW_EVP
 CADJ INIT comlev1_evp      = COMMON,        nEVPstepMax*nchklev_1
 CADJ INIT comlev1_bibj_evp = COMMON,nSx*nSy*nEVPstepMax*nchklev_1
+#     endif
 #    endif
 CML#   ifdef SEAICE_MULTICATEGORY
 CMLCADJ INIT comlev1_multdim = COMMON,nchklev_1*nSx*nSy*nitd
@@ -556,6 +562,11 @@ CADJ &    nchklev_1*nSx*nSy*(MaxTsf+1)*niter_bulk*sNx*sNy
 #    endif
 #   endif /* ALLOW_THSICE */
 c--
+#   ifdef ALLOW_STEEP_ICECAVITY
+CADJ INIT comlev1_stic_bibj_ijk = COMMON,
+CADJ &    nchklev_1*nSx*nSy*Nr*(2*OLy+sNy)*(2*OLx+sNx)
+#   endif
+c--
 #   ifdef ALLOW_STREAMICE
 CADJ INIT comlev1_stream_nl    = COMMON,nchklev_1*streamice_max_nl
 CADJ INIT comlev1_stream_front = COMMON,nchklev_1*4
@@ -570,6 +581,9 @@ CADJ INIT comlev1_cg2d_iter = COMMON,nchklev_1*numItersMax
 #   endif
 #  endif /* ALLOW_AUTODIFF_TAMC */
 c--
+#  ifdef ALLOW_GENCOST_CONTRIBUTION
+CADJ INIT comlev1_ngencost = COMMON,nchklev_1*NGENCOST
+#  endif
 c**************************************
 
 #  ifdef STORE_LOADEDREC_TEST

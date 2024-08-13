@@ -16,7 +16,7 @@ C     == Global variables ===
 #ifdef ALLOW_ADMTLM
 # include "cost.h"
 # include "g_cost.h"
-# include "optim.h"
+# include "OPTIMCYCLE.h"
 #endif
 
 C     ======== Routine arguments ======================

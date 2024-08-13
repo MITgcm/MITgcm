@@ -386,9 +386,10 @@ c (~ strong clipping, reducing non linearity of psi=f(K))
 
         slopeMaxSpec=1. _d -4
 
+#ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE slopeX(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE slopeY(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
-
+#endif
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx+1,sNx+OLx
           Smod = ABS(SlopeX(i,j))

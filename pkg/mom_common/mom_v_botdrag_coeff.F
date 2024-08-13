@@ -89,6 +89,15 @@ c       dragFac = wUnit2rVel(k)
         recDrC = recip_drC(kLowF)
        ENDIF
 
+#ifdef ALLOW_AUTODIFF
+C--   Initialise drag-coeff
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+          cDrag(i,j) = 0. _d 0
+        ENDDO
+       ENDDO
+#endif
+
 C--   Linear bottom drag contribution to cDrag:
        DO j=1-OLy+1,sNy+OLy
         DO i=1-OLx,sNx+OLx

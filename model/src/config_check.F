@@ -1097,12 +1097,11 @@ C--   Grid limitations:
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
-       IF ( useFLT .OR. useZonal_Filt .OR. useECCO ) THEN
-        WRITE(msgBuf,'(2A)')
-     &       'CONFIG_CHECK: specifying Euler angles will probably ',
-     &       'not work with pkgs FLT, ZONAL_FLT, ECCO'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        errCount = errCount + 1
+       IF ( useFLT .OR. useECCO ) THEN
+        WRITE(msgBuf,'(2A)') '** WARNING ** CONFIG_CHECK: specifying',
+     &       ' Euler angles may not work with pkgs FLT, ECCO'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
        ENDIF
       ENDIF
 

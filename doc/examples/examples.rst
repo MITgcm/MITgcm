@@ -277,18 +277,18 @@ For many experiments, additional information is provided in a ``README`` file lo
    and a setup using piecewise quartic ("mono" and "weno" limiter)
    advection schemes (:filelink:`input.pqm <verification/advect_xz/input.pqm>`).
 
+#. :filelink:`aim.5l_cs <verification/aim.5l_cs>` - 5-level intermediate atmospheric physics, global
+   configuration on cube sphere grid (32x32 grid points per face,
+   roughly 2.8\ :sup:`o` resolution).
+   Also contains an additional setup with a slab-ocean and
+   thermodynamic sea ice (:filelink:`input.thSI <verification/aim.5l_cs/input.thSI>`).
+
 #. :filelink:`aim.5l_Equatorial_Channel <verification/aim.5l_Equatorial_Channel>` - 5-level intermediate atmospheric
    physics, 3-D equatorial channel configuration.
 
 #. :filelink:`aim.5l_LatLon <verification/aim.5l_LatLon>` - 5-level intermediate atmospheric physics, global
    configuration, on latitude-longitude grid with 128x64x5 grid points
    (2.8\ :sup:`o` resolution).
-
-#. :filelink:`aim.5l_cs <verification/aim.5l_cs>` - 5-level intermediate atmospheric physics, global
-   configuration on cube sphere grid (32x32 grid points per face,
-   roughly 2.8\ :sup:`o` resolution).
-   Also contains an additional setup with a slab-ocean and
-   thermodynamic sea ice (:filelink:`input.thSI <verification/aim.5l_cs/input.thSI>`).
 
 #. :filelink:`cfc_example <verification/cfc_example>` - Global ocean with online computation and advection
    of CFC11 and CFC12.
@@ -560,6 +560,10 @@ For many experiments, additional information is provided in a ``README`` file lo
    - with package :filelink:`ggl90 <pkg/ggl90>` scheme (Gaspar et al. 1990 :cite:`gas-eta:90`) scheme
      (:filelink:`input.ggl90 <verification/vermix/input.ggl90>`)
 
+   - with :filelink:`ggl90 <pkg/ggl90>` package and parameterized Langmuir circulation effects
+     (:varlink:`useLANGMUIR` ``= .TRUE.`` in ``data.ggl90``,
+     :filelink:`input.gglLC <verification/vermix/input.gglLC>`)
+
    - with Mellor and Yamada (1982) :cite:`mellor:82` level 2 (:filelink:`pkg/my82`)
      scheme (:filelink:`input.my82 <verification/vermix/input.my82>`)
 
@@ -617,6 +621,15 @@ directories ``code_oad`` and ``input_oad`` respectively.
 #. :filelink:`global_oce_biogeo_bling <verification/global_oce_biogeo_bling>` - Based on standard forward experiment,
    TAF adjoint setup, uses package :filelink:`ecco <pkg/ecco>`.
 
+#. :filelink:`global_oce_latlon <verification/global_oce_latlon>` - Simple adjoint experiment (used also to test OpenAD compiler), TAF and OpenAD adjoint setups.
+   Also contains additional TAF and OpenAD adjoint setups:
+
+   - using package :filelink:`ggl90 <pkg/ggl90>`
+     (:filelink:`input_ad.ggl90 <verification/global_oce_latlon/input_ad.ggl90>`,
+     :filelink:`input_oad.ggl90 <verification/global_oce_latlon/input_oad.ggl90>`).
+
+   - using package :filelink:`kpp <pkg/kpp>` (:filelink:`input_oad.kpp <verification/global_oce_latlon/input_oad.kpp>`).
+
 #. :filelink:`global_with_exf <verification/global_with_exf>` - Based on standard forward experiment, TAF adjoint setup.
 
 #. :filelink:`halfpipe_streamice<verification/halfpipe_streamice>` - Based on standard forward experiment, TAF and OpenAD adjoint setups.
@@ -641,13 +654,6 @@ directories ``code_oad`` and ``input_oad`` respectively.
 #. :filelink:`offline_exf_seaice <verification/offline_exf_seaice>` - Based on standard forward experiment, TAF adjoint setup.
    Also contains additional TAF adjoint setup
    with sea ice thermodynamics-only using :filelink:`pkg/thsice` (:filelink:`input_ad.thsice <verification/offline_exf_seaice/input_ad.thsice>`).
-
-#. :filelink:`OpenAD <verification/OpenAD>` - Simple adjoint experiment (used also to test OpenAD compiler), TAF and OpenAD adjoint setups.
-   Also contains additional OpenAD adjoint setups:
-
-   - using package :filelink:`ggl90 <pkg/ggl90>` (:filelink:`input_oad.ggl90 <verification/OpenAD/input_oad.ggl90>`).
-
-   - using package :filelink:`kpp <pkg/kpp>` (:filelink:`input_oad.kpp <verification/OpenAD/input_oad.kpp>`).
 
 #. :filelink:`tutorial_dic_adjoffline <verification/tutorial_dic_adjoffline>` - TAF adjoint setup of offline form of passive tracers coupled
    to the dissolved inorganic carbon biogeochemistry model (currently NOT documented as a tutorial experiment).

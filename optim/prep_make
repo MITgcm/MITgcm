@@ -1,0 +1,114 @@
+#! /usr/bin/env bash
+
+usage()
+{
+   echo
+   echo "Script to generate Makefile to build Executable 'optim.x'"
+   echo " from local '$template' + Makefile and header files from BUILD_DIR"
+   echo
+   echo "Usage:  $0  BUILD_DIR [OPTIONS]"
+   echo
+   echo "where BUILD_DIR is Directory where MITgcm executable was created"
+   echo "and possible OPTIONS are:"
+   echo " (-help|-h)      : print usage"
+   echo " (-dbug) NUMBER  : set 'debug' level to NUMBER (def=0, use 1 or 2)"
+   echo " (-fake)         : Fake Makefile to just check reading Input without 'lsopt'"
+   echo
+   exit 1
+}
+
+template='makefile_templ'
+newMkF='Makefile'
+tmpFil=TTT.$$
+fake=0
+debug=0
+
+if test $# = 0 ; then usage ; else arg=$1 ; fi
+if test $arg = '-h' -o $arg = '-help' ; then usage
+else bldDir=$arg ; shift ; fi
+
+if test ! -f $template ; then
+   echo "Error: no template file '$template'"
+   usage
+fi
+if test -d $bldDir ; then
+   mkFile=$bldDir/Makefile
+   if test -f $mkFile ; then
+      echo " using Makefile and Included files from '$bldDir'"
+   else
+      echo "Error: no Makefile in dir '$bldDir'"
+      usage
+   fi
+else
+   echo "Error: no directory '$bldDir'"
+   usage
+fi
+if [ $# -ge 1 ] ; then
+   prev_arg=
+   for arg in $* ; do
+      # If the previous option needs an argument, assign it.
+      if test -n "$prev_arg"; then
+         eval "$prev_arg=\$arg"
+         prev_arg=
+         continue
+      fi
+      optarg=`expr "x$arg" : 'x[^=]*=\(.*\)'`
+      case $arg in
+         -help | -h ) usage ;;
+         -fake ) fake=1  ;;
+         -dbug ) prev_arg=debug ;;
+         -dbug=* ) debug=$optarg ;;
+         *) echo "Error: unrecognized option '$arg'" ; usage ;;
+      esac
+   done
+fi
+
+#-- do sym-link of these S/R files:
+LNK_LIST=ctrl_convert_header.F
+for ff in $LNK_LIST ; do
+   if test ! -f $ff -a -f $bldDir/$ff ; then
+      echo " - link '$ff' from $bldDir"
+      ln -s $bldDir/$ff .
+   fi
+done
+
+#-- make a local Makefile from template and account for this script options:
+rm -f $newMkF
+if test $fake = 1 ; then
+   EXTRA_OPT='EXCLUDE_LSOPT_TO_CHECK'
+   sed '/^LIB/s/ *-L..\/lsopt.*$//' $template | sed 's/^LIBS *=.*$/LIBS       =/' > $newMkF
+else
+   EXTRA_OPT='OFFLINE'
+   cp $template $newMkF
+fi
+sed "s|_GET_BLD_DIR|${bldDir}|" $newMkF > $tmpFil
+sed "s/_GET_EXTRA_OPT/${EXTRA_OPT}/" $tmpFil > $newMkF
+
+#-- Get setting from MITgcm Makefile:
+SFX=`grep '^\.F\..*:$' $mkFile | head -1 | sed 's/\.F\.//' | sed 's/:$//'`
+if test "x$SFX" = x ; then SFX=f
+  echo " Failed to get Suffix 'SFX' ; continue with default SFX='${SFX}'"
+fi
+sed "s/_GET_SFX_/${SFX}/" $newMkF > $tmpFil
+mv -f $tmpFil $newMkF
+
+for KEY in CPPCMD FC FFLAGS FOPTIM
+do
+   nc=`sed -n "/_GET_$KEY/=" $newMkF` ;
+   nm=`expr $nc - 1` ; np=`expr $nc + 1`
+   sed -n "1,$nm p" $newMkF > $tmpFil
+   grep "^$KEY =" $mkFile >> $tmpFil
+   sed -n "$np,$ p" $newMkF >> $tmpFil
+   if test $debug = 2 ; then
+      echo "-- KEY= '$KEY' : nm, nc, np= $nm , $nc , $np"
+      diff $tmpFil $newMkF
+   fi
+   mv -f $tmpFil $newMkF
+done
+
+echo " new $newMkF generated:"
+ls -l $newMkF
+if [ $debug -ge 1 ] ; then
+   echo " diff $newMkF $template :"
+   diff $newMkF $template
+fi

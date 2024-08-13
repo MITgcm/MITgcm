@@ -90,7 +90,7 @@ C Tags for IO: ctrl input and adjoint (gradient) output
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
-      CHARACTER*(80) fname
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER myNr
       LOGICAL useCurrentDir
 CEOP
@@ -173,7 +173,7 @@ C Tags for IO: ctrl input and adjoint (gradient) output
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
-      CHARACTER*(80) fname
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER myNr
       LOGICAL useCurrentDir
 CEOP
@@ -256,7 +256,7 @@ C Tags for IO: ctrl input and adjoint (gradient) output
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
-      CHARACTER*(80) fname
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER myNr
       LOGICAL useCurrentDir
 CEOP
@@ -339,7 +339,7 @@ C Tags for IO: ctrl input and adjoint (gradient) output
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
-      CHARACTER*(80) fname
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER myNr
       LOGICAL useCurrentDir
 CEOP
@@ -411,7 +411,7 @@ C     myThid:          thread number for this instance
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
-      CHARACTER*(80) fname
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
@@ -485,7 +485,7 @@ C     myThid:          thread number for this instance
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
-      CHARACTER*(80) fname
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
@@ -559,7 +559,7 @@ C     myThid:          thread number for this instance
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
-      CHARACTER*(80) fname
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
@@ -633,7 +633,7 @@ C     myThid:          thread number for this instance
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
-      CHARACTER*(80) fname
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir

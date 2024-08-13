@@ -32,6 +32,9 @@ C     Coriolis parameter, buoyancy frequency etc, when used in the denominator
 C     include Langmuir circulation parameterization
 #undef ALLOW_GGL90_LANGMUIR
 
+C     Replace MAX(mxl,mxlMin) by SQRT(mxl**2+mxlMin**2) to help adjoint
+#undef GGL90_REGULARIZE_MIXINGLENGTH
+
 C     recover old bug prior to Jun 2023
 #undef GGL90_MISSING_HFAC_BUG
 

@@ -3677,9 +3677,6 @@ TAP_ADJ_FILES: \$(AD_FILES) f95_test_mods.f90
 	touch \$(AD_FILES_ADJ)
 	\$(TAPENADECMD) -b -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
 
-adAll: ad_exe_target
-.PHONY: adAll
-
 tap_adj: ad_exe_target
 ad_exe_target:
 	@echo Update AD_CONFIG.h and make \$(EXE_ADJ)

@@ -22,7 +22,7 @@ C     *==========================================================*
       INTEGER myThid
 
       INTEGER nbt_in
-      CHARACTER*( 80) fnamegeneric
+      CHARACTER*(MAX_LEN_FNAM) fnamegeneric
       INTEGER i,j,bi,bj
       INTEGER IL
 

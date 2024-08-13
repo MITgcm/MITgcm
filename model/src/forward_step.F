@@ -265,8 +265,8 @@ C     == Global variables ==
 # endif
 # ifdef ALLOW_CTRL
 #  include "CTRL_SIZE.h"
-#  include "ctrl.h"
-#  include "ctrl_dummy.h"
+#  include "CTRL.h"
+#  include "CTRL_DUMMY.h"
 #  include "CTRL_GENARR.h"
 #  include "CTRL_OBCS.h"
 # endif
@@ -507,7 +507,7 @@ C--   Switch on/off individual tracer time-stepping
 C--   Switch on/off diagnostics for snap-shot output:
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
-        CALL DIAGNOSTICS_SWITCH_ONOFF( myTime, myIter, myThid )
+        CALL DIAGNOSTICS_SWITCH_ONOFF( 1, myTime, myIter, myThid )
 C--   State-variables diagnostics
         CALL TIMER_START('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
         CALL DO_STATEVARS_DIAGS( myTime, 0, myIter, myThid )
@@ -640,10 +640,6 @@ CADJ STORE PmEpR      = comlev1, key = ikey_dynamics, kind = isbyte
 # ifdef ALLOW_OBCS
 CADJ STORE salt       = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE totphihyd  = comlev1, key = ikey_dynamics, kind = isbyte
-#  ifdef ALLOW_OBCS_STEVENS
-CADJ STORE gsNm1      = comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE gtNm1      = comlev1, key = ikey_dynamics, kind = isbyte
-#  endif
 # endif /* ALLOW_OBCS */
 # ifdef ALLOW_PTRACERS
 CADJ STORE pTracer    = comlev1, key = ikey_dynamics, kind = isbyte

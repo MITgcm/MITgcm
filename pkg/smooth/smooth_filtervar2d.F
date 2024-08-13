@@ -36,7 +36,7 @@ c     == local variables ==
       INTEGER i,j,bi, bj, ii, jj
       INTEGER diLoc,djLoc
       INTEGER nbRand, nbt_in
-      CHARACTER*(80) fnamegeneric
+      CHARACTER*(MAX_LEN_FNAM) fnamegeneric
       _RL smoothTmpFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL smoothTmpVar (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL smoothTmpMean(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

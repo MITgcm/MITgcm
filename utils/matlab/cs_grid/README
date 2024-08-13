@@ -2,35 +2,35 @@ Matlab scripts (written by Alistair) specific to Cubed-Shere grid:
  [initially in utils/matlab and moved here Sep. 15, 2005]
 
 Interpolate to Lat-Lon grid:
- cube2latlon.m 
- cube2latlon_fast.m 
- cube2latlon_preprocess.m 
+ cube2latlon.m
+ cube2latlon_fast.m
+ cube2latlon_preprocess.m
  uvcube2latlon.m
- uvcube2latlon_fast.m 
+ uvcube2latlon_fast.m
  uvcube2latlongrid.m  (faster version, from Guillaume Maze)
 
 make graphics of cs-grid fields:
- merccube.m 
- displaytiles.m 
- drawedges.m 
- fancycube.m 
- plotcube.m 
+ merccube.m
+ displaytiles.m
+ drawedges.m
+ fancycube.m
+ plotcube.m
 
 others:
- permutetiles.m 
+ permutetiles.m
  tiles.m
 
 --------------------------------------------------------------------------
 Some tools specific to the Cubed-Sphere grid :
 
 split_C_cub.m   :: split a 2d,3d global CS-field into 6 faces ;
-        apply to cell-centered CS-field ; extend the face array by 
+        apply to cell-centered CS-field ; extend the face array by
         adding 1 row & 1 column (like the exchanges)
 split_Z_cub.m   :: split a 2d,3d global CS-field into 6 faces ;
-        apply to cell-corner CS-field ; extend the face array by 
+        apply to cell-corner CS-field ; extend the face array by
         adding 1 row & 1 column (like the exchanges)
-split_UV_cub.m  :: split the 2 C-grid components of a vector 
-        (2d,3d global CS-field) into 6 faces ; extend the face array 
+split_UV_cub.m  :: split the 2 C-grid components of a vector
+        (2d,3d global CS-field) into 6 faces ; extend the face array
         by adding 1 row or 1 column (like the exchanges)
 
 cubeZ2latlon.m  :: interpolate a CS-field to regular Lat-lon grid ;
@@ -39,30 +39,40 @@ cubeZ2latlon.m  :: interpolate a CS-field to regular Lat-lon grid ;
         (deal with the 2 "missing corners")
 
 calc_vort_cs.m  :: compute vorticity (vertical component) on CS-grid
-        from MITgcm output velocity fields u,c (on C-grid); 
-        Use the model discretization of vorticity. 
+        from MITgcm output velocity fields u,c (on C-grid);
+        Use the model discretization of vorticity.
 
 the following scripts are reading a file that contains the orientation
-        of the local direction of the CS-grid relative to E-W,N-S direction.  
-  file= proj_cs[]_2uEvN.bin :: cos & sin of rotation angle, 
+        of the local direction of the CS-grid relative to E-W,N-S direction.
+  file= proj_cs[]_2uEvN.bin :: cos & sin of rotation angle,
                       format:: real*8, big-endian, size=32x6x32 x2(cos+sin)
         for standard cs32 grid, the corresponding file is:
-           verification/global_ocean.cs32x15/input/proj_cs32_2uEvN.bin 
+           verification/global_ocean.cs32x15/input/proj_cs32_2uEvN.bin
 
-rotate_csAg_EN.m :: Rotate cell centered (A-grid) U,V vector components
-        of CS-grid to East,North directions. works for 2D or 3D vector.
-
-rotate_csCg_EN.m :: Rotate MITgcm C-grid U,V vector components of CS-grid 
-        to East,North directions. done in 2 steps: 1rst compute the average
-        at the cell-center and then rotate the vector.
+rotate_uv2uvEN.m :: Rotate CS-grid vector U,V components to East,North directions.
+        Input at grid-cell center (A-grid) or grid-cell edges (C-grid);
+        works for 2D or 3D vector.
 
 uvLatLon2cube.m :: interpolate a 2 components vector field U,V (on A-grid)
         to the MITgcm CS-grid (C-grid).
 
+mk_psiLine_CS.m :: define path to integrate horizontally horizontal transport
+        for computing Barotropic Stream-Function, starting from the N.Pole and
+        going southward.  => write matlab file: psiLine_N2S_cs32.mat
+use_psiLine.m :: an example that uses "psiLine_N2S_cs32.mat" to compute & plot
+        Barotropic Transport Stream-function.
+
+mk_isoLat_bkl.m :: define "broken-lines" as close to latitude-target vector
+        "yLat", for computing Meridional Transport stream-function.
+        => write matlab file: isoLat_${ydim}_cs32.mat (with ydim = length(yLat))
+use_isoLat_bkl.m :: an example that uses "isoLat_59_cs32.mat" to compute & plot
+        Meridional Transport Stream-function.
+
+%--------------------------------------------------
 More in dir bk_line:
  Scripts that generate "broken-lines" (used to compute Meridional Transport
-  stream-function and vertically integrated horizontal stream-function)
- + a README file + an example for each one.
+  stream-function) as close as great-circle and some ploting script for CS-grid.
+ see bk_line/README file there
 
 And in dir read_cs:
  Scripts for reading and writing cube-sphere binary output in various ways.

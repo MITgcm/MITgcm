@@ -385,7 +385,7 @@ c
       CALL MNC_CW_ADD_VATTR_TEXT('adhsnow',
      &     'coordinates','XC YC RC iter', myThid)
 c
-# ifdef SEAICE_ALLOW_DYNAMICS
+# ifdef SEAICE_CGRID
       CALL MNC_CW_ADD_VNAME('aduice', 'U_xy_Hn__-__t', 3,4, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('aduice',
      &     'units','[cost]/[m/s]', myThid)

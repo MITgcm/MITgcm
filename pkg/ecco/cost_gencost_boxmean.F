@@ -46,7 +46,7 @@ c     == local variables ==
       integer bi,bj
       integer i,j
       integer nrecloc,irec,il,ioUnit
-      character*(80) myfname
+      character*(MAX_LEN_FNAM) myfname
       _RL mydummy
       logical doglobalread
       logical ladinit
@@ -77,7 +77,7 @@ c set bar field params
       ladinit      = .false.
       mydummy=gencost_dummy(kgen)
       il = ilnblnk( gencost_barfile(kgen) )
-      write(myfname(1:80),'(2a,i10.10)')
+      write(myfname,'(2a,i10.10)')
      &    gencost_barfile(kgen)(1:il),'.',eccoiter
 
 c initialize various things to 0

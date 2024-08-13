@@ -29,8 +29,8 @@ c#include "GRID.h"
 
 c#ifdef ALLOW_COST
 c# include "CTRL_SIZE.h"
-c# include "ctrl.h"
-c# include "ctrl_dummy.h"
+c# include "CTRL.h"
+c# include "CTRL_DUMMY.h"
 c#endif
 
 c     == routine arguments ==

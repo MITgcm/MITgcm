@@ -40,8 +40,7 @@ C     myThid - Thread no. that called this routine.
       INTEGER myThid
 CEndOfInterface
 
-#ifndef SEAICE_CGRID
-#ifdef SEAICE_ALLOW_DYNAMICS
+#ifdef SEAICE_BGRID_DYNAMICS
 
 C     === Local variables ===
 C     i,j,bi,bj - Loop counters
@@ -168,30 +167,30 @@ C SET SOME VALUES
         DO j=1-OLy,sNy+OLy-1
          DO i=1-OLx,sNx+OLx-1
           ucLoc(I,J,bi,bj) = 0.25 _d 0 * (
-     &         +  uIceC(I+1,J,bi,bj) +  uIceC(I+1,J+1,bi,bj)
-     &         +  uIceC(I  ,J,bi,bj) +  uIceC(I,  J+1,bi,bj) )
+     &         +  uIceB(I+1,J,bi,bj) +  uIceB(I+1,J+1,bi,bj)
+     &         +  uIceB(I  ,J,bi,bj) +  uIceB(I,  J+1,bi,bj) )
           vcLoc(I,J,bi,bj) = 0.25 _d 0 * (
-     &         +  vIceC(I+1,J,bi,bj) +  vIceC(I+1,J+1,bi,bj)
-     &         +  vIceC(I  ,J,bi,bj) +  vIceC(I,  J+1,bi,bj) )
+     &         +  vIceB(I+1,J,bi,bj) +  vIceB(I+1,J+1,bi,bj)
+     &         +  vIceB(I  ,J,bi,bj) +  vIceB(I,  J+1,bi,bj) )
          ENDDO
         ENDDO
         DO J=1-OLy,sNy+OLy-1
          DO I=1-OLy,sNx+OLy-1
           e11loc = 0.5 _d 0 * _recip_dxF(I,J,bi,bj) *
-     &                (uIceC(I+1,J+1,bi,bj)+uIceC(I+1,J,bi,bj)
-     &                -uIceC(I,  J+1,bi,bj)-uIceC(I,  J,bi,bj))
+     &                (uIceB(I+1,J+1,bi,bj)+uIceB(I+1,J,bi,bj)
+     &                -uIceB(I,  J+1,bi,bj)-uIceB(I,  J,bi,bj))
      &                + vcLoc(I,J,bi,bj) * k2AtC(I,J,bi,bj)
           e22loc = 0.5 _d 0 * _recip_dyF(I,J,bi,bj) *
-     &                (vIceC(I+1,J+1,bi,bj)+vIceC(I,J+1,bi,bj)
-     &                -vIceC(I+1,J,  bi,bj)-vIceC(I,J,  bi,bj))
+     &                (vIceB(I+1,J+1,bi,bj)+vIceB(I,J+1,bi,bj)
+     &                -vIceB(I+1,J,  bi,bj)-vIceB(I,J,  bi,bj))
      &                + ucLoc(I,J,bi,bj) * k1AtC(I,J,bi,bj)
           e12loc = 0.5 _d 0*(
      &           0.5 _d 0 * _recip_dyF(I,J,bi,bj) *
-     &         (uIceC(I+1,J+1,bi,bj)+uIceC(I,J+1,bi,bj)
-     &         -uIceC(I+1,J,  bi,bj)-uIceC(I,J,  bi,bj))
+     &         (uIceB(I+1,J+1,bi,bj)+uIceB(I,J+1,bi,bj)
+     &         -uIceB(I+1,J,  bi,bj)-uIceB(I,J,  bi,bj))
      &         + 0.5 _d 0 * _recip_dxF(I,J,bi,bj) *
-     &         (vIceC(I+1,J+1,bi,bj)+vIceC(I+1,J,bi,bj)
-     &         -vIceC(I,  J+1,bi,bj)-vIceC(I,  J,bi,bj))
+     &         (vIceB(I+1,J+1,bi,bj)+vIceB(I+1,J,bi,bj)
+     &         -vIceB(I,  J+1,bi,bj)-vIceB(I,  J,bi,bj))
      &         - vcLoc(I,J,bi,bj)*k1AtC(I,J,bi,bj)
      &         - ucLoc(I,J,bi,bj)*k2AtC(I,J,bi,bj) )
 C  NOW EVALUATE VISCOSITIES
@@ -205,8 +204,8 @@ C  NOW EVALUATE VISCOSITIES
           ENDIF
           ZETA(I,J,bi,bj)  = 0.5 _d 0*PRESS0(I,J,bi,bj)/DELT2
 C NOW PUT MIN AND MAX VISCOSITIES IN
-          ZETA(I,J,bi,bj)  = MIN(ZMAX(I,J,bi,bj),ZETA(I,J,bi,bj))
-          ZETA(I,J,bi,bj)  = MAX(ZMIN(I,J,bi,bj),ZETA(I,J,bi,bj))
+          ZETA(I,J,bi,bj)  = MIN(SEAICE_zMax(I,J,bi,bj),ZETA(I,J,bi,bj))
+          ZETA(I,J,bi,bj)  = MAX(SEAICE_zMin(I,J,bi,bj),ZETA(I,J,bi,bj))
 C NOW SET VISCOSITIES TO ZERO AT HEFFMFLOW PTS
           ZETA(I,J,bi,bj)  = ZETA(I,J,bi,bj)*HEFFM(I,J,bi,bj)
           ETA(I,J,bi,bj)   = ECM2*ZETA(I,J,bi,bj)
@@ -412,13 +411,13 @@ C     at V-point
      &         * (vcLoc(I,J,bi,bj)-vcLoc(I,J-1,bi,bj))
      &         * _recip_dyC(I,J,bi,bj)
      &         + (zetaV(I,J)+etaV(I,J))*k2atV(I,J,bi,bj)
-     &         * 0.5 _d 0 * (vIceC(I,J,bi,bj)+vIceC(I+1,J,bi,bj))
+     &         * 0.5 _d 0 * (vIceB(I,J,bi,bj)+vIceB(I+1,J,bi,bj))
      &         - 0.5 _d 0 * (PRESS(I,J,bi,bj)+PRESS(I,J-1,bi,bj))
           sig12(I,J) = etaV(I,J)
      &         * (ucLoc(I,J,bi,bj)-ucLoc(I,J-1,bi,bj))
      &         * _recip_dyC(I,J,bi,bj)
      &         - etaV(I,J) * k2AtV(I,J,bi,bj)
-     &         * 0.5 _d 0 * (uIceC(I,J,bi,bj)+uIceC(I+1,J,bi,bj))
+     &         * 0.5 _d 0 * (uIceB(I,J,bi,bj)+uIceB(I+1,J,bi,bj))
          ENDDO
         ENDDO
         DO j=0,sNy
@@ -429,25 +428,25 @@ C     at U-point
      &         * (ucLoc(I,J,bi,bj)-ucLoc(I-1,J,bi,bj))
      &         * _recip_dxC(I,J,bi,bj)
      &         + (zetaU(I,J)+etaU(I,J))*k2atU(I,J,bi,bj)
-     &         * 0.5 _d 0 * (uIceC(I,J,bi,bj)+uIceC(I,J+1,bi,bj))
+     &         * 0.5 _d 0 * (uIceB(I,J,bi,bj)+uIceB(I,J+1,bi,bj))
      &         - 0.5 _d 0 * (PRESS(I,J,bi,bj)+PRESS(I-1,J,bi,bj))
           sig21(I,J) = etaU(I,J)
      &         * (vcLoc(I,J,bi,bj)-vcLoc(I-1,J,bi,bj))
      &         * _recip_dxC(I,J,bi,bj)
      &         - etaU(I,J) * k1AtU(I,J,bi,bj)
-     &         * 0.5 _d 0 * (vIceC(I,J,bi,bj)+vIceC(I,J+1,bi,bj))
+     &         * 0.5 _d 0 * (vIceB(I,J,bi,bj)+vIceB(I,J+1,bi,bj))
          ENDDO
         ENDDO
         DO j=1,sNy
          DO i=1,sNx
-          rhsU(I,J,bi,bj) =   DRAGA(I,J,bi,bj)*vIceC(I,J,bi,bj)
+          rhsU(I,J,bi,bj) =   DRAGA(I,J,bi,bj)*vIceB(I,J,bi,bj)
      &         +FORCEX(I,J,bi,bj)
      &         + ( _dyC(I,  J,  bi,bj) * sig11(I,  J  )
      &           - _dyC(I-1,J,  bi,bj) * sig11(I-1,J  )
      &           + _dxC(I,  J,  bi,bj) * sig21(I,  J  )
      &           - _dxC(I,  J-1,bi,bj) * sig21(I,  J-1) )
      &         * recip_rAz(I,J,bi,bj) * UVM(I,J,bi,bj)
-          rhsV(I,J,bi,bj) = - DRAGA(I,J,bi,bj)*uIceC(I,J,bi,bj)
+          rhsV(I,J,bi,bj) = - DRAGA(I,J,bi,bj)*uIceB(I,J,bi,bj)
      &         +FORCEY(I,J,bi,bj)
      &         + ( _dyC(I,  J,  bi,bj) * sig12(I,  J  )
      &           - _dyC(I-1,J,  bi,bj) * sig12(I-1,J  )
@@ -746,14 +745,14 @@ C     now set up right-hand side
         DO J=1-OLy,sNy+OLy-1
          DO I=1-OLx,sNx+OLx-1
           dVdy(I,J) = 0.5 _d 0 * (
-     &         ( VICEC(I+1,J+1,bi,bj) - VICEC(I+1,J  ,bi,bj) )
+     &         ( vIceB(I+1,J+1,bi,bj) - vIceB(I+1,J  ,bi,bj) )
      &         * _recip_dyG(I+1,J,bi,bj)
-     &         +(VICEC(I  ,J+1,bi,bj) - VICEC(I  ,J  ,bi,bj) )
+     &         +(vIceB(I  ,J+1,bi,bj) - vIceB(I  ,J  ,bi,bj) )
      &         * _recip_dyG(I,  J,bi,bj) )
           dVdx(I,J) = 0.5 _d 0 * (
-     &         ( VICEC(I+1,J+1,bi,bj) - VICEC(I  ,J+1,bi,bj) )
+     &         ( vIceB(I+1,J+1,bi,bj) - vIceB(I  ,J+1,bi,bj) )
      &         * _recip_dxG(I,J+1,bi,bj)
-     &         +(VICEC(I+1,J  ,bi,bj) - VICEC(I  ,J  ,bi,bj) )
+     &         +(vIceB(I+1,J  ,bi,bj) - vIceB(I  ,J  ,bi,bj) )
      &         * _recip_dxG(I,J,  bi,bj) )
          ENDDO
         ENDDO
@@ -761,15 +760,15 @@ C     now set up right-hand side
         DO j=1-OLy,sNy+OLy-1
          DO i=1-OLx,sNx+OLx-1
           vz(i,j) = quart * (
-     &         vicec(i,j,bi,bj) + vicec(i+1,j,bi,bj) )
+     &         vIceB(i,j,bi,bj) + vIceB(i+1,j,bi,bj) )
           vz(i,j)= vz(i,j) + quart * (
-     &         vicec(i,j+1,bi,bj) + vicec(i+1,j+1,bi,bj) )
+     &         vIceB(i,j+1,bi,bj) + vIceB(i+1,j+1,bi,bj) )
          ENDDO
         ENDDO
 #endif
         DO J=1,sNy
          DO I=1,sNx
-          rhsU(I,J,bi,bj)=DRAGA(I,J,bi,bj)*VICEC(I,J,bi,bj)
+          rhsU(I,J,bi,bj)=DRAGA(I,J,bi,bj)*vIceB(I,J,bi,bj)
      &         +FORCEX(I,J,bi,bj)
 #ifdef SEAICE_TEST
      &        + ( 0.5 _d 0 *
@@ -795,18 +794,18 @@ C     now set up right-hand side
      &
      &        -(etaPlusZeta(I  ,J  ,bi,bj)+etaPlusZeta(I  ,J-1,bi,bj)
      &         -etaPlusZeta(I-1,J-1,bi,bj)-etaPlusZeta(I-1,J  ,bi,bj))
-     &         * VICEC(I,J,bi,bj)
+     &         * vIceB(I,J,bi,bj)
      &            * _tanPhiAtV(I,J,bi,bj)
      &         * 0.5 _d 0 * _recip_dxV(I,J,bi,bj)*recip_rSphere
      &
      &         -(ETAMEAN(I,J,bi,bj)+ZETAMEAN(I,J,bi,bj))
-     &         *(VICEC(I+1,J,bi,bj) - VICEC(I-1,J,bi,bj))
+     &         *(vIceB(I+1,J,bi,bj) - vIceB(I-1,J,bi,bj))
      &            * _tanPhiAtV(I,J,bi,bj)
      &         * 1.0 _d 0 /( _dxG(I,J,bi,bj) + _dxG(I-1,J,bi,bj) )
      &         *recip_rSphere
      &
      &         -ETAMEAN(I,J,bi,bj)
-     &         *(VICEC(I+1,J,bi,bj) - VICEC(I-1,J,bi,bj))
+     &         *(vIceB(I+1,J,bi,bj) - vIceB(I-1,J,bi,bj))
      &            *TWO* _tanPhiAtV(I,J,bi,bj)
      &         * 1.0 _d 0 /( _dxG(I,J,bi,bj) + _dxG(I-1,J,bi,bj) )
      &         *recip_rSphere
@@ -989,14 +988,14 @@ C     now set up right-hand-side
         DO J=1-OLy,sNy+OLy-1
          DO I=1-OLx,sNx+OLx-1
           dUdx(I,J) = 0.5 _d 0 * (
-     &         ( UICEC(I+1,J+1,bi,bj) - UICEC(I ,J+1,bi,bj) )
+     &         ( uIceB(I+1,J+1,bi,bj) - uIceB(I ,J+1,bi,bj) )
      &         * _recip_dxG(I,J+1,bi,bj)
-     &         +(UICEC(I+1,J  ,bi,bj) - UICEC(I ,J  ,bi,bj) )
+     &         +(uIceB(I+1,J  ,bi,bj) - uIceB(I ,J  ,bi,bj) )
      &         * _recip_dxG(I,J  ,bi,bj) )
           dUdy(I,J) = 0.5 _d 0 * (
-     &          ( UICEC(I+1,J+1,bi,bj) - UICEC(I+1,J  ,bi,bj) )
+     &          ( uIceB(I+1,J+1,bi,bj) - uIceB(I+1,J  ,bi,bj) )
      &         * _recip_dyG(I+1,J,bi,bj)
-     &          +(UICEC(I  ,J+1,bi,bj) - UICEC(I  ,J  ,bi,bj) )
+     &          +(uIceB(I  ,J+1,bi,bj) - uIceB(I  ,J  ,bi,bj) )
      &         * _recip_dyG(I,  J,bi,bj) )
          ENDDO
         ENDDO
@@ -1004,15 +1003,15 @@ C     now set up right-hand-side
         DO j=1-OLy,sNy+OLy-1
          DO i=1-OLx,sNx+OLx-1
           uz(i,j) = quart * (
-     &         uicec(i,j,bi,bj) + uicec(i+1,j,bi,bj) )
+     &         uIceB(i,j,bi,bj) + uIceB(i+1,j,bi,bj) )
           uz(i,j)= uz(i,j) + quart * (
-     &         uicec(i,j+1,bi,bj) + uicec(i+1,j+1,bi,bj) )
+     &         uIceB(i,j+1,bi,bj) + uIceB(i+1,j+1,bi,bj) )
          ENDDO
         ENDDO
 #endif
         DO J=1,sNy
          DO I=1,sNx
-           rhsV(I,J,bi,bj)=-DRAGA(I,J,bi,bj)*UICEC(I,J,bi,bj)
+           rhsV(I,J,bi,bj)=-DRAGA(I,J,bi,bj)*uIceB(I,J,bi,bj)
      &        +FORCEY(I,J,bi,bj)
      &
 #ifdef SEAICE_TEST
@@ -1039,15 +1038,15 @@ C     now set up right-hand-side
      &
      &        +(ETA(I  ,J  ,bi,bj) + ETA(I  ,J-1,bi,bj)
      &         -ETA(I-1,J-1,bi,bj) - ETA(I-1,J  ,bi,bj))
-     &         * UICEC(I,J,bi,bj)
+     &         * uIceB(I,J,bi,bj)
      &         * _tanPhiAtV(I,J,bi,bj)
      &         * 0.5 _d 0 * _recip_dxV(I,J,bi,bj)*recip_rSphere
      &        +ETAMEAN(I,J,bi,bj) * _tanPhiAtV(I,J,bi,bj)
-     &         *(UICEC(I+1,J,bi,bj)-UICEC(I-1,J,bi,bj))
+     &         *(uIceB(I+1,J,bi,bj)-uIceB(I-1,J,bi,bj))
      &         * 0.5 _d 0 * _recip_dxV(I,J,bi,bj)*recip_rSphere
      &
      &        +ETAMEAN(I,J,bi,bj)*TWO  * _tanPhiAtV(I,J,bi,bj)
-     &        *(UICEC(I+1,J,bi,bj)-UICEC(I-1,J,bi,bj))
+     &        *(uIceB(I+1,J,bi,bj)-uIceB(I-1,J,bi,bj))
      &         * 1. _d 0 /( _dxG(I,J,bi,bj) + _dxG(I-1,J,bi,bj))
      &         *recip_rSphere
           VRT1(I,J,bi,bj)= 0.5 _d 0 * (
@@ -1197,8 +1196,7 @@ C NOW MAKE COROLIS TERM IMPLICIT
        ENDDO
       ENDDO
 
-#endif /* SEAICE_ALLOW_DYNAMICS */
-#endif /* SEAICE_CGRID */
+#endif /* SEAICE_BGRID_DYNAMICS */
 
       RETURN
       END

@@ -37,6 +37,7 @@ C     === Global variables ===
       _RL area_diag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL float_frac_diag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL surf_diag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL bdot_diag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifdef STREAMICE_HYBRID_STRESS
       _RL streamice_taubx_diag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL streamice_tauby_diag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -53,12 +54,14 @@ C     === Global variables ===
            v_streamice_diag(i,j,bi,bj) = v_streamice(i,j,bi,bj)%v
            h_streamice_diag(i,j,bi,bj) = H_streamice(i,j,bi,bj)%v
            area_diag(i,j,bi,bj) = area_shelf_streamice(i,j,bi,bj)%v
-#ifdef STREAMICE_SMOOTH_FLOATATION2
+#if (defined(STREAMICE_SMOOTH_FLOATATION2) || defined(STREAMICE_SMOOTH_FLOATATION))
            float_frac_diag(i,j,bi,bj) =
      &         float_frac_streamice(i,j,bi,bj)%v
 #endif
            surf_diag(i,j,bi,bj) =
      &         surf_el_streamice(i,j,bi,bj)%v
+           bdot_diag(i,j,bi,bj) =
+     &         bdot_streamice(i,j,bi,bj)%v
 #ifdef STREAMICE_HYBRID_STRESS
            streamice_taubx_diag(i,j,bi,bj) =
      $         streamice_taubx(i,j,bi,bj)%v
@@ -95,6 +98,8 @@ C     === Global variables ===
      &      0,1,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(surf_diag,'SI_selev',
      &      0,1,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(bdot_diag,'BDOT_SI ',
+     &      0,1,0,1,1,myThid)
 
 #else
 
@@ -116,7 +121,7 @@ C     === Global variables ===
 #endif
 
 #ifdef ALLOW_OPENAD
-#ifdef STREAMICE_SMOOTH_FLOATATION2
+#if (defined(STREAMICE_SMOOTH_FLOATATION2) || defined(STREAMICE_SMOOTH_FLOATATION))
        CALL DIAGNOSTICS_FILL(float_frac_diag,'SI_float',
      &      0,1,0,1,1,myThid)
 #else

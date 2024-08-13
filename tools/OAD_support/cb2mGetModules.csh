@@ -1,6 +1,6 @@
 #!/bin/csh -f
 set fileName=${1:r}
-set awkScript=${2}    
+set awkScript=${2}
 echo '      MODULE '${fileName}_mod   > ${fileName}_temp
 echo '#include "PACKAGES_CONFIG.h"'   >> ${fileName}_temp
 echo '#include "CPP_OPTIONS.h"'       >> ${fileName}_temp
@@ -16,7 +16,7 @@ echo '#endif'                         >> ${fileName}_temp
 echo '#ifdef ALLOW_ECCO'              >> ${fileName}_temp
 echo '# include "ECCO_OPTIONS.h"'     >> ${fileName}_temp
 echo '#endif'                         >> ${fileName}_temp
-if ( ${fileName} == 'DIC_LOAD' ) then
+if ( ${fileName} == 'DIC_LOAD' || ${fileName} == 'DIC_VARS' ) then
   echo '#include "DIC_OPTIONS.h"'    >> ${fileName}_temp
 endif
 if ( ${fileName} == 'GAD' ) then
@@ -52,7 +52,7 @@ endif
 if ( ${fileName} != 'PARAMS' && ${fileName} != 'EEPARAMS' &&  ${fileName} != 'SIZE' &&  ${fileName} != 'MNC_COMMON' && ${fileName} != 'GAD' && ${fileName} != 'GRID' ) then
   echo '      use PARAMS_mod'	     >> ${fileName}_temp
 endif
-if ( ${fileName} == 'ctrl' || ${fileName} == 'ctrl_dummy' || ${fileName} == 'CTRL_GENARR' ) then
+if ( ${fileName} == 'CTRL' || ${fileName} == 'CTRL_DUMMY' || ${fileName} == 'CTRL_GENARR' ) then
   echo '      use CTRL_SIZE_mod'     >> ${fileName}_temp
 endif
 if ( ${fileName} == 'DIAGSTATS_REGIONS' || ${fileName} == 'DIAGNOSTICS' ) then
@@ -66,7 +66,7 @@ endif
 if ( ${fileName} == 'RBCS_FIELDS' ) then
   echo '      use RBCS_SIZE_mod' >> ${fileName}_temp
 endif
-#echo awk -f ${awkScript} ${fileName}.h   
+#echo awk -f ${awkScript} ${fileName}.h
 awk -f ${awkScript} ${fileName}.h | grep -v mpif.h   >> ${fileName}_temp
 echo '      END MODULE' ${fileName}_mod   >> ${fileName}_temp
 cp ${fileName}_temp ${fileName}_mod.FF90

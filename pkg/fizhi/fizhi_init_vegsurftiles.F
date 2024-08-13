@@ -38,7 +38,7 @@ C     !INPUT/OUTPUT PARAMETERS:
       INTEGER MDS_RECLEN
 CEOP
 C     !LOCAL VARIABLES:
-      CHARACTER*80 fn
+      CHARACTER(MAX_LEN_FNAM) fn
       integer ihour
       integer i,j,n
       integer bislot,bjslot,iunit

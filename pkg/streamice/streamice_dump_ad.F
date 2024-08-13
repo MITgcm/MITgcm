@@ -7,7 +7,7 @@
 CBOP
 C     !ROUTINE: adstreamice_dump
 C     !INTERFACE:
-      subroutine adstreamice_dump( mytime, myiter, myThid )
+      subroutine adstreamice_dump( myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -23,7 +23,6 @@ C     \ev
 
 C     !USES:
       IMPLICIT NONE
-
 C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -40,18 +39,16 @@ C     == Global variables ===
       EXTERNAL IO_ERRCOUNT
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
-C     myIter - iteration counter for this thread
 C     myTime - time counter for this thread
+C     myIter - iteration counter for this thread
 C     myThid - Thread number for this instance of the routine.
+      _RL     myTime
+      integer myIter
       integer myThid
-      integer myiter
-      _RL     mytime
 
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_ADMTLM))
 
 C     !LOCAL VARIABLES:
-c     == local variables ==
 C     suff - Hold suffix part of a filename
 C     beginIOErrCount - Begin and end IO error counts
 C     endIOErrCount
@@ -61,27 +58,27 @@ C     msgBuf - Error message buffer
       INTEGER endIOErrCount
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-      double precision :: area_shelf_streamice_ad(1-olx:snx+olx,1-oly:
-     $sny+oly,nsx,nsy)
-      double precision :: b_glen_ad(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      double precision :: bdot_streamice_ad(1-olx:snx+olx,1-oly:sny+oly,
-     $nsx,nsy)
-      double precision :: c_basal_friction_ad(1-olx:snx+olx,1-oly:sny+
-     $oly,nsx,nsy)
-      double precision :: float_frac_streamice_ad(1-olx:snx+olx,1-oly:
-     $sny+oly,nsx,nsy)
-      double precision :: h_streamice_ad(1-olx:snx+olx,1-oly:sny+oly,
-     $nsx,nsy)
-      double precision :: surf_el_streamice_ad(1-olx:snx+olx,1-oly:sny+
-     $oly,nsx,nsy)
-      double precision :: tau_beta_eff_streamice_ad(1-olx:snx+olx,1-oly:
-     $sny+oly,nsx,nsy)
-      double precision :: u_streamice_ad(1-olx:snx+olx,1-oly:sny+oly,
-     $nsx,nsy)
-      double precision :: v_streamice_ad(1-olx:snx+olx,1-oly:sny+oly,
-     $nsx,nsy)
-      double precision :: visc_streamice_ad(1-olx:snx+olx,1-oly:sny+oly,
-     $nsx,nsy)
+      double precision :: area_shelf_streamice_ad(1-OLx:sNx+OLx,1-OLy:
+     $sNy+OLy,nSx,nSy)
+      double precision :: b_glen_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      double precision :: bdot_streamice_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
+     $nSx,nSy)
+      double precision :: c_basal_friction_ad(1-OLx:sNx+OLx,1-OLy:sNy+
+     $OLy,nSx,nSy)
+      double precision :: float_frac_streamice_ad(1-OLx:sNx+OLx,1-OLy:
+     $sNy+OLy,nSx,nSy)
+      double precision :: h_streamice_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
+     $nSx,nSy)
+      double precision :: surf_el_streamice_ad(1-OLx:sNx+OLx,1-OLy:sNy+
+     $OLy,nSx,nSy)
+      double precision :: tau_beta_eff_streamice_ad(1-OLx:sNx+OLx,1-OLy:
+     $sNy+OLy,nSx,nSy)
+      double precision :: u_streamice_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
+     $nSx,nSy)
+      double precision :: v_streamice_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
+     $nSx,nSy)
+      double precision :: visc_streamice_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
+     $nSx,nSy)
       common /streamice_fields_rl_ad/ h_streamice_ad, u_streamice_ad,
      $v_streamice_ad, visc_streamice_ad, tau_beta_eff_streamice_ad,
      $float_frac_streamice_ad, surf_el_streamice_ad,
@@ -89,21 +86,18 @@ C     msgBuf - Error message buffer
      $bdot_streamice_ad
 
 #ifdef USE_ALT_RLOW
-      double precision :: r_low_si_ad(1-olx:snx+olx,1-oly:sny+oly,nsx,
-     $nsy)
+      double precision :: r_low_si_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,
+     $nSy)
       common /streamice_rlow_ad/ r_low_si_ad
 #endif
-
-c     == end of interface ==
 CEOP
 
       IF (
-     &  DIFFERENT_MULTIPLE(streamice_adjDump,mytime,deltaTClock)
+     &  DIFFERENT_MULTIPLE(streamice_adjDump,myTime,deltaTClock)
      & ) THEN
 
 C--     Set suffix for this set of data files.
         WRITE(suff,'(I10.10)') myIter
-        writeBinaryPrec = writeStatePrec
 
 C--     Read IO error counter
         beginIOErrCount = IO_ERRCOUNT(myThid)

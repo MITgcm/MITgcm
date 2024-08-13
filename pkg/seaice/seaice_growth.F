@@ -1588,7 +1588,7 @@ C           heat flux overcoming potential melt by ocean
      &            (1.0 _d 0 - AREApreTH(i,j))
 C           Penetrative shortwave flux beyond first layer
 C           that is therefore not available to ice growth/melt
-            tmpscal2=SWFracB * a_QSWbyATM_open(i,j)
+            tmpscal2=SEAICE_SWFrac * a_QSWbyATM_open(i,j)
 C           impose -HEFF as the maxmum melting if SEAICE_doOpenWaterMelt
 C           or 0. otherwise (no melting if not SEAICE_doOpenWaterMelt)
             tmpscal3=facOpenGrow*MAX(tmpscal1-tmpscal2,

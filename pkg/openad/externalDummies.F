@@ -132,7 +132,7 @@ C dummy self dependence (nontrivial so mfef90 doesn't kill it)
 #endif
 C ###########################################################
 #ifdef ALLOW_STREAMICE
-      SUBROUTINE STREAMICE_CG_SOLVE( 
+      SUBROUTINE STREAMICE_CG_SOLVE(
      U                               cg_Uin,     ! x-velocities
      U                               cg_Vin,     ! y-velocities
      I                               cg_Bu,      ! force in x dir
@@ -141,7 +141,7 @@ C ###########################################################
      I                               A_uv,       ! section of matrix that multiplies v and projects on u
      I                               A_vu,       ! section of matrix that multiplies u and projects on v
      I                               A_vv,       ! section of matrix that multiplies v and projects on v
-     I                               tolerance, 
+     I                               tolerance,
      O                               iters,
      I                               maxiter,
      I                               myThid )
@@ -160,17 +160,17 @@ C ###########################################################
       _RL cg_Vin (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL cg_Bu (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL cg_Bv (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL 
+      _RL
      & A_uu (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
      & A_vu (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
      & A_uv (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
      & A_vv (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1)
 
-      cg_Uin(1,1,1,1) = A_uu(1,1,1,1,1,1) + A_uv(1,1,1,1,1,1) + 
-     & A_vu(1,1,1,1,1,1) + A_vv(1,1,1,1,1,1) + cg_Bu(1,1,1,1)  
+      cg_Uin(1,1,1,1) = A_uu(1,1,1,1,1,1) + A_uv(1,1,1,1,1,1) +
+     & A_vu(1,1,1,1,1,1) + A_vv(1,1,1,1,1,1) + cg_Bu(1,1,1,1)
 
-      cg_Vin(1,1,1,1) = A_uu(1,1,1,1,1,1) + A_uv(1,1,1,1,1,1) + 
-     & A_vu(1,1,1,1,1,1) + A_vv(1,1,1,1,1,1) + cg_Bv(1,1,1,1)  
+      cg_Vin(1,1,1,1) = A_uu(1,1,1,1,1,1) + A_uv(1,1,1,1,1,1) +
+     & A_vu(1,1,1,1,1,1) + A_vv(1,1,1,1,1,1) + cg_Bv(1,1,1,1)
 
       end subroutine
 #endif /* ALLOW_STREAMICE */
@@ -196,8 +196,8 @@ C ###########################################################
       _RL DELTA
       INTEGER myThid
 #ifdef STREAMICE_ALLOW_DEPTH_CONTROL
-      H(1,1,1,1) = s(1,1,1,1) + 
-     &  R(1,1,1,1)  
+      H(1,1,1,1) = s(1,1,1,1) +
+     &  R(1,1,1,1)
 #endif
 
       end subroutine
@@ -252,7 +252,7 @@ C ###########################################################
 !     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
-      CHARACTER*(80) active_var_file
+      CHARACTER*(*) active_var_file
       _RL     active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER iRec
       INTEGER myOptimIter
@@ -281,7 +281,7 @@ C ###########################################################
 !     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
-      CHARACTER*(80) active_var_file
+      CHARACTER*(*) active_var_file
       _RL     active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER iRec
       INTEGER myOptimIter
@@ -308,7 +308,7 @@ C ###########################################################
 !     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
-      CHARACTER*(80) active_var_file
+      CHARACTER*(*) active_var_file
       _RL     active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER iRec
       INTEGER myOptimIter
@@ -320,4 +320,3 @@ C ###########################################################
 #endif /* ALLOW_OPENAD_ACTIVE_WRITE */
       end subroutine
 C ###########################################################
-

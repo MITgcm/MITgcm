@@ -40,7 +40,7 @@ CEOP
 C     !LOCAL VARIABLES:
       CHARACTER*1 prec
       CHARACTER*80 bnam
-      character*(80) dataFName
+      character*(MAX_LEN_FNAM) dataFName
       integer ilst
       integer i,k,n
       integer ig,jg,tn,iunit
@@ -118,7 +118,7 @@ C       fizhi_earth_coms.h
        tn = (jG - 1)*(nPx*nSx) + iG
 #endif /* ALLOW_EXCH2 */
 
-       write(dataFname(1:80),'(a,2a,i3.3,a,i3.3,a)')
+       write(dataFname,'(a,2a,i3.3,a,i3.3,a)')
      &  'pickup_vegtiles.',fn(1:ilst),'.',iG,'.',jG,'.data'
        open( iUnit, file=dataFName, status='unknown',
      &       access='direct', recl=length_of_rec )
@@ -313,7 +313,7 @@ C     !LOCAL VARIABLES:
       CHARACTER*80 fn
       CHARACTER*80 bnam
       integer ilst
-      character*(80) dataFName
+      character*(MAX_LEN_FNAM) dataFName
       integer i,k,n
       integer ig,jg,tn,iunit
       integer length_of_rec
@@ -373,9 +373,9 @@ C       fizhi_land_coms.h
        tn = (jG - 1)*(nPx*nSx) + iG
 #endif /* ALLOW_EXCH2 */
 
-       write(dataFname(1:80),'(2a,i3.3,a,i3.3,a)')
+       write(dataFname,'(2a,i3.3,a,i3.3,a)')
      &              fn(1:ilst),'.',iG,'.',jG,'.data'
-       print *,' Opening ',dataFName
+       print *,' Opening ',dataFName(1:ilst+13)
        open( iUnit, file=dataFName, status='old',
      &       access='direct', recl=length_of_rec )
 

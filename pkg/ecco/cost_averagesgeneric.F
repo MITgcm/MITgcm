@@ -4,7 +4,7 @@
      &     localbarfile,
      &     localbar, localfld, xx_localbar_mean_dummy,
      &     first, last, startofloc, endofloc, inloc,
-     &     sum1loc, locrec, nnz, mythid )
+     &     sum1loc, locrec, nnz, myThid )
 
 c     ==================================================================
 c     SUBROUTINE cost_averagesgeneric
@@ -31,13 +31,13 @@ c     == global variables ==
 
 c     == routine arguments ==
 
-      integer mythid
+      integer myThid
       integer nnz
       integer locrec
       integer sum1loc
 
-      _RL localbar(1-olx:snx+olx,1-oly:sny+oly,nnz,nsx,nsy)
-      _RL localfld(1-olx:snx+olx,1-oly:sny+oly,nnz,nsx,nsy)
+      _RL localbar(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnz,nSx,nSy)
+      _RL localfld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnz,nSx,nSy)
       _RL xx_localbar_mean_dummy
 
       logical first
@@ -74,39 +74,39 @@ c     == end of interface ==
 #ifdef ALLOW_ECCO_DEBUG
        write(msgbuf,'(a)') '>> entering'
         call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT , myThid)
 
        il=ilnblnk( localbarfile )
        write(msgbuf,'(a,a)')
      & 'cost_averagesgeneric, file : ',localbarfile(1:il)
        call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT , myThid)
 
        write(msgbuf,'(a,5L5)')
      & 'cost_averagesgeneric, logicals : ',
      &  first, last, startofloc, endofloc, inloc
        call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT , myThid)
 
        write(msgbuf,'(a,3i5)')
      & 'cost_averagesgeneric, integers : ',
      &  sum1loc, locrec, nnz
        call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT , myThid)
 
        write(msgbuf,'(a)') '<< leaving'
         call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT , myThid)
 #endif
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
+      jtlo = myByLo(myThid)
+      jthi = myByHi(myThid)
+      itlo = myBxLo(myThid)
+      ithi = myBxHi(myThid)
       jmin = 1
-      jmax = sny
+      jmax = sNy
       imin = 1
-      imax = snx
+      imax = sNx
 
       if (startofloc .and. endofloc) then
 c--     Save snapshot at every time step
@@ -122,17 +122,16 @@ c--     Save snapshot at every time step
           enddo
         enddo
 c--     Save ...bar on file.
-        write(fname(1:128),'(80a)') ' '
         il=ilnblnk( localbarfile )
         write(fname,'(2a,i10.10)')
      &       localbarfile(1:il), '.', eccoiter
 #ifdef ALLOW_AUTODIFF
         if ( nnz .EQ. 1 ) then
            call active_write_xy( fname, localbar, locrec, eccoiter,
-     &          mythid, xx_localbar_mean_dummy )
+     &          myThid, xx_localbar_mean_dummy )
         else
            call active_write_xyz( fname, localbar, locrec, eccoiter,
-     &          mythid, xx_localbar_mean_dummy )
+     &          myThid, xx_localbar_mean_dummy )
         endif
 #else
         if ( nnz .EQ. 1 ) then
@@ -172,17 +171,16 @@ c--     Add the last value and devide by the number of accumulated records.
           enddo
         enddo
 c--     Save ...bar on file.
-        write(fname(1:128),'(80a)') ' '
         il=ilnblnk( localbarfile )
         write(fname,'(2a,i10.10)')
      &       localbarfile(1:il), '.', eccoiter
 #ifdef ALLOW_AUTODIFF
         if ( nnz .EQ. 1 ) then
            call active_write_xy( fname, localbar, locrec, eccoiter,
-     &          mythid, xx_localbar_mean_dummy )
+     &          myThid, xx_localbar_mean_dummy )
         else
            call active_write_xyz( fname, localbar, locrec, eccoiter,
-     &          mythid, xx_localbar_mean_dummy )
+     &          myThid, xx_localbar_mean_dummy )
         endif
 #else
         if ( nnz .EQ. 1 ) then
@@ -213,4 +211,3 @@ c--     Accumulate the array holding the average.
 
       return
       end
-

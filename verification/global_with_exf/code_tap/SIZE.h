@@ -43,11 +43,11 @@ CEOP
       INTEGER Nr
       PARAMETER (
      &           sNx =  45,
-     &           sNy =  40,
+     &           sNy =  20,
      &           OLx =   2,
      &           OLy =   2,
      &           nSx =   2,
-     &           nSy =   1,
+     &           nSy =   2,
      &           nPx =   1,
      &           nPy =   1,
      &           Nx  = sNx*nSx*nPx,
@@ -61,8 +61,4 @@ C                routine buffers.
       INTEGER MAX_OLY
       PARAMETER ( MAX_OLX = OLx,
      &            MAX_OLY = OLy )
-
-C     for pkg/ctrl:
-      INTEGER     nobcs
-      PARAMETER ( nobcs = 4 )
 

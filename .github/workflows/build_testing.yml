@@ -83,10 +83,10 @@ jobs:
    strategy:
      matrix:
       include:
+        - exp: "global_oce_latlon"
         - exp: "halfpipe_streamice"
         - exp: "hs94.1x64x5"
         - exp: "isomip"
-        - exp: "OpenAD"
         - exp: "tutorial_global_oce_biogeo"
         - exp: "tutorial_global_oce_optim"
         - exp: "tutorial_tracer_adjsens"
