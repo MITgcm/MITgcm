@@ -3262,7 +3262,7 @@ fwd_exe_target:
 
 depend:
 	@\$(MAKE) -f \$(MAKEFILE) links
-	\$(MAKEDEPEND) -f \$(MAKEFILE) -o .$FS \$(DEFINES) \$(INCLUDES) \$(CPPINCLUDES) \$(F77_SRC_FILES) \$(F90_SRC_FILES)
+	\$(MAKEDEPEND) -f \$(MAKEFILE) -o .$FS \$(DEFINES) \$(INCLUDES) \$(CPPINCLUDES) \$(F77_SRC_FILES)
 	\$(TOOLSDIR)/f90mkdepend >> \$(MAKEFILE)
 	-rm -f makedepend.out
 
@@ -3452,7 +3452,7 @@ ftl_sed:
 	sed -i.bak -f \$(TOOLSDIR)/adjoint_sed \$(AD_FILES:.$FS=_tl.$FS)
 	@-rm -f \$(AD_FILES:.$FS=_tl.$FS.bak)
 adobjfiles: \$(AD_FILES:.$FS=_ad.o) \$(AD_F90FILES:.$FS90=_ad.o)
-ftlobjfiles: \$(AD_FILES:.$FS=_tl.o) \$(AD_F90FILES:.$FS90=_tl.o)
+ftlobjfiles: \$(AD_FILES:.$FS=_tl.o)
 EOF
 fi
 
