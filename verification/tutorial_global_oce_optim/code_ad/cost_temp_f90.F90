@@ -23,22 +23,14 @@ SUBROUTINE COST_TEMP_F90 ( &
   !     !USES:
   IMPLICIT NONE
 
-  !   !INPUT/OUTPUT PARAMETERS:
-  ! sNx,sNy,nSx,nSy,OLx,OLy,Nr  - array boundaries (set it SIZE.h)
-  ! myByLo,myByHi,myBxLo,myBxHi - bi/bj loop boundaries for myThid
-  ! myThid        - Thread number for this instance of the routine.
-  ! maskC         - 3D mask for C-points (defined in GRID.h)
-  ! wtheta        - 1D weights (defined in cost_local.h)
-  ! cMeanTheta    - mean temperature over time (defined in cost.h)
-  ! objf_temp_tut - contribution to objective function (defined in cost.h)
-  INTEGER sNx, sNy, nSx, nSy, OLx, OLy, Nr
-  INTEGER myByLo, myByHi, myBxLo, myBxHi
-  INTEGER myThid
-  _RS     maskC     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-  _RL     wtheta                                (Nr,nSx,nSy)
-  _RL     cMeanTheta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-  _RL     objf_temp_tut                            (nSx,nSy)
-  ! This only works with TAF is TAF_FORTRAN_VERS > F77
+     !INPUT/OUTPUT PARAMETERS:
+  INTEGER :: sNx,sNy,nSx,nSy,OLx,OLy,Nr
+  INTEGER :: myByLo,myByHi,myBxLo,myBxHi,myThid
+  _RS     :: maskC     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+  _RL     :: wtheta                                (Nr,nSx,nSy)
+  _RL     :: cMeanTheta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+  _RL     :: objf_temp_tut(nSx,nSy)
+  ! For some reason this does not work with TAF
   ! INTEGER, INTENT(in) :: sNx,sNy,nSx,nSy,OLx,OLy,Nr
   ! INTEGER, INTENT(in) :: myByLo,myByHi,myBxLo,myBxHi,myThid
   ! _RS, INTENT(in)     :: maskC     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -48,22 +40,19 @@ SUBROUTINE COST_TEMP_F90 ( &
 
 #ifdef ALLOW_COST
   !   !LOCAL VARIABLES:
-  ! loop indices
   INTEGER :: i, j, k
   INTEGER :: bi, bj
   INTEGER :: Nk
-  ! auxilliary variables
   _RL :: locfc,tmp
-  ! theta/temperature data read from file
   _RL :: thetalev(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 !EOP
 
-  Nk = 2 ! only loop over top Nk levels
+  Nk = 2
   ! Read annual mean Levitus temperature
 
   CALL READ_FLD_XYZ_RL('lev_t_an.bin',' ',thetalev,0,myThid)
 
-  ! Total number of wet temperature points
+!  Total number of wet temperature point
   tmp  = 0. _d 0
   DO bj=myByLo,myByHi
    DO bi=myBxLo,myBxHi
@@ -100,5 +89,5 @@ SUBROUTINE COST_TEMP_F90 ( &
 #endif /* ALLOW_COST */
 
   RETURN
-  ! This only works with TAF is TAF_FORTRAN_VERS > F77
+  ! For some reason "END SUBROUTINE COST_TEMP_F90" does not work with TAF
 END ! SUBROUTINE COST_TEMP_F90
