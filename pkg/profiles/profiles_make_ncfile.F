@@ -63,7 +63,7 @@ C Set new netcdf variables names
         DO num_var=1,NVARMAX
          IL  = ILNBLNK( prof_names(num_file,num_var) )
          WRITE(prof_namesequi(num_file,num_var),'(2A)')
-     &        prof_names(num_file,num_var)(1:IL),'equi'
+     &        prof_names(num_file,num_var)(1:IL),'model'
         ENDDO
        ENDDO
 
