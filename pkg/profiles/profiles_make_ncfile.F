@@ -44,6 +44,8 @@ C     ========= Local variables =======================
       _RL prof_mask_buff(NVARMAX,NLEVELMAX,NOBSGLOB)
       _RL prof_modval_glo(NVARMAX,NLEVELMAX,NOBSGLOB)
       _RL prof_mask_glo(NVARMAX,NLEVELMAX,NOBSGLOB)
+      _RL FillValue
+      PARAMETER ( FillValue=-9999. _d 0 )
       CHARACTER*(MAX_LEN_FNAM) prof_namesequi(NFILESPROFMAX,NVARMAX)
       CHARACTER*(MAX_LEN_FNAM) profFile
       CHARACTER*(MAX_LEN_FNAM) fnameequinc
@@ -203,11 +205,11 @@ C Define variables and attributes
               err = NF_DEF_VAR(fid2,prof_namesequi(num_file,num_var),
      &          NF_DOUBLE,2,vecid,varid1(2+(num_var-1)*2))
               err = NF_PUT_ATT_DOUBLE(fid2,varid1(2+(num_var-1)*2),
-     &          '_FillValue',NF_DOUBLE,1, 0. _d 0 )
+     &          '_FillValue',NF_DOUBLE,1, FillValue )
               err = NF_DEF_VAR(fid2,prof_namesmask(num_file,num_var),
      &          NF_DOUBLE, 2,vecid,varid1(3+(num_var-1)*2))
               err = NF_PUT_ATT_DOUBLE(fid2,varid1(3+(num_var-1)*2),
-     &          '_FillValue',NF_DOUBLE,1, 0. _d 0)
+     &          '_FillValue',NF_DOUBLE,1, FillValue)
 
              ENDIF
             ENDDO
