@@ -146,7 +146,6 @@ C    Since we start cold with an arbitrary pH, we must iterate pH solver
 C    to ensure accurate estimate of co3 at depth
 C    Because we may call this for deep ocean infrequently can afford to make
 C    several iterations
-               pH3d(i,j,k,bi,bj) = 7.9 _d 0
                doIterCO3 = nIterCO3
             ELSE
                doIterCO3 = 1
@@ -206,8 +205,8 @@ C-        else (case maskC = 0 , dry point)
          ENDDO
         ENDDO
 
-C Fill up some diagnostics of deep pH, pCO2, and carbonate local arrays
 #ifdef ALLOW_DIAGNOSTICS
+C Fill up pCO2 and carbonate diagnostics from local arrays
         IF ( useDiagnostics ) THEN
          CALL DIAGNOSTICS_FILL(pCO2local,'DIC3DPCO',k,1,2,bi,bj,myThid)
          CALL DIAGNOSTICS_FILL(carbonate,'DIC3DCO3',k,1,2,bi,bj,myThid)
@@ -218,6 +217,7 @@ C-     end k loop
        ENDDO
 
 #ifdef ALLOW_DIAGNOSTICS
+C Fill up 3d pH, omegaC and silicate diagnostics
        IF ( useDiagnostics ) THEN
         CALL DIAGNOSTICS_FILL(pH3d      ,'DIC3DPH ',0,Nr,1,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(omegaC    ,'OMEGAC  ',0,Nr,1,bi,bj,myThid)

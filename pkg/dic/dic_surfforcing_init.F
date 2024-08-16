@@ -145,7 +145,7 @@ C for non-interactive Si
 C====================================================================
 
         IF ( .NOT.pH_isLoaded(1) ) THEN
-C set guess of pH for first step here
+C set guess of 2-d surface pH for first step here
 #ifdef ALLOW_DEBUG
           IF (debugMode) THEN
             WRITE(msgBuf,'(A)') 'Initial pCO2 approximation method'
