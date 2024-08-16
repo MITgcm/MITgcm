@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools/adjoint_options:
+  - allow to pass -f08 flag to TAF by setting TAF_FORTRAN_VERS to "F08".
 o pkg/mom_vecinv:
   - add more 3-D momentum tendency diagnostics (originally from Helen Pillar)
     for harmonic/bi-harmonic dissipation and for bottom + top friction
