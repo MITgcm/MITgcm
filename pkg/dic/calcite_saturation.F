@@ -141,10 +141,11 @@ C Use the original Follows et al. (2006) solver
 #ifdef ALLOW_DEBUG
             IF (debugPrt) CALL DEBUG_CALL('CALC_PCO2_APPROX',myThid)
 #endif
-            IF ( .NOT.pH_isLoaded(2) ) THEN
+            IF (( .NOT.pH_isLoaded(2) ) .OR.
+     &         ( calcOmegaCalciteFreq .gt. deltaTClock )) THEN
 C    Since we start cold with an arbitrary pH, we must iterate pH solver
 C    to ensure accurate estimate of co3 at depth
-C    Because we may call this for deep ocean infrequently can afford to make
+C    OR we may call this for deep ocean infrequently can afford to make
 C    several iterations
                doIterCO3 = nIterCO3
             ELSE
@@ -165,6 +166,10 @@ C    several iterations
      U          pH3d(i,j,k,bi,bj), pCO2local(i,j), carbonate(i,j),
      I          i,j,k,bi,bj,myIter,myThid )
             ENDDO
+            
+C Only need the extra iterations the first time if 
+C                           calcOmegaCalciteFreq .eq. deltaTClock           
+            pH_isLoaded(2) = .TRUE.
 #ifdef CARBONCHEM_SOLVESAPHE
            ENDIF
 #endif /* CARBONCHEM_SOLVESAPHE */
