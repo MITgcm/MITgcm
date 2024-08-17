@@ -11,6 +11,7 @@ C
 C--   COMMON /GCHEM_PARM_L/ Logical valued parameters used by GCHEM pkg.
 C     useCFC    :: flag to turn on/off CFC pkg
 C     useDIC    :: flag to turn on/off DIC pkg
+C     useBATS   :: flag to turn on/off BATS pkg
 C     useBLING  :: flag to turn on/off BLING pkg
 C     useSPOIL  :: flag to turn on/off SPOIL pkg
 C     useDARWIN :: flag to turn on/off darwin pkg
@@ -29,10 +30,11 @@ CEOP
       COMMON /GCHEM_PARM_L/
      &              useCFC,
      &              useDIC,
+     &              useBATS,
      &              useBLING,
      &              useSPOIL,
      &              useDARWIN
-      LOGICAL useCFC, useDIC, useBLING, useSPOIL, useDARWIN
+      LOGICAL useCFC, useDIC, useBLING, useSPOIL, useDARWIN, useBATS
 
       COMMON /GCHEM_PARM_C/
      &                   fileName1, fileName2, fileName3,

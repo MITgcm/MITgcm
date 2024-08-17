@@ -40,6 +40,7 @@ C  to test the flag before any corresponding pkg S/R call
       NAMELIST /GCHEM_PARM01/
      &                   useCFC,
      &                   useDIC,
+     &                   useBATS,
      &                   useBLING,
      &                   useSPOIL,
      &                   useDARWIN,
@@ -69,6 +70,7 @@ C     print a (weak) warning if data.gchem is found
 C- Set defaults values for parameters in GCHEM.h
        useCFC = .FALSE.
        useDIC = .FALSE.
+       useBATS = .FALSE.
        useBLING  = .FALSE.
        useSPOIL  = .FALSE.
        useDARWIN = .FALSE.
@@ -147,6 +149,12 @@ C  Everyone else must wait for the parameters to be loaded
 #ifdef ALLOW_BLING
       IF ( useBLING ) THEN
         CALL BLING_READPARMS(myThid)
+      ENDIF
+#endif
+
+#ifdef ALLOW_BATS
+      IF ( useBATS ) THEN
+        CALL BATS_READPARMS(myThid)
       ENDIF
 #endif
 
