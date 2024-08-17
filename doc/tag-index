@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools/genmake2:
+  - change Makefile to enable TAF to generate adjoint from a mix of fixed-form
+    (.F) and free-form (.F90) src code. Also fix for alternative suffix (e.g.,
+    used on MacOS) to work without -ncad.
 o tools/adjoint_options:
   - allow to pass -f08 flag to TAF by setting TAF_FORTRAN_VERS to "F08".
 o pkg/mom_vecinv:

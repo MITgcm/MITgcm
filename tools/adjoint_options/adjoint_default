@@ -25,6 +25,7 @@ AD_TAF_FLAGS="-reverse $DIVA_FLAG -l taf_ad.log $AD_TAF_FLAGS"
 FTL_TAF_FLAGS="-forward -l taf_ftl.log $FTL_TAF_FLAGS"
 SVD_TAF_FLAGS="-reverse -forward -pure -l taf_svd.log $SVD_TAF_FLAGS"
 
+# TAF_COMMON_FLAGS is a local variable used for abbreviation
 TAF_COMMON_FLAGS="-i4 -r4 -intrinsic system,flush"
 
 if test "x$TAMC_COMPATIBILITY_MODE" = "x1" ; then
