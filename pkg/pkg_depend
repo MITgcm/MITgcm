@@ -29,6 +29,7 @@ matrix		+ptracers	-gchem
 gchem		+ptracers
 dic		+gchem
 bling		+gchem		-dic
+bats    +gchem  -dic
 cfc		+gchem
 fizhi		+gridalt	+diagnostics	-aim
 fizhi		+atm_common

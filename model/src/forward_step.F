@@ -34,6 +34,9 @@
 #ifdef ALLOW_BLING
 # include "BLING_OPTIONS.h"
 #endif
+#ifdef ALLOW_BATS
+# include "BATS_OPTIONS.h"
+#endif
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
 #endif
@@ -320,6 +323,9 @@ C     == Global variables ==
 # ifdef ALLOW_BLING
 #  include "BLING_VARS.h"
 #  include "BLING_LOAD.h"
+# endif
+# ifdef ALLOW_BATS
+#  include "BATS_VARS.h"
 # endif
 # ifdef ALLOW_OBCS
 #  include "OBCS_PARAMS.h"

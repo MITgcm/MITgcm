@@ -28,6 +28,9 @@ c# endif
 # ifdef ALLOW_BLING
 #  include "BLING_OPTIONS.h"
 # endif
+# ifdef ALLOW_BATS
+#  include "BATS_OPTIONS.h"
+# endif
 #endif /* ALLOW_TAPENADE */
 
 CBOP
@@ -166,6 +169,9 @@ C     == Global variables ==
 # ifdef ALLOW_BLING
 #  include "BLING_VARS.h"
 #  include "BLING_LOAD.h"
+# endif
+# ifdef ALLOW_BATS
+#  include "BATS_VARS.h"
 # endif
 #endif /* ALLOW_TAPENADE */
 

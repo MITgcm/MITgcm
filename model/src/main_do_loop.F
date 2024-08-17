@@ -56,6 +56,9 @@ c# endif
 #ifdef ALLOW_BLING
 # include "BLING_OPTIONS.h"
 #endif
+#ifdef ALLOW_BATS
+# include "BATS_OPTIONS.h"
+#endif
 CBOP
 C     !ROUTINE: MAIN_DO_LOOP
 C     !INTERFACE:
@@ -180,6 +183,9 @@ c#  include "KPP_PARAMS.h"
 # ifdef ALLOW_BLING
 #  include "BLING_VARS.h"
 #  include "BLING_LOAD.h"
+# endif
+# ifdef ALLOW_BATS
+#  include "BATS_VARS.h"
 # endif
 #endif /* ALLOW_TAPENADE */
 

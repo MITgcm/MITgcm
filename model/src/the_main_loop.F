@@ -27,6 +27,9 @@
 #ifdef ALLOW_BLING
 # include "BLING_OPTIONS.h"
 #endif
+#ifdef ALLOW_BATS
+# include "BATS_OPTIONS.h"
+#endif
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
 #endif
@@ -120,6 +123,9 @@ c They provide the fields to be stored.
 #   include "DIC_ATMOS.h"
 #   include "DIC_CTRL.h"
 #   include "DIC_COST.h"
+#  endif
+#  ifdef ALLOW_BATS
+#   include "BATS_VARS.h"
 #  endif
 #  ifdef ALLOW_OBCS
 #   include "OBCS_PARAMS.h"
