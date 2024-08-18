@@ -8,6 +8,9 @@
 #ifdef ALLOW_DARWIN
 # include "DARWIN_OPTIONS.h"
 #endif
+#ifdef ALLOW_BATS
+# include "BATS_OPTIONS.h"
+#endif
 
 CBOP
 C !ROUTINE: GCHEM_FORCING_SEP
@@ -35,6 +38,9 @@ C !USES: ===============================================================
 #ifdef ALLOW_DIC
 # include "DIC_VARS.h"
 #endif /* ALLOW_DIC */
+#ifdef ALLOW_BATS
+# include "BATS_VARS.h"
+#endif /* ALLOW_BATS */
 #ifdef ALLOW_BLING
 # include "BLING_VARS.h"
 #endif /* ALLOW_BLING */
@@ -178,6 +184,17 @@ ccccccccccccccccccccccccccc DIC cccccccccccccccccccccccccccccccc
 # endif /* ALLOW_AUTODIFF */
 #endif /* ALLOW_DIC */
 cccccccccccccccccccccccccc END DIC cccccccccccccccccccccccccccccccccc
+
+ccccccccccccccccccccccccccc BATS cccccccccccccccccccccccccccccccc
+#ifdef ALLOW_BATS
+          CALL BATS_MAIN( pTracer(1-OLx,1-OLy,1,bi,bj,1),
+     &                          pTracer(1-OLx,1-OLy,1,bi,bj,2),
+     &                          pTracer(1-OLx,1-OLy,1,bi,bj,3),
+     &                          pTracer(1-OLx,1-OLy,1,bi,bj,4),
+     &                          bi, bj, iMin, iMax, jMin, jMax,
+     &                          myTime, myIter, myThid )
+#endif /* ALLOW_BATS */
+cccccccccccccccccccccccccc END BATS cccccccccccccccccccccccccccccccccc
 
 ccccccccccccccccccccccccccc BLING cccccccccccccccccccccccccccccccc
 #ifdef ALLOW_BLING

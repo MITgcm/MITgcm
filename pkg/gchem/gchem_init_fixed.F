@@ -49,6 +49,11 @@ ccccccccccccccccccccccccccc
          CALL BLING_INIT_FIXED( myThid )
       ENDIF
 #endif /* ALLOW_BLING */
+#ifdef ALLOW_BATS
+      IF ( useBATS ) THEN
+         CALL BATS_INIT_FIXED( myThid )
+      ENDIF
+#endif /* ALLOW_BATS */
 c         _END_MASTER( myThid )
 
 #ifdef ALLOW_DARWIN

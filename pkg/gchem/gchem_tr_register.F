@@ -62,6 +62,13 @@ C                             and finish with those using gchem-tendency
      I                myThid )
       ENDIF
 #endif
+#ifdef ALLOW_BATS
+      IF ( useBATS ) THEN
+        CALL BATS_TR_REGISTER(
+     U                gchem_Tracer_num, gchem_sepFTr_num,
+     I                myThid )
+      ENDIF
+#endif
 #ifdef ALLOW_DARWIN
       IF ( useDARWIN ) THEN
         CALL DARWIN_TR_REGISTER(
