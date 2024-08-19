@@ -90,7 +90,6 @@ C     cg2d_s     ::   *same*
       INTEGER bi, bj
       INTEGER i, j, it2d
 c     INTEGER actualIts
-      _RL    cg2dTolerance_sq
       _RL    err_sq,  errTile(nSx,nSy)
       _RL    eta_qrN, eta_qrNtile(nSx,nSy)
       _RL    eta_qrNM1
@@ -112,7 +111,6 @@ c     INTEGER actualIts
 CEOP
 
 C--   Initialise auxiliary constant, some output variable and inverter
-      cg2dTolerance_sq = cg2dTolerance*cg2dTolerance
       minResidualSq = -1. _d 0
       eta_qrNM1     =  1. _d 0
 
@@ -214,7 +212,7 @@ c     actualIts = 0
       IF ( debugLevel .GE. debLevZero ) THEN
         _BEGIN_MASTER( myThid )
         printResidual = printResidualFreq.GE.1
-        WRITE(standardmessageunit,'(A,1P2E22.14)')
+        WRITE(standardMessageUnit,'(A,1P2E22.14)')
      &  ' cg2d: Sum(rhs),rhsMax = ', sumRHS,rhsMax
         _END_MASTER( myThid )
       ENDIF
