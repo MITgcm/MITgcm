@@ -676,9 +676,9 @@ def teos10(salt,theta,p,epsln=0):
     Parameters
     ----------
     salt  : array_like
-            salinity [psu (PSS-78)]
+            absolute salinity [g/kg]
     theta : array_like
-            potential temperature [degree C (IPTS-68)];
+            conservative temperature [degree C (IPTS-68)];
             same shape as s
     p : array_like
         sea pressure [dbar]. p may have dims 1x1,
