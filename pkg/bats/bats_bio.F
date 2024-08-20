@@ -188,34 +188,34 @@ C
        double precision :: q_UN_min_n,q_UN_min_p
        double precision :: q_UN_max_n,q_UN_max_p,q_UN_rdf_n,q_UN_rdf_p
        double precision :: growUNnh4,growUNno3,growUNnf,maxUNnf,excrUN_nh4
-       double precision :: growUNc,growUNn,growUNp, &
-                              excrUN_1c,excrUN_1n,excrUN_1p,excrUN_2c,excrUN_2n,excrUN_2p, &
-                              pomUNc,pomUNn,pomUNp,grazUNc,grazUNn,grazUNp
-       double precision ::  Nfunc_un_n, Nfunc_un_p, Pc_UNmax,V_UNmax_n, V_UNmax_p, &
-                                            respUN,  growUNchl, grazUNchl, pomUNchl
+       double precision :: growUNc,growUNn,growUNp
+       double precision :: excrUN_1c,excrUN_1n,excrUN_1p,excrUN_2c,excrUN_2n,excrUN_2p
+       double precision :: pomUNc,pomUNn,pomUNp,grazUNc,grazUNn,grazUNp
+       double precision :: Nfunc_un_n, Nfunc_un_p, Pc_UNmax,V_UNmax_n, V_UNmax_p
+       double precision :: respUN,  growUNchl, grazUNchl, pomUNchl
        ! local variables in the BA module
-       double precision :: ALC,ASC,Nfunc_ba_n,Nfunc_ba_p,&
-                              growBAldoc,growBAldon,growBAldop,growBAsdoc,growBAsdon,growBAsdop,&
-                              growBAnh4,growBAno3,growBApo4,respBA,fluxBAnh4,fluxBAno3,fluxBApo4, &
-                              growBAc,growBAn,growBAp,refrBAc,refrBAn,refrBAp,&
-                              excrBAc,excrBAn,excrBAp,remiBAn,remiBAp,&
-                              grazBAc,grazBAn,grazBAp,mortBAc,mortBAn,mortBAp
+       double precision :: ALC,ASC,Nfunc_ba_n,Nfunc_ba_p
+       double precision :: growBAldoc,growBAldon,growBAldop,growBAsdoc,growBAsdon,growBAsdop
+       double precision :: growBAnh4,growBAno3,growBApo4,respBA,fluxBAnh4,fluxBAno3,fluxBApo4
+       double precision :: growBAc,growBAn,growBAp,refrBAc,refrBAn,refrBAp
+       double precision :: excrBAc,excrBAn,excrBAp,remiBAn,remiBAp
+       double precision :: grazBAc,grazBAn,grazBAp,mortBAc,mortBAn,mortBAp
        ! local variables in the PRT module
-       double precision :: growPRTc,growPRTn,growPRTp,&
-                              excrPRTldomc,excrPRTldomn,excrPRTldomp, &
-                              excrPRTsdomc,excrPRTsdomn,excrPRTsdomp, &
-                              excrPRTsdom2c,excrPRTsdom2n,excrPRTsdom2p, &
-                              remiPRTn,remiPRTp,pomPRTc,pomPRTn,pomPRTp, &
-                              grazPRTc,grazPRTn,grazPRTp,respPRT
+       double precision :: growPRTc,growPRTn,growPRTp
+       double precision :: excrPRTldomc,excrPRTldomn,excrPRTldomp
+       double precision :: excrPRTsdomc,excrPRTsdomn,excrPRTsdomp
+       double precision :: excrPRTsdom2c,excrPRTsdom2n,excrPRTsdom2p
+       double precision :: remiPRTn,remiPRTp,pomPRTc,pomPRTn,pomPRTp
+       double precision :: grazPRTc,grazPRTn,grazPRTp,respPRT
        ! local variables in the MZ module
-       double precision :: growMZc,growMZn,growMZp,&
-                              excrMZldomc,excrMZldomn,excrMZldomp, &
-                              excrMZsdomc,excrMZsdomn,excrMZsdomp, &
-                              excrMZsdom2c,excrMZsdom2n,excrMZsdom2p, &
-                              remiMZn,remiMZp,pomMZc,pomMZn,pomMZp, &
-                              refrMZc,refrMZn,refrMZp,remvMZc,remvMZn,remvMZp, &
-                              pomHZc,pomHZn,pomHZp,excrHZsdomc,excrHZsdomn,excrHZsdomp, &
-                              remiHZn,remiHZp,respMZ
+       double precision :: growMZc,growMZn,growMZp
+       double precision :: excrMZldomc,excrMZldomn,excrMZldomp
+       double precision :: excrMZsdomc,excrMZsdomn,excrMZsdomp
+       double precision :: excrMZsdom2c,excrMZsdom2n,excrMZsdom2p
+       double precision :: remiMZn,remiMZp,pomMZc,pomMZn,pomMZp
+       double precision :: refrMZc,refrMZn,refrMZp,remvMZc,remvMZn,remvMZp
+       double precision :: pomHZc,pomHZn,pomHZp,excrHZsdomc,excrHZsdomn,excrHZsdomp
+       double precision :: remiHZn,remiHZp,respMZ
        ! local variables in the DOM module
        double precision :: refrSDOMc,refrSDOMn,refrSDOMp
        ! local variables in the DET module
