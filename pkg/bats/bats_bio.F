@@ -149,28 +149,23 @@ C
 !-----------------------------------------------------------------------
 ! ecosystem model parameters
        double precision :: temp,temp1
-       double precision :: ae,mu_SP,alpha_SP,a_SP,v_SPn,k_nh4SP,k_no3SP,&
-         v_SPp,k_po4SP, zeta, theta, r_excrSP_1,r_excrSP_2,r_pomSP,&
-         mu_TR,alpha_TR,a_TR,k_nh4TR,v_TRn,k_no3TR,&
-         v_TRp, k_po4TR,mu_pickTRpo4, zeta_nf, &
-         r_excrTR_1,r_excrTR_n,r_excrTR_2,r_pomTR,&
-         mu_UN,alpha_UN,r_SDOM,k_DOM,mu_BA,& !b_SDONlabi,b_SDOPlabi,
-         b_BAresp,r_BAadju,r_BAremi,r_BArefr,f_BAslct,r_BAresp_1, r_BAresp_min, &
-         r_BAresp_max, r_BAmort, mu_PRT,g_sp,&
-         g_ba,r_PRTex,f_exPRTldom,&
-         r_PRTresp_1,r_PRTresp_2,r_PRTadju,r_PRTremi,&
-         r_pomPRT,mu_MZ,g_prt,g_tr,r_MZex,&
-         f_exMZldom,r_MZresp_1,r_MZresp_2,r_MZadju,r_MZremi,&
-         r_MZpom,r_MZrefr,r_MZremv,f_HZsdom,f_HZpom,r_SDOMrefr, q_refrDOM_n, q_refrDOM_p, &
-         q_POM_n,q_POM_p,r_nitrf,remin_prf_n,remin_prf_p,wnsvo,remin,k_pom,g_det,f_dvm
+       double precision :: ae,mu_SP,alpha_SP,a_SP,v_SPn,k_nh4SP,k_no3SP,v_SPp,k_po4SP, zeta, theta, r_excrSP_1,r_excrSP_2,r_pomSP
+       double precision :: mu_TR,alpha_TR,a_TR,k_nh4TR,v_TRn,k_no3TR,v_TRp, k_po4TR,mu_pickTRpo4, zeta_nf,r_excrTR_1,r_excrTR_n,r_excrTR_2,r_pomTR
+       double precision :: mu_UN,alpha_UN,r_SDOM,k_DOM,mu_BA,b_BAresp,r_BAadju,r_BAremi,r_BArefr,f_BAslct,r_BAresp_1, r_BAresp_min
+       double precision :: r_BAresp_max, r_BAmort, mu_PRT,g_sp
+       double precision :: g_ba,r_PRTex,f_exPRTldom
+       double precision :: r_PRTresp_1,r_PRTresp_2,r_PRTadju,r_PRTremi
+       double precision :: r_pomPRT,mu_MZ,g_prt,g_tr,r_MZex
+       double precision :: f_exMZldom,r_MZresp_1,r_MZresp_2,r_MZadju,r_MZremi
+       double precision :: r_MZpom,r_MZrefr,r_MZremv,f_HZsdom,f_HZpom,r_SDOMrefr, q_refrDOM_n, q_refrDOM_p
+       double precision :: q_POM_n,q_POM_p,r_nitrf,remin_prf_n,remin_prf_p,wnsvo,remin,k_pom,g_det,f_dvm
        ! local fixed parameters
-       double precision :: q_SP_min_n,&
-         q_SP_min_p, q_SP_max_n,q_SP_max_p, q_SP_rdf_n,&
-         q_SP_rdf_p,v_UNn,v_UNp,q_UN_min0_n,q_UN_min0_p,&
-         q_UN_max0_n,k_nh4UN,k_no3UN,k_po4UN, &
-         r_excrUN_1,r_excrUN_n,r_excrUN_2,r_pomUN,q_BA_n,q_BA_p,&
-         g_un,q_PRT_n,q_PRT_p,&
-         q_MZ_n,q_MZ_p,Tref,a_UN
+       double precision :: q_SP_min_n,q_SP_min_p, q_SP_max_n,q_SP_max_p, q_SP_rdf_n,
+       double precision :: q_SP_rdf_p,v_UNn,v_UNp,q_UN_min0_n,q_UN_min0_p
+       double precision :: q_UN_max0_n,k_nh4UN,k_no3UN,k_po4UN
+       double precision :: r_excrUN_1,r_excrUN_n,r_excrUN_2,r_pomUN,q_BA_n,q_BA_p
+       double precision :: g_un,q_PRT_n,q_PRT_p
+       double precision :: q_MZ_n,q_MZ_p,Tref,a_UN
        ! local variables for temperature effect function
        double precision :: Tfunc
        ! local variables in the SP module
