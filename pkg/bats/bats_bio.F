@@ -195,7 +195,8 @@ C
        double precision :: respUN,  growUNchl, grazUNchl, pomUNchl
        ! local variables in the BA module
        double precision :: ALC,ASC,Nfunc_ba_n,Nfunc_ba_p
-       double precision :: growBAldoc,growBAldon,growBAldop,growBAsdoc,growBAsdon,growBAsdop
+       double precision :: growBAldoc,growBAldon,growBAldop,growBAsdoc
+       double precision :: growBAsdon,growBAsdop
        double precision :: growBAnh4,growBAno3,growBApo4,respBA,fluxBAnh4,fluxBAno3,fluxBApo4
        double precision :: growBAc,growBAn,growBAp,refrBAc,refrBAn,refrBAp
        double precision :: excrBAc,excrBAn,excrBAp,remiBAn,remiBAp
@@ -214,7 +215,8 @@ C
        double precision :: excrMZsdom2c,excrMZsdom2n,excrMZsdom2p
        double precision :: remiMZn,remiMZp,pomMZc,pomMZn,pomMZp
        double precision :: refrMZc,refrMZn,refrMZp,remvMZc,remvMZn,remvMZp
-       double precision :: pomHZc,pomHZn,pomHZp,excrHZsdomc,excrHZsdomn,excrHZsdomp
+       double precision :: pomHZc,pomHZn,pomHZp,excrHZsdomc
+       double precision :: excrHZsdomn,excrHZsdomp
        double precision :: remiHZn,remiHZp,respMZ
        ! local variables in the DOM module
        double precision :: refrSDOMc,refrSDOMn,refrSDOMp
@@ -407,10 +409,8 @@ c  Nutrient uptake and partitioning between organic pools
         
 c --        -------------------------------------------------------------------
 c  M        icrophytoplankton processes
-            Nfunc_sp_n = (PTR_SPN(i,j,k)/PTR_SPC(i,j,k) - q_SP_min_n) / &
-                                    (q_SP_rdf_n - q_SP_min_n)
-            Nfunc_sp_p = (PTR_SPP(i,j,k)/PTR_SPC(i,j,k) - q_SP_min_p) / &
-                                    (q_SP_rdf_p - q_SP_min_p)
+            Nfunc_sp_n = (PTR_SPN(i,j,k)/PTR_SPC(i,j,k) - q_SP_min_n)/(q_SP_rdf_n - q_SP_min_n)
+            Nfunc_sp_p = (PTR_SPP(i,j,k)/PTR_SPC(i,j,k) - q_SP_min_p)/(q_SP_rdf_p - q_SP_min_p)
             temp = min(Nfunc_sp_n, Nfunc_sp_p)
             temp = min(temp, c1)
             temp = max(temp, c0)
@@ -429,10 +429,9 @@ c  M        icrophytoplankton processes
             growSPno3 = PTR_SPC(i,j,k) * v_SPn * V_SPmax_n * PTR_NO3(i,j,k)/(PTR_NO3(i,j,k)+k_no3SP+PTR_NH4(i,j,k) * k_no3SP/k_nh4SP)
             growSPn = growSPnh4 + growSPno3
             
-            V_SPmax_p = max(c0, (q_SP_max_p - PTR_SPP(i,j,k)/PTR_SPC(i,j,k) ) /         (q_SP_max_p -     q_SP_rdf_p))
+            V_SPmax_p = max(c0, (q_SP_max_p - PTR_SPP(i,j,k)/PTR_SPC(i,j,k) )/(q_SP_max_p-q_SP_rdf_p))
             V_SPmax_p = min(c1, V_SPmax_p)
-            growSPp = PTR_SPC(i,j,k) * v_SPp * V_SPmax_p * &
-                           PTR_PO4(i,j,k) /( PTR_PO4(i,j,k) + k_po4SP)
+            growSPp = PTR_SPC(i,j,k) * v_SPp * V_SPmax_p * PTR_PO4(i,j,k) /( PTR_PO4(i,j,k) + k_po4SP)
             
             respSP = growSPno3*zeta
         
@@ -542,13 +541,13 @@ c  M        icrophytoplankton processes
             excrTR_1p = r_excrTR_1 * PTR_TRP(i,j,k)
             excrTR_nh4 = 0.5* r_excrTR_n * growTRnf * min(c1, Nfunc_tr_n)
             
-            temp = MAX(c1-PTR_TRN(i,j,k)/PTR_TRC(i,j,k)/q_TR_rdf_n,         c1-PTR_TRP(i,j,k)/PTR_TRC(i,j,k)/q_TR_rdf_p)
+            temp = MAX(c1-PTR_TRN(i,j,k)/PTR_TRC(i,j,k)/q_TR_rdf_n,c1-PTR_TRP(i,j,k)/PTR_TRC(i,j,k)/q_TR_rdf_p)
             excrTR_2c = r_excrTR_2 * PTR_TRC(i,j,k) * MAX(temp, c0)
             IF (excrTR_2c > c0) THEN
-                temp = MAX(c0, c1 - PTR_TRP(i,j,k)/PTR_TRN(i,j,k) /         (q_TR_rdf_p/q_TR_rdf_n))
-                temp1 = MAX(c0, c1 - PTR_TRN(i,j,k)/PTR_TRP(i,j,k) /         (q_TR_rdf_n/q_TR_rdf_p))
-                excrTR_2n = r_excrTR_2 * MIN(0.25d0 * PTR_TRN(i,j,k) * temp,         excrTR_2c *   q_TR_rdf_n)
-                excrTR_2p = r_excrTR_2 * MIN(0.25d0 * PTR_TRP(i,j,k) * temp1,         excrTR_2c *  q_TR_rdf_p)
+                temp = MAX(c0, c1 - PTR_TRP(i,j,k)/PTR_TRN(i,j,k)/(q_TR_rdf_p/q_TR_rdf_n))
+                temp1 = MAX(c0, c1 - PTR_TRN(i,j,k)/PTR_TRP(i,j,k)/(q_TR_rdf_n/q_TR_rdf_p))
+                excrTR_2n = r_excrTR_2 * MIN(0.25d0 * PTR_TRN(i,j,k) * temp,excrTR_2c *   q_TR_rdf_n)
+                excrTR_2p = r_excrTR_2 * MIN(0.25d0 * PTR_TRP(i,j,k) * temp1,excrTR_2c *  q_TR_rdf_p)
             ELSE
                 excrTR_2n = c0
                 excrTR_2p = c0
