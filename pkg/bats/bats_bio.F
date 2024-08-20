@@ -359,24 +359,7 @@ C
     q_MZ_n = 0.2d0
     q_MZ_p = 0.008d0
     a_UN = a_SP
-    Tref = 25.d0 ! Reference Temperature for Function of Temperatue Effects
-    ! Temperature Effects
-    Tfunc = exp(-ae*( 1/(Tdat(iz,istep)+273.15) - 1/(Tref+273.15) ) )
-    mu_SP = mu_SP * Tfunc
-    v_SPn = v_SPn * Tfunc
-    v_SPp = v_SPp * Tfunc
-    mu_TR = mu_TR * Tfunc
-    v_TRn = v_TRn * Tfunc
-    v_TRp = v_TRp * Tfunc
-    mu_UN = mu_UN * Tfunc
-    v_UNn = v_UNn * Tfunc
-    v_UNp = v_UNp * Tfunc
-    mu_BA = mu_BA * Tfunc
-    mu_PRT = mu_PRT * Tfunc
-    r_BAresp_1 = r_BAresp_1 * Tfunc
-    r_PRTresp_1 = r_PRTresp_1 * Tfunc
-    mu_MZ = mu_MZ * Tfunc
-    r_MZresp_1 = r_MZresp_1 * Tfunc
+
     c0 = 0.0
     c1 = 1.0
 
@@ -411,6 +394,25 @@ c  Nutrient uptake and partitioning between organic pools
 
          IF (hFacC(i,j,k,bi,bj) .gt. 0. _d 0) THEN
 
+    Tref = 25.d0 ! Reference Temperature for Function of Temperatue Effects
+    ! Temperature Effects
+    Tfunc = exp(-ae*( 1/theta(i,j,k,bi,bj)+273.15) - 1/(Tref+273.15) ) )
+    mu_SP = mu_SP * Tfunc
+    v_SPn = v_SPn * Tfunc
+    v_SPp = v_SPp * Tfunc
+    mu_TR = mu_TR * Tfunc
+    v_TRn = v_TRn * Tfunc
+    v_TRp = v_TRp * Tfunc
+    mu_UN = mu_UN * Tfunc
+    v_UNn = v_UNn * Tfunc
+    v_UNp = v_UNp * Tfunc
+    mu_BA = mu_BA * Tfunc
+    mu_PRT = mu_PRT * Tfunc
+    r_BAresp_1 = r_BAresp_1 * Tfunc
+    r_PRTresp_1 = r_PRTresp_1 * Tfunc
+    mu_MZ = mu_MZ * Tfunc
+    r_MZresp_1 = r_MZresp_1 * Tfunc
+
 c ---------------------------------------------------------------------
 c  Microphytoplankton processes
     Nfunc_sp_n = (PTR_SPN(i,j,k)/PTR_SPC(i,j,k) - q_SP_min_n) / &
@@ -424,8 +426,8 @@ c  Microphytoplankton processes
 
     ! Light Limitation
     IF ((Pc_SPmax.gt.0).and.(PTR_SPC(i,j,k).gt.0)) THEN
-        growSPc = PTR_SPC(i,j,k) * Pc_SPmax * (1 -    exp(-alpha_SP*PTR_SPchl(i,j,k)/PTR_SPC(i,j,k)*rlt/Pc_SPmax)) &
-                        * exp(-a_SP*rlt)
+        growSPc = PTR_SPC(i,j,k) * Pc_SPmax * (1 -    exp(-alpha_SP*PTR_SPchl(i,j,k)/PTR_SPC(i,j,k)*irr_inst/Pc_SPmax)) &
+                        * exp(-a_SP*irr_inst)
     ELSE
         growSPc = 0
     END IF
@@ -447,9 +449,9 @@ c  Microphytoplankton processes
 
 
 ! Chlorophyll
-    IF (rlt .gt. 0) THEN
+    IF (irr_inst .gt. 0) THEN
         growSPchl = theta * growSPn * &
-                        growSPc / (alpha_SP*PTR_SPchl(i,j,k)*rlt*exp(-a_SP*rlt))
+                        growSPc / (alpha_SP*PTR_SPchl(i,j,k)*irr_inst*exp(-a_SP*irr_inst))
     ELSE
         growSPchl = 0
     END IF
@@ -505,8 +507,8 @@ c  Microphytoplankton processes
     Pc_TRmax = mu_TR * temp
      ! Light Limitation
     IF ((Pc_TRmax.gt.c0).and.(PTR_TRC(i,j,k).gt.c0)) THEN
-        growTRc = PTR_TRC(i,j,k) * Pc_TRmax * (c1 -    exp(-alpha_TR*PTR_TRchl(i,j,k)/PTR_TRC(i,j,k)*rlt/Pc_TRmax)) &
-                        * exp(-a_TR*rlt)
+        growTRc = PTR_TRC(i,j,k) * Pc_TRmax * (c1 -    exp(-alpha_TR*PTR_TRchl(i,j,k)/PTR_TRC(i,j,k)*irr_inst/Pc_TRmax)) &
+                        * exp(-a_TR*irr_inst)
     ELSE
         growTRc = c0
     END IF
@@ -517,7 +519,7 @@ c  Microphytoplankton processes
                    PTR_NH4(i,j,k) / (PTR_NH4(i,j,k) + k_nh4TR + PTR_NO3(i,j,k)  * k_nh4TR/k_no3TR)
     growTRno3 = PTR_TRC(i,j,k) * v_TRn * V_TRmax_n * &
                    PTR_NO3(i,j,k) / (PTR_NO3(i,j,k) + k_no3TR + PTR_NH4(i,j,k)  * k_no3TR/k_nh4TR)
-    IF (Tdat(iz,istep) < 20.0) THEN
+    IF (theta(i,j,k,bi,bj) < 20.0) THEN
         maxTRnf = c0
     ELSE
         maxTRnf = MAX(c0, &
@@ -539,9 +541,9 @@ c  Microphytoplankton processes
     ! Respiration
     respTR = growTRno3 *  zeta + growTRnf * zeta_nf
     ! Chlorophyll
-    IF (rlt .gt. c0) THEN
+    IF (irr_inst .gt. c0) THEN
         growTRchl = theta * growTRn * &
-                        growTRc / (alpha_TR*PTR_TRchl(i,j,k)*rlt*exp(-a_TR*rlt))
+                        growTRc / (alpha_TR*PTR_TRchl(i,j,k)*irr_inst*exp(-a_TR*irr_inst))
     ELSE
         growTRchl = c0
     END IF
@@ -600,8 +602,8 @@ c  Microphytoplankton processes
     Pc_UNmax = mu_UN * temp
      ! Light Limitation
      IF ((Pc_UNmax.gt.c0).and.(PTR_UNC(i,j,k).gt.c0)) THEN
-        growUNc = PTR_UNC(i,j,k) * Pc_UNmax * (c1 -     exp(-alpha_UN*PTR_UNchl(i,j,k)/PTR_UNC(i,j,k)*rlt/Pc_UNmax)) &
-                        * exp(-a_UN*rlt)
+        growUNc = PTR_UNC(i,j,k) * Pc_UNmax * (c1 -     exp(-alpha_UN*PTR_UNchl(i,j,k)/PTR_UNC(i,j,k)*irr_inst/Pc_UNmax)) &
+                        * exp(-a_UN*irr_inst)
      ELSE
         growUNc = c0
      END IF
@@ -613,7 +615,7 @@ c  Microphytoplankton processes
     growUNno3 = PTR_UNC(i,j,k) * v_UNn * V_UNmax_n * &
                    PTR_NO3(i,j,k) / (PTR_NO3(i,j,k) + k_no3UN + PTR_NH4(i,j,k)  * k_no3UN/k_nh4UN)
     !maxUNnf = MAX(c0, &
-    !            PTR_UNC(i,j,k) * q_UN_max_n * mu_UNnf * (c1 - exp(-alpha_UNnf  * (rlt - minPARunnf) / mu_UNnf)) )
+    !            PTR_UNC(i,j,k) * q_UN_max_n * mu_UNnf * (c1 - exp(-alpha_UNnf  * (irr_inst - minPARunnf) / mu_UNnf)) )
     maxUNnf = MAX(c0, &
                  ((PTR_UNC(i,j,k) - growUNc - growUNno3 * zeta) * q_UN_max_n &
          - PTR_UNN(i,j,k) - growUNno3 - growUNnh4) &
@@ -629,9 +631,9 @@ c  Microphytoplankton processes
                    PTR_PO4(i,j,k) /( PTR_PO4(i,j,k) + k_po4UN)
     respUN = growUNno3 *  zeta + growUNnf * zeta_nf
      ! Chlorophyll
-    IF (rlt .gt. c0) THEN
+    IF (irr_inst .gt. c0) THEN
         growUNchl = theta * growUNn * &
-                        growUNc / (alpha_UN*PTR_UNchl(i,j,k)*rlt*exp(-a_UN*rlt))
+                        growUNc / (alpha_UN*PTR_UNchl(i,j,k)*irr_inst*exp(-a_UN*irr_inst))
     ELSE
         growUNchl = c0
     END IF
