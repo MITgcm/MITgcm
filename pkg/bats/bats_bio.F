@@ -1,27 +1,28 @@
 #include "BATS_OPTIONS.h"
 
 CBOP
-      SUBROUTINE BATS_BIO( PTR_BAC, PTR_BAN, PTR_BAP,PTR_DETC, PTR_DETN, PTR_DETP,PTR_DVMZC, PTR_DVMZN, PTR_DVMZP,PTR_DOC, PTR_DON, PTR_DOP,
-       PTR_MZC, PTR_MZN, PTR_MZP,
-       PTR_NH4, PTR_NO3, PTR_PO4,
-       PTR_PRTC, PTR_PRTN, PTR_PRTP,
-       PTR_SDOC, PTR_SDON, PTR_SDOP,
-       PTR_SPC, PTR_SPchl, PTR_SPN, PTR_SPP,
-       PTR_TRC, PTR_TRchl, PTR_TRN, PTR_TRP,
-       PTR_UNC, PTR_UNchl, PTR_UNN, PTR_UNP,
-       G_BAC, G_BAN, G_BAP,
-       G_DETC, G_DETN, G_DETP,
-       G_DVMZC, G_DVMZN, G_DVMZP,
-       G_DOC, G_DON, G_DOP,
-       G_MZC, G_MZN, G_MZP,
-       G_NH4, G_NO3, G_PO4,
-       G_PRTC, G_PRTN, G_PRTP,
-       G_SDOC, G_SDON, G_SDOP,
-       G_SPC, G_SPchl, G_SPN, G_SPP,
-       G_TRC, G_TRchl, G_TRN, G_TRP,
-       G_UNC, G_UNchl, G_UNN, G_UNP,
-       bi, bj, imin, imax, jmin, jmax,
-       myTime, myIter, myThid)
+      SUBROUTINE BATS_BIO(PTR_BAC,PTR_BAN,PTR_BAP,PTR_DETC,PTR_DETN, &
+                          PTR_DETP,PTR_DVMZC,PTR_DVMZN,PTR_DVMZP,PTR_DOC,PTR_DON, PTR_DOP, &
+                          PTR_MZC, PTR_MZN, PTR_MZP, &
+                          PTR_NH4, PTR_NO3, PTR_PO4, &
+                          PTR_PRTC, PTR_PRTN, PTR_PRTP, &
+                          PTR_SDOC, PTR_SDON, PTR_SDOP, &
+                          PTR_SPC, PTR_SPchl, PTR_SPN, PTR_SPP, &
+                          PTR_TRC, PTR_TRchl, PTR_TRN, PTR_TRP, &
+                          PTR_UNC, PTR_UNchl, PTR_UNN, PTR_UNP, &
+                          G_BAC, G_BAN, G_BAP, &
+                          G_DETC, G_DETN, G_DETP, &
+                          G_DVMZC, G_DVMZN, G_DVMZP, &
+                          G_DOC, G_DON, G_DOP, &
+                          G_MZC, G_MZN, G_MZP, &
+                          G_NH4, G_NO3, G_PO4, &
+                          G_PRTC, G_PRTN, G_PRTP, &
+                          G_SDOC, G_SDON, G_SDOP, &
+                          G_SPC, G_SPchl, G_SPN, G_SPP, &
+                          G_TRC, G_TRchl, G_TRN, G_TRP, &
+                          G_UNC, G_UNchl, G_UNN, G_UNP, &
+                          bi, bj, imin, imax, jmin, jmax, &
+                          myTime, myIter, myThid)
 
       IMPLICIT NONE
 
@@ -146,7 +147,8 @@ C
 !-----------------------------------------------------------------------
 ! ecosystem model parameters
        double precision :: temp,temp1
-       double precision :: ae,mu_SP,alpha_SP,a_SP,v_SPn,k_nh4SP,k_no3SP,v_SPp,k_po4SP, zeta, theta, r_excrSP_1,r_excrSP_2,r_pomSP
+       double precision :: ae,mu_SP,alpha_SP,a_SP,v_SPn,k_nh4SP,k_no3SP
+       double precision :: v_SPp,k_po4SP, zeta, theta, r_excrSP_1,r_excrSP_2,r_pomSP
        double precision :: mu_TR,alpha_TR,a_TR,k_nh4TR,v_TRn,k_no3TR,v_TRp, k_po4TR,mu_pickTRpo4, zeta_nf,r_excrTR_1,r_excrTR_n,r_excrTR_2,r_pomTR
        double precision :: mu_UN,alpha_UN,r_SDOM,k_DOM,mu_BA,b_BAresp,r_BAadju,r_BAremi,r_BArefr,f_BAslct,r_BAresp_1, r_BAresp_min
        double precision :: r_BAresp_max, r_BAmort, mu_PRT,g_sp
