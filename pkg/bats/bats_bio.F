@@ -26,7 +26,6 @@ CBOP
  I           bi, bj, imin, imax, jmin, jmax,
  I           myTime, myIter, myThid)
 
-      use eco_params
       IMPLICIT NONE
 
 #include "SIZE.h"
