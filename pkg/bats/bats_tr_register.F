@@ -35,7 +35,7 @@ C     msgBuf     :: message buffer
       INTEGER BATS_Tr_num
 CEOP
 
-      BATS_Tr_num = 17
+      BATS_Tr_num = 36
 
       WRITE(msgBuf,'(2A,2I5)') ' BATS_TR_REGISTER:',
      &     ' number of BATS tracers=', BATS_Tr_num
