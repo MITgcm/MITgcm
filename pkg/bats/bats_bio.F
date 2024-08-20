@@ -1,27 +1,27 @@
 #include "BATS_OPTIONS.h"
 
 CBOP
-      SUBROUTINE BATS_BIO(PTR_BAC,PTR_BAN,PTR_BAP,PTR_DETC,PTR_DETN, &
-                          PTR_DETP,PTR_DVMZC,PTR_DVMZN,PTR_DVMZP,PTR_DOC,PTR_DON, PTR_DOP, &
-                          PTR_MZC, PTR_MZN, PTR_MZP, &
-                          PTR_NH4, PTR_NO3, PTR_PO4, &
-                          PTR_PRTC, PTR_PRTN, PTR_PRTP, &
-                          PTR_SDOC, PTR_SDON, PTR_SDOP, &
-                          PTR_SPC, PTR_SPchl, PTR_SPN, PTR_SPP, &
-                          PTR_TRC, PTR_TRchl, PTR_TRN, PTR_TRP, &
-                          PTR_UNC, PTR_UNchl, PTR_UNN, PTR_UNP, &
-                          G_BAC, G_BAN, G_BAP, &
-                          G_DETC, G_DETN, G_DETP, &
-                          G_DVMZC, G_DVMZN, G_DVMZP, &
-                          G_DOC, G_DON, G_DOP, &
-                          G_MZC, G_MZN, G_MZP, &
-                          G_NH4, G_NO3, G_PO4, &
-                          G_PRTC, G_PRTN, G_PRTP, &
-                          G_SDOC, G_SDON, G_SDOP, &
-                          G_SPC, G_SPchl, G_SPN, G_SPP, &
-                          G_TRC, G_TRchl, G_TRN, G_TRP, &
-                          G_UNC, G_UNchl, G_UNN, G_UNP, &
-                          bi, bj, imin, imax, jmin, jmax, &
+      SUBROUTINE BATS_BIO(PTR_BAC,PTR_BAN,PTR_BAP,PTR_DETC,PTR_DETN,
+                          PTR_DETP,PTR_DVMZC,PTR_DVMZN,PTR_DVMZP,PTR_DOC,PTR_DON, PTR_DOP,
+                          PTR_MZC, PTR_MZN, PTR_MZP,
+                          PTR_NH4, PTR_NO3, PTR_PO4,
+                          PTR_PRTC, PTR_PRTN, PTR_PRTP,
+                          PTR_SDOC, PTR_SDON, PTR_SDOP,
+                          PTR_SPC, PTR_SPchl, PTR_SPN, PTR_SPP,
+                          PTR_TRC, PTR_TRchl, PTR_TRN, PTR_TRP,
+                          PTR_UNC, PTR_UNchl, PTR_UNN, PTR_UNP,
+                          G_BAC, G_BAN, G_BAP,
+                          G_DETC, G_DETN, G_DETP,
+                          G_DVMZC, G_DVMZN, G_DVMZP,
+                          G_DOC, G_DON, G_DOP,
+                          G_MZC, G_MZN, G_MZP,
+                          G_NH4, G_NO3, G_PO4,
+                          G_PRTC, G_PRTN, G_PRTP,
+                          G_SDOC, G_SDON, G_SDOP,
+                          G_SPC, G_SPchl, G_SPN, G_SPP,
+                          G_TRC, G_TRchl, G_TRN, G_TRP,
+                          G_UNC, G_UNchl, G_UNN, G_UNP,
+                          bi, bj, imin, imax, jmin, jmax,
                           myTime, myIter, myThid)
 
       IMPLICIT NONE
@@ -159,7 +159,7 @@ C
        double precision :: r_MZpom,r_MZrefr,r_MZremv,f_HZsdom,f_HZpom,r_SDOMrefr, q_refrDOM_n, q_refrDOM_p
        double precision :: q_POM_n,q_POM_p,r_nitrf,remin_prf_n,remin_prf_p,wnsvo,remin,k_pom,g_det,f_dvm
        ! local fixed parameters
-       double precision :: q_SP_min_n,q_SP_min_p, q_SP_max_n,q_SP_max_p, q_SP_rdf_n,
+       double precision :: q_SP_min_n,q_SP_min_p, q_SP_max_n,q_SP_max_p,q_SP_rdf_n
        double precision :: q_SP_rdf_p,v_UNn,v_UNp,q_UN_min0_n,q_UN_min0_p
        double precision :: q_UN_max0_n,k_nh4UN,k_no3UN,k_po4UN
        double precision :: r_excrUN_1,r_excrUN_n,r_excrUN_2,r_pomUN,q_BA_n,q_BA_p
@@ -168,22 +168,17 @@ C
        ! local variables for temperature effect function
        double precision :: Tfunc
        ! local variables in the SP module
-       double precision :: Nfunc_sp_n, Nfunc_sp_p, Pc_SPmax, growSPnh4, growSPno3
+       double precision :: Nfunc_sp_n, Nfunc_sp_p, Pc_SPmax, growSPnh4,growSPno3
        double precision :: V_SPmax_n, V_SPmax_p, respSP,  growSPchl, grazSPchl, pomSPchl
        double precision :: growSPc,growSPn,growSPp,excrSP_1c,excrSP_1n,excrSP_1p
        double precision :: excrSP_2c,excrSP_2n,excrSP_2p,pomSPc,pomSPn,pomSPp
        double precision :: grazSPc,grazSPn,grazSPp
        ! local variables in the TR module
-       double precision :: q_TR_min_n,q_TR_min_p, &
-                              q_TR_max_n,q_TR_max_p, &
-                              q_TR_rdf_n,q_TR_rdf_p, &
-                              growTRnh4,growTRno3,growTRnf,maxTRnf, &
-                              excrTR_nh4,growTRpo4,pickTRpo4
-       double precision :: growTRc,growTRn,growTRp, &
-                              excrTR_1c,excrTR_1n,excrTR_1p,excrTR_2c,excrTR_2n,excrTR_2p, &
-                              pomTRc,pomTRn,pomTRp,grazTRc,grazTRn,grazTRp
-       double precision ::  Nfunc_tr_n, Nfunc_tr_p, Pc_TRmax,V_TRmax_n, V_TRmax_p, &
-                                            respTR,  growTRchl, grazTRchl, pomTRchl
+       double precision :: q_TR_min_n,q_TR_min_p,q_TR_max_n,q_TR_max_p,q_TR_rdf_n,q_TR_rdf_p
+       double precision :: growTRnh4,growTRno3,growTRnf,maxTRnf,excrTR_nh4,growTRpo4,pickTRpo4
+       double precision :: growTRc,growTRn,growTRp,excrTR_1c,excrTR_1n,excrTR_1p,excrTR_2c,excrTR_2n,excrTR_2p
+       double precision :: pomTRc,pomTRn,pomTRp,grazTRc,grazTRn,grazTRp
+       double precision :: Nfunc_tr_n, Nfunc_tr_p, Pc_TRmax,V_TRmax_n, V_TRmax_p,respTR,growTRchl,grazTRchl,pomTRchl
        ! local variables in the UN module
        double precision :: q_UN_min_n,q_UN_min_p, &
                               q_UN_max_n,q_UN_max_p, &
