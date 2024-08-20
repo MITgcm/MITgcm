@@ -418,18 +418,15 @@ c  M        icrophytoplankton processes
         
             ! Light Limitation
             IF ((Pc_SPmax.gt.c0).and.(PTR_SPC(i,j,k).gt.c0)) THEN
-                growSPc = PTR_SPC(i,j,k) * Pc_SPmax * (1 -            exp(-alpha_SP*PTR_SPchl(i,j,k)/PTR_SPC        (i,j,k)*irr_inst/Pc_SPmax)) &
-                                * exp(-a_SP*irr_inst)
+                growSPc = PTR_SPC(i,j,k) * Pc_SPmax * (1-exp(-alpha_SP*PTR_SPchl(i,j,k)/PTR_SPC(i,j,k)*irr_inst/Pc_SPmax))*exp(-a_SP*irr_inst)
             ELSE
                 growSPc = c0
             END IF
             ! Nutrient uptake
-            V_SPmax_n = max(c0, (q_SP_max_n - PTR_SPN(i,j,k)/PTR_SPC(i,j,k) ) /         (q_SP_max_n -     q_SP_rdf_n))
+            V_SPmax_n = max(c0, (q_SP_max_n - PTR_SPN(i,j,k)/PTR_SPC(i,j,k) )/(q_SP_max_n -q_SP_rdf_n))
             V_SPmax_n = min(c1, V_SPmax_n)
-            growSPnh4 = PTR_SPC(i,j,k) * v_SPn * V_SPmax_n * &
-                           PTR_NH4(i,j,k) / (PTR_NH4(i,j,k) + k_nh4SP +         PTR_NO3(i,j,k) * k_nh4SP/k_no3SP)
-            growSPno3 = PTR_SPC(i,j,k) * v_SPn * V_SPmax_n * &
-                           PTR_NO3(i,j,k) / (PTR_NO3(i,j,k) + k_no3SP +         PTR_NH4(i,j,k) * k_no3SP/k_nh4SP)
+            growSPnh4 = PTR_SPC(i,j,k) * v_SPn * V_SPmax_n * PTR_NH4(i,j,k)/(PTR_NH4(i,j,k)+k_nh4SP+PTR_NO3(i,j,k) * k_nh4SP/k_no3SP)
+            growSPno3 = PTR_SPC(i,j,k) * v_SPn * V_SPmax_n * PTR_NO3(i,j,k)/(PTR_NO3(i,j,k)+k_no3SP+PTR_NH4(i,j,k) * k_no3SP/k_nh4SP)
             growSPn = growSPnh4 + growSPno3
             
             V_SPmax_p = max(c0, (q_SP_max_p - PTR_SPP(i,j,k)/PTR_SPC(i,j,k) ) /         (q_SP_max_p -     q_SP_rdf_p))
@@ -437,13 +434,12 @@ c  M        icrophytoplankton processes
             growSPp = PTR_SPC(i,j,k) * v_SPp * V_SPmax_p * &
                            PTR_PO4(i,j,k) /( PTR_PO4(i,j,k) + k_po4SP)
             
-            respSP = growSPno3 *  zeta
+            respSP = growSPno3*zeta
         
         
 ! Ch        lorophyll
             IF (irr_inst .gt. c0) THEN
-                growSPchl = theta * growSPn * &
-                                growSPc /         (alpha_SP*PTR_SPchl(i,j,k)*irr_inst*exp        (-a_SP*irr_inst))
+                growSPchl = theta * growSPn * growSPc/(alpha_SP*PTR_SPchl(i,j,k)*irr_inst*exp(-a_SP*irr_inst))
             ELSE
                 growSPchl = c0
             END IF
