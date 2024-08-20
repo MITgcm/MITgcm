@@ -939,7 +939,7 @@ c  Microphytoplankton processes
     G_SDOP(i,j,k) = (excrSP_2p + excrTR_2p + excrUN_2p + excrBAp + excrPRTsdomp     + excrPRTsdom2p &
                    + excrMZsdomp + excrMZsdom2p + excrHZsdomp + disDETp -   growBAsdop - refrSDOMp)/ SecPerDay
 
-
+         ENDIF
         ENDDO
        ENDDO
       ENDDO
