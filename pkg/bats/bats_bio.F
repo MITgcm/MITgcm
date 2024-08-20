@@ -191,7 +191,7 @@ C
        double precision :: growUNc,growUNn,growUNp
        double precision :: excrUN_1c,excrUN_1n,excrUN_1p,excrUN_2c,excrUN_2n,excrUN_2p
        double precision :: pomUNc,pomUNn,pomUNp,grazUNc,grazUNn,grazUNp
-       double precision :: Nfunc_un_n, Nfunc_un_p, Pc_UNmax,V_UNmax_n, V_UNmax_p
+       double precision :: Nfunc_un_n, Nfunc_un_p, Pc_UNmax,V_UNmax_n,V_UNmax_p
        double precision :: respUN,  growUNchl, grazUNchl, pomUNchl
        ! local variables in the BA module
        double precision :: ALC,ASC,Nfunc_ba_n,Nfunc_ba_p
@@ -418,7 +418,8 @@ c  M        icrophytoplankton processes
         
             ! Light Limitation
             IF ((Pc_SPmax.gt.c0).and.(PTR_SPC(i,j,k).gt.c0)) THEN
-                growSPc = PTR_SPC(i,j,k) * Pc_SPmax * (1-exp(-alpha_SP*PTR_SPchl(i,j,k)/PTR_SPC(i,j,k)*irr_inst/Pc_SPmax))*exp(-a_SP*irr_inst)
+                growSPc = PTR_SPC(i,j,k) * Pc_SPmax * (1-exp(-alpha_SP*PTR_SPchl(i,j,k)/
+              &           PTR_SPC(i,j,k)*irr_inst/Pc_SPmax))*exp(-a_SP*irr_inst)
             ELSE
                 growSPc = c0
             END IF
