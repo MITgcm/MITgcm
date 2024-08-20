@@ -447,13 +447,13 @@ c  M        icrophytoplankton processes
             excrSP_1c = r_excrSP_1 * PTR_SPC(i,j,k) + r_excrSP_2 * growSPc * 0.75 !             Passive
             excrSP_1n = r_excrSP_1 * PTR_SPN(i,j,k)
             excrSP_1p = r_excrSP_1 * PTR_SPP(i,j,k)
-            temp = MAX(c1-PTR_SPN(i,j,k)/PTR_SPC(i,j,k)/q_SP_rdf_n,             c1-PTR_SPP(i,j,k)/PTR_SPC(i,j,k)/q_SP_rdf_p)
+            temp = MAX(c1-PTR_SPN(i,j,k)/PTR_SPC(i,j,k)/q_SP_rdf_n,c1-PTR_SPP(i,j,k)/PTR_SPC(i,j,k)/q_SP_rdf_p)
             excrSP_2c = 0.5 * PTR_SPC(i,j,k) * MAX(temp,c0)
             IF (excrSP_2c > c0) THEN
-                temp = MAX(c0, c1 - PTR_SPP(i,j,k)/PTR_SPN(i,j,k) /             (q_SP_rdf_p/q_SP_rdf_n))
-                temp1 = MAX(c0, c1 - PTR_SPN(i,j,k)/PTR_SPP(i,j,k) /            (q_SP_rdf_n/q_SP_rdf_p))
-                excrSP_2n = 0.5 * MIN(0.25d0 * PTR_SPN(i,j,k) * temp, excrSP_2c *           q_SP_rdf_n)
-                excrSP_2p = 0.5 * MIN(0.25d0 * PTR_SPP(i,j,k) * temp1, excrSP_2c *          q_SP_rdf_p)
+                temp = MAX(c0, c1 - PTR_SPP(i,j,k)/PTR_SPN(i,j,k)/(q_SP_rdf_p/q_SP_rdf_n))
+                temp1 = MAX(c0, c1 - PTR_SPN(i,j,k)/PTR_SPP(i,j,k)/(q_SP_rdf_n/q_SP_rdf_p))
+                excrSP_2n = 0.5 * MIN(0.25d0 * PTR_SPN(i,j,k) * temp,excrSP_2c*q_SP_rdf_n)
+                excrSP_2p = 0.5 * MIN(0.25d0 * PTR_SPP(i,j,k) * temp1,excrSP_2c*q_SP_rdf_p)
             ELSE
                 excrSP_2n = c0
                 excrSP_2p = c0
@@ -466,17 +466,16 @@ c  M        icrophytoplankton processes
             pomSPp = pomSPc * PTR_SPP(i,j,k) / PTR_SPC(i,j,k)
             pomSPchl = pomSPn * PTR_SPchl(i,j,k) / PTR_SPN(i,j,k)
             ! SP grazed
-            grazSPc = mu_PRT * PTR_PRTC(i,j,k) * PTR_SPC(i,j,k) * PTR_SPC(i,j,k) &
-                / (PTR_SPC(i,j,k) * PTR_SPC(i,j,k) + g_sp * g_sp + &
+            grazSPc = mu_PRT * PTR_PRTC(i,j,k) * PTR_SPC(i,j,k) * PTR_SPC(i,j,k)/(PTR_SPC(i,j,k) * PTR_SPC(i,j,k) + g_sp * g_sp + &
                    PTR_UNC(i,j,k)*PTR_UNC(i,j,k)/g_un/g_un*g_sp*g_sp + &
                    PTR_BAC(i,j,k)*PTR_BAC(i,j,k)/g_ba/g_ba*g_sp*g_sp)
             grazSPn = grazSPc * PTR_SPN(i,j,k) /PTR_SPC(i,j,k)
             grazSPp = grazSPc * PTR_SPP(i,j,k) /PTR_SPC(i,j,k)
             grazSPchl = grazSPn * PTR_SPchl(i,j,k) / PTR_SPN(i,j,k)
             ! SP derivs
-            G_SPC(i,j,k) = (growSPc - excrSP_1c - excrSP_2c - grazSPc - pomSPc)/             SecPerDay
-            G_SPN(i,j,k) = (growSPn - excrSP_1n - excrSP_2n - grazSPn - pomSPn)/             SecPerDay
-            G_SPP(i,j,k) = (growSPp - excrSP_1p - excrSP_2p - grazSPp - pomSPp)/             SecPerDay
+            G_SPC(i,j,k) = (growSPc - excrSP_1c - excrSP_2c - grazSPc - pomSPc)/SecPerDay
+            G_SPN(i,j,k) = (growSPn - excrSP_1n - excrSP_2n - grazSPn - pomSPn)/SecPerDay
+            G_SPP(i,j,k) = (growSPp - excrSP_1p - excrSP_2p - grazSPp - pomSPp)/SecPerDay
             G_SPchl(i,j,k) = (growSPchl - grazSPchl - pomSPchl)/ SecPerDay
         
             !-----------------------------------------------------------------------
