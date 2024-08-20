@@ -2,7 +2,8 @@
 
 CBOP
       SUBROUTINE BATS_BIO(PTR_BAC,PTR_BAN,PTR_BAP,PTR_DETC,PTR_DETN,
-                          PTR_DETP,PTR_DVMZC,PTR_DVMZN,PTR_DVMZP,PTR_DOC,PTR_DON, PTR_DOP,
+                          PTR_DETP,PTR_DVMZC,PTR_DVMZN,PTR_DVMZP,
+                          PTR_DOC,PTR_DON, PTR_DOP,
                           PTR_MZC, PTR_MZN, PTR_MZP,
                           PTR_NH4, PTR_NO3, PTR_PO4,
                           PTR_PRTC, PTR_PRTN, PTR_PRTP,
@@ -148,9 +149,13 @@ C
 ! ecosystem model parameters
        double precision :: temp,temp1
        double precision :: ae,mu_SP,alpha_SP,a_SP,v_SPn,k_nh4SP,k_no3SP
-       double precision :: v_SPp,k_po4SP, zeta, theta, r_excrSP_1,r_excrSP_2,r_pomSP
-       double precision :: mu_TR,alpha_TR,a_TR,k_nh4TR,v_TRn,k_no3TR,v_TRp, k_po4TR,mu_pickTRpo4, zeta_nf,r_excrTR_1,r_excrTR_n,r_excrTR_2,r_pomTR
-       double precision :: mu_UN,alpha_UN,r_SDOM,k_DOM,mu_BA,b_BAresp,r_BAadju,r_BAremi,r_BArefr,f_BAslct,r_BAresp_1, r_BAresp_min
+       double precision :: v_SPp,k_po4SP, zeta, theta, r_excrSP_1
+       double precision :: r_excrSP_2,r_pomSP
+       double precision :: mu_TR,alpha_TR,a_TR,k_nh4TR,v_TRn,k_no3TR
+       double precision :: v_TRp, k_po4TR,mu_pickTRpo4, zeta_nf
+       double precision :: r_excrTR_1,r_excrTR_n,r_excrTR_2,r_pomTR
+       double precision :: mu_UN,alpha_UN,r_SDOM,k_DOM,mu_BA,b_BAresp
+       double precision :: r_BAadju,r_BAremi,r_BArefr,f_BAslct,r_BAresp_1, r_BAresp_min
        double precision :: r_BAresp_max, r_BAmort, mu_PRT,g_sp
        double precision :: g_ba,r_PRTex,f_exPRTldom
        double precision :: r_PRTresp_1,r_PRTresp_2,r_PRTadju,r_PRTremi
@@ -159,7 +164,7 @@ C
        double precision :: r_MZpom,r_MZrefr,r_MZremv,f_HZsdom,f_HZpom,r_SDOMrefr, q_refrDOM_n, q_refrDOM_p
        double precision :: q_POM_n,q_POM_p,r_nitrf,remin_prf_n,remin_prf_p,wnsvo,remin,k_pom,g_det,f_dvm
        ! local fixed parameters
-       double precision :: q_SP_min_n,q_SP_min_p, q_SP_max_n,q_SP_max_p,q_SP_rdf_n
+       double precision :: q_SP_min_n,q_SP_min_p,q_SP_max_n,q_SP_max_p,q_SP_rdf_n
        double precision :: q_SP_rdf_p,v_UNn,v_UNp,q_UN_min0_n,q_UN_min0_p
        double precision :: q_UN_max0_n,k_nh4UN,k_no3UN,k_po4UN
        double precision :: r_excrUN_1,r_excrUN_n,r_excrUN_2,r_pomUN,q_BA_n,q_BA_p
@@ -180,11 +185,9 @@ C
        double precision :: pomTRc,pomTRn,pomTRp,grazTRc,grazTRn,grazTRp
        double precision :: Nfunc_tr_n, Nfunc_tr_p, Pc_TRmax,V_TRmax_n, V_TRmax_p,respTR,growTRchl,grazTRchl,pomTRchl
        ! local variables in the UN module
-       double precision :: q_UN_min_n,q_UN_min_p, &
-                              q_UN_max_n,q_UN_max_p, &
-                              q_UN_rdf_n,q_UN_rdf_p, &
-                              growUNnh4,growUNno3,growUNnf,maxUNnf, &
-                              excrUN_nh4
+       double precision :: q_UN_min_n,q_UN_min_p
+       double precision :: q_UN_max_n,q_UN_max_p,q_UN_rdf_n,q_UN_rdf_p
+       double precision :: growUNnh4,growUNno3,growUNnf,maxUNnf,excrUN_nh4
        double precision :: growUNc,growUNn,growUNp, &
                               excrUN_1c,excrUN_1n,excrUN_1p,excrUN_2c,excrUN_2n,excrUN_2p, &
                               pomUNc,pomUNn,pomUNp,grazUNc,grazUNn,grazUNp
@@ -408,28 +411,28 @@ c  M        icrophytoplankton processes
             Nfunc_sp_p = (PTR_SPP(i,j,k)/PTR_SPC(i,j,k) - q_SP_min_p) / &
                                     (q_SP_rdf_p - q_SP_min_p)
             temp = min(Nfunc_sp_n, Nfunc_sp_p)
-            temp = min(temp, 1)
-            temp = max(temp, 0)
+            temp = min(temp, c1)
+            temp = max(temp, c0)
             Pc_SPmax = mu_SP * temp
         
             ! Light Limitation
-            IF ((Pc_SPmax.gt.0).and.(PTR_SPC(i,j,k).gt.0)) THEN
+            IF ((Pc_SPmax.gt.c0).and.(PTR_SPC(i,j,k).gt.c0)) THEN
                 growSPc = PTR_SPC(i,j,k) * Pc_SPmax * (1 -            exp(-alpha_SP*PTR_SPchl(i,j,k)/PTR_SPC        (i,j,k)*irr_inst/Pc_SPmax)) &
                                 * exp(-a_SP*irr_inst)
             ELSE
-                growSPc = 0
+                growSPc = c0
             END IF
             ! Nutrient uptake
-            V_SPmax_n = max(0, (q_SP_max_n - PTR_SPN(i,j,k)/PTR_SPC(i,j,k) ) /         (q_SP_max_n -     q_SP_rdf_n))
-            V_SPmax_n = min(1, V_SPmax_n)
+            V_SPmax_n = max(c0, (q_SP_max_n - PTR_SPN(i,j,k)/PTR_SPC(i,j,k) ) /         (q_SP_max_n -     q_SP_rdf_n))
+            V_SPmax_n = min(c1, V_SPmax_n)
             growSPnh4 = PTR_SPC(i,j,k) * v_SPn * V_SPmax_n * &
                            PTR_NH4(i,j,k) / (PTR_NH4(i,j,k) + k_nh4SP +         PTR_NO3(i,j,k) * k_nh4SP/k_no3SP)
             growSPno3 = PTR_SPC(i,j,k) * v_SPn * V_SPmax_n * &
                            PTR_NO3(i,j,k) / (PTR_NO3(i,j,k) + k_no3SP +         PTR_NH4(i,j,k) * k_no3SP/k_nh4SP)
             growSPn = growSPnh4 + growSPno3
             
-            V_SPmax_p = max(0, (q_SP_max_p - PTR_SPP(i,j,k)/PTR_SPC(i,j,k) ) /         (q_SP_max_p -     q_SP_rdf_p))
-            V_SPmax_p = min(1, V_SPmax_p)
+            V_SPmax_p = max(c0, (q_SP_max_p - PTR_SPP(i,j,k)/PTR_SPC(i,j,k) ) /         (q_SP_max_p -     q_SP_rdf_p))
+            V_SPmax_p = min(c1, V_SPmax_p)
             growSPp = PTR_SPC(i,j,k) * v_SPp * V_SPmax_p * &
                            PTR_PO4(i,j,k) /( PTR_PO4(i,j,k) + k_po4SP)
             
@@ -437,11 +440,11 @@ c  M        icrophytoplankton processes
         
         
 ! Ch        lorophyll
-            IF (irr_inst .gt. 0) THEN
+            IF (irr_inst .gt. c0) THEN
                 growSPchl = theta * growSPn * &
                                 growSPc /         (alpha_SP*PTR_SPchl(i,j,k)*irr_inst*exp        (-a_SP*irr_inst))
             ELSE
-                growSPchl = 0
+                growSPchl = c0
             END IF
             
             ! SP excretion (could be also considered as mortality)

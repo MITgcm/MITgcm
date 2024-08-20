@@ -5,6 +5,8 @@
  useLayers=.FALSE.,
  useDiagnostics=.TRUE.,
  usePTRACERS=.TRUE.,
+ useGCHEM=.TRUE.,
+ useBATS=.TRUE.,
 #---------------------------------------
 #- for non-GM or eddy-permitting run, deactivate GMRedi package:
 # useGMRedi=.FALSE.,
