@@ -62,82 +62,82 @@ C     PTR_NO3       :: nitrate concentration
 C     PTR_PO4       :: phosphate concentration
 C     PTR_DOX       :: dissolved organic carbon, nitrogen, phosphorous
 C     PTR_SDOX      :: semi-labile dissolved organic carbon, nitrogen, phosphorous
-    double precision :: PTR_SPC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    double precision :: PTR_SPchl(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    double precision :: PTR_SPN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    double precision :: PTR_SPP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    double precision :: PTR_TRC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    double precision :: PTR_TRchl(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    double precision :: PTR_TRN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    double precision :: PTR_TRP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    double precision :: PTR_UNC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    double precision :: PTR_UNchl(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    double precision :: PTR_UNN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    double precision :: PTR_UNP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    double precision :: PTR_BAC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    double precision :: PTR_BAN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    double precision :: PTR_BAP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    double precision :: PTR_PTRC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    double precision :: PTR_PTRN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    double precision :: PTR_PTRP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    double precision :: PTR_MZC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    double precision :: PTR_MZN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    double precision :: PTR_MZP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    double precision :: PTR_DVMZC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    double precision :: PTR_DVMZN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    double precision :: PTR_DVMZP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    double precision :: PTR_DETC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    double precision :: PTR_DETN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    double precision :: PTR_DETP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    double precision :: PTR_NH4(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    double precision :: PTR_NO3(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    double precision :: PTR_PO4(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    double precision :: PTR_DOC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    double precision :: PTR_DON(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    double precision :: PTR_DOP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    double precision :: PTR_SDOC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    double precision :: PTR_SDON(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    double precision :: PTR_SDOP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      double precision :: PTR_SPC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      double precision :: PTR_SPchl(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      double precision :: PTR_SPN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      double precision :: PTR_SPP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      double precision :: PTR_TRC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      double precision :: PTR_TRchl(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      double precision :: PTR_TRN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      double precision :: PTR_TRP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      double precision :: PTR_UNC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      double precision :: PTR_UNchl(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      double precision :: PTR_UNN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      double precision :: PTR_UNP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      double precision :: PTR_BAC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      double precision :: PTR_BAN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      double precision :: PTR_BAP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      double precision :: PTR_PTRC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      double precision :: PTR_PTRN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      double precision :: PTR_PTRP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      double precision :: PTR_MZC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      double precision :: PTR_MZN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      double precision :: PTR_MZP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      double precision :: PTR_DVMZC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      double precision :: PTR_DVMZN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      double precision :: PTR_DVMZP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      double precision :: PTR_DETC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      double precision :: PTR_DETN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      double precision :: PTR_DETP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      double precision :: PTR_NH4(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      double precision :: PTR_NO3(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      double precision :: PTR_PO4(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      double precision :: PTR_DOC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      double precision :: PTR_DON(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      double precision :: PTR_DOP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      double precision :: PTR_SDOC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      double precision :: PTR_SDON(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      double precision :: PTR_SDOP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
 C     === Output ===
 C     G_xxx                :: tendency term for tracer xxx
 
-    _RL  G_SPC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    _RL  G_SPchl(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    _RL  G_SPN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    _RL  G_SPP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    _RL  G_TRC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    _RL  G_TRchl(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    _RL  G_TRN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    _RL  G_TRP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    _RL  G_UNC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    _RL  G_UNchl(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    _RL  G_UNN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    _RL  G_UNP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    _RL  G_BAC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    _RL  G_BAN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    _RL  G_BAP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    _RL  G_PTRC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    _RL  G_PTRN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    _RL  G_PTRP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    _RL  G_MZC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    _RL  G_MZN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    _RL  G_MZP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    _RL  G_DVMZC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    _RL  G_DVMZN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    _RL  G_DVMZP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    _RL  G_DETC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    _RL  G_DETN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    _RL  G_DETP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    _RL  G_NH4(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    _RL  G_NO3(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    _RL  G_PO4(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    _RL  G_DOC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    _RL  G_DON(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    _RL  G_DOP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    _RL  G_SDOC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    _RL  G_SDON(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-    _RL  G_SDOP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  G_SPC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  G_SPchl(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  G_SPN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  G_SPP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  G_TRC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  G_TRchl(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  G_TRN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  G_TRP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  G_UNC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  G_UNchl(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  G_UNN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  G_UNP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  G_BAC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  G_BAN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  G_BAP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  G_PTRC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  G_PTRN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  G_PTRP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  G_MZC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  G_MZN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  G_MZP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  G_DVMZC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  G_DVMZN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  G_DVMZP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  G_DETC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  G_DETN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  G_DETP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  G_NH4(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  G_NO3(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  G_PO4(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  G_DOC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  G_DON(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  G_DOP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  G_SDOC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  G_SDON(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  G_SDOP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
 
 C     === Local variables ===
@@ -148,219 +148,219 @@ C
 !     Local variables
 !-----------------------------------------------------------------------
 ! ecosystem model parameters
-    double precision :: temp,temp1
-    double precision :: ae,mu_SP,alpha_SP,a_SP,v_SPn,k_nh4SP,k_no3SP,&
-      v_SPp,k_po4SP, zeta, theta, r_excrSP_1,r_excrSP_2,r_pomSP,&
-      mu_TR,alpha_TR,a_TR,k_nh4TR,v_TRn,k_no3TR,&
-      v_TRp, k_po4TR,mu_pickTRpo4, zeta_nf, &
-      r_excrTR_1,r_excrTR_n,r_excrTR_2,r_pomTR,&
-      mu_UN,alpha_UN,r_SDOM,k_DOM,mu_BA,& !b_SDONlabi,b_SDOPlabi,
-      b_BAresp,r_BAadju,r_BAremi,r_BArefr,f_BAslct,r_BAresp_1, r_BAresp_min, &
-      r_BAresp_max, r_BAmort, mu_PRT,g_sp,&
-      g_ba,r_PRTex,f_exPRTldom,&
-      r_PRTresp_1,r_PRTresp_2,r_PRTadju,r_PRTremi,&
-      r_pomPRT,mu_MZ,g_prt,g_tr,r_MZex,&
-      f_exMZldom,r_MZresp_1,r_MZresp_2,r_MZadju,r_MZremi,&
-      r_MZpom,r_MZrefr,r_MZremv,f_HZsdom,f_HZpom,r_SDOMrefr, q_refrDOM_n, q_refrDOM_p, &
-      q_POM_n,q_POM_p,r_nitrf,remin_prf_n,remin_prf_p,wnsvo,remin,k_pom,g_det,f_dvm
-    ! local fixed parameters
-    double precision :: q_SP_min_n,&
-      q_SP_min_p, q_SP_max_n,q_SP_max_p, q_SP_rdf_n,&
-      q_SP_rdf_p,v_UNn,v_UNp,q_UN_min0_n,q_UN_min0_p,&
-      q_UN_max0_n,k_nh4UN,k_no3UN,k_po4UN, &
-      r_excrUN_1,r_excrUN_n,r_excrUN_2,r_pomUN,q_BA_n,q_BA_p,&
-      g_un,q_PRT_n,q_PRT_p,&
-      q_MZ_n,q_MZ_p,Tref,a_UN
-    ! local variables for temperature effect function
-    double precision :: Tfunc
-    ! local variables in the SP module
-    double precision :: Nfunc_sp_n, Nfunc_sp_p, Pc_SPmax, growSPnh4, growSPno3
-    double precision :: V_SPmax_n, V_SPmax_p, respSP,  growSPchl, grazSPchl, pomSPchl
-    double precision :: growSPc,growSPn,growSPp,excrSP_1c,excrSP_1n,excrSP_1p
-    double precision :: excrSP_2c,excrSP_2n,excrSP_2p,pomSPc,pomSPn,pomSPp
-    double precision :: grazSPc,grazSPn,grazSPp
-    ! local variables in the TR module
-    double precision :: q_TR_min_n,q_TR_min_p, &
-                           q_TR_max_n,q_TR_max_p, &
-                           q_TR_rdf_n,q_TR_rdf_p, &
-                           growTRnh4,growTRno3,growTRnf,maxTRnf, &
-                           excrTR_nh4,growTRpo4,pickTRpo4
-    double precision :: growTRc,growTRn,growTRp, &
-                           excrTR_1c,excrTR_1n,excrTR_1p,excrTR_2c,excrTR_2n,excrTR_2p, &
-                           pomTRc,pomTRn,pomTRp,grazTRc,grazTRn,grazTRp
-    double precision ::  Nfunc_tr_n, Nfunc_tr_p, Pc_TRmax,V_TRmax_n, V_TRmax_p, &
-                                         respTR,  growTRchl, grazTRchl, pomTRchl
-    ! local variables in the UN module
-    double precision :: q_UN_min_n,q_UN_min_p, &
-                           q_UN_max_n,q_UN_max_p, &
-                           q_UN_rdf_n,q_UN_rdf_p, &
-                           growUNnh4,growUNno3,growUNnf,maxUNnf, &
-                           excrUN_nh4
-    double precision :: growUNc,growUNn,growUNp, &
-                           excrUN_1c,excrUN_1n,excrUN_1p,excrUN_2c,excrUN_2n,excrUN_2p, &
-                           pomUNc,pomUNn,pomUNp,grazUNc,grazUNn,grazUNp
-    double precision ::  Nfunc_un_n, Nfunc_un_p, Pc_UNmax,V_UNmax_n, V_UNmax_p, &
-                                         respUN,  growUNchl, grazUNchl, pomUNchl
-    ! local variables in the BA module
-    double precision :: ALC,ASC,Nfunc_ba_n,Nfunc_ba_p,&
-                           growBAldoc,growBAldon,growBAldop,growBAsdoc,growBAsdon,growBAsdop,&
-                           growBAnh4,growBAno3,growBApo4,respBA,fluxBAnh4,fluxBAno3,fluxBApo4, &
-                           growBAc,growBAn,growBAp,refrBAc,refrBAn,refrBAp,&
-                           excrBAc,excrBAn,excrBAp,remiBAn,remiBAp,&
-                           grazBAc,grazBAn,grazBAp,mortBAc,mortBAn,mortBAp
-    ! local variables in the PRT module
-    double precision :: growPRTc,growPRTn,growPRTp,&
-                           excrPRTldomc,excrPRTldomn,excrPRTldomp, &
-                           excrPRTsdomc,excrPRTsdomn,excrPRTsdomp, &
-                           excrPRTsdom2c,excrPRTsdom2n,excrPRTsdom2p, &
-                           remiPRTn,remiPRTp,pomPRTc,pomPRTn,pomPRTp, &
-                           grazPRTc,grazPRTn,grazPRTp,respPRT
-    ! local variables in the MZ module
-    double precision :: growMZc,growMZn,growMZp,&
-                           excrMZldomc,excrMZldomn,excrMZldomp, &
-                           excrMZsdomc,excrMZsdomn,excrMZsdomp, &
-                           excrMZsdom2c,excrMZsdom2n,excrMZsdom2p, &
-                           remiMZn,remiMZp,pomMZc,pomMZn,pomMZp, &
-                           refrMZc,refrMZn,refrMZp,remvMZc,remvMZn,remvMZp, &
-                           pomHZc,pomHZn,pomHZp,excrHZsdomc,excrHZsdomn,excrHZsdomp, &
-                           remiHZn,remiHZp,respMZ
-    ! local variables in the DOM module
-    double precision :: refrSDOMc,refrSDOMn,refrSDOMp
-    ! local variables in the DET module
-    double precision ::  disDETc,disDETn,disDETp
-    ! local variables in the DIN module
-    double precision :: nitrf
-    ! local variables in newly added processes
-    double precision :: growBApoc, growBApon, growBApop, grazDETc, grazDETn, grazDETp, c0, c1
+       double precision :: temp,temp1
+       double precision :: ae,mu_SP,alpha_SP,a_SP,v_SPn,k_nh4SP,k_no3SP,&
+         v_SPp,k_po4SP, zeta, theta, r_excrSP_1,r_excrSP_2,r_pomSP,&
+         mu_TR,alpha_TR,a_TR,k_nh4TR,v_TRn,k_no3TR,&
+         v_TRp, k_po4TR,mu_pickTRpo4, zeta_nf, &
+         r_excrTR_1,r_excrTR_n,r_excrTR_2,r_pomTR,&
+         mu_UN,alpha_UN,r_SDOM,k_DOM,mu_BA,& !b_SDONlabi,b_SDOPlabi,
+         b_BAresp,r_BAadju,r_BAremi,r_BArefr,f_BAslct,r_BAresp_1, r_BAresp_min, &
+         r_BAresp_max, r_BAmort, mu_PRT,g_sp,&
+         g_ba,r_PRTex,f_exPRTldom,&
+         r_PRTresp_1,r_PRTresp_2,r_PRTadju,r_PRTremi,&
+         r_pomPRT,mu_MZ,g_prt,g_tr,r_MZex,&
+         f_exMZldom,r_MZresp_1,r_MZresp_2,r_MZadju,r_MZremi,&
+         r_MZpom,r_MZrefr,r_MZremv,f_HZsdom,f_HZpom,r_SDOMrefr, q_refrDOM_n, q_refrDOM_p, &
+         q_POM_n,q_POM_p,r_nitrf,remin_prf_n,remin_prf_p,wnsvo,remin,k_pom,g_det,f_dvm
+       ! local fixed parameters
+       double precision :: q_SP_min_n,&
+         q_SP_min_p, q_SP_max_n,q_SP_max_p, q_SP_rdf_n,&
+         q_SP_rdf_p,v_UNn,v_UNp,q_UN_min0_n,q_UN_min0_p,&
+         q_UN_max0_n,k_nh4UN,k_no3UN,k_po4UN, &
+         r_excrUN_1,r_excrUN_n,r_excrUN_2,r_pomUN,q_BA_n,q_BA_p,&
+         g_un,q_PRT_n,q_PRT_p,&
+         q_MZ_n,q_MZ_p,Tref,a_UN
+       ! local variables for temperature effect function
+       double precision :: Tfunc
+       ! local variables in the SP module
+       double precision :: Nfunc_sp_n, Nfunc_sp_p, Pc_SPmax, growSPnh4, growSPno3
+       double precision :: V_SPmax_n, V_SPmax_p, respSP,  growSPchl, grazSPchl, pomSPchl
+       double precision :: growSPc,growSPn,growSPp,excrSP_1c,excrSP_1n,excrSP_1p
+       double precision :: excrSP_2c,excrSP_2n,excrSP_2p,pomSPc,pomSPn,pomSPp
+       double precision :: grazSPc,grazSPn,grazSPp
+       ! local variables in the TR module
+       double precision :: q_TR_min_n,q_TR_min_p, &
+                              q_TR_max_n,q_TR_max_p, &
+                              q_TR_rdf_n,q_TR_rdf_p, &
+                              growTRnh4,growTRno3,growTRnf,maxTRnf, &
+                              excrTR_nh4,growTRpo4,pickTRpo4
+       double precision :: growTRc,growTRn,growTRp, &
+                              excrTR_1c,excrTR_1n,excrTR_1p,excrTR_2c,excrTR_2n,excrTR_2p, &
+                              pomTRc,pomTRn,pomTRp,grazTRc,grazTRn,grazTRp
+       double precision ::  Nfunc_tr_n, Nfunc_tr_p, Pc_TRmax,V_TRmax_n, V_TRmax_p, &
+                                            respTR,  growTRchl, grazTRchl, pomTRchl
+       ! local variables in the UN module
+       double precision :: q_UN_min_n,q_UN_min_p, &
+                              q_UN_max_n,q_UN_max_p, &
+                              q_UN_rdf_n,q_UN_rdf_p, &
+                              growUNnh4,growUNno3,growUNnf,maxUNnf, &
+                              excrUN_nh4
+       double precision :: growUNc,growUNn,growUNp, &
+                              excrUN_1c,excrUN_1n,excrUN_1p,excrUN_2c,excrUN_2n,excrUN_2p, &
+                              pomUNc,pomUNn,pomUNp,grazUNc,grazUNn,grazUNp
+       double precision ::  Nfunc_un_n, Nfunc_un_p, Pc_UNmax,V_UNmax_n, V_UNmax_p, &
+                                            respUN,  growUNchl, grazUNchl, pomUNchl
+       ! local variables in the BA module
+       double precision :: ALC,ASC,Nfunc_ba_n,Nfunc_ba_p,&
+                              growBAldoc,growBAldon,growBAldop,growBAsdoc,growBAsdon,growBAsdop,&
+                              growBAnh4,growBAno3,growBApo4,respBA,fluxBAnh4,fluxBAno3,fluxBApo4, &
+                              growBAc,growBAn,growBAp,refrBAc,refrBAn,refrBAp,&
+                              excrBAc,excrBAn,excrBAp,remiBAn,remiBAp,&
+                              grazBAc,grazBAn,grazBAp,mortBAc,mortBAn,mortBAp
+       ! local variables in the PRT module
+       double precision :: growPRTc,growPRTn,growPRTp,&
+                              excrPRTldomc,excrPRTldomn,excrPRTldomp, &
+                              excrPRTsdomc,excrPRTsdomn,excrPRTsdomp, &
+                              excrPRTsdom2c,excrPRTsdom2n,excrPRTsdom2p, &
+                              remiPRTn,remiPRTp,pomPRTc,pomPRTn,pomPRTp, &
+                              grazPRTc,grazPRTn,grazPRTp,respPRT
+       ! local variables in the MZ module
+       double precision :: growMZc,growMZn,growMZp,&
+                              excrMZldomc,excrMZldomn,excrMZldomp, &
+                              excrMZsdomc,excrMZsdomn,excrMZsdomp, &
+                              excrMZsdom2c,excrMZsdom2n,excrMZsdom2p, &
+                              remiMZn,remiMZp,pomMZc,pomMZn,pomMZp, &
+                              refrMZc,refrMZn,refrMZp,remvMZc,remvMZn,remvMZp, &
+                              pomHZc,pomHZn,pomHZp,excrHZsdomc,excrHZsdomn,excrHZsdomp, &
+                              remiHZn,remiHZp,respMZ
+       ! local variables in the DOM module
+       double precision :: refrSDOMc,refrSDOMn,refrSDOMp
+       ! local variables in the DET module
+       double precision ::  disDETc,disDETn,disDETp
+       ! local variables in the DIN module
+       double precision :: nitrf
+       ! local variables in newly added processes
+       double precision :: growBApoc, growBApon, growBApop, grazDETc, grazDETn, grazDETp, c0, c1
+      
+! ma   p bioparams to local copies
+       ae          = bioparams(iae         )
+       mu_SP          = bioparams(imu_SP          )
+       alpha_SP       = bioparams(ialpha_SP       )
+       a_SP       = bioparams(ia_SP       )
+       v_SPn        = bioparams(iv_SPn        )
+       k_nh4SP        = bioparams(ik_nh4SP        )
+       k_no3SP        = bioparams(ik_no3SP        )
+       v_SPp           = bioparams(iv_SPp       )
+       k_po4SP        = bioparams(ik_po4SP        )
+       zeta              = bioparams(izeta       )
+       theta            = bioparams(itheta       )
+       r_excrSP_1     = bioparams(ir_excrSP_1     )
+       r_excrSP_2     = bioparams(ir_excrSP_2     )
+       r_pomSP        = bioparams(ir_pomSP        )
+       mu_TR          = bioparams(imu_TR          )
+       alpha_TR       = bioparams(ialpha_TR       )
+       a_TR           = bioparams(ia_TR       )
+       v_TRn        = bioparams(iv_TRn        )
+       k_nh4TR        = bioparams(ik_nh4TR        )
+       k_no3TR        = bioparams(ik_no3TR        )
+       v_TRp        = bioparams(iv_TRp        )
+       k_po4TR        = bioparams(ik_po4TR        )
+       mu_pickTRpo4 = bioparams(imu_pickTRpo4)
+       zeta_nf        = bioparams(izeta_nf        )
+       r_excrTR_1     = bioparams(ir_excrTR_1     )
+       r_excrTR_n   = bioparams(ir_excrTR_n   )
+       r_excrTR_2     = bioparams(ir_excrTR_2     )
+       r_pomTR        = bioparams(ir_pomTR        )
+       mu_UN          = bioparams(imu_UN          )
+       alpha_UN       = bioparams(ialpha_UN       )
+       k_DOM        = bioparams(ik_DOM        )
+       !b_SDONlabi     = bioparams(ib_SDONlabi     )
+       !b_SDOPlabi     = bioparams(ib_SDOPlabi     )
+       r_SDOM      = bioparams(ir_SDOM    )
+       mu_BA          = bioparams(imu_BA          )
+       b_BAresp       = bioparams(ib_BAresp       )
+       r_BAadju       = bioparams(ir_BAadju       )
+       r_BAremi       = bioparams(ir_BAremi       )
+       r_BArefr       = bioparams(ir_BArefr       )
+       f_BAslct = bioparams(if_BAslct)
+       r_BAresp_1 = bioparams(ir_BAresp_1)
+       r_BAresp_min = bioparams(ir_BAresp_min)
+       r_BAresp_max = bioparams(ir_BAresp_max)
+       r_BAmort = bioparams(ir_BAmort)
+       mu_PRT       = bioparams(imu_PRT       )
+       g_sp        = bioparams(ig_sp        )
+       g_ba        = bioparams(ig_ba        )
+       r_PRTex      = bioparams(ir_PRTex      )
+       f_exPRTldom    = bioparams(if_exPRTldom    )
+       r_PRTresp_1    = bioparams(ir_PRTresp_1    )
+       r_PRTresp_2    = bioparams(ir_PRTresp_2    )
+       r_PRTadju      = bioparams(ir_PRTadju      )
+       r_PRTremi      = bioparams(ir_PRTremi      )
+       r_pomPRT       = bioparams(ir_pomPRT       )
+       mu_MZ       = bioparams(imu_MZ       )
+       g_prt        = bioparams(ig_prt        )
+       g_tr         = bioparams(ig_tr         )
+       r_MZex         = bioparams(ir_MZex         )
+       f_exMZldom     = bioparams(if_exMZldom     )
+       r_MZresp_1     = bioparams(ir_MZresp_1     )
+       r_MZresp_2     = bioparams(ir_MZresp_2     )
+       r_MZadju       = bioparams(ir_MZadju       )
+       r_MZremi       = bioparams(ir_MZremi       )
+       r_MZpom        = bioparams(ir_MZpom        )
+       r_MZrefr       = bioparams(ir_MZrefr       )
+       r_MZremv       = bioparams(ir_MZremv       )
+       f_HZsdom       = bioparams(if_HZsdom       )
+       f_HZpom        = bioparams(if_HZpom        )
+       r_SDOMrefr     = bioparams(ir_SDOMrefr     )
+       q_refrDOM_n = bioparams(iq_refrDOM_n)
+       q_refrDOM_p = bioparams(iq_refrDOM_p)
+       q_POM_n        = bioparams(iq_POM_n        )
+       q_POM_p        = bioparams(iq_POM_p        )
+       r_nitrf        = bioparams(ir_nitrf        )
+       remin_prf_n    = bioparams(iremin_prf_n    )
+       remin_prf_p    = bioparams(iremin_prf_p    )
+       wnsvo          = bioparams(iwnsvo          )
+       remin          = bioparams(iremin          )
+       k_pom          = bioparams(ik_pom          )
+       g_det          = bioparams(ig_det          )
+       f_dvm          = bioparams(if_dvm          )
    
-! map bioparams to local copies
-    ae          = bioparams(iae         )
-    mu_SP          = bioparams(imu_SP          )
-    alpha_SP       = bioparams(ialpha_SP       )
-    a_SP       = bioparams(ia_SP       )
-    v_SPn        = bioparams(iv_SPn        )
-    k_nh4SP        = bioparams(ik_nh4SP        )
-    k_no3SP        = bioparams(ik_no3SP        )
-    v_SPp           = bioparams(iv_SPp       )
-    k_po4SP        = bioparams(ik_po4SP        )
-    zeta              = bioparams(izeta       )
-    theta            = bioparams(itheta       )
-    r_excrSP_1     = bioparams(ir_excrSP_1     )
-    r_excrSP_2     = bioparams(ir_excrSP_2     )
-    r_pomSP        = bioparams(ir_pomSP        )
-    mu_TR          = bioparams(imu_TR          )
-    alpha_TR       = bioparams(ialpha_TR       )
-    a_TR           = bioparams(ia_TR       )
-    v_TRn        = bioparams(iv_TRn        )
-    k_nh4TR        = bioparams(ik_nh4TR        )
-    k_no3TR        = bioparams(ik_no3TR        )
-    v_TRp        = bioparams(iv_TRp        )
-    k_po4TR        = bioparams(ik_po4TR        )
-    mu_pickTRpo4 = bioparams(imu_pickTRpo4)
-    zeta_nf        = bioparams(izeta_nf        )
-    r_excrTR_1     = bioparams(ir_excrTR_1     )
-    r_excrTR_n   = bioparams(ir_excrTR_n   )
-    r_excrTR_2     = bioparams(ir_excrTR_2     )
-    r_pomTR        = bioparams(ir_pomTR        )
-    mu_UN          = bioparams(imu_UN          )
-    alpha_UN       = bioparams(ialpha_UN       )
-    k_DOM        = bioparams(ik_DOM        )
-    !b_SDONlabi     = bioparams(ib_SDONlabi     )
-    !b_SDOPlabi     = bioparams(ib_SDOPlabi     )
-    r_SDOM      = bioparams(ir_SDOM    )
-    mu_BA          = bioparams(imu_BA          )
-    b_BAresp       = bioparams(ib_BAresp       )
-    r_BAadju       = bioparams(ir_BAadju       )
-    r_BAremi       = bioparams(ir_BAremi       )
-    r_BArefr       = bioparams(ir_BArefr       )
-    f_BAslct = bioparams(if_BAslct)
-    r_BAresp_1 = bioparams(ir_BAresp_1)
-    r_BAresp_min = bioparams(ir_BAresp_min)
-    r_BAresp_max = bioparams(ir_BAresp_max)
-    r_BAmort = bioparams(ir_BAmort)
-    mu_PRT       = bioparams(imu_PRT       )
-    g_sp        = bioparams(ig_sp        )
-    g_ba        = bioparams(ig_ba        )
-    r_PRTex      = bioparams(ir_PRTex      )
-    f_exPRTldom    = bioparams(if_exPRTldom    )
-    r_PRTresp_1    = bioparams(ir_PRTresp_1    )
-    r_PRTresp_2    = bioparams(ir_PRTresp_2    )
-    r_PRTadju      = bioparams(ir_PRTadju      )
-    r_PRTremi      = bioparams(ir_PRTremi      )
-    r_pomPRT       = bioparams(ir_pomPRT       )
-    mu_MZ       = bioparams(imu_MZ       )
-    g_prt        = bioparams(ig_prt        )
-    g_tr         = bioparams(ig_tr         )
-    r_MZex         = bioparams(ir_MZex         )
-    f_exMZldom     = bioparams(if_exMZldom     )
-    r_MZresp_1     = bioparams(ir_MZresp_1     )
-    r_MZresp_2     = bioparams(ir_MZresp_2     )
-    r_MZadju       = bioparams(ir_MZadju       )
-    r_MZremi       = bioparams(ir_MZremi       )
-    r_MZpom        = bioparams(ir_MZpom        )
-    r_MZrefr       = bioparams(ir_MZrefr       )
-    r_MZremv       = bioparams(ir_MZremv       )
-    f_HZsdom       = bioparams(if_HZsdom       )
-    f_HZpom        = bioparams(if_HZpom        )
-    r_SDOMrefr     = bioparams(ir_SDOMrefr     )
-    q_refrDOM_n = bioparams(iq_refrDOM_n)
-    q_refrDOM_p = bioparams(iq_refrDOM_p)
-    q_POM_n        = bioparams(iq_POM_n        )
-    q_POM_p        = bioparams(iq_POM_p        )
-    r_nitrf        = bioparams(ir_nitrf        )
-    remin_prf_n    = bioparams(iremin_prf_n    )
-    remin_prf_p    = bioparams(iremin_prf_p    )
-    wnsvo          = bioparams(iwnsvo          )
-    remin          = bioparams(iremin          )
-    k_pom          = bioparams(ik_pom          )
-    g_det          = bioparams(ig_det          )
-    f_dvm          = bioparams(if_dvm          )
-
-    !Fixed Parameters
-    ! minimum [N,P]:C for SP
-    q_SP_min_n = 0.034d0
-    q_SP_min_p = 0.00375d0
-    ! maximum [N,P]:C for SP
-    q_SP_max_n = 0.17d0
-    q_SP_max_p = 0.00926d0
-    ! Redfield ratios
-    q_SP_rdf_n = 0.15d0
-    q_SP_rdf_p = 0.0094d0
-    q_TR_min_n = 0.12d0
-    q_TR_min_p = 0.001d0
-    q_TR_max_n = 0.20d0
-    q_TR_max_p = 0.0060d0
-    q_TR_rdf_n = 0.16d0
-    q_TR_rdf_p = 0.0035d0
-    q_UN_min_n = 0.12d0
-    q_UN_min_p = q_TR_min_p
-    q_UN_max_n = 0.20d0
-    q_UN_max_p = q_TR_max_p
-    q_UN_rdf_n = 0.16d0
-    q_UN_rdf_p =  q_TR_rdf_p
-    v_UNn = v_SPn
-    k_nh4UN = k_nh4SP
-    k_no3UN = k_no3SP
-    v_UNp = v_SPp
-    k_po4UN = k_po4SP
-    r_excrUN_1=r_excrSP_1
-    r_excrUN_n=r_excrTR_n
-    r_excrUN_2=r_excrSP_2
-    r_pomUN=r_pomSP
-    ! Optimal baterial [C, N, P]:C ratio
-    q_BA_n = 0.18d0
-    q_BA_p = 0.02d0
-    g_un=g_sp
-    ! Optimal protozoa [C, N, P]:C ratio
-    q_PRT_n = 0.2d0
-    q_PRT_p = 0.022d0
-    ! Optimal metazoa [C, N, P]:C ratio
-    q_MZ_n = 0.2d0
-    q_MZ_p = 0.008d0
-    a_UN = a_SP
-
-    c0 = 0.0
-    c1 = 1.0
+       !Fixed Parameters
+       ! minimum [N,P]:C for SP
+       q_SP_min_n = 0.034d0
+       q_SP_min_p = 0.00375d0
+       ! maximum [N,P]:C for SP
+       q_SP_max_n = 0.17d0
+       q_SP_max_p = 0.00926d0
+       ! Redfield ratios
+       q_SP_rdf_n = 0.15d0
+       q_SP_rdf_p = 0.0094d0
+       q_TR_min_n = 0.12d0
+       q_TR_min_p = 0.001d0
+       q_TR_max_n = 0.20d0
+       q_TR_max_p = 0.0060d0
+       q_TR_rdf_n = 0.16d0
+       q_TR_rdf_p = 0.0035d0
+       q_UN_min_n = 0.12d0
+       q_UN_min_p = q_TR_min_p
+       q_UN_max_n = 0.20d0
+       q_UN_max_p = q_TR_max_p
+       q_UN_rdf_n = 0.16d0
+       q_UN_rdf_p =  q_TR_rdf_p
+       v_UNn = v_SPn
+       k_nh4UN = k_nh4SP
+       k_no3UN = k_no3SP
+       v_UNp = v_SPp
+       k_po4UN = k_po4SP
+       r_excrUN_1=r_excrSP_1
+       r_excrUN_n=r_excrTR_n
+       r_excrUN_2=r_excrSP_2
+       r_pomUN=r_pomSP
+       ! Optimal baterial [C, N, P]:C ratio
+       q_BA_n = 0.18d0
+       q_BA_p = 0.02d0
+       g_un=g_sp
+       ! Optimal protozoa [C, N, P]:C ratio
+       q_PRT_n = 0.2d0
+       q_PRT_p = 0.022d0
+       ! Optimal metazoa [C, N, P]:C ratio
+       q_MZ_n = 0.2d0
+       q_MZ_p = 0.008d0
+       a_UN = a_SP
+   
+       c0 = 0.0
+       c1 = 1.0
 
 CEOP
 
