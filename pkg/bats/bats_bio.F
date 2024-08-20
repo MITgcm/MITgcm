@@ -223,7 +223,8 @@ C
        ! local variables in the DIN module
        double precision :: nitrf
        ! local variables in newly added processes
-       double precision :: growBApoc, growBApon, growBApop, grazDETc, grazDETn, grazDETp, c0, c1
+       double precision :: growBApoc, growBApon, growBApop, grazDETc, grazDETn, grazDETp,
+       double precision :: c0, c1
       
 ! ma   p bioparams to local copies
        ae          = bioparams(iae         )
