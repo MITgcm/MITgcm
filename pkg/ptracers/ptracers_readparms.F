@@ -144,7 +144,7 @@ C     Set defaults values for parameters in PTRACERS.h
         PTRACERS_preformedUseMLD(iTracer)     = .FALSE.
         PTRACERS_tauRelaxPreformed(iTracer)   = 1. _d 0
         PTRACERS_preformedMate(iTracer)       = UNSET_I
-        PTRACERS_preformedFixedValue(iTracer) = UNSET_RL
+        PTRACERS_preformedFixedValue(iTracer) = 0. _d 0
         PTRACERS_preformedAgeTracer(iTracer)  = .FALSE.
 
       ENDDO

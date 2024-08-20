@@ -60,7 +60,8 @@ C     !FUNCTIONS:
 #endif /* ALLOW_DIAGNOSTICS */
 
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER iMin,iMax,jMin,jMax,i,j,k
+      INTEGER i,j,k,kt,itrMate
+      _RL recip_tau
       INTEGER kmld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER ktop(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER kind(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -69,97 +70,100 @@ C     !FUNCTIONS:
       IF (debugMode) CALL DEBUG_ENTER('PTRACERS_PREFORMED_RESET',myThid)
 #endif
 
-      iMin=1-Olx
-      iMax=sNx+Olx
-      jMin=1-Oly
-      jMax=sNy+Oly
-
 C Get arrays of mixed layer depth for preformed tracers
-C     DO bj = myByLo(myThid), myByHi(myThid)
-C        DO bi = myBxLo(myThid), myBxHi(myThid)
-            DO j=jMin,jMax
-               DO i=iMin,iMax
-C Single surface          
-                  IF ( usingPCoords ) THEN
-                     ktop(i,j) = Nr
-                  ELSE
-                     ktop(i,j) = 1
-                  ENDIF
-C Entire mixed layer       
-                  kmld(i,j) = 0
-                  
-                  DO k=1,Nr
-                     IF ( maskC(i,j,k,bi,bj).NE.0. _d 0 
-     &                  .AND. abs(RF(1+kmld(i,j))) 
-     &                  .LT.hMixLayer(i,j,bi,bj) 
-     &                  ) 
-     &                  kmld(i,j)=kmld(i,j)+1
-                  ENDDO
-               ENDDO
-            ENDDO
-C        ENDDO
-C     ENDDO
-
+C     Single surface
+      IF ( usingPCoords ) THEN
+       kt = Nr
+      ELSE
+       kt = 1
+      ENDIF
+      DO j=jMin,jMax
+       DO i=iMin,iMax
+        ktop(i,j) = 0
+        IF ( maskC(i,j,k,bi,bj).NE.0. _d 0 ) ktop(i,j) = kt
+       ENDDO
+      ENDDO
+C Entire mixed layer
+      DO k=1,Nr
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+C     for z-coordinates, RF(k+1) is below the C-point
+C     for p-coordinates, RF(k+1) is above the C-point
+         IF ( maskC(i,j,k,bi,bj).NE.0. _d 0
+     &        .AND. ABS(RF(k+1)).LT.hMixLayer(i,j,bi,bj)
+     &        ) THEN
+          kmld(i,j)=k
+         ELSE
+          kmld(i,j)=0
+        ENDDO
+       ENDDO
+      ENDDO
 
 C--   Loop over tracers
       DO iTracer=1,PTRACERS_numInUse
-         IF (PTRACERS_isPreformed(iTracer)) THEN
+       IF (PTRACERS_isPreformed(iTracer)) THEN
 #ifdef ALLOW_DEBUG
-            IF (debugMode) THEN
-               WRITE(msgBuf,'(A)')
-     &           'EVALUATING PASSIVE TRACER',PTRACERS_names(iTracer)
-               CALL DEBUG_MSG(msgBuf, myThid)
-            ENDIF
+        IF (debugMode) THEN
+         WRITE(msgBuf,'(A)')
+     &    'EVALUATING PASSIVE TRACER',PTRACERS_names(iTracer)
+         CALL DEBUG_MSG(msgBuf, myThid)
+        ENDIF
 #endif 
 
-            DO j=jMin,jMax
-               DO i=iMin,iMax
-                  IF (PTRACERS_preformedUseMLD(iTracer)) THEN
-                     kind(i,j) = kmld(i,j)
-                  ELSE
-                     kind(i,j) = ktop(i,j)
-                  ENDIF
-               ENDDO
-            ENDDO
-
+        IF (PTRACERS_preformedUseMLD(iTracer)) THEN
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           kind(i,j) = kmld(i,j)
+          ENDDO
+         ENDDO
+        ELSE
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           kind(i,j) = ktop(i,j)
+          ENDDO
+         ENDDO
+        ENDIF
+        
 C Preformed tracer tracer set, or relaxed to a constant concentration at the surface
-            DO j=jMin,jMax
-               DO i=iMin,iMax
-                  DO k=1,kind(i,j)
-                     IF ( maskC(i,j,k,bi,bj).NE.0. _d 0 ) THEN
-                        IF (PTRACERS_preformedMate(iTracer)
-     &                                          .EQ.UNSET_I) THEN
+        recip_tau = 1. _d 0/PTRACERS_tauRelaxPreformed(iTracer)
+C If PTRACERS_preformedMate is not set then use the fixed value, which
+C   is set to zero by default
+        IF (PTRACERS_preformedMate(iTracer).EQ.UNSET_I) THEN
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           DO k=1,kind(i,j)    
 C Reset preformed tracer compared to a fixed value
-                           pTracer(i,j,k,bi,bj,iTracer) = 
-     &                          pTracer(i,j,k,bi,bj,iTracer)
-     &                        + (
-     &                           (PTRACERS_preformedFixedValue(iTracer)
-     &                         - pTracer(i,j,k,bi,bj,iTracer))     
-     &                         *_hFacC(i,j,k,bi,bj)
-     &                         * (PTRACERS_dTLev(k)
-     &                             /PTRACERS_tauRelaxPreformed(iTracer))
-     &                           )
-                        ELSEIF (PTRACERS_preformedMate(iTracer)
-     &                                         .EQ.UNSET_RL) THEN
-C Reset preformed tracer compared to another tracer carried by the model                    
-                           pTracer(i,j,k,bi,bj,iTracer) = 
-     &                          pTracer(i,j,k,bi,bj,iTracer)
-     &                        + (
-     &                           (pTracer(i,j,k,bi,bj,
-     &                                  PTRACERS_preformedMate(iTracer))
-     &                         - pTracer(i,j,k,bi,bj,iTracer))     
-     &                         *_hFacC(i,j,k,bi,bj)
-     &                         * (PTRACERS_dTLev(k)
-     &                             /PTRACERS_tauRelaxPreformed(iTracer))
-     &                           )
-                        ENDIF
-                     ELSE
-                        pTracer(i,j,k,bi,bj,iTracer)=0. _d 0
-                     ENDIF
-                  ENDDO
-               ENDDO
-            ENDDO
-         ENDIF
+             pTracer(i,j,k,bi,bj,iTracer) = 
+     &         pTracer(i,j,k,bi,bj,iTracer)
+     &        + (
+     &          (PTRACERS_preformedFixedValue(iTracer)
+     &        - pTracer(i,j,k,bi,bj,iTracer))     
+     &        * (_hFacC(i,j,k,bi,bj)
+     &        * PTRACERS_dTLev(k) * recip_tau)
+     &          )
+           ENDDO 
+          ENDDO
+         ENDDO
+        ELSE
+C If PTRACERS_preformedMate is set then reset preformed tracer 
+C  towards another tracer carried by the model    
+         itrMate = PTRACERS_preformedMate(iTracer)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           DO k=1,kind(i,j)   
+             pTracer(i,j,k,bi,bj,iTracer) =
+     &         pTracer(i,j,k,bi,bj,iTracer)
+     &        + (
+     &          (pTracer(i,j,k,bi,bj,itrMate)
+     &        - pTracer(i,j,k,bi,bj,iTracer))
+     &        * (_hFacC(i,j,k,bi,bj)
+     &        * PTRACERS_dTLev(k) * recip_tau)
+     &          )
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDIF 
+       ENDIF
       ENDDO
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_LEAVE('PTRACERS_PREFORMED_RESET',myThid)
