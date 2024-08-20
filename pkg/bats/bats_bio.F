@@ -390,7 +390,8 @@ c  Nutrient uptake and partitioning between organic pools
 
             Tref = 25.d0 ! Reference Temperature for Function of Temperatue Effects
             ! Temperature Effects
-            Tfunc = exp(-ae*( 1/theta(i,j,k,bi,bj)+273.15)-1/(Tref+273.15))
+            Tfunc = exp(-ae*( 1/theta(i,j,k,bi,bj)
+           &        +273.15)-1/(Tref+273.15))
             mu_SP = mu_SP * Tfunc
             v_SPn = v_SPn * Tfunc
             v_SPp = v_SPp * Tfunc
@@ -410,7 +411,7 @@ c  Nutrient uptake and partitioning between organic pools
 c --        -------------------------------------------------------------------
 c  M        icrophytoplankton processes
             Nfunc_sp_n = (PTR_SPN(i,j,k)/PTR_SPC(i,j,k) - q_SP_min_n)/
-                       & (q_SP_rdf_n - q_SP_min_n)
+          &              (q_SP_rdf_n - q_SP_min_n)
             Nfunc_sp_p = (PTR_SPP(i,j,k)/PTR_SPC(i,j,k) - q_SP_min_p)/(q_SP_rdf_p - q_SP_min_p)
             temp = min(Nfunc_sp_n, Nfunc_sp_p)
             temp = min(temp, c1)
