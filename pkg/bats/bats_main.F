@@ -187,29 +187,29 @@ c  Initialize local variables
 C-----------------------------------------------------------
 C  biological activity
        CALL BATS_BIO( PTR_BAC, PTR_BAN, PTR_BAP,
-      I       PTR_DETC, PTR_DETN, PTR_DETP,
-      I       PTR_DVMZC, PTR_DVMZN, PTR_DVMZP,
-      I       PTR_DOC, PTR_DON, PTR_DOP,
-      I       PTR_MZC, PTR_MZN, PTR_MZP,
-      I       PTR_NH4, PTR_NO3, PTR_PO4,
-      I       PTR_PRTC, PTR_PRTN, PTR_PRTP,
-      I       PTR_SDOC, PTR_SDON, PTR_SDOP,
-      I       PTR_SPC, PTR_SPchl, PTR_SPN, PTR_SPP,
-      I       PTR_TRC, PTR_TRchl, PTR_TRN, PTR_TRP,
-      I       PTR_UNC, PTR_UNchl, PTR_UNN, PTR_UNP,
-      O       G_BAC, G_BAN, G_BAP,
-      O       G_DETC, G_DETN, G_DETP,
-      O       G_DVMZC, G_DVMZN, G_DVMZP,
-      O       G_DOC, G_DON, G_DOP,
-      O       G_MZC, G_MZN, G_MZP,
-      O       G_NH4, G_NO3, G_PO4,
-      O       G_PRTC, G_PRTN, G_PRTP,
-      O       G_SDOC, G_SDON, G_SDOP,
-      O       G_SPC, G_SPchl, G_SPN, G_SPP,
-      O       G_TRC, G_TRchl, G_TRN, G_TRP,
-      O       G_UNC, G_UNchl, G_UNN, G_UNP,
-      I       bi, bj, imin, imax, jmin, jmax,
-      I       myTime, myIter, myThid)
+     I       PTR_DETC, PTR_DETN, PTR_DETP,
+     I       PTR_DVMZC, PTR_DVMZN, PTR_DVMZP,
+     I       PTR_DOC, PTR_DON, PTR_DOP,
+     I       PTR_MZC, PTR_MZN, PTR_MZP,
+     I       PTR_NH4, PTR_NO3, PTR_PO4,
+     I       PTR_PRTC, PTR_PRTN, PTR_PRTP,
+     I       PTR_SDOC, PTR_SDON, PTR_SDOP,
+     I       PTR_SPC, PTR_SPchl, PTR_SPN, PTR_SPP,
+     I       PTR_TRC, PTR_TRchl, PTR_TRN, PTR_TRP,
+     I       PTR_UNC, PTR_UNchl, PTR_UNN, PTR_UNP,
+     O       G_BAC, G_BAN, G_BAP,
+     O       G_DETC, G_DETN, G_DETP,
+     O       G_DVMZC, G_DVMZN, G_DVMZP,
+     O       G_DOC, G_DON, G_DOP,
+     O       G_MZC, G_MZN, G_MZP,
+     O       G_NH4, G_NO3, G_PO4,
+     O       G_PRTC, G_PRTN, G_PRTP,
+     O       G_SDOC, G_SDON, G_SDOP,
+     O       G_SPC, G_SPchl, G_SPN, G_SPP,
+     O       G_TRC, G_TRchl, G_TRN, G_TRP,
+     O       G_UNC, G_UNchl, G_UNN, G_UNP,
+     I       bi, bj, imin, imax, jmin, jmax,
+     I       myTime, myIter, myThid)
 
 C-----------------------------------------------------------
 C update
@@ -217,15 +217,18 @@ C update
          DO j=jmin,jmax
           DO i=imin,imax
            PTR_SPC(i,j,k)=PTR_SPC(i,j,k)+G_SPC(i,j,k)*PTRACERS_dTLev(k)
-           PTR_SPchl(i,j,k)=PTR_SPchl(i,j,k)+G_SPchl(i,j,k)*PTRACERS_dTLev(k)
+           PTR_SPchl(i,j,k)=PTR_SPchl(i,j,k)+G_SPchl(i,j,k)*
+     &                      PTRACERS_dTLev(k)
            PTR_SPN(i,j,k)=PTR_SPN(i,j,k)+G_SPN(i,j,k)*PTRACERS_dTLev(k)
            PTR_SPP(i,j,k)=PTR_SPP(i,j,k)+G_SPP(i,j,k)*PTRACERS_dTLev(k)
            PTR_TRC(i,j,k)=PTR_TRC(i,j,k)+G_TRC(i,j,k)*PTRACERS_dTLev(k)
-           PTR_TRchl(i,j,k)=PTR_TRchl(i,j,k)+G_TRchl(i,j,k)*PTRACERS_dTLev(k)
+           PTR_TRchl(i,j,k)=PTR_TRchl(i,j,k)+G_TRchl(i,j,k)*
+     &                      PTRACERS_dTLev(k)
            PTR_TRN(i,j,k)=PTR_TRN(i,j,k)+G_TRN(i,j,k)*PTRACERS_dTLev(k)
            PTR_TRP(i,j,k)=PTR_TRP(i,j,k)+G_TRP(i,j,k)*PTRACERS_dTLev(k)
            PTR_UNC(i,j,k)=PTR_UNC(i,j,k)+G_UNC(i,j,k)*PTRACERS_dTLev(k)
-           PTR_UNchl(i,j,k)=PTR_UNchl(i,j,k)+G_UNchl(i,j,k)*PTRACERS_dTLev(k)
+           PTR_UNchl(i,j,k)=PTR_UNchl(i,j,k)+G_UNchl(i,j,k)*
+     &                      PTRACERS_dTLev(k)
            PTR_UNN(i,j,k)=PTR_UNN(i,j,k)+G_UNN(i,j,k)*PTRACERS_dTLev(k)
            PTR_UNP(i,j,k)=PTR_UNP(i,j,k)+G_UNP(i,j,k)*PTRACERS_dTLev(k)
            PTR_BAC(i,j,k)=PTR_BAC(i,j,k)+G_BAC(i,j,k)*PTRACERS_dTLev(k)
@@ -249,9 +252,12 @@ C update
            PTR_DOC(i,j,k)=PTR_DOC(i,j,k)+G_DOC(i,j,k)*PTRACERS_dTLev(k)
            PTR_DON(i,j,k)=PTR_DON(i,j,k)+G_DON(i,j,k)*PTRACERS_dTLev(k)
            PTR_DOP(i,j,k)=PTR_DOP(i,j,k)+G_DOP(i,j,k)*PTRACERS_dTLev(k)
-           PTR_SDOC(i,j,k)=PTR_SDOC(i,j,k)+G_SDOC(i,j,k)*PTRACERS_dTLev(k)
-           PTR_SDON(i,j,k)=PTR_SDON(i,j,k)+G_SDON(i,j,k)*PTRACERS_dTLev(k)
-           PTR_SDOP(i,j,k)=PTR_SDOP(i,j,k)+G_SDOP(i,j,k)*PTRACERS_dTLev(k)
+           PTR_SDOC(i,j,k)=PTR_SDOC(i,j,k)+
+     &                     G_SDOC(i,j,k)*PTRACERS_dTLev(k)
+           PTR_SDON(i,j,k)=PTR_SDON(i,j,k)+
+     &                     G_SDON(i,j,k)*PTRACERS_dTLev(k)
+           PTR_SDOP(i,j,k)=PTR_SDOP(i,j,k)+
+     &                     G_SDOP(i,j,k)*PTRACERS_dTLev(k)
           ENDDO
          ENDDO
        ENDDO
