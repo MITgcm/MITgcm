@@ -26,7 +26,7 @@ CEOP
       INTEGER k, nparams
       INTEGER iUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      double precision :: bioparams(161)
+C      double precision :: bioparams(161)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -34,13 +34,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   Set other constant/flag
 
-       CALL MDSFINDUNIT( iUnit, myThid )
-       OPEN(UNIT=iUnit,FILE='bioparams.dat',STATUS='old')
-       DO k=1,nparams
-           READ(iUnit,*) bioparams(k)
-           WRITE(standardMessageUnit,*) 'bioparam',bioparams(k)
-       ENDDO
-       CLOSE(iUnit)
+C       CALL MDSFINDUNIT( iUnit, myThid )
+C       OPEN(UNIT=iUnit,FILE='bioparams.dat',STATUS='old')
+C       DO k=1,nparams
+C           READ(iUnit,*) bioparams(k)
+C           WRITE(standardMessageUnit,*) 'bioparam',bioparams(k)
+C       ENDDO
+C       CLOSE(iUnit)
+      print('init_fixed not used')
 
       _END_MASTER(myThid)
 
