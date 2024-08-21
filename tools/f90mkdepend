@@ -7,21 +7,47 @@
 # Note: We assume that the name of a module and the same of source are the same.
 #       The name of the source file should be all lower case (except for the extension).
 
+# set defaults
+FS=
+FS90=
+
+# process option arguments
+while [[ $# -gt 0 ]]; do
+    key="$1"
+    case $key in 
+    -fs)
+        shift
+        FS="$1"
+        shift
+        ;;
+    -fs90)
+        shift
+        FS90="$1"
+        shift
+        ;;
+    *)
+        echo "f90mkdepend: Unknown option: $key"
+        exit 1
+        ;;
+    esac
+done
+
 # don't complain if *.F90 doesn't match any files
 shopt -s nullglob
 
 cat /dev/null > f90mkdepend.log
 
+# append module dependencies to Makefile
 for filename in *.F90 *.F *.h; do
   # quick check for "use" to speed up processing
   if grep -i '^ *use ' $filename > /dev/null; then
     # extract module name in lower case
-    modreflist=$(grep -i '^ *use ' $filename | awk '{print tolower($2)}' | sed 's/,.*$//') 
+    modreflist=$(grep -i '^ *use ' $filename | awk '{print tolower($2)}' | sed 's/,.*$\|\r$//')
 
     echo "$filename => $modreflist" >> f90mkdepend.log
 
-    # change .F90 into .f90, .F into .f for target
-    preprocessed=$(echo $filename | sed -e 's/\.F$/.f/' -e 's/\.F90$/.f90/')
+    # change .F90 into .$FS90, .F into .$FS for target
+    preprocessed=$(echo $filename | sed -e "s/\.F$/.$FS/" -e "s/\.F90$/.$FS90/")
 
     depline="$preprocessed:"
     for m in $modreflist; do
@@ -32,10 +58,9 @@ for filename in *.F90 *.F *.h; do
         # source file name is module name without "_mod"
         depline="$depline ${m%_mod}.o"
       else
-        echo "WARNING: f90mkdepend: no source file found for module $m" 1>&2
+        echo "WARNING: f90mkdepend: in $filename no source file found for module $m" 1>&2
       fi
     done
     echo $depline
   fi
 done
-
