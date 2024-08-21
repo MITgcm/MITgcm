@@ -1036,25 +1036,33 @@ c  M        icrophytoplankton processes
             !-----------------------------------------------------------------------
             !      Dissolved Organic Matter (DOM) Processes
             !-----------------------------------------------------------------------
-            temp = MIN(PTR_SDON(i,j,k)/PTR_SDOC(i,j,k)/q_refrDOM_n,         PTR_SDOP(i,j,k)/PTR_SDOC(i,j,k)/q_refrDOM_p)
+            temp = MIN(PTR_SDON(i,j,k)/PTR_SDOC(i,j,k)/q_refrDOM_n,         
+     &             PTR_SDOP(i,j,k)/PTR_SDOC(i,j,k)/q_refrDOM_p)
             refrSDOMc = r_SDOMrefr * PTR_SDOC(i,j,k) * EXP(c1 - temp)
             refrSDOMn = refrSDOMc * q_refrDOM_n
             refrSDOMp = refrSDOMc * q_refrDOM_p
-            temp = MAX(PTR_SDOC(i,j,k)-PTR_SDON(i,j,k)/q_refrDOM_n,         PTR_SDOC(i,j,k)-PTR_SDOP(i,j,k)/q_refrDOM_p)
+            temp = MAX(PTR_SDOC(i,j,k)-PTR_SDON(i,j,k)/q_refrDOM_n,
+     &             PTR_SDOC(i,j,k)-PTR_SDOP(i,j,k)/q_refrDOM_p)
             temp = MAX(temp, c0)
             refrSDOMc = refrSDOMc + temp
-            G_DOC(i,j,k) = (excrSP_1c + excrTR_1c + excrUN_1c + excrPRTldomc
-     &                        + excrMZldomc - growBAldoc + mortBAc)/ SecPerDay
-            G_DON(i,j,k) = (excrSP_1n + excrTR_1n + excrUN_1n + excrPRTldomn
-     &                        + excrMZldomn - growBAldon + mortBAn)/ SecPerDay
-            G_DOP(i,j,k) = (excrSP_1p + excrTR_1p + excrUN_1p + excrPRTldomp
-     &                        + excrMZldomp - growBAldop + mortBAp)/ SecPerDay
-            G_SDOC(i,j,k) = (excrSP_2c + excrTR_2c + excrUN_2c + excrBAc +         excrPRTsdomc     + excrPRTsdom2c
-     &                      + excrMZsdomc + excrMZsdom2c + excrHZsdomc + disDETc -           growBAsdoc - refrSDOMc)/ SecPerDay
-            G_SDON(i,j,k) = (excrSP_2n + excrTR_2n + excrUN_2n + excrBAn +         excrPRTsdomn     + excrPRTsdom2n
-     &                      + excrMZsdomn + excrMZsdom2n + excrHZsdomn + disDETn -           growBAsdon - refrSDOMn)/ SecPerDay
-            G_SDOP(i,j,k) = (excrSP_2p + excrTR_2p + excrUN_2p + excrBAp +         excrPRTsdomp     + excrPRTsdom2p
-     &                      + excrMZsdomp + excrMZsdom2p + excrHZsdomp + disDETp -           growBAsdop - refrSDOMp)/ SecPerDay
+            G_DOC(i,j,k)=(excrSP_1c+excrTR_1c+excrUN_1c+excrPRTldomc
+     &                     +excrMZldomc-growBAldoc+mortBAc)/SecPerDay
+            G_DON(i,j,k)=(excrSP_1n+excrTR_1n+excrUN_1n+excrPRTldomn
+     &                   + excrMZldomn - growBAldon + mortBAn)/SecPerDay
+            G_DOP(i,j,k)=(excrSP_1p+excrTR_1p+excrUN_1p+excrPRTldomp
+     &                   + excrMZldomp-growBAldop + mortBAp)/SecPerDay
+            G_SDOC(i,j,k) = (excrSP_2c + excrTR_2c + excrUN_2c +excrBAc+
+     &                      excrPRTsdomc     + excrPRTsdom2c
+     &                      + excrMZsdomc + excrMZsdom2c + excrHZsdomc +
+     &                      disDETc -growBAsdoc - refrSDOMc)/ SecPerDay
+            G_SDON(i,j,k) = (excrSP_2n+excrTR_2n+excrUN_2n+excrBAn+
+     &                      excrPRTsdomn     + excrPRTsdom2n
+     &                      + excrMZsdomn + excrMZsdom2n + excrHZsdomn +
+     &                      disDETn-growBAsdon - refrSDOMn)/ SecPerDay
+            G_SDOP(i,j,k) = (excrSP_2p + excrTR_2p + excrUN_2p+excrBAp+
+     &                      excrPRTsdomp     + excrPRTsdom2p
+     &                      + excrMZsdomp + excrMZsdom2p + excrHZsdomp +
+     &                      disDETp - growBAsdop - refrSDOMp)/ SecPerDay
         
          ENDIF
         ENDDO
