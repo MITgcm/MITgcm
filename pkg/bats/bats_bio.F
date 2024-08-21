@@ -844,13 +844,14 @@ c  M        icrophytoplankton processes
             growBAsdon = growBAsdoc * min(q_BA_n,
      &                  (PTR_SDON(i,j,k)/PTR_SDOC(i,j,k) + f_BAslct
      &            /Nfunc_ba_n*(q_BA_n-PTR_SDON(i,j,k)/PTR_SDOC(i,j,k))))
-     &             growBAsdop = growBAsdoc * min(q_BA_p,
+            growBAsdop = growBAsdoc * min(q_BA_p,
      &                  (PTR_SDOP(i,j,k)/PTR_SDOC(i,j,k) +f_BAslct/
      &             Nfunc_ba_p*(q_BA_p-PTR_SDOP(i,j,k)/PTR_SDOC(i,j,k))))
             growBApon  = growBApoc/PTR_DETC(i,j,k)*PTR_DETN(i,j,k)   ! available         labile     N
             growBApop  = growBApoc/PTR_DETC(i,j,k)*PTR_DETP(i,j,k)   ! available         labile     P
             ! inorganic nutrients uptake
-            growBAnh4 = growBAldon / PTR_DON(i,j,k) * PTR_NH4(i,j,k) * min(c1,1/Nfunc_ba_n)
+            growBAnh4 = growBAldon / PTR_DON(i,j,k) * PTR_NH4(i,j,k) * 
+     &                  min(c1,1/Nfunc_ba_n)
             if (Nfunc_ba_n.lt.c1) then
                 growBAno3 = min(0.1 * (growBAldon + growBAsdon) / (
      &          PTR_DON(i,j,k) + PTR_SDON(i,j,k))
