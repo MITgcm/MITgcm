@@ -48,6 +48,7 @@ C     myThid        :: thread Id. number
       INTEGER myIter
       INTEGER myThid
       double precision :: bioparams(161)
+      double precision :: irr_inst, SecPerDay
 C     === Input ===
 C     PTR_SPX       :: microphytoplankton carbon, chl, nitrogen, phosphorous
 C     PTR_TRX       :: Trichodesmium carbon, chl, nitrogen, phosphorous
