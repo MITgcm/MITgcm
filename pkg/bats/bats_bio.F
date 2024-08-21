@@ -147,109 +147,109 @@ C
 !     Local variables
 !-----------------------------------------------------------------------
 ! ecosystem model parameters
-       double precision :: temp,temp1
-       double precision :: ae,mu_SP,alpha_SP,a_SP,v_SPn,k_nh4SP,k_no3SP
-       double precision :: v_SPp,k_po4SP, zeta, theta, r_excrSP_1
-       double precision :: r_excrSP_2,r_pomSP
-       double precision :: mu_TR,alpha_TR,a_TR,k_nh4TR,v_TRn,k_no3TR
-       double precision :: v_TRp, k_po4TR,mu_pickTRpo4, zeta_nf
-       double precision :: r_excrTR_1,r_excrTR_n,r_excrTR_2,r_pomTR
-       double precision :: mu_UN,alpha_UN,r_SDOM,k_DOM,mu_BA,b_BAresp
-       double precision :: r_BAadju,r_BAremi,r_BArefr,f_BAslct,
+      double precision :: temp,temp1
+      double precision :: ae,mu_SP,alpha_SP,a_SP,v_SPn,k_nh4SP,k_no3SP
+      double precision :: v_SPp,k_po4SP, zeta, theta, r_excrSP_1
+      double precision :: r_excrSP_2,r_pomSP
+      double precision :: mu_TR,alpha_TR,a_TR,k_nh4TR,v_TRn,k_no3TR
+      double precision :: v_TRp, k_po4TR,mu_pickTRpo4, zeta_nf
+      double precision :: r_excrTR_1,r_excrTR_n,r_excrTR_2,r_pomTR
+      double precision :: mu_UN,alpha_UN,r_SDOM,k_DOM,mu_BA,b_BAresp
+      double precision :: r_BAadju,r_BAremi,r_BArefr,f_BAslct,
      &                     r_BAresp_1, r_BAresp_min
-       double precision :: r_BAresp_max, r_BAmort, mu_PRT,g_sp
-       double precision :: g_ba,r_PRTex,f_exPRTldom
-       double precision :: r_PRTresp_1,r_PRTresp_2,r_PRTadju,r_PRTremi
-       double precision :: r_pomPRT,mu_MZ,g_prt,g_tr,r_MZex
-       double precision :: f_exMZldom,r_MZresp_1,r_MZresp_2,r_MZadju,
+      double precision :: r_BAresp_max, r_BAmort, mu_PRT,g_sp
+      double precision :: g_ba,r_PRTex,f_exPRTldom
+      double precision :: r_PRTresp_1,r_PRTresp_2,r_PRTadju,r_PRTremi
+      double precision :: r_pomPRT,mu_MZ,g_prt,g_tr,r_MZex
+      double precision :: f_exMZldom,r_MZresp_1,r_MZresp_2,r_MZadju,
      &                     r_MZremi
-       double precision :: r_MZpom,r_MZrefr,r_MZremv,f_HZsdom,f_HZpom,
+      double precision :: r_MZpom,r_MZrefr,r_MZremv,f_HZsdom,f_HZpom,
      &                     r_SDOMrefr, q_refrDOM_n, q_refrDOM_p
-       double precision :: q_POM_n,q_POM_p,r_nitrf,remin_prf_n,
+      double precision :: q_POM_n,q_POM_p,r_nitrf,remin_prf_n,
      &                     remin_prf_p,wnsvo,remin,k_pom,g_det,f_dvm
        ! local fixed parameters
-       double precision :: q_SP_min_n,q_SP_min_p,q_SP_max_n,
+      double precision :: q_SP_min_n,q_SP_min_p,q_SP_max_n,
      &                     q_SP_max_p,q_SP_rdf_n
-       double precision :: q_SP_rdf_p,v_UNn,v_UNp,q_UN_min0_n,
+      double precision :: q_SP_rdf_p,v_UNn,v_UNp,q_UN_min0_n,
      &                     q_UN_min0_p
-       double precision :: q_UN_max0_n,k_nh4UN,k_no3UN,k_po4UN
-       double precision :: r_excrUN_1,r_excrUN_n,r_excrUN_2,r_pomUN,
-     &                     q_BA_n,q_BA_p
-       double precision :: g_un,q_PRT_n,q_PRT_p,
-     &                     q_MZ_n,q_MZ_p,Tref,a_UN
-       ! local variables for temperature effect function
-       double precision :: Tfunc
-       ! local variables in the SP module
-       double precision :: Nfunc_sp_n, Nfunc_sp_p, Pc_SPmax, 
-     &                     growSPnh4,growSPno3
-       double precision :: V_SPmax_n, V_SPmax_p, respSP,  growSPchl, 
-     &                     grazSPchl, pomSPchl
-       double precision :: growSPc,growSPn,growSPp,excrSP_1c,excrSP_1n,
-     &                     excrSP_1p
-       double precision :: excrSP_2c,excrSP_2n,excrSP_2p,pomSPc,pomSPn,
-     &                     pomSPp
-       double precision :: grazSPc,grazSPn,grazSPp
-       ! local variables in the TR module
-       double precision :: q_TR_min_n,q_TR_min_p,q_TR_max_n,q_TR_max_p,
-     &                     q_TR_rdf_n,q_TR_rdf_p
-       double precision :: growTRnh4,growTRno3,growTRnf,maxTRnf,
-     &                     excrTR_nh4,growTRpo4,pickTRpo4
-       double precision :: growTRc,growTRn,growTRp,excrTR_1c,excrTR_1n,
-     &                     excrTR_1p,excrTR_2c,excrTR_2n,excrTR_2p
-       double precision :: pomTRc,pomTRn,pomTRp,grazTRc,grazTRn,grazTRp
-       double precision :: Nfunc_tr_n, Nfunc_tr_p, Pc_TRmax,V_TRmax_n, 
-     &                     V_TRmax_p,respTR,growTRchl,grazTRchl,pomTRchl
-       ! local variables in the UN module
-       double precision :: q_UN_min_n,q_UN_min_p
-       double precision :: q_UN_max_n,q_UN_max_p,q_UN_rdf_n,q_UN_rdf_p
-       double precision :: growUNnh4,growUNno3,growUNnf,maxUNnf,
-     &                     excrUN_nh4
-       double precision :: growUNc,growUNn,growUNp
-       double precision :: excrUN_1c,excrUN_1n,excrUN_1p,excrUN_2c,
-     &                     excrUN_2n,excrUN_2p
-       double precision :: pomUNc,pomUNn,pomUNp,grazUNc,grazUNn,grazUNp
-       double precision :: Nfunc_un_n, Nfunc_un_p, Pc_UNmax,V_UNmax_n,
-     &                     V_UNmax_p
-       double precision :: respUN,  growUNchl, grazUNchl, pomUNchl
-       ! local variables in the BA module
-       double precision :: ALC,ASC,Nfunc_ba_n,Nfunc_ba_p
-       double precision :: growBAldoc,growBAldon,growBAldop,growBAsdoc
-       double precision :: growBAsdon,growBAsdop
-       double precision :: growBAnh4,growBAno3,growBApo4,respBA,
-     &                     fluxBAnh4,fluxBAno3,fluxBApo4
-       double precision :: growBAc,growBAn,growBAp,refrBAc,refrBAn,
-     &                     refrBAp
-       double precision :: excrBAc,excrBAn,excrBAp,remiBAn,remiBAp
-       double precision :: grazBAc,grazBAn,grazBAp,mortBAc,
+      double precision :: q_UN_max0_n,k_nh4UN,k_no3UN,k_po4UN
+      double precision :: r_excrUN_1,r_excrUN_n,r_excrUN_2,r_pomUN,
+     &                    q_BA_n,q_BA_p
+      double precision :: g_un,q_PRT_n,q_PRT_p,
+     &                    q_MZ_n,q_MZ_p,Tref,a_UN
+      ! local variables for temperature effect function
+      double precision :: Tfunc
+      ! local variables in the SP module
+      double precision :: Nfunc_sp_n, Nfunc_sp_p, Pc_SPmax, 
+     &                    growSPnh4,growSPno3
+      double precision :: V_SPmax_n, V_SPmax_p, respSP,  growSPchl, 
+     &                    grazSPchl, pomSPchl
+      double precision :: growSPc,growSPn,growSPp,excrSP_1c,excrSP_1n,
+     &                    excrSP_1p
+      double precision :: excrSP_2c,excrSP_2n,excrSP_2p,pomSPc,pomSPn,
+     &                    pomSPp
+      double precision :: grazSPc,grazSPn,grazSPp
+      ! local variables in the TR module
+      double precision :: q_TR_min_n,q_TR_min_p,q_TR_max_n,q_TR_max_p,
+     &                    q_TR_rdf_n,q_TR_rdf_p
+      double precision :: growTRnh4,growTRno3,growTRnf,maxTRnf,
+     &                    excrTR_nh4,growTRpo4,pickTRpo4
+      double precision :: growTRc,growTRn,growTRp,excrTR_1c,excrTR_1n,
+     &                    excrTR_1p,excrTR_2c,excrTR_2n,excrTR_2p
+      double precision :: pomTRc,pomTRn,pomTRp,grazTRc,grazTRn,grazTRp
+      double precision :: Nfunc_tr_n, Nfunc_tr_p, Pc_TRmax,V_TRmax_n, 
+     &                    V_TRmax_p,respTR,growTRchl,grazTRchl,pomTRchl
+      ! local variables in the UN module
+      double precision :: q_UN_min_n,q_UN_min_p
+      double precision :: q_UN_max_n,q_UN_max_p,q_UN_rdf_n,q_UN_rdf_p
+      double precision :: growUNnh4,growUNno3,growUNnf,maxUNnf,
+     &                    excrUN_nh4
+      double precision :: growUNc,growUNn,growUNp
+      double precision :: excrUN_1c,excrUN_1n,excrUN_1p,excrUN_2c,
+     &                    excrUN_2n,excrUN_2p
+      double precision :: pomUNc,pomUNn,pomUNp,grazUNc,grazUNn,grazUNp
+      double precision :: Nfunc_un_n, Nfunc_un_p, Pc_UNmax,V_UNmax_n,
+     &                    V_UNmax_p
+      double precision :: respUN,  growUNchl, grazUNchl, pomUNchl
+      ! local variables in the BA module
+      double precision :: ALC,ASC,Nfunc_ba_n,Nfunc_ba_p
+      double precision :: growBAldoc,growBAldon,growBAldop,growBAsdoc
+      double precision :: growBAsdon,growBAsdop
+      double precision :: growBAnh4,growBAno3,growBApo4,respBA,
+     &                    fluxBAnh4,fluxBAno3,fluxBApo4
+      double precision :: growBAc,growBAn,growBAp,refrBAc,refrBAn,
+     &                    refrBAp
+      double precision :: excrBAc,excrBAn,excrBAp,remiBAn,remiBAp
+      double precision :: grazBAc,grazBAn,grazBAp,mortBAc,
      &                     mortBAn,mortBAp
        ! local variables in the PRT module
-       double precision :: growPRTc,growPRTn,growPRTp
-       double precision :: excrPRTldomc,excrPRTldomn,excrPRTldomp
-       double precision :: excrPRTsdomc,excrPRTsdomn,excrPRTsdomp
-       double precision :: excrPRTsdom2c,excrPRTsdom2n,excrPRTsdom2p
-       double precision :: remiPRTn,remiPRTp,pomPRTc,pomPRTn,pomPRTp
-       double precision :: grazPRTc,grazPRTn,grazPRTp,respPRT
-       ! local variables in the MZ module
-       double precision :: growMZc,growMZn,growMZp
-       double precision :: excrMZldomc,excrMZldomn,excrMZldomp
-       double precision :: excrMZsdomc,excrMZsdomn,excrMZsdomp
-       double precision :: excrMZsdom2c,excrMZsdom2n,excrMZsdom2p
-       double precision :: remiMZn,remiMZp,pomMZc,pomMZn,pomMZp
-       double precision :: refrMZc,refrMZn,refrMZp,remvMZc,
-     &                     remvMZn,remvMZp
-       double precision :: pomHZc,pomHZn,pomHZp,excrHZsdomc
-       double precision :: excrHZsdomn,excrHZsdomp
-       double precision :: remiHZn,remiHZp,respMZ
-       ! local variables in the DOM module
-       double precision :: refrSDOMc,refrSDOMn,refrSDOMp
-       ! local variables in the DET module
-       double precision :: disDETc,disDETn,disDETp
-       ! local variables in the DIN module
-       double precision :: nitrf
-       ! local variables in newly added processes
-       double precision :: growBApoc, growBApon, growBApop, 
-     &                     grazDETc, grazDETn, grazDETp
-       double precision :: c0, c1
+      double precision :: growPRTc,growPRTn,growPRTp
+      double precision :: excrPRTldomc,excrPRTldomn,excrPRTldomp
+      double precision :: excrPRTsdomc,excrPRTsdomn,excrPRTsdomp
+      double precision :: excrPRTsdom2c,excrPRTsdom2n,excrPRTsdom2p
+      double precision :: remiPRTn,remiPRTp,pomPRTc,pomPRTn,pomPRTp
+      double precision :: grazPRTc,grazPRTn,grazPRTp,respPRT
+      ! local variables in the MZ module
+      double precision :: growMZc,growMZn,growMZp
+      double precision :: excrMZldomc,excrMZldomn,excrMZldomp
+      double precision :: excrMZsdomc,excrMZsdomn,excrMZsdomp
+      double precision :: excrMZsdom2c,excrMZsdom2n,excrMZsdom2p
+      double precision :: remiMZn,remiMZp,pomMZc,pomMZn,pomMZp
+      double precision :: refrMZc,refrMZn,refrMZp,remvMZc,
+     &                    remvMZn,remvMZp
+      double precision :: pomHZc,pomHZn,pomHZp,excrHZsdomc
+      double precision :: excrHZsdomn,excrHZsdomp
+      double precision :: remiHZn,remiHZp,respMZ
+      ! local variables in the DOM module
+      double precision :: refrSDOMc,refrSDOMn,refrSDOMp
+      ! local variables in the DET module
+      double precision :: disDETc,disDETn,disDETp
+      ! local variables in the DIN module
+      double precision :: nitrf
+      ! local variables in newly added processes
+      double precision :: growBApoc, growBApon, growBApop,
+     &                    grazDETc, grazDETn, grazDETp
+      double precision :: c0, c1
 
      !-------------------------------------------------------------------------
      ! indices for state variables
