@@ -176,7 +176,7 @@ C
       double precision :: r_excrUN_1,r_excrUN_n,r_excrUN_2,r_pomUN,
      &                    q_BA_n,q_BA_p
       double precision :: g_un,q_PRT_n,q_PRT_p,
-     &                    q_MZ_n,q_MZ_p,a_UN,
+     &                    q_MZ_n,q_MZ_p,a_UN
       double precision :: Tref_eco
       ! local variables for temperature effect function
       double precision :: Tfunc
@@ -251,10 +251,7 @@ C
       double precision :: growBApoc, growBApon, growBApop,
      &                    grazDETc, grazDETn, grazDETp
       double precision :: c0, c1
-
-     !-------------------------------------------------------------------------
-     ! indices for state variables
-     !-------------------------------------------------------------------------
+C indices for state variables
        integer, parameter :: iSPc=1,iSPn=2,iSPp=3,
      &                       iTRc=4,iTRn=5,iTRp=6,
      &                       iUNc=7,iUNn=8,iUNp=9,
@@ -268,9 +265,7 @@ C
      &                       iSPchl=31, iTRchl = 32, iUNchl = 33,
      &                       iDVMZc=34, iDVMZn=35, iDVMZp=36
      
-     !-------------------------------------------------------------------------
-     ! indices for diagnostic variables
-     !------------------------------------------------------------------------
+C indices for diagnostic variables
        integer, parameter :: iPP=1, iprBAc=2,
      &     igrowSPc=3, igrowSPnh4=4, igrowSPno3=5,
      &     igrowSPn=6, igrowSPp=7,
@@ -752,7 +747,7 @@ c  M        icrophytoplankton processes
      &                  ((PTR_UNC(i,j,k) - growUNc - growUNno3 * zeta) *
      &                  q_UN_max_n
      &            - PTR_UNN(i,j,k) - growUNno3 - growUNnh4)
-                      / (c1 + zeta_nf * q_UN_max_n) * V_UNmax_n * Tfunc)
+     &                 / (c1 + zeta_nf * q_UN_max_n) * V_UNmax_n * Tfunc)
             
             growUNn = MIN( PTR_UNC(i,j,k) * v_UNn * V_UNmax_n,
      &               growUNnh4 + growUNno3 + maxUNnf )
