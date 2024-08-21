@@ -919,7 +919,8 @@ c  M        icrophytoplankton processes
             ! removal of detritus by detrivore metazoa
             grazDETc = mu_MZ * PTR_MZC(i,j,k) * PTR_DETC(i,j,k) * PTR_DETC(i,j,k)
      &           / (PTR_DETC(i,j,k) * PTR_DETC(i,j,k) + g_det * g_det +
-     &              PTR_PRTC(i,j,k)*PTR_PRTC(i,j,k)/g_prt/g_prt*g_det*g_det +
+     &              PTR_PRTC(i,j,k)*PTR_PRTC(i,j,k)/g_prt/g_prt*
+     &              g_det*g_det +
      &              PTR_TRC(i,j,k)*PTR_TRC(i,j,k)/g_tr/g_tr*g_det*g_det)
             grazDETn = grazDETc * PTR_DETN(i,j,k) / PTR_DETC(i,j,k)
             grazDETp = grazDETc * PTR_DETP(i,j,k) / PTR_DETC(i,j,k)
