@@ -54,8 +54,8 @@ C     == local variables ==
       _RL     dummy
       LOGICAL doglobalread
       LOGICAL ladinit
-      CHARACTER*(MAX_LEN_FNAM) fName
       CHARACTER*(MAX_LEN_FNAM) ctrl_name
+      CHARACTER*(MAX_LEN_FNAM) fName
       _RL loctmp2d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifdef ALLOW_GENARR3D_CONTROL
       _RL loctmp3d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -73,8 +73,7 @@ C--   == end of interface ==
 C     Find ctrlDir (w/o trailing blanks) length
       ilDir = ILNBLNK(ctrlDir)
 
-C-    get the name of varIndex_gc corresponding CTRL:
-      CALL GRDCHK_CTRL_FNAME( ctrl_name, varIndex_gc, myThid )
+      ctrl_name = ncvarfname(varIndex_gc)
       iL = ILNBLNK( ctrl_name )
 
       IF ( theSimulationMode .EQ. TANGENT_SIMULATION ) THEN
@@ -88,8 +87,7 @@ C-    get the name of varIndex_gc corresponding CTRL:
       ENDIF
 
 #ifdef ALLOW_GENARR3D_CONTROL
-      IF ( varIndex_gc .GE. 201 .AND.
-     &     varIndex_gc .LE. 200+maxCtrlArr3D ) THEN
+      IF ( ncvartype(varIndex_gc) .EQ. 'Arr3D' ) THEN
         CALL active_read_xyz( fName, loctmp3d, 1,
      &                        doglobalread, ladinit, optimcycle,
      &                        myThid, dummy )
@@ -103,7 +101,7 @@ C-    get the name of varIndex_gc corresponding CTRL:
 #endif
 
 #if (defined ALLOW_OBCSN_CONTROL || defined ALLOW_OBCSS_CONTROL)
-      ELSEIF ( varIndex_gc.EQ.11 .OR. varIndex_gc.EQ.12) THEN
+      ELSEIF ( ncvartype(varIndex_gc) .EQ. 'SecXZ' ) THEN
         CALL active_read_xz( fName, tmpfldxz, icvrec,
      &                       doglobalread, ladinit, optimcycle,
      &                       myThid, dummy )
@@ -115,7 +113,7 @@ C-    get the name of varIndex_gc corresponding CTRL:
 #endif
 
 #if (defined ALLOW_OBCSE_CONTROL || defined ALLOW_OBCSW_CONTROL)
-      ELSEIF ( varIndex_gc.EQ.13 .OR. varIndex_gc.EQ.14) THEN
+      ELSEIF ( ncvartype(varIndex_gc) .EQ. 'SecYZ' ) THEN
         CALL active_read_yz( fName, tmpfldyz, icvrec,
      &                       doglobalread, ladinit, optimcycle,
      &                       myThid, dummy )

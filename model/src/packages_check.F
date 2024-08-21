@@ -53,6 +53,8 @@ C       |-- SEAICE_CHECK
 C       |
 C       |-- SHELFICE_CHECK
 C       |
+C       |-- STIC_CHECK
+C       |
 C       |-- SMOOTH_CHECK
 C       |
 C       |-- STREAMICE_CHECK
@@ -348,6 +350,13 @@ C---  Continue with standard packages (with standard usePKG flag)
       IF (useShelfIce) CALL PACKAGES_ERROR_MSG('ShelfIce',' ',myThid)
 #endif
 
+#ifdef ALLOW_STEEP_ICECAVITY
+      IF (useSTIC) CALL STIC_CHECK( myThid )
+#else
+      IF (useSTIC) CALL PACKAGES_ERROR_MSG(
+     &                  'STEEP_ICECAVITY','useSTIC=.T.', myThid )
+#endif
+
 #ifdef ALLOW_SMOOTH
       IF (useSmooth) CALL SMOOTH_CHECK( myThid )
 #else
@@ -379,7 +388,7 @@ C---  Continue with standard packages (with standard usePKG flag)
 #endif
 
 #ifndef ALLOW_ATM2D
-      IF (useATM2D) CALL PACKAGES_ERROR_MSG('ATM2D',' ',myThid)
+      IF (useATM2d) CALL PACKAGES_ERROR_MSG('ATM2d',' ',myThid)
 #endif
 
 #ifndef ALLOW_AIM

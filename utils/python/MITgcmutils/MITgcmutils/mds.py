@@ -223,7 +223,7 @@ def rdmds(fnamearg,itrs=-1,machineformat='b',rec=None,fill_value=0,
         will read prefix0000/T.0000002880.*, prefix0001/T.0000002880.*, ...
         (and any others that match the wildcard, so be careful how you name things!)
 
-    itrs : int or list of ints or np.NaN or np.Inf
+    itrs : int or list of ints or np.nan or np.inf
         Iteration number(s).  With itrs=-1, will try to read
 
           fname.meta or fname.001.001.meta, ...
@@ -232,8 +232,8 @@ def rdmds(fnamearg,itrs=-1,machineformat='b',rec=None,fill_value=0,
 
           fname.000000iter.meta, ...
 
-        If itrs is np.NaN, it will read all iterations for which files are found.
-        If itrs is np.Inf, it will read the highest iteration found.
+        If itrs is np.nan, it will read all iterations for which files are found.
+        If itrs is np.inf, it will read the highest iteration found.
 
     machineformat : int
         endianness ('b' or 'l', default 'b')
@@ -271,7 +271,7 @@ def rdmds(fnamearg,itrs=-1,machineformat='b',rec=None,fill_value=0,
     >>> T = rdmds('T.0000002880')
     >>> T = rdmds('T',2880)
     >>> T2 = rdmds('T',[2880,5760])
-    >>> T,its = rdmds('T',numpy.Inf)
+    >>> T,its = rdmds('T',numpy.inf)
     >>> VVEL = rdmds('pickup',2880,rec=range(50,100))
     >>> a5 = rdmds('diags',2880,rec=0,lev=[5])
     >>> a = rdmds('diags',2880,rec=0,lev=([0],[0,1,5,6,7]))

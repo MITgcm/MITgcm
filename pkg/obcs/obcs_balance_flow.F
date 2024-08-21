@@ -32,8 +32,7 @@ C     !INPUT/OUTPUT PARAMETERS:
       INTEGER myThid
 CEOP
 
-#ifdef ALLOW_OBCS
-#ifdef ALLOW_OBCS_BALANCE
+#if ( defined ALLOW_OBCS && defined ALLOW_OBCS_BALANCE )
 
 C     !FUNCTIONS:
 
@@ -468,8 +467,7 @@ C--   Add correction:
       IF (debugMode) CALL DEBUG_LEAVE('OBCS_BALANCE_FLOW',myThid)
 #endif
 
-#endif /* ALLOW_OBCS_BALANCE */
-#endif /* ALLOW_OBCS */
+#endif /* ALLOW_OBCS and ALLOW_OBCS_BALANCE */
 
       RETURN
       END

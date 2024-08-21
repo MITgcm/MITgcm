@@ -61,7 +61,6 @@
  forcing_In_AB=.FALSE.,
  pChkptFreq  =311040000.,
  chkptFreq   = 31104000.,
-#taveFreq    =311040000.,
 #dumpFreq    = 31104000.,
 #adjDumpFreq = 31104000.,
 #monitorFreq = 31104000.,
@@ -77,7 +76,6 @@
  adjMonitorFreq=1.,
  dumpFreq    = 432000.,
  adjDumpFreq = 432000.,
- pickupStrictlyMatch=.FALSE.,
  &
 
 # Gridding parameters
