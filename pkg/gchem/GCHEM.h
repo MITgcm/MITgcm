@@ -34,7 +34,7 @@ CEOP
      &              useBLING,
      &              useSPOIL,
      &              useDARWIN
-      LOGICAL useCFC, useDIC, useBLING, useSPOIL, useDARWIN, useBATS
+      LOGICAL useCFC, useDIC, useBLING, useSPOIL, useDARWIN
 
       COMMON /GCHEM_PARM_C/
      &                   fileName1, fileName2, fileName3,
