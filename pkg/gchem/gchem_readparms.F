@@ -152,11 +152,11 @@ C  Everyone else must wait for the parameters to be loaded
       ENDIF
 #endif
 
-#ifdef ALLOW_BATS
-      IF ( useBATS ) THEN
-        CALL BATS_READPARMS(myThid)
-      ENDIF
-#endif
+C#ifdef ALLOW_BATS
+C      IF ( useBATS ) THEN
+C        CALL BATS_READPARMS(myThid)
+C      ENDIF
+C#endif
 
 #ifdef ALLOW_SPOIL
       IF ( useSPOIL ) THEN
