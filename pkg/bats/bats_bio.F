@@ -2,28 +2,28 @@
 
 CBOP
       SUBROUTINE BATS_BIO(PTR_BAC,PTR_BAN,PTR_BAP,PTR_DETC,PTR_DETN,
- I                        PTR_DETP,PTR_DVMZC,PTR_DVMZN,PTR_DVMZP,
- I                        PTR_DOC,PTR_DON, PTR_DOP,
- I                        PTR_MZC, PTR_MZN, PTR_MZP,
- I                        PTR_NH4, PTR_NO3, PTR_PO4,
- I                        PTR_PRTC, PTR_PRTN, PTR_PRTP,
- I                        PTR_SDOC, PTR_SDON, PTR_SDOP,
- I                        PTR_SPC, PTR_SPchl, PTR_SPN, PTR_SPP,
- I                        PTR_TRC, PTR_TRchl, PTR_TRN, PTR_TRP,
- I                        PTR_UNC, PTR_UNchl, PTR_UNN, PTR_UNP,
- O                        G_BAC, G_BAN, G_BAP,
- O                        G_DETC, G_DETN, G_DETP,
- O                        G_DVMZC, G_DVMZN, G_DVMZP,
- O                        G_DOC, G_DON, G_DOP,
- O                        G_MZC, G_MZN, G_MZP,
- O                        G_NH4, G_NO3, G_PO4,
- O                        G_PRTC, G_PRTN, G_PRTP,
- O                        G_SDOC, G_SDON, G_SDOP,
- O                        G_SPC, G_SPchl, G_SPN, G_SPP,
- O                        G_TRC, G_TRchl, G_TRN, G_TRP,
- O                        G_UNC, G_UNchl, G_UNN, G_UNP,
- I                        bi, bj, imin, imax, jmin, jmax,
- I                        myTime, myIter, myThid)
+     I                    PTR_DETP,PTR_DVMZC,PTR_DVMZN,PTR_DVMZP,
+     I                    PTR_DOC,PTR_DON, PTR_DOP,
+     I                    PTR_MZC, PTR_MZN, PTR_MZP,
+     I                    PTR_NH4, PTR_NO3, PTR_PO4,
+     I                    PTR_PRTC, PTR_PRTN, PTR_PRTP,
+     I                    PTR_SDOC, PTR_SDON, PTR_SDOP,
+     I                    PTR_SPC, PTR_SPchl, PTR_SPN, PTR_SPP,
+     I                    PTR_TRC, PTR_TRchl, PTR_TRN, PTR_TRP,
+     I                    PTR_UNC, PTR_UNchl, PTR_UNN, PTR_UNP,
+     O                    G_BAC, G_BAN, G_BAP,
+     O                    G_DETC, G_DETN, G_DETP,
+     O                    G_DVMZC, G_DVMZN, G_DVMZP,
+     O                    G_DOC, G_DON, G_DOP,
+     O                    G_MZC, G_MZN, G_MZP,
+     O                    G_NH4, G_NO3, G_PO4,
+     O                    G_PRTC, G_PRTN, G_PRTP,
+     O                    G_SDOC, G_SDON, G_SDOP,
+     O                    G_SPC, G_SPchl, G_SPN, G_SPP,
+     O                    G_TRC, G_TRchl, G_TRN, G_TRP,
+     O                    G_UNC, G_UNchl, G_UNN, G_UNP,
+     I                    bi, bj, imin, imax, jmin, jmax,
+     I                    myTime, myIter, myThid)
 
       IMPLICIT NONE
 
@@ -248,7 +248,7 @@ C
        double precision :: nitrf
        ! local variables in newly added processes
        double precision :: growBApoc, growBApon, growBApop, 
-     &                     grazDETc, grazDETn, grazDETp,
+     &                     grazDETc, grazDETn, grazDETp
        double precision :: c0, c1
       
 ! ma   p bioparams to local copies
@@ -626,7 +626,7 @@ c  M        icrophytoplankton processes
      &               PTR_TRC(i,j,k) 
      &           / (PTR_TRC(i,j,k) * PTR_TRC(i,j,k) + g_tr * g_tr + 
      &            PTR_PRTC(i,j,k)*PTR_PRTC(i,j,k)/g_prt/g_prt*g_tr*g_tr+
-                  PTR_DETC(i,j,k)*PTR_DETC(i,j,k)/g_det/g_det*g_tr*g_tr)
+     &            PTR_DETC(i,j,k)*PTR_DETC(i,j,k)/g_det/g_det*g_tr*g_tr)
             grazTRn = grazTRc * PTR_TRN(i,j,k)/PTR_TRC(i,j,k)
             grazTRp = grazTRc * PTR_TRP(i,j,k)/PTR_TRC(i,j,k)
             grazTRchl = grazTRc * PTR_TRchl(i,j,k)/PTR_TRC(i,j,k)
@@ -774,7 +774,7 @@ c  M        icrophytoplankton processes
             growBAsdon = growBAsdoc * min(q_BA_n,
      &                  (PTR_SDON(i,j,k)/PTR_SDOC(i,j,k) + f_BAslct
      &            /Nfunc_ba_n*(q_BA_n-PTR_SDON(i,j,k)/PTR_SDOC(i,j,k))))
-            growBAsdop = growBAsdoc * min(q_BA_p,
+     &             growBAsdop = growBAsdoc * min(q_BA_p,
      &                  (PTR_SDOP(i,j,k)/PTR_SDOC(i,j,k) +f_BAslct/
      &             Nfunc_ba_p*(q_BA_p-PTR_SDOP(i,j,k)/PTR_SDOC(i,j,k))))
             growBApon  = growBApoc/PTR_DETC(i,j,k)*PTR_DETN(i,j,k)   ! available         labile     N
@@ -785,7 +785,7 @@ c  M        icrophytoplankton processes
                 growBAno3 = min(0.1 * (growBAldon + growBAsdon) / (
      &          PTR_DON(i,j,k) + PTR_SDON(i,j,k))
      &           * PTR_NO3(i,j,k) * min(c1, 1/Nfunc_ba_n),
-                 (growBAldon + growBAsdon) / (PTR_DON(i,j,k) + 
+     &            (growBAldon + growBAsdon) / (PTR_DON(i,j,k) +
      &           PTR_SDON(i,j,k))*(PTR_NO3(i,j,k)  + PTR_NH4(i,j,k)) -
      &           growBAnh4)
                 growBAno3 = max(c0, growBAno3)
