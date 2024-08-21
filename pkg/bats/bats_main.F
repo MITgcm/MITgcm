@@ -271,19 +271,5 @@ C update
          ENDDO
        ENDDO
 
-C DOES NOT WORK BELOW HERE
-C-----------------------------------------------------------
-#ifdef ALLOW_DIAGNOSTICS
-      IF ( useDiagnostics ) THEN
-        CALL DIAGNOSTICS_FILL(pH      ,'BLGPH3D ',0,Nr,1,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(OmegaAr ,'BLGOMAR ',0,Nr,1,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(pCO2    ,'BLGPCO2 ',0,1 ,1,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(fluxCO2 ,'BLGCFLX ',0,1 ,1,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(fluxO2  ,'BLGOFLX ',0,1 ,2,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(surf_Fe ,'BLGSURFE',0,1, 2,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(apco2,'BLGapco2',0,1, 1,bi,bj,myThid)
-      ENDIF
-#endif /* ALLOW_DIAGNOSTICS */
-
        RETURN
        END
