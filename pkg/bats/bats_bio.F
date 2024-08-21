@@ -252,7 +252,7 @@ C
      &                    grazDETc, grazDETn, grazDETp
       double precision :: c0, c1
 C indices for state variables
-       integer, parameter :: iSPc=1,iSPn=2,iSPp=3,
+       integer :: iSPc=1,iSPn=2,iSPp=3,
      &                       iTRc=4,iTRn=5,iTRp=6,
      &                       iUNc=7,iUNn=8,iUNp=9,
      &                       iBAc=10,iBAn=11,iBAp=12,
@@ -266,7 +266,7 @@ C indices for state variables
      &                       iDVMZc=34, iDVMZn=35, iDVMZp=36
      
 C indices for diagnostic variables
-       integer, parameter :: iPP=1, iprBAc=2,
+       integer :: iPP=1, iprBAc=2,
      &     igrowSPc=3, igrowSPnh4=4, igrowSPno3=5,
      &     igrowSPn=6, igrowSPp=7,
      &     iexcrSP_1c=8, iexcrSP_1n=9, iexcrSP_1p=10,
