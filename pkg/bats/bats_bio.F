@@ -149,7 +149,7 @@ C
 ! ecosystem model parameters
       double precision :: temp,temp1
       double precision :: ae,mu_SP,alpha_SP,a_SP,v_SPn,k_nh4SP,k_no3SP
-      double precision :: v_SPp,k_po4SP, zeta, theta, r_excrSP_1
+      double precision :: v_SPp,k_po4SP, zeta, theta_eco, r_excrSP_1
       double precision :: r_excrSP_2,r_pomSP
       double precision :: mu_TR,alpha_TR,a_TR,k_nh4TR,v_TRn,k_no3TR
       double precision :: v_TRp, k_po4TR,mu_pickTRpo4, zeta_nf
@@ -332,7 +332,7 @@ C indices for diagnostic variables
        v_SPp           = bioparams(iv_SPp       )
        k_po4SP        = bioparams(ik_po4SP        )
        zeta              = bioparams(izeta       )
-       theta            = bioparams(itheta       )
+       theta_eco            = bioparams(itheta       )
        r_excrSP_1     = bioparams(ir_excrSP_1     )
        r_excrSP_2     = bioparams(ir_excrSP_2     )
        r_pomSP        = bioparams(ir_pomSP        )
@@ -543,7 +543,7 @@ c  M        icrophytoplankton processes
         
 ! Ch        lorophyll
             IF (irr_inst .gt. c0) THEN
-                growSPchl = theta * growSPn * growSPc/
+                growSPchl = theta_eco * growSPn * growSPc/
      &          (alpha_SP*PTR_SPchl(i,j,k)*irr_inst*exp(-a_SP*irr_inst))
             ELSE
                 growSPchl = c0
@@ -653,7 +653,7 @@ c  M        icrophytoplankton processes
             respTR = growTRno3 *  zeta + growTRnf * zeta_nf
             ! Chlorophyll
             IF (irr_inst .gt. c0) THEN
-                growTRchl = theta * growTRn * 
+                growTRchl = theta_eco * growTRn * 
      &                   growTRc /(alpha_TR*PTR_TRchl(i,j,k)*
      &                   irr_inst*exp(-a_TR*irr_inst))
             ELSE
@@ -746,8 +746,8 @@ c  M        icrophytoplankton processes
             maxUNnf = MAX(c0, 
      &                  ((PTR_UNC(i,j,k) - growUNc - growUNno3 * zeta) *
      &                  q_UN_max_n
-     &            - PTR_UNN(i,j,k) - growUNno3 - growUNnh4)
-     &                 / (c1 + zeta_nf * q_UN_max_n) * V_UNmax_n * Tfunc)
+     &              - PTR_UNN(i,j,k) - growUNno3 - growUNnh4)
+     &              / (c1 + zeta_nf * q_UN_max_n)*V_UNmax_n*Tfunc)
             
             growUNn = MIN( PTR_UNC(i,j,k) * v_UNn * V_UNmax_n,
      &               growUNnh4 + growUNno3 + maxUNnf )
@@ -761,7 +761,7 @@ c  M        icrophytoplankton processes
             respUN = growUNno3 *  zeta + growUNnf * zeta_nf
              ! Chlorophyll
             IF (irr_inst .gt. c0) THEN
-                growUNchl = theta * growUNn *
+                growUNchl = theta_eco * growUNn *
      &                      growUNc /(alpha_UN*PTR_UNchl(i,j,k)*
      &                      irr_inst*exp(-a_UN*irr_inst))
             ELSE
