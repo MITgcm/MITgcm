@@ -159,9 +159,9 @@ c  Initialize local variables
           G_BAC(i,j,k)         = 0. _d 0
           G_BAN(i,j,k)        = 0. _d 0
           G_BAP(i,j,k)        = 0. _d 0
-          G_PTRC(i,j,k)        = 0. _d 0
-          G_PTRN(i,j,k)        = 0. _d 0
-          G_PTRP(i,j,k)        = 0. _d 0
+          G_PRTC(i,j,k)        = 0. _d 0
+          G_PRTN(i,j,k)        = 0. _d 0
+          G_PRTP(i,j,k)        = 0. _d 0
           G_MZC(i,j,k)        = 0. _d 0
           G_MZN(i,j,k)         = 0. _d 0
           G_MZP(i,j,k)         = 0. _d 0
@@ -234,12 +234,12 @@ C update
            PTR_BAC(i,j,k)=PTR_BAC(i,j,k)+G_BAC(i,j,k)*PTRACERS_dTLev(k)
            PTR_BAN(i,j,k)=PTR_BAN(i,j,k)+G_BAN(i,j,k)*PTRACERS_dTLev(k)
            PTR_BAP(i,j,k)=PTR_BAP(i,j,k)+G_BAP(i,j,k)*PTRACERS_dTLev(k)
-           PTR_PTRC(i,j,k)=PTR_PTRC(i,j,k)+
-     &                      G_PTRC(i,j,k)*PTRACERS_dTLev(k)
-           PTR_PTRN(i,j,k)=PTR_PTRN(i,j,k)+
-     &                      G_PTRN(i,j,k)*PTRACERS_dTLev(k)
-           PTR_PTRP(i,j,k)=PTR_PTRP(i,j,k)+
-     &                      G_PTRP(i,j,k)*PTRACERS_dTLev(k)
+           PTR_PRTC(i,j,k)=PTR_PRTC(i,j,k)+
+     &                      G_PRTC(i,j,k)*PTRACERS_dTLev(k)
+           PTR_PRTN(i,j,k)=PTR_PRTN(i,j,k)+
+     &                      G_PRTN(i,j,k)*PTRACERS_dTLev(k)
+           PTR_PRTP(i,j,k)=PTR_PRTP(i,j,k)+
+     &                      G_PRTP(i,j,k)*PTRACERS_dTLev(k)
            PTR_MZC(i,j,k)=PTR_MZC(i,j,k)+G_MZC(i,j,k)*PTRACERS_dTLev(k)
            PTR_MZN(i,j,k)=PTR_MZN(i,j,k)+G_MZN(i,j,k)*PTRACERS_dTLev(k)
            PTR_MZP(i,j,k)=PTR_MZP(i,j,k)+G_MZP(i,j,k)*PTRACERS_dTLev(k)
