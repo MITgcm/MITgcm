@@ -26,6 +26,7 @@ CEOP
       INTEGER k, nparams
       INTEGER iUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      double precision :: bioparams(161)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
