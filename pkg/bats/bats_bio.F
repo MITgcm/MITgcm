@@ -176,13 +176,14 @@ C
       double precision :: r_excrUN_1,r_excrUN_n,r_excrUN_2,r_pomUN,
      &                    q_BA_n,q_BA_p
       double precision :: g_un,q_PRT_n,q_PRT_p,
-     &                    q_MZ_n,q_MZ_p,Tref,a_UN
+     &                    q_MZ_n,q_MZ_p,a_UN,
+      double precision :: Tref_eco
       ! local variables for temperature effect function
       double precision :: Tfunc
       ! local variables in the SP module
-      double precision :: Nfunc_sp_n, Nfunc_sp_p, Pc_SPmax, 
+      double precision :: Nfunc_sp_n, Nfunc_sp_p, Pc_SPmax,
      &                    growSPnh4,growSPno3
-      double precision :: V_SPmax_n, V_SPmax_p, respSP,  growSPchl, 
+      double precision :: V_SPmax_n, V_SPmax_p, respSP,  growSPchl,
      &                    grazSPchl, pomSPchl
       double precision :: growSPc,growSPn,growSPp,excrSP_1c,excrSP_1n,
      &                    excrSP_1p
@@ -197,7 +198,7 @@ C
       double precision :: growTRc,growTRn,growTRp,excrTR_1c,excrTR_1n,
      &                    excrTR_1p,excrTR_2c,excrTR_2n,excrTR_2p
       double precision :: pomTRc,pomTRn,pomTRp,grazTRc,grazTRn,grazTRp
-      double precision :: Nfunc_tr_n, Nfunc_tr_p, Pc_TRmax,V_TRmax_n, 
+      double precision :: Nfunc_tr_n, Nfunc_tr_p, Pc_TRmax,V_TRmax_n,
      &                    V_TRmax_p,respTR,growTRchl,grazTRchl,pomTRchl
       ! local variables in the UN module
       double precision :: q_UN_min_n,q_UN_min_p
@@ -485,10 +486,10 @@ c  Nutrient uptake and partitioning between organic pools
 
          IF (hFacC(i,j,k,bi,bj) .gt. 0. _d 0) THEN
 
-            Tref = 25.d0 ! Reference Temperature for Function of Temperatue Effects
+            Tref_eco = 25.d0 ! Reference Temperature for Function of Temperatue Effects
             ! Temperature Effects
             Tfunc = exp(-ae*( 1/theta(i,j,k,bi,bj)
-     &              +273.15)-1/(Tref+273.15))
+     &              +273.15)-1/(Tref_eco+273.15))
             mu_SP = mu_SP * Tfunc
             v_SPn = v_SPn * Tfunc
             v_SPp = v_SPp * Tfunc
@@ -754,7 +755,7 @@ c  M        icrophytoplankton processes
                       / (c1 + zeta_nf * q_UN_max_n) * V_UNmax_n * Tfunc)
             
             growUNn = MIN( PTR_UNC(i,j,k) * v_UNn * V_UNmax_n,
-                    growUNnh4 + growUNno3 + maxUNnf )
+     &               growUNnh4 + growUNno3 + maxUNnf )
             growUNnf = growUNn - growUNnh4 - growUNno3
             
             V_UNmax_p = max(c0, (q_UN_max_p - PTR_UNP(i,j,k)/
@@ -808,7 +809,7 @@ c  M        icrophytoplankton processes
      &               PTR_UNC(i,j,k)
      &           / (PTR_UNC(i,j,k) * PTR_UNC(i,j,k) + g_un * g_un +
      &              PTR_SPC(i,j,k)*PTR_SPC(i,j,k)/g_sp/g_sp*g_un*g_un +
-                   PTR_BAC(i,j,k)*PTR_BAC(i,j,k)/g_ba/g_ba*g_un*g_un)
+     &              PTR_BAC(i,j,k)*PTR_BAC(i,j,k)/g_ba/g_ba*g_un*g_un)
             grazUNn = grazUNc * PTR_UNN(i,j,k)/PTR_UNC(i,j,k)
             grazUNp = grazUNc * PTR_UNP(i,j,k)/PTR_UNC(i,j,k)
             grazUNchl = grazUNc * PTR_UNchl(i,j,k)/PTR_UNC(i,j,k)
@@ -914,7 +915,7 @@ c  M        icrophytoplankton processes
      &                PTR_BAC(i,j,k)
      &           / (PTR_BAC(i,j,k) * PTR_BAC(i,j,k) + g_ba * g_ba +
      &              PTR_SPC(i,j,k)*PTR_SPC(i,j,k)/g_sp/g_sp*g_ba*g_ba +
-                   PTR_UNC(i,j,k)*PTR_UNC(i,j,k)/g_un/g_un*g_ba*g_ba)
+     &              PTR_UNC(i,j,k)*PTR_UNC(i,j,k)/g_un/g_un*g_ba*g_ba)
             grazBAn = grazBAc / PTR_BAC(i,j,k) * PTR_BAN(i,j,k)
             grazBAp = grazBAc / PTR_BAC(i,j,k) * PTR_BAP(i,j,k)
             !6b. Mortality due to viruses
