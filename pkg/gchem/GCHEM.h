@@ -30,7 +30,6 @@ CEOP
       COMMON /GCHEM_PARM_L/
      &              useCFC,
      &              useDIC,
-     &              useBATS,
      &              useBLING,
      &              useSPOIL,
      &              useDARWIN
