@@ -22,5 +22,7 @@ C     === Global variables ===
 #include "BATS_VARS.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
+
+     print('nothing here!')
   RETURN
   END
