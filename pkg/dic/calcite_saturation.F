@@ -41,7 +41,7 @@ C !OUTPUT PARAMETERS: ===================================================
 C !LOCAL VARIABLES: ====================================================
 C  i,j,k                  :: loop indices
        INTEGER i,j,k
-       LOGICAL debugPrt
+       LOGICAL doIni_pH, debugPrt
        _RL carbonate(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
        _RL calcium
        _RL sitlocal
@@ -51,9 +51,26 @@ C  i,j,k                  :: loop indices
        _RL pCO2local(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
        _RL locTemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
        _RL locSalt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-
        INTEGER doIterCO3, CO3ITER
 CEOP
+
+       doIni_pH = ( myIter.EQ.(nIter0 + 1) ) .AND. .NOT.pH_isLoaded(2)
+C-   set number of iterations for 3-D pH (for case selectPHsolver=0):
+       IF ( doIni_pH .OR.
+     &      ( calcOmegaCalciteFreq.GT.deltaTClock ) ) THEN
+C    Since we start cold with an arbitrary pH, we must iterate pH solver
+C    to ensure accurate estimate of CO3 at depth
+C    OR we may call this for deep ocean infrequently and in this case
+C    can afford to make several iterations
+         doIterCO3 = nIterCO3
+       ELSE
+         doIterCO3 = 1
+       ENDIF
+c      IF ( bi+bj .EQ. 2 ) THEN
+c       WRITE(standardMessageUnit,'(A,L5,I4,I10)')
+c    &  '--- CALCITE_SATURATION: doIni_pH, doIterCO3, myIter=',
+c    &                           doIni_pH, doIterCO3, myIter
+c      ENDIF
 
        DO k=1,Nr
         DO j=1-OLy,sNy+OLy
@@ -111,13 +128,12 @@ C     DIC_deepSilicaFile provided.
 #ifdef CARBONCHEM_SOLVESAPHE
            IF ( selectPHsolver.GT.0 ) THEN
 C Use Munhoven (2013) Solvesaphe routine to calculate pH and pCO2
-            IF ( .NOT.pH_isLoaded(2) ) THEN
+            IF ( doIni_pH ) THEN
 #ifdef ALLOW_DEBUG
-               IF (debugPrt) CALL DEBUG_CALL(
-     &                      'AHINI_FOR_AT',myThid)
+             IF (debugPrt) CALL DEBUG_CALL('AHINI_FOR_AT',myThid)
 #endif
 C call AHINI_FOR_AT to get better initial guess of pH
-               CALL AHINI_FOR_AT(alklocal*permil,
+             CALL AHINI_FOR_AT(alklocal*permil,
      I              diclocal*permil,
      I              bt(i,j,bi,bj),
      O              pH3d(i,j,k,bi,bj),
@@ -141,19 +157,8 @@ C Use the original Follows et al. (2006) solver
 #ifdef ALLOW_DEBUG
             IF (debugPrt) CALL DEBUG_CALL('CALC_PCO2_APPROX',myThid)
 #endif
-            IF (( .NOT.pH_isLoaded(2) ) .OR.
-     &         ( calcOmegaCalciteFreq .gt. deltaTClock )) THEN
-C    Since we start cold with an arbitrary pH, we must iterate pH solver
-C    to ensure accurate estimate of co3 at depth
-C    OR we may call this for deep ocean infrequently can afford to make
-C    several iterations
-               doIterCO3 = nIterCO3
-            ELSE
-               doIterCO3 = 1
-            ENDIF
-
             DO CO3iter = 1, doIterCO3
-              CALL CALC_PCO2_APPROX(
+             CALL CALC_PCO2_APPROX(
      I          locTemp(i,j), locSalt(i,j),
      I          diclocal, po4local,
      I          sitlocal, alklocal,
@@ -166,10 +171,7 @@ C    several iterations
      U          pH3d(i,j,k,bi,bj), pCO2local(i,j), carbonate(i,j),
      I          i,j,k,bi,bj,myIter,myThid )
             ENDDO
-            
-C Only need the extra iterations the first time if 
-C                           calcOmegaCalciteFreq .eq. deltaTClock           
-            pH_isLoaded(2) = .TRUE.
+
 #ifdef CARBONCHEM_SOLVESAPHE
            ENDIF
 #endif /* CARBONCHEM_SOLVESAPHE */
