@@ -47,6 +47,7 @@ C     myThid        :: thread Id. number
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
+      double precision :: bioparams(161)
 C     === Input ===
 C     PTR_SPX       :: microphytoplankton carbon, chl, nitrogen, phosphorous
 C     PTR_TRX       :: Trichodesmium carbon, chl, nitrogen, phosphorous
@@ -61,42 +62,42 @@ C     PTR_NO3       :: nitrate concentration
 C     PTR_PO4       :: phosphate concentration
 C     PTR_DOX       :: dissolved organic carbon, nitrogen, phosphorous
 C     PTR_SDOX      :: semi-labile dissolved organic carbon, nitrogen, phosphorous
-      double precision :: PTR_SPC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      double precision :: PTR_SPchl(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      double precision :: PTR_SPN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      double precision :: PTR_SPP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      double precision :: PTR_TRC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      double precision :: PTR_TRchl(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      double precision :: PTR_TRN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      double precision :: PTR_TRP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      double precision :: PTR_UNC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      double precision :: PTR_UNchl(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      double precision :: PTR_UNN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      double precision :: PTR_UNP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      double precision :: PTR_BAC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      double precision :: PTR_BAN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      double precision :: PTR_BAP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      double precision :: PTR_PRTC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      double precision :: PTR_PRTN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      double precision :: PTR_PRTP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      double precision :: PTR_MZC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      double precision :: PTR_MZN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      double precision :: PTR_MZP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      double precision :: PTR_DVMZC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      double precision :: PTR_DVMZN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      double precision :: PTR_DVMZP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      double precision :: PTR_DETC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      double precision :: PTR_DETN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      double precision :: PTR_DETP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      double precision :: PTR_NH4(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      double precision :: PTR_NO3(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      double precision :: PTR_PO4(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      double precision :: PTR_DOC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      double precision :: PTR_DON(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      double precision :: PTR_DOP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      double precision :: PTR_SDOC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      double precision :: PTR_SDON(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      double precision :: PTR_SDOP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  PTR_SPC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  PTR_SPchl(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  PTR_SPN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  PTR_SPP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  PTR_TRC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  PTR_TRchl(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  PTR_TRN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  PTR_TRP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  PTR_UNC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  PTR_UNchl(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  PTR_UNN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  PTR_UNP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  PTR_BAC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  PTR_BAN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  PTR_BAP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  PTR_PRTC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  PTR_PRTN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  PTR_PRTP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  PTR_MZC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  PTR_MZN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  PTR_MZP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  PTR_DVMZC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  PTR_DVMZN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  PTR_DVMZP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  PTR_DETC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  PTR_DETN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  PTR_DETP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  PTR_NH4(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  PTR_NO3(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  PTR_PO4(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  PTR_DOC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  PTR_DON(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  PTR_DOP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  PTR_SDOC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  PTR_SDON(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  PTR_SDOP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
 C     === Output ===
 C     G_xxx                :: tendency term for tracer xxx
@@ -335,7 +336,7 @@ C indices for diagnostic variables
      &     itheta             = izeta        + 1,
      &     ir_excrSP_1     = itheta        + 1,
      &     ir_excrSP_2     = ir_excrSP_1     + 1,
-     &     ir_pomSP        = ir_excrSP_2     + 1, 
+     &     ir_pomSP        = ir_excrSP_2     + 1,
      &     imu_TR          = ir_pomSP        + 1,
      &     ialpha_TR       = imu_TR          + 1,
      &     ia_TR       = ialpha_TR         + 1,
