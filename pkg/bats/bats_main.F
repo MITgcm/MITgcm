@@ -234,18 +234,27 @@ C update
            PTR_BAC(i,j,k)=PTR_BAC(i,j,k)+G_BAC(i,j,k)*PTRACERS_dTLev(k)
            PTR_BAN(i,j,k)=PTR_BAN(i,j,k)+G_BAN(i,j,k)*PTRACERS_dTLev(k)
            PTR_BAP(i,j,k)=PTR_BAP(i,j,k)+G_BAP(i,j,k)*PTRACERS_dTLev(k)
-           PTR_PTRC(i,j,k)=PTR_PTRC(i,j,k)+G_PTRC(i,j,k)*PTRACERS_dTLev(k)
-           PTR_PTRN(i,j,k)=PTR_PTRN(i,j,k)+G_PTRN(i,j,k)*PTRACERS_dTLev(k)
-           PTR_PTRP(i,j,k)=PTR_PTRP(i,j,k)+G_PTRP(i,j,k)*PTRACERS_dTLev(k)
+           PTR_PTRC(i,j,k)=PTR_PTRC(i,j,k)+
+     &                      G_PTRC(i,j,k)*PTRACERS_dTLev(k)
+           PTR_PTRN(i,j,k)=PTR_PTRN(i,j,k)+
+     &                      G_PTRN(i,j,k)*PTRACERS_dTLev(k)
+           PTR_PTRP(i,j,k)=PTR_PTRP(i,j,k)+
+     &                      G_PTRP(i,j,k)*PTRACERS_dTLev(k)
            PTR_MZC(i,j,k)=PTR_MZC(i,j,k)+G_MZC(i,j,k)*PTRACERS_dTLev(k)
            PTR_MZN(i,j,k)=PTR_MZN(i,j,k)+G_MZN(i,j,k)*PTRACERS_dTLev(k)
            PTR_MZP(i,j,k)=PTR_MZP(i,j,k)+G_MZP(i,j,k)*PTRACERS_dTLev(k)
-           PTR_DVMZC(i,j,k)=PTR_DVMZC(i,j,k)+G_DVMZC(i,j,k)*PTRACERS_dTLev(k)
-           PTR_DVMZN(i,j,k)=PTR_DVMZN(i,j,k)+G_DVMZN(i,j,k)*PTRACERS_dTLev(k)
-           PTR_DVMZP(i,j,k)=PTR_DVMZP(i,j,k)+G_DVMZP(i,j,k)*PTRACERS_dTLev(k)
-           PTR_DETC(i,j,k)=PTR_DETC(i,j,k)+G_DETC(i,j,k)*PTRACERS_dTLev(k)
-           PTR_DETN(i,j,k)=PTR_DETN(i,j,k)+G_DETN(i,j,k)*PTRACERS_dTLev(k)
-           PTR_DETP(i,j,k)=PTR_DETP(i,j,k)+G_DETP(i,j,k)*PTRACERS_dTLev(k)
+           PTR_DVMZC(i,j,k)=PTR_DVMZC(i,j,k)+
+     &                       G_DVMZC(i,j,k)*PTRACERS_dTLev(k)
+           PTR_DVMZN(i,j,k)=PTR_DVMZN(i,j,k)+
+     &                       G_DVMZN(i,j,k)*PTRACERS_dTLev(k)
+           PTR_DVMZP(i,j,k)=PTR_DVMZP(i,j,k)+
+     &                       G_DVMZP(i,j,k)*PTRACERS_dTLev(k)
+           PTR_DETC(i,j,k)=PTR_DETC(i,j,k)+
+     &                       G_DETC(i,j,k)*PTRACERS_dTLev(k)
+           PTR_DETN(i,j,k)=PTR_DETN(i,j,k)+
+     &                       G_DETN(i,j,k)*PTRACERS_dTLev(k)
+           PTR_DETP(i,j,k)=PTR_DETP(i,j,k)+
+     &                       G_DETP(i,j,k)*PTRACERS_dTLev(k)
            PTR_NH4(i,j,k)=PTR_NH4(i,j,k)+G_NH4(i,j,k)*PTRACERS_dTLev(k)
            PTR_NO3(i,j,k)=PTR_NO3(i,j,k)+G_NO3(i,j,k)*PTRACERS_dTLev(k)
            PTR_PO4(i,j,k)=PTR_PO4(i,j,k)+G_PO4(i,j,k)*PTRACERS_dTLev(k)
