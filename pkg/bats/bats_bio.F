@@ -675,11 +675,11 @@ c  M        icrophytoplankton processes
             !            PTR_UNC(i,j,k) * q_UN_max_n * mu_UNnf * (c1 -         exp(-alpha_UNnf  * (irr_inst - minPARunnf) / mu_UNnf)) )
             maxUNnf = MAX(c0, 
      &                  ((PTR_UNC(i,j,k) - growUNc - growUNno3 * zeta) *
-     &                  q_UN_max_n &
+     &                  q_UN_max_n
      &            - PTR_UNN(i,j,k) - growUNno3 - growUNnh4)
                       / (c1 + zeta_nf * q_UN_max_n) * V_UNmax_n * Tfunc)
             
-            growUNn = MIN( PTR_UNC(i,j,k) * v_UNn * V_UNmax_n, &
+            growUNn = MIN( PTR_UNC(i,j,k) * v_UNn * V_UNmax_n,
                     growUNnh4 + growUNno3 + maxUNnf )
             growUNnf = growUNn - growUNnh4 - growUNno3
             
@@ -731,7 +731,7 @@ c  M        icrophytoplankton processes
             pomUNchl = pomUNc * PTR_UNchl(i,j,k) / PTR_UNC(i,j,k)
             ! UN grazed
             grazUNc = mu_PRT * PTR_PRTC(i,j,k) * PTR_UNC(i,j,k) * 
-     &               PTR_UNC(i,j,k) &
+     &               PTR_UNC(i,j,k)
      &           / (PTR_UNC(i,j,k) * PTR_UNC(i,j,k) + g_un * g_un +
      &              PTR_SPC(i,j,k)*PTR_SPC(i,j,k)/g_sp/g_sp*g_un*g_un +
                    PTR_BAC(i,j,k)*PTR_BAC(i,j,k)/g_ba/g_ba*g_un*g_un)
@@ -762,12 +762,12 @@ c  M        icrophytoplankton processes
             Nfunc_ba_p = PTR_BAP(i,j,k)/PTR_BAC(i,j,k)/q_BA_p
             temp = min(Nfunc_ba_n, Nfunc_ba_p)
             temp = min(temp, c1)
-            growBAldoc = mu_BA * PTR_BAC(i,j,k) * temp * ALC &
-                                  / (ALC+ k_DOM + ASC)
-            growBAsdoc = mu_BA * PTR_BAC(i,j,k) * temp * ASC &
-                                  / (ASC+ k_DOM + ALC)
-            growBApoc  = mu_BA * PTR_BAC(i,j,k) * PTR_DETC(i,j,k) &
-                          / ( PTR_DETC(i,j,k) + k_POM * PTR_BAC(i,j,k) ) !          particle-attached bacteria
+            growBAldoc = mu_BA * PTR_BAC(i,j,k) * temp * ALC
+     &                          / (ALC+ k_DOM + ASC)
+            growBAsdoc = mu_BA * PTR_BAC(i,j,k) * temp * ASC
+     &                              / (ASC+ k_DOM + ALC)
+            growBApoc  = mu_BA * PTR_BAC(i,j,k) * PTR_DETC(i,j,k)
+     &                    / ( PTR_DETC(i,j,k) + k_POM * PTR_BAC(i,j,k) ) !          particle-attached bacteria
             ! DON and DOP usage
             growBAldon = growBAldoc/PTR_DOC(i,j,k)*PTR_DON(i,j,k) ! available         labile N
             growBAldop = growBAldoc/PTR_DOC(i,j,k)*PTR_DOP(i,j,k) ! available         labile P
@@ -808,8 +808,8 @@ c  M        icrophytoplankton processes
             refrBAn = q_refrDOM_n * refrBAc
             refrBAp = q_refrDOM_p * refrBAc
             ! 4. excreting semi-labile DOM and regenerating DIN
-            IF ( (PTR_BAC(i,j,k) < PTR_BAN(i,j,k)/q_BA_n) .AND. &
-                 (PTR_BAC(i,j,k) < PTR_BAP(i,j,k)/q_BA_p) ) THEN  !Cabon in short
+            IF ( (PTR_BAC(i,j,k) < PTR_BAN(i,j,k)/q_BA_n) .AND.
+     &            (PTR_BAC(i,j,k) < PTR_BAP(i,j,k)/q_BA_p) ) THEN  !Cabon in short
                  excrBAc = c0
                  excrBAn = c0
                  excrBAp = c0
@@ -885,11 +885,13 @@ c  M        icrophytoplankton processes
             excrPRTsdom2n = 0.5d0*excrPRTsdom2c * PTR_PRTN(i,j,k)/PTR_PRTC(i,j,k)
             excrPRTsdom2p = 0.5d0*excrPRTsdom2c * PTR_PRTP(i,j,k)/PTR_PRTC(i,j,k)
             ! 5. adjust body stoichiometry by remineralizing inorganic nutrients
-            remiPRTn = MAX(r_PRTremi*(PTR_PRTN(i,j,k)-q_PRT_n * PTR_PRTC(i,j,k)), &
-                           r_PRTremi*(PTR_PRTN(i,j,k)-q_PRT_n/q_PRT_p*PTR_PRTP        (i,j,k)) )
+            remiPRTn = MAX(r_PRTremi*(PTR_PRTN(i,j,k)-q_PRT_n * PTR_PRTC(i,j,k)),
+     &                      r_PRTremi*(PTR_PRTN(i,j,k)-
+     &                 q_PRT_n/q_PRT_p*PTR_PRTP        (i,j,k)) )
             remiPRTn = MAX(c0, remiPRTn)
-            remiPRTp = MAX(r_PRTremi*(PTR_PRTP(i,j,k)-q_PRT_p * PTR_PRTC(i,j,k)), &
-                           r_PRTremi*(PTR_PRTP(i,j,k)-q_PRT_p/q_PRT_n*PTR_PRTN        (i,j,k)) )
+            remiPRTp = MAX(r_PRTremi*(PTR_PRTP(i,j,k)-q_PRT_p * PTR_PRTC(i,j,k)),
+     &                      r_PRTremi*(PTR_PRTP(i,j,k)-
+     &                 q_PRT_p/q_PRT_n*PTR_PRTN        (i,j,k)) )
             remiPRTp = MAX(c0, remiPRTp)
             ! POM production
             pomPRTc = r_pomPRT * growPRTc
