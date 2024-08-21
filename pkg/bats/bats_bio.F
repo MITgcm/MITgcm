@@ -1024,11 +1024,14 @@ c  M        icrophytoplankton processes
             !      Inorganic Nutrients Processes
             !-----------------------------------------------------------------------
             nitrf = r_nitrf * PTR_NH4(i,j,k)
-            G_NH4(i,j,k) = (remiPRTn + remiMZn + remiHZn + excrTR_nh4 + excrUN_nh4
-     &                     - growSPnh4 - growTRnh4 - growUNnh4 - fluxBAnh4 - nitrf)/             SecPerDay
-            G_NO3(i,j,k) = (-growSPno3 - growTRno3 - growUNno3 - fluxBAno3 +         nitrf)/     SecPerDay
-            G_PO4(i,j,k) = (remiPRTp + remiMZp + remiHZp - growSPp - growTRpo4
-     &                     - growUNp - fluxBApo4)/ SecPerDay
+            G_NH4(i,j,k) = (remiPRTn + remiMZn + remiHZn + excrTR_nh4 + 
+     &                     excrUN_nh4
+     &                     - growSPnh4 - growTRnh4 - growUNnh4 -
+     &                     fluxBAnh4 - nitrf)/SecPerDay
+            G_NO3(i,j,k) = (-growSPno3 - growTRno3 - growUNno3 -
+     &                     fluxBAno3 + nitrf)/SecPerDay
+            G_PO4(i,j,k) = (remiPRTp + remiMZp + remiHZp - growSPp -
+     &                     growTRpo4-growUNp-fluxBApo4)/SecPerDay
             
             !-----------------------------------------------------------------------
             !      Dissolved Organic Matter (DOM) Processes
