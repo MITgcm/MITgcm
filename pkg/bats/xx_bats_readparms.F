@@ -3,7 +3,7 @@
 CBOP
 C !ROUTINE: BATS_READPARMS
 C !INTERFACE: ==========================================================
-      SUBROUTINE BATS_READPARMS( myThid )
+      SUBROUTINE XX_BATS_READPARMS( myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*

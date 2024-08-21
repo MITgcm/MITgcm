@@ -3,4 +3,5 @@ bats_init_fixed.f
 bats_light.f
 bats_main.f
 bats_min_val.f
+bats_readparms.f
 bats_tr_register.f
