@@ -874,22 +874,29 @@ c  M        icrophytoplankton processes
             excrPRTsdomn = (c1 - f_exPRTldom) * r_PRTex * growPRTn *
      &                      PTR_PRTN(i,j,k)/PTR_PRTC(i,j,k)/q_PRT_n
             !                                *         EXP(3*(PTR_PRTN(i,j,k)/PTR_PRTC(i,j,k)/q_PRT_n-c1))
-            excrPRTsdomp = (c1 - f_exPRTldom) * r_PRTex * growPRTp *            PTR_PRTP(i,j,k)/PTR_PRTC(i,j,k)/q_PRT_p
+            excrPRTsdomp = (c1 - f_exPRTldom) * r_PRTex * growPRTp * 
+     &                    PTR_PRTP(i,j,k)/PTR_PRTC(i,j,k)/q_PRT_p
             !                               *         EXP(3*(PTR_PRTP(i,j,k)/PTR_PRTC(i,j,k)/q_PRT_p-c1))
             ! 3. respiration
-            respPRT = r_PRTresp_1 * PTR_PRTC(i,j,k) + r_PRTresp_2 * growPRTc
+            respPRT = r_PRTresp_1 * PTR_PRTC(i,j,k) + 
+     &                 r_PRTresp_2 * growPRTc
             ! 4. adjust body stoichiometry by excreting semi-labile DOM
-            temp = MAX(c1 - PTR_PRTN(i,j,k)/PTR_PRTC(i,j,k)/q_PRT_n, c1 -         PTR_PRTP(i,j,k)/PTR_PRTC(i,j,k)/q_PRT_p)
+            temp = MAX(c1 - PTR_PRTN(i,j,k)/PTR_PRTC(i,j,k)/q_PRT_n, 
+     &                  c1 - PTR_PRTP(i,j,k)/PTR_PRTC(i,j,k)/q_PRT_p)
             temp = MAX(c0, temp)
             excrPRTsdom2c = r_PRTadju * PTR_PRTC(i,j,k) * temp
-            excrPRTsdom2n = 0.5d0*excrPRTsdom2c * PTR_PRTN(i,j,k)/PTR_PRTC(i,j,k)
-            excrPRTsdom2p = 0.5d0*excrPRTsdom2c * PTR_PRTP(i,j,k)/PTR_PRTC(i,j,k)
+            excrPRTsdom2n = 0.5d0*excrPRTsdom2c * 
+     &                            PTR_PRTN(i,j,k)/PTR_PRTC(i,j,k)
+            excrPRTsdom2p = 0.5d0*excrPRTsdom2c * 
+     &                            PTR_PRTP(i,j,k)/PTR_PRTC(i,j,k)
             ! 5. adjust body stoichiometry by remineralizing inorganic nutrients
-            remiPRTn = MAX(r_PRTremi*(PTR_PRTN(i,j,k)-q_PRT_n * PTR_PRTC(i,j,k)),
+            remiPRTn = MAX(r_PRTremi*(PTR_PRTN(i,j,k)-
+     &                      q_PRT_n * PTR_PRTC(i,j,k)),
      &                      r_PRTremi*(PTR_PRTN(i,j,k)-
      &                 q_PRT_n/q_PRT_p*PTR_PRTP        (i,j,k)) )
             remiPRTn = MAX(c0, remiPRTn)
-            remiPRTp = MAX(r_PRTremi*(PTR_PRTP(i,j,k)-q_PRT_p * PTR_PRTC(i,j,k)),
+            remiPRTp = MAX(r_PRTremi*(PTR_PRTP(i,j,k)-
+     &                     q_PRT_p * PTR_PRTC(i,j,k)),
      &                      r_PRTremi*(PTR_PRTP(i,j,k)-
      &                 q_PRT_p/q_PRT_n*PTR_PRTN        (i,j,k)) )
             remiPRTp = MAX(c0, remiPRTp)
@@ -898,16 +905,19 @@ c  M        icrophytoplankton processes
             pomPRTn = pomPRTc * q_POM_n
             pomPRTp = pomPRTc * q_POM_p
             ! 6. removal by microzooplankton
-            grazPRTc = mu_MZ * PTR_MZC(i,j,k) * PTR_PRTC(i,j,k) * PTR_PRTC(i,j,k)
+            grazPRTc = mu_MZ * PTR_MZC(i,j,k) * 
+     &              PTR_PRTC(i,j,k) * PTR_PRTC(i,j,k)
      &           / (PTR_PRTC(i,j,k) * PTR_PRTC(i,j,k) + g_prt * g_prt +
-     &              PTR_TRC(i,j,k)*PTR_TRC(i,j,k)/g_tr/g_tr*g_prt*g_prt +
-     &              PTR_DETC(i,j,k)*PTR_DETC(i,j,k)/g_det/g_det*g_prt*g_prt)
+     &              PTR_TRC(i,j,k)*PTR_TRC(i,j,k)/g_tr/g_tr*g_prt*g_prt+
+     &          PTR_DETC(i,j,k)*PTR_DETC(i,j,k)/g_det/g_det*g_prt*g_prt)
             grazPRTn = grazPRTc * PTR_PRTN(i,j,k) / PTR_PRTC(i,j,k)
             grazPRTp = grazPRTc * PTR_PRTP(i,j,k) / PTR_PRTC(i,j,k)
             ! 7. new PRT
-            G_PRTC(i,j,k) = (growPRTc - excrPRTldomc - excrPRTsdomc - excrPRTsdom2c         -    grazPRTc - pomPRTc
+            G_PRTC(i,j,k) = (growPRTc - excrPRTldomc - 
+     &                      excrPRTsdomc -excrPRTsdom2c-grazPRTc-pomPRTc
      &                      - respPRT)/ SecPerDay
-            G_PRTN(i,j,k) = (growPRTn - excrPRTldomn - excrPRTsdomn - excrPRTsdom2n         -    remiPRTn - grazPRTn
+            G_PRTN(i,j,k) = (growPRTn - excrPRTldomn - excrPRTsdomn - 
+     &                      excrPRTsdom2n -    remiPRTn - grazPRTn
      &                      - pomPRTn)/ SecPerDay
             G_PRTP(i,j,k) = (growPRTp - excrPRTldomp - excrPRTsdomp -
      &                      excrPRTsdom2p  -remiPRTp - grazPRTp
@@ -917,7 +927,8 @@ c  M        icrophytoplankton processes
             !      Metazoan Processes
             !-----------------------------------------------------------------------
             ! removal of detritus by detrivore metazoa
-            grazDETc = mu_MZ * PTR_MZC(i,j,k) * PTR_DETC(i,j,k) * PTR_DETC(i,j,k)
+            grazDETc = mu_MZ * PTR_MZC(i,j,k) * PTR_DETC(i,j,k) * 
+     &              PTR_DETC(i,j,k)
      &           / (PTR_DETC(i,j,k) * PTR_DETC(i,j,k) + g_det * g_det +
      &              PTR_PRTC(i,j,k)*PTR_PRTC(i,j,k)/g_prt/g_prt*
      &              g_det*g_det +
@@ -934,25 +945,30 @@ c  M        icrophytoplankton processes
             excrMZldomn = f_exMZldom * r_MZex * growMZn
             excrMZldomp = f_exMZldom * r_MZex * growMZp
             excrMZsdomc = (c1 - f_exMZldom) * r_MZex * growMZc
-            excrMZsdomn = (c1 - f_exMZldom) * r_MZex * growMZn *         PTR_MZN(i,j,k)/PTR_MZC(i,j,k)/q_MZ_n
+            excrMZsdomn = (c1 - f_exMZldom) * r_MZex * growMZn *
+     &                    PTR_MZN(i,j,k)/PTR_MZC(i,j,k)/q_MZ_n
             !                                   *         EXP(3*(PTR_MZN(i,j,k)/PTR_MZC(i,j,k)/q_MZ_n-c1))
-            excrMZsdomp = (c1 - f_exMZldom) * r_MZex * growMZp *         PTR_MZP(i,j,k)/PTR_MZC(i,j,k)/q_MZ_p
+            excrMZsdomp = (c1 - f_exMZldom) * r_MZex * growMZp *
+     &                    PTR_MZP(i,j,k)/PTR_MZC(i,j,k)/q_MZ_p
             !                                   *         EXP(3*(PTR_MZP(i,j,k)/PTR_MZC(i,j,k)/q_MZ_p-c1))
             
             ! 3. respiration
             respMZ = r_MZresp_1 * PTR_MZC(i,j,k) + r_MZresp_2 * growMZc
             ! 4. adjust body stoichiometry by excreting semi-labile DOM
-            temp = MAX(c1 - PTR_MZN(i,j,k)/PTR_MZC(i,j,k)/q_MZ_n, c1 -         PTR_MZP(i,j,k)/PTR_MZC(i,j,k)/q_MZ_p)
+            temp = MAX(c1 - PTR_MZN(i,j,k)/PTR_MZC(i,j,k)/q_MZ_n, c1 - 
+     &              PTR_MZP(i,j,k)/PTR_MZC(i,j,k)/q_MZ_p)
             temp = MAx(temp, c0)
             excrMZsdom2c = r_MZadju * PTR_MZC(i,j,k) * temp
-            excrMZsdom2n = excrMZsdom2c * PTR_MZN(i,j,k)/PTR_MZC(i,j,k)*0.5d0
-            excrMZsdom2p = excrMZsdom2c * PTR_MZP(i,j,k)/PTR_MZC(i,j,k)*0.5d0
+            excrMZsdom2n= excrMZsdom2c * PTR_MZN(i,j,k)/PTR_MZC(i,j,k)*0.5d0
+            excrMZsdom2p= excrMZsdom2c * PTR_MZP(i,j,k)/PTR_MZC(i,j,k)*0.5d0
             ! 5. adjust body stoichiometry by remineralizing inorganic nutrients
-            remiMZn = MAX(r_MZremi*(PTR_MZN(i,j,k)-q_MZ_n * PTR_MZC(i,j,k)),
-     &                     r_MZremi*(PTR_MZN(i,j,k)-q_MZ_n/q_MZ_p*PTR_MZP(i,j,k)) )
+            remiMZn = MAX(r_MZremi*(PTR_MZN(i,j,k)-q_MZ_n * 
+     &                   PTR_MZC(i,j,k)),
+     &         r_MZremi*(PTR_MZN(i,j,k)-q_MZ_n/q_MZ_p*PTR_MZP(i,j,k)) )
             remiMZn = MAX(remiMZn, c0)
-            remiMZp = MAX(r_MZremi*(PTR_MZP(i,j,k)-q_MZ_p * PTR_MZC(i,j,k)),
-     &                     r_MZremi*(PTR_MZP(i,j,k)-q_MZ_p/q_MZ_n*PTR_MZN(i,j,k)) )
+            remiMZp = MAX(r_MZremi*(PTR_MZP(i,j,k)-q_MZ_p * 
+     &                    PTR_MZC(i,j,k)),
+     &          r_MZremi*(PTR_MZP(i,j,k)-q_MZ_p/q_MZ_n*PTR_MZN(i,j,k)) )
             remiMZp = MAX(remiMZp, c0)
             ! 6. indissolved POM and refractory DOM production
             pomMZc = r_MZpom * growMZc
@@ -974,16 +990,21 @@ c  M        icrophytoplankton processes
             remiHZn = remvMZn - excrHZsdomn - pomHZn
             remiHZp = remvMZp - excrHZsdomp - pomHZp
             ! 8. new MZ
-            G_MZC(i,j,k) = (growMZc - excrMZldomc -excrMZsdomc - excrMZsdom2c
-     &                       - pomMZc - refrMZc - remvMZc - respMZ) / SecPerDay
-            G_MZN(i,j,k) = (growMZn - excrMZldomn -excrMZsdomn - remiMZn -         excrMZsdom2n
-     &                       - pomMZn - refrMZn - remvMZn)/ SecPerDay
-            G_MZP(i,j,k) = (growMZp - excrMZldomp -excrMZsdomp - remiMZp -         excrMZsdom2p
+            G_MZC(i,j,k) = (growMZc - excrMZldomc -excrMZsdomc - 
+     &                      excrMZsdom2c
+     &                - pomMZc - refrMZc - remvMZc - respMZ) / SecPerDay
+            G_MZN(i,j,k) = (growMZn - excrMZldomn -excrMZsdomn - remiMZn
+     &             -         excrMZsdom2n
+     &                     - pomMZn - refrMZn - remvMZn)/ SecPerDay
+            G_MZP(i,j,k) = (growMZp - excrMZldomp -excrMZsdomp - remiMZp
+     &                   -         excrMZsdom2p
      &                   - pomMZp - refrMZp - remvMZp)/ SecPerDay
             ! 9. DVM MZ
             G_DVMZC(i,j,k) = PTR_MZC(i,j,k)*f_dvm
-            G_DVMZN(i,j,k) = PTR_DVMZC(i,j,k)*PTR_MZN(i,j,k)/PTR_MZC(i,j,k)
-            G_DVMZP(i,j,k) = PTR_DVMZC(i,j,k)*PTR_MZP(i,j,k)/PTR_MZC(i,j,k)
+            G_DVMZN(i,j,k)=PTR_DVMZC(i,j,k)*PTR_MZN(i,j,k)/
+     &                     PTR_MZC(i,j,k)
+            G_DVMZP(i,j,k)=PTR_DVMZC(i,j,k)*PTR_MZP(i,j,k)/
+     &                     PTR_MZC(i,j,k)
             
             !-----------------------------------------------------------------------
             !      Detritus Processes
@@ -992,9 +1013,12 @@ c  M        icrophytoplankton processes
             disDETn = remin * PTR_DETN(i,j,k) * remin_prf_n
             disDETp = remin * PTR_DETP(i,j,k) * remin_prf_p
             
-            G_DETC(i,j,k) = (pomSPc + pomTRc + pomUNc + pomPRTc + pomMZc + pomHZc -          disDETc - growBApoc - grazDETc)/ SecPerDay
-            G_DETN(i,j,k) = (pomSPn + pomTRn + pomUNn + pomPRTn + pomMZn + pomHZn -          disDETn - growBApon - grazDETn)/ SecPerDay
-            G_DETP(i,j,k) = (pomSPp + pomTRp + pomUNp + pomPRTp + pomMZp + pomHZp -          disDETp - growBApop - grazDETp)/ SecPerDay
+            G_DETC(i,j,k) = (pomSPc + pomTRc + pomUNc + pomPRTc + pomMZc
+     &                     +pomHZc-disDETc-growBApoc-grazDETc)/SecPerDay
+            G_DETN(i,j,k) = (pomSPn + pomTRn + pomUNn + pomPRTn + pomMZn
+     &    + pomHZn -          disDETn - growBApon - grazDETn)/ SecPerDay
+            G_DETP(i,j,k) = (pomSPp + pomTRp + pomUNp + pomPRTp + pomMZp
+     &    + pomHZp -          disDETp - growBApop - grazDETp)/ SecPerDay
             
             !-----------------------------------------------------------------------
             !      Inorganic Nutrients Processes
