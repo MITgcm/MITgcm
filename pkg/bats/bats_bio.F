@@ -175,8 +175,8 @@ C
        double precision :: q_UN_max0_n,k_nh4UN,k_no3UN,k_po4UN
        double precision :: r_excrUN_1,r_excrUN_n,r_excrUN_2,r_pomUN,
      &                     q_BA_n,q_BA_p
-       double precision :: g_un,q_PRT_n,q_PRT_p
-       double precision :: q_MZ_n,q_MZ_p,Tref,a_UN
+       double precision :: g_un,q_PRT_n,q_PRT_p,
+     &                     q_MZ_n,q_MZ_p,Tref,a_UN
        ! local variables for temperature effect function
        double precision :: Tfunc
        ! local variables in the SP module
