@@ -1,0 +1,10 @@
+# GM-Redi package parameters:
+
+# GM_background_K:      GM  diffusion coefficient
+# GM_taper_scheme:      slope clipping or one of the tapering schemes
+
+ &GM_PARM01
+  GM_background_K    = 1000.,
+  GM_taper_scheme    = 'dm95',
+  GM_AdvForm         =.TRUE.,
+ &

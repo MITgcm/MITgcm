@@ -41,7 +41,7 @@ C           READ(iUnit,*) bioparams(k)
 C           WRITE(standardMessageUnit,*) 'bioparam',bioparams(k)
 C       ENDDO
 C       CLOSE(iUnit)
-      print('init_fixed not used')
+      print *, 'init_fixed not used'
 
       _END_MASTER(myThid)
 

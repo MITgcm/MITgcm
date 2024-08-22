@@ -1,0 +1,4 @@
+ &GCHEM_PARM01
+  useBATS=.TRUE.,
+  nsubtime=1,
+ &
