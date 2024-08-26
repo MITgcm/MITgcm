@@ -31,57 +31,18 @@ C     == Global variables ===
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid - Thread number for this instance of the routine.
       INTEGER myThid
-
-#ifdef ALLOW_COST_TEMP
-C     !LOCAL VARIABLES:
-      INTEGER i, j, k
-      INTEGER bi, bj
-      INTEGER Nk
-      _RL locfc,tmp
-      _RL thetalev(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 CEOP
 
-      Nk = 2
-C Read annual mean Levitus temperature
-
-      CALL READ_FLD_XYZ_RL('lev_t_an.bin',' ',thetalev,0,myThid)
-
-C  Total number of wet temperature point
-      tmp  = 0. _d 0
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO k=1, Nk
-          DO j=1,sNy
-           DO i=1,sNx
-             tmp = tmp + maskC(i,j,k,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-       ENDDO
-      ENDDO
-      _GLOBAL_SUM_RL( tmp , myThid )
-      IF ( tmp.GT.0. ) tmp = 1. _d 0 / tmp
-
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-
-         locfc = 0. _d 0
-         DO k=1,Nk
-           DO j=1,sNy
-            DO i=1,sNx
-              locfc = locfc + tmp*maskC(i,j,k,bi,bj)*
-     &         wtheta(k,bi,bj)*
-     &         ( cMeanTheta(i,j,k,bi,bj) - thetalev(i,j,k,bi,bj) )**2
-            ENDDO
-           ENDDO
-         ENDDO
-
-         objf_temp_tut(bi,bj) = locfc
-c        print*,'objf_temp_tut =',locfc,startTime,endTime,tmp
-
-       ENDDO
-      ENDDO
-
+#ifdef ALLOW_COST_TEMP
+C     Abuse this routine as driver to call a free-format function
+      CALL COST_TEMP_FFORM(
+     I     sNx, sNy, nSx, nSy, OLx, OLy, Nr,
+     I     myByLo(myThid), myByHi(myThid),
+     I     myBxLo(myThid), myBxHi(myThid),
+     I     maskC, wtheta, cMeanTheta,
+     O     objf_temp_tut,
+     I     myThid )
 #endif /* ALLOW_COST_TEMP */
+
       RETURN
       END
