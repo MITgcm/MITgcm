@@ -3612,29 +3612,6 @@ ad_taf_output.$FS: \$(AD_FLOW_FILES) \$(AD_F90FILES) \$(AD_FILES)
 	cat \$(AD_F90FILES:.$FS90=_ad.$FS90) > ad_taf_outpF90.$FS90
 	cat \$(AD_FILES:.$FS=_ad.$FS) > ad_taf_output.$FS
 
-
-# ... Escobar needs a hacked target: 
-adhybrid: \$(SPECIAL_FILES) \$(H_SRC_FILES) ad_prep \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
-	@echo Compiling hybrid adjoint, need help? Ask Ivana
-
-# ... Escobar needs a hacked target: ad_taf_output up until the TAF call...
-ad_prep: \$(AD_FLOW_FILES) \$(AD_F90FILES) \$(AD_FILES)
-	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "Adjoint version" -bAD_CONFIG_H -DALLOW_ADJOINT_RUN -UALLOW_TANGENTLINEAR_RUN > ad_config.template
-	cmp ad_config.template AD_CONFIG.h || cat ad_config.template > AD_CONFIG.h
-	@-rm -f ad_config.template
-	@\$(MAKE) -f \$(MAKEFILE) \$(FLOWFILES)
-	@\$(MAKE) -f \$(MAKEFILE) \$(F90_PP_SRC_FILES) \$(F77_PP_SRC_FILES) 
-	@-rm -f \$(AD_F90FILES:.$FS90=_ad.$FS90) \$(AD_F90FILES:.$FS90=_ad.o); echo ''
-	@-rm -f \$(AD_FILES:.$FS=_ad.$FS) \$(AD_FILES:.$FS=_ad.o); echo ''
-	\$(MAKE) -f \$(MAKEFILE) remove_comments
-	@echo Compiling hybrid adjoint, execute staf call now ... 
-
-# ... Escobar needs a hacked target: ad_taf_output after the TAF call...
-ad_postprep: \$(AD_FLOW_FILES) \$(AD_F90FILES) \$(AD_FILES)
-	cat \$(AD_FILES:.$FS=_ad.$FS) > ad_taf_output.$FS
-	\$(MAKE) -f \$(MAKEFILE) adobjfiles
-	\$(LINK) -o \${EXE_ADJ} \$(FFLAGS) \$(FOPTIM) \$(AD_F90FILES:.$FS90=_ad.o) \$(AD_FILES:.$FS=_ad.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
-
 \$(EXE_ADJ): \$(SPECIAL_FILES) \$(H_SRC_FILES) ad_taf_output.$FS \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
 	\$(MAKE) -f \$(MAKEFILE) adobjfiles
 	\$(LINK) -o \${EXE_ADJ} \$(FFLAGS) \$(FOPTIM) \$(AD_F90FILES:.$FS90=_ad.o) \$(AD_FILES:.$FS=_ad.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
