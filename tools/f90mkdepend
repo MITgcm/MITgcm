@@ -12,18 +12,28 @@ FS=
 FS90=
 
 # process option arguments
-while [[ $# -gt 0 ]]; do
-    key="$1"
-    case $key in 
+key_prev=
+for key in "$@" ; do
+
+    # If the previous option needs an argument, assign it.
+    if test -n "$key_prev"; then
+	    eval "$key_prev=\$key"
+	    key_prev=
+	    continue
+    fi
+
+    case $key in
     -fs)
-        shift
-        FS="$1"
-        shift
+        key_prev='FS'
+        ;;
+    -fs=*)
+        FS="${key#*=}"
         ;;
     -fs90)
-        shift
-        FS90="$1"
-        shift
+        key_prev='FS90'
+        ;;
+    -fs90=*)
+        FS90="${key#*=}"
         ;;
     *)
         echo "f90mkdepend: Unknown option: $key"
@@ -31,6 +41,26 @@ while [[ $# -gt 0 ]]; do
         ;;
     esac
 done
+
+#while [[ $# -gt 0 ]]; do
+#    key="$1"
+#    case $key in 
+#    -fs)
+#        shift
+#        FS="$1"
+#        shift
+#        ;;
+#    -fs90)
+#        shift
+#        FS90="$1"
+#        shift
+#        ;;
+#    *)
+#        echo "f90mkdepend: Unknown option: $key"
+#        exit 1
+#        ;;
+#    esac
+#done
 
 # don't complain if *.F90 doesn't match any files
 shopt -s nullglob
