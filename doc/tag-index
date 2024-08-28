@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o eesupp/src:
+  - new set of Global-Sum vector routines working with shared buffer
+    (=> no needs for input/output to be in common block) and with
+    GLOBAL_SUM_ORDER_TILES implemented ; and remove older versions.
 o tools/genmake2:
   - change Makefile to enable TAF to generate adjoint from a mix of fixed-form
     (.F) and free-form (.F90) src code. Also fix for alternative suffix (e.g.,
