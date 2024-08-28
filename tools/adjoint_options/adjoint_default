@@ -7,15 +7,6 @@
 TAF=staf
 TAMC=stamc
 
-#- select which Fortran version to specify to TAF
-if test "x$TAF_FORTRAN_VERS" = x ; then
-    if test "x$ALWAYS_USE_F90" = "x1" ; then
-	TAF_FORTRAN_VERS='F90' ;
-    else
-	TAF_FORTRAN_VERS='F77' ;
-    fi
-fi
-
 if test "x$USE_DIVA" = "x1" ; then
     DIVA='true'
     DIVA_FLAG="-pure"
@@ -34,6 +25,7 @@ AD_TAF_FLAGS="-reverse $DIVA_FLAG -l taf_ad.log $AD_TAF_FLAGS"
 FTL_TAF_FLAGS="-forward -l taf_ftl.log $FTL_TAF_FLAGS"
 SVD_TAF_FLAGS="-reverse -forward -pure -l taf_svd.log $SVD_TAF_FLAGS"
 
+# TAF_COMMON_FLAGS is a local variable used for abbreviation
 TAF_COMMON_FLAGS="-i4 -r4 -intrinsic system,flush"
 
 if test "x$TAMC_COMPATIBILITY_MODE" = "x1" ; then
@@ -44,10 +36,21 @@ if test "x$USE_EXTENDED_SRC" = "xt"; then
     TAF_COMMON_FLAGS="-e $TAF_COMMON_FLAGS"
 fi
 
+#- select which Fortran version to specify to TAF
+if test "x$TAF_FORTRAN_VERS" = x ; then
+    if test "x$ALWAYS_USE_F90" = "x1" ; then
+	TAF_FORTRAN_VERS='F90' ;
+    else
+	TAF_FORTRAN_VERS='F77' ;
+    fi
+fi
+
 if test $TAF_FORTRAN_VERS = 'F77' ; then
     TAF_COMMON_FLAGS="-f77 $TAF_COMMON_FLAGS"
 elif test $TAF_FORTRAN_VERS = 'F90' ; then
     TAF_COMMON_FLAGS="-f90 $TAF_COMMON_FLAGS"
+elif test $TAF_FORTRAN_VERS = 'F08' ; then
+    TAF_COMMON_FLAGS="-f08 $TAF_COMMON_FLAGS"
 else
     #- after Jan 14, 2016, TAF default is "-f95"
     TAF_COMMON_FLAGS="-f95 $TAF_COMMON_FLAGS"
