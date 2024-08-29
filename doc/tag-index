@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/dic:
+  - save 3D pH (for calcite saturation calculation, useCalciteSaturation=T)
+    for next time-step and store it in pickup files (for restart).
 o eesupp/src:
   - new set of Global-Sum vector routines working with shared buffer
     (=> no needs for input/output to be in common block) and with
