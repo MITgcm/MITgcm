@@ -57,13 +57,12 @@ C     | SUBROUTINE the_main_loop
 C     | o Run the ocean model and evaluate the specified cost function.
 C     *================================================================*
 C     |
-C     | THE_MAIN_LOOP is the toplevel routine for the Tangent Linear and
-C     | Adjoint Model Compiler (TAMC).
-C     | For this purpose the initialization
-C     | of the model was split into two parts. Those parameters that do
-C     | not depend on a specific model run are set in INITIALISE_FIXED,
-C     | whereas those that do depend on the specific realization are
-C     | initialized in INITIALISE_VARIA.
+C     | THE_MAIN_LOOP is the toplevel routine for the Transformation of
+C     | Algorith in Fortran (TAF).
+C     | For this purpose the initialization of the model was split into
+C     | two parts. Those parameters that do not depend on a specific model
+C     | run are set in INITIALISE_FIXED, whereas those that do depend on
+C     | the specific realization are initialized in INITIALISE_VARIA.
 C     | This routine is to be used in conjuction with the MITgcmuv
 C     | checkpoint 37.
 C     *================================================================*
