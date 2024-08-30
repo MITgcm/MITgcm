@@ -3605,8 +3605,8 @@ ftl_inpF90_code.$FS90: \$(AD_F90FILES)
 	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "TangLin version" -bAD_CONFIG_H -UALLOW_ADJOINT_RUN -DALLOW_TANGENTLINEAR_RUN > ad_config.template
 	cmp ad_config.template AD_CONFIG.h || cat ad_config.template > AD_CONFIG.h
 	@-rm -f ad_config.template
- 	@\$(MAKE) -f \$(MAKEFILE) \$(F90_PP_SRC_FILES)
- 	cat \$(AD_F90FILES) > ftl_inpF90_code.$FS90
+	@\$(MAKE) -f \$(MAKEFILE) \$(F90_PP_SRC_FILES)
+	cat \$(AD_F90FILES) > ftl_inpF90_code.$FS90
 
 EOF
 fi
@@ -3640,16 +3640,17 @@ else
 cat >>$MAKEFILE <<EOF
 # ... send 1 fixed format file and 1 free format file to TAF ...
 ftl_taf_output.$FS: ftl_input_code.$FS ftl_inpF90_code.$FS90
- 	@-rm -f ftl_input_code_ad.$FS ftl_inpF90_code_ad.$FS90 ; echo ''
- 	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) -fixed ftl_input_code.$FS -free ftl_inpF90_code.$FS90
- 	ls -l ftl_input_code_ad.$FS ftl_inpF90_code_ad.$FS90
- 	cat ftl_input_code_ad.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ftl_taf_output.$FS
+	@-rm -f ftl_input_code_tl.$FS ftl_inpF90_code_tl.$FS90 ; echo ''
+	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) -fixed ftl_input_code.$FS -free ftl_inpF90_code.$FS90
+	ls -l ftl_input_code_tl.$FS ftl_inpF90_code_tl.$FS90
+	cat ftl_input_code_tl.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ftl_taf_output.$FS
 # We need the extra target for ftl_taf_outpF90.$FS90, because the file is
 # generated together with ftl_taf_output.$FS.
 ftl_taf_outpF90.$FS90: ftl_taf_output.$FS
- 	cat ftl_inpF90_code_ad.$FS90 > ftl_taf_outpF90.$FS90
+	cat ftl_inpF90_code_tl.$FS90 > ftl_taf_outpF90.$FS90
+
 \$(EXE_TLM): \$(SPECIAL_FILES) \$(H_SRC_FILES) ftl_taf_output.o ftl_taf_outpF90.o \$(NON_AD_F77_SRC_FILES:.F=.o) \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
- 	\$(LINK) -o \${EXE_ADJ} \$(FFLAGS) \$(FOPTIM) ftl_taf_output.o ftl_taf_outpF90.o \$(NON_AD_F77_SRC_FILES:.F=.o) \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
+	\$(LINK) -o \${EXE_TLM} \$(FFLAGS) \$(FOPTIM) ftl_taf_output.o ftl_taf_outpF90.o \$(NON_AD_F77_SRC_FILES:.F=.o) \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
 # unused target, could be removed
 ftlobj: ftl_taf_output.o ftl_taf_outpF90.o \$(NON_AD_F77_SRC_FILES:.F=.o) \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o)
 EOF
@@ -3673,7 +3674,7 @@ ftl_taf_output.$FS: \$(AD_FLOW_FILES) \$(AD_FILES) \$(AD_F90FILES)
 
 \$(EXE_TLM): \$(SPECIAL_FILES) \$(H_SRC_FILES) ftl_taf_output.$FS \$(NON_AD_F77_SRC_FILES:.F=.o) \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
 	\$(MAKE) -f \$(MAKEFILE) ftlobjfiles
-	\$(LINK) -o \${EXE_TLM} \$(FFLAGS) \$(FOPTIM) \$(AD_FILES:.$FS=_tl.o) \$(AD_F90FILES:.F90=_tl.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
+	\$(LINK) -o \${EXE_TLM} \$(FFLAGS) \$(FOPTIM) \$(AD_FILES:.$FS=_tl.o) \$(AD_F90FILES:.$FS90=_tl.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
 
 # unused target, could be removed
 ftlobj: ftl_taf_output.$FS \$(NON_AD_F77_SRC_FILES:.F=.o) \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o)
