@@ -3655,6 +3655,7 @@ ftl_taf_outpF90.$FS90: ftl_taf_output.$FS
 
 # unused target, could be removed
 ftlobj: ftl_taf_output.o ftl_taf_outpF90.o \$(NON_AD_F77_SRC_FILES:.F=.o) \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o)
+
 EOF
 fi
 
