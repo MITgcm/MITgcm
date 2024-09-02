@@ -3424,7 +3424,7 @@ echo >> $MAKEFILE
 printf "AD_FILES = " >> $MAKEFILE
 AD_FILES=`cat $TMP.adSrcFiles | sed -e "s/\.f/.$FS/g"`
 for i in $AD_FILES ; do
-    echo    " \\" >> $MAKEFILE
+    echo   " \\" >> $MAKEFILE
     printf " $i" >> $MAKEFILE
 done
 echo >> $MAKEFILE
@@ -3432,7 +3432,7 @@ rm -f $TMP.adSrcFiles
 printf "AD_F90FILES = " >> $MAKEFILE
 AD_F90FILES=`cat $TMP.adF90Files | sed -e "s/\.f90/.$FS90/g"`
 for i in $AD_F90FILES ; do
-    echo    " \\" >> $MAKEFILE
+    echo   " \\" >> $MAKEFILE
     printf " $i" >> $MAKEFILE
 done
 echo >> $MAKEFILE
@@ -3644,6 +3644,7 @@ ftl_taf_output.$FS: ftl_input_code.$FS ftl_inpF90_code.$FS90
 	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) -fixed ftl_input_code.$FS -free ftl_inpF90_code.$FS90
 	ls -l ftl_input_code_tl.$FS ftl_inpF90_code_tl.$FS90
 	cat ftl_input_code_tl.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ftl_taf_output.$FS
+
 # We need the extra target for ftl_taf_outpF90.$FS90, because the file is
 # generated together with ftl_taf_output.$FS.
 ftl_taf_outpF90.$FS90: ftl_taf_output.$FS
@@ -3651,6 +3652,7 @@ ftl_taf_outpF90.$FS90: ftl_taf_output.$FS
 
 \$(EXE_TLM): \$(SPECIAL_FILES) \$(H_SRC_FILES) ftl_taf_output.o ftl_taf_outpF90.o \$(NON_AD_F77_SRC_FILES:.F=.o) \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
 	\$(LINK) -o \${EXE_TLM} \$(FFLAGS) \$(FOPTIM) ftl_taf_output.o ftl_taf_outpF90.o \$(NON_AD_F77_SRC_FILES:.F=.o) \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
+
 # unused target, could be removed
 ftlobj: ftl_taf_output.o ftl_taf_outpF90.o \$(NON_AD_F77_SRC_FILES:.F=.o) \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o)
 EOF
