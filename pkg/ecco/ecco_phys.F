@@ -90,10 +90,10 @@ C- note: defined with overlap here, not needed, but more efficient
 #ifdef ALLOW_PSBAR_STERIC
       _RL VOLsumTile(nSx,nSy), RHOsumTile(nSx,nSy)
       _RL VOLsumGlob_1, RHOsumGlob_1
-C     CHARACTER*(MAX_LEN_MBUF) msgBuf
+c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 #endif
 C     Mload     :: total mass load (kg/m**2)
-C     _RL Mload(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+c     _RL Mload(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifdef ALLOW_SEAICE
       _RL tmprecip_area,  tmphsnowact, tmpheffact
       _RL area_reg_sq
@@ -368,14 +368,14 @@ cts ---
            DO i =  1,sNx
             tmprecip_area = 1. _d 0/SQRT(area(i,j,bi,bj)*area(i,j,bi,bj)
      &       + area_reg_sq)
-            tmphsnowact = hsnow(I,J,bi,bj) * tmprecip_area
-            tmpheffact  = heff(I,J,bi,bj) * tmprecip_area
-C gencost_storefld is the total freeboard, which is the sum of snow 
+            tmphsnowact = hsnow(i,j,bi,bj) * tmprecip_area
+            tmpheffact  = heff(i,j,bi,bj) * tmprecip_area
+C gencost_storefld is the total freeboard, which is the sum of snow
 C thickness and sea-ice freeboard. Based on Archimedes' principle,
-C the total freeboard is equal to the sum of snow thickness and 
+C the total freeboard is equal to the sum of snow thickness and
 C sea-ice thickness minus the sea-ice thickness below the water line
 C (see, e.g., Kwok & Markus, 2018, Advances in Space Research,
-C https://doi.org/10.1016/j.asr.2017.09.007; their equation for lidar). 
+C https://doi.org/10.1016/j.asr.2017.09.007; their equation for lidar).
 C Note that snow thickness and sea-ice thickness are the actual,
 C not effective, thickness.
             gencost_storefld(i,j,bi,bj,kgen) =

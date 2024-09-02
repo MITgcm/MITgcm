@@ -12,13 +12,13 @@
 # include "GMREDI_OPTIONS.h"
 #endif
 
-      subroutine cost_gencost_customize( mythid )
+      subroutine cost_gencost_customize( myThid )
 
 c     ==================================================================
 c     SUBROUTINE cost_gencost_customize
 c     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
 c     == global variables ==
 
@@ -52,7 +52,7 @@ c     == global variables ==
 
 c     == routine arguments ==
 
-      integer mythid
+      integer myThid
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
 c     == local variables ==
@@ -66,10 +66,10 @@ c     == local variables ==
       integer kLev
 #ifdef ALLOW_EXF
       _RL uBarC, vBarC
-      _RL zontau        (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL mertau        (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL zonwind        (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL merwind        (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL zontau        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL mertau        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL zonwind        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL merwind        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
       integer itlo,ithi
       integer jtlo,jthi
@@ -78,14 +78,14 @@ c     == local variables ==
 
 c     == end of interface ==
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
+      jtlo = myByLo(myThid)
+      jthi = myByHi(myThid)
+      itlo = myBxLo(myThid)
+      ithi = myBxHi(myThid)
       jmin = 1
-      jmax = sny
+      jmax = sNy
       imin = 1
-      imax = snx
+      imax = sNx
 
 #ifdef ALLOW_EXF
 c rotated to EW/NS tracer point
@@ -228,55 +228,55 @@ c    &     .TRUE.,.TRUE.,.TRUE.,1,myThid)
 #ifdef ALLOW_GENCOST3D
          elseif (gencost_barfile(k)(1:7).EQ.'m_theta') then
            kk=gencost_pointer3d(k)
-           do k2=1,nr
+           do k2=1,Nr
             gencost_mod3d(i,j,k2,bi,bj,kk) =
      &       theta(i,j,k2,bi,bj)*maskC(i,j,k2,bi,bj)
            enddo
          elseif (gencost_barfile(k)(1:6).EQ.'m_salt') then
            kk=gencost_pointer3d(k)
-           do k2=1,nr
+           do k2=1,Nr
             gencost_mod3d(i,j,k2,bi,bj,kk) =
      &       salt(i,j,k2,bi,bj)*maskC(i,j,k2,bi,bj)
            enddo
 #ifdef ALLOW_PTRACERS
          elseif (gencost_barfile(k)(1:9).EQ.'m_ptracer') then
            kk=gencost_pointer3d(k)
-           do k2=1,nr
+           do k2=1,Nr
             gencost_mod3d(i,j,k2,bi,bj,kk) =
      &       pTracer(i,j,k2,bi,bj,itr)*maskC(i,j,k2,bi,bj)
            enddo
 #endif
          elseif (gencost_barfile(k)(1:4).EQ.'m_UE') then
            kk=gencost_pointer3d(k)
-           do k2=1,nr
+           do k2=1,Nr
             gencost_mod3d(i,j,k2,bi,bj,kk) =
      &       m_UE(i,j,k2,bi,bj)*maskC(i,j,k2,bi,bj)
            enddo
          elseif (gencost_barfile(k)(1:4).EQ.'m_VN') then
            kk=gencost_pointer3d(k)
-           do k2=1,nr
+           do k2=1,Nr
             gencost_mod3d(i,j,k2,bi,bj,kk) =
      &       m_VN(i,j,k2,bi,bj)*maskC(i,j,k2,bi,bj)
            enddo
          elseif (gencost_barfile(k)(1:7).EQ.'m_trVol') then
            kk=gencost_pointer3d(k)
-           do k2=1,nr
+           do k2=1,Nr
              gencost_mod3d(i,j,k2,bi,bj,kk) = trVol(i,j,k2,bi,bj)
            enddo
          elseif (gencost_barfile(k)(1:8).EQ.'m_trHeat') then
            kk=gencost_pointer3d(k)
-           do k2=1,nr
+           do k2=1,Nr
              gencost_mod3d(i,j,k2,bi,bj,kk) = trHeat(i,j,k2,bi,bj)
            enddo
          elseif (gencost_barfile(k)(1:8).EQ.'m_trSalt') then
            kk=gencost_pointer3d(k)
-           do k2=1,nr
+           do k2=1,Nr
              gencost_mod3d(i,j,k2,bi,bj,kk) = trSalt(i,j,k2,bi,bj)
            enddo
 #if (defined (ALLOW_3D_DIFFKR) || defined (ALLOW_DIFFKR_CONTROL))
          elseif (gencost_barfile(k)(1:8).EQ.'m_diffkr') then
            kk=gencost_pointer3d(k)
-           do k2=1,nr
+           do k2=1,Nr
             gencost_mod3d(i,j,k2,bi,bj,kk) =
      &       diffkr(i,j,k2,bi,bj)*maskC(i,j,k2,bi,bj)
            enddo
@@ -285,7 +285,7 @@ c    &     .TRUE.,.TRUE.,.TRUE.,1,myThid)
 #if ( defined ALLOW_KAPGM_CONTROL && defined GM_READ_K3D_GM )
          elseif (gencost_barfile(k)(1:7).EQ.'m_kapgm') then
            kk=gencost_pointer3d(k)
-           do k2=1,nr
+           do k2=1,Nr
             gencost_mod3d(i,j,k2,bi,bj,kk) =
      &       GM_inpK3dGM(i,j,k2,bi,bj)*maskC(i,j,k2,bi,bj)
            enddo
@@ -293,7 +293,7 @@ c    &     .TRUE.,.TRUE.,.TRUE.,1,myThid)
 #if ( defined ALLOW_KAPREDI_CONTROL && defined GM_READ_K3D_REDI )
          elseif (gencost_barfile(k)(1:9).EQ.'m_kapredi') then
            kk=gencost_pointer3d(k)
-           do k2=1,nr
+           do k2=1,Nr
             gencost_mod3d(i,j,k2,bi,bj,kk) =
      &       GM_inpK3dRedi(i,j,k2,bi,bj)*maskC(i,j,k2,bi,bj)
            enddo
