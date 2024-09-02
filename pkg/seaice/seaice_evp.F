@@ -313,9 +313,6 @@ CADJ STORE vice           = comlev1_evp, key = evpkey, byte = isbyte
 CADJ STORE seaice_sigma1  = comlev1_evp, key = evpkey, byte = isbyte
 CADJ STORE seaice_sigma2  = comlev1_evp, key = evpkey, byte = isbyte
 CADJ STORE seaice_sigma12 = comlev1_evp, key = evpkey, byte = isbyte
-CADJ STORE evpAlphaC      = comlev1_evp, key = evpkey, byte = isbyte
-CADJ STORE evpBetaU       = comlev1_evp, key = evpkey, byte = isbyte
-CADJ STORE evpBetaV       = comlev1_evp, key = evpkey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C
 C     first calculate strain rates and bulk moduli/viscosities
@@ -326,8 +323,6 @@ C
      I       iEVPstep, myTime, myIter, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE e11 = comlev1_evp,key = evpkey, byte = isbyte
-CADJ STORE e12 = comlev1_evp,key = evpkey, byte = isbyte
 CADJ STORE e22 = comlev1_evp,key = evpkey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -424,9 +419,16 @@ CML            deltaCreg  = SQRT(deltaSq + deltaMinSq)
             DO i=0,sNx+1
 CML   I do not like these hidden regularisations, why do we need to
 CML   divide by mass?
+#ifdef ALLOW_AUTODIFF
+             evpAlphaC(i,j,bi,bj) = SEAICE_evpAlpha
+             IF ( zetaC(i,j) .GT. 0. _d 0 ) THEN
+#endif
              evpAlphaC(i,j,bi,bj) = SQRT(zetaC(i,j)
      &            * EVPcFac / MAX(seaiceMassC(i,j,bi,bj), 1.D-04)
      &            * recip_rA(i,j,bi,bj) ) * HEFFM(i,j,bi,bj)
+#ifdef ALLOW_AUTODIFF
+             ENDIF
+#endif
              evpAlphaC(i,j,bi,bj) =
      &            MAX(evpAlphaC(i,j,bi,bj),SEAICEaEVPalphaMin)
             ENDDO
@@ -564,13 +566,15 @@ C     than squaring the averages
             ENDDO
            ENDDO
           ENDIF
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE evpAlphaC(:,:,bi,bj) =comlev1_bibj_evp,key=tkey,byte=isbyte
+CADJ STORE seaice_div        = comlev1_bibj_evp, key=tkey, byte=isbyte
+CADJ STORE seaice_tension    = comlev1_bibj_evp, key=tkey, byte=isbyte
+CADJ STORE seaice_shear      = comlev1_bibj_evp, key=tkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
 C
 C     first step stress equations
 C
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE denom1(:,:,bi,bj) = comlev1_bibj_evp, key=tkey, byte=isbyte
-CADJ STORE denom2(:,:,bi,bj) = comlev1_bibj_evp, key=tkey, byte=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
           IF ( useAdaptiveEVP ) THEN
            DO j=0,sNy
             DO i=0,sNx
@@ -579,6 +583,10 @@ CADJ STORE denom2(:,:,bi,bj) = comlev1_bibj_evp, key=tkey, byte=isbyte
             ENDDO
            ENDDO
           ENDIF
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE denom1(:,:,bi,bj) = comlev1_bibj_evp, key=tkey, byte=isbyte
+CADJ STORE denom2(:,:,bi,bj) = comlev1_bibj_evp, key=tkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
           DO j=0,sNy
            DO i=0,sNx
 C     sigma1 and sigma2 are computed on C points
@@ -611,10 +619,6 @@ C     recover sigma11 and sigma22
            ENDDO
           ENDDO
 
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE denom2   (:,:,bi,bj) = comlev1_bibj_evp,key=tkey,byte=isbyte
-CADJ STORE evpAlphaZ(:,:,bi,bj) = comlev1_bibj_evp,key=tkey,byte=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
 C     sigma12 is computed on Z points
           IF ( useAdaptiveEVP ) THEN
            DO j=1,sNy+1
@@ -626,6 +630,10 @@ C     sigma12 is computed on Z points
             ENDDO
            ENDDO
           ENDIF
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE denom2   (:,:,bi,bj) = comlev1_bibj_evp,key=tkey,byte=isbyte
+CADJ STORE evpAlphaZ(:,:,bi,bj) = comlev1_bibj_evp,key=tkey,byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
           DO j=1,sNy+1
            DO i=1,sNx+1
             seaice_sigma12(i,j,bi,bj) = ( seaice_sigma12(i,j,bi,bj)
@@ -740,9 +748,19 @@ C
      O       CbotC,
      I       iEVPstep, myTime, myIter, myThid )
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */
-
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE DWATN = comlev1_evp, key = evpkey, byte=isbyte
+# ifdef SEAICE_ALLOW_BOTTOMDRAG
+CADJ STORE CbotC = comlev1_evp, key = evpkey, byte=isbyte
+# endif
+#endif
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
+#ifdef ALLOW_AUTODIFF_TAMC
+          tkey = bi + (bj-1)*nSx + (evpkey-1)*nSx*nSy
+CADJ STORE uIce(:,:,bi,bj) = comlev1_bibj_evp, key=tkey, byte=isbyte
+CADJ STORE vIce(:,:,bi,bj) = comlev1_bibj_evp, key=tkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
           DO j=1,sNy
            DO i=1,sNx
 C     over open water, all terms that contain sea ice mass drop out and
@@ -799,6 +817,10 @@ C     coriols terms
      &           )
            ENDDO
           ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE FORCEX(:,:,bi,bj) = comlev1_bibj_evp, key=tkey, byte=isbyte
+CADJ STORE FORCEY(:,:,bi,bj) = comlev1_bibj_evp, key=tkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
 #ifdef SEAICE_ALLOW_MOM_ADVECTION
           IF ( SEAICEmomAdvection ) THEN
            DO j=1-OLy,sNy+OLy
@@ -835,6 +857,12 @@ C     compute and adjust parameters that are constant otherwise
             ENDDO
            ENDDO
           ENDIF
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE evpBetaU(:,:,bi,bj) = comlev1_bibj_evp,key=tkey,byte=isbyte
+CADJ STORE evpBetaV(:,:,bi,bj) = comlev1_bibj_evp,key=tkey,byte=isbyte
+CADJ STORE uIce(:,:,bi,bj) = comlev1_bibj_evp, key=tkey, byte=isbyte
+CADJ STORE vIce(:,:,bi,bj) = comlev1_bibj_evp, key=tkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
           DO j=1,sNy
            DO i=1,sNx
             betaFacU   = evpBetaU(i,j,bi,bj)*recip_deltaT
@@ -878,6 +906,10 @@ c    &                       +( vIce(i,j,bi,bj) - vIceNm1(i,j,bi,bj) )
            ENDDO
           ENDDO
 #ifndef OBCS_UVICE_OLD
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE uIce(:,:,bi,bj) = comlev1_bibj_evp, key=tkey, byte=isbyte
+CADJ STORE vIce(:,:,bi,bj) = comlev1_bibj_evp, key=tkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
           DO j=1,sNy
            DO i=1,sNx
             locMaskU = maskInC(i,j,bi,bj)*maskInC(i-1,j,bi,bj)
@@ -891,11 +923,6 @@ c    &                       +( vIce(i,j,bi,bj) - vIceNm1(i,j,bi,bj) )
 #endif /* OBCS_UVICE_OLD */
          ENDDO
         ENDDO
-
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE uIce = comlev1_evp, key = evpkey, byte = isbyte
-CADJ STORE vIce = comlev1_evp, key = evpkey, byte = isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
 
         CALL EXCH_UV_XY_RL(uIce,vIce,.TRUE.,myThid)
 
