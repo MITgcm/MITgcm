@@ -1,7 +1,11 @@
 #include "PACKAGES_CONFIG.h"
 ! Copied from default CPP_EEMACROS.h
 ! To avoid this, we need to find a way to include CPP_EEMACROS.h
-#define _RS Real*8
+#ifdef LET_RS_BE_REAL4
+# define _RS Real*4
+#else /* LET_RS_BE_REAL4 */
+# define _RS Real*8
+#endif /* LET_RS_BE_REAL4 */
 #define _RL Real*8
 
 !BOP
@@ -24,12 +28,12 @@ subroutine cost_test_local ( &
   implicit none
 
   !   !INPUT/OUTPUT PARAMETERS:
-  ! sNx,sNy,nSx,nSy,OLx,OLy,Nr  - array boundaries (set it SIZE.h)
-  ! myByLo,myByHi,myBxLo,myBxHi - bi/bj loop boundaries for myThid
-  ! myXGlobalLo, myYGlobalLo    - smallest indices of global fields
-  ! myThid        - Thread number for this instance of the routine.
-  ! theta         - temperature
-  ! objf_test     - objective/cost function contribution defined in cost.h
+  ! sNx,sNy,nSx,nSy,OLx,OLy,Nr  :: array boundaries (set it SIZE.h)
+  ! myByLo,myByHi,myBxLo,myBxHi :: bi/bj loop boundaries for myThid
+  ! myXGlobalLo, myYGlobalLo    :: smallest indices of global fields
+  ! myThid        :: Thread number for this instance of the routine.
+  ! theta         :: temperature
+  ! objf_test     :: objective/cost function contribution defined in cost.h
   integer sNx, sNy, nSx, nSy, OLx, OLy, Nr
   integer myByLo, myByHi, myBxLo, myBxHi
   integer myXGlobalLo, myYGlobalLo
