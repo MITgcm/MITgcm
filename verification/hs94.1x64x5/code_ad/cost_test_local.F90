@@ -1,11 +1,6 @@
 #include "PACKAGES_CONFIG.h"
 ! Copied from default CPP_EEMACROS.h
 ! To avoid this, we need to find a way to include CPP_EEMACROS.h
-#ifdef LET_RS_BE_REAL4
-# define _RS Real*4
-#else /* LET_RS_BE_REAL4 */
-# define _RS Real*8
-#endif /* LET_RS_BE_REAL4 */
 #define _RL Real*8
 
 !BOP
@@ -13,7 +8,7 @@
 !     !INTERFACE:
 subroutine cost_test_local ( &
      sNx, sNy, nSx, nSy, OLx, OLy, Nr, &
-     myByLo, myByHi, myBxLo, myBxHi, &
+     myBxLo, myBxHi, myByLo, myByHi, &
      myXGlobalLo, myYGlobalLo, &
      theta, &
      objf_test, &
@@ -34,17 +29,11 @@ subroutine cost_test_local ( &
   ! myThid        :: Thread number for this instance of the routine.
   ! theta         :: temperature
   ! objf_test     :: objective/cost function contribution defined in cost.h
-  integer sNx, sNy, nSx, nSy, OLx, OLy, Nr
-  integer myByLo, myByHi, myBxLo, myBxHi
-  integer myXGlobalLo, myYGlobalLo
-  integer myThid
-  _RL     theta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-  _RL     objf_test                           (nSx,nSy)
-  ! This only works with TAF if TAF_FORTRAN_VERS > F77
-  ! integer, intent(in) :: sNx, sNy, nSx, nSy, OLx, OLy, Nr &
-  !      myByLo, myByHi, myBxLo, myBxHi, myXGlobalLo, myYGlobalLo, myThid
-  ! _RL, intent(in)     :: theta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-  ! _RL, intent(inout)  :: objf_test(nSx,nSy)
+  ! This requires TAF_FORTRAN_VERS > F77
+  integer, intent(in) :: sNx, sNy, nSx, nSy, OLx, OLy, Nr, &
+       myByLo, myByHi, myBxLo, myBxHi, myXGlobalLo, myYGlobalLo, myThid
+  _RL, intent(in)     :: theta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+  _RL, intent(inout)  :: objf_test(nSx,nSy)
 
 #ifdef ALLOW_COST
   !   !LOCAL VARIABLES:
@@ -83,5 +72,5 @@ subroutine cost_test_local ( &
 #endif /* ALLOW_COST */
 
   return
-  ! This only works with TAF if TAF_FORTRAN_VERS > F77
-end ! subroutine cost_test_local
+  ! This requires TAF_FORTRAN_VERS > F77
+end subroutine cost_test_local

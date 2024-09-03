@@ -31,8 +31,8 @@ C     Abuse this routine as driver to call a free-format function and
 C     pass all variables normally imported by include statements.
       CALL COST_TEST_LOCAL (
      I     sNx, sNy, nSx, nSy, OLx, OLy, Nr,
-     I     myByLo(myThid), myByHi(myThid),
      I     myBxLo(myThid), myBxHi(myThid),
+     I     myByLo(myThid), myByHi(myThid),
      I     myXGlobalLo, myYGlobalLo,
      I     theta,
      U     objf_test,
