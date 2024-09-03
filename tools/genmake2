@@ -881,7 +881,7 @@ EOF
     FC_NAMEMANGLE="#define FC_NAMEMANGLE(X)  $nmangle"
 
     #  cleanup the testing files
-    rm -f genmake_tcomp.* genmake_test.*
+    rm -rf genmake_tcomp.* genmake_test.*
 
     echo " --> set FC_NAMEMANGLE='$FC_NAMEMANGLE'" >> $LOGFILE
 }
@@ -2061,7 +2061,7 @@ else
     HAVE_SYSTEM=
     echo "no"
 fi
-rm -f genmake_tcomp*
+rm -rf genmake_tcomp*
 
 printf "  Do we have the fdate() command using $FC...  "
 cat > genmake_tcomp.$FS <<EOF
@@ -2082,7 +2082,7 @@ else
     HAVE_FDATE=
     echo "no"
 fi
-rm -f genmake_tcomp*
+rm -rf genmake_tcomp*
 
 printf "  Do we have the etime() command using $FC... "
 cat > genmake_tcomp_1.$FS <<EOF
@@ -2134,7 +2134,7 @@ EOF
   fi
 fi
 #mkdir chk_etime ; cp -p -f genmake_tcomp* chk_etime
-rm -f genmake_tcomp*
+rm -rf genmake_tcomp*
 
 printf "  Can we call simple C routines (here, \"cloc()\") using $FC...  "
 check_HAVE_CLOC
@@ -2149,7 +2149,7 @@ else
 	EMBED_SRC=
     fi
 fi
-rm -f genmake_t*
+rm -rf genmake_t*
 
 printf "  Can we unlimit the stack size using $FC...  "
 check_HAVE_SETRLSTK
@@ -2159,7 +2159,7 @@ if test "x$HAVE_SETRLSTK" = xt ; then
 else
     echo "no"
 fi
-rm -f genmake_t*
+rm -rf genmake_t*
 
 printf "  Can we register a signal handler using $FC...  "
 check_HAVE_SIGREG
@@ -2169,7 +2169,7 @@ if test "x$HAVE_SIGREG" = xt ; then
 else
     echo "no"
 fi
-rm -f genmake_t*
+rm -rf genmake_t*
 
 printf "  Can we use stat() through C calls...  "
 check_HAVE_STAT
@@ -2179,7 +2179,7 @@ if test "x$HAVE_STAT" != x ; then
 else
     echo "no"
 fi
-rm -f genmake_t*
+rm -rf genmake_t*
 
 printf "  Can we create NetCDF-enabled binaries...  "
 check_netcdf_libs
@@ -2807,9 +2807,9 @@ done < "$TMP.adF90Files"
 tsort "$TMP.adF90Graph" > "$TMP.adF90Files"
 #
 # Clean up topological sorting files
-rm -rf $TMP.adF90Graph
-sed -i 's|.*/||' "$TMP.adF90Files"
-
+sed 's|.*/||' $TMP.adF90Files > $TMP.adF90Files.tmp
+cat $TMP.adF90Files.tmp > $TMP.adF90Files
+rm -rf $TMP.adF90Graph $TMP.adF90Files.tmp
 
 echo
 echo "===  Creating the Makefile  ==="
@@ -3125,13 +3125,16 @@ done < "$TMP.F90Files"
 # Replace alphabetical with topological file order
 tsort "$TMP.F90Graph" > "$TMP.F90Files"
 #
+
 # Format to F90srclist specs
 sed -e 's|.*/||' -e 's/^/ /' -e 's/$/ \\/' "$TMP.F90Files" > "$TMP.F90Files.tmp"
-sed -i '2,$d' "$TMP.F90srclist"
-cat "$TMP.F90Files.tmp" >> "$TMP.F90srclist"
+sed '2,$d' $TMP.F90srclist > $TMP.F90srclist.tmp
+
+cat $TMP.F90Files.tmp >> $TMP.F90srclist.tmp
+cat $TMP.F90srclist.tmp > $TMP.F90srclist
 #
 # Clean up topological sorting files
-rm -rf $TMP.F90Files.tmp $TMP.F90Files
+rm -rf $TMP.F90Files.tmp $TMP.F90Files $TMP.F90srclist.tmp
 rm -rf $TMP.F90Graph
 
 rm -rf $TMP.links
@@ -3276,7 +3279,7 @@ cat $TMP.F90srclist      >> $MAKEFILE
 cat $TMP.hsrclist        >> $MAKEFILE
 cat $TMP.ad_flow_files   >> $MAKEFILE
 
-rm -f $TMP.F77srclist $TMP.nonADF77srclist $TMP.nonADF90srclist $TMP.csrclist $TMP.F90srclist $TMP.hsrclist $TMP.ad_flow_files
+#rm -f $TMP.F77srclist $TMP.nonADF77srclist $TMP.nonADF90srclist $TMP.csrclist $TMP.F90srclist $TMP.hsrclist $TMP.ad_flow_files
 
 echo >> $MAKEFILE
 
@@ -3314,7 +3317,7 @@ fwd_exe_target:
 	@-rm -f ad_config.template
 	\$(MAKE) -f \$(MAKEFILE) \$(EXECUTABLE)
 
-\$(EXECUTABLE): \$(SPECIAL_FILES) \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES) \$(OBJFILES) \$(EMBEDDED_FILES)
+\$(EXECUTABLE): \$(SPECIAL_FILES) \$(F90_SRC_FILES) \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(H_SRC_FILES) \$(OBJFILES) \$(EMBEDDED_FILES)
 	@echo Creating \$@ ...
 	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) \$(LIBS)
 
