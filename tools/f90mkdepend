@@ -42,26 +42,6 @@ for key in "$@" ; do
     esac
 done
 
-#while [[ $# -gt 0 ]]; do
-#    key="$1"
-#    case $key in 
-#    -fs)
-#        shift
-#        FS="$1"
-#        shift
-#        ;;
-#    -fs90)
-#        shift
-#        FS90="$1"
-#        shift
-#        ;;
-#    *)
-#        echo "f90mkdepend: Unknown option: $key"
-#        exit 1
-#        ;;
-#    esac
-#done
-
 # don't complain if *.F90 doesn't match any files
 shopt -s nullglob
 
