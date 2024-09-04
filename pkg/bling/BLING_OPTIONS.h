@@ -31,7 +31,7 @@ C nutrient limitations to calculate maximum phyto growth rate
 
 C Allow different phytoplankton groups to have different growth rates and
 C nutrient/light limitations. Parameters implemented have yet to be tuned
-#define SIZE_DEP_LIM
+#undef SIZE_DEP_LIM
 
 C Assume that phytoplankton in the mixed layer experience
 C the average light over the mixed layer (as in original BLING model)
@@ -46,7 +46,8 @@ C MLD is calculated using the second derivative of rho(z)
 
 C Determine PAR from shortwave radiation Qsw;
 C otherwise determined from date and latitude
-#define USE_QSW
+C (Do not define if not using pkg/exf)
+#undef USE_QSW
 
 C Light absorption scheme from Manizza et al. (2005),
 C with self shading from phytoplankton
