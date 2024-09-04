@@ -24,16 +24,18 @@ subroutine cost_test_local ( &
 
   !   !INPUT/OUTPUT PARAMETERS:
   ! sNx,sNy,nSx,nSy,OLx,OLy,Nr  :: array boundaries (set it SIZE.h)
-  ! myByLo,myByHi,myBxLo,myBxHi :: bi/bj loop boundaries for myThid
+  ! myBxLo,myBxHi,myByLo,myByHi :: bi/bj loop boundaries for myThid
   ! myXGlobalLo, myYGlobalLo    :: smallest indices of global fields
-  ! myThid        :: Thread number for this instance of the routine.
   ! theta         :: temperature
   ! objf_test     :: objective/cost function contribution defined in cost.h
+  ! myThid        :: my Thread Id number
   ! This requires TAF_FORTRAN_VERS > F77
-  integer, intent(in) :: sNx, sNy, nSx, nSy, OLx, OLy, Nr, &
-       myByLo, myByHi, myBxLo, myBxHi, myXGlobalLo, myYGlobalLo, myThid
+  integer, intent(in) :: sNx, sNy, nSx, nSy, OLx, OLy, Nr
+  integer, intent(in) :: myBxLo, myBxHi, myByLo, myByHi
+  integer, intent(in) :: myXGlobalLo, myYGlobalLo
   _RL, intent(in)     :: theta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
   _RL, intent(inout)  :: objf_test(nSx,nSy)
+  integer, intent(in) :: myThid
 
 #ifdef ALLOW_COST
   !   !LOCAL VARIABLES:
