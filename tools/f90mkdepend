@@ -8,8 +8,8 @@
 #       The name of the source file should be all lower case (except for the extension).
 
 # set defaults
-FS=
-FS90=
+FS=f
+FS90=f90
 
 # process option arguments
 key_prev=
