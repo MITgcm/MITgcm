@@ -92,9 +92,9 @@ C     viscosities are required
      I     krylovIter, myTime, myIter, myThid )
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */
 #ifdef SEAICE_ALLOW_SIDEDRAG
-        IF ( SEAICESideDrag .NE. 0. _d 0 ) CALL SEAICE_SIDEDRAG_STRESS(
-     I       uIceLoc, vIceLoc, NcoastX, NcoastY, AREA,
-     O       SideDragX, SideDragY,
+        IF ( SEAICEsideDrag .NE. 0. _d 0 ) CALL SEAICE_SIDEDRAG_STRESS(
+     I       uIceLoc, vIceLoc, coastRoughU, coastRoughV, AREA,
+     O       sideDragU, sideDragV,
      I       krylovIter, myTime, myIter, myThid )
 #endif /* SEAICE_ALLOW_SIDEDRAG */
       CALL SEAICE_CALC_STRAINRATES(

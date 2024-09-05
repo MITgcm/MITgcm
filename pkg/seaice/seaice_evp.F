@@ -751,9 +751,9 @@ C
      I       iEVPstep, myTime, myIter, myThid )
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */
 #ifdef SEAICE_ALLOW_SIDEDRAG
-        IF ( SEAICESideDrag .NE. 0. _d 0 ) CALL SEAICE_SIDEDRAG_STRESS(
-     I       uIce, vIce, NcoastX, NcoastY, AREA,
-     O       SideDragX, SideDragY,
+        IF ( SEAICEsideDrag .NE. 0. _d 0 ) CALL SEAICE_SIDEDRAG_STRESS(
+     I       uIce, vIce, coastRoughU, coastRoughV, AREA,
+     O       sideDragU, sideDragV,
      I       iEVPstep, myTime, myIter, myThid )
 #endif /* SEAICE_ALLOW_SIDEDRAG */
 
@@ -763,8 +763,8 @@ CADJ STORE DWATN = comlev1_evp, key = evpkey, byte=isbyte
 CADJ STORE CbotC = comlev1_evp, key = evpkey, byte=isbyte
 # endif
 # ifdef SEAICE_ALLOW_SIDEDRAG
-CADJ STORE SideDragX = comlev1_evp, key = evpkey, byte=isbyte
-CADJ STORE SideDragY = comlev1_evp, key = evpkey, byte=isbyte
+CADJ STORE sideDragX = comlev1_evp, key = evpkey, byte=isbyte
+CADJ STORE sideDragY = comlev1_evp, key = evpkey, byte=isbyte
 # endif
 #endif
         DO bj=myByLo(myThid),myByHi(myThid)
@@ -896,8 +896,8 @@ CADJ STORE vIce(:,:,bi,bj) = comlev1_bibj_evp, key=tkey, byte=isbyte
      &           * 0.5 _d 0*( CbotC(i,j,bi,bj) + CbotC(i,j-1,bi,bj) )
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */
 #ifdef SEAICE_ALLOW_SIDEDRAG
-            denomU = denomU + SideDragX(i,j,bi,bj)
-            denomV = denomV + SideDragY(i,j,bi,bj)
+            denomU = denomU + sideDragU(i,j,bi,bj)
+            denomV = denomV + sideDragV(i,j,bi,bj)
 #endif
             IF ( denomU .EQ. 0. _d 0 ) denomU = 1. _d 0
             IF ( denomV .EQ. 0. _d 0 ) denomV = 1. _d 0

@@ -423,7 +423,7 @@ C     recompute lateral coast drag terms
 C     use sig1 as a temporary field
           DO j=1,sNy
            DO i=1,sNx+1
-            sig1(i,j) = SideDragX(i,j,bi,bj)*uIce(i,j,bi,bj)
+            sig1(i,j) = sideDragU(i,j,bi,bj)*uIce(i,j,bi,bj)
            ENDDO
           ENDDO
           CALL DIAGNOSTICS_FILL(sig1,'SIlatDgU',0,1,2,bi,bj,myThid)
@@ -436,7 +436,7 @@ C     use sig1 as a temporary field
 C     use sig1 as a temporary field
           DO j=1,sNy+1
            DO i=1,sNx
-            sig1(i,j) = SideDragY(i,j,bi,bj)*vIce(i,j,bi,bj)
+            sig1(i,j) = sideDragV(i,j,bi,bj)*vIce(i,j,bi,bj)
            ENDDO
           ENDDO
           CALL DIAGNOSTICS_FILL(sig1,'SIlatDgV',0,1,2,bi,bj,myThid)

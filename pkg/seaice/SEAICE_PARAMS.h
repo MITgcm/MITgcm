@@ -421,8 +421,9 @@ C     SEAICEbasalDragU0 (default = 5e-5)
 C     SEAICEbasalDragK1 (default = 8)
 C     SEAICEbasalDragK2  :: if > 0, turns on basal drag
 C                           (default = 0, Lemieux suggests 15)
-C     SEAICESideDrag     :: if > 0, turns on lateral static drag
+C     SEAICEsideDrag     :: if > 0, turns on lateral static drag
 C                           if < 0, turns on lateral quadratic drag
+C                           both are different landfast ice parameterisations
 C                           (default = 0, Liu et al 2022 use 2e-4)
 C
 C     SEAICE_wetAlbTemp  :: Temp (deg.C) above which wet-albedo values are used
@@ -517,7 +518,7 @@ C
       _RL SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south, HO_south
       _RL SEAICE_cBasalStar, SEAICEbasalDragU0
       _RL SEAICEbasalDragK1, SEAICEbasalDragK2
-      _RL SEAICESideDrag
+      _RL SEAICEsideDrag
       _RL SEAICE_wetAlbTemp, SEAICE_waterAlbedo
       _RL SEAICE_strength, SEAICE_cStar, SEAICEpressReplFac
       _RL SEAICE_tensilFac, SEAICE_tensilDepth
@@ -576,7 +577,7 @@ C
      &    SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south, HO_south,
      &    SEAICE_cBasalStar, SEAICEbasalDragU0,
      &    SEAICEbasalDragK1, SEAICEbasalDragK2,
-     &    SEAICESideDrag,
+     &    SEAICEsideDrag,
      &    SEAICE_wetAlbTemp, SEAICE_waterAlbedo,
      &    SEAICE_strength, SEAICE_cStar, SEAICE_eccen, SEAICE_eccfr,
      &    SEAICEtdMU, SEAICEmcMu,

@@ -189,16 +189,17 @@ C     CbobC :: (linear) bottom drag coefficient for basals stress param.
 # endif /* SEAICE_ALLOW_BOTTOMDRAG */
 
 # ifdef SEAICE_ALLOW_SIDEDRAG
-C     NcoastX/Y   :: coast line roughness (w/out units) in X and Y direction,
-C                    computed from the coastline length at corner points,
-C                    interpolated to U/V points, and scaled by the grid cell
-C                    width
-C     SideDragX/Y :: drag coefficients for lateral drag a parameterisation
-      COMMON/SEAICE_SIDEDRAG/ SideDragX, SideDragY, NcoastX, NcoastY
-      _RL SideDragX  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL SideDragY  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL NcoastX    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL NcoastY    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     coastRoughU/V :: coast line roughness (w/out units) in U and V direction,
+C                      computed from the coastline length at corner points,
+C                      interpolated to U/V points, and scaled by the grid cell
+C                      width
+C     sideDragU/V   :: drag coefficients for lateral drag a parameterisation
+      COMMON/SEAICE_SIDEDRAG/ sideDragU, sideDragV,
+     &     coastRoughU, coastRoughV
+      _RL sideDragU  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL sideDragV  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL coastRoughU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL coastRoughV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 # endif /* SEAICE_ALLOW_SIDEDRAG */
 
 # if ( defined SEAICE_ALLOW_JFNK ||  defined SEAICE_ALLOW_KRYLOV )

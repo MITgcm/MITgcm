@@ -177,12 +177,12 @@ C                                      + (Cdrag*cosWat+Cb)*uIce + uIce*sinWat)
      &         (uIceLoc(I,J-1,bi,bj)+uIceLoc(I+1,J-1,bi,bj))
      &         ) ) * areaS(I,J)
 #ifdef SEAICE_ALLOW_SIDEDRAG
-C     lateral drag terms: + SideDragX*uIce
+C     lateral drag terms: + sideDragU*uIce
           uIceLHS(I,J,bi,bj) = uIceLHS(I,J,bi,bj)
-     &         + SideDragX(I,J,bi,bj)*uIceLoc(I,J,bi,bj)
-C                         + SideDragY*vIce
+     &         + sideDragU(I,J,bi,bj)*uIceLoc(I,J,bi,bj)
+C                         + sideDragV*vIce
           vIceLHS(I,J,bi,bj) = vIceLHS(I,J,bi,bj)
-     &         + SideDragY(I,J,bi,bj)*vIceLoc(I,J,bi,bj)
+     &         + sideDragV(I,J,bi,bj)*vIceLoc(I,J,bi,bj)
 #endif /* SEAICE_ALLOW_SIDEDRAG */
 C     apply masks for interior (important when we have open boundaries)
           uIceLHS(I,J,bi,bj) = uIceLHS(I,J,bi,bj)*maskinW(I,J,bi,bj)

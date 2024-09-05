@@ -393,13 +393,13 @@ CADJ STORE vicec = comlev1_dynsol, kind=isbyte, key = nlkey
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */
 
 #ifdef SEAICE_ALLOW_SIDEDRAG
-      IF ( SEAICESideDrag .NE. 0. _d 0 ) CALL SEAICE_SIDEDRAG_STRESS(
-     I     uIceC, vIceC, NcoastX, NcoastY, AREA,
-     O     SideDragX, SideDragY,
+      IF ( SEAICEsideDrag .NE. 0. _d 0 ) CALL SEAICE_SIDEDRAG_STRESS(
+     I     uIceC, vIceC, coastRoughU, coastRoughV, AREA,
+     O     sideDragU, sideDragV,
      I     ipass, myTime, myIter, myThid )
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE SideDragX = comlev1_dynsol, kind=isbyte, key = nlkey
-CADJ STORE SideDragY = comlev1_dynsol, kind=isbyte, key = nlkey
+CADJ STORE sideDragX = comlev1_dynsol, kind=isbyte, key = nlkey
+CADJ STORE sideDragY = comlev1_dynsol, kind=isbyte, key = nlkey
 #endif /* ALLOW_AUTODIFF_TAMC */
 #endif /* SEAICE_ALLOW_SIDEDRAG */
 C
@@ -544,15 +544,15 @@ C
      I     iMin, iMax, jMin, jMax, myTime, myIter, myThid )
 
 #ifdef SEAICE_ALLOW_SIDEDRAG
-      IF ( SEAICESideDrag .NE. 0. _d 0 ) THEN
+      IF ( SEAICEsideDrag .NE. 0. _d 0 ) THEN
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO J=jMin,jMax
           DO I=iMin,iMax
            BU(I,J,bi,bj) = BU(I,J,bi,bj)
-     &          + seaiceMaskU(I,J,bi,bj) * SideDragX(I,J,bi,bj)
+     &          + seaiceMaskU(I,J,bi,bj) * sideDragU(I,J,bi,bj)
            BV(I,J,bi,bj) = BV(I,J,bi,bj)
-     &          + seaiceMaskV(I,J,bi,bj) * SideDragY(I,J,bi,bj)
+     &          + seaiceMaskV(I,J,bi,bj) * sideDragV(I,J,bi,bj)
           ENDDO
          ENDDO
         ENDDO
