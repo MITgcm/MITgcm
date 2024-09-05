@@ -1,8 +1,11 @@
 C----------------------------------------
 C subroutine profiles_readvector
 C----------------------------------------
-CADJ SUBROUTINE  profiles_readvector   INPUT =   1,2,3,4,6,7,8
-CADJ SUBROUTINE  profiles_readvector   DEPEND =  1,2,3,4,6,7
-CADJ SUBROUTINE  profiles_readvector   OUTPUT =  5
+CADJ SUBROUTINE  profiles_readvector   INPUT  =  1,2,3,4,  6,7,8
+CADJ SUBROUTINE  profiles_readvector   DEPEND =  1,2,3,4,  6,7
+CADJ SUBROUTINE  profiles_readvector   OUTPUT =          5
+CADJ SUBROUTINE  profiles_make_ncfile  INPUT  =  1
+CADJ SUBROUTINE  profiles_make_ncfile  DEPEND =  1
+CADJ SUBROUTINE  profiles_make_ncfile  OUTPUT =
 CADJ SUBROUTINE  NF_OPEN               INPUT = 
 CADJ SUBROUTINE  NF_CLOSE              INPUT =

@@ -147,10 +147,10 @@ C Combine all processes
          DO k=1,NLEVELMAX
 
           tmpgs = prof_buff(num_var,k,prof_num)
-          _GLOBAL_SUM_RL (tmpgs, myThid)
+          _GLOBAL_SUM_RL(tmpgs, myThid)
           prof_modval_glo(num_var,k,prof_num) = tmpgs
           tmpgs = prof_mask_buff(num_var,k,prof_num)
-          _GLOBAL_SUM_RL (tmpgs, myThid)
+          _GLOBAL_SUM_RL(tmpgs, myThid)
           prof_mask_glo(num_var,k,prof_num) = tmpgs
 
          ENDDO
