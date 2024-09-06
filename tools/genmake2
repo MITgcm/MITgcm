@@ -2791,7 +2791,7 @@ done
 #
 # Sort the f90 files in topological order
 while IFS= read -r f90file; do
-    # Find modules used, ignoring those commented out
+    # List modules used in f90file, ignoring those commented out
     mod_used=$(grep -i "^[^!]*\buse\b" $f90file | awk '{print $2}' | \
         tr -d ',')
     
@@ -2799,17 +2799,14 @@ while IFS= read -r f90file; do
         # Find the file that defines this module
         mod_file=$(grep -li "^module $mod\b" $(grep -v $f90file "$TMP.adF90Files"))
         if [ -n "$mod_file" ]; then
-            echo $mod_file $f90file >> "$TMP.adF90Graph"
+            echo $mod_file $f90file >> $TMP.adF90Graph
         fi
     done
-done < "$TMP.adF90Files"
+done < $TMP.adF90Files
 # Replace alphabetical with topological file order
-tsort "$TMP.adF90Graph" > "$TMP.adF90Files"
-#
+tsort $TMP.adF90Graph | sed 's|.*/||' | sed 's/\.F90/\.f90/g' > $TMP.adF90Files
 # Clean up topological sorting files
-sed 's|.*/||' $TMP.adF90Files > $TMP.adF90Files.tmp
-cat $TMP.adF90Files.tmp > $TMP.adF90Files
-rm -rf $TMP.adF90Graph $TMP.adF90Files.tmp
+rm -rf $TMP.adF90Graph
 
 echo
 echo "===  Creating the Makefile  ==="
@@ -3070,7 +3067,7 @@ for d in $alldirs ; do
 
 			if ( test "x$OPENAD" = x && test "x$TAPENADE" = x ) ; then
 			    basename=${sf%%.F90}
-			    isAD=`egrep ^$basename.f90'[ 	]*' $TMP.adF90Files`
+			    isAD=`egrep ^$basename.F90'[ 	]*' $TMP.adF90Files`
 			    if test -z "$isAD" ; then
 				echo    " \\" >> $TMP.nonADF90srclist
 				printf " $sf" >> $TMP.nonADF90srclist
@@ -3279,7 +3276,7 @@ cat $TMP.F90srclist      >> $MAKEFILE
 cat $TMP.hsrclist        >> $MAKEFILE
 cat $TMP.ad_flow_files   >> $MAKEFILE
 
-#rm -f $TMP.F77srclist $TMP.nonADF77srclist $TMP.nonADF90srclist $TMP.csrclist $TMP.F90srclist $TMP.hsrclist $TMP.ad_flow_files
+rm -f $TMP.F77srclist $TMP.nonADF77srclist $TMP.nonADF90srclist $TMP.csrclist $TMP.F90srclist $TMP.hsrclist $TMP.ad_flow_files
 
 echo >> $MAKEFILE
 
@@ -3491,7 +3488,7 @@ done
 echo >> $MAKEFILE
 rm -f $TMP.adSrcFiles
 printf "AD_F90FILES = " >> $MAKEFILE
-AD_F90FILES=`cat $TMP.adF90Files | sed -e "s/\.F90/.$FS90/g"`
+AD_F90FILES=`cat $TMP.adF90Files | sed -e "s/\.f90/.$FS90/g"`
 for i in $AD_F90FILES ; do
     echo    " \\" >> $MAKEFILE
     printf " $i" >> $MAKEFILE
