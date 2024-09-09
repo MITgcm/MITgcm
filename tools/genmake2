@@ -3062,8 +3062,8 @@ for d in $alldirs ; do
 		    F90)
 			echo    " \\" >> $TMP.F90srclist
 			printf " $sf" >> $TMP.F90srclist
-            # Store file path and name for topo ordering later
-            echo "$d/$sf" >> $TMP.F90Files
+                        # Store file path and name for topo ordering later
+                        echo "$d/$sf" >> $TMP.F90Files
 
 			if ( test "x$OPENAD" = x && test "x$TAPENADE" = x ) ; then
 			    basename=${sf%%.F90}
