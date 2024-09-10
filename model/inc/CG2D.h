@@ -43,3 +43,16 @@ C                                             depending on cg2dNormaliseRHS)
       _RL  cg2dNorm, cg2dTolerance
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifdef ALLOW_PCSI
+      COMMON /PCSI_I_L/ PcsiNormaliseRHS
+      LOGICAL PcsiNormaliseRHS
+
+      COMMON /PCSI_I_RL/
+     &      PcsiMaxEigs, PcsiMinEigs,
+     &      PcsiNorm, PcsiTolerance
+      _RL  PcsiMaxEigs, PcsiMinEigs
+      _RL  PcsiNorm, PcsiTolerance
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+#endif /* ALLOW_PCSI */
