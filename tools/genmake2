@@ -3263,7 +3263,7 @@ fwd_exe_target:
 depend:
 	@\$(MAKE) -f \$(MAKEFILE) links
 	\$(MAKEDEPEND) -f \$(MAKEFILE) -o .$FS \$(DEFINES) \$(INCLUDES) \$(CPPINCLUDES) \$(F77_SRC_FILES)
-	\$(TOOLSDIR)/f90mkdepend >> \$(MAKEFILE)
+	\$(TOOLSDIR)/f90mkdepend -fs $FS -fs90 $FS90 >> \$(MAKEFILE)
 	-rm -f makedepend.out
 
 lib: libmitgcmuv.a
@@ -3900,7 +3900,7 @@ CB2M_F90_PP_SRC_FILES=\$(addsuffix _mod.f$FS90, \$(CB2M_F90_SRC_NAMES))
 .PHONY: adDepend
 adDepend: \$(ALL_LINKED_FILES) \$(addsuffix _mod.h, \$(CB2M_F90_SRC_NAMES)) \$(addsuffix _mod.FF90, \$(CB2M_F90_SRC_NAMES)) \$(F77_SRC_FILES:.F=_cb2m.FF90)
 	\$(MAKEDEPEND) -f \$(MAKEFILE) -o .$FS \$(DEFINES) \$(INCLUDES) \$(F77_SRC_FILES)
-	\$(TOOLSDIR)/f90mkdepend >> \$(MAKEFILE)
+	\$(TOOLSDIR)/f90mkdepend -fs $FS -fs90 $FS90 >> \$(MAKEFILE)
 	-rm -f makedepend.out
 
 OPENAD_SUPPORT_F90_SRC_FILES = \
