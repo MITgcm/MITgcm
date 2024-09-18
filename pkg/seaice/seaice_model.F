@@ -74,8 +74,9 @@ CEOP
       LOGICAL  DIAGNOSTICS_IS_ON
       EXTERNAL DIAGNOSTICS_IS_ON
       LOGICAL  diag_SIenph_isOn
-      _RL hTmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL mTmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL recip_deltaTtherm
+      _RL addSnow
 #endif
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_ENTER( 'SEAICE_MODEL', myThid )
@@ -101,11 +102,17 @@ C     needed in S/R SEAICE_DYNSOLVER
       IF ( useDiagnostics ) THEN
        diag_SIenph_isOn = DIAGNOSTICS_IS_ON('SIenph  ',myThid)
        IF ( diag_SIenph_isOn ) THEN
+        IF ( SEAICEaddSnowMass ) THEN
+         addSnow=1. _d 0
+        ELSE
+         addSnow=0. _d 0
+        ENDIF
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-            hTmp(i,j,bi,bj)=HEFF(i,j,bi,bj)
+            mTmp(i,j,bi,bj)=SEAICE_rhoIce*HEFF(i,j,bi,bj)
+     &                     +addSnow*SEAICE_rhoSnow*HSNOW(i,j,bi,bj) 
            ENDDO
           ENDDO
          ENDDO
@@ -369,17 +376,18 @@ C     ... and energy diagnostic
           DO bi=myBxLo(myThid),myBxHi(myThid)
            DO j=1,sNy
             DO i=1,sNx
-             hTmp(i,j,bi,bj) = 0.5 _d 0 * SEAICE_rhoIce
-     &            * 0.5 _d 0 * (
+             mTmp(i,j,bi,bj) = 0.5 _d 0 * 0.5 _d 0 * (
      &              uIce (i,j,bi,bj)**2 + uIce (i+1,j,  bi,bj)**2
      &            + vIce (i,j,bi,bj)**2 + vIce (i,  j+1,bi,bj)**2 )
-     &            * (HEFF(i,j,bi,bj) - hTmp(i,j,bi,bj))
+     &            * (SEAICE_rhoIce*HEFF(i,j,bi,bj) 
+     &            + addSnow*SEAICE_rhoSnow*HSNOW(i,j,bi,bj) 
+     &            - mTmp(i,j,bi,bj))
      &             *recip_deltaTtherm
             ENDDO
            ENDDO
           ENDDO
          ENDDO
-         CALL DIAGNOSTICS_FILL(hTmp,'SIenph  ',0,1,0,1,1,myThid)
+         CALL DIAGNOSTICS_FILL(mTmp,'SIenph  ',0,1,0,1,1,myThid)
         ENDIF
        ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
