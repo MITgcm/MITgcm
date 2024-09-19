@@ -225,8 +225,11 @@ case "$makefile" in
     $TMPMAKEFILE)
 	;;
     *)
-	rm -f $makefile.bak
-	cp $makefile $makefile.bak
+	if [ "$append" = "n" ]
+	then
+	  rm -f $makefile.bak
+	  cp $makefile $makefile.bak
+	fi
 	echo "Appending dependencies to $makefile"
 	;;
 esac
