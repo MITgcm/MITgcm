@@ -97,7 +97,6 @@ C     ikey       :: tape key (depends on iteration it2d)
 #else
       _RL    rhsNorm
 #endif
-      _RL    cg2dTolerance_sq
       _RL    err_sq,  errTile(nSx,nSy)
       _RL    eta_qrN, eta_qrNtile(nSx,nSy)
       _RL    eta_qrNM1, recip_eta_qrNM1
@@ -133,7 +132,6 @@ CEOP
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Initialise auxiliary constant, some output variable and inverter
-      cg2dTolerance_sq = cg2dTolerance*cg2dTolerance
       minResidualSq = -1. _d 0
       eta_qrNM1     =  1. _d 0
       recip_eta_qrNM1= 1. _d 0
@@ -228,7 +226,7 @@ c     CALL EXCH_S3D_RL( cg2d_r, 1, myThid )
       IF ( debugLevel .GE. debLevZero ) THEN
         _BEGIN_MASTER( myThid )
         printResidual = printResidualFreq.GE.1
-        WRITE(standardmessageunit,'(A,1P2E22.14)')
+        WRITE(standardMessageUnit,'(A,1P2E22.14)')
      &  ' cg2d_nsa: Sum(rhs),rhsMax = ', sumRHS,rhsMax
         _END_MASTER( myThid )
       ENDIF
