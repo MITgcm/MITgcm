@@ -8,22 +8,32 @@
 #       The name of the source file should be all lower case (except for the extension).
 
 # set defaults
-FS=
-FS90=
+FS=f
+FS90=f90
 
 # process option arguments
-while [[ $# -gt 0 ]]; do
-    key="$1"
-    case $key in 
+key_prev=
+for key in "$@" ; do
+
+    # If the previous option needs an argument, assign it.
+    if test -n "$key_prev"; then
+	    eval "$key_prev=\$key"
+	    key_prev=
+	    continue
+    fi
+
+    case $key in
     -fs)
-        shift
-        FS="$1"
-        shift
+        key_prev='FS'
+        ;;
+    -fs=*)
+        FS="${key#*=}"
         ;;
     -fs90)
-        shift
-        FS90="$1"
-        shift
+        key_prev='FS90'
+        ;;
+    -fs90=*)
+        FS90="${key#*=}"
         ;;
     *)
         echo "f90mkdepend: Unknown option: $key"
@@ -42,7 +52,7 @@ for filename in *.F90 *.F *.h; do
   # quick check for "use" to speed up processing
   if grep -i '^ *use ' $filename > /dev/null; then
     # extract module name in lower case
-    modreflist=$(grep -i '^ *use ' $filename | awk '{print tolower($2)}' | sed 's/,.*$\|\r$//')
+    modreflist=$(grep -i '^ *use ' $filename | awk '{print tolower($2)}' | sed -e 's/,.*$//' -e 's/\r$//')
 
     echo "$filename => $modreflist" >> f90mkdepend.log
 

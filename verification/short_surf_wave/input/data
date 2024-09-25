@@ -32,9 +32,11 @@
 # Elliptic solver parameters
  &PARM02
  cg2dMaxIters=100,
- cg2dTargetResidual=1.E-13,
  cg3dMaxIters=200,
- cg3dTargetResidual=1.E-11,
+#cg2dTargetResidual=1.E-13,
+#cg3dTargetResidual=1.E-11,
+ cg2dTargetResWunit=6.0E-14,
+ cg3dTargetResWunit=1.5E-17,
  &
 
 # Time stepping parameters
