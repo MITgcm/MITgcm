@@ -26,5 +26,12 @@ C as a function of grid cell thickness and roughness length
 C zRoughBot (order 0.01m), assuming a von Karman constant = 0.4.
 #undef ALLOW_BOTTOMDRAG_ROUGHNESS
 
+C Compute extra momentum tendency diagnostics for bottom and ice-shelf drag.
+C The code does not work with using implicit bottom or ice-shelf
+C drag (selectImplicitDrag = 2). For non-r* vertical coordinate, these
+C tendency diagnostics can be derived from existing diagnostics for
+C frictional stress (botTauX etc.) and therefore are not necessarily needed.
+#undef ALLOW_MOM_TEND_EXTRA_DIAGS
+
 #endif /* ALLOW_MOM_COMMON */
 #endif /* MOM_COMMON_OPTIONS_H */

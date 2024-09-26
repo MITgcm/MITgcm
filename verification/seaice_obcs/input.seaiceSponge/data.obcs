@@ -9,6 +9,7 @@
 # This flag check and equalise topography across open boundaries:
  OBCSfixTopo = .TRUE.,
  useOBCSprescribe=.TRUE.,
+ useSeaiceSponge=.TRUE.,
 #
  OBSsFile='OBSs.seaice_obcs',
  OBStFile='OBSt.seaice_obcs',
@@ -51,16 +52,16 @@
  OBNviceFile='OBNvice.seaice_obcs',
  OBEviceFile='OBEvice.seaice_obcs',
  OBWviceFile='OBWvice.seaice_obcs',
- useSeaiceSponge=.TRUE.,
  &
+
  &OBCS_PARM05
- seaiceSpongeThickness = 3
- Arelaxobcsinner  = 432000.
- Arelaxobcsbound  = 43200.
- Hrelaxobcsinner  = 432000.
- Hrelaxobcsbound  = 43200.
- SLrelaxobcsinner = 432000.
- SLrelaxobcsbound = 43200.
- SNrelaxobcsinner = 432000.
- SNrelaxobcsbound = 43200.
+ seaiceSpongeThickness = 3,
+ Arelaxobcsinner  = 432000.,
+ Arelaxobcsbound  =  43200.,
+ Hrelaxobcsinner  = 432000.,
+ Hrelaxobcsbound  =  43200.,
+ SLrelaxobcsinner = 432000.,
+ SLrelaxobcsbound =  43200.,
+ SNrelaxobcsinner = 432000.,
+ SNrelaxobcsbound =  43200.,
  &

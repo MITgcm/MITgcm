@@ -12,9 +12,5 @@
  jgloTile         = 1,
  nstep            = 1,
  nend             = 4,
-# to test xx_tr1 set 17
-### grdchkvarindex   = 17,
-# to test passive tracer in
-# xx_genarr3d (4th field) set 204
- grdchkvarindex   = 204,
+ grdchkvarname    = "xx_ptr1",
  &

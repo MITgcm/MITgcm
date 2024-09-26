@@ -19,16 +19,17 @@ C     !USES:
 #include "REGRID_SIZE.h"
 #include "REGRID.h"
 #ifdef ALLOW_EXCH2
-#include "W2_EXCH2_SIZE.h"
-#include "W2_EXCH2_TOPOLOGY.h"
+# include "W2_EXCH2_SIZE.h"
+# include "W2_EXCH2_TOPOLOGY.h"
 #endif
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid ::  my Thread Id number
       INTEGER myThid
-CEOP
+
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
       INTEGER i,k, iface, uniq_tnum, bi,bj
@@ -39,6 +40,10 @@ C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_FNAM) fname
       CHARACTER*(MAX_LEN_MBUF) msgbuf
       LOGICAL  exst
+#ifndef ALLOW_EXCH2
+      INTEGER iG, jG
+#endif
+CEOP
 
 C     Regrid files contain information on a per-face basis.  This is
 C     convenient in two respects: (1) the domain can be re-tiled without
@@ -100,7 +105,7 @@ C         Global tile number for simple single-face "EXCH1" domains
           uniq_tnum = (jG - 1)*(nPx*nSx) + iG
           iface = 1
           nFx = nSx * sNx
-          nFy = sSy * sNy
+          nFy = nSy * sNy
           iminx = myXGlobalLo
           imaxx = myXGlobalLo + sNx - 1
           iminy = myYGlobalLo

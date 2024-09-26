@@ -5,6 +5,9 @@
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
+#ifdef ALLOW_MOM_COMMON
+# include "MOM_COMMON_OPTIONS.h"
+#endif
 
       SUBROUTINE SHELFICE_INIT_FIXED( myThid )
 C     *============================================================*
@@ -312,6 +315,22 @@ c     ENDIF
        diagCode  = 'SM      L1      '
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+#if ( defined ALLOW_MOM_COMMON && defined ALLOW_MOM_TEND_EXTRA_DIAGS )
+cHP adding diagnostic for drag from ice shelf to allow exp. dissip decomp
+      diagName  = 'UShIDrag'
+      diagTitle = 'U momentum tendency from ice shelf Drag'
+      diagCode  = 'UUR     MR      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+      diagName  = 'VShIDrag'
+      diagTitle = 'V momentum tendency from ice shelf Drag'
+      diagCode  = 'VVR     MR      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+#endif
 
 #ifdef SHI_ALLOW_GAMMAFRICT
        diagName  = 'SHIuStar'

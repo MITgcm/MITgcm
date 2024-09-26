@@ -1,3 +1,4 @@
+#include "CTRL_OPTIONS.h"
 
       subroutine optim_initmod(
      I                    nn,
@@ -31,6 +32,7 @@ c     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
+#include "CTRL_SIZE.h"
 #include "CTRL.h"
 #include "optim.h"
 

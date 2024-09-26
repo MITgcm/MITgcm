@@ -100,6 +100,7 @@ C     == global variables ==
 #include "SIZE.h"
 #include "PARAMS.h"
 #ifdef ALLOW_CTRL
+# include "CTRL_SIZE.h"
 # include "CTRL.h"
 # include "OPTIMCYCLE.h"
 #endif
@@ -294,6 +295,7 @@ C     == global variables ==
 #include "SIZE.h"
 #include "PARAMS.h"
 #ifdef ALLOW_CTRL
+# include "CTRL_SIZE.h"
 # include "CTRL.h"
 # include "OPTIMCYCLE.h"
 #endif

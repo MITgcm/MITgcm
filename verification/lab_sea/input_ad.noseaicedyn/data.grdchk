@@ -12,5 +12,5 @@
  kGloPos          = 2,
  nstep            = 1,
  nend             = 4,
- grdchkvarindex   = 202,
+ grdchkvarname    = "xx_salt",
  &

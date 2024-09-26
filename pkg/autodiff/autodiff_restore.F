@@ -44,6 +44,7 @@ C They provide the fields to be stored.
 #include "SURFACE.h"
 
 #ifdef ALLOW_OBCS
+# include "OBCS_PARAMS.h"
 # include "OBCS_FIELDS.h"
 # include "OBCS_SEAICE.h"
 #endif
@@ -58,6 +59,7 @@ C They provide the fields to be stored.
 # include "SEAICE.h"
 #endif
 #ifdef ALLOW_CTRL
+# include "CTRL_SIZE.h"
 # include "CTRL.h"
 # include "CTRL_OBCS.h"
 #endif
