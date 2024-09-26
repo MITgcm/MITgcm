@@ -461,8 +461,8 @@ C-----
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       CALL PRINT_MESSAGE(endList, ioUnit, SQUEEZE_RIGHT, myThid )
 C-----
-      CALL WRITE_0D_L( metricTerms,  INDEX_NONE, 'metricTerms =',
-     &                '  /* metric-Terms on/off flag */')
+      CALL WRITE_0D_I( selectMetricTerms, INDEX_NONE,
+     & 'selectMetricTerms=', ' /* Metric-Terms on/off flag (=0/1) */')
       CALL WRITE_0D_L( useNHMTerms,  INDEX_NONE, 'useNHMTerms =',
      &              ' /* Non-Hydrostatic Metric-Terms on/off */')
       WRITE(msgBuf,'(2A)')
@@ -475,8 +475,8 @@ C-----
      &  ' 2= Spherical ; 3= read from file'
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       CALL PRINT_MESSAGE(endList, ioUnit, SQUEEZE_RIGHT, myThid )
-      CALL WRITE_0D_L( use3dCoriolis,  INDEX_NONE,
-     & 'use3dCoriolis =', ' /* 3-D Coriolis on/off flag */')
+      CALL WRITE_0D_I( select3dCoriScheme, INDEX_NONE,
+     & 'select3dCoriScheme=', ' /* 3-D Coriolis on/off flag (=0/1) */')
       CALL WRITE_0D_L( useCoriolis,  INDEX_NONE,
      & 'useCoriolis =', '  /* Coriolis on/off flag */')
       CALL WRITE_0D_L( useCDscheme,  INDEX_NONE,
@@ -709,6 +709,16 @@ C---
      & 'useNSACGSolver =', '  /* use not-self-adjoint CG solver */')
       CALL WRITE_0D_I( printResidualFreq, INDEX_NONE,
      & 'printResidualFreq =', ' /* Freq. for printing CG residual */')
+      IF ( use3Dsolver ) THEN
+       CALL WRITE_0D_I( cg3dMaxIters, INDEX_NONE, 'cg3dMaxIters =',
+     & '   /* Upper limit on CG3d iterations  */')
+       CALL WRITE_0D_RL( cg3dTargetResidual, INDEX_NONE,
+     & 'cg3dTargetResidual =',
+     & '   /* CG3d target residual [normalise RHS] */')
+       CALL WRITE_0D_RL( cg3dTargetResWunit, INDEX_NONE,
+     & 'cg3dTargetResWunit =',
+     & '   /* CG3d target residual [W units] */')
+      ENDIF
 
       WRITE(msgBuf,'(A)') '//  '
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )

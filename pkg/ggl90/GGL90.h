@@ -26,12 +26,16 @@ C     GGL90alpha      - constant relating viscosity to GGL90 diffusivity
 C                      (default=1 in Gaspar etal.)
 C     GGL90TKEsurfmin - minimum of surface kinetic energy boundary condition
 C                      (default=GGL90TKEmin)
-C     GGL90TKEmin     - minimum kinetic energy, leads to minimum mixing if TKE=0.
+C     GGL90TKEmin     - minimum kinetic energy, both numerical regularisation
+C                       and source of due to unresolved processes,
+C                       e.g. internal gravity waves
 C     GGL90TKEbottom  - bottom bounardy condition for kinetic energy
 C                      (default=GGL90TKEmin)
 C     GGL90TKEFile    - File with initial field of TKE
 C     GGL90mixingLengthMin - Mininum mixing length
 C     mxlMaxFlag      - Flag for limiting mixing-length method (default=0)
+C     adMxlMaxFlag    - in AD-mode, use adMxlMaxFlag instead of mxlMaxFlag
+C                       (default=mxlMaxFlag)
 C     mxlSurfFlag     - Flag to force mixing near ocean surface (default= F )
 C     calcMeanVertShear :: calculate the mean (@ grid-cell center) of vertical
 C                          shear compon. (instead of vert. shear of mean flow);
@@ -75,6 +79,7 @@ CEOP
       _RL    GGL90viscMax, GGL90diffMax
       _RL    GGL90dumpFreq
       INTEGER mxlMaxFlag
+      INTEGER adMxlMaxFlag
       COMMON /GGL90_PARMS_R/
      &     GGL90ck, GGL90ceps,
      &     GGL90alpha, GGL90m2,
@@ -82,7 +87,7 @@ CEOP
      &     GGL90mixingLengthMin,
      &     GGL90TKEmin, GGL90TKEsurfMin, GGL90TKEbottom,
      &     GGL90viscMax, GGL90diffMax,
-     &     GGL90dumpFreq, mxlMaxFlag
+     &     GGL90dumpFreq, mxlMaxFlag, adMxlMaxFlag
 
       _RL GGL90TKE    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL GGL90viscArU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)

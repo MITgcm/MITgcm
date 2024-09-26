@@ -44,6 +44,7 @@ C     !LOCAL VARIABLES:
 C     msgBuf :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iL, errCount
+      _RL     tmpVar
 CEOP
 #ifdef ALLOW_PTRACERS
       INTEGER iTr
@@ -57,15 +58,7 @@ CEOP
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT , myThid )
 
-       IF ( GM_useLeithQG .AND. viscC2LeithQG.EQ.zeroRL ) THEN
-        WRITE(msgBuf,'(2A,I3)') '** WARNING ** GMREDI_CHECK: ',
-     &   'switch OFF GM_useLeithQG since viscC2LeithQG = 0'
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-        GM_useLeithQG = .FALSE.
-       ENDIF
-
-C- print out some kee parameters :
+C- print out some key parameters :
        CALL WRITE_0D_L( GM_AdvForm, INDEX_NONE,
      &  'GM_AdvForm =', '     /* if FALSE => use SkewFlux Form */')
        CALL WRITE_0D_L( GM_InMomAsStress, INDEX_NONE,
@@ -76,12 +69,18 @@ C- print out some kee parameters :
      &  'GM_ExtraDiag =','   /* Tensor Extra Diag (line 1&2) non 0 */')
        CALL WRITE_0D_RL( GM_isopycK, INDEX_NONE, 'GM_isopycK =',
      &  '    /* Background Isopyc. Diffusivity [m^2/s] */')
+c      CALL WRITE_0D_RL( GM_background_K, INDEX_NONE,
+c    &  'GM_background_K =',
+c    &  ' /* Background GM (=Bolus) Diffusivity [m^2/s] */')
+       tmpVar = GM_background_K*( oneRL - GM_skewflx )
+       CALL WRITE_0D_RL( tmpVar, INDEX_NONE, 'GM_advec*K =',
+     &  '    /* Backg. GM-Advec(=Bolus) Diffusivity [m^2/s] */')
        CALL WRITE_0D_RL( GM_background_K*GM_skewflx, INDEX_NONE,
      &  'GM_skewflx*K =',
      &  '  /* Background GM_SkewFlx Diffusivity [m^2/s] */')
-       CALL WRITE_0D_RL( GM_background_K*GM_advect, INDEX_NONE,
-     &  'GM_advec*K =',
-     &  '    /* Backg. GM-Advec(=Bolus) Diffusivity [m^2/s]*/')
+       CALL WRITE_0D_RL( GM_isoFac_calcK, INDEX_NONE,
+     &  'GM_isoFac_calcK =',
+     &  ' /* Fraction of dynamic K added to Redi tensor */')
        CALL WRITE_0D_RL( GM_Kmin_horiz, INDEX_NONE, 'GM_Kmin_horiz =',
      &  ' /* Minimum Horizontal Diffusivity [m^2/s] */')
        CALL WRITE_0D_RL( GM_Visbeck_alpha, INDEX_NONE,
@@ -129,6 +128,8 @@ C- print out some kee parameters :
        CALL WRITE_0D_L( GM_useLeithQG, INDEX_NONE,
      &  'GM_useLeithQG =',
      &  ' /* if TRUE => add QG Leith viscosity to GMRedi tensor */')
+       CALL WRITE_0D_L( GM_useGEOM, INDEX_NONE,
+     &  'GM_useGEOM =', ' /* using GEOMETRIC */')
 
 C--  Check parameters:
 
@@ -174,6 +175,44 @@ C     Make sure we are not trying to use something that is unavailable
        errCount = errCount + 1
       ENDIF
 #endif
+
+#ifdef GM_GEOM_VARIABLE_K
+      IF ( GM_useGEOM ) THEN
+       CALL WRITE_0D_RL( GEOM_alpha, INDEX_NONE,
+     &  'GEOM_alpha      =', ' /* GEOM alpha coeff. [-] */')
+       CALL WRITE_0D_RL( GEOM_lmbda, INDEX_NONE,
+     &  'GEOM_lmbda      =', ' /* GEOM ene diss rate [/s] */')
+       CALL WRITE_0D_RL( GEOM_diffKh_EKE, INDEX_NONE,
+     &  'GEOM_diffKh_EKE =', ' /* GEOM Eke diffusion coeff [m2/s] */')
+       CALL WRITE_0D_L( GEOM_vert_struc, INDEX_NONE,
+     &  'GEOM_vert_struc =', ' /* GEOM vertical structure function */')
+       CALL WRITE_0D_RL( GEOM_vert_struc_min, INDEX_NONE,
+     &  'GEOM_vert_struc_min =', ' /* vert struc min [-] */')
+       CALL WRITE_0D_RL( GEOM_vert_struc_max, INDEX_NONE,
+     &  'GEOM_vert_struc_min =', ' /* vert struc min [-] */')
+       CALL WRITE_0D_RL( GEOM_minVal_K, INDEX_NONE,
+     &  'GEOM_minVal_K   =', ' /* GEOM_K3d lower bound [m2/s] */')
+       CALL WRITE_0D_RL( GEOM_maxVal_K, INDEX_NONE,
+     &  'GEOM_maxVal_K   =', ' /* GEOM_K3d upper bound [m2/s] */')
+       IF (usingPcoords) THEN
+        WRITE(msgBuf,'(3A)') 'GMREDI_CHECK:',
+     &       ' p-coords not yet implemented with GM_useGEOM'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+      ENDIF
+#else /* GM_GEOM_VARIABLE_K */
+C     Make sure we are not trying to use something that is unavailable
+      IF ( GM_useGEOM ) THEN
+       WRITE(msgBuf,'(A)')
+     &   ' GMREDI_CHECK: GEOM variables used in data.gmredi'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &   ' GMREDI_CHECK: without #define GM_GEOM_VARIABLE_K'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       errCount = errCount + 1
+      ENDIF
+#endif /* GM_GEOM_VARIABLE_K */
 
 #ifndef GM_BOLUS_ADVEC
 C     Make sure we are not trying to use some arrays that are unavailable
@@ -276,14 +315,29 @@ C     Make sure we are not trying to use some arrays that are unavailable
        CALL PRINT_ERROR( msgBuf, myThid )
        errCount = errCount + 1
       ENDIF
-      IF ( GM_useLeithQG ) THEN
+      IF ( GM_isoFac_calcK .NE. zeroRL .AND.
+     &     ( GM_Visbeck_alpha.NE.zeroRL .OR.
+     &       GM_useBatesK3d .OR. GM_useLeithQG ) ) THEN
        WRITE(msgBuf,'(A)')
-     &   'GMREDI_CHECK: GM_useLeithQG is only implemented for cases'
+     &   'GMREDI_CHECK: needs #define GM_NON_UNITY_DIAGONAL'
        CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)')
-     &   'GMREDI_CHECK: with #define GM_NON_UNITY_DIAGONAL'
-       CALL PRINT_ERROR( msgBuf, myThid )
+       IF ( GM_Visbeck_alpha.NE.zeroRL ) THEN
+        WRITE(msgBuf,'(A)')
+     &   'GMREDI_CHECK: to use Visbeck computed K'
+        CALL PRINT_ERROR( msgBuf, myThid )
+       ENDIF
+       IF ( GM_useBatesK3d .OR. GM_useLeithQG ) THEN
+        WRITE(msgBuf,'(A)')
+     &   'GMREDI_CHECK: to use GM_useBatesK3d or GM_useLeithQG'
+        CALL PRINT_ERROR( msgBuf, myThid )
+       ENDIF
        errCount = errCount + 1
+      ENDIF
+      IF ( errCount .EQ. 0 ) THEN
+        WRITE(msgBuf,'(2A)') '** WARNING ** GMREDI_CHECK: ',
+     &       '#undef GM_NON_UNITY_DIAGONAL not recommended'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
       ENDIF
 #endif
 

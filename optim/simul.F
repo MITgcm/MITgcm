@@ -1,3 +1,4 @@
+#include "CTRL_OPTIONS.h"
 
       subroutine simul(
      I                  indic,
@@ -41,7 +42,8 @@ c     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#include "ctrl.h"
+#include "CTRL_SIZE.h"
+#include "CTRL.h"
 
 c     == routine arguments ==
 

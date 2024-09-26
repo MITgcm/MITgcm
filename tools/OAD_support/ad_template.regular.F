@@ -47,15 +47,13 @@ c we may need these for the checkpointing
       use STREAMICE_BDRY_mod
       use STREAMICE_CG_mod
 #endif
-      use SOLVE_FOR_PRESSURE3D_mod
-      use SOLVE_FOR_PRESSURE_mod
       use SURFACE_mod
       use cost_mod
       use g_cost_mod
-      use ctrl_mod
-      use ctrl_dummy_mod
-      use optim_mod
-      use grdchk_mod
+      use CTRL_mod
+      use CTRL_DUMMY_mod
+      use OPTIMCYCLE_mod
+      use GRDCHK_mod
 
 !$TEMPLATE_PRAGMA_DECLARATIONS
       integer, save :: currcp, curradjointcp

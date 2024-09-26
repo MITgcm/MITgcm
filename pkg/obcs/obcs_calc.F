@@ -57,8 +57,13 @@ C     bi, bj       :: tile indices
 C     i,j,k        :: loop indices
 C     I_obc, J_obc :: local index of open boundary
 C     msgBuf       :: Informational/error message buffer
-      INTEGER bi, bj
-      INTEGER i, j, k
+      INTEGER bi, bj, k
+#if (defined ALLOW_OBCS_EAST ) || (defined ALLOW_OBCS_WEST )
+      INTEGER j
+#endif
+#if (defined ALLOW_OBCS_NORTH) || (defined ALLOW_OBCS_SOUTH)
+      INTEGER i
+#endif
 #ifdef ALLOW_PTRACERS
       INTEGER I_obc, J_obc
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -415,10 +420,10 @@ C     ALLOW_OBCS_PRESCRIBE and useOBCSprescribe
 #ifdef ALLOW_CTRL
       IF ( useCTRL ) THEN
 # ifdef ALLOW_OBCSN_CONTROL
-       CALL CTRL_GETOBCSN ( futureTime, futureIter, mythid )
+       CALL CTRL_GETOBCSN ( futureTime, futureIter, myThid )
 # endif
 # ifdef ALLOW_OBCSS_CONTROL
-       CALL CTRL_GETOBCSS ( futureTime, futureIter, mythid )
+       CALL CTRL_GETOBCSS ( futureTime, futureIter, myThid )
 # endif
 # ifdef ALLOW_OBCSW_CONTROL
        CALL CTRL_GETOBCSW ( futureTime, futureIter, myThid )

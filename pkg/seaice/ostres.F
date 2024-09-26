@@ -23,15 +23,15 @@ C     myThid - Thread no. that called this routine.
       INTEGER myThid
 CEndOfInterface
 
-#ifndef SEAICE_CGRID
+#ifdef SEAICE_BGRID_DYNAMICS
 C     === Local variables ===
 C     i,j,bi,bj - Loop counters
 
       INTEGER i, j, bi, bj
       _RL  SINWIN, COSWIN, SINWAT, COSWAT
-#ifdef SEAICE_BICE_STRESS
+# ifdef SEAICE_BICE_STRESS
       _RL  fuIce, fvIce
-#endif
+# endif
 
 c     introduce turning angle (default is zero)
       SINWIN=SIN(SEAICE_airTurnAngle*deg2rad)
@@ -42,7 +42,7 @@ c     introduce turning angle (default is zero)
 C--   Update overlap regions
       CALL EXCH_UV_XY_RL(WINDX, WINDY, .TRUE., myThid)
 
-#ifndef SEAICE_EXTERNAL_FLUXES
+# ifndef SEAICE_EXTERNAL_FLUXES
 C--   Interpolate wind stress (N/m^2) from South-West B-grid
 C     to South-West C-grid for forcing ocean model.
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -58,9 +58,9 @@ C     to South-West C-grid for forcing ocean model.
        ENDDO
       ENDDO
       CALL EXCH_UV_XY_RS(fu, fv, .TRUE., myThid)
-#endif /* ifndef SEAICE_EXTERNAL_FLUXES */
+# endif /* ifndef SEAICE_EXTERNAL_FLUXES */
 
-#ifdef SEAICE_BICE_STRESS
+# ifdef SEAICE_BICE_STRESS
 C--   Compute ice-affected wind stress
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -91,8 +91,8 @@ C--   Compute ice-affected wind stress
        ENDDO
       ENDDO
       CALL EXCH_UV_XY_RS(fu, fv, .TRUE., myThid)
-#endif /* SEAICE_BICE_STRESS */
-#endif /* not SEAICE_CGRID */
+# endif /* SEAICE_BICE_STRESS */
+#endif /* SEAICE_BCGRID_DYNAMICS */
 
       RETURN
       END

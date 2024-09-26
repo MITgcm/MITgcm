@@ -27,13 +27,13 @@ c     == global variables ==
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "GRID.h"
-c#include "OBCS_PARAMS.h"
+#include "OBCS_PARAMS.h"
 #include "OBCS_GRID.h"
 #include "OBCS_FIELDS.h"
 #include "CTRL_SIZE.h"
-#include "ctrl.h"
-#include "ctrl_dummy.h"
-#include "optim.h"
+#include "CTRL.h"
+#include "CTRL_DUMMY.h"
+#include "OPTIMCYCLE.h"
 #include "CTRL_OBCS.h"
 #endif /* ALLOW_OBCSE_CONTROL */
 
@@ -106,10 +106,15 @@ c--   Get the counters, flags, and the interpolation factor.
       do iobcs = 1,nobcs
 
        if ( obcsefirst ) then
+#ifdef ALLOW_AUTODIFF
         call active_read_yz( fnameobcse, tmpfldyz,
      &                       (obcsecount0-1)*nobcs+iobcs,
      &                       doglobalread, ladinit, optimcycle,
-     &                       mythid, xx_obcse_dummy )
+     &                       myThid, xx_obcse_dummy )
+#else
+        CALL READ_REC_YZ_RL( fnameobcse, ctrlprec, Nr, tmpfldyz,
+     &                       (obcsecount0-1)*nobcs+iobcs, 1, myThid )
+#endif
 
         do bj = jtlo,jthi
          do bi = itlo,ithi
@@ -175,10 +180,15 @@ cgg   &                                        *   maskyz (j,k,bi,bj)
          enddo
         enddo
 
+#ifdef ALLOW_AUTODIFF
         call active_read_yz( fnameobcse, tmpfldyz,
      &                       (obcsecount1-1)*nobcs+iobcs,
      &                       doglobalread, ladinit, optimcycle,
-     &                       mythid, xx_obcse_dummy )
+     &                       myThid, xx_obcse_dummy )
+#else
+        CALL READ_REC_YZ_RL( fnameobcse, ctrlprec, Nr, tmpfldyz,
+     &                       (obcsecount1-1)*nobcs+iobcs, 1, myThid )
+#endif
 
         do bj = jtlo,jthi
          do bi = itlo,ithi

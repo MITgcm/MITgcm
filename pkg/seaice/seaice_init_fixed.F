@@ -42,7 +42,7 @@ C     i,j, bi,bj  :: Loop counters
 #endif
 C     local copy of surface layer thickness in meters
       _RL dzSurf
-#ifndef SEAICE_CGRID
+#ifdef SEAICE_BGRID_DYNAMICS
       _RL mask_uice
 #endif
 
@@ -245,7 +245,7 @@ C-    loops on tile indices bi,bj:
           SIMaskV(i,j,bi,bj) = maskS(i,j,kSrf,bi,bj)
          ENDDO
         ENDDO
-#ifndef SEAICE_CGRID
+#ifdef SEAICE_BGRID_DYNAMICS
         DO j=1-OLy+1,sNy+OLy
          DO i=1-OLx+1,sNx+OLx
           UVM(i,j,bi,bj)=0. _d 0
@@ -254,7 +254,7 @@ C-    loops on tile indices bi,bj:
           IF(mask_uice.GT.3.5 _d 0) UVM(i,j,bi,bj)=1. _d 0
          ENDDO
         ENDDO
-#endif /* ndef SEAICE_CGRID */
+#endif
 
 C     coefficients for metric terms
 #ifdef SEAICE_CGRID
@@ -311,7 +311,9 @@ C     approximation
           ENDDO
          ENDDO
         ENDIF
-#else /* not SEAICE_CGRID */
+#endif /* SEAICE_CGRID */
+
+#ifdef SEAICE_BGRID_DYNAMICS
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           k1AtC(i,j,bi,bj) = 0.0 _d 0
@@ -382,7 +384,30 @@ C     approximation
           ENDDO
          ENDDO
         ENDIF
-#endif /* not SEAICE_CGRID */
+C--   Choose a proxy level for geostrophic velocity,
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          KGEO(i,j,bi,bj)   = 0
+         ENDDO
+        ENDDO
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+#ifdef SEAICE_BICE_STRESS
+          KGEO(i,j,bi,bj) = 1
+#else /* SEAICE_BICE_STRESS */
+          IF (klowc(i,j,bi,bj) .LT. 2) THEN
+           KGEO(i,j,bi,bj) = 1
+          ELSE
+           KGEO(i,j,bi,bj) = 2
+           DO WHILE ( abs(rC(KGEO(i,j,bi,bj))) .LT. 50.0 _d 0 .AND.
+     &          KGEO(i,j,bi,bj) .LT. (klowc(i,j,bi,bj)-1) )
+              KGEO(i,j,bi,bj) = KGEO(i,j,bi,bj) + 1
+           ENDDO
+          ENDIF
+#endif /* SEAICE_BICE_STRESS */
+         ENDDO
+        ENDDO
+#endif /* SEAICE_BGRID_DYNAMICS */
 C-    end bi,bj loops
        ENDDO
       ENDDO
@@ -410,36 +435,6 @@ C--   Prevent seaice to form where Ice-Shelf is present
        CALL EXCH_UV_XY_RL( SIMaskU, SIMaskV, .FALSE., myThid )
       ENDIF
 #endif /* ALLOW_SHELFICE */
-
-#ifndef SEAICE_CGRID
-C--   Choose a proxy level for geostrophic velocity,
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          KGEO(i,j,bi,bj)   = 0
-         ENDDO
-        ENDDO
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-#ifdef SEAICE_BICE_STRESS
-          KGEO(i,j,bi,bj) = 1
-#else /* SEAICE_BICE_STRESS */
-          IF (klowc(i,j,bi,bj) .LT. 2) THEN
-           KGEO(i,j,bi,bj) = 1
-          ELSE
-           KGEO(i,j,bi,bj) = 2
-           DO WHILE ( abs(rC(KGEO(i,j,bi,bj))) .LT. 50.0 _d 0 .AND.
-     &          KGEO(i,j,bi,bj) .LT. (klowc(i,j,bi,bj)-1) )
-              KGEO(i,j,bi,bj) = KGEO(i,j,bi,bj) + 1
-           ENDDO
-          ENDIF
-#endif /* SEAICE_BICE_STRESS */
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-#endif /* ndef SEAICE_CGRID */
 
       RETURN
       END

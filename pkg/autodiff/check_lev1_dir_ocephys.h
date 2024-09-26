@@ -23,8 +23,13 @@ CADJ STORE sIceLoad       = comlev1, key = ikey_dynamics, kind = isbyte
 #ifdef ALLOW_OBCS
 CADJ STORE salt, theta = comlev1, key = ikey_dynamics, kind = isbyte
 # ifdef ALLOW_OBCS_NORTH
+#  ifdef NONLIN_FRSURF
+CADJ STORE OBNeta      = comlev1, key = ikey_dynamics, kind = isbyte
+#  endif
 CADJ STORE OBNt        = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE OBNs        = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE OBNu        = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE OBNv        = comlev1, key = ikey_dynamics, kind = isbyte
 #  ifdef ALLOW_OBCS_STEVENS
 CADJ STORE OBNtStevens = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE OBNsStevens = comlev1, key = ikey_dynamics, kind = isbyte
@@ -33,8 +38,13 @@ CADJ STORE OBNvStevens = comlev1, key = ikey_dynamics, kind = isbyte
 # endif /* ALLOW_OBCS_NORTH */
 
 # ifdef ALLOW_OBCS_SOUTH
+#  ifdef NONLIN_FRSURF
+CADJ STORE OBSeta      = comlev1, key = ikey_dynamics, kind = isbyte
+#  endif
 CADJ STORE OBSt        = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE OBSs        = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE OBSu        = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE OBSv        = comlev1, key = ikey_dynamics, kind = isbyte
 #  ifdef ALLOW_OBCS_STEVENS
 CADJ STORE OBStStevens = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE OBSsStevens = comlev1, key = ikey_dynamics, kind = isbyte
@@ -43,8 +53,13 @@ CADJ STORE OBSvStevens = comlev1, key = ikey_dynamics, kind = isbyte
 # endif /* ALLOW_OBCS_SOUTH */
 
 # ifdef ALLOW_OBCS_EAST
+#  ifdef NONLIN_FRSURF
+CADJ STORE OBEeta      = comlev1, key = ikey_dynamics, kind = isbyte
+#  endif
 CADJ STORE OBEt        = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE OBEs        = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE OBEu        = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE OBEv        = comlev1, key = ikey_dynamics, kind = isbyte
 #  ifdef ALLOW_OBCS_STEVENS
 CADJ STORE OBEtStevens = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE OBEsStevens = comlev1, key = ikey_dynamics, kind = isbyte
@@ -53,8 +68,13 @@ CADJ STORE OBEuStevens = comlev1, key = ikey_dynamics, kind = isbyte
 # endif /* ALLOW_OBCS_EAST */
 
 # ifdef ALLOW_OBCS_WEST
+#  ifdef NONLIN_FRSURF
+CADJ STORE OBWeta      = comlev1, key = ikey_dynamics, kind = isbyte
+#  endif
 CADJ STORE OBWt        = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE OBWs        = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE OBWu        = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE OBWv        = comlev1, key = ikey_dynamics, kind = isbyte
 #  ifdef ALLOW_OBCS_STEVENS
 CADJ STORE OBWtStevens = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE OBWsStevens = comlev1, key = ikey_dynamics, kind = isbyte
@@ -118,8 +138,6 @@ CADJ STORE hFacC, hFacS, hFacW
 CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE recip_hFacC, recip_hFacS, recip_hFacW
 CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE surfaceForcingU, surfaceForcingV =
-CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
 #endif
 
 cph the following needed to be moved here from do_oceanic_physics
@@ -173,9 +191,16 @@ CADJ STORE DWNSLP_Transp  = comlev1, key = ikey_dynamics, kind = isbyte
 #endif
 
 #ifdef ALLOW_SHELFICE
-CADJ STORE kTopC           =comlev1, key = ikey_dynamics
+# ifdef ALLOW_SHELFICE_REMESHING
+CADJ STORE kTopC          = comlev1, key = ikey_dynamics
+# endif
 CADJ STORE shelficeForcingT=comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE shelficeForcingS=comlev1, key = ikey_dynamics, kind = isbyte
+# ifdef ALLOW_STEEP_ICECAVITY
+C     need to add this to avoid recomputing s/r do_oceanic_phys in
+C     s/r forward_step, this implies that ALLOW_ADDFLUID is defined
+CADJ STORE addMass         =comlev1, key = ikey_dynamics, kind = isbyte
+# endif
 #endif /* ALLOW_SHELFICE */
 
 #if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
@@ -191,5 +216,24 @@ CADJ STORE pTracer        = comlev1, key = ikey_dynamics, kind = isbyte
 #ifdef NONLIN_FRSURF
 # ifndef DISABLE_RSTAR_CODE
 CADJ STORE rStarExpC      = comlev1, key = ikey_dynamics, kind = isbyte
+# endif
+#endif
+
+#ifndef EXCLUDE_PCELL_MIX_CODE
+# ifdef ALLOW_KPP
+CADJ STORE KPPviscAz      = comlev1, key = ikey_dynamics, kind = isbyte
+# endif
+# ifdef ALLOW_PP81
+CADJ STORE PPviscAz       = comlev1, key = ikey_dynamics, kind = isbyte
+# endif
+# ifdef ALLOW_KL10
+CADJ STORE KLviscAz       = comlev1, key = ikey_dynamics, kind = isbyte
+# endif
+# ifdef ALLOW_MY82
+CADJ STORE MYviscAz       = comlev1, key = ikey_dynamics, kind = isbyte
+# endif
+# ifdef ALLOW_GGL90
+CADJ STORE GGL90viscArU   = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE GGL90viscArV   = comlev1, key = ikey_dynamics, kind = isbyte
 # endif
 #endif

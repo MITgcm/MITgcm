@@ -244,6 +244,11 @@ C ==========================================================
 C ==========================================================
 C   Ecosystem variables and parameters
 C ==========================================================
+C     irr_mem       :: Phyto irradiance memory
+C          this is a temporally smoothed field carried between timesteps,
+C          to represent photoadaptation.
+C   chlsat_locTimWindow(1:2) :: local-time window (in h) for
+C          satellite-equivalent chlorophyll diagnostic (and cost)
 
       COMMON /BIOTIC_NEEDS/
      &                     InputFe,
@@ -253,6 +258,7 @@ C ==========================================================
      &                     phyto_lg,
      &                     phyto_sm,
      &                     chl,
+     &                     chl_sat,
      &                     poc,
      &                     Pc_0_2d,
      &                     k_Fe_2d,
@@ -344,7 +350,8 @@ C ==========================================================
      &                     parfrac,
      &                     alpfe,
      &                     k0,
-     &                     MLmix_max
+     &                     MLmix_max,
+     &                     chlsat_locTimWindow
 
       _RL InputFe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL omegaC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -353,6 +360,7 @@ C ==========================================================
       _RL phyto_lg(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL phyto_sm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL chl(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL chl_sat(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL poc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL Pc_0_2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL k_Fe_2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -445,6 +453,7 @@ C ==========================================================
       _RL alpfe
       _RL k0
       _RL MLmix_max
+      _RL chlsat_locTimWindow(2)
 
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***

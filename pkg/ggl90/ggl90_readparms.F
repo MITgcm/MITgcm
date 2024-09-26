@@ -51,7 +51,7 @@ C--   GGL90 vertical mixing parameters
      &     GGL90mixingMaps, GGL90writeState,
      &     GGL90ck, GGL90ceps, GGL90alpha, GGL90m2,
      &     GGL90TKEmin, GGL90TKEsurfMin, GGL90TKEbottom,
-     &     GGL90mixingLengthMin, mxlMaxFlag, mxlSurfFlag,
+     &     GGL90mixingLengthMin, mxlMaxFlag, adMxlMaxFlag, mxlSurfFlag,
      &     GGL90viscMax, GGL90diffMax, GGL90TKEFile,
      &     GGL90_dirichlet, calcMeanVertShear, useIDEMIX,
      &     useLANGMUIR
@@ -119,6 +119,7 @@ C     Blanke and Delecluse (1993, JPO) use
       GGL90diffTKEh        = 0.0 _d 0
       GGL90mixingLengthMin = 1.0 _d -08
       mxlMaxFlag           = 0
+      adMxlMaxFlag         = UNSET_I
       mxlSurfFlag          = .FALSE.
       GGL90TKEFile         = ' '
       GGL90_dirichlet      = .TRUE.
@@ -250,6 +251,9 @@ C Now set-up any remaining parameters that result from the input parameters
       IF ( GGL90TKEbottom .EQ. UNSET_RL ) THEN
        GGL90TKEbottom = GGL90TKEmin
       ENDIF
+      IF ( adMxlMaxFlag .EQ. UNSET_I ) THEN
+       adMxlMaxFlag = mxlMaxFlag
+      ENDIF
 #ifdef ALLOW_GGL90_IDEMIX
       IF ( GGL90TKEmin .LT. 0. ) THEN   ! CE: changed le to lt  !!!
 #else
@@ -353,6 +357,10 @@ C--   print TKE vertical mixing parameters to stdout for better debugging
      &     '   /* GGL90 minimum mixing length (m) */')
       CALL WRITE_0D_I(mxlMaxFlag, INDEX_NONE, 'mxlMaxFlag =',
      &     '   /* Flag for limiting mixing-length method */')
+#ifdef ALLOW_AUTODIFF
+      CALL WRITE_0D_I(adMxlMaxFlag, INDEX_NONE, 'adMxlMaxFlag =',
+     &     '   /* Flag for limiting mixing-length method in AD-mode */')
+#endif
       CALL WRITE_0D_L(mxlSurfFlag,INDEX_NONE,
      &     'mxlSurfFlag =',
      &     '   /* GGL90 flag for near surface mixing */')

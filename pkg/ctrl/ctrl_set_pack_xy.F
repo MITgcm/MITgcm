@@ -1,9 +1,9 @@
 #include "CTRL_OPTIONS.h"
 
       subroutine ctrl_set_pack_xy(
-     &     cunit, ivartype, precondScalar,
+     &     cunit, ivar, precondScalar,
      &     fname, masktype, weighttype,
-     &     lxxadxx, mythid )
+     &     lxxadxx, myThid )
 
 c     ==================================================================
 c     SUBROUTINE ctrl_set_pack_xy
@@ -23,19 +23,20 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 
-#include "ctrl.h"
-#include "optim.h"
+#include "CTRL_SIZE.h"
+#include "CTRL.h"
+#include "OPTIMCYCLE.h"
 
 c     == routine arguments ==
 
       integer cunit
-      integer ivartype
+      integer ivar
       _RL precondScalar
       character*(MAX_LEN_FNAM) fname
       character*(  9) masktype
       character*(MAX_LEN_FNAM) weighttype
       logical lxxadxx
-      integer mythid
+      integer myThid
 
 #ifndef EXCLUDE_CTRL_PACK
 c     == external ==
@@ -109,47 +110,47 @@ c     Initialise temporary file
       enddo
 
 c--   Only the master thread will do I/O.
-      _BEGIN_MASTER( mythid )
+      _BEGIN_MASTER( myThid )
 
       if ( doPackDiag ) then
          if ( lxxadxx ) then
             write(cfile2,'(a,I3.3,a,I4.4,a)')
      &           'diag_pack_nonout_ctrl_',
-     &           ivartype, '_', optimcycle, '.bin'
+     &           ivar, '_', optimcycle, '.bin'
             write(cfile3,'(a,I3.3,a,I4.4,a)')
      &           'diag_pack_dimout_ctrl_',
-     &           ivartype, '_', optimcycle, '.bin'
+     &           ivar, '_', optimcycle, '.bin'
          else
             write(cfile2,'(a,I3.3,a,I4.4,a)')
      &           'diag_pack_nonout_grad_',
-     &           ivartype, '_', optimcycle, '.bin'
+     &           ivar, '_', optimcycle, '.bin'
             write(cfile3,'(a,I3.3,a,I4.4,a)')
      &           'diag_pack_dimout_grad_',
-     &           ivartype, '_', optimcycle, '.bin'
+     &           ivar, '_', optimcycle, '.bin'
          endif
 
          reclen = FLOAT(sNx*nSx*nPx*sNy*nSy*nPy*4)
-         call mdsfindunit( cunit2, mythid )
+         call mdsfindunit( cunit2, myThid )
          open( cunit2, file=cfile2, status='unknown',
      &        access='direct', recl=reclen )
-         call mdsfindunit( cunit3, mythid )
+         call mdsfindunit( cunit3, myThid )
          open( cunit3, file=cfile3, status='unknown',
      &        access='direct', recl=reclen )
       endif
 
       call MDSREADFIELD_3D_GL(
      &     masktype, ctrlprec, 'RL',
-     &     Nr, globmsk, 1, mythid)
+     &     Nr, globmsk, 1, myThid)
 
-      nrec_nl=int(ncvarrecs(ivartype)/Nr)
+      nrec_nl=int(ncvarrecs(ivar)/Nr)
       do irec = 1, nrec_nl
 
        call MDSREADFIELD_3D_GL( fname, ctrlprec, 'RL',
-     &      Nr, globfld3d, irec, mythid)
+     &      Nr, globfld3d, irec, myThid)
        do k = 1, Nr
         irectrue = (irec-1)*Nr + k
 #ifndef ALLOW_ADMTLM
-        write(cunit) ncvarindex(ivartype)
+        write(cunit) ncvarindex(ivar)
         write(cunit) 1
         write(cunit) 1
 #endif
@@ -209,13 +210,13 @@ c
 c     -- end of irec loop --
       enddo
 
-      do irec = nrec_nl*Nr+1, ncvarrecs(ivartype)
+      do irec = nrec_nl*Nr+1, ncvarrecs(ivar)
 
        call MDSREADFIELD_2D_GL( fname, ctrlprec, 'RL',
-     &        1, globfld3d(1,1,1,1,1,1,1), irec, mythid)
+     &        1, globfld3d(1,1,1,1,1,1,1), irec, myThid)
 
 #ifndef ALLOW_ADMTLM
-       write(cunit) ncvarindex(ivartype)
+       write(cunit) ncvarindex(ivar)
        write(cunit) 1
        write(cunit) 1
 #endif
@@ -282,7 +283,7 @@ c     -- end of irec loop --
          close ( cunit3 )
       endif
 
-      _END_MASTER( mythid )
+      _END_MASTER( myThid )
 
 # else /* ALLOW_PACKUNPACK_METHOD2 */
 
@@ -290,7 +291,7 @@ c-- part 1: preliminary reads and definitions
 
 #ifdef ALLOW_AUTODIFF
       call active_read_xyz(masktype, msk3d, 1,
-     &    .FALSE., .FALSE., 0 , mythid, dummy)
+     &    .FALSE., .FALSE., 0 , myThid, dummy)
 #else
       CALL READ_REC_XYZ_RL( masktype, msk3d, 1, 1, myThid )
 #endif
@@ -308,11 +309,11 @@ c-- part 1: preliminary reads and definitions
 
 c-- part 2: loop over records
 
-      do irec = 1, ncvarrecs(ivartype)
+      do irec = 1, ncvarrecs(ivar)
 
 c-- 2.1:
       call READ_REC_3D_RL( fname, ctrlprec,
-     &        1, fld2dDim, irec, 0, mythid)
+     &        1, fld2dDim, irec, 0, myThid)
 
 c-- 2.2: normalize field if needed
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -339,21 +340,21 @@ c-- 2.2: normalize field if needed
 c-- 2.3:
       if ( doPackDiag ) then
       call WRITE_REC_3D_RL( cfile2, ctrlprec,
-     &        1, fld2dNodim, irec, 0, mythid)
+     &        1, fld2dNodim, irec, 0, myThid)
       call WRITE_REC_3D_RL( cfile3, ctrlprec,
-     &        1, fld2dDim, irec, 0, mythid)
+     &        1, fld2dDim, irec, 0, myThid)
       endif
 
 c-- 2.4: array -> buffer -> global buffer -> global file
 
 #ifndef ALLOW_ADMTLM
-      _BEGIN_MASTER( mythid )
+      _BEGIN_MASTER( myThid )
       IF ( myProcId .eq. 0 ) THEN
-         write(cunit) ncvarindex(ivartype)
+         write(cunit) ncvarindex(ivar)
          write(cunit) 1
          write(cunit) 1
       ENDIF
-      _END_MASTER( mythid )
+      _END_MASTER( myThid )
       _BARRIER
 #endif
 
@@ -373,7 +374,7 @@ c-- 2.4: array -> buffer -> global buffer -> global file
      &                       Nx,Ny,.FALSE.,.TRUE.,myThid)
         CALL BAR2( myThid )
 
-        _BEGIN_MASTER( mythid )
+        _BEGIN_MASTER( myThid )
         cbuffindex = 0
         IF ( myProcId .eq. 0 ) THEN
 
@@ -399,7 +400,7 @@ c-- 2.4: array -> buffer -> global buffer -> global file
 #endif
 
         ENDIF
-        _END_MASTER( mythid )
+        _END_MASTER( myThid )
         _BARRIER
 
       enddo

@@ -10,7 +10,7 @@ C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | S/R DIAGS_SOUND_SPEED
 C     | o Diagnose speed of sound in seawater
-C     |   from the algorithm by Del Grasso (1974).
+C     |   from the algorithm by Del Grosso (1974).
 C     |   This is NOT the sound-speed that can be derived from
 C     |   the equation of state (EOS). It is independent of
 C     |   the model setup specific EOS.
@@ -97,7 +97,7 @@ C pressure in dbar (for SW_TEMP)
              temp = SW_TEMP( SALT(i,j,k,bi,bj),
      &                 THETA(i,j,k,bi,bj), pres, zeroRL )
              sal  = SALT(i,j,k,bi,bj)
-C convert pressure to kg/cm^2 for Del Grasso algorithm
+C convert pressure to kg/cm^2 for Del Grosso algorithm
              pres = pres/gravity
              ct   = ( 5.01109398873 _d 0 - ( 0.550946843172 _d -1
      &              - 0.221535969240 _d -3 * temp ) * temp ) * temp

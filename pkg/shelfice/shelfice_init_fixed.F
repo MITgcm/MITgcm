@@ -5,6 +5,9 @@
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
+#ifdef ALLOW_MOM_COMMON
+# include "MOM_COMMON_OPTIONS.h"
+#endif
 
       SUBROUTINE SHELFICE_INIT_FIXED( myThid )
 C     *============================================================*
@@ -33,7 +36,11 @@ C     myThid ::  Number of this instance of SHELFICE_INIT_FIXED
 #ifdef ALLOW_SHELFICE
 C     === Local variables ===
 C     i, j, bi, bj :: Loop counters
+C     SHI_minDepth :: minimum Ice-Shelf depth
+C     msgBuf       :: Informational/error message buffer
       INTEGER i, j, bi, bj
+      _RS SHI_minDepth
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_DIAGNOSTICS
       INTEGER       diagNum
       INTEGER       diagMate
@@ -54,23 +61,10 @@ C     Initialize MNC variable information for SHELFICE
       ENDIF
 #endif /* ALLOW_MNC */
 
-C-----------------------------------------------------------------------
-C--   Initialize SHELFICE variables kTopC
-C--   kTopC is the same as kSurfC, except outside ice-shelf area:
-C--   kTop = 0 where there is no ice-shelf (where kSurfC=1)
-C--   and over land (completely dry column) where kSurfC = Nr+1
-C-----------------------------------------------------------------------
-
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j = 1-OLy, sNy+OLy
          DO i = 1-OLx, sNx+OLx
-          IF ( kSurfC(i,j,bi,bj).LE.Nr .AND.
-     &         Ro_surf(i,j,bi,bj).LT.rF(1) ) THEN
-            kTopC(i,j,bi,bj) = kSurfC(i,j,bi,bj)
-          ELSE
-            kTopC(i,j,bi,bj) = 0
-          ENDIF
           shelficeMassInit   (i,j,bi,bj) = 0. _d 0
           shelficeLoadAnomaly(i,j,bi,bj) = 0. _d 0
           shelfIceMassDynTendency(i,j,bi,bj) = 0. _d 0
@@ -78,35 +72,6 @@ C-----------------------------------------------------------------------
         ENDDO
        ENDDO
       ENDDO
-
-#ifdef ALLOW_CTRL
-C     maskSHI is a hack to play along with the general ctrl-package
-C     infrastructure, where only the k=1 layer of a 3D mask is used
-C     for 2D fields. We cannot use maskInC instead, because routines
-C     like ctrl_get_gen and ctrl_set_unpack_xy require 3D masks.
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO k=1,Nr
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           maskSHI(i,j,k,bi,bj) = 0. _d 0
-          ENDDO
-         ENDDO
-        ENDDO
-        DO k=1,Nr
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           IF ( Ro_surf(i,j,bi,bj).LT.rF(1)
-     &          .AND. maskC(i,j,k,bi,bj).NE.zeroRS ) THEN
-            maskSHI(i,j,k,bi,bj) = 1. _d 0
-            maskSHI(i,j,1,bi,bj) = 1. _d 0
-           ENDIF
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-#endif /* ALLOW_CTRL */
 
       IF ( SHELFICEloadAnomalyFile .NE. ' ' ) THEN
        CALL READ_FLD_XY_RL( SHELFICEloadAnomalyFile, ' ',
@@ -129,9 +94,124 @@ C     like ctrl_get_gen and ctrl_set_unpack_xy require 3D masks.
        ENDDO
       ENDIF
       _EXCH_XY_RL( shelficeMassInit, myThid )
-      CALL WRITE_FLD_XY_RL ( 'shelficemassinit', ' ',
-     &                       shelficeMassInit, 0, myThid )
 
+C-----------------------------------------------------------------------
+C--   Initialize SHELFICE variables kTopC
+C--   kTopC is the same as kSurfC, except outside ice-shelf area:
+C--   kTop = 0 where there is no ice-shelf (where kSurfC=1)
+C--   and over land (completely dry column) where kSurfC = Nr+1
+C-----------------------------------------------------------------------
+
+C--   Currently, there is no specific pkg/shelfice criteria to decide when very
+C     thin ice-shelf vanishes: some limits come from ocean hFacMin/hFacMinDr;
+C     but should depend on shelficeMass if SHELFICEMassStepping is used.
+C     Here the SHI_minDepth threshold is just to get around machine round-off
+C     isssues so does not need to be a run-time params.
+      SHI_minDepth = 1. _d -6
+      SHI_minDepth = rF(1) - drF(1)*SHI_minDepth
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        IF ( SHELFICEMassStepping ) THEN
+C-      In this case, it is recommended to initialise ice-shelf Mass (from file)
+C       And if updating "kTopC" is permitted (SHI_update_kTopC=T), kTopC will
+C       be reset in SHELFICE_INIT_VARIA after loading shelficeMass from pickup
+         DO j = 1-OLy, sNy+OLy
+          DO i = 1-OLx, sNx+OLx
+           IF ( kSurfC(i,j,bi,bj).LE.Nr .AND.
+     &          shelficeMassInit(i,j,bi,bj).GT.zeroRL ) THEN
+            kTopC(i,j,bi,bj) = kSurfC(i,j,bi,bj)
+           ELSE
+            kTopC(i,j,bi,bj) = 0
+           ENDIF
+          ENDDO
+         ENDDO
+        ELSE
+C-      no time-evolving Ice-Shelf: set kTopC according to Ro_surf
+C       Note: use Ro_surf instead of R_shelfIce to stay consistent
+C             with ocean mask & hFac, see issue #99
+         DO j = 1-OLy, sNy+OLy
+          DO i = 1-OLx, sNx+OLx
+           IF ( kSurfC(i,j,bi,bj).LE.Nr .AND.
+     &          Ro_surf(i,j,bi,bj).LT.SHI_minDepth ) THEN
+c    &          R_shelfIce(i,j,bi,bj).LT.rF(1) ) THEN
+            kTopC(i,j,bi,bj) = kSurfC(i,j,bi,bj)
+           ELSE
+            kTopC(i,j,bi,bj) = 0
+           ENDIF
+          ENDDO
+         ENDDO
+        ENDIF
+       ENDDO
+      ENDDO
+
+#ifdef ALLOW_CTRL
+C     maskSHI is a hack to play along with the general ctrl-package
+C     infrastructure, where only the k=1 layer of a 3D mask is used
+C     for 2D fields. We cannot use maskInC instead, because routines
+C     like ctrl_get_gen and ctrl_set_unpack_xy require 3D masks.
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO k=1,Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           maskSHI(i,j,k,bi,bj) = 0. _d 0
+          ENDDO
+         ENDDO
+        ENDDO
+        DO k=1,Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           IF ( kTopC(i,j,bi,bj).GE.1
+     &          .AND. maskC(i,j,k,bi,bj).NE.zeroRS ) THEN
+            maskSHI(i,j,k,bi,bj) = 1. _d 0
+            maskSHI(i,j,1,bi,bj) = 1. _d 0
+           ENDIF
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+#endif /* ALLOW_CTRL */
+
+      IF ( debugLevel.GE.debLevC ) THEN
+       WRITE(msgBuf,'(A)')
+     &  'SHELFICE_INIT_FIXED: checking Ice-Shelf extension & kTopC'
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(A,1PE18.10)')
+     &  'SHELFICE_INIT_FIXED:  SHI_minDepth =', SHI_minDepth
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+c        DO j = 1-OLy, sNy+OLy
+c         DO i = 1-OLx, sNx+OLx
+         DO j = 1, sNy
+          DO i = 1, sNx
+           IF ( kTopC(i,j,bi,bj).NE.0 .AND.
+     &          ( shelficeMassInit(i,j,bi,bj).LE.zeroRL
+     &            .OR. R_shelfIce(i,j,bi,bj).GE.rF(1) ) ) THEN
+             WRITE(standardMessageUnit,'(A,2I4,2I3,A,1P3E17.9)')
+     &        ' Ice-Shelf (kTopC>0) in i,j,bi,bj=', i, j, bi, bj,
+     &        ' but R_shelf,Ro_surf,MassIni=', R_shelfIce(i,j,bi,bj),
+     &         Ro_surf(i,j,bi,bj), shelficeMassInit(i,j,bi,bj)
+           ELSEIF ( kTopC(i,j,bi,bj).EQ.0 .AND.
+     &          ( shelficeMassInit(i,j,bi,bj).GT.zeroRL
+     &            .OR. R_shelfIce(i,j,bi,bj).LT.rF(1) ) ) THEN
+             WRITE(standardMessageUnit,'(A,2I4,2I3,A,1P3E17.9)')
+     &        ' no Ice-Shelf (kTopC=0) i,j,bi,bj=', i, j, bi, bj,
+     &        ' but R_shelf,Ro_surf,MassIni=', R_shelfIce(i,j,bi,bj),
+     &         Ro_surf(i,j,bi,bj), shelficeMassInit(i,j,bi,bj)
+           ENDIF
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+       WRITE(msgBuf,'(A)')
+     &  'SHELFICE_INIT_FIXED: checking Ice-Shelf extension: done'
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+      ENDIF
 c     IF ( SHELFICEloadAnomalyFile .EQ. ' ' ) THEN
 C-   In case we need shelficeLoadAnomaly in phi0surf for initial pressure
 C    calculation (if using selectP_inEOS_Zc=2 or 3)
@@ -139,8 +219,14 @@ C    calculation (if using selectP_inEOS_Zc=2 or 3)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j = 1-OLy, sNy+OLy
           DO i = 1-OLx, sNx+OLx
-           shelficeLoadAnomaly(i,j,bi,bj) = gravity
+           IF ( kTopC(i,j,bi,bj).EQ.0 ) THEN
+            R_shelfIce         (i,j,bi,bj) = rF(1)
+            shelficeMassInit   (i,j,bi,bj) = 0. _d 0
+            shelficeLoadAnomaly(i,j,bi,bj) = 0. _d 0
+           ELSE
+            shelficeLoadAnomaly(i,j,bi,bj) = gravity
      &      *(shelficeMassInit(i,j,bi,bj)+rhoConst*Ro_surf(i,j,bi,bj))
+           ENDIF
           ENDDO
          ENDDO
         ENDDO
@@ -148,6 +234,8 @@ C    calculation (if using selectP_inEOS_Zc=2 or 3)
 c     ELSE
 c      _EXCH_XY_RS( shelficeLoadAnomaly, myThid )
 c     ENDIF
+      CALL WRITE_FLD_XY_RL ( 'shelficemassinit', ' ',
+     &                       shelficeMassInit, 0, myThid )
       IF ( debugLevel.GE.debLevC ) THEN
        CALL WRITE_FLD_XY_RL( 'SHICE_pLoadAnom', ' ',
      I                       shelficeLoadAnomaly, -1, myThid )
@@ -227,6 +315,22 @@ c     ENDIF
        diagCode  = 'SM      L1      '
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+#if ( defined ALLOW_MOM_COMMON && defined ALLOW_MOM_TEND_EXTRA_DIAGS )
+cHP adding diagnostic for drag from ice shelf to allow exp. dissip decomp
+      diagName  = 'UShIDrag'
+      diagTitle = 'U momentum tendency from ice shelf Drag'
+      diagCode  = 'UUR     MR      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+      diagName  = 'VShIDrag'
+      diagTitle = 'V momentum tendency from ice shelf Drag'
+      diagCode  = 'VVR     MR      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+#endif
 
 #ifdef SHI_ALLOW_GAMMAFRICT
        diagName  = 'SHIuStar'

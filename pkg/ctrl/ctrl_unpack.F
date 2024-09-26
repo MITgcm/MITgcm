@@ -6,7 +6,7 @@
 # include "ECCO_OPTIONS.h"
 #endif
 
-      subroutine ctrl_unpack( first, mythid )
+      subroutine ctrl_unpack( first, myThid )
 
 c     ==================================================================
 c     SUBROUTINE ctrl_unpack
@@ -19,7 +19,7 @@ c     started: Christian Eckert eckert@mit.edu  10-Mar-2000
 c
 c     changed: Patrick Heimbach heimbach@mit.edu 06-Jun-2000
 c              - Transferred some filename declarations
-c                from here to namelist in ctrl_init
+c                from here to namelist in ctrl_init_fixed
 c
 c              Patrick Heimbach heimbach@mit.edu 16-Jun-2000
 c              - single file name convention with or without
@@ -38,7 +38,7 @@ c     ==================================================================
 c     SUBROUTINE ctrl_unpack
 c     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
 c     == global variables ==
 
@@ -48,10 +48,10 @@ c     == global variables ==
 #include "GRID.h"
 
 #ifdef ALLOW_CTRL
-# include "ctrl.h"
 # include "CTRL_SIZE.h"
+# include "CTRL.h"
 # include "CTRL_GENARR.h"
-# include "optim.h"
+# include "OPTIMCYCLE.h"
 # include "CTRL_OBCS.h"
 #endif
 #ifdef ALLOW_COST
@@ -61,7 +61,7 @@ c     == global variables ==
 c     == routine arguments ==
 
       logical first
-      integer mythid
+      integer myThid
 
 #ifndef EXCLUDE_CTRL_PACK
 c     == external functions ==
@@ -71,74 +71,92 @@ c     == external functions ==
 
 c     == local variables ==
 
-      integer i, k
-      integer ivartype
+      integer k, ivar, iarr
       integer ictrlgrad
       integer cunit
       logical lxxadxx
-      character*(128) cfile
-      integer ilDir
+      CHARACTER*(128) cfile
+      integer il, ilDir
 
-#if (defined ALLOW_GENARR2D_CONTROL) \
-      || (defined ALLOW_GENARR3D_CONTROL) \
-      || (defined ALLOW_GENTIM2D_CONTROL)
-C-    Provided we set the file name just before calling ctrl_set_unpack,
-C     the same local file name variable can be used for different variables.
-C     This is how GENARR2/3D_CONTROL is implemented (+ provides an example)
-      integer iarr
-      character*(MAX_LEN_FNAM) fname_local(3)
+C     These are variables needed to read the header, but subsequently
+C     they are not used.
+      INTEGER maxLocal, numLoc
+#ifdef READ_OLD_CTRL_PACK_FILE
+      PARAMETER( maxLocal = old_maxcvars )
+#else
+      PARAMETER( maxLocal = maxcvars )
 #endif
+      INTEGER file_nvarType
+      INTEGER file_nvarLength
+      CHARACTER*(10) file_YctrlId
+      INTEGER file_OptimCycle
+      _RL     file_fc
+      INTEGER file_Ig
+      INTEGER file_Jg
+      INTEGER file_nSx
+      INTEGER file_nSy
+      INTEGER file_nWetcGlobal(Nr)
+      INTEGER file_nWetsGlobal(Nr)
+      INTEGER file_nWetwGlobal(Nr)
+c     INTEGER file_nWetvGlobal(Nr)
+#ifdef ALLOW_SHELFICE
+      INTEGER file_nWetiGlobal(Nr)
+#endif
+      INTEGER file_varIndex(maxLocal)
+      INTEGER file_varRecs(maxLocal)
+      INTEGER file_varNxMax(maxLocal)
+      INTEGER file_varNyMax(maxLocal)
+      INTEGER file_varNrMax(maxLocal)
+      CHARACTER*(1) file_varGrid(maxLocal)
+      CHARACTER*(5) file_varType(maxLocal)
+
+      CHARACTER*(MAX_LEN_FNAM) fname_local(3)
 #if ( defined ALLOW_GENARR2D_CONTROL || defined ALLOW_GENTIM2D_CONTROL )
       integer nwettmp(Nr)
-      character*( 9) mskNameForSetUnpack
+      CHARACTER*(9) mskNameForSetUnpack
 #endif
 
 #ifdef ALLOW_OBCS
-      character*(MAX_LEN_FNAM) weighttype
-      character*(MAX_LEN_FNAM) fname_obcsn(3)
-      character*(MAX_LEN_FNAM) fname_obcss(3)
-      character*(MAX_LEN_FNAM) fname_obcsw(3)
-      character*(MAX_LEN_FNAM) fname_obcse(3)
-cgg(  Add OBCS mask names.
+      INTEGER iobcs
 #ifdef ALLOW_OBCSN_CONTROL
-      integer        filenWetobcsnGlo(Nr,nobcs)
+      INTEGER file_nWetobcsnGlo(Nr,nobcs)
 #endif
 #ifdef ALLOW_OBCSS_CONTROL
-      integer        filenWetobcssGlo(Nr,nobcs)
+      INTEGER file_nWetobcssGlo(Nr,nobcs)
 #endif
 #ifdef ALLOW_OBCSW_CONTROL
-      integer        filenWetobcswGlo(Nr,nobcs)
+      INTEGER file_nWetobcswGlo(Nr,nobcs)
 #endif
 #ifdef ALLOW_OBCSE_CONTROL
-      integer        filenWetobcseGlo(Nr,nobcs)
+      INTEGER file_nWetobcseGlo(Nr,nobcs)
 #endif
-      integer iobcs
-cgg)
 #endif /* ALLOW_OBCS */
 
 c     == end of interface ==
 
 c--   Initialise
       nbuffGlobal = 0
+      DO k = 1, Nr
+       file_nWetcGlobal(k) = 0
+       file_nWetsGlobal(k) = 0
+       file_nWetwGlobal(k) = 0
+c      file_nWetvGlobal(k) = 0
+      ENDDO
+      DO ivar = 1, maxLocal
+       file_varIndex(ivar) = 0
+       file_varRecs(ivar)  = 0
+       file_varNxMax(ivar) = 0
+       file_varNyMax(ivar) = 0
+       file_varNrMax(ivar) = 0
+       file_varGrid(ivar)  = ' '
+       file_varType(ivar)  = '     '
+      ENDDO
 
 c--   Find ctrlDir (w/o trailing blanks) length
       ilDir = ilnblnk(ctrlDir)
 
-c--   Assign file names.
-
-#ifdef ALLOW_OBCS
-      call ctrl_set_fname(ctrlDir(1:ilDir)//xx_obcsn_file,
-     & fname_obcsn, mythid)
-      call ctrl_set_fname(ctrlDir(1:ilDir)//xx_obcss_file,
-     & fname_obcss, mythid)
-      call ctrl_set_fname(ctrlDir(1:ilDir)//xx_obcsw_file,
-     & fname_obcsw, mythid)
-      call ctrl_set_fname(ctrlDir(1:ilDir)//xx_obcse_file,
-     & fname_obcse, mythid)
-#endif
-
-c--     Only the master thread will do I/O.
-        _BEGIN_MASTER( mythid )
+c--   Only the master thread will do I/O.
+      _BEGIN_MASTER( myThid )
 
 c *********************************************************************
 
@@ -165,88 +183,89 @@ c     >>> Write gradient vector <<<
 c--   Only Proc 0 will do I/O.
       IF ( myProcId .eq. 0 ) THEN
 
-          call mdsfindunit( cunit, mythid )
+          call mdsfindunit( cunit, myThid )
 
 #ifndef ALLOW_ADMTLM
 
-          open( cunit, file   = cfile,
-     &         status = 'old',
-     &         form   = 'unformatted',
-     &         access  = 'sequential'   )
+          open( cunit, file = cfile,
+     &          status = 'old',
+     &          form   = 'unformatted',
+     &          access = 'sequential' )
 
 c--       Header information.
-          read(cunit) filenvartype
-          read(cunit) filenvarlength
-          read(cunit) fileYctrlid
-          read(cunit) fileOptimCycle
-          read(cunit) filefc
-          read(cunit) fileIg
-          read(cunit) fileJg
-          read(cunit) filensx
-          read(cunit) filensy
-          read(cunit) (filenWetcGlobal(k),   k=1,Nr)
-          read(cunit) (filenWetsGlobal(k),   k=1,Nr)
-          read(cunit) (filenWetwGlobal(k),   k=1,Nr)
-#ifdef ALLOW_CTRL_WETV
-          read(cunit) (filenWetvGlobal(k),   k=1,Nr)
-#endif
+          read(cunit)  file_nvarType
+          read(cunit)  file_nvarLength
+          read(cunit)  file_YctrlId
+          read(cunit)  file_OptimCycle
+          read(cunit)  file_fc
+          read(cunit)  file_Ig
+          read(cunit)  file_Jg
+          read(cunit)  file_nSx
+          read(cunit)  file_nSy
+          read(cunit) (file_nWetcGlobal(k), k=1,Nr)
+          read(cunit) (file_nWetsGlobal(k), k=1,Nr)
+          read(cunit) (file_nWetwGlobal(k), k=1,Nr)
+c#ifdef ALLOW_CTRL_WETV
+c         read(cunit) (file_nWetvGlobal(k), k=1,Nr)
+c#endif
 #ifdef ALLOW_SHELFICE
-          read(cunit) (filenWetiGlobal(k),   k=1,Nr)
-c         read(cunit) filenWetiGlobal(1)
+          read(cunit) (file_nWetiGlobal(k), k=1,Nr)
+c         read(cunit)  file_nWetiGlobal(1)
 #endif
 
 #ifdef ALLOW_OBCS
 cgg(     Add OBCS mask information to the header.
 #ifdef ALLOW_OBCSN_CONTROL
-          read(cunit) ((filenWetobcsnGlo(k,iobcs),
+          read(cunit) ((file_nWetobcsnGlo(k,iobcs),
      &         k=1,Nr), iobcs= 1,nobcs)
 #endif
 #ifdef ALLOW_OBCSS_CONTROL
-          read(cunit) ((filenWetobcssGlo(k,iobcs),
+          read(cunit) ((file_nWetobcssGlo(k,iobcs),
      &         k=1,Nr), iobcs= 1,nobcs)
 #endif
 #ifdef ALLOW_OBCSW_CONTROL
-          read(cunit) ((filenWetobcswGlo(k,iobcs),
+          read(cunit) ((file_nWetobcswGlo(k,iobcs),
      &         k=1,Nr), iobcs= 1,nobcs)
 #endif
 #ifdef ALLOW_OBCSE_CONTROL
-          read(cunit) ((filenWetobcseGlo(k,iobcs),
+          read(cunit) ((file_nWetobcseGlo(k,iobcs),
      &         k=1,Nr), iobcs= 1,nobcs)
 #endif
 cgg)
 #endif /* ALLOW_OBCS */
 
-          read(cunit) (filencvarindex(i), i=1,maxcvars)
-          read(cunit) (filencvarrecs(i),  i=1,maxcvars)
-          read(cunit) (filencvarxmax(i),  i=1,maxcvars)
-          read(cunit) (filencvarymax(i),  i=1,maxcvars)
-          read(cunit) (filencvarnrmax(i), i=1,maxcvars)
-          read(cunit) (filencvargrd(i),   i=1,maxcvars)
-          read(cunit)
+C--       Check file header info.
 
-c         Check file header info.
-c
-          if ( filenvarlength .NE. nvarlength ) then
-             print *, 'WARNING: wrong nvarlength ',
-     &            filenvarlength, nvarlength
+          if ( file_nvarType .NE. nvartype ) then
+             print *, 'ERROR: wrong nvartype ',
+     &            file_nvarType, nvartype
              STOP 'in S/R ctrl_unpack'
-          else if ( filensx .NE. nSx .OR. filensy .NE. nSy ) then
+          endif
+          if ( file_nvarLength .NE. nvarlength ) then
+             print *, 'WARNING: wrong nvarlength ',
+     &            file_nvarLength, nvarlength
+             STOP 'in S/R ctrl_unpack'
+          elseif ( file_nSx .NE. nSx .OR. file_nSy .NE. nSy ) then
              print *, 'WARNING: wrong nSx or nSy ',
-     &            filensx, nSx, filensy, nSy
+     &            file_nSx, nSx, file_nSy, nSy
              STOP 'in S/R ctrl_unpack'
           endif
           do k = 1, Nr
-             if ( filenWetcGlobal(k) .NE. nWetcGlobal(k) .OR.
-     &            filenWetsGlobal(k) .NE. nWetsGlobal(k) .OR.
-     &            filenWetwGlobal(k) .NE. nWetwGlobal(k) .OR.
-     &            filenWetvGlobal(k) .NE. nWetvGlobal(k)  ) then
+             if ( file_nWetcGlobal(k) .NE. nWetcGlobal(k) .OR.
+c    &            file_nWetvGlobal(k) .NE. nWetvGlobal(k) .OR.
+     &            file_nWetsGlobal(k) .NE. nWetsGlobal(k) .OR.
+     &            file_nWetwGlobal(k) .NE. nWetwGlobal(k)  ) then
                 print *, 'WARNING: wrong nWet?Global for k = ', k
+                print *, 'c', file_nWetcGlobal(k), nWetcGlobal(k)
+                print *, 's', file_nWetsGlobal(k), nWetsGlobal(k)
+                print *, 'w', file_nWetwGlobal(k), nWetwGlobal(k)
+c               print *, 'v', file_nWetvGlobal(k), nWetvGlobal(k)
                 STOP
              endif
           end do
 #ifdef ALLOW_SHELFICE
           do k=1,1
-           if ( filenWetiGlobal(k) .NE. nWetiGlobal(k) ) then
+           if ( file_nWetiGlobal(k) .NE. nWetiGlobal(k) ) then
             print *, 'WARNING: wrong nWetiGlobal for k = ', k
             STOP
            endif
@@ -258,7 +277,7 @@ cgg(   Lets also check the OBCS mask info in the header.
 #ifdef ALLOW_OBCSN_CONTROL
        do iobcs = 1, nobcs
          do k = 1, Nr
-           if (filenWetobcsnGlo(k,iobcs) .NE.
+           if (file_nWetobcsnGlo(k,iobcs) .NE.
      &           nWetobcsnGlo(k,iobcs)) then
              print *, 'WARNING: OBCSN wrong nWet?Global for k = ', k
              STOP
@@ -269,7 +288,7 @@ cgg(   Lets also check the OBCS mask info in the header.
 #ifdef ALLOW_OBCSS_CONTROL
        do iobcs = 1, nobcs
          do k = 1, Nr
-           if (filenWetobcssGlo(k,iobcs) .NE.
+           if (file_nWetobcssGlo(k,iobcs) .NE.
      &           nWetobcssGlo(k,iobcs)) then
              print *, 'WARNING: OBCSS wrong nWet?Global for k = ', k
              STOP
@@ -280,7 +299,7 @@ cgg(   Lets also check the OBCS mask info in the header.
 #ifdef ALLOW_OBCSW_CONTROL
        do iobcs = 1, nobcs
          do k = 1, Nr
-           if (filenWetobcswGlo(k,iobcs) .NE.
+           if (file_nWetobcswGlo(k,iobcs) .NE.
      &           nWetobcswGlo(k,iobcs)) then
              print *, 'WARNING: OBCSW wrong nWet?Global for k = ', k
              STOP
@@ -291,7 +310,7 @@ cgg(   Lets also check the OBCS mask info in the header.
 #ifdef ALLOW_OBCSE_CONTROL
        do iobcs = 1, nobcs
          do k = 1, Nr
-           if (filenWetobcseGlo(k,iobcs) .NE.
+           if (file_nWetobcseGlo(k,iobcs) .NE.
      &           nWetobcseGlo(k,iobcs)) then
              print *, 'WARNING: OBCSE wrong nWet?Global for k = ', k
              STOP
@@ -302,132 +321,142 @@ cgg(   Lets also check the OBCS mask info in the header.
 cgg)  End OBCS mask check.
 #endif /* ALLOW_OBCS */
 
+C--   Finish to read header information.
+          numLoc = nvartype
+#ifdef READ_OLD_CTRL_PACK_FILE
+          numLoc = maxLocal
+#endif
+          read(cunit) ( file_varIndex(ivar), ivar=1,numLoc )
+          read(cunit) ( file_varRecs(ivar),  ivar=1,numLoc )
+          read(cunit) ( file_varNxMax(ivar), ivar=1,numLoc )
+          read(cunit) ( file_varNyMax(ivar), ivar=1,numLoc )
+          read(cunit) ( file_varNrMax(ivar), ivar=1,numLoc )
+          read(cunit) ( file_varGrid(ivar),  ivar=1,numLoc )
+#ifdef READ_OLD_CTRL_PACK_FILE
+          read(cunit)
+          CALL CTRL_CONVERT_HEADER(
+     I              maxLocal, file_nvarType, errorMessageUnit,
+     U              file_varIndex, file_varRecs,
+     U              file_varNxMax, file_varNyMax, file_varNrMax,
+     U              file_varGrid, file_varType,
+     I              myThid )
+#else
+          read(cunit) ( file_varType(ivar),  ivar=1,numLoc )
+#endif
+
 #endif /* ndef ALLOW_ADMTLM */
 
 #ifdef ALLOW_PACKUNPACK_METHOD2
       ENDIF
-      _END_MASTER( mythid )
+      _END_MASTER( myThid )
       _BARRIER
 #endif
 
 c----------------------------------------------------------------------
 
+c     do ivar = 1, maxcvars
+      do ivar = 1, nvartype
+       if ( ncvarindex(ivar) .GE. 0 ) THEN
+        il = ilnblnk(ncvarfname(ivar))
+        iarr = ncvarindex(ivar)
+        call ctrl_set_fname(ctrlDir(1:ilDir)//ncvarfname(ivar),
+     &                      fname_local, myThid )
+        if ( ncvargrd(ivar).EQ.'m' ) then
 #ifdef ALLOW_OBCS
-#ifdef ALLOW_OBCSN_CONTROL
-          ivartype    = 11
-          write(weighttype,'(a)') 'wobcsn'
-          call ctrl_set_unpack_xz(
-     &         cunit, ivartype, fname_obcsn(ictrlgrad), 'maskobcsn',
-     &         weighttype, wobcsn, nWetobcsnGlo, mythid)
-#endif
-#ifdef ALLOW_OBCSS_CONTROL
-          ivartype    = 12
-          write(weighttype,'(a)') 'wobcss'
-          call ctrl_set_unpack_xz(
-     &         cunit, ivartype, fname_obcss(ictrlgrad), 'maskobcss',
-     &         weighttype, wobcss, nWetobcssGlo, mythid)
-#endif
-#ifdef ALLOW_OBCSW_CONTROL
-          ivartype    = 13
-          write(weighttype,'(a)') 'wobcsw'
-          call ctrl_set_unpack_yz(
-     &         cunit, ivartype, fname_obcsw(ictrlgrad), 'maskobcsw',
-     &         weighttype, wobcsw, nWetobcswGlo, mythid)
-#endif
-#ifdef ALLOW_OBCSE_CONTROL
-          ivartype    = 14
-          write(weighttype,'(a)') 'wobcse'
-          call ctrl_set_unpack_yz(
-     &         cunit, ivartype, fname_obcse(ictrlgrad), 'maskobcse',
-     &         weighttype, wobcse, nWetobcseGlo, mythid)
-#endif
+         if ( iarr.EQ.1 ) then
+# ifdef ALLOW_OBCSN_CONTROL
+          call ctrl_set_unpack_xz( cunit, ivar, fname_local(ictrlgrad),
+     &            'maskobcsn', 'wobcsn', wobcsn, nWetobcsnGlo, myThid )
+# endif
+         elseif ( iarr.EQ.2 ) then
+# ifdef ALLOW_OBCSS_CONTROL
+          call ctrl_set_unpack_xz( cunit, ivar, fname_local(ictrlgrad),
+     &            'maskobcss', 'wobcss', wobcss, nWetobcssGlo, myThid )
+# endif
+         elseif ( iarr.EQ.3 ) then
+# ifdef ALLOW_OBCSE_CONTROL
+          call ctrl_set_unpack_yz( cunit, ivar, fname_local(ictrlgrad),
+     &            'maskobcse', 'wobcse', wobcse, nWetobcseGlo, myThid )
+# endif
+         elseif ( iarr.EQ.4 ) then
+# ifdef ALLOW_OBCSW_CONTROL
+          call ctrl_set_unpack_yz( cunit, ivar, fname_local(ictrlgrad),
+     &            'maskobcsw', 'wobcsw', wobcsw, nWetobcswGlo, myThid )
+# endif
+         endif
 #endif /* ALLOW_OBCS */
 
 #ifdef ALLOW_GENARR2D_CONTROL
-       do iarr = 1, maxCtrlArr2D
-        if (xx_genarr2d_weight(iarr).NE.' ') then
-         mskNameForSetUnpack='maskCtrlC'
-         DO k=1,Nr
-           nwettmp(k) = nwetcglobal(k)
-         ENDDO
-# ifdef ALLOW_SHELFICE
-         if ((xx_genarr2d_file(iarr)(1:11).eq.'xx_shicoeff').or.
-     &       (xx_genarr2d_file(iarr)(1:11).eq.'xx_shicdrag')) then
-          mskNameForSetUnpack='maskCtrlI'
+        elseif ( ncvartype(ivar).EQ.'Arr2D' ) then
+         if ( xx_genarr2d_weight(iarr).NE.' ') then
+          mskNameForSetUnpack='maskCtrlC'
           DO k=1,Nr
-           nwettmp(k) = nwetiglobal(k)
+           nwettmp(k) = nwetcglobal(k)
           ENDDO
-         endif
+# ifdef ALLOW_SHELFICE
+          if ( ncvargrd(ivar).EQ.'i' ) then
+           mskNameForSetUnpack='maskCtrlI'
+           DO k=1,Nr
+            nwettmp(k) = nwetiglobal(k)
+           ENDDO
+          endif
 # endif
-          call ctrl_set_fname( ctrlDir(1:ilDir)//xx_genarr2d_file(iarr),
-     O                         fname_local, mythid )
-          ivartype    = 100+iarr
-cc          write(weighttype,'(a)') ' '
-cc          write(weighttype,'(a)') 'wunit'
           call ctrl_set_unpack_xy(
-     &         lxxadxx, cunit, ivartype, genarr2dPrecond(iarr),
+     &         lxxadxx, cunit, ivar, genarr2dPrecond(iarr),
      &         fname_local(ictrlgrad), mskNameForSetUnpack,
      &         xx_genarr2d_weight(iarr),
-     &         nwettmp, mythid)
-        endif
-       enddo
+     &         nwettmp, myThid )
+         endif
 #endif /* ALLOW_GENARR2D_CONTROL */
 
 #ifdef ALLOW_GENARR3D_CONTROL
-       do iarr = 1, maxCtrlArr3D
-        if (xx_genarr3d_weight(iarr).NE.' ') then
-          call ctrl_set_fname( ctrlDir(1:ilDir)//xx_genarr3d_file(iarr),
-     O                         fname_local, mythid )
-          ivartype    = 200+iarr
-c          write(weighttype,'(a)') ' '
-c          write(weighttype,'(a)') 'wunit'
-          call ctrl_set_unpack_xyz( lxxadxx, cunit, ivartype,
+        elseif ( ncvartype(ivar).EQ.'Arr3D' ) then
+         if ( xx_genarr3d_weight(iarr).NE.' ') then
+          call ctrl_set_unpack_xyz( lxxadxx, cunit, ivar,
      &         fname_local(ictrlgrad), 'maskCtrlC',
      &         xx_genarr3d_weight(iarr),
-     &         wunit, nwetcglobal, mythid)
-        endif
-       enddo
+     &         wunit, nwetcglobal, myThid )
+         endif
 #endif /* ALLOW_GENARR3D_CONTROL */
 
 #ifdef ALLOW_GENTIM2D_CONTROL
-       do iarr = 1, maxCtrlTim2D
-        if (xx_gentim2d_weight(iarr).NE.' ') then
-         mskNameForSetUnpack='maskCtrlC'
-         DO k=1,Nr
+        elseif ( ncvartype(ivar).EQ.'Tim2D' ) then
+         if ( xx_gentim2d_weight(iarr).NE.' ') then
+          mskNameForSetUnpack='maskCtrlC'
+          DO k=1,Nr
            nwettmp(k) = nwetcglobal(k)
-         ENDDO
+          ENDDO
 # ifdef ALLOW_SHELFICE
-         if (xx_gentim2d_file(iarr)(1:11).eq.'xx_shifwflx') then
+          if ( ncvargrd(ivar).EQ.'i' ) then
            mskNameForSetUnpack='maskCtrlI'
            DO k=1,Nr
-             nwettmp(k) = nwetiglobal(k)
+            nwettmp(k) = nwetiglobal(k)
            ENDDO
-         endif
+          endif
 # endif
-          call ctrl_set_fname( ctrlDir(1:ilDir)//xx_gentim2d_file(iarr),
-     O                         fname_local, mythid )
-          ivartype    = 300+iarr
-c          write(weighttype,'(a)') ' '
-c          write(weighttype,'(a)') 'wunit'
           call ctrl_set_unpack_xy(
-     &         lxxadxx, cunit, ivartype, gentim2dPrecond(iarr),
+     &         lxxadxx, cunit, ivar, gentim2dPrecond(iarr),
      &         fname_local(ictrlgrad), mskNameForSetUnpack,
      &         xx_gentim2d_weight(iarr),
-     &         nwettmp, mythid)
-        endif
-       enddo
+     &         nwettmp, myThid )
+         endif
 #endif /* ALLOW_GENTIM2D_CONTROL */
+        endif
+C     if ( ncvarindex(ivar) .ge. 0 ) then
+       endif
+C     do ivar = 1, maxcvars
+      enddo
 
 #ifdef ALLOW_PACKUNPACK_METHOD2
-      _BEGIN_MASTER( mythid )
+      _BEGIN_MASTER( myThid )
       IF ( myProcId .eq. 0 ) THEN
 #endif
 
       close ( cunit )
       ENDIF !IF ( myProcId .eq. 0 )
-      _END_MASTER( mythid )
+      _END_MASTER( myThid )
       _BARRIER
 #endif /* EXCLUDE_CTRL_PACK */
 
-      return
-      end
+      RETURN
+      END

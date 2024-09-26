@@ -46,7 +46,10 @@ Parts of the :filelink:`seaice <pkg/seaice>` code can be enabled or disabled at
 compile time via CPP preprocessor flags. These options are set in
 :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>`.
 :numref:`tab_phys_pkg_seaice_cpp` summarizes the most important ones. For more
-options see :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>`.
+options see :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>`. Note
+that defining :varlink:`SEAICE_BGRID_DYNAMICS` turns on legacy code and thus
+automatically undefines more recent features, see :filelink:`SEAICE_OPTIONS.h
+<pkg/seaice/SEAICE_OPTIONS.h>` for details.
 
 .. tabularcolumns:: |\Y{.375}|\Y{.1}|\Y{.55}|
 
@@ -56,8 +59,7 @@ options see :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>`.
    :name: tab_phys_pkg_seaice_cpp
 
    :varlink:`SEAICE_DEBUG`, #undef, enhance STDOUT for debugging
-   :varlink:`SEAICE_ALLOW_DYNAMICS`, #define, sea ice dynamics code
-   :varlink:`SEAICE_CGRID`, #define, LSR solver on C-grid (rather than original B-grid)
+   :varlink:`SEAICE_CGRID`, #define, use sea ice dynamics on C-grid
    :varlink:`SEAICE_ALLOW_EVP`, #define, enable use of EVP rheology solver
    :varlink:`SEAICE_ALLOW_JFNK`, #define, enable use of JFNK rheology solver
    :varlink:`SEAICE_ALLOW_KRYLOV`, #define, enable use of Krylov rheology solver
@@ -69,14 +71,16 @@ options see :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>`.
    :varlink:`SEAICE_ALLOW_FREEDRIFT`, #undef, enable solve approximate sea ice momentum equation and bypass solving for sea ice internal stress
    :varlink:`SEAICE_EXTERNAL_FLUXES`, #define, use :filelink:`pkg/exf`-computed fluxes as starting point
    :varlink:`SEAICE_ZETA_SMOOTHREG`, #define, use differentiable regularization for viscosities
-   :varlink:`SEAICE_DELTA_SMOOTHREG`, #undef, use differentiable regularization for :math:`1/\Delta`
+   :varlink:`SEAICE_DELTA_SMOOTHREG`, #undef, use differentiable regularization :math:`\Delta_{\mathrm{reg}}=\sqrt{\Delta^2+\Delta_{\min}}` instead of :math:`\max`-function for :math:`1/\Delta_{\mathrm{reg}}`
    :varlink:`SEAICE_ALLOW_BOTTOMDRAG`, #undef, enable grounding parameterization for improved fastice in shallow seas
+   :varlink:`SEAICE_BGRID_DYNAMICS`, #undef, use sea ice dynamics code on legacy B-grid; most of the previous flags are not available with B-grid
+   :varlink:`SEAICE_BICE_STRESS`, #undef, B-grid only for backward compatiblity: turn on ice-stress on ocean; defined by default if :varlink:`SEAICE_BGRID_DYNAMICS` is defined
+   :varlink:`EXPLICIT_SSH_SLOPE`, #undef, B-grid only for backward compatiblity: use ETAN for tilt computations rather than geostrophic velocities; defined by default if :varlink:`SEAICE_BGRID_DYNAMICS` is defined
+   :varlink:`SEAICE_LSRBNEW`, #undef, FV discretization for B-grid
    :varlink:`SEAICE_ITD`, #undef, run with dynamical sea Ice Thickness Distribution (ITD)
    :varlink:`SEAICE_VARIABLE_SALINITY`, #undef, enable sea ice with variable salinity
    :varlink:`SEAICE_CAP_ICELOAD`, #undef, enable to limit seaice load (:varlink:`siceLoad`) on the sea surface
    :varlink:`ALLOW_SITRACER`, #undef, enable sea ice tracer package
-   :varlink:`SEAICE_BICE_STRESS`, #undef, B-grid only for backward compatiblity: turn on ice-stress on ocean
-   :varlink:`EXPLICIT_SSH_SLOPE`, #undef, B-grid only for backward compatiblity: use ETAN for tilt computations rather than geostrophic velocities
    :varlink:`SEAICE_USE_GROWTH_ADX`, #undef, use of adjointable but more simplified sea ice thermodynamics model in :filelink:`seaice_growth_adx.F <pkg/seaice/seaice_growth_adx.F>` instead of :filelink:`seaice_growth.F <pkg/seaice/seaice_growth.F>`
 
 .. _ssub_phys_pkg_seaice_runtime:
@@ -317,6 +321,8 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICE_EPS`              | 1.0E-10                      | a "small number" used in various routines                               |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`SEAICE_deltaMin`         | :varlink:`SEAICE_EPS`        | minimum to regularize :math:`\Delta`                                    |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICE_area_reg`         | 1.0E-5                       | minimum concentration to regularize ice thickness                       |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICE_hice_reg`         | 0.05                         | minimum ice thickness (m) for regularization                            |
@@ -497,21 +503,27 @@ The momentum equation of the sea-ice model is
    - m \nabla{\phi(0)} + \mathbf{F}
    :label: eq_momseaice
 
-where :math:`m=m_{i}+m_{s}` is the ice and snow mass per unit area;
-:math:`\mathbf{u}=u\hat{\mathbf{i}}+v\hat{\mathbf{j}}` is the ice velocity vector;
-:math:`\hat{\mathbf{i}}`, :math:`\hat{\mathbf{j}}`, and :math:`\hat{\mathbf{k}}` are unit vectors
-in the :math:`x`, :math:`y`, and :math:`z` directions, respectively; :math:`f`
-is the Coriolis parameter; :math:`\mathbf{\tau}_\mathrm{air}` and
-:math:`\mathbf{\tau}_\mathrm{ocean}` are the wind-ice and ocean-ice stresses,
-respectively; :math:`g` is the gravity accelation; :math:`\nabla\phi(0)` is the
-gradient (or tilt) of the sea surface height; :math:`\phi(0) = g\eta +
-p_{a}/\rho_{0} + mg/\rho_{0}` is the sea surface height potential in response
-to ocean dynamics (:math:`g\eta`), to atmospheric pressure loading
-(:math:`p_{a}/\rho_{0}`, where :math:`\rho_{0}` is a reference density) and a
-term due to snow and ice loading ; and :math:`\mathbf{F}= \nabla  \cdot\sigma` is
-the divergence of the internal ice stress tensor :math:`\sigma_{ij}`.
-Advection of sea-ice momentum is neglected. The wind and ice-ocean stress terms
-are given by
+where :math:`m=m_{i}+m_{s}` is the ice and snow mass per unit area. The ice
+mass per grid cell is :math:`m_i=\rho_{\mathrm{ice}} h\,c` with the mean ice
+density :math:`\rho_{\mathrm{ice}}` and the mean thickness :math:`h\,c = `
+volume per grid cell area that is the product of the actual thickness :math:`h`
+of the ice covered part of the cell and the fractional ice cover :math:`c =
+[0,1]`, sloppily also called ice concentration. A similar relationship defines
+the snow mass per grid cell :math:`m_s`.
+:math:`\mathbf{u}=u\hat{\mathbf{i}}+v\hat{\mathbf{j}}` is the ice velocity
+vector; :math:`\hat{\mathbf{i}}`, :math:`\hat{\mathbf{j}}`, and
+:math:`\hat{\mathbf{k}}` are unit vectors in the :math:`x`, :math:`y`, and
+:math:`z` directions, respectively; :math:`f` is the Coriolis parameter;
+:math:`\mathbf{\tau}_\mathrm{air}` and :math:`\mathbf{\tau}_\mathrm{ocean}` are
+the wind-ice and ocean-ice stresses, respectively; :math:`g` is the gravity
+accelation; :math:`\nabla\phi(0)` is the gradient (or tilt) of the sea surface
+height; :math:`\phi(0) = g\eta + p_{a}/\rho_{0} + mg/\rho_{0}` is the sea
+surface height potential in response to ocean dynamics (:math:`g\eta`),
+atmospheric pressure loading (:math:`p_{a}/\rho_{0}`, where :math:`\rho_{0}` is
+a reference density), and a term due to snow and ice loading; and
+:math:`\mathbf{F}= \nabla \cdot\sigma` is the divergence of the internal ice
+stress tensor :math:`\sigma_{ij}`.  Advection of sea-ice momentum is
+neglected. The wind and ice-ocean stress terms are given by
 
 .. math::
    \begin{aligned}
@@ -564,8 +576,10 @@ compactness (concentration) :math:`c`:
 
 with the constants :math:`P^{\ast}` (run-time parameter
 :varlink:`SEAICE_strength`) and :math:`C^{\ast}` (run-time parameter
-:varlink:`SEAICE_cStar`). By default, :math:`P` (variable :varlink:`PRESS` in
-the code) is the replacement pressure
+:varlink:`SEAICE_cStar`). Note that Hibler (1979) :cite:`hibler:79` defines
+:math:`h` as the "mean thickness" or an "equivalent ice thickness" for mass,
+which is :math:`c\,h` with our definitions. By default, :math:`P` (variable
+:varlink:`PRESS` in the code) is the replacement pressure
 
  .. math::
     :label: eq_pressrepl
@@ -573,12 +587,16 @@ the code) is the replacement pressure
     P = (1-k_t)\,P_{\max} \left( (1 - f_{r})
     + f_{r} \frac{\Delta}{\Delta_{\rm reg}}  \right)
 
-where :math:`f_{r}` is run-time parameter :varlink:`SEAICEpressReplFac`
+where :math:`f_{r}` is a run-time parameter :varlink:`SEAICEpressReplFac`
 (default = 1.0), and :math:`\Delta_{\rm reg}` is a regularized form of
 :math:`\Delta = \left[ \left(\dot{\epsilon}_{11}+\dot{\epsilon}_{22}\right)^2 +
 e^{-2}\left( \left(\dot{\epsilon}_{11}-\dot{\epsilon}_{22} \right)^2 +
-\dot{\epsilon}_{12}^2 \right) \right]^{\frac{1}{2}}`, for example
-:math:`\Delta_{\rm reg} = \max(\Delta,\Delta_{\min})`.
+4\,\dot{\epsilon}_{12}^2 \right) \right]^{\frac{1}{2}}`. By default
+:math:`\Delta_{\mathrm{reg}}=\max(\Delta,\Delta_{\min})`. If CPP-flag
+:varlink:`SEAICE_DELTA_SMOOTHREG` is defined,
+:math:`\Delta_{\mathrm{reg}}=\sqrt{\Delta^2+\Delta^2_{\min}}`. Run-time
+parameter :varlink:`SEAICE_deltaMin` :math:`= \Delta_{\min} = 10^{-10}` by
+default.
 
 The tensile strength factor :math:`k_t` (run-time parameter
 :varlink:`SEAICE_tensilFac`) determines the ice tensile strength :math:`T =
@@ -652,7 +670,7 @@ with the ratio of major to minor axis :math:`e = 2.0` (run-time parameter
 
 .. math::
    \begin{aligned}
-     \zeta =& \min\left(\frac{(1+k_t)P_{\max}}{2\max(\Delta,\Delta_{\min})},
+     \zeta =& \min\left(\frac{(1+k_t)P_{\max}}{2\Delta_\mathrm{reg}},
       \zeta_{\max}\right) \\
      \eta =& \frac{\zeta}{e^2}
    \end{aligned}
@@ -665,16 +683,18 @@ with the abbreviation
     \Delta =  \left[
     \left(\dot{\epsilon}_{11}+\dot{\epsilon}_{22}\right)^2
     + e^{-2}\left( \left(\dot{\epsilon}_{11}-\dot{\epsilon}_{22} \right)^2
-      + \dot{\epsilon}_{12}^2 \right)
+      + 4\,\dot{\epsilon}_{12}^2 \right)
     \right]^{\frac{1}{2}}
 
 The bulk viscosities are bounded above by imposing both a minimum
-:math:`\Delta_{\min}` (for numerical reasons, run-time parameter
+:math:`\Delta_{\min}` and replacing :math:`\Delta` by the regularized version
+:math:`\Delta_\mathrm{reg}` (for historical reasons, run-time parameter
 :varlink:`SEAICE_deltaMin` is set to a default value of
 :math:`10^{-10}\,\text{s}^{-1}`, the value of :varlink:`SEAICE_EPS`) and a
 maximum :math:`\zeta_{\max} = P_{\max}/(2\Delta^\ast)`, where
-:math:`\Delta^\ast=(2\times10^4/5\times10^{12})\,\text{s}^{-1}` :math:`=
-2\times10^{-9}\,\text{s}^{-1}`.  Obviously, this corresponds to regularizing
+:math:`\Delta^\ast=(2\times10^4/5\times10^{12})\,\text{s}^{-1} =
+2\times10^{-9}\,\text{s}^{-1}` (:varlink:`SEAICE_zetaMaxFac`
+:math:`=\frac{1}{2\Delta^\ast}`). Obviously, this corresponds to regularizing
 :math:`\Delta` with the typical value of :varlink:`SEAICE_deltaMin` :math:`=
 2\times10^{-9}`. Clearly, some of this regularization is redundant.  (There is
 also the option of bounding :math:`\zeta` from below by setting run-time
@@ -691,9 +711,9 @@ expression:
 .. math::
    \begin{split}
    \zeta &= \zeta_{\max}\tanh\left(\frac{(1+k_t)P_{\max}}{2\,
-         \min(\Delta,\Delta_{\min}) \,\zeta_{\max}}\right)\\
+         \Delta_\mathrm{reg} \,\zeta_{\max}}\right)\\
    &= \frac{(1+k_t)P_{\max}}{2\Delta^\ast}
-   \tanh\left(\frac{\Delta^\ast}{\min(\Delta,\Delta_{\min})}\right)
+   \tanh\left(\frac{\Delta^\ast}{\Delta_\mathrm{reg}}\right)
    \end{split}
    :label: eq_zetaregsmooth
 
@@ -733,7 +753,7 @@ with the abbreviation
 .. math::
      \Delta = \sqrt{(\dot{\epsilon}_{11}-\dot{\epsilon}_{22})^2
        +\frac{e_F^2}{e_G^4}((\dot{\epsilon}_{11}
-       -\dot{\epsilon}_{22})^2+4\dot{\epsilon}_{12}^2)}.
+       -\dot{\epsilon}_{22})^2+4\,\dot{\epsilon}_{12}^2)}.
 
 Note that if :math:`e_G=e_F=e`, these formulae reduce to the normal flow rule.
 
@@ -1464,7 +1484,7 @@ In the zero-layer model of Semtner (1976) :cite:`semtner:76`, the conductive
 heat flux depends strongly on the ice thickness :math:`h`. However, the ice
 thickness in the model represents a mean over a potentially very heterogeneous
 thickness distribution. In order to parameterize a sub-grid scale distribution
-for heat flux computations, the mean ice thickness :math:`h` is split into
+for heat flux computations, the ice thickness :math:`h` is split into
 :math:`N` thickness categories :math:`H_{n}` that are equally distributed
 between :math:`2h` and a minimum imposed ice thickness of :math:`5\,\text{cm}`
 by :math:`H_n= \frac{2n-1}{7}\,h` for :math:`n\in[1,N]`. The heat fluxes
@@ -1515,9 +1535,11 @@ parameter :varlink:`SEAICEuseFlooding` set to ``.TRUE.``.
 Advection of thermodynamic variables
 ------------------------------------
 
-Effective ice thickness (ice volume per unit area, :math:`c h`),
-concentration :math:`c` and effective snow thickness (:math:`c h_s`)
-are advected by ice velocities:
+Mean ice thickness (ice volume per unit area, :math:`c h`, model variable
+:varlink:`HEFF`, which implies the misleading name "effective thickness"),
+concentration :math:`c` (model variable :varlink:`AREA`) and mean snow
+thickness (:math:`c h_s`, model variable :varlink:`HSNOW`) are advected by ice
+velocities:
 
 .. math::
    \frac{\partial{X}}{\partial{t}} =
@@ -1525,15 +1547,15 @@ are advected by ice velocities:
    :label: eq_advection
 
 where :math:`\Gamma_X` are the thermodynamic source terms and :math:`D_{X}` the
-diffusive terms for quantities :math:`X= c h, c, c h_s`. From
-the various advection schemes that are available in MITgcm, we recommend
-flux-limited schemes to preserve sharp gradients and edges that are typical of
-sea ice distributions and to rule out unphysical over- and undershoots
-(negative thickness or concentration). These schemes conserve volume and
-horizontal area and are unconditionally stable, so that we can set
-:math:`D_{X}=0`. Run-time flags: :varlink:`SEAICEadvScheme` (default=77, is a
-2nd-order flux limited scheme), :varlink:`DIFF1` = :math:`D_{X}/\Delta{x}`
-(default=0).
+diffusive terms for quantities :math:`X= c h, c, c h_s` or any other tracer,
+such as sea ice salinity. From the various advection schemes that are available
+in MITgcm, we recommend flux-limited schemes (runtime flag
+:varlink:`SEAICEadvScheme`; default=77, a 2nd-order flux limited scheme) to
+preserve sharp gradients and edges that are typical of sea ice distributions
+and to rule out unphysical over- and undershoots (negative thickness or
+concentration). These schemes conserve volume and horizontal area and are
+unconditionally stable, so that we can set :math:`D_{X}=0` (runtime flag
+:varlink:`DIFF1` = :math:`D_{X}/\Delta{x}`; default=0).
 
 The MITgcm sea ice model provides the option to use the thermodynamics model of
 Winton (2000) :cite:`winton:00`, which in turn is based on the 3-layer model of

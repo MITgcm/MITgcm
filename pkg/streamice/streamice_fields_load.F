@@ -55,6 +55,7 @@ c     _RL pfact
       LOGICAL first, changed
 C--   for use with useMMsurfFc:
       CHARACTER*(MAX_LEN_FNAM) fNam
+      LOGICAL upd_cfric, upd_bdot_maxmelt, upd_bglen
 
       INTEGER nm0, nm1, nmP
       _RL myRelTime, fac, tmpFac
@@ -65,10 +66,25 @@ C--   find which month to use for surface BC
 C     aim_surfForc_TimePeriod :: Length of forcing time period (e.g. 1 month)
 C     aim_surfForc_NppCycle   :: Number of time period per Cycle (e.g. 12)
 
+      upd_cfric = .FALSE.
+      upd_bdot_maxmelt = .FALSE.
+      upd_bglen = .FALSE.
+      IF ( bdotMaxmeltTimeDepFile .NE. ' ' .and.
+     &  STREAMICEbasalTracConfig.eq.'FILE' ) THEN
+        upd_bdot_maxmelt = .TRUE.
+      ENDIF
+      IF ( bglenTimeDepFile .NE. ' ' .and.
+     &  STREAMICEGlenConstConfig.eq.'FILE' ) THEN
+        upd_bglen = .TRUE.
+      ENDIF
+      IF ( cfricTimeDepFile .NE. ' '  ) THEN
+        upd_cfric = .TRUE.
+      ENDIF
+
       myRelTime = myTime - startTime
       first = (myRelTime .lt. 0.5*deltaTClock)
       if ( streamice_forcing_period .eq. 0.D0 ) THEN
-!     &     .or. externForcingCycle .eq. 0.D0 ) then
+c     &     .or. externForcingCycle .eq. 0.D0 ) then
 C     control parameter is constant in time and only needs to be updated
 C     once in the beginning
        changed = .false.
@@ -114,9 +130,6 @@ C-    Wait for everyone to set loadNewData before Master updates prevMnthIndex
 
 #ifdef STREAMICE_STRESS_BOUNDARY_CONTROL
 
-!         PRINT *, "GOT HERE FIELDS LOAD 1", first, changed,
-!     &     nm0,nm1,myTime,fac
-
          IF ( STREAMICEuNormalTimeDepFile .NE. ' '  ) THEN
           CALL READ_REC_XY_RL(STREAMICEuNormalTimeDepFile,
      &                        streamice_u_normal_stress1,
@@ -140,7 +153,6 @@ C-    Wait for everyone to set loadNewData before Master updates prevMnthIndex
      &                        streamice_v_shear_stress1,
      &                        nm0,myIter,myThid)
          ENDIF
-!         PRINT *, "GOT HERE FIELDS LOAD 2"
 
 #endif
 #ifdef ALLOW_STREAMICE_FLUX_CONTROL
@@ -157,9 +169,26 @@ C-    Wait for everyone to set loadNewData before Master updates prevMnthIndex
 #endif
 
          IF ( STREAMICEBdotTimeDepFile .NE. ' '  ) THEN
-!         PRINT *, "GOT HERE FIELDS LOAD 3",  STREAMICEBdotTimeDepFile
           CALL READ_REC_XY_RL(STREAMICEBdotTimeDepFile,
      &                        bdot_streamice1,
+     &                        nm0,myIter,myThid)
+         ENDIF
+
+         IF ( bdotMaxmeltTimeDepFile .NE. ' '  ) THEN
+          CALL READ_REC_XY_RL(bdotMaxmeltTimeDepFile,
+     &                        streamice_bdot_maxmelt1,
+     &                        nm0,myIter,myThid)
+         ENDIF
+
+         IF ( bglenTimeDepFile .NE. ' '  ) THEN
+          CALL READ_REC_XY_RL(bglenTimeDepFile,
+     &                        streamice_bglen1,
+     &                        nm0,myIter,myThid)
+         ENDIF
+
+         IF ( cfricTimeDepFile .NE. ' '  ) THEN
+          CALL READ_REC_XY_RL(cfricTimeDepFile,
+     &                        streamice_beta1,
      &                        nm0,myIter,myThid)
          ENDIF
 
@@ -187,7 +216,6 @@ C-      endif 1rst iter.
            ENDDO
           ENDDO
          ENDDO
-!         PRINT *, "GOT HERE FIELDS LOAD 4"
 
          IF ( STREAMICEuNormalTimeDepFile .NE. ' '  ) THEN
           CALL READ_REC_XY_RL(STREAMICEuNormalTimeDepFile,
@@ -230,7 +258,6 @@ C-      endif 1rst iter.
            ENDDO
           ENDDO
          ENDDO
-!         PRINT *, "GOT HERE FIELDS LOAD 4"
 
          IF ( STREAMICEuFluxTimeDepFile .NE. ' '  ) THEN
           CALL READ_REC_XY_RL(STREAMICEuFluxTimeDepFile,
@@ -257,10 +284,61 @@ C-      endif 1rst iter.
           ENDDO
          ENDDO
 
+         DO bj=myByLo(myThid),myByHi(myThid)
+          DO bi=myBxLo(myThid),myBxHi(myThid)
+           DO j=1,sNy
+            DO i=1,sNx
+             streamice_bdot_maxmelt0(i,j,bi,bj) =
+     &        streamice_bdot_maxmelt1(i,j,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+
+         DO bj=myByLo(myThid),myByHi(myThid)
+          DO bi=myBxLo(myThid),myBxHi(myThid)
+           DO j=1,sNy
+            DO i=1,sNx
+             streamice_bglen0(i,j,bi,bj) =
+     &        streamice_bglen1(i,j,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+
+         DO bj=myByLo(myThid),myByHi(myThid)
+          DO bi=myBxLo(myThid),myBxHi(myThid)
+           DO j=1,sNy
+            DO i=1,sNx
+             streamice_beta0(i,j,bi,bj) =
+     &        streamice_beta1(i,j,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+
          IF ( STREAMICEBdotTimeDepFile .NE. ' '  ) THEN
           CALL READ_REC_XY_RL(STREAMICEBdotTimeDepFile,
      &                        bdot_streamice1,
      &                        nm1,myIter,myThid)
+         ENDIF
+
+         IF ( bdotMaxmeltTimeDepFile .NE. ' '  ) THEN
+          CALL READ_REC_XY_RL(bdotMaxmeltTimeDepFile,
+     &                        streamice_bdot_maxmelt1,
+     &                        nm0,myIter,myThid)
+         ENDIF
+
+         IF ( bglenTimeDepFile .NE. ' '  ) THEN
+          CALL READ_REC_XY_RL(bglenTimeDepFile,
+     &                        streamice_bglen1,
+     &                        nm0,myIter,myThid)
+         ENDIF
+
+         IF ( cfricTimeDepFile .NE. ' '  ) THEN
+          CALL READ_REC_XY_RL(cfricTimeDepFile,
+     &                        streamice_beta1,
+     &                        nm0,myIter,myThid)
          ENDIF
 
 C-      endif 1rst iter.
@@ -292,10 +370,25 @@ C-      endif 1rst iter.
      &        fac    * v_flux_bdry_SI_0(i,j,bi,bj)
      &     + (1-fac) * v_flux_bdry_SI_1(i,j,bi,bj)
 #endif
-
              bdot_streamice (i,j,bi,bj) =
      &        fac    * bdot_streamice0(i,j,bi,bj)
      &     + (1-fac) * bdot_streamice1(i,j,bi,bj)
+             if (upd_bdot_maxmelt) then
+              streamice_bdot_maxmelt_v (i,j,bi,bj) =
+     &         fac    * streamice_bdot_maxmelt0(i,j,bi,bj)
+     &     +  (1-fac) * streamice_bdot_maxmelt1(i,j,bi,bj)
+             endif
+             if (upd_bglen) then
+              b_glen (i,j,bi,bj) =
+     &         fac    * streamice_bglen0(i,j,bi,bj)
+     &     +  (1-fac) * streamice_bglen1(i,j,bi,bj)
+             endif
+             if (upd_cfric) then
+              C_basal_friction (i,j,bi,bj) =
+     &         fac    * streamice_beta0(i,j,bi,bj)
+     &     +  (1-fac) * streamice_beta1(i,j,bi,bj)
+             endif
+
            ENDDO
           ENDDO
          ENDDO
@@ -313,6 +406,9 @@ C-      endif 1rst iter.
 #endif
 
        _EXCH_XY_RL(bdot_streamice, myThid )
+       _EXCH_XY_RL(streamice_bdot_maxmelt_v, myThid )
+       _EXCH_XY_RL(b_glen, myThid )
+       _EXCH_XY_RL(C_basal_friction, myThid )
 #ifdef ALLOW_STREAMICE_FLUX_CONTROL
       CALL EXCH_XY_RL
      & (u_flux_bdry_pert, myThid)
@@ -320,8 +416,8 @@ C-      endif 1rst iter.
      & (v_flux_bdry_pert, myThid)
 #endif
 
-!      print *, "GOT HERE STREAMICE FIELDS LOAD",
-!     &  first,changed,nm0,nm1,fac
+c      print *, "GOT HERE STREAMICE FIELDS LOAD",
+c     &  first,changed,nm0,nm1,fac
 #endif
 #endif
 

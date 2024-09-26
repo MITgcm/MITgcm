@@ -1,6 +1,9 @@
 C---+----1--+-+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_STREAMICE
+#ifdef ALLOW_STREAMICE_TC_COST
+#include "STREAMICE_COST_SIZE.h"
+#endif
 
 C     -------------------------- REAL PARAMS ---------------------------------------------------
 
@@ -52,8 +55,18 @@ C     streamice_wgt_avthick       :: cost function coefficient
 C                                    of thickness misfit term
 C     streamice_wgt_vel           :: cost function coefficient
 C                                    of vel misfit term
-C     streamice_wgt_tikh          :: cost function coefficient
-C                                    of sq gradient penalty
+C     streamice_wgt_vel_norm      :: cost function coefficient
+C                                    of vel misfit normalised by obs. vel
+C     streamice_wgt_tikh_beta     :: cost function coefficient
+C                                    of sq gradient penalty for sliding param
+C     streamice_wgt_tikh_bglen    :: cost function coefficient
+C                                    of sq gradient penalty for stiffness
+C     streamice_wgt_tikh_gen      :: cost function coefficient
+C                                    of sq gradient penalty for generic ctrl
+C     streamice_wgt_prior_bglen   :: cost function coefficient
+C                                    of sq deviation from prior stiffness
+C     streamice_wgt_prior_gen     :: cost function coefficient
+C                                    of sq deviation from prior, generic ctrl
 C     streamice_addl_backstress   -- to remove
 C     streamice_smooth_gl_width   :: grounding line regularisation
 C                                    width (m)
@@ -63,6 +76,15 @@ C                                    of buttressing -- flowline mode only
 C     streamice_firn_correction   :: air thickness in column (m)
 C     streamice_density_firn      :: firn density in column
 C     streamice_forcing_period    :: forcing freq (s)
+C      FOLLOWING FOR STREAMICEBdotConfig='PARAM'
+C     streamice_bdot_depth_nomelt :: pw linear depth-dependent melt param:
+C                                    depth above which no melt
+C     streamice_bdot_depth_maxmelt:: pw linear depth-dependent melt param:
+C                                    depth below which const melt
+C     streamice_bdot_maxmelt      :: pw linear depth-dependent melt param:
+C                                    maximum melt rate
+C     streamice_bdot_exp          :: pw linear depth-dependent melt param:
+C                                    melt exponent
 
       COMMON /STREAMICE_PARMS_R/
      & streamice_density, streamice_density_ocean_avg,
@@ -78,10 +100,19 @@ C     streamice_forcing_period    :: forcing freq (s)
      & streamice_kx_b_init, streamice_ky_b_init,
      & streamice_wgt_drift, streamice_wgt_surf,
      & streamice_wgt_avthick, streamice_wgt_vel,
-     & streamice_wgt_tikh,
+     & streamice_wgt_vel_norm,
+     & streamice_wgt_tikh_beta,
+     & streamice_wgt_tikh_bglen,
+     & streamice_wgt_tikh_gen,
+     & streamice_wgt_prior_bglen,
+     & streamice_wgt_prior_gen,
      & streamice_addl_backstress,
      & streamice_smooth_gl_width,
      & streamice_adot_uniform,
+     & streamice_bdot_depth_nomelt,
+     & streamice_bdot_depth_maxmelt,
+     & streamice_bdot_maxmelt,
+     & streamice_bdot_exp,
 #ifdef STREAMICE_FLOWLINE_BUTTRESS
      & streamice_buttr_width,
 #endif
@@ -108,10 +139,17 @@ C     streamice_forcing_period    :: forcing freq (s)
       _RL streamice_kx_b_init, streamice_ky_b_init
       _RL streamice_wgt_drift, streamice_wgt_surf
       _RL streamice_wgt_avthick, streamice_wgt_vel
-      _RL streamice_wgt_tikh
+      _RL streamice_wgt_vel_norm
+      _RL streamice_wgt_tikh_beta, streamice_wgt_tikh_bglen,
+     &    streamice_wgt_tikh_gen
+      _RL streamice_wgt_prior_bglen, streamice_wgt_prior_gen
       _RL streamice_addl_backstress
       _RL streamice_smooth_gl_width
       _RL streamice_adot_uniform
+      _RL streamice_bdot_depth_nomelt
+      _RL streamice_bdot_depth_maxmelt
+      _RL streamice_bdot_maxmelt
+      _RL streamice_bdot_exp
       _RL streamice_forcing_period
 #ifdef STREAMICE_FLOWLINE_BUTTRESS
       _RL streamice_buttr_width
@@ -161,6 +199,12 @@ C     streamice_petsc_pcfactorlevels    :: fill level of incomplete
 C                                          cholesky preconditioner
 C                                          for use with PETSC and
 C                                          BLOCKJACOBI precond ONLY
+C     streamice_vel_cost_timesteps      :: array of time steps where velocity misfit
+C                                          is accumulated, expects files
+C       [STREAMICEvelOptimTCBasename][timestep in 10 digit format][u/v/err].bin
+C     streamice_surf_cost_timesteps     :: array of time steps where surface misfit
+C                                          is accumulated, expects files
+C       [STREAMICEsurfOptimTCBasename][timestep in 10 digit format][u/v/err].bin
 
 #ifdef ALLOW_AUTODIFF_TAMC
       INTEGER streamice_max_nl
@@ -196,6 +240,15 @@ c      INTEGER streamice_n_sub_regularize
 
 #endif
 
+#ifdef ALLOW_STREAMICE_TC_COST
+      COMMON /STREAMICE_PARMS_TC_CTRL/
+     &     streamice_vel_cost_timesteps,
+     &     streamice_surf_cost_timesteps
+
+      INTEGER streamice_vel_cost_timesteps(streamiceMaxCostLevel)
+      INTEGER streamice_surf_cost_timesteps(streamiceMaxCostLevel)
+#endif
+
 C     -------------------------- CHAR PARAMS ---------------------------------------------------
 
 C---+----1--+-+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -226,10 +279,18 @@ C                                    overridden in coupled mode
 C     STREAMICEAdotConfig         :: mode of SMB init
 C                                    FILE - via STREAMICEAdotFile
 C                                    o/w streamice_adot_uniform
-C     STREAMICEvelOptimFile       :: file prefix for obs velocities
-C                                    in inversion e.g. 'velobs'
-C                                    indicates 'velobsu.bin'
-C                                    and       'velobsv.bin'
+C     STREAMICEBglenCostMaskFile  :: prior values for Bglen in
+C                                    transient or snapshot inversion
+C     STREAMICEvelOptimSnapBasename
+C                                 :: file prefix for obs velocities
+C                                    in snapshot inversion, expects files
+C        [STREAMICEvelOptimSnapBasename][u/v/err].bin
+C     STREAMICEvelOptimTCBasename :: file prefix for obs velocities
+C                                    in transient inversion, expects files
+C       [STREAMICEvelOptimTCBasename][timestep in 10 digit format][u/v/err].bin
+C     STREAMICEsurfOptimTCBasename :: file prefix for obs surf elev
+C                                    in transient inversion, expects files
+C       [STREAMICEsurfOptimTCBasename][timestep in 10 digit format][u/v/err].bin
 C     STREAMICEtopogFile          :: bed topography (separate from
 C                                    ocean bathy)
 C     STREAMICEhmaskFile          :: ice mask file
@@ -252,6 +313,27 @@ C     STREAMICEuMassFluxFile      :: file to set u_flux_bdry_SI
 C                                    see EXPLANATION OF MASKS below
 C     STREAMICEvMassFluxFile      :: file to set v_flux_bdry_SI
 C                                    see EXPLANATION OF MASKS below
+C     STREAMICEBdotDepthFile      :: file giving a spatially dependent
+C                                    depth below which const melt
+C                                    when Bdot_config='PARAM'.
+C                                    overrides streamice_bdot_depth_maxmelt
+C     STREAMICEBdotMaxMeltFile    :: file giving a spatially dependent
+C                                    max melt at depth
+C                                    when Bdot_config='PARAM'
+C                                    overrides streamice_bdot_maxmelt
+C     BdotMaxMeltTimeDepFile      :: file giving a time and spatially dependent
+C                                    max melt at depth
+C                                    when Bdot_config='PARAM'
+C                                    overrides streamice_bdot_maxmelt and
+C                                    STREAMICEBdotMaxMeltFile
+C     cfricTimeDepFile            :: file giving a time and spatially dependent
+C                                    sliding param
+C                                    when STREAMICEbasalTracConfig is 'FILE'
+C                                    overrides STREAMICEbasaltracFile
+C     bglenTimeDepFile            :: file giving a time and spatially dependent
+C                                    rheology param (Bbar)
+C                                    when STREAMICEGlenconstConfig='FILE'
+C                                    overrides STREAMICEGlenConstFile
 C
 C     following give \gamma_sig and \gamma_tau factors as described
 C     in appendix of
@@ -309,10 +391,15 @@ C     STREAMICE_vvel_ext_file     :: y-velocity file to replace velocity calc
       CHARACTER*(MAX_LEN_FNAM) STREAMICEBdotFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICEAdotFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICEBdotTimeDepFile
-      CHARACTER*(MAX_LEN_FNAM) STREAMICEvelOptimFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICEtopogFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICEcostMaskFile
+      CHARACTER*(MAX_LEN_FNAM) STREAMICEBglenCostMaskFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICE_ADV_SCHEME
+      CHARACTER*(MAX_LEN_FNAM) STREAMICEvelOptimSnapBasename
+      CHARACTER*(MAX_LEN_FNAM) STREAMICEvelOptimTCBasename
+      CHARACTER*(MAX_LEN_FNAM) STREAMICEsurfOptimTCBasename
+      CHARACTER*(MAX_LEN_FNAM) STREAMICEBdotDepthFile
+      CHARACTER*(MAX_LEN_FNAM) STREAMICEBdotMaxMeltFile
 
 C     THE FOLLOWING FILENAMES ARE FOR SPECIFYING IRREGULAR DOMAIN GEOMETRIES
 C     (i.e. boundaries that do not conform with rectangular walls)
@@ -338,6 +425,10 @@ C     THE FOLLOWING FILENAMES ARE FOR SPECIFYING buttressing along calving front
 
       CHARACTER*(MAX_LEN_FNAM) STREAMICEuFluxTimeDepFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICEvFluxTimeDepFile
+
+      CHARACTER*(MAX_LEN_FNAM) bdotMaxmeltTimeDepFile
+      CHARACTER*(MAX_LEN_FNAM) bglenTimeDepFile
+      CHARACTER*(MAX_LEN_FNAM) cfricTimeDepFile
 
       CHARACTER*(MAX_LEN_FNAM) STREAMICE_uvel_ext_file
       CHARACTER*(MAX_LEN_FNAM) STREAMICE_vvel_ext_file
@@ -370,7 +461,9 @@ c     CHARACTER PARAMS FOR TRACER
      &     STREAMICEBdotConfig,
      &     STREAMICEAdotConfig,
      &     STREAMICEbasalTracFile,
-     &     STREAMICEvelOptimFile,
+     &     STREAMICEvelOptimSnapBasename,
+     &     STREAMICEvelOptimTCBasename,
+     &     STREAMICEsurfOptimTCBasename,
      &     STREAMICEtopogFile,
      &     STREAMICEhmaskFile,
      &     STREAMICEHBCxFile,
@@ -396,10 +489,16 @@ c     CHARACTER PARAMS FOR TRACER
      &     STREAMICEAdotFile,
      &     STREAMICEBdotTimeDepFile,
      &     STREAMICEGlenConstConfig,
+     &     STREAMICEBglenCostMaskFile,
      &     STREAMICEcostMaskFile,
      &     STREAMICE_ADV_SCHEME,
      &     STREAMICE_uvel_ext_file,
-     &     STREAMICE_vvel_ext_file
+     &     STREAMICE_vvel_ext_file,
+     &     STREAMICEBdotDepthFile,
+     &     STREAMICEBdotMaxMeltFile,
+     &     bdotMaxmeltTimeDepFile,
+     &     bglenTimeDepFile,
+     &     cfricTimeDepFile
 
 #ifdef ALLOW_PETSC
       COMMON /PETSC_PARM_C/
@@ -466,6 +565,14 @@ C                                        (if false, sqrt is used)
 C     STREAMICE_vel_ext           :: impose velocity with external files
 C     STREAMICE_vel_ext_cgrid     :: impose velocity with external files on C grid
 C                                 ::  (over-rides STREAMICE_vel_ext)
+C     STREAMICE_do_snapshot_cost  :: accumulate snapshot cost function at
+C                                    final time step
+C     STREAMICE_do_timedep_cost   :: accumulate cost at specified time steps
+C     STREAMICE_do_verification_cost
+C                                 :: do cost for verification test
+C     STREAMICE_do_vaf_cost       :: do cost for volume above floatation
+C     STREAMICE_shelf_dhdt_ctrl   :: option to apply surface elevation constraint to
+C                                    floating ice in cost function
 
       LOGICAL STREAMICEison
       LOGICAL STREAMICE_dump_mdsio
@@ -489,6 +596,11 @@ C                                 ::  (over-rides STREAMICE_vel_ext)
       LOGICAL STREAMICE_use_log_ctrl
       LOGICAL STREAMICE_vel_ext
       LOGICAL STREAMICE_vel_ext_cgrid
+      LOGICAL STREAMICE_do_snapshot_cost
+      LOGICAL STREAMICE_do_timedep_cost
+      LOGICAL STREAMICE_do_verification_cost
+      LOGICAL STREAMICE_do_vaf_cost
+      LOGICAL STREAMICE_shelf_dhdt_ctrl
 #if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP) )
 #ifdef ALLOW_PETSC
       LOGICAL STREAMICE_need2createmat
@@ -529,6 +641,11 @@ C      LOGICAL STREAMICE_hybrid_stress
      & STREAMICE_vel_ext,
      & STREAMICE_vel_ext_cgrid,
      & STREAMICE_use_log_ctrl,
+     & STREAMICE_do_snapshot_cost,
+     & STREAMICE_do_verification_cost,
+     & STREAMICE_do_vaf_cost,
+     & STREAMICE_do_timedep_cost,
+     & STREAMICE_shelf_dhdt_ctrl,
 #ifdef STREAMICE_FLOWLINE_BUTTRESS
      & useStreamiceFlowlineButtr,
 #endif
@@ -636,9 +753,15 @@ C    REAL ARRAYS
      &     u_bdry_values_SI,
      &     v_bdry_values_SI,
      &     STREAMICE_dummy_array,
-     &     C_basal_friction,
-     &     B_glen,
-     &     BDOT_streamice, ADOT_streamice,BDOT_pert,ADOT_pert, ! mass balances in meters per year
+     &     C_basal_friction, C_basal_fric_init,
+     &     B_glen, B_glen_init, B_glen0
+
+C     Spit common block, because it lead to memory problem on some
+C     platform/compiler combinations (e.g. PowerBook with MacOS and
+C     gfortran)
+      COMMON /STREAMICE_FIELDS_RL_2/
+     &     BDOT_streamice, ADOT_streamice,BDOT_pert,ADOT_pert,
+     &     streamice_bdot_depth_maxmelt_v, streamice_bdot_maxmelt_v,
      &     streamice_sigma_coord, streamice_delsigma,
      &     H_streamice_prev,
      &     u_new_si, v_new_si, streamice_u_tavg, streamice_v_tavg,
@@ -674,7 +797,10 @@ C    REAL ARRAYS
 #ifdef ALLOW_STREAMICE_TIMEDEP_FORCING
       COMMON /STREAMICE_TIMEDEP_FORCE/
      &      bdot_streamice0,
-     &      bdot_streamice1
+     &      bdot_streamice1,
+     &      streamice_bdot_maxmelt0, streamice_bdot_maxmelt1,
+     &      streamice_bglen0, streamice_bglen1,
+     &      streamice_beta0, streamice_beta1
 #ifdef STREAMICE_STRESS_BOUNDARY_CONTROL
      &      ,streamice_u_normal_stress0,
      &      streamice_u_normal_stress1,
@@ -726,6 +852,7 @@ C    REAL ARRAYS
       _RL u_bdry_values_SI    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL v_bdry_values_SI    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL c_basal_friction    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL c_basal_fric_init   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL u_streamice_ext     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL v_streamice_ext     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C      _RL A_glen    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -734,6 +861,8 @@ C      _RL A_glen    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #else
       _RL B_glen    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
+      _RL B_glen_init    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL B_glen0        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL streamice_sigma_coord (Nr)
       _RL streamice_delsigma (Nr)
 
@@ -799,6 +928,10 @@ C     The following arrays are used for the hybrid stress balance
 C  IMPORTANT: MELT RATE IN METERS PER YEAR
 C  POSITIVE WHERE MELTING
       _RL BDOT_streamice (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL streamice_bdot_depth_maxmelt_v
+     &                   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL streamice_bdot_maxmelt_v
+     &                   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL BDOT_pert (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL ADOT_pert (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL H_streamice_prev (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -841,15 +974,29 @@ C  POSITIVE WHERE MELTING
      &   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL bdot_streamice1
      &   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL streamice_bdot_maxmelt0
+     &    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL streamice_bdot_maxmelt1
+     &    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL streamice_bglen0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL streamice_bglen1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL streamice_beta0     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL streamice_beta1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
       COMMON /STREAMICE_COST_RL/
      &       cost_func1_streamice,
      &       cost_vel_streamice,
-     &       cost_surf_streamice
+     &       cost_surf_streamice,
+     &       cost_smooth_fric_streamice,
+     &       cost_smooth_glen_streamice,
+     &       cost_prior_streamice
       _RL cost_func1_streamice(nSx,nSy)
       _RL cost_vel_streamice(nSx,nSy)
       _RL cost_surf_streamice(nSx,nSy)
+      _RL cost_smooth_fric_streamice(nSx,nSy)
+      _RL cost_smooth_glen_streamice(nSx,nSy)
+      _RL cost_prior_streamice(nSx,nSy)
 
 C    NOTES :
 C      REAL ARRAYS THAT COMPRISE "STATE":

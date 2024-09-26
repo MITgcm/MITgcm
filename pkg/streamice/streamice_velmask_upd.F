@@ -22,12 +22,12 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "STREAMICE.h"
-!#ifdef ALLOW_PETSC
-!# ifdef ALLOW_USE_MPI
-!#  include "EESUPPORT.h"
-!# endif
-!#endif
-! #include "STREAMICE_ADV.h"
+c#ifdef ALLOW_PETSC
+c# ifdef ALLOW_USE_MPI
+c#  include "EESUPPORT.h"
+c# endif
+c#endif
+c #include "STREAMICE_ADV.h"
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -38,12 +38,12 @@ C     === Global variables ===
 #ifdef ALLOW_STREAMICE
 
       INTEGER i, j, bi, bj, ki, kj
-      INTEGER maskFlag, myThidCopy
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER maskFlag
 #ifdef ALLOW_USE_MPI
       integer mpiRC, mpiMyWid
 #endif
 #ifdef ALLOW_PETSC
+      INTEGER myThidCopy
       _RS DoFCount
       integer n_dofs_proc_loc (0:nPx*nPy-1)
       integer n_dofs_cum_sum (0:nPx*nPy-1)
@@ -96,9 +96,9 @@ C     === Global variables ===
               ENDDO
               STREAMICE_ufacemask(i+ki,j,bi,bj) = 3.0
              ELSE IF (maskFlag.EQ.2) THEN
-              !DO kj=0,1
+c             DO kj=0,1
                STREAMICE_ufacemask(i+ki,j,bi,bj) = 2.0
-              !ENDDO
+c             ENDDO
              ELSE IF (maskFlag.EQ.4) THEN
               DO kj=0,1
                STREAMICE_umask(i+ki,j+kj,bi,bj) = 0.0
@@ -131,9 +131,9 @@ C     === Global variables ===
               ENDDO
               STREAMICE_vfacemask(i,j+kj,bi,bj) = 3.0
            ELSE IF (maskFlag.EQ.2) THEN
-              !DO ki=0,1
+c             DO ki=0,1
                STREAMICE_vfacemask(i,j+kj,bi,bj) = 2.0
-              !ENDDO
+c             ENDDO
            ELSE IF (maskFlag.EQ.4) THEN
               DO ki=0,1
                STREAMICE_umask(i+ki,j+kj,bi,bj) = 0.0
@@ -156,7 +156,7 @@ C     === Global variables ===
            IF (i .lt. sNx+OLx) THEN
             IF ((STREAMICE_hmask(i+1,j,bi,bj) .eq. 0.0) .OR.
      &          (STREAMICE_hmask(i+1,j,bi,bj) .eq. 2.0))  THEN
-            !right boundary or adjacent to unfilled cell
+C           right boundary or adjacent to unfilled cell
              STREAMICE_ufacemask(i+1,j,bi,bj) = 2.0
             ENDIF
            ENDIF
@@ -164,7 +164,7 @@ C     === Global variables ===
            IF (i .gt. 1-OLx) THEN
             IF ((STREAMICE_hmask(i-1,j,bi,bj) .eq. 0.0) .OR.
      &          (STREAMICE_hmask(i-1,j,bi,bj) .eq. 2.0))  THEN
-            !left boundary or adjacent to unfilled cell
+C           left boundary or adjacent to unfilled cell
              STREAMICE_ufacemask(i,j,bi,bj) = 2
             ENDIF
            ENDIF
@@ -172,7 +172,7 @@ C     === Global variables ===
            IF (j .lt. sNy+OLy) THEN
             IF ((STREAMICE_hmask(i,j+1,bi,bj) .eq. 0.0) .OR.
      &          (STREAMICE_hmask(i,j+1,bi,bj) .eq. 2.0))  THEN
-            !top boundary or adjacent to unfilled cell
+C           top boundary or adjacent to unfilled cell
              STREAMICE_vfacemask(i,j+1,bi,bj) = 2
             ENDIF
            ENDIF
@@ -180,7 +180,7 @@ C     === Global variables ===
            IF (j .gt. 1-OLy) THEN
             IF ((STREAMICE_hmask(i,j-1,bi,bj) .eq. 0.0) .OR.
      &          (STREAMICE_hmask(i,j-1,bi,bj) .eq. 2.0))  THEN
-            !bot boundary or adjacent to unfilled cell
+C           bot boundary or adjacent to unfilled cell
              STREAMICE_vfacemask(i,j,bi,bj) = 2.0
             ENDIF
            ENDIF
@@ -191,8 +191,8 @@ C     === Global variables ===
        ENDDO
       ENDDO
 
-!$TAF STORE streamice_umask = comlev1, key=ikey_dynamics
-!$TAF STORE streamice_vmask = comlev1, key=ikey_dynamics
+c!$TAF STORE streamice_umask = comlev1, key=ikey_dynamics
+c!$TAF STORE streamice_vmask = comlev1, key=ikey_dynamics
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -214,12 +214,12 @@ C     === Global variables ===
       _EXCH_XY_RS( STREAMICE_umask, myThid )
       _EXCH_XY_RS( STREAMICE_vmask, myThid )
 
-!       CALL WRITE_FULLARRAY_RL ("umask",STREAMICE_umask,
-!      c   1,0,0,1,0,myThid)
-!      CALL WRITE_FLD_XY_RL ("umask","",STREAMICE_umask,0,myThid)
-!      CALL WRITE_FLD_XY_RL ("vmask","",STREAMICE_vmask,0,myThid)
-!      CALL WRITE_FLD_XY_RL ("ufacemask","",STREAMICE_ufacemask,0,myThid)
-!      CALL WRITE_FLD_XY_RL ("vfacemask","",STREAMICE_vfacemask,0,myThid)
+c       CALL WRITE_FULLARRAY_RL ("umask",STREAMICE_umask,
+c      c   1,0,0,1,0,myThid)
+c      CALL WRITE_FLD_XY_RL ("umask","",STREAMICE_umask,0,myThid)
+c      CALL WRITE_FLD_XY_RL ("vmask","",STREAMICE_vmask,0,myThid)
+c      CALL WRITE_FLD_XY_RL ("ufacemask","",STREAMICE_ufacemask,0,myThid)
+c      CALL WRITE_FLD_XY_RL ("vfacemask","",STREAMICE_vfacemask,0,myThid)
 
 #ifdef ALLOW_PETSC
       myThidCopy = myThid

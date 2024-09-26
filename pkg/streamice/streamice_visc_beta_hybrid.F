@@ -144,13 +144,13 @@ CADJ &     = comlev1_stream_hybrid, key=ikey_1
 
 #ifdef STREAMICE_3D_GLEN_CONST
             IF (.not.STREAMICE_use_log_ctrl) THEN
-             Bglen_val = B_glen(i,j,m,bi,bj)**2
+             Bglen_val = (B_glen(i,j,m,bi,bj))**2
             ELSE
              Bglen_val = exp(B_glen(i,j,m,bi,bj))
             ENDIF
 #else
             IF (.not.STREAMICE_use_log_ctrl) THEN
-             Bglen_val = B_glen(i,j,bi,bj)**2
+             Bglen_val = (B_glen(i,j,bi,bj))**2
             ELSE
              Bglen_val = exp(B_glen(i,j,bi,bj))
             ENDIF
@@ -226,9 +226,11 @@ CADJ &     = comlev1_stream_hybrid, key=ikey_1
            unorm = sqrt(ub**2+vb**2+eps_u_min**2)
 
            if (.not.STREAMICE_use_log_ctrl) THEN
-            C_fric_val = C_basal_friction(i,j,bi,bj)**2
+            C_fric_val =
+     &      (C_basal_friction(i,j,bi,bj))**2
            else
-            C_fric_val = exp(C_basal_friction(i,j,bi,bj))
+            C_fric_val =
+     &      exp(C_basal_friction(i,j,bi,bj))
            endif
 
 #ifdef STREAMICE_COULOMB_SLIDING

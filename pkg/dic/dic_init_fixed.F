@@ -27,7 +27,7 @@ CEOP
 #ifdef ALLOW_DIC
       INTEGER k
       INTEGER iUnit
-#ifdef DIC_BIOTIC
+#if ( defined DIC_BIOTIC || defined READ_PAR )
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #endif
 
@@ -35,7 +35,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       _BEGIN_MASTER(myThid)
 
-C set up coefficients for DIC chemistry
+C--   Set up coefficients for DIC chemistry
 C define Schmidt no. coefficients for CO2
       sca1 = 2073.1 _d 0
       sca2 = -125.62 _d 0
@@ -61,7 +61,7 @@ C coefficients for determining saturation O2
       oB3= -8.17083 _d -3
       oC0= -4.88682 _d -7
 
-C     Set other constant/flag
+C--   Set other constant/flag
 
       IF ( dic_int1.EQ.2 ) THEN
         CALL MDSFINDUNIT( iUnit, myThid )
@@ -93,11 +93,35 @@ C--   Print out nlev values :
       WRITE(msgBuf,'(A)') '//  DIC_INIT_FIXED parameters :'
       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
 
-       CALL WRITE_0D_I( nlev, INDEX_NONE, 'nlev =',
+      CALL WRITE_0D_I( nlev, INDEX_NONE, 'nlev =',
      &   ' /* Number of level over which Bio act is computed */')
 #endif /* DIC_BIOTIC */
 
       _END_MASTER(myThid)
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C--  Check some option & parameter combinations:
+
+C    for now, just collect here few check & stop from various places:
+#ifdef READ_PAR
+#ifdef USE_QSW
+c     WRITE(msgBuf,'(2A)') ' DIC_INI_FORCING: ',
+      WRITE(msgBuf,'(2A)') 'DIC_INIT_FIXED: ',
+     &     'You can not use READ_PAR  and USE_QSW together'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      STOP 'ABNORMAL END: S/R DIC_INIT_FIXED'
+#endif
+      IF ( DIC_forcingCycle.GT.0. _d 0
+     &     .AND. DIC_parFile .EQ. ' '  ) THEN
+c       WRITE(msgBuf,'(2A)') ' DIC_FIELDS_LOAD: ',
+        WRITE(msgBuf,'(2A)') 'DIC_INIT_FIXED: ',
+     &     'You need to provide a file if you want to use READ_PAR'
+           CALL PRINT_ERROR( msgBuf, myThid )
+           STOP 'ABNORMAL END: S/R DIC_INIT_FIXED'
+      ENDIF
+#endif /* READ_PAR */
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_MNC
       IF ( useMNC ) THEN

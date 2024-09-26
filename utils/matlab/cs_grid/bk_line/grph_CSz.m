@@ -12,23 +12,36 @@ function grph_CSz(var,xcs,ycs,xcg,ycg,c1,c2,shift,cbV,AxBx,kEnv)
 % kEnv = 0 : standard ; =odd : do not draw the mesh ; >1 : no min,Max written.
 % AxBx = do axis(AxBx) to zoom in Box "AxBx" ; only if shift=-1 ;
 %-----------------------
-% Written by jmc@ocean.mit.edu, 2005.
+
+% Written by jmc@mit.edu, 2005.
+
+%- for debugging, switch to > 0:
+dBug=0;
 %- small number (relative to lon,lat in degree)
 epsil=1.e-6;
+%- big jump in longitude from 2 neighbor points
+xJump=240; xJmp2=xJump*0.5;
 %- mid-longitude of the grid (truncated @ epsil level):
 xMid=mean(xcs(:)); xMid=epsil*round(xMid/epsil);
-%fprintf(' mid Longitude of the grid: %22.16e\n',xMid);
+if dBug > 0, fprintf(' mid longitude of the grid: xMid= %22.16e\n',xMid); end
 
 if nargin < 9, cbV=0 ; end
 if nargin < 10, AxBx=[xMid-180 xMid+180 -90 90] ; end
 if nargin < 11, kEnv=0 ; end
 
 %------------------------------
-ncx=size(xcs,1); nc=size(xcs,2) ; ncp=nc+1 ; nPt2=size(var,1);
-nPts=ncx*nc;
-%- check dim
- if ncx ~= 6*nc | nPt2 ~= nPts+2,
-  fprintf('Bad dim (input fields): nc,ncx,nPts,nPt2= %i %i %i %i\n',nc,ncx,nPts,nPt2);
+ n1h=size(xcs,1); n2h=size(xcs,2);
+ if n1h == 6*n2h, nc=n2h;
+ elseif n1h*6 == n2h, nc=n1h;
+ else
+  error([' input xcs size: ',int2str(n1h),' x ',int2str(n2h),' does not fit regular cube !']);
+ end
+ ncp=nc+1 ; nPg=nc*nc*6;
+ nPp2=size(var,1);
+%- check input "var" size: assumes it includes the 2 missing corner (nPg+2 lenth) and,
+%  as a long-vector, always in "compact-format" shape (i.e., 1 face after the other)
+ if nPp2 ~= nPg+2,
+  fprintf('Bad dim (input fields): n1h,n2h,nPg,nPp2= %i %i %i %i\n',n1h,n2h,nPg,nPp2);
   error(' wrong dimensions ');
  end
  mnV=min(var);
@@ -70,63 +83,108 @@ else
 end
 %---
 nbsf = 0 ; ic = 0 ; jc = 0 ;
-vv0=permute(reshape(var(1:nPts,1),[nc 6 nc]),[1 3 2]);
-[xx2]=split_C_cub(xcs,1);
-[yy2]=split_C_cub(ycs,1);
+ %- long-vector input "var" always in "compact-format" style (i.e., 1 face after the other)
+ vv0=reshape(var(1:nPg,1),[nc nc 6]);
+ [xx2]=split_C_cub(xcs,1);
+ [yy2]=split_C_cub(ycs,1);
 %---
 for n=1:6,
 %if n > 2 & n < 4,
  if n < 7,
 %--------------------------------------------------------
- i0=nc*(n-1);
  vv1=zeros(ncp,ncp) ; xx1=vv1 ; yy1=vv1 ;
  vv1(1:nc,1:nc)=vv0(:,:,n);
-%-----
-  xx1=xx2(:,:,n);
-  yy1=yy2(:,:,n);
+ xx1=xx2(:,:,n); yy1=yy2(:,:,n); xxc=xx1(2:ncp,2:ncp);
 % if xx1(ncp,1) < xMid-300. ; xx1(ncp,1)=xx1(ncp,1)+360. ; end
 % if xx1(1,ncp) < xMid-300. ; xx1(1,ncp)=xx1(1,ncp)+360. ; end
 %------------
-if shift <= -360
-%--- Jump ? (only for debug diagnostic) :
- for i=1:nc, for j=1:nc,
-   if abs(xx1(i,j)-xx1(i,j+1)) > 120
-     fprintf('N: i,J,xx_j,j+1,+C %3i %3i %3i %8.3e %8.3e %8.3e \n', ...
-             n, i,j,xx1(i,j), xx1(i,j+1), xcs(i0+i,j) ) ; end
-   if abs(xx1(i,j)-xx1(i+1,j)) > 120
-     fprintf('N: I,j,xx_i,i+1,+C %3i %3i %3i %8.3e %8.3e %8.3e \n', ...
-             n, i,j,xx1(i,j), xx1(i+1,j), xcs(i0+i,j) ) ; end
- end ; end
-%---
-end
-%--------------------------------------
- if n == 4 | n == 3
-  jc=2+nc/2 ;
-%-- case where Xc jump from < 180 to > -180 when j goes from jc to jc+1 :
-%   cut the face in 2 parts (1: x > 0 ; 2: x < 0 ) and plot separately
-  xxSav=xx1(:,jc);
-  [I]=find(xx1(:,jc) < xMid-120); xx1(I,jc)=xMid+180.;
-  [nbsf,S(nbsf)]=part_surf(nbsf,fac,xx1,yy1,vv1,1,ncp,1,jc,c1,c2) ;
-%-
-  xx1(:,jc)=xxSav; jc=jc-1;
-  [I]=find(xx1(:,jc) > xMid+120); xx1(I,jc)=xMid-180.;
-  [nbsf,S(nbsf)]=part_surf(nbsf,fac,xx1,yy1,vv1,1,ncp,jc,ncp,c1,c2) ;
+ %- use jump in grid-cell center longitude to decide where to cut 1 face:
+ cutFace=0;
+ dxi=xx1(2:ncp,:)-xx1(1:nc,:); dxImx=max(abs(dxi(:)));
+ dxj=xx1(:,2:ncp)-xx1(:,1:nc); dxJmx=max(abs(dxj(:)));
+ if dxImx > xJump & dxJmx > xJump, cutFace=3;
+ elseif dxImx > xJump, cutFace=1;
+ elseif dxJmx > xJump, cutFace=2; end
+ if dBug > 0,
+   fprintf(' face # %i , Max dxI,dxJ = %8.3f , %8.3f',n,dxImx,dxJmx);
+   if cutFace > 0, fprintf(' ; cutFace= %i',cutFace); end
+   fprintf('\n');
+ end
+ if cutFace == 3,
+  fprintf(' Jump in both i & j not implemented ==> skip face # %i\n',n);
+%------------
+ elseif cutFace == 2,
+  [I,J]=find( abs(dxj) > xJump );
+  if dBug > 1, for l=1:length(I), fprintf(' i,j= %2i, %2i \n',I(l),J(l)); end; end
+  if min(J) == max(J),
+   jc =J(1); jp=jc+1;
+   if dBug > 0, fprintf('--> cut Face @ jc,jp = %3i,%3i\n',jc,jp); end
+%   cut the face in 2 parts (1: j in [1 jp] ; 2: j in [jc ncp]) and plot separately
+%   note: duplicate points at the edges to get half grid-cell plotted on both side
+   for lp=1:2,
+    if lp == 1,
+      j1=1; j2=jp; j3=jc-1;
+    else
+      j1=jc; j2=ncp; j3=nc;
+    end
+    xx1=xx2(:,:,n);
+    tmp=xxc(:,j1:j3); xLoc=mean(tmp(:));
+    if dBug > 0, fprintf('    p.%i, %2i -> %2i : %8.3f %8.3f %8.3f\n', ...
+                          lp,j1,j3,min(tmp(:)),xLoc,max(tmp(:))); end
+    if xLoc > xMid,
+%-- case where Xc jump from > 180 to < -180 when j goes from jc to jc+1 :
+     [I]=find(xx1(:,j1) < xMid-xJmp2); xx1(I,j1)=xx1(I,j1)+360.;
+     [I]=find(xx1(:,j2) < xMid-xJmp2); xx1(I,j2)=xx1(I,j2)+360.;
+    else
+%-- case where Xc jump from < -180 to > 180 when j goes from jc to jc+1 :
+     [I]=find(xx1(:,j1) > xMid+xJmp2); xx1(I,j1)=xx1(I,j1)-360.;
+     [I]=find(xx1(:,j2) > xMid+xJmp2); xx1(I,j2)=xx1(I,j2)-360.;
+    end
+    [nbsf,S(nbsf)]=part_surf(nbsf,fac,xx1,yy1,vv1,1,ncp,j1,j2,c1,c2) ;
+   end
 % Note: later on, will plot separately N & S poles with the 2 missing corners.
-%---
- elseif n == 6
-  ic=1+nc/2 ;
-%-- case where Xc jump from < -180 to > 180 when i goes from ic to ic+1 :
-%   cut the face in 2 parts (1: x > 0 ; 2: x < 0 ) and plot separately
-  xxSav=xx1(ic,:);
-  [J]=find(xx1(ic,:) < xMid-120); xx1(ic,J)=xMid+180.;
-  [nbsf,S(nbsf)]=part_surf(nbsf,fac,xx1,yy1,vv1,ic,ncp,1,ncp,c1,c2) ;
-%-
-  xx1(ic,:)=xxSav; ic=ic+1;
-  [J]=find(xx1(ic,:) > xMid+120); xx1(ic,J)=xMid-180.;
-  [nbsf,S(nbsf)]=part_surf(nbsf,fac,xx1,yy1,vv1,1,ic,1,ncp,c1,c2) ;
-%---
+  else
+   fprintf(' Irregular cut not implemented ==> skip face # %i\n',n);
+  end
+%------------
+ elseif cutFace == 1,
+  [I,J]=find( abs(dxi) > xJump );
+  if dBug > 1, for l=1:length(I), fprintf(' i,j= %2i, %2i \n',I(l),J(l)); end; end
+  if min(I) == max(I),
+   ic =I(1); ip=ic+1;
+   if dBug > 0, fprintf('--> cut Face @ ic,ip = %3i,%3i\n',ic,ip); end
+%   cut the face in 2 parts (1: i in [1 ip] ; 2: i in [ic ncp]) and plot separately
+%   note: duplicate points at the edges to get half grid-cell plotted on both side
+   for lp=1:2,
+    if lp == 1,
+      i1=1; i2=ip; i3=ic-1;
+    else
+      i1=ic; i2=ncp; i3=nc;
+    end
+    xx1=xx2(:,:,n);
+    tmp=xxc(i1:i3,:); xLoc=mean(tmp(:));
+    if dBug > 0, fprintf('    p.%i, %2i -> %2i : %8.3f %8.3f %8.3f\n', ...
+                          lp,i1,i3,min(tmp(:)),xLoc,max(tmp(:))); end
+    if xLoc > xMid,
+%-- case where X jump from > 180 to < -180 when i goes from ic to ic+1 :
+     [J]=find(xx1(i1,:) < xMid-xJmp2); xx1(i1,J)=xx1(i1,J)+360.;
+     [J]=find(xx1(i2,:) < xMid-xJmp2); xx1(i2,J)=xx1(i2,J)+360.;
+    else
+%-- case where X jump from < -180 to > 180 when i goes from ic to ic+1 :
+     [J]=find(xx1(i1,:) > xMid+xJmp2); xx1(i1,J)=xx1(i1,J)-360.;
+     [J]=find(xx1(i2,:) > xMid+xJmp2); xx1(i2,J)=xx1(i2,J)-360.;
+    end
+    [nbsf,S(nbsf)]=part_surf(nbsf,fac,xx1,yy1,vv1,i1,i2,1,ncp,c1,c2) ;
+   end
+%----
+  else
+   fprintf(' Irregular cut not implemented ==> skip face # %i\n',n);
+  end
+%------------
  else
 %-- plot the face in 1 piece :
+  xLoc=mean(xxc(:));
+  xx1=rem(xx1-xLoc+180*3,360)+xLoc-180;
   [nbsf,S(nbsf)]=part_surf(nbsf,fac,xx1,yy1,vv1,1,ncp,1,ncp,c1,c2) ;
  end
 %--------------------------------------
@@ -135,8 +193,8 @@ end ; end
 %- add isolated point:
  vvI=zeros(2,2); xxI=vvI; yyI=vvI;
 
-%- 1rst missing corner (N.W corner of 1rst face): nPts+1
- vvI(1,1)=var(nPts+1);
+%- 1rst missing corner (N.W corner of 1rst face): nPg+1
+ vvI(1,1)=var(nPg+1);
  for l=0:2,
   xxI(1+rem(l,2),1+fix(l/2))=xx2(2,ncp,1+2*l);
   yyI(1+rem(l,2),1+fix(l/2))=yy2(2,ncp,1+2*l);
@@ -144,8 +202,8 @@ end ; end
  xxI(2,2)=xxI(1,2); yyI(2,2)=yyI(1,2);
  [nbsf,S(nbsf)]=part_surf(nbsf,fac,xxI,yyI,vvI,1,2,1,2,c1,c2) ;
 
-%- 2nd missing corner (S.E corner of 2nd face): nPts+2
- vvI(1,1)=var(nPts+2);
+%- 2nd missing corner (S.E corner of 2nd face): nPg+2
+ vvI(1,1)=var(nPg+2);
  for l=0:2,
   xxI(1+rem(l,2),1+fix(l/2))=xx2(ncp,2,2+2*l);
   yyI(1+rem(l,2),1+fix(l/2))=yy2(ncp,2,2+2*l);
@@ -154,12 +212,12 @@ end ; end
  [nbsf,S(nbsf)]=part_surf(nbsf,fac,xxI,yyI,vvI,1,2,1,2,c1,c2) ;
 
 %- N pole:
- vvI(1,1)=var(1+nc/2+2*nc+nc/2*ncx);
+ vvI(1,1)=var(1+nc/2+nc/2*nc+2*nc*nc);
  xxI(1,:)=xMid-180; xxI(2,:)=xMid+180;
  yyI(:,1)=max(ycs(:)); yyI(:,2)=+90;
  [nbsf,S(nbsf)]=part_surf(nbsf,fac,xxI,yyI,vvI,1,2,1,2,c1,c2) ;
 %- S pole:
- vvI(1,1)=var(1+nc/2+5*nc+nc/2*ncx);
+ vvI(1,1)=var(1+nc/2+nc/2*nc+5*nc*nc);
  xxI(1,:)=xMid-180; xxI(2,:)=xMid+180;
  yyI(:,2)=min(ycs(:)); yyI(:,1)=-90;
  [nbsf,S(nbsf)]=part_surf(nbsf,fac,xxI,yyI,vvI,1,2,1,2,c1,c2) ;
@@ -182,15 +240,16 @@ else
 end
 
 %--
- if cbV < 2, scalHV_colbar([10-cbV/2 10 7-5*cbV 7+2*cbV]/10,cbV); end
+ if cbV < 2, bV=fix(cbV); moveHV_colbar([10+bV*2.2 10 7-5*bV 7+2*bV]/10,cbV); end
 if mnV < MxV & kEnv < 2,
  ytxt=min(1,cbV);
  if shift == 1 | shift == -1,
-  xtxt=mean(AxBx(1:2)) ; ytxt=AxBx(3)-(AxBx(4)-AxBx(3))*(10+1*ytxt)/100;
-  text(xtxt*fac,ytxt*fac,sprintf('min,Max= %9.5g  , %9.5g', mnV, MxV))
-  %set(gca,'position',[-.1 0.2 0.8 0.75]); % xmin,ymin,xmax,ymax in [0,1]
- else text(0,(30*cbV-120)*fac,sprintf('min,Max= %9.5g  , %9.5g', mnV, MxV))
+  pos=get(gca,'position');
+  xtxt=mean(AxBx(1:2)) ; ytxt=AxBx(3)-(AxBx(4)-AxBx(3))*(16-pos(4)*7.4)/100;
+ %fprintf(' pp= %9.6f , ytxt= %7.2f\n',pos(4),ytxt);
+ else xtxt=0; ytxt=(30*cbV-120)*fac;
  end
+ text(xtxt*fac,ytxt*fac,sprintf('min,Max= %9.5g  , %9.5g', mnV, MxV))
 else fprintf('Uniform field: min,Max= %g \n',MxV); end
 return
 %----------------------------------------------------------------------

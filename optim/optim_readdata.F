@@ -1,10 +1,7 @@
-
-c ECCO_CPPOPTIONS used to affect maxcvars 
-c and def ALLOW_OBCSN_CONTROL etc (OBCS masks etc)
-c#include ECCO_CPPOPTIONS.h
-
-c CTRL_OPTIONS affects maxcvars and may def 
-c ALLOW_OBCSN_CONTROL etc (OBCS masks etc)
+C     ECCO_CPPOPTIONS used to affect maxcvars and defined ALLOW_OBCS?_CONTROL
+C#include "ECCO_CPPOPTIONS.h"
+C     now:
+C     CTRL_OPTIONS affects maxcvars and may define ALLOW_OBCS?_CONTROL
 #include "CTRL_OPTIONS.h"
 
       subroutine optim_readdata(
@@ -35,26 +32,26 @@ c     ==================================================================
 c     SUBROUTINE optim_readdata
 c     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
 c     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#include "ctrl.h"
+#include "CTRL_SIZE.h"
+#ifdef ALLOW_OBCS_CONTROL
+# include "CTRL_OBCS.h"
+#endif
+#include "CTRL.h"
 #include "optim.h"
-#include "minimization.h"
 
 c     == routine arguments ==
 
       integer nn
       _RL     ff
 
-#if defined (DYNAMIC)
+#ifdef DYNAMIC
       _RL     vv(nn)
-#elif defined (USE_POINTER) || (MAX_INDEPEND == 0)
-      _RL            vv
-      pointer (pvv,vv(1))
 #else
       integer nmax
       parameter( nmax = MAX_INDEPEND )
@@ -65,12 +62,23 @@ c     == routine arguments ==
       logical lheaderonly
 
 c     == local variables ==
+#ifdef READ_OLD_CTRL_PACK_FILE
+      INTEGER maxLocal
+      PARAMETER( maxLocal = old_maxcvars )
+      INTEGER file_varIndex(maxLocal)
+      INTEGER file_varRecs(maxLocal)
+      INTEGER file_varNxMax(maxLocal)
+      INTEGER file_varNyMax(maxLocal)
+      INTEGER file_varNrMax(maxLocal)
+      CHARACTER*( 1) file_varGrid(maxLocal)
+      CHARACTER*( 5) file_varType(maxLocal)
+#endif
 
-      integer bi,bj
+CM      integer bi,bj
       integer biG,bjG
       integer i,j
       integer ii,k
-      integer icvar
+      integer ivar
       integer icvrec
       integer icvcomp
       integer icvoffset
@@ -81,14 +89,17 @@ c     == local variables ==
       real*4 cbuff( sNx*nSx*nPx*sNy*nSy*nPy )
 
       character*(128) fname
+      character*(17)  prefix
+      parameter ( prefix =  " OPTIM_READDATA: " )
 
-c      integer         filei
-c      integer         filej
-c      integer         filek
-c      integer         fileiG
-c      integer         filejG
-c      integer         filensx
-c      integer         filensy
+      integer         ncvarindex_loc
+      integer         filei
+      integer         filej
+      integer         filek
+      integer         fileiG
+      integer         filejG
+      integer         filensx
+      integer         filensy
       integer         filenopt
       _RL             fileff
 
@@ -100,8 +111,6 @@ cgg)
 
 c     == end of interface ==
 
-      print *, 'pathei-lsopt in optim_readdata'
-
 c--   The reference i/o unit.
       funit = 20
 
@@ -109,28 +118,30 @@ c--   Next optimization cycle.
       nopt = optimcycle
 
       if      ( dfile .eq. ctrlname ) then
-        print*
-        print*,' OPTIM_READDATA: Reading control vector'
-        print*,'            for optimization cycle: ',nopt
-        print*
+       print*
+       print*,' OPTIM_READDATA: Reading control vector'
+       print*,'                 for optimization cycle: ',nopt
       else if ( dfile .eq. costname ) then
-        print*
-        print*,' OPTIM_READDATA: Reading cost function and'
-        print*,'            gradient of cost function'
-        print*,'            for optimization cycle: ',nopt
-        print*
+       print*
+       print*,' OPTIM_READDATA: Reading cost function and'//
+     &                        ' gradient of cost function'
+       print*,'                 for optimization cycle: ',nopt
       else
-        print*
-        print*,' OPTIM_READDATA: subroutine called by a false *dfile*'
-        print*,'            argument. *dfile* = ',dfile
-        print*
-        stop   '  ...  stopped in OPTIM_READDATA.'
+       print*
+       print*,' OPTIM_READDATA: subroutine called by a false *dfile*'
+       print*,'                 argument. *dfile* = ',dfile
+       print*
+       stop   '  ...  stopped in OPTIM_READDATA.'
       endif
+      if ( lheaderonly ) then
+       print*,'                 ... header only'
+      endif
+      print*, ' '
 
 c--   Read the data.
 
-      bjG = 1 + (myygloballo - 1)/sny
-      biG = 1 + (myxgloballo - 1)/snx
+      bjG = 1 + (myYGlobalLo - 1)/sNy
+      biG = 1 + (myXGlobalLo - 1)/sNx
 
 c--   Generate file name and open the file.
       write(fname(1:128),'(4a,i4.4)')
@@ -139,7 +150,7 @@ c--   Generate file name and open the file.
      &     status = 'old',
      &     form   = 'unformatted',
      &     access = 'sequential'   )
-      print*, 'opened file ', fname
+      print*, prefix, 'opened file ', fname
 
 c--   Read the header.
       read( funit ) nvartype
@@ -147,139 +158,157 @@ c--   Read the header.
       read( funit ) yctrlid
       read( funit ) filenopt
       read( funit ) fileff
+C     filei/jG are dummy values and not used
       read( funit ) fileiG
       read( funit ) filejG
       read( funit ) filensx
       read( funit ) filensy
 
-      read( funit ) (nWetcGlobal(k), k=1,nr)
-      read( funit ) (nWetsGlobal(k), k=1,nr)
-      read( funit ) (nWetwGlobal(k), k=1,nr)
-#ifdef ALLOW_CTRL_WETV
-      read( funit ) (nWetvGlobal(k), k=1,nr)
-#endif
+      read( funit ) (nWetcGlobal(k), k=1,Nr)
+      read( funit ) (nWetsGlobal(k), k=1,Nr)
+      read( funit ) (nWetwGlobal(k), k=1,Nr)
+c#ifdef ALLOW_CTRL_WETV
+c     read( funit ) (nWetvGlobal(k), k=1,Nr)
+c#endif
 #ifdef ALLOW_SHIFWFLX_CONTROL
-      read(funit) (nWetiGlobal(k), k=1,nr)
+      read(funit) (nWetiGlobal(k), k=1,Nr)
 c     read(funit) nWetiGlobal(1)
 #endif
 
 cgg(    Add OBCS Mask information into the header section for optimization.
+CML#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
 #ifdef ALLOW_OBCSN_CONTROL
-      read( funit ) ((nWetobcsnGlo(k,iobcs), k=1,nr),iobcs= 1,nobcs)
+      read( funit ) ((nWetobcsnGlo(k,iobcs), k=1,Nr),iobcs= 1,nobcs)
 #endif
 #ifdef ALLOW_OBCSS_CONTROL
-      read( funit ) ((nWetobcssGlo(k,iobcs), k=1,nr),iobcs= 1,nobcs)
+      read( funit ) ((nWetobcssGlo(k,iobcs), k=1,Nr),iobcs= 1,nobcs)
 #endif
 #ifdef ALLOW_OBCSW_CONTROL
-      read( funit ) ((nWetobcswGlo(k,iobcs), k=1,nr),iobcs= 1,nobcs)
+      read( funit ) ((nWetobcswGlo(k,iobcs), k=1,Nr),iobcs= 1,nobcs)
 #endif
 #ifdef ALLOW_OBCSE_CONTROL
-      read( funit ) ((nWetobcseGlo(k,iobcs), k=1,nr),iobcs= 1,nobcs)
+      read( funit ) ((nWetobcseGlo(k,iobcs), k=1,Nr),iobcs= 1,nobcs)
 #endif
+CML#endif /* ALLOW_CTRL and ALLOW_OBCS */
 cgg)
-      read( funit ) (ncvarindex(i), i=1,maxcvars)
-      read( funit ) (ncvarrecs(i),  i=1,maxcvars)
-      read( funit ) (ncvarxmax(i),  i=1,maxcvars)
-      read( funit ) (ncvarymax(i),  i=1,maxcvars)
-      read( funit ) (ncvarnrmax(i), i=1,maxcvars)
-      read( funit ) (ncvargrd(i),   i=1,maxcvars)
+#ifdef READ_OLD_CTRL_PACK_FILE
+      DO ivar = 1,maxLocal
+        file_varType(ivar)  = '     '
+      ENDDO
+      read( funit ) (file_varIndex(ivar), ivar=1,maxLocal)
+      read( funit ) (file_varRecs(ivar),  ivar=1,maxLocal)
+      read( funit ) (file_varNxMax(ivar), ivar=1,maxLocal)
+      read( funit ) (file_varNyMax(ivar), ivar=1,maxLocal)
+      read( funit ) (file_varNrMax(ivar), ivar=1,maxLocal)
+      read( funit ) (file_varGrid(ivar),  ivar=1,maxLocal)
       read( funit )
+      CALL CTRL_CONVERT_HEADER(
+     I              maxLocal, nvartype, 6,
+     U              file_varIndex, file_varRecs,
+     U              file_varNxMax, file_varNyMax, file_varNrMax,
+     U              file_varGrid, file_varType,
+     I              1 )
+      DO ivar = 1,nvartype
+        ncvarindex(ivar) = file_varIndex(ivar)
+        ncvarrecs(ivar)  = file_varRecs(ivar)
+        ncvarxmax(ivar)  = file_varNxMax(ivar)
+        ncvarymax(ivar)  = file_varNyMax(ivar)
+        ncvarnrmax(ivar) = file_varNrMax(ivar)
+        ncvargrd(ivar)   = file_varGrid(ivar)
+        ncvartype(ivar)  = file_varType(ivar)
+      ENDDO
+#else /* READ_OLD_CTRL_PACK_FILE */
+      read( funit ) (ncvarindex(ivar), ivar=1,nvartype)
+      read( funit ) (ncvarrecs(ivar),  ivar=1,nvartype)
+      read( funit ) (ncvarxmax(ivar),  ivar=1,nvartype)
+      read( funit ) (ncvarymax(ivar),  ivar=1,nvartype)
+      read( funit ) (ncvarnrmax(ivar), ivar=1,nvartype)
+      read( funit ) (ncvargrd(ivar),   ivar=1,nvartype)
+      read( funit ) (ncvartype(ivar),  ivar=1,nvartype)
+#endif /* READ_OLD_CTRL_PACK_FILE */
 
-cph(
-cph      if (lheaderonly) then
-         print *, 'pathei: nvartype ', nvartype
-         print *, 'pathei: nvarlength ', nvarlength
-         print *, 'pathei: yctrlid ', yctrlid
-         print *, 'pathei: filenopt ', filenopt
-         print *, 'pathei: fileff ', fileff
-         print *, 'pathei: fileiG ', fileiG
-         print *, 'pathei: filejG ', filejG
-         print *, 'pathei: filensx ', filensx
-         print *, 'pathei: filensy ', filensy
-         
-         print *, 'pathei: nWetcGlobal ', 
-     &        (nWetcGlobal(k),  k=1,nr)
-         print *, 'pathei: nWetsGlobal ', 
-     &        (nWetsGlobal(k),  k=1,nr)
-         print *, 'pathei: nWetwGlobal ', 
-     &        (nWetwGlobal(k),  k=1,nr)
-         print *, 'pathei: nWetvGlobal ',
-     &        (nWetvGlobal(k),  k=1,nr)
+      print *, prefix, 'nvartype ', nvartype
+      print *, prefix, 'nvarlength ', nvarlength
+      print *, prefix, 'yctrlid ', yctrlid
+      print *, prefix, 'filenopt ', filenopt
+      print *, prefix, 'fileff ', fileff
+      print *, prefix, 'fileiG ', fileiG
+      print *, prefix, 'filejG ', filejG
+      print *, prefix, 'filensx ', filensx
+      print *, prefix, 'filensy ', filensy
+
+      if (lheaderonly) then
+       print *, prefix, 'nWetcGlobal ', (nWetcGlobal(k), k=1,Nr)
+       print *, prefix, 'nWetsGlobal ', (nWetsGlobal(k), k=1,Nr)
+       print *, prefix, 'nWetwGlobal ', (nWetwGlobal(k), k=1,Nr)
+c      print *, prefix, 'nWetvGlobal ', (nWetvGlobal(k), k=1,Nr)
 #ifdef ALLOW_SHIFWFLX_CONTROL
-         print *, 'pathei: nWetiGlobal ',
-     &        (nWetiGlobal(k), k=1,nr)
+       print *, prefix, 'nWetiGlobal ', (nWetiGlobal(k), k=1,Nr)
 #endif
 #ifdef ALLOW_OBCSN_CONTROL
-         do iobcs=1,nobcs
-          print *, 'pathei: nWetobcsnGlo (iobcs=', iobcs,')',
-     &         (nWetobcsnGlo(k,iobcs), k=1,nr)
-         enddo
+       do iobcs=1,nobcs
+        print *, prefix, 'nWetobcsnGlo (iobcs=', iobcs,')',
+     &       (nWetobcsnGlo(k,iobcs), k=1,Nr)
+       enddo
 #endif
 #ifdef ALLOW_OBCSS_CONTROL
-         do iobcs=1,nobcs
-          print *, 'pathei: nWetobcssGlo (iobcs=', iobcs,')',
-     &         (nWetobcssGlo(k,iobcs), k=1,nr)
-         enddo
+       do iobcs=1,nobcs
+        print *, prefix, 'nWetobcssGlo (iobcs=', iobcs,')',
+     &         (nWetobcssGlo(k,iobcs), k=1,Nr)
+       enddo
 #endif
 #ifdef ALLOW_OBCSW_CONTROL
-         do iobcs=1,nobcs
-          print *, 'pathei: nWetobcswGlo (iobcs=', iobcs,')',
-     &         (nWetobcswGlo(k,iobcs), k=1,nr)
-         enddo
+       do iobcs=1,nobcs
+        print *, prefix, 'nWetobcswGlo (iobcs=', iobcs,')',
+     &       (nWetobcswGlo(k,iobcs), k=1,Nr)
+       enddo
 #endif
 #ifdef ALLOW_OBCSE_CONTROL
-         do iobcs=1,nobcs
-          print *, 'pathei: nWetobcseGlo (iobcs=', iobcs,')',
-     &         (nWetobcseGlo(k,iobcs), k=1,nr)
-         enddo
+       do iobcs=1,nobcs
+        print *, prefix, 'nWetobcseGlo (iobcs=', iobcs,')',
+     &       (nWetobcseGlo(k,iobcs), k=1,Nr)
+       enddo
 #endif
-         print *, 'pathei: ncvarindex ', 
-     &        (ncvarindex(i), i=1,maxcvars)
-         print *, 'pathei: ncvarrecs ', 
-     &        (ncvarrecs(i),  i=1,maxcvars)
-         print *, 'pathei: ncvarxmax ', 
-     &        (ncvarxmax(i),  i=1,maxcvars)
-         print *, 'pathei: ncvarymax ', 
-     &        (ncvarymax(i),  i=1,maxcvars)
-         print *, 'pathei: ncvarnrmax ', 
-     &        (ncvarnrmax(i), i=1,maxcvars)
-         print *, 'pathei: ncvargrd ', 
-     &        (ncvargrd(i),   i=1,maxcvars)
-cph      end if
-cph)
+       print *, prefix, 'ncvarindex ', (ncvarindex(i), i=1,maxcvars)
+       print *, prefix, 'ncvarrecs  ', (ncvarrecs(i),  i=1,maxcvars)
+       print *, prefix, 'ncvarxmax  ', (ncvarxmax(i),  i=1,maxcvars)
+       print *, prefix, 'ncvarymax  ', (ncvarymax(i),  i=1,maxcvars)
+       print *, prefix, 'ncvarnrmax ', (ncvarnrmax(i), i=1,maxcvars)
+       print *, prefix, 'ncvargrd   ', (ncvargrd(i), ',',i=1,maxcvars)
+       print *, prefix, 'ncvartype  ', (ncvartype(i),',',i=1,maxcvars)
+      end if
 c--   Check the header information for consistency.
 
 cph      if ( filenopt .ne. nopt ) then
-cph         print*
-cph         print*,' READ_HEADER: Input data belong to the wrong'
-cph         print*,'              optimization cycle.'
-cph         print*,'              optimization cycle = ',nopt
-cph         print*,'              input optim  cycle = ',filenopt
-cph         print*
-cph         stop   ' ... stopped in READ_HEADER.'
+cph       print*
+cph       print*,' READ_HEADER: Input data belong to the wrong'
+cph       print*,'              optimization cycle.'
+cph       print*,'              optimization cycle = ',nopt
+cph       print*,'              input optim  cycle = ',filenopt
+cph       print*
+cph       stop   ' ... stopped in READ_HEADER.'
 cph      endif
-      
+
       if ( (fileiG .ne. biG) .or. (filejG .ne. bjG) ) then
-         print*
-         print*,' READ_HEADER: Tile indices of loop and data '
-         print*,'              do not match.'
-         print*,'              loop x/y component = ',
-     &        biG,bjG
-         print*,'              data x/y component = ',
-     &        fileiG,filejG
-         print*
-         stop   ' ... stopped in READ_HEADER.'
+       print*
+       print*, prefix, 'Tile indices of loop and data do not match.'
+       print*,'                 loop x/y component = ',
+     &      biG,bjG
+       print*,'                 data x/y component = ',
+     &      fileiG,filejG
+       print*
+       stop   ' ... stopped in OPTIM_READDATA.'
       endif
-      
-      if ( (filensx .ne. nsx) .or. (filensy .ne. nsy) ) then
-         print*
-         print*,' READ_HEADER: Numbers of tiles do not match.'
-         print*,'              parameter x/y no. of tiles = ',
-     &        bi,bj
-         print*,'              data      x/y no. of tiles = ',
-     &        filensx,filensy
-         print*
-         stop   ' ... stopped in READ_HEADER.'
+
+      if ( (filensx .ne. nSx) .or. (filensy .ne. nSy) ) then
+       print*
+       print*, prefix, ' Numbers of tiles do not match.'
+       print*,'                 parameter x/y no. of tiles = ',
+     &      nSx,nSy
+       print*,'                 data      x/y no. of tiles = ',
+     &      filensx,filensy
+       print*
+       stop   ' ... stopped in OPTIM_READDATA.'
       endif
 
 ce    Add some more checks. ...
@@ -287,62 +316,64 @@ ce    Add some more checks. ...
       if (.NOT. lheaderonly) then
 c--   Read the data.
        icvoffset = 0
-       do icvar = 1,maxcvars
-        if ( ncvarindex(icvar) .ne. -1 ) then
-         do icvrec = 1,ncvarrecs(icvar)
+c      do ivar = 1,maxcvars
+       do ivar = 1,nvartype
+        if ( ncvarindex(ivar) .ne. -1 ) then
+         do icvrec = 1,ncvarrecs(ivar)
 cph          do bj = 1,nsy
 cph           do bi = 1,nsx
-            read( funit ) ncvarindex(icvar)
+            read( funit ) ncvarindex_loc
             read( funit ) filej
             read( funit ) filei
-            do k = 1,ncvarnrmax(icvar)
+            if ( ncvarindex_loc.NE.ncvarindex(ivar) .AND. icvrec.EQ.1 )
+     &       print*, prefix, ' ivar=', ivar, ' , ncvarindex(com,loc)=',
+     &               ncvarindex(ivar), ncvarindex_loc
+            do k = 1,ncvarnrmax(ivar)
              cbuffindex = 0
-             if (ncvargrd(icvar) .eq. 'c') then
+             if (ncvargrd(ivar) .eq. 'c') then
               cbuffindex = nWetcGlobal(k)
-             else if (ncvargrd(icvar) .eq. 's') then
+             else if (ncvargrd(ivar) .eq. 's') then
               cbuffindex = nWetsGlobal(k)
-             else if (ncvargrd(icvar) .eq. 'w') then
+             else if (ncvargrd(ivar) .eq. 'w') then
               cbuffindex = nWetwGlobal(k)
-             else if (ncvargrd(icvar) .eq. 'v') then
-              cbuffindex = nWetvGlobal(k)
+c            else if (ncvargrd(ivar) .eq. 'v') then
+c             cbuffindex = nWetvGlobal(k)
 #ifdef ALLOW_SHIFWFLX_CONTROL
-             else if (ncvargrd(icvar) .eq. 'i') then
+             else if (ncvargrd(ivar) .eq. 'i') then
               cbuffindex = nWetiGlobal(k)
 #endif
+#ifdef ALLOW_OBCS_CONTROL
 cgg(   O.B. points have the grid mask "m".
-             else if (ncvargrd(icvar) .eq. 'm') then
+             else if (ncvargrd(ivar) .eq. 'm') then
 cgg    From "icvrec", calculate what iobcs must be.
               gg   = (icvrec-1)/nobcs
               igg  = int(gg)
               iobcs= icvrec - igg*nobcs
-#ifdef ALLOW_OBCSN_CONTROL
-              if (icvar .eq. 11) then                    
-               cbuffindex = nWetobcsnGlo(k,iobcs)
-              endif
-#endif
-#ifdef ALLOW_OBCSS_CONTROL
-              if (icvar .eq. 12) then
-               cbuffindex = nWetobcssGlo(k,iobcs)
-              endif
-#endif 
-#ifdef ALLOW_OBCSW_CONTROL
-              if (icvar .eq. 13) then
-               cbuffindex = nWetobcswGlo(k,iobcs)
-              endif
-#endif
-#ifdef ALLOW_OBCSE_CONTROL
-              if (icvar .eq. 14) then
-               cbuffindex = nWetobcseGlo(k,iobcs)
-              endif
-#endif
+# ifdef ALLOW_OBCSN_CONTROL
+              if (ncvarindex(ivar) .eq. 1)
+     &             cbuffindex = nWetobcsnGlo(k,iobcs)
+# endif
+# ifdef ALLOW_OBCSS_CONTROL
+              if (ncvarindex(ivar) .eq. 2)
+     &             cbuffindex = nWetobcssGlo(k,iobcs)
+# endif
+# ifdef ALLOW_OBCSE_CONTROL
+              if (ncvarindex(ivar) .eq. 3)
+     &             cbuffindex = nWetobcseGlo(k,iobcs)
+# endif
+# ifdef ALLOW_OBCSW_CONTROL
+              if (ncvarindex(ivar) .eq. 4)
+     &             cbuffindex = nWetobcswGlo(k,iobcs)
+# endif
 cgg)
+#endif /* ALLOW_OBCS_CONTROL */
              endif
              if ( icvoffset + cbuffindex .gt. nvarlength ) then
               print*
               print *, ' ERROR:'
               print *, ' There are at least ', icvoffset+cbuffindex,
      &             ' records in '//fname(1:28)//'.'
-              print *, ' This is more than expected from nvarlength =', 
+              print *, ' This is more than expected from nvarlength =',
      &             nvarlength, '.'
               print *, ' Something is wrong in the computation of '//
      &             'the wet points or'
@@ -370,12 +401,12 @@ cph          enddo
          enddo
         endif
        enddo
-         
+
       else
 
 c--   Assign the number of control variables.
        nn = nvarlength
-         
+
       endif
 
       close( funit )
@@ -387,6 +418,11 @@ c--   Assign the cost function value in case we read the cost file.
       else if ( dfile .eq. costname ) then
        ff = fileff
       endif
+c--   Always return the cost function value if lheaderonly
+      if ( lheaderonly) ff = fileff
+
+      print *, prefix, 'end of optim_readdata'
+      print *, ' '
 
       return
       end

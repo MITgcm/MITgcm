@@ -4,10 +4,10 @@ C--  File bling_solvesaphe.F:
 C--   Contents:
 C--   o AHINI_FOR_AT
 C--   o ANW_INFSUP
-C--   o EQUATION_AT
 C--   o CALC_PCO2_SOLVESAPHE
 C--   o DIC_COEFFS_SURF
 C--   o DIC_COEFFS_DEEP
+C--   o EQUATION_AT
 C--   o SOLVE_AT_FAST
 C--   o SOLVE_AT_GENERAL
 C--   o SOLVE_AT_GENERAL_SEC
@@ -803,7 +803,7 @@ C       pH scale  : N/A
 C       Units     : (mol/kg-SW)^2
            Ksp_TP_Calc(i,j,bi,bj) = 10. _d 0**(-171.9065 _d 0
      &             - 0.077993 _d 0*t_k
-     &             + 2839.319 _d 0*inv_t_k + 71.595 _d 0*dlog_t_k
+     &             + 2839.319 _d 0*inv_t_k + 71.595 _d 0*LOG10(t_k)
      &             + ( -0.77712 _d 0 + 0.0028426 _d 0*t_k
      &             + 178.34 _d 0*inv_t_k)*sqrts
      &             - 0.07711 _d 0*s + 0.0041249 _d 0*s_15)
@@ -815,7 +815,7 @@ C       pH scale  : N/A
 C       Units     : (mol/kg-SW)^2
            Ksp_TP_Arag(i,j,bi,bj) = 10. _d 0**(-171.945 _d 0
      &             - 0.077993 _d 0*t_k
-     &             + 2903.293 _d 0*inv_t_k + 71.595 _d 0*dlog_t_k
+     &             + 2903.293 _d 0*inv_t_k + 71.595 _d 0*LOG10(t_k)
      &             + ( -0.068393 _d 0 + 0.0017276 _d 0*t_k
      &             + 88.135 _d 0*inv_t_k)*sqrts
      &             - 0.10018 _d 0*s + 0.0059415 _d 0*s_15)

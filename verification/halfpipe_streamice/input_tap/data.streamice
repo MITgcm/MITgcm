@@ -26,6 +26,7 @@
  STREAMICEtopogFile='topog.box',
  STREAMICEbasalTracConfig='UNIFORM',
  STREAMICEGlenConstConfig='UNIFORM',
+ STREAMICEBdotConfig='FILE',
  &
 
 #PETSC_SOLVER_TYPE = 'BICG',
@@ -43,6 +44,10 @@
 
  &STREAMICE_PARMOAD
  streamice_nonlin_tol_adjoint = 1.e-8,
+ &
+
+ &STREAMICE_COST
+ streamice_do_verification_cost=.TRUE.,
  &
 
  &STREAMICE_PARM03

@@ -124,6 +124,8 @@ C--  Seaice-Dynamics parameters
      & 'SEAICEusePicardAsPrecon =', ' /* Picard as preconditioner */')
       CALL WRITE_0D_L ( SEAICEuseLSR, INDEX_NONE,
      & 'SEAICEuseLSR      =', ' /* use default Picard-LSR solver */')
+      CALL WRITE_0D_L ( SEAICEuseLSRflex, INDEX_NONE,
+     & 'SEAICEuseLSRflex  =', ' /* with residual norm criterion */')
       CALL WRITE_0D_L ( SEAICEuseKrylov, INDEX_NONE,
      & 'SEAICEuseKrylov   =', ' /* use Picard-Krylov solver */')
       CALL WRITE_0D_L ( SEAICEuseEVP, INDEX_NONE,

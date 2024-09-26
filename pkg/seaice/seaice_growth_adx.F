@@ -421,7 +421,9 @@ C NEW VARIABLE NAMES
           leadPlumeFraction               (I,J) = 0. _d 0
           saltPlumeFlux             (I,J,bi,bj) = 0. _d 0
 #endif
+#ifdef ALLOW_DIAGNOSTICS
           SIeprflx(I,J,bi,bj) = 0. _d 0
+#endif
          ENDDO
         ENDDO
 

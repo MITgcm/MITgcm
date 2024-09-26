@@ -59,7 +59,7 @@ C     shear viscosity
       _RL zetaZ (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 CEndOfInterface
 
-#if ( defined (SEAICE_CGRID) && defined (SEAICE_ALLOW_DYNAMICS) )
+#ifdef SEAICE_CGRID
 C     === Local variables ===
 C     i,j,bi,bj - Loop counters
 C     e11, e12, e22 - components of strain rate tensor
@@ -477,6 +477,6 @@ C     about the no-slip boundary conditions
        ENDDO
       ENDDO
 
-#endif /* SEAICE_ALLOW_DYNAMICS and SEAICE_CGRID */
+#endif /* SEAICE_CGRID */
       RETURN
       END

@@ -7,7 +7,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP
       SUBROUTINE STREAMICE_VEL_SOLVE_OPENAD ( myThid, maxNLIter,
-     &                                maxCGiter, myiter )
+     &                                maxCGiter, myIter )
 C     /============================================================\
 C     | SUBROUTINE                                                 |
 C     | o                                                          |
@@ -33,10 +33,10 @@ C     !INPUT/OUTPUT ARGUMENTS
 
 C     LOCAL VARIABLES
 
+#ifdef ALLOW_STREAMICE_OAD_FP
       INTEGER i, j, k, l, bi, bj, loopiter
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
-
       INTEGER NL_iter
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL err_last_change, cgtol, err_init
       LOGICAL CONVERGED
 
@@ -45,13 +45,9 @@ C     LOCAL VARIABLES
       LOGICAL ADJ_CONVERGED
 #endif
 
-#ifdef ALLOW_STREAMICE_OAD_FP
       isinloop0 =0
       isinloop1 =1
       isinloop2 =2
-#endif
-
-#if (defined (ALLOW_STREAMICE_OAD_FP))
 
       IF (STREAMICE_ppm_driving_stress) THEN
        CALL STREAMICE_DRIVING_STRESS_PPM (myThid)
@@ -138,7 +134,7 @@ C     LOCAL VARIABLES
 C     To avoid using "exit", loop goes through all iterations
 C       but after convergence loop does nothing
 
-!        IF (.not.CONVERGED) THEN
+c        IF (.not.CONVERGED) THEN
 
 #ifndef ALLOW_OPENAD
       CALL STREAMICE_VEL_PHISTAGE (
@@ -166,16 +162,16 @@ C       but after convergence loop does nothing
      I                   isinloop1)
 #endif
 
-       !DO bj = myByLo(myThid), myByHi(myThid)
-       ! DO bi = myBxLo(myThid), myBxHi(myThid)
-       !  DO j=1-OLy,sNy+OLy
-       !   DO i=1-OLx,sNx+OLx
-       !    U_streamice (i,j,bi,bj)=u_new_SI (i,j,bi,bj)
-       !    V_streamice (i,j,bi,bj)=v_new_SI (i,j,bi,bj)
-       !   ENDDO
-       !  ENDDO
-       ! ENDDO
-       !ENDDO
+c      DO bj = myByLo(myThid), myByHi(myThid)
+c       DO bi = myBxLo(myThid), myBxHi(myThid)
+c        DO j=1-OLy,sNy+OLy
+c         DO i=1-OLx,sNx+OLx
+c          U_streamice (i,j,bi,bj)=u_new_SI (i,j,bi,bj)
+c          V_streamice (i,j,bi,bj)=v_new_SI (i,j,bi,bj)
+c         ENDDO
+c        ENDDO
+c       ENDDO
+c      ENDDO
 
       ENDDO
 

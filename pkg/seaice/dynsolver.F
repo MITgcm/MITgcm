@@ -10,8 +10,8 @@ CStartOfInterface
       SUBROUTINE DYNSOLVER( myTime, myIter, myThid )
 C     *==========================================================*
 C     | SUBROUTINE DYNSOLVER                                     |
-C     | o Ice dynamics using LSR solver                          |
-C     |   Zhang and Hibler,   JGR, 102, 8691-8702, 1997          |
+C     | o B-grid version of ice dynamics using LSR solver        |
+C     |   Zhang and Hibler, JGR, 102, 8691-8702, 1997            |
 C     *==========================================================*
 C     *==========================================================*
       IMPLICIT NONE
@@ -42,7 +42,7 @@ C     myThid - Thread no. that called this routine.
       INTEGER myThid
 CEndOfInterface
 
-#ifndef SEAICE_CGRID
+#ifdef SEAICE_BGRID_DYNAMICS
 
 #ifdef EXPLICIT_SSH_SLOPE
 #include "SURFACE.h"
@@ -233,8 +233,6 @@ CML          SEAICE_zMin(I,J,bi,bj)=4.0 _d +08
        ENDDO
       ENDDO
 
-#ifdef SEAICE_ALLOW_DYNAMICS
-
       IF ( SEAICEuseDYNAMICS ) THEN
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -255,8 +253,8 @@ C NOW DO PREDICTOR TIME STEP
          DO i=1-OLx,sNx+OLx
           UICENM1(i,j,bi,bj)=UICE(i,j,bi,bj)
           VICENM1(i,j,bi,bj)=VICE(i,j,bi,bj)
-          UICEC(i,j,bi,bj)=UICE(i,j,bi,bj)
-          VICEC(i,j,bi,bj)=VICE(i,j,bi,bj)
+          UICEB(i,j,bi,bj)=UICE(i,j,bi,bj)
+          VICEB(i,j,bi,bj)=VICE(i,j,bi,bj)
          ENDDO
         ENDDO
        ENDDO
@@ -276,8 +274,8 @@ C NOW DO MODIFIED EULER STEP
          DO i=1-OLx,sNx+OLx
           UICE(i,j,bi,bj)=HALF*(UICE(i,j,bi,bj)+UICENM1(i,j,bi,bj))
           VICE(i,j,bi,bj)=HALF*(VICE(i,j,bi,bj)+VICENM1(i,j,bi,bj))
-          UICEC(i,j,bi,bj)=UICE(i,j,bi,bj)
-          VICEC(i,j,bi,bj)=VICE(i,j,bi,bj)
+          UICEB(i,j,bi,bj)=UICE(i,j,bi,bj)
+          VICEB(i,j,bi,bj)=VICE(i,j,bi,bj)
          ENDDO
         ENDDO
        ENDDO
@@ -289,7 +287,6 @@ C NOW LSR SCHEME (ZHANG-J/HIBLER 1997)
 cdm c$taf store uice,vice = comlev1, key=ikey_dynamics
 
       ENDIF
-#endif /* SEAICE_ALLOW_DYNAMICS */
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
@@ -302,7 +299,6 @@ cdm c$taf store uice,vice = comlev1, key=ikey_dynamics
 C Calculate ocean surface stress
       CALL OSTRES ( COR_ICE, myThid )
 
-#ifdef SEAICE_ALLOW_DYNAMICS
 #ifdef SEAICE_ALLOW_CLIPVELS
       IF ( SEAICEuseDYNAMICS .AND. SEAICE_clipVelocities) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -347,8 +343,7 @@ CADJ STORE vice = comlev1, key=ikey_dynamics
 
       ENDIF
 #endif /* SEAICE_ALLOW_CLIPVELS */
-#endif /* SEAICE_ALLOW_DYNAMICS */
-#endif /* NOT SEAICE_CGRID */
+#endif /* SEAICE_BGRID_DYNAMICS */
 
       RETURN
       END

@@ -40,7 +40,6 @@ C     myThid   :: my Thread Id number
       INTEGER myIter
       INTEGER myThid
 
-#ifdef SEAICE_CGRID
 C     !LOCAL VARIABLES:
 C     i,j,bi,bj :: Loop counters
 C     kSrf      :: vertical index of surface layer
@@ -77,7 +76,9 @@ C     stress and internal ice stresses to surface layer of ocean
      &          * SEAICEstressFactor
            fu(I,J,bi,bj)=(ONE-areaW)*fu(I,J,bi,bj)
      &          + areaW*windTauX(I,J,bi,bj)
+#ifdef SEAICE_CGRID
      &          + stressDivergenceX(I,J,bi,bj) * SEAICEstressFactor
+#endif
           ENDDO
          ENDDO
 C     This loop separation makes the adjoint code vectorize
@@ -87,7 +88,9 @@ C     This loop separation makes the adjoint code vectorize
      &          * SEAICEstressFactor
            fv(I,J,bi,bj)=(ONE-areaS)*fv(I,J,bi,bj)
      &          + areaS*windTauY(I,J,bi,bj)
+#ifdef SEAICE_CGRID
      &          + stressDivergenceY(I,J,bi,bj) * SEAICEstressFactor
+#endif
           ENDDO
          ENDDO
         ENDDO
@@ -137,8 +140,6 @@ C     ice cover
       ENDDO
       ENDIF
       CALL EXCH_UV_XY_RS(fu, fv, .TRUE., myThid)
-
-#endif /* SEAICE_CGRID */
 
       RETURN
       END

@@ -13,19 +13,30 @@ function [fac]=grph_CS(var,xcs,ycs,xcg,ycg,c1,c2,shift,cbV,AxBx,kEnv)
 % AxBx = do axis(AxBx) to zoom in Box "AxBx" ; only if shift=-1,1 ;
 %-----------------------
 
-% Written by jmc@ocean.mit.edu, 2005.
+% Written by jmc@mit.edu, 2005.
+
+%- for debugging, switch to > 0:
+dBug=0;
 %- small number (relative to lon,lat in degree)
 epsil=1.e-6;
+%- big jump in longitude from 2 neighbor points
+xJump=240; xJmp2=xJump*0.5;
 %- mid-longitude of the grid (truncated @ epsil level):
 xMid=mean(xcs(:)); xMid=epsil*round(xMid/epsil);
-%fprintf(' mid Longitude of the grid: %22.16e\n',xMid);
+if dBug > 0, fprintf(' mid longitude of the grid: xMid= %22.16e\n',xMid); end
 
 if nargin < 9, cbV=0 ; end
 if nargin < 10, AxBx=[xMid-180 xMid+180 -90 90] ; end
 if nargin < 11, kEnv=0 ; end
 
 %------------------------------
-nc=size(var,2) ; ncp=nc+1 ; nPg=nc*nc*6;
+ n1h=size(var,1); n2h=size(var,2);
+ if n1h == 6*n2h, nc=n2h;
+ elseif n1h*6 == n2h, nc=n1h;
+ else
+  error([' input var size: ',int2str(n1h),' x ',int2str(n2h),' does not fit regular cube !']);
+ end
+  ncp=nc+1 ; nPg=nc*nc*6;
   MxV=min(min(var));
   mnV=max(max(var));
  if shift == 1 | shift == -1,
@@ -56,76 +67,127 @@ end
 nbsf = 0 ; ic = 0 ; jc = 0 ;
 nPx=prod(size(xcg)); nPy=prod(size(ycg));
 if nPx == nPg & nPy == nPg,
+ %- when stored in long-vector, use "compact" convention (i.e., 1 face after the other)
+ if n2h == nc,
+   xcg=permute(reshape(xcg,[nc 6 nc]),[1 3 2]);
+   ycg=permute(reshape(ycg,[nc 6 nc]),[1 3 2]);
+ end
  xcg=reshape(xcg,[nPg 1]); ycg=reshape(ycg,[nPg 1]);
 %- add the 2 missing corners:
 %fprintf(' Local version of grph_CS : ---------------------------------- \n');
- xcg(nPg+1)=xcg(1); ycg(nPg+1)=ycg(1+2*nc);
- xcg(nPg+2)=xcg(1+3*nc); ycg(nPg+2)=ycg(1);
+ xcg(nPg+1)=xcg(1); ycg(nPg+1)=ycg(1+2*nc*nc);
+ xcg(nPg+2)=xcg(1+3*nc*nc); ycg(nPg+2)=ycg(1);
 elseif nPx ~= nPg+2 | nPy ~= nPg+2,
  error([' wrong xcg,ycg dimensions : ',int2str(nPx),' , ',int2str(nPy)]);
 end
+[x6c]=split_C_cub(xcs,0);
 [xx2]=split_Z_cub(xcg);
 [yy2]=split_Z_cub(ycg);
 %---
-var=permute(reshape(var,[nc 6 nc]),[1 3 2]);
+if n2h == nc,
+ var=permute(reshape(var,[nc 6 nc]),[1 3 2]);
+else
+ var=reshape(var,[nc nc 6]);
+end
 for n=1:6,
  %if n < 5 & n > 2,
  if n < 7,
 %--------------------------------------------------------
- i0=nc*(n-1);
- vv1=zeros(ncp,ncp) ; xx1=vv1 ; yy1=vv1 ;
+  vv1=zeros(ncp,ncp) ; xx1=vv1 ; yy1=vv1 ;
   vv1(1:nc,1:nc)=var(:,:,n);
-  xx1=xx2(:,:,n);
-  yy1=yy2(:,:,n);
+  xx1=xx2(:,:,n); yy1=yy2(:,:,n); xxc=x6c(:,:,n);
 % if xx1(ncp,1) < xMid-300. ; xx1(ncp,1)=xx1(ncp,1)+360. ; end
 % if xx1(1,ncp) < xMid-300. ; xx1(1,ncp)=xx1(1,ncp)+360. ; end
 %------------
-if shift <= -360
-%--- Jump ? (only for debug diagnostic) :
- for i=1:nc, for j=1:nc,
-   if abs(xx1(i,j)-xx1(i,j+1)) > 120
-     fprintf('N: i,J,xx_j,j+1,+C %3i %3i %3i %8.3e %8.3e %8.3e \n', ...
-             n, i,j,xx1(i,j), xx1(i,j+1), xcs(i0+i,j) ) ; end
-   if abs(xx1(i,j)-xx1(i+1,j)) > 120
-     fprintf('N: I,j,xx_i,i+1,+C %3i %3i %3i %8.3e %8.3e %8.3e \n', ...
-             n, i,j,xx1(i,j), xx1(i+1,j), xcs(i0+i,j) ) ; end
- end ; end
-%---
-end
-%--------------------------------------
- if n == 4 | n == 3
-  jc=1+nc/2 ;
-%-- case where Xc jump from < 180 to > -180 when j goes from jc to jc+1 :
-%   cut the face in 2 parts (1: x > 0 ; 2: x < 0 ) and plot separately
-  [I]=find(xx1(:,jc) < xMid-120); xx1(I,jc)=xx1(I,jc)+360.;
-%  N pole longitude is arbitrary: set to +90 to get a nicer plot:
-  xx1(find( abs(yy1-90)<epsil ))=xMid+90;
-  [nbsf,S(nbsf)]=part_surf(nbsf,fac,xx1,yy1,vv1,1,ncp,1,jc,c1,c2) ;
+ %- use jump in grid-cell center longitude to decide where to cut 1 face:
+ cutFace=0;
+ dxi=xxc(2:nc,:)-xxc(1:nc-1,:); dxImx=max(abs(dxi(:)));
+ dxj=xxc(:,2:nc)-xxc(:,1:nc-1); dxJmx=max(abs(dxj(:)));
+ if dxImx > xJump & dxJmx > xJump, cutFace=3;
+ elseif dxImx > xJump, cutFace=1;
+ elseif dxJmx > xJump, cutFace=2; end
+ if dBug > 0,
+   fprintf(' face # %i , Max dxI,dxJ = %8.3f , %8.3f',n,dxImx,dxJmx);
+   if cutFace > 0, fprintf(' ; cutFace= %i',cutFace); end
+   fprintf('\n');
+ end
+ if cutFace == 3,
+  fprintf(' Jump in both i & j not implemented ==> skip face # %i\n',n);
+%------------
+ elseif cutFace == 2,
+  [I,J]=find( abs(dxj) > xJump );
+  if dBug > 1, for l=1:length(I), fprintf(' i,j= %2i, %2i \n',I(l),J(l)); end; end
+  if min(J) == max(J),
+   jc =J(1); jp=jc+1;
+   if dBug > 0, fprintf('--> cut Face @ jc,jp = %3i,%3i\n',jc,jp); end
+%   cut the face in 2 parts (1: j in [1 jp] ; 2: j in [jp ncp]) and plot separately
+   for lp=1:2,
+    if lp == 1,
+      j1=1; j2=jp;
+    else
+      j1=jp; j2=ncp;
+    end
+    tmp=xxc(:,j1:j2-1); xLoc=mean(tmp(:));
+    if dBug > 0, fprintf('    p.%i, %2i -> %2i : %8.3f %8.3f %8.3f\n', ...
+                          lp,j1,j2-1,min(tmp(:)),xLoc,max(tmp(:))); end
+    if xLoc > xMid,
+%-- case where Xc jump from > 180 to < -180 when j goes from jc to jc+1 :
+     [I]=find(xx1(:,jp) < xMid-xJmp2); xx1(I,jp)=xx1(I,jp)+360.;
+%   Pole longitude is arbitrary: set to +90 to get a nicer plot:
+     xx1(find( abs(yy1) > 90-epsil ))=xMid+90;
+    else
+%-- case where Xc jump from < -180 to > 180 when j goes from jc to jc+1 :
+     [I]=find(xx1(:,jp) > xMid+xJmp2); xx1(I,jp)=xx1(I,jp)-360.;
+%   Pole longitude is arbitrary: set to -90 to get a nicer plot:
+     xx1(find( abs(yy1) > 90-epsil ))=xMid-90;
+    end
+    [nbsf,S(nbsf)]=part_surf(nbsf,fac,xx1,yy1,vv1,1,ncp,j1,j2,c1,c2) ;
+   end
+  else
+   fprintf(' Irregular cut not implemented ==> skip face # %i\n',n);
+  end
+%------------
+ elseif cutFace == 1,
+  [I,J]=find( abs(dxi) > xJump );
+  if dBug > 1, for l=1:length(I), fprintf(' i,j= %2i, %2i \n',I(l),J(l)); end; end
+  if min(I) == max(I),
+   ic =I(1); ip=ic+1;
+   if dBug > 0, fprintf('--> cut Face @ ic,ip = %3i,%3i\n',ic,ip); end
+%   cut the face in 2 parts (1: i in [1 ip] ; 2: i in [ip ncp]) and plot separately
+   for lp=1:2,
+    if lp == 1,
+      i1=1; i2=ip;
+    else
+      i1=ip; i2=ncp;
+    end
+    tmp=xxc(i1:i2-1,:); xLoc=mean(tmp(:));
+    if dBug > 0, fprintf('    p.%i, %2i -> %2i : %8.3f %8.3f %8.3f\n', ...
+                          lp,i1,i2-1,min(tmp(:)),xLoc,max(tmp(:))); end
+    if xLoc > xMid,
+%-- case where X jump from > 180 to < -180 when i goes from ic to ic+1 :
+     [J]=find(xx1(ip,:) < xMid-xJmp2); xx1(ip,J)=xx1(ip,J)+360.;
+%   Pole longitude is arbitrary: set to +90 to get a nicer plot:
+     xx1(find( abs(yy1) > 90-epsil ))=xMid+90;
+    else
+%-- case where X jump from < -180 to > 180 when i goes from ic to ic+1 :
+     [J]=find(xx1(ip,:) > xMid+xJmp2); xx1(ip,J)=xx1(ip,J)-360.;
+%   Pole longitude is arbitrary: set to -90 to get a nicer plot:
+     xx1(find( abs(yy1) > 90-epsil ))=xMid-90;
+    end
+    [nbsf,S(nbsf)]=part_surf(nbsf,fac,xx1,yy1,vv1,i1,i2,1,ncp,c1,c2) ;
 %-
-  [I]=find(xx1(:,jc) > xMid+120); xx1(I,jc)=xx1(I,jc)-360.;
-%  N pole longitude is arbitrary: set to -90 to get a nicer plot:
-  xx1(find( abs(yy1-90)<epsil ))=xMid-90;
-  [nbsf,S(nbsf)]=part_surf(nbsf,fac,xx1,yy1,vv1,1,ncp,jc,ncp,c1,c2) ;
-%---
- elseif n == 6
-  ic=1+nc/2 ;
-%-- case where Xc jump from < -180 to > 180 when i goes from ic to ic+1 :
-%   cut the face in 2 parts (1: x > 0 ; 2: x < 0 ) and plot separately
-  [J]=find(xx1(ic,:) < xMid-120); xx1(ic,J)=xx1(ic,J)+360.;
-%  S pole longitude is arbitrary: set to +90 to get a nicer plot:
-  xx1(find( abs(yy1+90)<epsil ))=xMid+90;
-  [nbsf,S(nbsf)]=part_surf(nbsf,fac,xx1,yy1,vv1,ic,ncp,1,ncp,c1,c2) ;
-%-
-  [J]=find(xx1(ic,:) > xMid+120); xx1(ic,J)=xx1(ic,J)-360.;
-%  S pole longitude is arbitrary: set to -90 to get a nicer plot:
-  xx1(find( abs(yy1+90)<epsil ))=xMid-90;
-  [nbsf,S(nbsf)]=part_surf(nbsf,fac,xx1,yy1,vv1,1,ic,1,ncp,c1,c2) ;
-%---
+   end
+  else
+   fprintf(' Irregular cut not implemented ==> skip face # %i\n',n);
+  end
+%------------
  else
 %-- plot the face in 1 piece :
+  xLoc=mean(xxc(:));
+  xx1=rem(xx1-xLoc+180*3,360)+xLoc-180;
   [nbsf,S(nbsf)]=part_surf(nbsf,fac,xx1,yy1,vv1,1,ncp,1,ncp,c1,c2) ;
  end
-%--------------------------------------
+%--------------------------------------------------------
 end ; end
  set(S,'LineStyle','-','LineWidth',0.01);
  if rem(kEnv,2) > 0, set(S,'EdgeColor','none'); end
@@ -149,7 +211,9 @@ end
 if mnV < MxV & kEnv < 2,
  ytxt=min(1,fix(cbV));
  if shift == 1 | shift == -1,
-  xtxt=mean(AxBx(1:2)) ; ytxt=AxBx(3)-(AxBx(4)-AxBx(3))*(12+2*ytxt)/100;
+  pos=get(gca,'position');
+  xtxt=mean(AxBx(1:2)) ; ytxt=AxBx(3)-(AxBx(4)-AxBx(3))*(16-pos(4)*7.4)/100;
+ %fprintf(' pp= %9.6f , ytxt= %7.2f\n',pos(4),ytxt);
  else
   xtxt=60 ; ytxt=30*ytxt-145 ;
  %xtxt= 0 ; ytxt=30*ytxt-120 ;

@@ -80,10 +80,15 @@ C                          is calculated.
 C  nIterCO3             :: Number of iterations of the Follows 3D pH solver to
 C                          calculate deep carbonate ion concenetration (no
 C                          effect when using the Munhoven/SolveSapHe solvers).
-C  KierRateK            :: Rate constant (%) for calcite dissolution from
-C                          Kier (1980) Geochem. Cosmochem. Acta.
-C  KierRateExp          :: Rate exponent for calcite dissolution from
-C                          Kier (1980) Geochem. Cosmochem. Acta.
+C  selectCalciteDissolution :: flag to control calcite dissolution rate method:
+C          =0 : Constant dissolution rate
+C          =1 : Follows sinking flux (default);
+C          =2 : Keir (1980) Geochem. Cosmochem. Acta. ;
+C          =3 : Naviaux et al. 2019, Marine Chemistry
+C  calciteDissolRate :: Rate constant (%) for calcite dissolution from
+C          e.g. Keir (1980) Geochem. Cosmochem. Acta. or Naviaux et al. (2019)
+C  calciteDissolExp  :: Rate exponent for calcite dissolution from
+C          e.g. Keir (1980) Geochem. Cosmochem. Acta. or Naviaux et al. (2019)
 C  WsinkPIC             :: sinking speed (m/s) of particulate inorganic carbon
 C                          for calcite dissolution through the watercolumn
 C  selectCalciteBottomRemin :: to either remineralize in bottom or top layer
@@ -97,8 +102,9 @@ C----
      &  selectHFconst, selectK1K2const,
      &  selectPHsolver,
      &  useCalciteSaturation, calcOmegaCalciteFreq,
-     &  nIterCO3, KierRateK, KierRateExp,
+     &  nIterCO3, selectCalciteDissolution,
      &  WsinkPIC, selectCalciteBottomRemin,
+     &  calciteDissolRate, calciteDissolExp,
      &  zca
 
 #ifdef DIC_BIOTIC
@@ -166,17 +172,21 @@ C set calcite saturation calculation to every timestep - could be expensive
        calcOmegaCalciteFreq = deltaTClock
 C number of iterations for the Follows 3d pH solver
        nIterCO3             = 10
-C set some nominal particulate sinking rate (m/s); try 100m/day:
 C flag to either remineralize in bottom or top layer if flux
 C reaches bottom layer 0=bottom, 1=top
        selectCalciteBottomRemin = 1
-       WsinkPIC                 = 100. _d 0/86400. _d 0
-C Kier rate exponent for calcite (4.2 for aragonite)
-       KierRateExp              = 4.54 _d 0
-C Kier dissolution rate constant (%/day)
-       KierRateK                = 7.177 _d 0
+C selectCalciteDissolution :: flag to control calcite dissolution rate method:
+       selectCalciteDissolution = 1
+C Calcite dissolution rate constant (%/day, defaults set later if not read in)
+       calciteDissolRate(1) = UNSET_RL
+       calciteDissolRate(2) = UNSET_RL
+C Calcite dissolution rate exponent (defaults set later if not read in)
+       calciteDissolExp(1)  = UNSET_RL
+       calciteDissolExp(2)  = UNSET_RL
+C set nominal particulate sinking rate (m/s)
+       WsinkPIC             = 100. _d 0/86400. _d 0
 C-- setting default values for Calcite Saturation params ends here.
-       zca                      = 3500. _d 0
+       zca                  = 3500. _d 0
 
 #ifdef DIC_BIOTIC
        DOPfraction = 0.67 _d 0
@@ -262,6 +272,43 @@ C-    set parameter default values
       IF ( selectHFconst  .EQ.UNSET_I ) selectHFconst   = 1
       IF ( selectK1K2const.EQ.UNSET_I ) selectK1K2const = 1
       IF ( selectPHsolver .EQ.UNSET_I ) selectPHsolver  = 0
+
+      IF ( selectCalciteDissolution .EQ. 3 ) THEN
+C     Calcite dissolution rate constant for the Naviaux et al. 2019 scheme
+C      Default values are slightly different from the paper, but consistent with
+C      the Darwin model. Values include a ~1e5 cm2/mol conversion factor for
+C      specific surface area (SSA) of CaCO3 (e.g. benthic forams or synthetic
+C      calcite), for example, Subhas et al. 2018 (Marine Chemistry).
+        IF ( calciteDissolRate(1).EQ.UNSET_RL )
+     &       calciteDissolRate(1) = 5.22 _d -9
+        IF ( calciteDissolRate(2).EQ.UNSET_RL )
+     &       calciteDissolRate(2) = 1.65 _d -5
+C     Calcite dissolution rate exponent for the Naviaux et al. 2019 scheme
+        IF ( calciteDissolExp(1).EQ.UNSET_RL )
+     &       calciteDissolExp(1) = 0.11 _d 0
+        IF ( calciteDissolExp(2).EQ.UNSET_RL )
+     &       calciteDissolExp(2) = 4.76 _d 0
+      ELSE
+C     use second set of Coeff only if select case =3
+       calciteDissolRate(2) = 0.0 _d 0
+       calciteDissolExp(2)  = 0.0 _d 0
+C     set default for other cases:
+       IF ( selectCalciteDissolution .EQ. 0 ) THEN
+C     Calcite dissolution rate constant
+        IF ( calciteDissolRate(1).EQ.UNSET_RL )
+     &       calciteDissolRate(1) = 1 _d 0/(360 _d 0*86400.0 _d 0)
+C     Calcite dissolution rate exponent not used for constant dissolution
+        calciteDissolExp(1) = 0.0 _d 0
+       ELSE
+C     Calcite dissolution rate constant (%/day) for Keir dissolution
+        IF ( calciteDissolRate(1).EQ.UNSET_RL )
+     &       calciteDissolRate(1) = 7.177 _d 0
+C     Calcite dissolution rate exponent for Keir dissolution (4.2 for aragonite)
+        IF ( calciteDissolExp(1).EQ.UNSET_RL )
+     &       calciteDissolExp(1) = 4.54 _d 0
+       ENDIF
+      ENDIF
+
 #ifdef DIC_BIOTIC
        QSW_underice = .FALSE.
 #ifdef USE_QSW_UNDERICE
@@ -391,10 +438,41 @@ C- namelist ABIOTIC_PARMS
        CALL WRITE_0D_RL( calcOmegaCalciteFreq, INDEX_NONE,
      &  'calcOmegaCalciteFreq =',
      &  ' /* Frequency of calcite saturation calculation (s) */')
-       CALL WRITE_0D_RL( KierRateK, INDEX_NONE, 'KierRateK =',
-     &  ' /* Rate constant for calcite dissolution (%/day) */')
-       CALL WRITE_0D_RL( KierRateExp, INDEX_NONE, 'KierRateExp =',
-     &  ' /* Rate exponent for calcite dissolution */')
+       IF ( selectCalciteDissolution .LT. 3 ) THEN
+        IF ( selectCalciteDissolution .EQ. 0 )
+     &  WRITE(msgBuf,'(A)') 'Using Constant dissolution rate method'
+        IF ( selectCalciteDissolution .EQ. 1 )
+     &  WRITE(msgBuf,'(A)') 'Using Follows default dissolution method'
+        IF ( selectCalciteDissolution .EQ. 2 )
+     &  WRITE(msgBuf,'(A)') 'Using Keir (1980) dissolution method'
+        IF ( selectCalciteDissolution .GE. 0 ) THEN
+         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+         CALL WRITE_0D_RL( calciteDissolRate(1), INDEX_NONE,
+     &   'calciteDissolRate =',
+     &   ' /* Rate constant for calcite dissolution (%/day) */')
+        ENDIF
+        IF ( selectCalciteDissolution .GE. 1  ) THEN
+         CALL WRITE_0D_RL( calciteDissolExp(1), INDEX_NONE,
+     &   'calciteDissolExp = ',
+     &   ' /* Rate exponent for calcite dissolution */')
+        ENDIF
+       ELSEIF ( selectCalciteDissolution .EQ. 3 ) THEN
+        WRITE(msgBuf,'(A)')
+     &               'Using Naviaux et al. (2019) dissolution rates'
+        CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+        CALL WRITE_0D_RL( calciteDissolRate(1), INDEX_NONE,
+     &   'calciteDissolRate(1) =',
+     &   ' /* Rate constant for dissolution (%/day), omega > 0.8272 */')
+        CALL WRITE_0D_RL( calciteDissolRate(2), INDEX_NONE,
+     &   'calciteDissolRate(2) =',
+     &   ' /* Rate constant for dissolution (%/day), omega < 0.8272 */')
+        CALL WRITE_0D_RL( calciteDissolExp(1), INDEX_NONE,
+     &   'calciteDissolExp(1) = ',
+     &   ' /* Rate exponent for dissolution, omega > 0.8272 */')
+        CALL WRITE_0D_RL( calciteDissolExp(2), INDEX_NONE,
+     &   'calciteDissolExp(2) = ',
+     &   ' /* Rate exponent for dissolution, omega < 0.8272 */')
+       ENDIF
        CALL WRITE_0D_RL( WsinkPIC, INDEX_NONE, 'WsinkPIC =',
      &  ' /* Sinking speed of particulate inorganic carbon (m/s) */')
        CALL WRITE_0D_I( selectCalciteBottomRemin, INDEX_NONE,
@@ -564,6 +642,16 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* CARBONCHEM_SOLVESAPHE */
 
 #ifdef DIC_CALCITE_SAT
+C Issue an error and stop for invalid selectCalciteDissolution
+      IF ( ( selectCalciteDissolution .LT. 0 .OR.
+     &       selectCalciteDissolution .GT. 3 )
+     &              .AND. useCalciteSaturation ) THEN
+        WRITE(msgBuf,'(2A,I4,A)') 'DIC_READPARMS: ',
+     &    'selectCalciteDissolution =', selectCalciteDissolution,
+     &    ' : invalid value'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
 C Issue a soft message if a deepSilicaFile is supplied
 C    but will not be used because useCalciteSaturation is FALSE
       IF ( DIC_deepSilicaFile .NE. ' ' .AND.

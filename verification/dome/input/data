@@ -41,7 +41,6 @@
  saltAdvScheme=77,
  readBinaryPrec=64,
  writeBinaryPrec=64,
- writeStatePrec=64,
 #- not safe to use globalFiles in multi-processors runs
 #globalFiles=.TRUE.,
  &

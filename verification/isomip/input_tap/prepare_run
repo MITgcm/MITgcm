@@ -25,10 +25,11 @@ else
   echo " Error:" $fromDir "not a directory"
 fi
 
-#- and take pickup files from this dir:
+#- And to simplify maintenance, take parameter files and pickup files
+#- from this dir:
 fromDir="../input_ad"
 
-fileList=`( cd $fromDir ; ls pickup* ones_64b.bin )`
+fileList=`( cd $fromDir ; ls data* eedata pickup* ones_64b.bin )`
 
 #echo 'fileList=' $fileList
 

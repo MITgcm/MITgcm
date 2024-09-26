@@ -504,6 +504,7 @@ C     Avoid using both type of diffusion scheme (DIFF1 & SEAICEdiffKh)
 
 C--
 #ifdef ALLOW_AUTODIFF_TAMC
+      IF ( SEAICEuseLSR ) THEN
       IF ( SEAICEnonLinIterMax .GT. MPSEUDOTIMESTEPS ) THEN
        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
      &  ' need to increase MPSEUDOTIMESTEPS in SEAICE_PARAMS.h'
@@ -533,6 +534,8 @@ C--
        CALL PRINT_ERROR( msgBuf, myThid )
        errCount = errCount + 1
       ENDIF
+C     endif SEAICEuseLSR
+      ENDIF
       IF ( SEAICE_maskRHS ) THEN
        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICE_maskRHS not allowed'
        CALL PRINT_ERROR( msgBuf, myThid )
@@ -540,11 +543,19 @@ C--
       ENDIF
 #endif
 
-C--   SEAICE_ALLOW_DYNAMICS and SEAICEuseDYNAMICS
-#ifndef SEAICE_ALLOW_DYNAMICS
+C--   SEAICE_CGRID, SEAICE_BGRID_DYNAMICS and SEAICEuseDYNAMICS
+#if ( defined SEAICE_CGRID && defined SEAICE_BGRID_DYNAMICS )
+      WRITE(msgBuf,'(A,A)')
+     &     'SEAICE_CHECK: SEAICE_CGRID and SEAICE_BGRID_DYNAMICS ',
+     &     'cannot be defined at the same time.'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      errCount = errCount + 1
+#endif
+#if !( defined SEAICE_CGRID || defined SEAICE_BGRID_DYNAMICS )
       IF (SEAICEuseDYNAMICS) THEN
-         WRITE(msgBuf,'(A)')
-     &        'SEAICE_ALLOW_DYNAMICS needed for SEAICEuseDYNAMICS'
+         WRITE(msgBuf,'(A,A)')
+     &      'SEAICE_CHECK: either SEAICE_CGRID ',
+     &      'or SEAICE_BGRID_DYNAMICS needed for SEAICEuseDYNAMICS = T'
          CALL PRINT_ERROR( msgBuf, myThid )
          errCount = errCount + 1
       ENDIF
@@ -783,7 +794,7 @@ C     end if usePW79thermodynamics
         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       ENDIF
 
-#ifdef SEAICE_ALLOW_DYNAMICS
+#ifdef SEAICE_CGRID
       IF ( SEAICEuseDynamics ) THEN
 C--   Check Overlap size:
        IF ( SEAICEuseJFNK ) THEN
@@ -873,7 +884,7 @@ C--   Check Overlap size:
        ENDIF
 # endif /* SEAICE_ALLOW_EVP */
 
-#ifdef SEAICE_ALLOW_EVP
+# ifdef SEAICE_ALLOW_EVP
        IF ( SEAICEuseEVP .AND. (SEAICE_eccfr.NE.SEAICE_eccen) ) THEN
         WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: SEAICEuseEVP = .TRUE., ',
      &       'so EVP is turned on by setting appropriate'
@@ -904,11 +915,19 @@ C--   Check Overlap size:
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
-#endif /* SEAICE_ALLOW_EVP */
+# endif /* SEAICE_ALLOW_EVP */
 
+#ifndef SEAICE_ALLOW_LSR_FLEX
+      IF ( SEAICEuseLSRflex ) THEN
+       WRITE(msgBuf,'(A)')
+     &   'SEAICE_ALLOW_LSR_FLEX needed for SEAICEuseLSRflex'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       errCount = errCount + 1
+      ENDIF
+#endif
 C     SEAICEuseDynamics
       ENDIF
-#endif /* SEAICE_ALLOW_DYNAMICS */
+#endif /* SEAICE_CGRID */
 
 #ifndef SEAICE_GLOBAL_3DIAG_SOLVER
       IF ( SEAICEuseMultiTileSolver ) THEN
@@ -1003,8 +1022,7 @@ C     SEAICEuseDynamics
        errCount = errCount + 1
       ENDIF
 
-#ifndef SEAICE_CGRID
-
+#ifdef SEAICE_BGRID_DYNAMICS
       IF ( i .GE. 1 ) THEN
        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: non-default rheologies ',
      &      'require that SEAICE_CGRID is defined.'
@@ -1036,7 +1054,7 @@ C     SEAICEuseDynamics
        CALL PRINT_ERROR( msgBuf, myThid )
 C      errCount = errCount + 1
       ENDIF
-#endif /* ndef SEAICE_CGRID */
+#endif /* SEAICE_BGRID_DYNAMICS */
 
 C--   SEAICE_ALLOW_FREEDRIFT and SEAICEuseFREEDRIFT
 #ifndef SEAICE_ALLOW_FREEDRIFT

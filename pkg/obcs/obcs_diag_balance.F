@@ -57,12 +57,23 @@ C     i,j,k        :: loop indices
 C     iB, jB       :: local index of open boundary
 C     msgBuf       :: Informational/error message buffer
       INTEGER bi, bj, n
-      INTEGER i, j, iB, jB, iBt, jBt
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL areaOB(OBCS_maxConnect), tmpA
       _RL inFlow(OBCS_maxConnect)
       _RL tileAreaOB(nSx,nSy,OBCS_maxConnect)
       _RL tileInFlow(nSx,nSy,OBCS_maxConnect)
+#if (defined ALLOW_OBCS_EAST ) || (defined ALLOW_OBCS_WEST )
+      INTEGER j, iB
+#endif
+#ifdef ALLOW_OBCS_WEST
+      INTEGER iBt
+#endif
+#if (defined ALLOW_OBCS_NORTH) || (defined ALLOW_OBCS_SOUTH)
+      INTEGER i, jB
+#endif
+#ifdef ALLOW_OBCS_SOUTH
+      INTEGER jBt
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

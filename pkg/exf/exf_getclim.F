@@ -5,9 +5,6 @@
 #ifdef ALLOW_ECCO
 # include "ECCO_OPTIONS.h"
 #endif
-#ifdef ALLOW_AUTODIFF
-# include "AUTODIFF_OPTIONS.h"
-#endif
 
       SUBROUTINE EXF_GETCLIM(
      I                        myTime, myIter, myThid )
@@ -49,9 +46,6 @@ c     == global variables ==
 #include "EXF_INTERP_SIZE.h"
 #include "EXF_INTERP_PARAM.h"
 #include "EXF_FIELDS.h"
-#ifdef ALLOW_AUTODIFF_TAMC
-# include "tamc.h"
-#endif
 
 c     == routine arguments ==
 
@@ -87,10 +81,6 @@ c     Get values of climatological sst fields.
 #endif
      I     myTime, myIter, myThid )
 
-#ifdef ALLOW_AUTODIFF_TAMC
-C     this avoids storing climsst0/1
-CADJ STORE climsst      = comlev1, key=ikey_dynamics, kind=isbyte
-#endif
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
         DO j = 1,sNy

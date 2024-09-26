@@ -3,259 +3,141 @@
 # include "CTRL_OPTIONS.h"
 #endif
 
-      subroutine grdchk_setxx(
+      SUBROUTINE GRDCHK_SETXX(
      I                       icvrec,
      I                       theSimulationMode,
-     I                       itile,
-     I                       jtile,
-     I                       layer,
-     I                       itilepos,
-     I                       jtilepos,
+     I                       iGrdC, jGrdC, layer,
+     I                       bi_gc, bj_gc, procId_gc,
+     I                       varIndex_gc,
      I                       xx_comp_ref,
-     I                       ierr,
-     I                       mythid )
+     I                       myThid )
 
-c     ==================================================================
-c     SUBROUTINE grdchk_setxx
-c     ==================================================================
+C     ==================================================================
+C     SUBROUTINE grdchk_setxx
+C     ==================================================================
+C
+C     o Set component a component of the control vector; xx(loc)
+C
+C     started: Christian Eckert eckert@mit.edu 08-Mar-2000
+C     continued: heimbach@mit.edu: 13-Jun-2001
 c
-c     o Set component a component of the control vector; xx(loc)
-c
-c     started: Christian Eckert eckert@mit.edu 08-Mar-2000
-c     continued: heimbach@mit.edu: 13-Jun-2001
-c
-c     ==================================================================
-c     SUBROUTINE grdchk_setxx
-c     ==================================================================
+C     ==================================================================
+C     SUBROUTINE grdchk_setxx
+C     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
-c     == global variables ==
-
+C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "CTRL_SIZE.h"
-#include "ctrl.h"
-#include "CTRL_GENARR.h"
-#include "CTRL_OBCS.h"
-#include "optim.h"
-#include "grdchk.h"
+#include "CTRL.h"
+#include "OPTIMCYCLE.h"
 
-c     == routine arguments ==
-      integer icvrec
-      integer theSimulationMode
-      integer itile
-      integer jtile
-      integer layer
-      integer itilepos
-      integer jtilepos
+C     == routine arguments ==
+      INTEGER icvrec
+      INTEGER theSimulationMode
+      INTEGER iGrdC, jGrdC, layer
+      INTEGER bi_gc, bj_gc
+      INTEGER procId_gc
+      INTEGER varIndex_gc
       _RL     xx_comp_ref
-      integer ierr
-      integer mythid
+      INTEGER myThid
 
 #ifdef ALLOW_GRDCHK
-c--   == external ==
-      integer  ilnblnk
-      external ilnblnk
+C--   == external ==
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 
-c     == local variables ==
-      integer iarr
-      integer il, ilDir
-      integer dumiter
-      _RL     dumtime
+C     == local variables ==
+      INTEGER iL, ilDir
       _RL     dummy
-      logical doglobalread
-      logical ladinit
+      LOGICAL doglobalread
+      LOGICAL ladinit
+      CHARACTER*(MAX_LEN_FNAM) ctrl_name
+      CHARACTER*(MAX_LEN_FNAM) fName
+      _RL loctmp2d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#ifdef ALLOW_GENARR3D_CONTROL
+      _RL loctmp3d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif
 #if (defined ALLOW_OBCSN_CONTROL || defined ALLOW_OBCSS_CONTROL)
       _RL tmpfldxz (1-OLx:sNx+OLx,Nr,nSx,nSy)
 #endif
 #if (defined ALLOW_OBCSE_CONTROL || defined ALLOW_OBCSW_CONTROL)
       _RL tmpfldyz (1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
-      _RL loctmp2d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL loctmp3d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      character*(MAX_LEN_FNAM) fname
+C--   == end of interface ==
 
-c--   == end of interface ==
+      doglobalread = .FALSE.
+      ladinit      = .FALSE.
+C     Find ctrlDir (w/o trailing blanks) length
+      ilDir = ILNBLNK(ctrlDir)
 
-      doglobalread = .false.
-      ladinit      = .false.
-      dumiter      = 0
-      dumtime      = 0. _d 0
-c     Find ctrlDir (w/o trailing blanks) length
-      ilDir = ilnblnk(ctrlDir)
-      write(fname,'(a)') ' '
+      ctrl_name = ncvarfname(varIndex_gc)
+      iL = ILNBLNK( ctrl_name )
 
-      if ( grdchkvarindex .eq. 0 ) then
-         STOP 'GRDCHK INDEX 0 NOT ALLOWED'
-
-#ifdef ALLOW_OBCSN_CONTROL
-      else if ( grdchkvarindex .eq. 11 ) then
-         il=ilnblnk( xx_obcsn_file )
-         if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
-            write(fname,'(3a,i10.10)') ctrlDir(1:ilDir)//
-     &           yadmark, xx_obcsn_file(1:il),'.',optimcycle
-         else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
-            write(fname,'(2a,i10.10)') ctrlDir(1:ilDir)//
-     &           xx_obcsn_file(1:il),'.',optimcycle
-         end if
-#endif /* ALLOW_OBCSN_CONTROL */
-
-#ifdef ALLOW_OBCSS_CONTROL
-      else if ( grdchkvarindex .eq. 12 ) then
-         il=ilnblnk( xx_obcss_file )
-         if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
-            write(fname,'(3a,i10.10)') ctrlDir(1:ilDir)//
-     &           yadmark, xx_obcss_file(1:il),'.',optimcycle
-         else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
-            write(fname,'(2a,i10.10)') ctrlDir(1:ilDir)//
-     &           xx_obcss_file(1:il),'.',optimcycle
-         end if
-
-#endif /* ALLOW_OBCSS_CONTROL */
-
-#ifdef ALLOW_OBCSW_CONTROL
-      else if ( grdchkvarindex .eq. 13 ) then
-         il=ilnblnk( xx_obcsw_file )
-         if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
-            write(fname,'(3a,i10.10)') ctrlDir(1:ilDir)//
-     &           yadmark, xx_obcsw_file(1:il),'.',optimcycle
-         else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
-            write(fname,'(2a,i10.10)') ctrlDir(1:ilDir)//
-     &           xx_obcsw_file(1:il),'.',optimcycle
-         end if
-
-#endif /* ALLOW_OBCSW_CONTROL */
-
-#ifdef ALLOW_OBCSE_CONTROL
-      else if ( grdchkvarindex .eq. 14 ) then
-         il=ilnblnk( xx_obcse_file )
-         if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
-            write(fname,'(3a,i10.10)') ctrlDir(1:ilDir)//
-     &           yadmark, xx_obcse_file(1:il),'.',optimcycle
-         else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
-            write(fname,'(2a,i10.10)') ctrlDir(1:ilDir)//
-     &           xx_obcse_file(1:il),'.',optimcycle
-         end if
-
-#endif /* ALLOW_OBCSE_CONTROL */
-
-#ifdef ALLOW_GENARR2D_CONTROL
-      else if ( grdchkvarindex .ge. 101 .and.
-     &          grdchkvarindex .le. 100+maxCtrlArr2D ) then
-       do iarr = 1, maxCtrlArr2D
-        if ( grdchkvarindex .eq. 100+iarr ) then
-         il=ilnblnk( xx_genarr2d_file(iarr) )
-         if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
-            write(fname,'(3a,i10.10)') ctrlDir(1:ilDir)//
-     &           yadmark, xx_genarr2d_file(iarr)(1:il),'.',optimcycle
-         else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
-            write(fname,'(2a,i10.10)') ctrlDir(1:ilDir)//
-     &           xx_genarr2d_file(iarr)(1:il),'.',optimcycle
-         end if
-        endif
-       enddo
-#endif /* ALLOW_GENARR2D_CONTROL */
+      IF ( theSimulationMode .EQ. TANGENT_SIMULATION ) THEN
+        WRITE(fName,'(3A,I10.10)') ctrlDir(1:ilDir)//yadmark,
+     &           ctrl_name(1:iL), '.', optimcycle
+      ELSEIF ( theSimulationMode .EQ. FORWARD_SIMULATION ) THEN
+        WRITE(fName,'(3A,I10.10)') ctrlDir(1:ilDir),
+     &           ctrl_name(1:iL), '.', optimcycle
+      ELSE
+        WRITE(fName,'(A)') ' '
+      ENDIF
 
 #ifdef ALLOW_GENARR3D_CONTROL
-      else if ( grdchkvarindex .ge. 201 .and.
-     &          grdchkvarindex .le. 200+maxCtrlArr3D ) then
-       do iarr = 1, maxCtrlArr3D
-        if ( grdchkvarindex .eq. 200+iarr ) then
-         il=ilnblnk( xx_genarr3d_file(iarr) )
-         if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
-            write(fname,'(3a,i10.10)') ctrlDir(1:ilDir)//
-     &           yadmark, xx_genarr3d_file(iarr)(1:il),'.',optimcycle
-         else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
-            write(fname,'(2a,i10.10)') ctrlDir(1:ilDir)//
-     &           xx_genarr3d_file(iarr)(1:il),'.',optimcycle
-         end if
-        endif
-       enddo
-#endif /* ALLOW_GENARR3D_CONTROL */
-
-#ifdef ALLOW_GENTIM2D_CONTROL
-      else if ( grdchkvarindex .ge. 301 .and.
-     &          grdchkvarindex .le. 300+maxCtrlTim2D ) then
-       do iarr = 1, maxCtrlTim2D
-        if ( grdchkvarindex .eq. 300+iarr ) then
-         il=ilnblnk( xx_gentim2d_file(iarr) )
-         if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
-            write(fname,'(3a,i10.10)') ctrlDir(1:ilDir)//
-     &           yadmark, xx_gentim2d_file(iarr)(1:il),'.',optimcycle
-         else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
-            write(fname,'(2a,i10.10)') ctrlDir(1:ilDir)//
-     &           xx_gentim2d_file(iarr)(1:il),'.',optimcycle
-         end if
-        endif
-       enddo
-#endif /* ALLOW_GENTIM2D_CONTROL */
-
-      else
-ce      --> this index does not exist yet.
-      endif
-
-      if (ierr .EQ. 0 ) then
-      if ( grdchkvarindex.EQ.1 .OR. grdchkvarindex.EQ.2 .OR.
-     &     grdchkvarindex.EQ.27 .OR. grdchkvarindex.EQ.28 .OR.
-     &     grdchkvarindex.EQ.15 .OR. grdchkvarindex.EQ.16 .OR.
-     &     grdchkvarindex.EQ.17 .OR. grdchkvarindex.EQ.21 .OR.
-     &     grdchkvarindex.EQ.22 .OR. grdchkvarindex.EQ.31 .OR.
-     &     grdchkvarindex.EQ.44
-#ifdef ALLOW_GENARR3D_CONTROL
-     &     .OR. ( grdchkvarindex .ge. 201 .and.
-     &     grdchkvarindex .le. 200+maxCtrlArr3D )
+      IF ( ncvartype(varIndex_gc) .EQ. 'Arr3D' ) THEN
+        CALL active_read_xyz( fName, loctmp3d, 1,
+     &                        doglobalread, ladinit, optimcycle,
+     &                        myThid, dummy )
+        IF ( myProcId .EQ. procId_gc )
+     &  loctmp3d( iGrdC,jGrdC,layer,bi_gc,bj_gc ) = xx_comp_ref
+        CALL active_write_xyz( fName, loctmp3d, 1,
+     &                         optimcycle,
+     &                         myThid, dummy )
+#else
+      IF ( .FALSE. ) THEN
 #endif
-     &                                            ) then
-
-         call active_read_xyz( fname, loctmp3d, 1,
-     &                         doglobalread, ladinit, optimcycle,
-     &                         mythid, dummy)
-         if ( myProcId .EQ. grdchkwhichproc )
-     &   loctmp3d( itilepos,jtilepos,layer,itile,jtile ) = xx_comp_ref
-         call active_write_xyz( fname, loctmp3d, 1,
-     &                          optimcycle,
-     &                          mythid, dummy)
 
 #if (defined ALLOW_OBCSN_CONTROL || defined ALLOW_OBCSS_CONTROL)
-      elseif ( grdchkvarindex.EQ.11 .OR. grdchkvarindex.EQ.12) then
-         call active_read_xz( fname, tmpfldxz, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
-     &                        mythid, dummy)
-         if ( myProcId .EQ. grdchkwhichproc )
-     &   tmpfldxz( itilepos,layer,itile,jtile ) = xx_comp_ref
-         call active_write_xz( fname, tmpfldxz, icvrec,
-     &                         optimcycle,
-     &                         mythid, dummy)
+      ELSEIF ( ncvartype(varIndex_gc) .EQ. 'SecXZ' ) THEN
+        CALL active_read_xz( fName, tmpfldxz, icvrec,
+     &                       doglobalread, ladinit, optimcycle,
+     &                       myThid, dummy )
+        IF ( myProcId .EQ. procId_gc )
+     &  tmpfldxz( iGrdC,layer,bi_gc,bj_gc ) = xx_comp_ref
+        CALL active_write_xz( fName, tmpfldxz, icvrec,
+     &                        optimcycle,
+     &                        myThid, dummy )
 #endif
 
 #if (defined ALLOW_OBCSE_CONTROL || defined ALLOW_OBCSW_CONTROL)
-      elseif ( grdchkvarindex.EQ.13 .OR. grdchkvarindex.EQ.14) then
-         call active_read_yz( fname, tmpfldyz, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
-     &                        mythid, dummy)
-         if ( myProcId .EQ. grdchkwhichproc )
-     &   tmpfldyz( jtilepos,layer,itile,jtile ) = xx_comp_ref
-         call active_write_yz( fname, tmpfldyz, icvrec,
-     &                         optimcycle,
-     &                         mythid, dummy)
+      ELSEIF ( ncvartype(varIndex_gc) .EQ. 'SecYZ' ) THEN
+        CALL active_read_yz( fName, tmpfldyz, icvrec,
+     &                       doglobalread, ladinit, optimcycle,
+     &                       myThid, dummy )
+        IF ( myProcId .EQ. procId_gc )
+     &  tmpfldyz( jGrdC,layer,bi_gc,bj_gc ) = xx_comp_ref
+        CALL active_write_yz( fName, tmpfldyz, icvrec,
+     &                        optimcycle,
+     &                        myThid, dummy )
 #endif
 
-      else
+      ELSE
 
-         call active_read_xy( fname, loctmp2d, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
-     &                        mythid, dummy)
-         if ( myProcId .EQ. grdchkwhichproc )
-     &   loctmp2d( itilepos,jtilepos,itile,jtile ) = xx_comp_ref
-         call active_write_xy( fname, loctmp2d, icvrec,
-     &                         optimcycle,
-     &                         mythid, dummy)
+        CALL active_read_xy( fName, loctmp2d, icvrec,
+     &                       doglobalread, ladinit, optimcycle,
+     &                       myThid, dummy )
+        IF ( myProcId .EQ. procId_gc )
+     &  loctmp2d( iGrdC,jGrdC,bi_gc,bj_gc ) = xx_comp_ref
+        CALL active_write_xy( fName, loctmp2d, icvrec,
+     &                        optimcycle,
+     &                        myThid, dummy )
 
-      endif
-      endif
+      ENDIF
 
 #endif /* ALLOW_GRDCHK */
 
-      return
-      end
+      RETURN
+      END

@@ -31,9 +31,8 @@ c     == global variables ==
 # include "ECCO.h"
 #endif
 #ifdef ALLOW_CTRL
-# include "ctrl.h"
-# include "optim.h"
 # include "CTRL_SIZE.h"
+# include "CTRL.h"
 # include "CTRL_GENARR.h"
 # ifdef ALLOW_OBCS
 #  include "CTRL_OBCS.h"

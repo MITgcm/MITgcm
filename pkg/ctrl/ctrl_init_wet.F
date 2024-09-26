@@ -6,15 +6,15 @@ c     ==================================================================
 c     SUBROUTINE ctrl_init_wet
 c     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
 c     == global variables ==
-
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "ctrl.h"
+#include "CTRL_SIZE.h"
+#include "CTRL.h"
 #include "CTRL_OBCS.h"
 
 #ifdef ALLOW_OBCS_CONTROL
@@ -25,34 +25,31 @@ c     == global variables ==
 #endif /* ALLOW_SHELFICE */
 
 c     == routine arguments ==
-
       integer myThid
 
 c     == local variables ==
-
       integer bi,bj
       integer i,j,k
       integer itlo,ithi
       integer jtlo,jthi
       integer jmin,jmax
       integer imin,imax
+      integer ivar
       integer ntmp2(4)
       integer nwetc3d
-      integer nwettmp
 #ifdef ALLOW_SHELFICE
       integer ntmpshi
 #endif
 #ifdef ALLOW_OBCS_CONTROL
       integer iobcs
       integer ntmpob(nobcs)
-      character*(MAX_LEN_FNAM) ymaskobcs
+      CHARACTER*(MAX_LEN_FNAM) ymaskobcs
 #endif
-#ifdef ALLOW_EFLUXP0_CONTROL
-      _RL dummy
-#endif /* ALLOW_EFLUXP0_CONTROL */
+c#ifdef REAL4_IS_SLOW
+c     _RL dummy
+c#endif
       _RS dummyRS
-
-      character*(max_len_mbuf) msgbuf
+      CHARACTER*(MAX_LEN_MBUF) msgbuf
 
 c--   Set loop ranges.
       jtlo = myByLo(myThid)
@@ -124,12 +121,6 @@ c--             West mask.
                 if (maskW(i,j,k,bi,bj) .eq. 1.) then
                   nwetwtile(bi,bj,k) = nwetwtile(bi,bj,k) + 1
                 endif
-#if (defined (ALLOW_EFLUXP0_CONTROL))
-c--             Vertical mask.
-                if (hFacV(i,j,k,bi,bj) .ne. 0.) then
-                  nwetvtile(bi,bj,k) = nwetvtile(bi,bj,k) + 1
-                endif
-#endif
 #ifdef ALLOW_SHELFICE
 c--             Ice shelf mask.
                 if (maskSHI(i,j,k,bi,bj) .eq. 1.) then
@@ -178,53 +169,53 @@ c--   mask conventions are adopted from obcs_apply_ts, obcs_apply_uv
 c--   Determine the total number of control variables.
       nvartype   = 0
       nvarlength = 0
-      do i = 1,maxcvars
+      do ivar = 1, maxcvars
 c
-       if ( ncvarindex(i) .ne. -1 ) then
+       if ( ncvarindex(ivar) .ge. 0 ) then
         nvartype = nvartype + 1
         do bj = jtlo,jthi
          do bi = itlo,ithi
-          do k = 1,ncvarnrmax(i)
-           if ( ncvargrd(i) .eq. 'c' ) then
-            nvarlength = nvarlength + ncvarrecs(i)*nwetctile(bi,bj,k)
-           else if ( ncvargrd(i) .eq. 's' ) then
-            nvarlength = nvarlength + ncvarrecs(i)*nwetstile(bi,bj,k)
-           else if ( ncvargrd(i) .eq. 'w' ) then
-            nvarlength = nvarlength + ncvarrecs(i)*nwetwtile(bi,bj,k)
-           else if ( ncvargrd(i) .eq. 'v' ) then
-            nvarlength = nvarlength + ncvarrecs(i)*nwetvtile(bi,bj,k)
+          do k = 1,ncvarnrmax(ivar)
+           if ( ncvargrd(ivar) .eq. 'c' ) then
+            nvarlength = nvarlength + ncvarrecs(ivar)*nwetctile(bi,bj,k)
+           else if ( ncvargrd(ivar) .eq. 's' ) then
+            nvarlength = nvarlength + ncvarrecs(ivar)*nwetstile(bi,bj,k)
+           else if ( ncvargrd(ivar) .eq. 'w' ) then
+            nvarlength = nvarlength + ncvarrecs(ivar)*nwetwtile(bi,bj,k)
+c          else if ( ncvargrd(ivar) .eq. 'v' ) then
+c           nvarlength = nvarlength + ncvarrecs(ivar)*nwetvtile(bi,bj,k)
 #ifdef ALLOW_SHELFICE
 c--             Ice shelf mask.
-           else if ( ncvargrd(i) .eq. 'i') then
-            nvarlength = nvarlength + ncvarrecs(i)*nwetitile(bi,bj,k)
+           else if ( ncvargrd(ivar) .eq. 'i') then
+            nvarlength = nvarlength + ncvarrecs(ivar)*nwetitile(bi,bj,k)
 #endif /* ALLOW_SHELFICE */
-           else if ( ncvargrd(i) .eq. 'm' ) then
+           else if ( ncvargrd(ivar) .eq. 'm' ) then
 #ifdef ALLOW_OBCS_CONTROL
             do iobcs = 1, nobcs
 cgg   This overcounts the number of o.b. control points by a factor of "nobcs".
 cgg   As an ad-hoc solution I have divided by nobcs everywhere.
 #ifdef ALLOW_OBCSN_CONTROL
-             if ( i .eq. 11 ) nvarlength = nvarlength
-     &            + nwetobcsn(bi,bj,k,iobcs)*(ncvarrecs(i)/nobcs)
+             if ( ncvarindex(ivar) .eq. 1 ) nvarlength = nvarlength
+     &            + nwetobcsn(bi,bj,k,iobcs)*(ncvarrecs(ivar)/nobcs)
 #endif
 #ifdef ALLOW_OBCSS_CONTROL
-             if ( i .eq. 12 ) nvarlength = nvarlength
-     &            + nwetobcss(bi,bj,k,iobcs)*(ncvarrecs(i)/nobcs)
-#endif
-#ifdef ALLOW_OBCSW_CONTROL
-             if ( i .eq. 13 ) nvarlength = nvarlength
-     &            + nwetobcsw(bi,bj,k,iobcs)*(ncvarrecs(i)/nobcs)
+             if ( ncvarindex(ivar) .eq. 2 ) nvarlength = nvarlength
+     &            + nwetobcss(bi,bj,k,iobcs)*(ncvarrecs(ivar)/nobcs)
 #endif
 #ifdef ALLOW_OBCSE_CONTROL
-             if ( i .eq. 14 ) nvarlength = nvarlength
-     &            + nwetobcse(bi,bj,k,iobcs)*(ncvarrecs(i)/nobcs)
+             if ( ncvarindex(ivar) .eq. 3 ) nvarlength = nvarlength
+     &            + nwetobcse(bi,bj,k,iobcs)*(ncvarrecs(ivar)/nobcs)
+#endif
+#ifdef ALLOW_OBCSW_CONTROL
+             if ( ncvarindex(ivar) .eq. 4 ) nvarlength = nvarlength
+     &            + nwetobcsw(bi,bj,k,iobcs)*(ncvarrecs(ivar)/nobcs)
 #endif
             enddo
 #endif
            else
             print*,'ctrl_init_wet: invalid grid location'
-            print*,'     control variable = ',ncvarindex(i)
-            print*,'     grid location    = ',ncvargrd(i)
+            print*,'     control variable = ',ncvarindex(ivar)
+            print*,'     grid location    = ',ncvargrd(ivar)
             stop   ' ... stopped in ctrl_init_wet'
            endif
           enddo
@@ -236,24 +227,24 @@ cgg   As an ad-hoc solution I have divided by nobcs everywhere.
 cph(
       write(msgbuf,'(a,2x,I10)')
      &     'ctrl-wet 1:    nvarlength = ', nvarlength
-      call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,2x,I10)')
      &     'ctrl-wet 2: surface wet C = ', nwetctile(1,1,1)
-      call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,2x,I10)')
      &     'ctrl-wet 3: surface wet W = ', nwetwtile(1,1,1)
-      call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,2x,I10)')
      &     'ctrl-wet 4: surface wet S = ', nwetstile(1,1,1)
-      call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , myThid)
-      write(msgbuf,'(a,2x,I10)')
-     &     'ctrl-wet 4a:surface wet V = ', nwetvtile(1,1,1)
-      call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
+c     write(msgbuf,'(a,2x,I10)')
+c    &     'ctrl-wet 4a:surface wet V = ', nwetvtile(1,1,1)
+c     call print_message( msgbuf, standardMessageUnit,
+c    &     SQUEEZE_RIGHT, myThid )
 
       nwetc3d = 0
       do k = 1, Nr
@@ -261,88 +252,66 @@ cph(
       end do
       write(msgbuf,'(a,2x,I10)')
      &     'ctrl-wet 5: 3D wet points = ', nwetc3d
-      call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
 
-      do i = 1, maxcvars
+      do ivar = 1, maxcvars
          write(msgbuf,'(a,2x,I3,2x,I10)')
-     &     'ctrl-wet 6: no recs for i = ', i, ncvarrecs(i)
-        call print_message( msgbuf, standardmessageunit,
-     &       SQUEEZE_RIGHT , myThid)
+     &     'ctrl-wet 6: no recs for ivar = ', ivar, ncvarrecs(ivar)
+        call print_message( msgbuf, standardMessageUnit,
+     &       SQUEEZE_RIGHT, myThid )
       end do
-
-      nwettmp =
-     &     2*nwetc3d +
-     &     ncvarrecs(3)*nwetctile(1,1,1) +
-     &     ncvarrecs(4)*nwetctile(1,1,1) +
-     &     ncvarrecs(5)*nwetwtile(1,1,1) +
-     &     ncvarrecs(6)*nwetstile(1,1,1)
-      write(msgbuf,'(a,2x,I10)')
-     &     'ctrl-wet 7: flux  ', nwettmp
-      call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , myThid)
-
-      nwettmp =
-     &     2*nwetc3d +
-     &     ncvarrecs(7)*nwetctile(1,1,1) +
-     &     ncvarrecs(8)*nwetctile(1,1,1) +
-     &     ncvarrecs(9)*nwetwtile(1,1,1) +
-     &     ncvarrecs(10)*nwetstile(1,1,1)
-      write(msgbuf,'(a,2x,I10)')
-     &     'ctrl-wet 8: atmos ', nwettmp
-      call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , myThid)
 
 #ifdef ALLOW_OBCSN_CONTROL
       write(msgbuf,'(a,2x,4I10)')
      &     'ctrl-wet 9: surface wet obcsn = '
      &     , nwetobcsn(1,1,1,1), nwetobcsn(1,1,1,2)
      &     , nwetobcsn(1,1,1,3), nwetobcsn(1,1,1,4)
-      call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
 #endif
 #ifdef ALLOW_OBCSS_CONTROL
       write(msgbuf,'(a,2x,4I10)')
      &     'ctrl-wet 10: surface wet obcss = '
      &     , nwetobcss(1,1,1,1), nwetobcss(1,1,1,2)
      &     , nwetobcss(1,1,1,3), nwetobcss(1,1,1,4)
-      call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
 #endif
 #ifdef ALLOW_OBCSW_CONTROL
       write(msgbuf,'(a,2x,4I10)')
      &     'ctrl-wet 11: surface wet obcsw = '
      &     , nwetobcsw(1,1,1,1), nwetobcsw(1,1,1,2)
      &     , nwetobcsw(1,1,1,3), nwetobcsw(1,1,1,4)
-      call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
 #endif
 #ifdef ALLOW_OBCSE_CONTROL
       write(msgbuf,'(a,2x,4I10)')
      &     'ctrl-wet 12: surface wet obcse = '
      &     , nwetobcse(1,1,1,1), nwetobcse(1,1,1,2)
      &     , nwetobcse(1,1,1,3), nwetobcse(1,1,1,4)
-      call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
 #endif
 cph)
 
       write(msgbuf,'(a)')
      &    'ctrl-wet -------------------------------------------------'
-      call print_message( msgbuf, standardmessageunit,
-     &    SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &    SQUEEZE_RIGHT, myThid )
 
       CALL GLOBAL_SUM_INT( nvarlength,  myThid )
 
       write(msgbuf,'(a,2x,I3,2x,I10)')
      &     'ctrl-wet 13: global nvarlength for Nr =', Nr, nvarlength
-      call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
 
       write(msgbuf,'(a)')
      &    'ctrl-wet -------------------------------------------------'
-      call print_message( msgbuf, standardmessageunit,
-     &    SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &    SQUEEZE_RIGHT, myThid )
 
 c
 c     Summation of wet point counters
@@ -377,25 +346,26 @@ c
          nWetwGlobal(k)=ntmp2(3)
 
          ntmp2(4)=0
-         do bj=1,nSy
-            do bi=1,nSx
-               ntmp2(4)=ntmp2(4)+nWetvTile(bi,bj,k)
-            enddo
-         enddo
-         CALL GLOBAL_SUM_INT( ntmp2(4),  myThid )
+c        do bj=1,nSy
+c           do bi=1,nSx
+c              ntmp2(4)=ntmp2(4)+nWetvTile(bi,bj,k)
+c           enddo
+c        enddo
+c        CALL GLOBAL_SUM_INT( ntmp2(4),  myThid )
          nWetvGlobal(k)=ntmp2(4)
 
          write(msgbuf,'(a,2x,I3,4(2x,I10))')
-     &        'ctrl-wet 14: global nWet C/S/W/V k=', k, ntmp2
-         call print_message( msgbuf, standardmessageunit,
-     &       SQUEEZE_RIGHT , myThid)
+     &        'ctrl-wet 14: global nWet C/S/W k=', k, (ntmp2(i),i=1,3)
+c    &        'ctrl-wet 14: global nWet C/S/W/V k=', k, ntmp2
+         call print_message( msgbuf, standardMessageUnit,
+     &       SQUEEZE_RIGHT, myThid )
 
       enddo
 
       write(msgbuf,'(a)')
      &    'ctrl-wet -------------------------------------------------'
-      call print_message( msgbuf, standardmessageunit,
-     &    SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &    SQUEEZE_RIGHT, myThid )
 
       do k = 1, Nr
 
@@ -412,8 +382,8 @@ c
          enddo
          write(msgbuf,'(a,2x,I3,4(2x,I10))')
      &       'ctrl-wet 15a: global obcsN T,S,U,V k=', k, ntmpob
-         call print_message( msgbuf, standardmessageunit,
-     &       SQUEEZE_RIGHT , myThid)
+         call print_message( msgbuf, standardMessageUnit,
+     &       SQUEEZE_RIGHT, myThid )
 #endif
 #ifdef ALLOW_OBCSS_CONTROL
          do iobcs = 1, nobcs
@@ -428,8 +398,8 @@ c
          enddo
          write(msgbuf,'(a,2x,I3,4(2x,I10))')
      &       'ctrl-wet 15b: global obcsS T,S,U,V k=', k, ntmpob
-         call print_message( msgbuf, standardmessageunit,
-     &       SQUEEZE_RIGHT , myThid)
+         call print_message( msgbuf, standardMessageUnit,
+     &       SQUEEZE_RIGHT, myThid )
 #endif
 #ifdef ALLOW_OBCSW_CONTROL
          do iobcs = 1, nobcs
@@ -444,8 +414,8 @@ c
          enddo
          write(msgbuf,'(a,2x,I3,4(2x,I10))')
      &       'ctrl-wet 15c: global obcsW T,S,U,V k=', k, ntmpob
-         call print_message( msgbuf, standardmessageunit,
-     &       SQUEEZE_RIGHT , myThid)
+         call print_message( msgbuf, standardMessageUnit,
+     &       SQUEEZE_RIGHT, myThid )
 #endif
 #ifdef ALLOW_OBCSE_CONTROL
          do iobcs = 1, nobcs
@@ -460,16 +430,18 @@ c
          enddo
          write(msgbuf,'(a,2x,I3,4(2x,I10))')
      &       'ctrl-wet 15d: global obcsE T,S,U,V k=', k, ntmpob
-         call print_message( msgbuf, standardmessageunit,
-     &       SQUEEZE_RIGHT , myThid)
+         call print_message( msgbuf, standardMessageUnit,
+     &       SQUEEZE_RIGHT, myThid )
 #endif
 
       enddo
 
+#ifdef ALLOW_OBCS_CONTROL
       write(msgbuf,'(a)')
      &    'ctrl-wet -------------------------------------------------'
-      call print_message( msgbuf, standardmessageunit,
-     &    SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &    SQUEEZE_RIGHT, myThid )
+#endif
 
 #ifdef ALLOW_OBCSN_CONTROL
       do iobcs = 1, nobcs
@@ -480,8 +452,8 @@ c
       enddo
       write(msgbuf,'(a,4(2x,I10))')
      &    'ctrl-wet 16a: global SUM(K) obcsN T,S,U,V ', ntmpob
-      call print_message( msgbuf, standardmessageunit,
-     &    SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &    SQUEEZE_RIGHT, myThid )
 #endif
 #ifdef ALLOW_OBCSS_CONTROL
       do iobcs = 1, nobcs
@@ -492,8 +464,8 @@ c
       enddo
       write(msgbuf,'(a,4(2x,I10))')
      &    'ctrl-wet 16b: global SUM(K) obcsS T,S,U,V ', ntmpob
-      call print_message( msgbuf, standardmessageunit,
-     &    SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &    SQUEEZE_RIGHT, myThid )
 #endif
 #ifdef ALLOW_OBCSW_CONTROL
       do iobcs = 1, nobcs
@@ -504,8 +476,8 @@ c
       enddo
       write(msgbuf,'(a,4(2x,I10))')
      &    'ctrl-wet 16c: global SUM(K) obcsW T,S,U,V ', ntmpob
-      call print_message( msgbuf, standardmessageunit,
-     &    SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &    SQUEEZE_RIGHT, myThid )
 #endif
 #ifdef ALLOW_OBCSE_CONTROL
       do iobcs = 1, nobcs
@@ -516,20 +488,21 @@ c
       enddo
       write(msgbuf,'(a,4(2x,I10))')
      &    'ctrl-wet 16d: global SUM(K) obcsE T,S,U,V ', ntmpob
-      call print_message( msgbuf, standardmessageunit,
-     &    SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &    SQUEEZE_RIGHT, myThid )
 #endif
-
+#ifdef ALLOW_OBCS_CONTROL
       write(msgbuf,'(a)')
      &    'ctrl-wet -------------------------------------------------'
-      call print_message( msgbuf, standardmessageunit,
-     &    SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &    SQUEEZE_RIGHT, myThid )
+#endif
 
 #ifdef ALLOW_SHELFICE
       write(msgbuf,'(a,2x,I10)')
      &     'ctrl-wet 17a:surface wet I = ', nwetitile(1,1,1)
-      call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
 
       do k = 1, Nr
        ntmpshi=0
@@ -546,8 +519,8 @@ c
        endif
        write(msgbuf,'(a,2x,I3,2x,I10)')
      &      'ctrl-wet 17b: global nWet I k=', k, ntmpshi
-       call print_message( msgbuf, standardmessageunit,
-     &      SQUEEZE_RIGHT , myThid)
+       call print_message( msgbuf, standardMessageUnit,
+     &      SQUEEZE_RIGHT, myThid )
       enddo
 
       ntmpshi=0
@@ -556,23 +529,23 @@ c
       enddo
       write(msgbuf,'(a,2x,I10)')
      &    'ctrl-wet 17c: global SUM(K) shelfice ', ntmpshi
-      call print_message( msgbuf, standardmessageunit,
-     &    SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &    SQUEEZE_RIGHT, myThid )
 
       write(msgbuf,'(a)')
      &    'ctrl-wet -------------------------------------------------'
-      call print_message( msgbuf, standardmessageunit,
-     &    SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &    SQUEEZE_RIGHT, myThid )
 #endif
 
       write(msgbuf,'(a,2x,I10)')
      &     'ctrl_init_wet: no. of control variables: ', nvartype
-      call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,2x,I10)')
      &     'ctrl_init_wet: control vector length:    ', nvarlength
-      call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
 
       _END_MASTER( myThid )
 
@@ -592,9 +565,6 @@ c#else
       CALL ACTIVE_WRITE_GEN_RS( 'maskCtrlS', maskS, 'XY', Nr,
      I                          1, .FALSE., 0, myThid, dummyRS )
 c#endif
-#ifdef ALLOW_EFLUXP0_CONTROL
-      call active_write_xyz( 'maskhFacV', hFacV, 1, 0, myThid, dummy)
-#endif
 #ifdef ALLOW_SHELFICE
 c#ifdef REAL4_IS_SLOW
 c     call active_write_xyz( 'maskCtrlI', maskSHI, 1, 0, myThid, dummy)

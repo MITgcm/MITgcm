@@ -1,6 +1,3 @@
-#ifdef ALLOW_OPENAD
-# include "DIC_OPTIONS.h"
-#endif
 C     *==========================================================*
 C     | DIC_VARS.h
 C     | o Abiotic Carbon Variables
@@ -28,22 +25,30 @@ C                             omegaC, is updated (s).
 C     nIterCO3    :: Number of iterations of the Follows 3D pH solver to
 C                       calculate deep carbonate ion concenetration (no
 C                       effect when using the Munhoven/SolveSapHe solvers).
-C     KierRateK   :: Rate constant (%) for calcite dissolution from
-C                       Kier (1980) Geochem. Cosmochem. Acta.
-C     KierRateExp :: Rate exponent for calcite dissolution from
-C                       Kier (1980) Geochem. Cosmochem. Acta.
+C     calciteDissolRate :: Rate constant (%) for calcite dissolution
+C                       from Keir (1980) Geochem. Cosmochem. Acta.
+C     calciteDissolExp  :: Rate exponent for calcite dissolution
+C                       from Keir (1980) Geochem. Cosmochem. Acta.
 C     WsinkPIC    :: sinking speed (m/s) of particulate inorganic carbon for
 C                    calculation of calcite dissolution through the watercolumn
 C     selectCalciteBottomRemin :: to either remineralize in bottom or top layer
 C                       if flux reaches bottom layer; =0 : bottom, =1 : top
+C  selectCalciteDissolution :: flag to control calcite dissolution rate method:
+C          =0 : Constant dissolution rate;
+C          =1 : Follows (default) ;
+C          =2 : Keir (1980) Geochem. Cosmochem. Acta. ;
+C          =3 : Naviaux et al. 2019, Marine Chemistry
+C     pH_isLoaded(1) :: = T when surface pH is loaded from pickup file
+C     pH_isLoaded(2) :: = T when   3-D   pH is loaded from pickup file
 
        COMMON /CARBON_NEEDS/
      &              AtmospCO2, AtmosP, pH, pCO2, FluxCO2,
      &              wind, fIce, Kwexch_Pre, silicaSurf,
-     &              zca, calcOmegaCalciteFreq,
-     &              KierRateK, KierRateExp, WsinkPIC,
-     &              selectCalciteBottomRemin, nIterCO3,
-     &              useCalciteSaturation
+     &              calciteDissolRate, calciteDissolExp,
+     &              calcOmegaCalciteFreq, zca,
+     &              WsinkPIC, selectCalciteBottomRemin,
+     &              selectCalciteDissolution, nIterCO3,
+     &              useCalciteSaturation, pH_isLoaded
 
       _RL  AtmospCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  AtmosP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -54,21 +59,23 @@ C                       if flux reaches bottom layer; =0 : bottom, =1 : top
       _RL  fIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  Kwexch_Pre(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  silicaSurf(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  zca
+      _RL  calciteDissolRate(2), calciteDissolExp(2)
       _RL  calcOmegaCalciteFreq
-      _RL  KierRateK
-      _RL  KierRateExp
+      _RL  zca
       _RL  WsinkPIC
       INTEGER selectCalciteBottomRemin
+      INTEGER selectCalciteDissolution
       INTEGER nIterCO3
       LOGICAL useCalciteSaturation
+      LOGICAL pH_isLoaded(2)
 
 #ifdef DIC_CALCITE_SAT
 C     silicaDeep  :: 3D-field of silicate concentration for pH and
 C                    carbonate calculations. Read in from file (mol/m3).
 C     omegaC      :: Local saturation state with respect to calcite
        COMMON /DIC_CALCITE_SAT_FIELDS/
-     &              silicaDeep, omegaC
+     &              pH3D, silicaDeep, omegaC
+      _RL  pH3D      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  silicaDeep(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  omegaC    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif

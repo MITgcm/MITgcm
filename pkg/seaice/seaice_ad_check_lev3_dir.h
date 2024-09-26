@@ -10,24 +10,18 @@ CADJ STORE vice  = tapelev3, key = ilev_3
 CADJ STORE AREA              = tapelev3, key = ilev_3
 CADJ STORE HEFF              = tapelev3, key = ilev_3
 CADJ STORE HSNOW             = tapelev3, key = ilev_3
-CADJ STORE RUNOFF            = tapelev3, key = ilev_3
 CADJ STORE UICE              = tapelev3, key = ilev_3
 CADJ STORE VICE              = tapelev3, key = ilev_3
-CADJ STORE ZETA              = tapelev3, key = ilev_3
-CADJ STORE ETA               = tapelev3, key = ilev_3
 CADJ STORE TICES             = tapelev3, key = ilev_3
 # ifdef SEAICE_CGRID
 CADJ STORE dwatn             = tapelev3, key = ilev_3
-#  ifdef SEAICE_ALLOW_BOTTOMDRAG
-CADJ STORE cbotc             = tapelev3, key = ilev_3
-#  endif /* SEAICE_ALLOW_BOTTOMDRAG */
 CADJ STORE stressDivergenceX = tapelev3, key = ilev_3
 CADJ STORE stressDivergenceY = tapelev3, key = ilev_3
-# ifdef SEAICE_ALLOW_EVP
+#  ifdef SEAICE_ALLOW_EVP
 CADJ STORE seaice_sigma1     = tapelev3, key = ilev_3
 CADJ STORE seaice_sigma2     = tapelev3, key = ilev_3
 CADJ STORE seaice_sigma12    = tapelev3, key = ilev_3
-# endif /* SEAICE_ALLOW_EVP */
+#  endif /* SEAICE_ALLOW_EVP */
 # endif /* SEAICE_CGRID */
 # ifdef SEAICE_VARIABLE_SALINITY
 CADJ STORE HSALT             = tapelev3, key = ilev_3
@@ -36,11 +30,11 @@ CADJ STORE HSALT             = tapelev3, key = ilev_3
 
 #ifdef ALLOW_COST_ICE
 CADJ STORE objf_ice = tapelev3, key = ilev_3
-#endif
 # ifdef ALLOW_SEAICE_COST_EXPORT
 CADJ STORE uHeffExportCell = tapelev3, key = ilev_3
 CADJ STORE vHeffExportCell = tapelev3, key = ilev_3
 # endif
+#endif
 
 #ifdef ALLOW_OBCS
 # ifdef ALLOW_OBCS_EAST

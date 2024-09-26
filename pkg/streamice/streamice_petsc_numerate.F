@@ -27,13 +27,13 @@ C     === Global variables ===
 
 #ifdef ALLOW_STREAMICE
 
-      INTEGER i, j, bi, bj, ki, kj
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
+#ifdef ALLOW_PETSC
+      INTEGER i, j, bi, bj
+c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_USE_MPI
       integer mpiRC
 #endif
       integer mpimywid
-#ifdef ALLOW_PETSC
       _RS DoFCount
       integer n_dofs_proc_loc (0:nPx*nPy-1)
       integer n_dofs_cum_sum (0:nPx*nPy-1)

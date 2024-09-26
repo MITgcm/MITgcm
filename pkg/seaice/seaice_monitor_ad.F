@@ -109,14 +109,12 @@ C       Print some statistics about input forcing fields
 #ifdef SEAICE_CGRID
         CALL MON_WRITESTATS_RL( 1, ADUICE, '_aduice',
      &           maskInW, maskInW, rAw, drF, dummyRL, myThid )
-#else
-        CALL MON_WRITESTATS_RL( 1, ADUICE, '_aduice',
-     &                   UVM, UVM, rAz, drF, dummyRL, myThid )
-#endif
-#ifdef SEAICE_CGRID
         CALL MON_WRITESTATS_RL( 1, ADVICE, '_advice',
      &           maskInS, maskInS, rAs, drF, dummyRL, myThid )
-#else
+#endif
+#ifdef SEAICE_BGRID_DYNAMICS
+        CALL MON_WRITESTATS_RL( 1, ADUICE, '_aduice',
+     &                   UVM, UVM, rAz, drF, dummyRL, myThid )
         CALL MON_WRITESTATS_RL( 1, ADVICE, '_advice',
      &                   UVM, UVM, rAz, drF, dummyRL, myThid )
 #endif
