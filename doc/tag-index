@@ -1,6 +1,59 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools/xmakedepend:
+  - fix xmakedepend to accept suffix longer than 1.c and add dependencies to
+    Makefile from included headers in F90 src files.
+o model/src:
+  - Add new param "cg3dTargetResWunit" to skip the normalization of cg3d RHS
+    by specifying the CG3D target residual in term of vertical-velocity units ;
+  - Remove header files SOLVE_FOR_PRESSURE{3D}.h ; clean-up "post_cg3d.F" ;
+  - switch test exp. global_ocean.cs32x15.viscA4 & short_surf_wave to use new
+    param "cg3dTargetResWunit".
+o tools/f90mkdepend:
+  - add arguments to f90mkdepend to specify alternative file suffix (e.g.,
+    for MacOS) + minor improvement in error message.
+
+checkpoint69a (2024/09/08)
+o tools/genmake2:
+  - list of src files to Differentiate: change from simply "*.list" to commonly
+    adopted "*_ad_diff.list" (to avoid accidents).
+  - change Makefile to enable TAF to generate Tangent-Linear code from a mix
+    of fixed-form (.F) and free-form (.F90) src code.
+  - test free format *.F90 code in hs94.1x64x5/code_ad/ exp. for AD and TLM.
+o pkg/dic:
+  - save 3D pH (for calcite saturation calculation, useCalciteSaturation=T)
+    for next time-step and store it in pickup files (for restart).
+o eesupp/src:
+  - new set of Global-Sum vector routines working with shared buffer
+    (=> no needs for input/output to be in common block) and with
+    GLOBAL_SUM_ORDER_TILES implemented ; and remove older versions.
+o tools/genmake2:
+  - change Makefile to enable TAF to generate adjoint from a mix of fixed-form
+    (.F) and free-form (.F90) src code. Also fix for alternative suffix (e.g.,
+    used on MacOS) to work without -ncad.
+o tools/adjoint_options:
+  - allow to pass -f08 flag to TAF by setting TAF_FORTRAN_VERS to "F08".
+o pkg/mom_vecinv:
+  - add more 3-D momentum tendency diagnostics (originally from Helen Pillar)
+    for harmonic/bi-harmonic dissipation and for bottom + top friction
+    tendency (under new CPP option: ALLOW_MOM_TEND_EXTRA_DIAGS).
+
+checkpoint68z (2024/07/27)
+o pkg/diagnostics:
+  - to allow to use ADJ-diags in DIVA runs, change call sequence regarding
+    TURNOFF_MODEL_IO and DIAGSTATS_INI_IO and simplify (fewer tests for
+    "costfinal") the_model_main.F (+ shorten pkg/openad version) ;
+  - restore the use of "diag_pkgStatus" (switch & check) in AD backward sweep
+    with new small S/R for DIVA runs ;
+  - turn on FWD and ADJ-diags in secondary lab_sea AD test "noseaice".
+o pkg/bling:
+  - clean-up "bling_light.F" (fix typo related to PHYTO_SELF_SHADING option,
+    move k-loop outside) ; add CHL to bling_ad_check_lev{2,3,4}_dir.h and
+    fix TAF storage directives ;
+  - change "global_oce_biogeo_bling" AD test exp. (both TAF & Tapenade) to
+    use PHYTO_SELF_SHADING (with #undef USE_QSW) and update ref. output.
+  - also clean-up MDSIO_BUFF_WH.h (avoid common block that mixes r4 & r8 vars).
 o pkg/obcs:
   - Neumann boundary conditions for sea ice variables, activate by setting
     new runtime parameter useSeaiceNeumann=.TRUE. in data.obcs ;
