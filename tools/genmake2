@@ -2783,7 +2783,7 @@ for i in $SOURCEDIRS ; do
     for j in $list_files ; do
 	    grep '\.f\>'   $i/$j >> $TMP.adSrcFiles
         # Retain file paths for topo sorting later
-	    grep '\.F90\>' $i/$j | while IFS= read -r line; do
+	    grep '\.f90\>' $i/$j | sed 's/f90$/F90/'g | while IFS= read -r line; do
             echo "$i/$line" >> $TMP.adF90Files
         done
     done
@@ -3062,8 +3062,8 @@ for d in $alldirs ; do
 		    F90)
 			echo    " \\" >> $TMP.F90srclist
 			printf " $sf" >> $TMP.F90srclist
-                        # Store file path and name for topo ordering later
-                        echo "$d/$sf" >> $TMP.F90Files
+            # Store file path and name for topo ordering later
+            echo "$d/$sf" >> $TMP.F90Files
 
 			if ( test "x$OPENAD" = x && test "x$TAPENADE" = x ) ; then
 			    basename=${sf%%.F90}
@@ -3683,10 +3683,10 @@ ftl_taf_output.$FS: ftl_input_code.$FS
 	ls -l ftl_input_code_tl.$FS
 	cat ftl_input_code_tl.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ftl_taf_output.$FS
 
-\$(EXE_TLM): \$(SPECIAL_FILES) \$(H_SRC_FILES) ftl_taf_output.o \$(NON_AD_F77_SRC_FILES:.F=.o) \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
-	\$(LINK) -o \${EXE_TLM} \$(FFLAGS) \$(FOPTIM) ftl_taf_output.o \$(NON_AD_F77_SRC_FILES:.F=.o) \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
+\$(EXE_TLM): \$(SPECIAL_FILES) \$(H_SRC_FILES) ftl_taf_output.o \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
+	\$(LINK) -o \${EXE_TLM} \$(FFLAGS) \$(FOPTIM) ftl_taf_output.o \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
 
-ftlobj: ftl_taf_output.o \$(NON_AD_F77_SRC_FILES:.F=.o) \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o)
+ftlobj: ftl_taf_output.o \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o)
 
 EOF
 else
@@ -3714,24 +3714,24 @@ fi
 else
 cat >>$MAKEFILE <<EOF
 # ... send multiple files to TAF ...
-ftl_taf_output.$FS: \$(AD_FLOW_FILES) \$(AD_FILES) \$(AD_F90FILES)
+ftl_taf_output.$FS: \$(AD_FLOW_FILES) \$(AD_F90FILES) \$(AD_FILES)
 	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "TangLin version" -bAD_CONFIG_H -UALLOW_ADJOINT_RUN -DALLOW_TANGENTLINEAR_RUN > ad_config.template
 	cmp ad_config.template AD_CONFIG.h || cat ad_config.template > AD_CONFIG.h
 	@-rm -f ad_config.template
-	@\$(MAKE) -f \$(MAKEFILE) \$(F77_PP_SRC_FILES) \$(F90_PP_SRC_FILES)
+	@\$(MAKE) -f \$(MAKEFILE) \$(F90_PP_SRC_FILES) \$(F77_PP_SRC_FILES)
 	@\$(MAKE) -f \$(MAKEFILE) \$(AD_FLOW_FILES)
 	@-rm -f \$(AD_FILES:.$FS=_tl.$FS) \$(AD_FILES:.$FS=_tl.o); echo ''
 	@-rm -f \$(AD_F90FILES:.$FS90=_tl.$FS90) \$(AD_F90FILES:.$FS90=_tl.o); echo ''
 	\$(MAKE) -f \$(MAKEFILE) remove_comments
-	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) -fixed \$(AD_FLOW_FILES) \$(AD_FILES) -free \$(AD_F90FILES)
+	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) -free -N 150 \$(AD_F90FILES) -fixed -e \$(AD_FLOW_FILES) \$(AD_FILES)
 	\$(MAKE) -f \$(MAKEFILE) ftl_sed
 	cat \$(AD_FILES:.$FS=_tl.$FS) > ftl_taf_output.$FS
 
-\$(EXE_TLM): \$(SPECIAL_FILES) \$(H_SRC_FILES) ftl_taf_output.$FS \$(NON_AD_F77_SRC_FILES:.F=.o) \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
+\$(EXE_TLM): \$(SPECIAL_FILES) \$(H_SRC_FILES) ftl_taf_output.$FS \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
 	\$(MAKE) -f \$(MAKEFILE) ftlobjfiles
-	\$(LINK) -o \${EXE_TLM} \$(FFLAGS) \$(FOPTIM) \$(AD_FILES:.$FS=_tl.o) \$(AD_F90FILES:.$FS90=_tl.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
+	\$(LINK) -o \${EXE_TLM} \$(FFLAGS) \$(FOPTIM) \$(AD_F90FILES:.$FS90=_tl.o) \$(AD_FILES:.$FS=_tl.o) \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
 
-ftlobj: ftl_taf_output.$FS \$(NON_AD_F77_SRC_FILES:.F=.o) \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o)
+ftlobj: ftl_taf_output.$FS \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o)
 	\$(MAKE) -f \$(MAKEFILE) ftlobjfiles
 
 EOF
