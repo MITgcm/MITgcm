@@ -235,8 +235,9 @@ C calcite dissolution occurs only below saturation horizon
 C    code following method by Karsten Friis
 C could be expensive, so find out if it is time to update the omega calcite
 C    field (requires 3-d computation of pH).
-        IF ( DIFFERENT_MULTIPLE( calcOmegaCalciteFreq, myTime,
-     &                                    deltaTClock ) ) THEN
+        IF ( myIter.EQ.(nIter0 + 1) .OR.
+     &       DIFFERENT_MULTIPLE( calcOmegaCalciteFreq,
+     &                           myTime, deltaTClock ) ) THEN
 #ifdef ALLOW_DEBUG
           IF (debugMode) CALL DEBUG_CALL('CALCITE_SATURATION',myThid)
 #endif

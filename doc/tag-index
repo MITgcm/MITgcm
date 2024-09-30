@@ -1,6 +1,119 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools/xmakedepend:
+  - fix xmakedepend to accept suffix longer than 1.c and add dependencies to
+    Makefile from included headers in F90 src files.
+o model/src:
+  - Add new param "cg3dTargetResWunit" to skip the normalization of cg3d RHS
+    by specifying the CG3D target residual in term of vertical-velocity units ;
+  - Remove header files SOLVE_FOR_PRESSURE{3D}.h ; clean-up "post_cg3d.F" ;
+  - switch test exp. global_ocean.cs32x15.viscA4 & short_surf_wave to use new
+    param "cg3dTargetResWunit".
+o tools/f90mkdepend:
+  - add arguments to f90mkdepend to specify alternative file suffix (e.g.,
+    for MacOS) + minor improvement in error message.
+
+checkpoint69a (2024/09/08)
+o tools/genmake2:
+  - list of src files to Differentiate: change from simply "*.list" to commonly
+    adopted "*_ad_diff.list" (to avoid accidents).
+  - change Makefile to enable TAF to generate Tangent-Linear code from a mix
+    of fixed-form (.F) and free-form (.F90) src code.
+  - test free format *.F90 code in hs94.1x64x5/code_ad/ exp. for AD and TLM.
+o pkg/dic:
+  - save 3D pH (for calcite saturation calculation, useCalciteSaturation=T)
+    for next time-step and store it in pickup files (for restart).
+o eesupp/src:
+  - new set of Global-Sum vector routines working with shared buffer
+    (=> no needs for input/output to be in common block) and with
+    GLOBAL_SUM_ORDER_TILES implemented ; and remove older versions.
+o tools/genmake2:
+  - change Makefile to enable TAF to generate adjoint from a mix of fixed-form
+    (.F) and free-form (.F90) src code. Also fix for alternative suffix (e.g.,
+    used on MacOS) to work without -ncad.
+o tools/adjoint_options:
+  - allow to pass -f08 flag to TAF by setting TAF_FORTRAN_VERS to "F08".
+o pkg/mom_vecinv:
+  - add more 3-D momentum tendency diagnostics (originally from Helen Pillar)
+    for harmonic/bi-harmonic dissipation and for bottom + top friction
+    tendency (under new CPP option: ALLOW_MOM_TEND_EXTRA_DIAGS).
+
+checkpoint68z (2024/07/27)
+o pkg/diagnostics:
+  - to allow to use ADJ-diags in DIVA runs, change call sequence regarding
+    TURNOFF_MODEL_IO and DIAGSTATS_INI_IO and simplify (fewer tests for
+    "costfinal") the_model_main.F (+ shorten pkg/openad version) ;
+  - restore the use of "diag_pkgStatus" (switch & check) in AD backward sweep
+    with new small S/R for DIVA runs ;
+  - turn on FWD and ADJ-diags in secondary lab_sea AD test "noseaice".
+o pkg/bling:
+  - clean-up "bling_light.F" (fix typo related to PHYTO_SELF_SHADING option,
+    move k-loop outside) ; add CHL to bling_ad_check_lev{2,3,4}_dir.h and
+    fix TAF storage directives ;
+  - change "global_oce_biogeo_bling" AD test exp. (both TAF & Tapenade) to
+    use PHYTO_SELF_SHADING (with #undef USE_QSW) and update ref. output.
+  - also clean-up MDSIO_BUFF_WH.h (avoid common block that mixes r4 & r8 vars).
+o pkg/obcs:
+  - Neumann boundary conditions for sea ice variables, activate by setting
+    new runtime parameter useSeaiceNeumann=.TRUE. in data.obcs ;
+  - fewer (hidden) recomputations and no recomputation warnings when
+    both ALLOW_OBCS_BALANCE and ALLOW_OBCS_STEVENS are defined.
+o pkg/cost:
+  - new runtime flag for pkg/cost "cost_mask_file", which can be used
+    for flexible cost function definition.
+
+checkpoint68y (2024/06/05)
+o pkg/bling:
+  - fix bigR setting when option CARBONCHEM_TOTALPHSCALE is defined.
+o pkg/steep_icecavity + shelfice:
+  - new package to be used together with pkg/shelfice to also account for
+    melting at the vertical faces of a steep ice-shelf interface ;
+  - allows to use non-zero (but constant) ice-shelf salinity ;
+  - new FWD and (TAF) AD secondary test exp. (in isomip) using new pkg.
+o pkg/bling:
+  - fix/improve initialization of biomass for the 3 phytoplankton groups ;
+  - add 2D diagnostics of optically integrated chlorophyll concentration
+    within local-time window to be compared with satellite observation ;
+  - improve TAF store directives (reduce recomputations).
+o pkg/obcs (tides):
+  - more efficient implementation of OB barotropic tidal velocity components,
+    with both Cos & Sin of phase times Amplitude stored in common block ;
+  - more flexible specification of OB tidal-components (only read-in components
+    with non-zero tidal period) ;
+  - allows to specify tangential component of barotropic tidal velocity at OB ;
+  - rename all OBC tidal component input parameter (period, amplitude and
+    phase of each OB barotropic tidal velocity component input files) ;
+  - upgrade OB tidal example (in seaice_obcs/input.tides) with fewer tidal
+    components (only 4) but including few tangential components.
+o verification:
+  - changing domain decomposition (more tiles) in global_with_exf experiment
+    (both FWD & AD) and update ref. output ;
+  - use correct CD-Scheme time-stepping in FWD exp. global_ocean_ebm and update
+    ref. output ;
+  - simplify global_ocean.90x40x15/code_ad (undef ALLOW_GENTIM2D_CONTROL,
+    ALLOW_DIFFKR_CONTROL & ALLOW_3D_DIFFKR); remove kpp from global_oce_latlon
+    (from both TAF & Tapenade code) ;
+  - after adjusting new host experiment code, merge forward test:
+      flt_example            --> exp4.with_flt
+      global_with_exf        --> global_ocean_ebm.w_exf
+      global_with_exf.yearly --> global_ocean_ebm.yearly
+      natl_box               --> lab_sea.natl_box
+      natl_box.longstep      --> lab_sea.longstep
+    and TAF & Tapenade tests:
+      global_with_exf        --> global_oce_latlon.w_exf
+    For now, keep original set-up in place and add symbolic links into new
+    host exp. for input dir and ref. output to run these as secondary test.
+o pkg/obcs:
+  - fix unusual division by zero in all 4 (N,S,E,W) orlanski main S/R.
+o pkg/diagnostics:
+  - new header file "DIAGNOSTICS_P2SHARE.h" (for now, just for useDiag4AdjOutp),
+    and remove DIAGNOSTICS.h in any src code outside pkg/diagnostics;
+  - new params "diag_dBugLevel" (default = main model "debugLevel");
+  - add new arg "seqFlag" to DIAGNOSTICS_SWITCH_ONOFF and DIAGNOSTICS_SUMMARY
+    and prevent "diagnostics_status" to be overwritten when using ADJ-diags.
+
+checkpoint68x (2024/04/30)
 o model/src:
   - more precise specific-volume anomaly expression for Ocean in P-coord;
     update reference output of all 3 Ocean in P test experiments.
