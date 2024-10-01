@@ -378,6 +378,10 @@ C (see, e.g., Kwok & Markus, 2018, Advances in Space Research,
 C https://doi.org/10.1016/j.asr.2017.09.007; their equation for lidar).
 C Note that snow thickness and sea-ice thickness are the actual,
 C not effective, thickness.
+C Note that recip_rhoConst (the reciprocal of the constant reference
+C density) is used here instead of the more accurate reciprocal of
+C the in-situ seawater density rhoInSitu(:,:,1).
+C This is something worth improving in the future.
             gencost_storefld(i,j,bi,bj,kgen) =
      &       ( ( tmphsnowact + tmpheffact ) -
      &         ( tmphsnowact * SEAICE_rhoSnow +
