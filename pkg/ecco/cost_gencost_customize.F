@@ -12,16 +12,19 @@
 # include "GMREDI_OPTIONS.h"
 #endif
 
-      subroutine cost_gencost_customize( myThid )
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C !ROUTINE: COST_GENCOST_CUSTOMIZE
 
-c     ==================================================================
-c     SUBROUTINE cost_gencost_customize
-c     ==================================================================
+C !INTERFACE:
+      SUBROUTINE COST_GENCOST_CUSTOMIZE( myThid )
 
+C     !DESCRIPTION:
+C     Customize various costs
+
+C     !USES:
       IMPLICIT NONE
-
-c     == global variables ==
-
+C     == Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "GRID.h"
@@ -50,49 +53,43 @@ c     == global variables ==
 # include "PTRACERS_FIELDS.h"
 #endif
 
-c     == routine arguments ==
+C !INPUT PARAMETERS: ===================================================
+C myThid    :: my Thread Id number
+      INTEGER myThid
 
-      integer myThid
+C !OUTPUT PARAMETERS: ==================================================
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
-c     == local variables ==
-
-      integer bi,bj
-      integer i,j,k
+C !LOCAL VARIABLES: ====================================================
+      INTEGER bi,bj
+      INTEGER i,j,k
 #ifdef ALLOW_GENCOST3D
-      integer k2,kk
-      integer itr
+      INTEGER k2,kk
+      INTEGER itr
 #endif
-      integer kLev
+      INTEGER kLev
 #ifdef ALLOW_EXF
       _RL uBarC, vBarC
-      _RL zontau        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL mertau        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL zonwind        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL merwind        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL zontau  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL mertau  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL zonwind (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL merwind (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
-      integer itlo,ithi
-      integer jtlo,jthi
-      integer jmin,jmax
-      integer imin,imax
+      INTEGER jMin,jMax
+      INTEGER iMin,iMax
+CEOP
 
-c     == end of interface ==
-
-      jtlo = myByLo(myThid)
-      jthi = myByHi(myThid)
-      itlo = myBxLo(myThid)
-      ithi = myBxHi(myThid)
-      jmin = 1
-      jmax = sNy
-      imin = 1
-      imax = sNx
+      jMin = 1
+      jMax = sNy
+      iMin = 1
+      iMax = sNx
 
 #ifdef ALLOW_EXF
 c rotated to EW/NS tracer point
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            do j = jmin,jmax
-              do i = imin,imax
+        do bj = myByLo(myThid),myByHi(myThid)
+          do bi = myBxLo(myThid),myBxHi(myThid)
+            do j = jMin,jMax
+              do i = iMin,iMax
                 uBarC = 0.5 _d 0
      &           *(ustress(i,j,bi,bj)+ustress(i+1,j,bi,bj))
                 vBarC = 0.5 _d 0
@@ -117,10 +114,10 @@ c    &     .TRUE.,.TRUE.,.TRUE.,1,myThid)
       do k=1,NGENCOST
       itr=gencost_itracer(k)
       kLev = MAX( 1, MIN( Nr, gencost_kLev_select(k) ) )
-      do bj = jtlo,jthi
-       do bi = itlo,ithi
-        do j = jmin,jmax
-         do i =  imin,imax
+      do bj = myByLo(myThid),myByHi(myThid)
+       do bi = myBxLo(myThid),myBxHi(myThid)
+        do j = jMin,jMax
+         do i =  iMin,iMax
 
          if (gencost_barfile(k)(1:5).EQ.'m_eta' .and.
      &       gencost_barfile(k)(1:9).NE.'m_eta_dyn') then
