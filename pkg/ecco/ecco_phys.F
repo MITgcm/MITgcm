@@ -371,7 +371,7 @@ cts ---
             tmphsnowact = hsnow(i,j,bi,bj) * tmprecip_area
             tmpheffact  = heff(i,j,bi,bj) * tmprecip_area
 C gencost_storefld is the total freeboard, which is the sum of snow
-C thickness and sea-ice freeboard. Based on Archimedes' principle,
+C thickness and sea-ice freeboard. Based on Archimedes principle,
 C the total freeboard is equal to the sum of snow thickness and
 C sea-ice thickness minus the sea-ice thickness below the water line
 C (see, e.g., Kwok & Markus, 2018, Advances in Space Research,
