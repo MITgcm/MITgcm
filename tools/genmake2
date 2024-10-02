@@ -1435,6 +1435,9 @@ FTL_TAF_FLAGS=
 SVD_TAMC_FLAGS=
 TAMC_EXTRA=
 
+TAF_F77_FLAGS=
+TAF_F90_FLAGS=
+
 DIVA=
 MPIINCLUDEDIR=
 MPI_HEADER_FILES=
@@ -1455,7 +1458,7 @@ gm_s8="HAVE_NETCDF HAVE_SYSTEM HAVE_FDATE HAVE_ETIME HAVE_LAPACK HAVE_FLUSH"
 #  The following are all related to adjoint/tangent-linear stuff
 gm_s10="AUTODIFF_PKG_USED AD_OPTFILE TAPENADE TAPENADECMD OPENAD TAMC TAF AD_TAMC_FLAGS AD_TAF_FLAGS"
 gm_s11="FTL_TAMC_FLAGS FTL_TAF_FLAGS SVD_TAMC_FLAGS SVD_TAF_FLAGS"
-gm_s12="TAF_EXTRA TAMC_EXTRA DIVA MPIINCLUDEDIR MPI_HEADER_FILES"
+gm_s12="TAF_F77_FLAGS TAF_F90_FLAGS TAF_EXTRA TAMC_EXTRA DIVA MPIINCLUDEDIR MPI_HEADER_FILES"
 
 gm_state="COMMANDL $gm_s1 $gm_s2 $gm_s3 $gm_s4 $gm_s5 $gm_s6 $gm_s7 $gm_s8"
 gm_state="$gm_state $gm_s10 $gm_s11 $gm_s12"
@@ -1674,6 +1677,16 @@ for ac_option in "$@" ; do
 	    ac_prev=TAMC_EXTRA ;;
 	-tamc_extra=* | --tamc_extra=*)
 	    TAMC_EXTRA=$ac_optarg ;;
+
+	-taf_f77_flags | --taf_f77_flags)
+	    ac_prev=TAF_F77_FLAGS ;;
+	-taf_f77_flags=* | --taf_f77_flags=*)
+	    TAF_F77_FLAGS=$ac_optarg ;;
+
+	-taf_f90_flags | --taf_f90_flags)
+	    ac_prev=TAF_F90_FLAGS ;;
+	-taf_f90_flags=* | --taf_f90_flags=*)
+	    TAF_F90_FLAGS=$ac_optarg ;;
 
 	-ignoretime | -ignore_time | --ignoretime | --ignore_time)
 	    IGNORE_TIME="-DIGNORE_TIME" ;;
@@ -3120,6 +3133,7 @@ done
 
 # Sort the F90 files in topological order
 while IFS= read -r f90file; do
+    mod_used=$(grep -i "^[^!]*\buse\b" $f90file | awk '{print $2}' | tr -d ',')
     # Find modules used, ignoring those commented out
     mod_used=$(grep -i "^[^!]*\buse\b" $f90file | awk '{print $2}' | tr -d ',')
 
@@ -3487,6 +3501,8 @@ TAF            = ${TAF}
 
 TAF_EXTRA      = ${TAF_EXTRA}
 TAMC_EXTRA     = ${TAMC_EXTRA}
+TAF_F77_FLAGS  = ${TAF_F77_FLAGS}
+TAF_F90_FLAGS  = ${TAF_F90_FLAGS}
 LOCAL_MPI_HEADERS    = ${LOCAL_MPI_HEADERS}
 
 EOF
@@ -3576,7 +3592,7 @@ fi
 cat >>$MAKEFILE <<EOF
 # this is an unused target and could be removed
 adtafonly: ad_input_code.$FS
-	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) -fixed ad_input_code.$FS
+	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) -fixed \$(TAF_F77_FLAGS) ad_input_code.$FS
 	ls -l ad_input_code_ad.$FS
 	cat ad_input_code_ad.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ad_taf_output.$FS
 
@@ -3588,7 +3604,7 @@ cat >>$MAKEFILE <<EOF
 # ... send 1 file to TAF ...
 ad_taf_output.$FS: ad_input_code.$FS
 	@-rm -f ad_input_code_ad.$FS ; echo ''
-	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) -fixed ad_input_code.$FS
+	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) -fixed \$(TAF_F77_FLAGS) ad_input_code.$FS
 	ls -l ad_input_code_ad.$FS
 	cat ad_input_code_ad.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ad_taf_output.$FS
 
@@ -3603,7 +3619,7 @@ cat >>$MAKEFILE <<EOF
 # ... send 1 fixed format file and 1 free format file to TAF ...
 ad_taf_output.$FS: ad_inpF90_code.$FS90 ad_input_code.$FS
 	@-rm -f ad_input_code_ad.$FS ad_inpF90_code_ad.$FS90 ; echo ''
-	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) -free -N 150 ad_inpF90_code.$FS90 -fixed -e ad_input_code.$FS
+	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) -free \$(TAF_F90_FLAGS) ad_inpF90_code.$FS90 -fixed \$(TAF_F77_FLAGS) ad_input_code.$FS
 	ls -l ad_inpF90_code_ad.$FS90 ad_input_code_ad.$FS
 	cat ad_input_code_ad.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ad_taf_output.$FS
 
@@ -3636,7 +3652,7 @@ ad_taf_output.$FS: \$(AD_FLOW_FILES) \$(AD_F90FILES) \$(AD_FILES)
 	@-rm -f \$(AD_F90FILES:.$FS90=_ad.$FS90) \$(AD_F90FILES:.$FS90=_ad.o); echo ''
 	@-rm -f \$(AD_FILES:.$FS=_ad.$FS) \$(AD_FILES:.$FS=_ad.o); echo ''
 	\$(MAKE) -f \$(MAKEFILE) remove_comments
-	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) -free -N 150 \$(AD_F90FILES) -fixed -e \$(FLOWFILES) \$(AD_FILES)
+	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) -free \$(TAF_F90_FLAGS) \$(AD_F90FILES) -fixed \$(TAF_F77_FLAGS) \$(FLOWFILES) \$(AD_FILES)
 	\$(MAKE) -f \$(MAKEFILE) adj_sed
 EOF
 if test -n "$AD_F90FILES" ; then
@@ -3702,7 +3718,7 @@ fi
 cat >>$MAKEFILE <<EOF
 # this is an unused target and could be removed
 ftltafonly:
-	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) -fixed ftl_input_code.$FS
+	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) -fixed \$(TAF_F77_FLAGS) ftl_input_code.$FS
 	ls -l ftl_input_code_tl.$FS
 	cat ftl_input_code_tl.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ftl_taf_output.$FS
 EOF
@@ -3713,7 +3729,7 @@ cat >>$MAKEFILE <<EOF
 # ... send 1 file to TAF ...
 ftl_taf_output.$FS: ftl_input_code.$FS
 	@-rm -f ftl_input_code_tl.$FS ; echo ''
-	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) -fixed ftl_input_code.$FS
+	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) -fixed \$(TAF_F77_FLAGS) ftl_input_code.$FS
 	ls -l ftl_input_code_tl.$FS
 	cat ftl_input_code_tl.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ftl_taf_output.$FS
 
@@ -3728,7 +3744,7 @@ cat >>$MAKEFILE <<EOF
 # ... send 1 fixed format file and 1 free format file to TAF ...
 ftl_taf_output.$FS: ftl_input_code.$FS ftl_inpF90_code.$FS90
 	@-rm -f ftl_input_code_tl.$FS ftl_inpF90_code_tl.$FS90 ; echo ''
-	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) -fixed ftl_input_code.$FS -free ftl_inpF90_code.$FS90
+	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) -fixed \$(TAF_F77_FLAGS) ftl_input_code.$FS -free \$(TAF_F90_FLAGS) ftl_inpF90_code.$FS90
 	ls -l ftl_input_code_tl.$FS ftl_inpF90_code_tl.$FS90
 	cat ftl_input_code_tl.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ftl_taf_output.$FS
 
@@ -3757,7 +3773,7 @@ ftl_taf_output.$FS: \$(AD_FLOW_FILES) \$(AD_F90FILES) \$(AD_FILES)
 	@-rm -f \$(AD_FILES:.$FS=_tl.$FS) \$(AD_FILES:.$FS=_tl.o); echo ''
 	@-rm -f \$(AD_F90FILES:.$FS90=_tl.$FS90) \$(AD_F90FILES:.$FS90=_tl.o); echo ''
 	\$(MAKE) -f \$(MAKEFILE) remove_comments
-	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) -free -N 150 \$(AD_F90FILES) -fixed -e \$(AD_FLOW_FILES) \$(AD_FILES)
+	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) -free \$(TAF_F90_FLAGS) \$(AD_F90FILES) -fixed \$(TAF_F77_FLAGS) \$(AD_FLOW_FILES) \$(AD_FILES)
 	\$(MAKE) -f \$(MAKEFILE) ftl_sed
 	cat \$(AD_FILES:.$FS=_tl.$FS) > ftl_taf_output.$FS
 
