@@ -1435,6 +1435,9 @@ FTL_TAF_FLAGS=
 SVD_TAMC_FLAGS=
 TAMC_EXTRA=
 
+TAF_F77_FLAGS=
+TAF_F90_FLAGS=
+
 DIVA=
 MPIINCLUDEDIR=
 MPI_HEADER_FILES=
@@ -1455,7 +1458,7 @@ gm_s8="HAVE_NETCDF HAVE_SYSTEM HAVE_FDATE HAVE_ETIME HAVE_LAPACK HAVE_FLUSH"
 #  The following are all related to adjoint/tangent-linear stuff
 gm_s10="AUTODIFF_PKG_USED AD_OPTFILE TAPENADE TAPENADECMD OPENAD TAMC TAF AD_TAMC_FLAGS AD_TAF_FLAGS"
 gm_s11="FTL_TAMC_FLAGS FTL_TAF_FLAGS SVD_TAMC_FLAGS SVD_TAF_FLAGS"
-gm_s12="TAF_EXTRA TAMC_EXTRA DIVA MPIINCLUDEDIR MPI_HEADER_FILES"
+gm_s12="TAF_F77_FLAGS TAF_F90_FLAGS TAF_EXTRA TAMC_EXTRA DIVA MPIINCLUDEDIR MPI_HEADER_FILES"
 
 gm_state="COMMANDL $gm_s1 $gm_s2 $gm_s3 $gm_s4 $gm_s5 $gm_s6 $gm_s7 $gm_s8"
 gm_state="$gm_state $gm_s10 $gm_s11 $gm_s12"
@@ -1674,6 +1677,16 @@ for ac_option in "$@" ; do
 	    ac_prev=TAMC_EXTRA ;;
 	-tamc_extra=* | --tamc_extra=*)
 	    TAMC_EXTRA=$ac_optarg ;;
+
+	-taf_f77_flags | --taf_f77_flags)
+	    ac_prev=TAF_F77_FLAGS ;;
+	-taf_f77_flags=* | --taf_f77_flags=*)
+	    TAF_F77_FLAGS=$ac_optarg ;;
+
+	-taf_f90_flags | --taf_f90_flags)
+	    ac_prev=TAF_F90_FLAGS ;;
+	-taf_f90_flags=* | --taf_f90_flags=*)
+	    TAF_F90_FLAGS=$ac_optarg ;;
 
 	-ignoretime | -ignore_time | --ignoretime | --ignore_time)
 	    IGNORE_TIME="-DIGNORE_TIME" ;;
@@ -2778,12 +2791,13 @@ test -f $TMP.adF90Graph && rm -f $TMP.adF90Graph
 touch $TMP.adSrcFiles
 touch $TMP.adF90Files
 touch $TMP.adF90Graph
+touch $TMP.adF90noGraph
 for i in $SOURCEDIRS ; do
     list_files=`( cd $i && ls -1 *_ad_diff.list 2>/dev/null )`
     for j in $list_files ; do
-	    grep '\.f\>'   $i/$j >> $TMP.adSrcFiles
+	grep '\.f\>' $i/$j >> $TMP.adSrcFiles
         # Retain file paths for topo sorting later
-	    grep '\.f90\>' $i/$j | sed 's/f90$/F90/'g | while IFS= read -r line; do
+	grep '\.f90\>' $i/$j | sed 's/f90$/F90/'g | while IFS= read -r line; do
             echo "$i/$line" >> $TMP.adF90Files
         done
     done
@@ -2792,21 +2806,34 @@ done
 # Sort the f90 files in topological order
 while IFS= read -r f90file; do
     # List modules used in f90file, ignoring those commented out
-    mod_used=$(grep -i "^[^!]*\buse\b" $f90file | awk '{print $2}' | \
-        tr -d ',')
-    
-    for mod in $mod_used; do
-        # Find the file that defines this module
-        mod_file=$(grep -li "^module $mod\b" $(grep -v $f90file "$TMP.adF90Files"))
-        if [ -n "$mod_file" ]; then
-            echo $mod_file $f90file >> $TMP.adF90Graph
-        fi
-    done
+    mod_used=$(grep -i "^[^!]*\buse\b" $f90file | awk '{print $2}' | tr -d ',')
+
+    if [ -n "$mod_used" ]; then
+	for mod in $mod_used; do
+            # Find the file that defines this module
+            mod_file=$(grep -li "^module $mod\b" \
+			    $(grep -v $f90file "$TMP.adF90Files"))
+            if [ -n "$mod_file" ]; then
+		echo $mod_file $f90file >> $TMP.adF90Graph
+            fi
+	done
+    else
+	echo $f90file >> $TMP.adF90noGraph
+    fi
 done < $TMP.adF90Files
 # Replace alphabetical with topological file order
-tsort $TMP.adF90Graph | sed 's|.*/||' | sed 's/\.F90/\.f90/g' > $TMP.adF90Files
+tsort $TMP.adF90Graph | sed -e 's|.*/||' -e 's/\.F90/\.f90/g' > $TMP.adF90Files
+# append files without use-statements if they are not already included
+while IFS= read -r f90file; do
+    f=$(echo $f90file | sed -e 's|.*/||' -e 's/\.F90/\.f90/g' )
+    inList=$(grep -i $f $TMP.adF90Files)
+    if test -z "$inList" ; then
+	echo $f >>  $TMP.adF90Files
+    fi
+done < $TMP.adF90noGraph
 # Clean up topological sorting files
-rm -rf $TMP.adF90Graph
+rm -rf $TMP.adF90Graph $TMP.adF90noGraph
+
 
 echo
 echo "===  Creating the Makefile  ==="
@@ -3062,12 +3089,12 @@ for d in $alldirs ; do
 		    F90)
 			echo    " \\" >> $TMP.F90srclist
 			printf " $sf" >> $TMP.F90srclist
-            # Store file path and name for topo ordering later
-            echo "$d/$sf" >> $TMP.F90Files
+			# Store file path and name for topo ordering later
+			echo "$d/$sf" >> $TMP.F90Files
 
 			if ( test "x$OPENAD" = x && test "x$TAPENADE" = x ) ; then
 			    basename=${sf%%.F90}
-			    isAD=`egrep ^$basename.F90'[ 	]*' $TMP.adF90Files`
+			    isAD=`egrep ^$basename.f90'[ 	]*' $TMP.adF90Files`
 			    if test -z "$isAD" ; then
 				echo    " \\" >> $TMP.nonADF90srclist
 				printf " $sf" >> $TMP.nonADF90srclist
@@ -3104,23 +3131,34 @@ for d in $alldirs ; do
     fi
 done
 
-#
 # Sort the F90 files in topological order
 while IFS= read -r f90file; do
+    mod_used=$(grep -i "^[^!]*\buse\b" $f90file | awk '{print $2}' | tr -d ',')
     # Find modules used, ignoring those commented out
-    mod_used=$(grep -i "^[^!]*\buse\b" $f90file | awk '{print $2}' | \
-        tr -d ',')
-    
-    for mod in $mod_used; do
-        # Find the file that defines this module
-        mod_file=$(grep -li "^module $mod\b" $(grep -v $f90file "$TMP.F90Files"))
-        if [ -n "$mod_file" ]; then
-            echo $mod_file $f90file >> "$TMP.F90Graph"
-        fi
-    done
+    mod_used=$(grep -i "^[^!]*\buse\b" $f90file | awk '{print $2}' | tr -d ',')
+
+    if [ -n "$mod_used" ]; then
+	for mod in $mod_used; do
+            # Find the file that defines this module
+            mod_file=$(grep -li "^module $mod\b" \
+			    $(grep -v $f90file "$TMP.F90Files"))
+            if [ -n "$mod_file" ]; then
+		echo $mod_file $f90file >> $TMP.F90Graph
+            fi
+	done
+    else
+	echo $f90file >> $TMP.F90noGraph
+    fi
 done < "$TMP.F90Files"
 # Replace alphabetical with topological file order
-tsort "$TMP.F90Graph" > "$TMP.F90Files"
+tsort $TMP.F90Graph > $TMP.F90Files
+# append files without use-statements if they are not already included
+while IFS= read -r f90file; do
+    inList=$(grep -i $f90file $TMP.F90Files)
+    if test -z "$inList" ; then
+	echo $f90file >> $TMP.F90Files
+    fi
+done < $TMP.F90noGraph
 #
 
 # Format to F90srclist specs
@@ -3132,7 +3170,7 @@ cat $TMP.F90srclist.tmp > $TMP.F90srclist
 #
 # Clean up topological sorting files
 rm -rf $TMP.F90Files.tmp $TMP.F90Files $TMP.F90srclist.tmp
-rm -rf $TMP.F90Graph
+rm -rf $TMP.F90Graph $TMP.noF90Graph
 
 rm -rf $TMP.links
 echo "" >> $TMP.F77srclist
@@ -3463,6 +3501,8 @@ TAF            = ${TAF}
 
 TAF_EXTRA      = ${TAF_EXTRA}
 TAMC_EXTRA     = ${TAMC_EXTRA}
+TAF_F77_FLAGS  = ${TAF_F77_FLAGS}
+TAF_F90_FLAGS  = ${TAF_F90_FLAGS}
 LOCAL_MPI_HEADERS    = ${LOCAL_MPI_HEADERS}
 
 EOF
@@ -3552,7 +3592,7 @@ fi
 cat >>$MAKEFILE <<EOF
 # this is an unused target and could be removed
 adtafonly: ad_input_code.$FS
-	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) -fixed ad_input_code.$FS
+	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) -fixed \$(TAF_F77_FLAGS) ad_input_code.$FS
 	ls -l ad_input_code_ad.$FS
 	cat ad_input_code_ad.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ad_taf_output.$FS
 
@@ -3564,7 +3604,7 @@ cat >>$MAKEFILE <<EOF
 # ... send 1 file to TAF ...
 ad_taf_output.$FS: ad_input_code.$FS
 	@-rm -f ad_input_code_ad.$FS ; echo ''
-	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) -fixed ad_input_code.$FS
+	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) -fixed \$(TAF_F77_FLAGS) ad_input_code.$FS
 	ls -l ad_input_code_ad.$FS
 	cat ad_input_code_ad.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ad_taf_output.$FS
 
@@ -3579,10 +3619,13 @@ cat >>$MAKEFILE <<EOF
 # ... send 1 fixed format file and 1 free format file to TAF ...
 ad_taf_output.$FS: ad_inpF90_code.$FS90 ad_input_code.$FS
 	@-rm -f ad_input_code_ad.$FS ad_inpF90_code_ad.$FS90 ; echo ''
-	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) -free -N 150 ad_inpF90_code.$FS90 -fixed -e ad_input_code.$FS
+	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) -free \$(TAF_F90_FLAGS) ad_inpF90_code.$FS90 -fixed \$(TAF_F77_FLAGS) ad_input_code.$FS
 	ls -l ad_inpF90_code_ad.$FS90 ad_input_code_ad.$FS
 	cat ad_input_code_ad.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ad_taf_output.$FS
 
+EOF
+if test -n "$AD_F90FILES" ; then
+cat >>$MAKEFILE <<EOF
 # We need the extra target for ad_taf_outpF90.$FS90, because the file is
 # generated together with ad_taf_output.$FS.
 ad_taf_outpF90.$FS90: ad_taf_output.$FS
@@ -3595,22 +3638,29 @@ adobj: ad_taf_outpF90.o ad_taf_output.o \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_
 
 EOF
 fi
+fi
 
 else
 cat >>$MAKEFILE <<EOF
 # ... send multiple files to TAF ...
-ad_taf_output.$FS: \$(AD_FLOW_FILES) \$(AD_F90FILES) \$(AD_FILES) 
+ad_taf_output.$FS: \$(AD_FLOW_FILES) \$(AD_F90FILES) \$(AD_FILES)
 	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "Adjoint version" -bAD_CONFIG_H -DALLOW_ADJOINT_RUN -UALLOW_TANGENTLINEAR_RUN > ad_config.template
 	cmp ad_config.template AD_CONFIG.h || cat ad_config.template > AD_CONFIG.h
 	@-rm -f ad_config.template
 	@\$(MAKE) -f \$(MAKEFILE) \$(FLOWFILES)
-	@\$(MAKE) -f \$(MAKEFILE) \$(F90_PP_SRC_FILES) \$(F77_PP_SRC_FILES) 
+	@\$(MAKE) -f \$(MAKEFILE) \$(F90_PP_SRC_FILES) \$(F77_PP_SRC_FILES)
 	@-rm -f \$(AD_F90FILES:.$FS90=_ad.$FS90) \$(AD_F90FILES:.$FS90=_ad.o); echo ''
 	@-rm -f \$(AD_FILES:.$FS=_ad.$FS) \$(AD_FILES:.$FS=_ad.o); echo ''
 	\$(MAKE) -f \$(MAKEFILE) remove_comments
-	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) -free -N 150 \$(AD_F90FILES) -fixed -e \$(FLOWFILES) \$(AD_FILES)
+	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) -free \$(TAF_F90_FLAGS) \$(AD_F90FILES) -fixed \$(TAF_F77_FLAGS) \$(FLOWFILES) \$(AD_FILES)
 	\$(MAKE) -f \$(MAKEFILE) adj_sed
+EOF
+if test -n "$AD_F90FILES" ; then
+cat >>$MAKEFILE <<EOF
 	cat \$(AD_F90FILES:.$FS90=_ad.$FS90) > ad_taf_outpF90.$FS90
+EOF
+fi
+cat >>$MAKEFILE <<EOF
 	cat \$(AD_FILES:.$FS=_ad.$FS) > ad_taf_output.$FS
 
 \$(EXE_ADJ): \$(SPECIAL_FILES) \$(H_SRC_FILES) ad_taf_output.$FS \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
@@ -3668,7 +3718,7 @@ fi
 cat >>$MAKEFILE <<EOF
 # this is an unused target and could be removed
 ftltafonly:
-	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) -fixed ftl_input_code.$FS
+	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) -fixed \$(TAF_F77_FLAGS) ftl_input_code.$FS
 	ls -l ftl_input_code_tl.$FS
 	cat ftl_input_code_tl.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ftl_taf_output.$FS
 EOF
@@ -3679,7 +3729,7 @@ cat >>$MAKEFILE <<EOF
 # ... send 1 file to TAF ...
 ftl_taf_output.$FS: ftl_input_code.$FS
 	@-rm -f ftl_input_code_tl.$FS ; echo ''
-	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) -fixed ftl_input_code.$FS
+	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) -fixed \$(TAF_F77_FLAGS) ftl_input_code.$FS
 	ls -l ftl_input_code_tl.$FS
 	cat ftl_input_code_tl.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ftl_taf_output.$FS
 
@@ -3694,7 +3744,7 @@ cat >>$MAKEFILE <<EOF
 # ... send 1 fixed format file and 1 free format file to TAF ...
 ftl_taf_output.$FS: ftl_input_code.$FS ftl_inpF90_code.$FS90
 	@-rm -f ftl_input_code_tl.$FS ftl_inpF90_code_tl.$FS90 ; echo ''
-	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) -fixed ftl_input_code.$FS -free ftl_inpF90_code.$FS90
+	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) -fixed \$(TAF_F77_FLAGS) ftl_input_code.$FS -free \$(TAF_F90_FLAGS) ftl_inpF90_code.$FS90
 	ls -l ftl_input_code_tl.$FS ftl_inpF90_code_tl.$FS90
 	cat ftl_input_code_tl.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ftl_taf_output.$FS
 
@@ -3723,7 +3773,7 @@ ftl_taf_output.$FS: \$(AD_FLOW_FILES) \$(AD_F90FILES) \$(AD_FILES)
 	@-rm -f \$(AD_FILES:.$FS=_tl.$FS) \$(AD_FILES:.$FS=_tl.o); echo ''
 	@-rm -f \$(AD_F90FILES:.$FS90=_tl.$FS90) \$(AD_F90FILES:.$FS90=_tl.o); echo ''
 	\$(MAKE) -f \$(MAKEFILE) remove_comments
-	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) -free -N 150 \$(AD_F90FILES) -fixed -e \$(AD_FLOW_FILES) \$(AD_FILES)
+	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) -free \$(TAF_F90_FLAGS) \$(AD_F90FILES) -fixed \$(TAF_F77_FLAGS) \$(AD_FLOW_FILES) \$(AD_FILES)
 	\$(MAKE) -f \$(MAKEFILE) ftl_sed
 	cat \$(AD_FILES:.$FS=_tl.$FS) > ftl_taf_output.$FS
 
