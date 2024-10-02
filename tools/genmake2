@@ -881,7 +881,7 @@ EOF
     FC_NAMEMANGLE="#define FC_NAMEMANGLE(X)  $nmangle"
 
     #  cleanup the testing files
-    rm -rf genmake_tcomp.* genmake_test.*
+    rm -f genmake_tcomp.* genmake_test.*
 
     echo " --> set FC_NAMEMANGLE='$FC_NAMEMANGLE'" >> $LOGFILE
 }
@@ -2074,7 +2074,7 @@ else
     HAVE_SYSTEM=
     echo "no"
 fi
-rm -rf genmake_tcomp*
+rm -f genmake_tcomp*
 
 printf "  Do we have the fdate() command using $FC...  "
 cat > genmake_tcomp.$FS <<EOF
@@ -2095,7 +2095,7 @@ else
     HAVE_FDATE=
     echo "no"
 fi
-rm -rf genmake_tcomp*
+rm -f genmake_tcomp*
 
 printf "  Do we have the etime() command using $FC... "
 cat > genmake_tcomp_1.$FS <<EOF
@@ -2147,7 +2147,7 @@ EOF
   fi
 fi
 #mkdir chk_etime ; cp -p -f genmake_tcomp* chk_etime
-rm -rf genmake_tcomp*
+rm -f genmake_tcomp*
 
 printf "  Can we call simple C routines (here, \"cloc()\") using $FC...  "
 check_HAVE_CLOC
@@ -2162,7 +2162,7 @@ else
 	EMBED_SRC=
     fi
 fi
-rm -rf genmake_t*
+rm -f genmake_t*
 
 printf "  Can we unlimit the stack size using $FC...  "
 check_HAVE_SETRLSTK
@@ -2172,7 +2172,7 @@ if test "x$HAVE_SETRLSTK" = xt ; then
 else
     echo "no"
 fi
-rm -rf genmake_t*
+rm -f genmake_t*
 
 printf "  Can we register a signal handler using $FC...  "
 check_HAVE_SIGREG
@@ -2182,7 +2182,7 @@ if test "x$HAVE_SIGREG" = xt ; then
 else
     echo "no"
 fi
-rm -rf genmake_t*
+rm -f genmake_t*
 
 printf "  Can we use stat() through C calls...  "
 check_HAVE_STAT
@@ -2192,7 +2192,7 @@ if test "x$HAVE_STAT" != x ; then
 else
     echo "no"
 fi
-rm -rf genmake_t*
+rm -f genmake_t*
 
 printf "  Can we create NetCDF-enabled binaries...  "
 check_netcdf_libs
