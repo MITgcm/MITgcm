@@ -41,7 +41,7 @@ C !OUTPUT PARAMETERS: ===================================================
 C !LOCAL VARIABLES: ====================================================
 C  i,j,k                  :: loop indices
        INTEGER i,j,k
-       LOGICAL debugPrt
+       LOGICAL doIni_pH, debugPrt
        _RL carbonate(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
        _RL calcium
        _RL sitlocal
@@ -49,12 +49,28 @@ C  i,j,k                  :: loop indices
        _RL diclocal
        _RL alklocal
        _RL pCO2local(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-       _RL pHlocal(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
        _RL locTemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
        _RL locSalt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-
-       INTEGER CO3ITER
+       INTEGER doIterCO3, CO3ITER
 CEOP
+
+       doIni_pH = ( myIter.EQ.(nIter0 + 1) ) .AND. .NOT.pH_isLoaded(2)
+C-   set number of iterations for 3-D pH (for case selectPHsolver=0):
+       IF ( doIni_pH .OR.
+     &      ( calcOmegaCalciteFreq.GT.deltaTClock ) ) THEN
+C    Since we start cold with an arbitrary pH, we must iterate pH solver
+C    to ensure accurate estimate of CO3 at depth
+C    OR we may call this for deep ocean infrequently and in this case
+C    can afford to make several iterations
+         doIterCO3 = nIterCO3
+       ELSE
+         doIterCO3 = 1
+       ENDIF
+c      IF ( bi+bj .EQ. 2 ) THEN
+c       WRITE(standardMessageUnit,'(A,L5,I4,I10)')
+c    &  '--- CALCITE_SATURATION: doIni_pH, doIterCO3, myIter=',
+c    &                           doIni_pH, doIterCO3, myIter
+c      ENDIF
 
        DO k=1,Nr
         DO j=1-OLy,sNy+OLy
@@ -63,7 +79,6 @@ CEOP
             locSalt(i,j) = salt (i,j,k,bi,bj)
             carbonate(i,j) = 0. _d 0
             pCO2local(i,j) = 0. _d 0
-            pHlocal(i,j)   = 0. _d 0
          ENDDO
         ENDDO
 #ifdef CARBONCHEM_SOLVESAPHE
@@ -113,16 +128,17 @@ C     DIC_deepSilicaFile provided.
 #ifdef CARBONCHEM_SOLVESAPHE
            IF ( selectPHsolver.GT.0 ) THEN
 C Use Munhoven (2013) Solvesaphe routine to calculate pH and pCO2
+            IF ( doIni_pH ) THEN
 #ifdef ALLOW_DEBUG
-            IF (debugPrt) CALL DEBUG_CALL('AHINI_FOR_AT',myThid)
+             IF (debugPrt) CALL DEBUG_CALL('AHINI_FOR_AT',myThid)
 #endif
 C call AHINI_FOR_AT to get better initial guess of pH
-            CALL AHINI_FOR_AT(alklocal*permil,
-     I           diclocal*permil,
-     I           bt(i,j,bi,bj),
-     O           pHlocal(i,j),
-     I           i,j,k,bi,bj,myIter,myThid )
-
+             CALL AHINI_FOR_AT(alklocal*permil,
+     I              diclocal*permil,
+     I              bt(i,j,bi,bj),
+     O              pH3d(i,j,k,bi,bj),
+     I              i,j,k,bi,bj,myIter,myThid )
+            ENDIF /* 3d pH is not loaded */
 #ifdef ALLOW_DEBUG
             IF (debugPrt) CALL DEBUG_CALL('CALC_PCO2_SOLVESAPHE',myThid)
 #endif
@@ -130,7 +146,7 @@ C call AHINI_FOR_AT to get better initial guess of pH
      I          locTemp(i,j), locSalt(i,j),
      I          diclocal, po4local,
      I          sitlocal, alklocal,
-     U          pHlocal(i,j), pCO2local(i,j), carbonate(i,j),
+     U          pH3d(i,j,k,bi,bj), pCO2local(i,j), carbonate(i,j),
      I          i,j,k,bi,bj, debugPrt,myIter,myThid )
 
 C- convert carbonate to mol kg^-1-SW for calculation of saturation state
@@ -141,15 +157,8 @@ C Use the original Follows et al. (2006) solver
 #ifdef ALLOW_DEBUG
             IF (debugPrt) CALL DEBUG_CALL('CALC_PCO2_APPROX',myThid)
 #endif
-            pHlocal(i,j) = 7.9 _d 0
-
-C Since we start cold with an arbitrary pH, we must iterate pH solver
-C    to ensure accurate estimate of co3 at depth
-C    Because we may call this for deep ocean infrequently can afford to make
-C    several iterations
-
-            DO CO3iter = 1, nIterCO3
-              CALL CALC_PCO2_APPROX(
+            DO CO3iter = 1, doIterCO3
+             CALL CALC_PCO2_APPROX(
      I          locTemp(i,j), locSalt(i,j),
      I          diclocal, po4local,
      I          sitlocal, alklocal,
@@ -159,9 +168,10 @@ C    several iterations
      I          aksi(i,j,bi,bj),akf(i,j,bi,bj),
      I          ak0(i,j,bi,bj), fugf(i,j,bi,bj), ff(i,j,bi,bj),
      I          bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
-     U          pHlocal(i,j), pCO2local(i,j), carbonate(i,j),
+     U          pH3d(i,j,k,bi,bj), pCO2local(i,j), carbonate(i,j),
      I          i,j,k,bi,bj,myIter,myThid )
             ENDDO
+
 #ifdef CARBONCHEM_SOLVESAPHE
            ENDIF
 #endif /* CARBONCHEM_SOLVESAPHE */
@@ -176,7 +186,7 @@ c             if(i .eq. 76 .and. j .eq. 36  .and. k .eq. 15) then
 c               write(6,*)'i,j,k,KS,CO3,pHCa,T,S,hfacc,omega',
 c     &                 i,j,k,
 c     &                 Ksp_TP_Calc(i,j,bi,bj),
-c     &                 carbonate(i,j), calcium, pHlocal(i,j),
+c     &                 carbonate(i,j), calcium, pH3d(i,j,k,bi,bj),
 c     &                 locTemp(i,j), locSalt(i,j),
 c     &                 hfacc(i,j,k,bi,bj),omegaC(i,j,k,bi,bj)
 c              write(6,*)'Ksp_TP_Calc',
@@ -202,10 +212,9 @@ C-        else (case maskC = 0 , dry point)
          ENDDO
         ENDDO
 
-C Fill up some diagnostics of deep pH, pCO2, and carbonate local arrays
 #ifdef ALLOW_DIAGNOSTICS
+C Fill up pCO2 and carbonate diagnostics from local arrays
         IF ( useDiagnostics ) THEN
-         CALL DIAGNOSTICS_FILL(pHlocal  ,'DIC3DPH ',k,1,2,bi,bj,myThid)
          CALL DIAGNOSTICS_FILL(pCO2local,'DIC3DPCO',k,1,2,bi,bj,myThid)
          CALL DIAGNOSTICS_FILL(carbonate,'DIC3DCO3',k,1,2,bi,bj,myThid)
         ENDIF
@@ -215,7 +224,9 @@ C-     end k loop
        ENDDO
 
 #ifdef ALLOW_DIAGNOSTICS
+C Fill up 3d pH, omegaC and silicate diagnostics
        IF ( useDiagnostics ) THEN
+        CALL DIAGNOSTICS_FILL(pH3d      ,'DIC3DPH ',0,Nr,1,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(omegaC    ,'OMEGAC  ',0,Nr,1,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(silicaDeep,'DIC3DSIT',0,Nr,1,bi,bj,myThid)
        ENDIF
