@@ -292,8 +292,8 @@ C--   if useICEFRONT=T, set ICEFRONT parameters; otherwise just return
 #endif
 
 #ifdef ALLOW_ICEPLUME
-C--   Initialise ICEPLUME parameters 
-      IF (useICEPLUME) CALL ICEPLUME_READPARMS ( myThid )
+C--   if useICEPLUME=T, set ICEPLUME parameters; otherwise just return
+      CALL ICEPLUME_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_SEAICE
