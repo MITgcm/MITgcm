@@ -3607,8 +3607,8 @@ ad_taf_output.$FS: ad_input_code.$FS
 	ls -l ad_input_code_ad.$FS
 	cat ad_input_code_ad.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ad_taf_output.$FS
 
-\$(EXE_ADJ): \$(SPECIAL_FILES) \$(H_SRC_FILES) ad_taf_output.o \$(NON_AD_F77_SRC_FILES:.F=.o) \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
-	\$(LINK) -o \${EXE_ADJ} \$(FFLAGS) \$(FOPTIM) ad_taf_output.o \$(NON_AD_F77_SRC_FILES:.F=.o) \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
+\$(EXE_ADJ): \$(SPECIAL_FILES) \$(H_SRC_FILES) ad_taf_output.o \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
+	\$(LINK) -o \${EXE_ADJ} \$(FFLAGS) \$(FOPTIM) ad_taf_output.o \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
 
 adobj: ad_taf_output.o \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o)
 
@@ -3664,7 +3664,7 @@ cat >>$MAKEFILE <<EOF
 
 \$(EXE_ADJ): \$(SPECIAL_FILES) \$(H_SRC_FILES) ad_taf_output.$FS \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
 	\$(MAKE) -f \$(MAKEFILE) adobjfiles
-	\$(LINK) -o \${EXE_ADJ} \$(FFLAGS) \$(FOPTIM) \$(AD_F90FILES:.$FS90=_ad.o) \$(AD_FILES:.$FS=_ad.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
+	\$(LINK) -o \${EXE_ADJ} \$(FFLAGS) \$(FOPTIM) \$(AD_F90FILES:.$FS90=_ad.o) \$(AD_FILES:.$FS=_ad.o) \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
 
 adobj: ad_taf_output.$FS \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o)
 	\$(MAKE) -f \$(MAKEFILE) adobjfiles
@@ -3743,7 +3743,7 @@ cat >>$MAKEFILE <<EOF
 # ... send 1 fixed format file and 1 free format file to TAF ...
 ftl_taf_output.$FS: ftl_input_code.$FS ftl_inpF90_code.$FS90
 	@-rm -f ftl_input_code_tl.$FS ftl_inpF90_code_tl.$FS90 ; echo ''
-	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) -fixed \$(TAF_F77_FLAGS) ftl_input_code.$FS -free \$(TAF_F90_FLAGS) ftl_inpF90_code.$FS90
+	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) -free \$(TAF_F90_FLAGS) ftl_inpF90_code.$FS90 -fixed \$(TAF_F77_FLAGS) ftl_input_code.$FS
 	ls -l ftl_input_code_tl.$FS ftl_inpF90_code_tl.$FS90
 	cat ftl_input_code_tl.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ftl_taf_output.$FS
 
@@ -3752,10 +3752,10 @@ ftl_taf_output.$FS: ftl_input_code.$FS ftl_inpF90_code.$FS90
 ftl_taf_outpF90.$FS90: ftl_taf_output.$FS
 	cat ftl_inpF90_code_tl.$FS90 > ftl_taf_outpF90.$FS90
 
-\$(EXE_TLM): \$(SPECIAL_FILES) \$(H_SRC_FILES) ftl_taf_output.o ftl_taf_outpF90.o \$(NON_AD_F77_SRC_FILES:.F=.o) \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
-	\$(LINK) -o \${EXE_TLM} \$(FFLAGS) \$(FOPTIM) ftl_taf_output.o ftl_taf_outpF90.o \$(NON_AD_F77_SRC_FILES:.F=.o) \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
+\$(EXE_TLM): \$(SPECIAL_FILES) \$(H_SRC_FILES) ftl_taf_output.o ftl_taf_outpF90.o \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
+	\$(LINK) -o \${EXE_TLM} \$(FFLAGS) \$(FOPTIM) ftl_taf_output.o ftl_taf_outpF90.o \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
 
-ftlobj: ftl_taf_output.o ftl_taf_outpF90.o \$(NON_AD_F77_SRC_FILES:.F=.o) \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o)
+ftlobj: ftl_taf_output.o ftl_taf_outpF90.o \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o)
 
 EOF
 fi
