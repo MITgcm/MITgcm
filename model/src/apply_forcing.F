@@ -603,7 +603,7 @@ C 1Feb2022: from JMC we should save also addMass3Dplume*salt as it
 C is the quantity to convert between gT and diag fluxes similar to
 C how we treat sflux under nonlinFreeSurf and useRealFreshWaterFlux
 C JMC is not sure if treatment for heat will work and will check
-            tmpVar(i,j) = 
+            tmpVar(i,j) =
      &          addMass(i,j,k,bi,bj)*mass2rUnit
      &          *( temp_addMass - tRef(k) )
      &          *recip_rA(i,j,bi,bj)
@@ -850,7 +850,7 @@ c     ENDIF
       IF ( useICEPLUME )
      &     CALL ICEPLUME_TENDENCY_APPLY_T(
      U                   gT_arr,
-     I                   iMin,iMax,jMin,jMax, 
+     I                   iMin,iMax,jMin,jMax,
      I                   k, bi, bj, myTime, myIter, myThid )
 #endif /* ALLOW_ICEPLUME */
 

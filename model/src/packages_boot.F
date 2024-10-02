@@ -370,7 +370,7 @@ C----- pkgs with a standard "usePKG" On/Off switch in "data.pkg":
       CALL PACKAGES_PRINT_MSG( useICEFRONT,   'ICEFRONT',    ' ' )
 #endif
 #ifdef ALLOW_ICEPLUME
-      CALL PACKAGES_PRINT_MSG( useICEPLUME,  'ICEPLUME',   ' ' )
+      CALL PACKAGES_PRINT_MSG( useICEPLUME,   'ICEPLUME',    ' ' )
 #endif
 #ifdef ALLOW_THSICE
       CALL PACKAGES_PRINT_MSG( useThSIce,     'ThSIce',      ' ' )
