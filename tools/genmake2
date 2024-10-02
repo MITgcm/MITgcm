@@ -3133,7 +3133,6 @@ done
 
 # Sort the F90 files in topological order
 while IFS= read -r f90file; do
-    mod_used=$(grep -i "^[^!]*\buse\b" $f90file | awk '{print $2}' | tr -d ',')
     # Find modules used, ignoring those commented out
     mod_used=$(grep -i "^[^!]*\buse\b" $f90file | awk '{print $2}' | tr -d ',')
 
