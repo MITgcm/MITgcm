@@ -24,28 +24,17 @@ C     == Global variables
 #include "SURFACE.h"
 #include "FFIELDS.h"
 #include "DYNVARS.h"
-#include "SOLVE_FOR_PRESSURE.h"
 #ifdef ALLOW_NONHYDROSTATIC
-#include "SOLVE_FOR_PRESSURE3D.h"
-#include "NH_VARS.h"
+# include "NH_VARS.h"
 #endif
 #ifdef ALLOW_CD_CODE
-#include "CD_CODE_VARS.h"
+# include "CD_CODE_VARS.h"
 #endif
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_PARAMS.h"
 #endif
 
-C     === Functions ====
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
-#ifdef ALLOW_DIAGNOSTICS
-      LOGICAL  DIAGNOSTICS_IS_ON
-      EXTERNAL DIAGNOSTICS_IS_ON
-#endif /* ALLOW_DIAGNOSTICS */
-
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
 C     myTime :: Current time in simulation
 C     myIter :: Current iteration number in simulation
 C     myThid :: Thread number for this instance of SOLVE_FOR_PRESSURE
@@ -53,8 +42,15 @@ C     myThid :: Thread number for this instance of SOLVE_FOR_PRESSURE
       INTEGER myIter
       INTEGER myThid
 
+C     !FUNCTIONS:
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
+#ifdef ALLOW_DIAGNOSTICS
+      LOGICAL  DIAGNOSTICS_IS_ON
+      EXTERNAL DIAGNOSTICS_IS_ON
+#endif /* ALLOW_DIAGNOSTICS */
+
 C     !LOCAL VARIABLES:
-C     == Local variables ==
       INTEGER i,j,k,bi,bj
       INTEGER ks
       INTEGER numIters, nIterMin
@@ -64,11 +60,22 @@ C     == Local variables ==
       LOGICAL putPmEinXvector
       INTEGER ioUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+C--   formerly part of header file SOLVE_FOR_PRESSURE.h (but not common block)
+C     cg2d_x  :: Solution vector of the 2-D solver equation A.x=B
+C     cg2d_b  :: Right Hand side vector of the 2-D solver equation A.x=B
+      _RL cg2d_x(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL cg2d_b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifdef ALLOW_NONHYDROSTATIC
-      LOGICAL zeroPsNH, zeroMeanPnh, oldFreeSurfTerm
-#else
+C--   formerly part of header file SOLVE_FOR_PRESSURE3D.h, but do not need
+C     to be in common block --> changed to local var.
+C     cg3d_x  :: Solution vector of the 3-D solver equation A.x=B
+C     cg3d_b  :: Right Hand side vector of the 3-D solver equation A.x=B
+c     _RL  cg3d_x(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  cg3d_b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      LOGICAL oldFreeSurfTerm
+#else /* ALLOW_NONHYDROSTATIC */
       _RL     cg3d_b(1)
-#endif
+#endif /* ALLOW_NONHYDROSTATIC */
 #ifdef ALLOW_DIAGNOSTICS
       CHARACTER*8 diagName
       _RL tmpVar (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -76,13 +83,6 @@ C     == Local variables ==
 CEOP
 
 #ifdef ALLOW_NONHYDROSTATIC
-        zeroPsNH = .FALSE.
-c       zeroPsNH = use3Dsolver .AND. exactConserv
-c    &                         .AND. select_rStar.EQ.0
-        zeroMeanPnh = .FALSE.
-c       zeroMeanPnh = use3Dsolver .AND. select_rStar.NE.0
-c       oldFreeSurfTerm = use3Dsolver .AND. select_rStar.EQ.0
-c    &                                .AND. .NOT.zeroPsNH
         oldFreeSurfTerm = use3Dsolver .AND. .NOT.exactConserv
 #else
         cg3d_b(1) = 0.
@@ -110,9 +110,6 @@ c     putPmEinXvector = useRealFreshWaterFlux.AND.fluidIsWater
      &       ' putPmEinXvector =', putPmEinXvector
         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 #ifdef ALLOW_NONHYDROSTATIC
-        WRITE(msgBuf,'(A,2(A,L5))') 'SOLVE_FOR_PRESSURE:',
-     &       ' zeroPsNH=', zeroPsNH, ' , zeroMeanPnh=', zeroMeanPnh
-        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
         WRITE(msgBuf,'(2A,L5)') 'SOLVE_FOR_PRESSURE:',
      &       ' oldFreeSurfTerm =', oldFreeSurfTerm
         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
@@ -130,9 +127,18 @@ C--   Save previous solution & Initialise Vector solution and source term :
           etaNm1(i,j,bi,bj) = etaN(i,j,bi,bj)
 #endif
           cg2d_x(i,j,bi,bj) = Bo_surf(i,j,bi,bj)*etaN(i,j,bi,bj)
-          cg2d_b(i,j,bi,bj) = 0.
+          cg2d_b(i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
+#ifdef ALLOW_NONHYDROSTATIC
+        DO k=1,Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           cg3d_b(i,j,k,bi,bj) = 0. _d 0
+          ENDDO
+         ENDDO
+        ENDDO
+#endif /* ALLOW_NONHYDROSTATIC */
         IF (useRealFreshWaterFlux.AND.fluidIsWater) THEN
          tmpFac = freeSurfFac*mass2rUnit*implicDiv2DFlow
          DO j=1,sNy
@@ -448,7 +454,6 @@ C     from the Non-hydrostatic pressure (since cg3d_x contains both contribution
          CALL WRITE_FLD_XYZ_RL('cg3d_x','I10', phi_nh, myIter,myThid )
         ENDIF
         CALL POST_CG3D(
-     I                  zeroPsNH, zeroMeanPnh,
      I                  myTime, myIter, myThid )
        ENDIF
 
