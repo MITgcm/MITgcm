@@ -1244,9 +1244,6 @@ C--   Some sanity checks for SEAICEdWatMin
      &      'SEAICE_CHECK: vCoastLineFile = ', vCoastLineFile(1:i),
      &      ' is set, but SEAICE_ALLOW_SIDEDRAG is not defined'
        CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: is set, ',
-     &      'but SEAICE_ALLOW_SIDEDRAG is not defined'
-       CALL PRINT_ERROR( msgBuf, myThid )
        errCount = errCount + 1
       ENDIF
 #endif
