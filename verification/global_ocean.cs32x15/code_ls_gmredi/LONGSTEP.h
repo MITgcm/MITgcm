@@ -102,6 +102,7 @@ C     LS_PsiY :: longstep average of K_32 element, Y direction at W point
       _RL LS_PsiY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER LS_PsiXCount(nSx,nSy)
       INTEGER LS_PsiYCount(nSx,nSy)
+      COMMON /LONGSTEP_GM_PSI/ LS_PsiX, LS_PsiY
 
 #endif /* ALLOW_GMREDI */
 
