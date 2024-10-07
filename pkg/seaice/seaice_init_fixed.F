@@ -55,6 +55,9 @@ C     local copy of surface layer thickness in meters
 #ifdef SEAICE_BGRID_DYNAMICS
       _RL mask_uice
 #endif
+#ifdef SEAICE_ALLOW_SIDEDRAG
+      LOGICAL readCoastLineFields
+#endif
 CEOP
 
       IF ( usingPCoords ) THEN
