@@ -141,28 +141,9 @@ C   Implementation alternative (might be faster on some platforms ?)
 
 C-- Retired code options:
 
-C o ALLOW isotropic scaling of harmonic and bi-harmonic terms when
-C   using an locally isotropic spherical grid with (dlambda) x (dphi*cos(phi))
-C *only for use on a lat-lon grid*
-C   Setting this flag here affects both momentum and tracer equation unless
-C   it is set/unset again in other header fields (e.g., GAD_OPTIONS.h).
-C   The definition of the flag is commented to avoid interference with
-C   such other header files.
-C   The preferred method is specifying a value for viscAhGrid or viscA4Grid
-C   in data which is then automatically scaled by the grid size;
-C   the old method of specifying viscAh/viscA4 and this flag is provided
-C   for completeness only (and for use with the adjoint).
-c#define ISOTROPIC_COS_SCALING
-
-C o This flag selects the form of COSINE(lat) scaling of bi-harmonic term.
-C *only for use on a lat-lon grid*
-C   Has no effect if ISOTROPIC_COS_SCALING is undefined.
-C   Has no effect on vector invariant momentum equations.
-C   Setting this flag here affects both momentum and tracer equation unless
-C   it is set/unset again in other header fields (e.g., GAD_OPTIONS.h).
-C   The definition of the flag is commented to avoid interference with
-C   such other header files.
-c#define COSINEMETH_III
+C-  These 2 flags: ISOTROPIC_COS_SCALING & COSINEMETH_III have no effect
+C   here as they are reset in GAD_OPTIONS.h and in MOM_COMMON_OPTIONS.h
+C   for tracer diffusivity and momentum viscosity respectively
 
 C o Use "OLD" UV discretisation near boundaries (*not* recommended)
 C   Note - only works with pkg/mom_fluxform and "no_slip_sides=.FALSE."
