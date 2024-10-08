@@ -1,219 +1,24 @@
 #! /usr/bin/env bash
 
-look_for_makedepend()  {
+#-- Settings:
+AWK=awk
+keep=0;
+if [ $# -ge 1 ] ; then
+  if test $1 = '-help' -o $1 = '-h' ; then
+    echo "Usage: `basename $0` [-k/-keep]"
+    echo " suggest OPTFILE name for MITgcm 'genmake2' script"
+    echo "options:"
+    echo "  -h/-help :: just print this and return"
+    echo "  -k/-keep :: keep log-file and temp-script file"
+    exit
+  fi
+  if test $1 = '-keep' -o $1 = '-k' ; then keep=1 ; fi
+fi
+LOC_SH_FIND='find_optfile'
+LOGFILE="$LOC_SH_FIND.log"
+rm -f $LOC_SH_FIND $LOGFILE
 
-    #  The "original" makedepend is part of the Imake system that is
-    #  most often distributed with XFree86 or with an XFree86 source
-    #  package.  As a result, many machines (eg. generic Linux) do not
-    #  have a system-default "makedepend" available.  For those
-    #  systems, we have two fall-back options:
-    #
-    #    1) a makedepend implementation shipped with the cyrus-imapd
-    #       package:  ftp://ftp.andrew.cmu.edu/pub/cyrus-mail/
-    #
-    #    2) a known-buggy xmakedpend shell script
-    #
-    #  So the choices are, in order:
-    #
-    #    1) use the user-specified program
-    #    2) use a system-wide default
-    #    3) locally build and use the cyrus implementation
-    #    4) fall back to the buggy local xmakedpend script
-    #
-    if test "x${MAKEDEPEND}" = x ; then
-	which makedepend > /dev/null 2>&1
-	RV0=$?
-	cat <<EOF >> genmake_tc.f
-      program test
-      write(*,*) 'test'
-      stop
-      end
-EOF
-	makedepend genmake_tc.f > /dev/null 2>&1
-	RV1=$?
-	if test "x${RV0}${RV1}" = x00 ; then
-	    MAKEDEPEND=makedepend
-	else
-	    echo "    a system-default makedepend was not found."
-
-	    #  Try to build the cyrus implementation
-	    build_cyrus_makedepend
-	    RETVAL=$?
-	    if test "x$RETVAL" != x0 ; then
-		MAKEDEPEND='$(TOOLSDIR)/xmakedepend'
-	    fi
-	    rm -f ./genmake_cy_md
-	fi
-    else
-	#  echo "MAKEDEPEND=${MAKEDEPEND}"
-	echo "${MAKEDEPEND}" | grep -i cyrus > /dev/null 2>&1
-	RETVAL=$?
-	if test x"$RETVAL" = x0 ; then
-	    build_cyrus_makedepend
-	fi
-    fi
-    rm -f genmake_tc*
-}
-
-build_cyrus_makedepend()  {
-    rm -f ./genmake_cy_md
-    (
-	cd $ROOTDIR/tools/cyrus-imapd-makedepend  \
-	    &&  ./configure > /dev/null 2>&1  \
-	    &&  make > /dev/null 2>&1
-	if test -x ./makedepend.exe ; then
-	    $LN ./makedepend.exe ./makedepend
-	fi
-	./makedepend ifparser.c > /dev/null 2>&1  \
-	    &&  echo "true"
-    ) > ./genmake_cy_md
-    grep true ./genmake_cy_md > /dev/null 2>&1
-    RETVAL=$?
-    rm -f ./genmake_cy_md
-    if test "x$RETVAL" = x0 ; then
-	MAKEDEPEND='$(TOOLSDIR)/cyrus-imapd-makedepend/makedepend'
-	return 0
-    else
-	echo "WARNING: unable to build cyrus-imapd-makedepend"
-	return 1
-    fi
-}
-
-find_possible_configs()  {
-
-    tmp1=`uname`"_"`uname -m`
-    tmp2=`echo $tmp1 | sed -e 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/'`
-    tmp3=`echo $tmp2 | sed -e 's/power macintosh/ppc/'`
-    tmp1=`echo $tmp3 | sed -e 's|x86_64|amd64|'`
-    tmp2=`echo $tmp1 | sed -e 's/i[3-6]86/ia32/' | sed -e 's/athlon/ia32/'`
-    tmp3=`echo $tmp2 | sed -e 's/cray sv1/craysv1/'`
-    PLATFORM=$tmp3
-    echo $PLATFORM | grep cygwin > /dev/null 2>&1  &&  PLATFORM=cygwin_ia32
-    OFLIST=`(cd $ROOTDIR/tools/build_options; ls | grep "^$PLATFORM")`
-    echo "  The platform appears to be:  $PLATFORM"
-
-    echo "test" > test
-    ln -s ./test link
-    RETVAL=$?
-    if test "x${RETVAL}" = x0 ; then
-	LN="ln -s"
-    else
-	echo "Error: \"ln -s\" does not appear to work on this system!"
-	echo "  For help, please contact <MITgcm-support@mitgcm.org>."
-	exit 1
-    fi
-    rm -f test link
-
-    if test "x$CPP" = x ; then
-	CPP="cpp -traditional -P"
-    fi
-
-    look_for_makedepend
-
-    #================================================================
-    #  look for possible C compilers
-    tmp="$MITGCM_CC $CC gcc c89 cc c99 mpicc"
-    p_CC=
-    for c in $tmp ; do
-	rm -f ./genmake_hello.c  ./genmake_hello
-	cat >> genmake_hello.c << EOF
-#include <stdio.h>
-int main(int argc, char **argv) {
-  printf("Hello!\n");
-  return 0;
-}
-EOF
-	$c -o genmake_hello genmake_hello.c > /dev/null 2>&1
-	RETVAL=$?
-	if test "x${RETVAL}" = x0 ; then
-	    p_CC="$p_CC $c"
-	fi
-    done
-    rm -f ./genmake_hello.c ./genmake_hello
-    if test "x${p_CC}" = x ; then
-	cat 1>&2 <<EOF
-
-Error: No C compilers were found in your path.  Please specify one using:
-
-    1) an "optfile" on (eg. "-optfile=path/to/OPTFILE"),
-    2) the CC or MITGCM_CC environment variables.
-
-EOF
-	exit 1
-    else
-	echo "  The possible C compilers found in your path are:"
-	echo "   "$p_CC
-	if test "x$CC" = x ; then
-	    CC=`echo $p_CC | $AWK '{print $1}'`
-	    echo "  Setting C compiler to: "$CC
-	fi
-    fi
-
-    #================================================================
-    #  look for possible FORTRAN compilers
-    tmp="$MITGCM_FC $FC efc g77 f77 pgf77 pgf95 ifc f90 f95 mpif77 mpf77 mpxlf95"
-    p_FC=
-    for c in $tmp ; do
-	rm -f ./hello.f ./hello
-	cat >> hello.f <<EOF
-      program hello
-      do i=1,3
-        print *, 'hello world : ', i
-      enddo
-      end
-EOF
-	$c -o hello hello.f > /dev/null 2>&1
-	RETVAL=$?
-	if test "x${RETVAL}" = x0 ; then
-	    p_FC="$p_FC $c"
-	fi
-    done
-    rm -f ./hello.f ./hello
-    if test "x${p_FC}" = x ; then
-	cat 1>&2 <<EOF
-
-Error: No Fortran compilers were found in your path.  Please specify one using:
-
-    1) an "optfile" on (eg. "-optfile=path/to/OPTFILE"),
-    2) a command-line option (eg. "-fc NAME"), or
-    3) the FC or MITGCM_FC environment variables.
-
-EOF
-	exit 1
-    else
-	echo "  The possible FORTRAN compilers found in your path are:"
-	echo "   "$p_FC
-	if test "x$FC" = x ; then
-	    FC=`echo $p_FC | $AWK '{print $1}'`
-	    echo "  Setting FORTRAN compiler to: "$FC
-	fi
-    fi
-
-    if test "x$OPTFILE" = x ; then
-	OPTFILE=$ROOTDIR"/tools/build_options/"$PLATFORM"_"$FC
-	if test ! -r $OPTFILE ; then
-             echo "  I looked for the file "$OPTFILE" but did not find it"
-        fi
-    fi
-    if test "x$OPTFILE" = x ; then
-	cat 1>&2 <<EOF
-
-Error: No options file was found in:  $ROOTDIR/tools/build_options/
-  that matches this platform ("$PLATFORM") and the compilers found in
-  your path.  Please specify an "optfile" using:
-
-    1) the command line (eg. "-optfile=path/to/OPTFILE"), or
-    2) the MITGCM_OF environment variable.
-
-  If you need help, please contact the developers at <MITgcm-support@mitgcm.org>.
-
-EOF
-	exit 1
-    fi
-
-}
-
-#-- Sequential part of script starts here --------------------------------------
+#-- Get where to find MITgcm main dir (ROOTDIR):
 if test "x$MITGCM_ROOTDIR" = x ; then
   if test "x$ROOTDIR" != x ; then
     echo "WARNING: Environment Variable 'ROOTDIR' no longer recognized"
@@ -223,41 +28,61 @@ else
   ROOTDIR=$MITGCM_ROOTDIR
 fi
 
-AWK=awk
-
+#  Find the MITgcm ${ROOTDIR}
 if test "x${ROOTDIR}" = x ; then
-    tmp=`echo $PWD | sed -e 's/\// /g' | awk '{print $NR}'`
-    if test "x$tmp" = "xbin" -a -d ../model -a -d ../eesup -a -d ../pkg ; then
-	ROOTDIR=".."
+    tmp=`echo $PWD | sed -e 's/\// /g' | $AWK '{print $NR}'`
+    if test "x$tmp" = "xbin" -a -d ../model -a -d ../eesupp -a -d ../pkg ; then
+        ROOTDIR=".."
     else
-	for d in . .. ../.. ../../.. ../../../.. ../../../../.. ; do
-	    if test -d "$d/model" -a -d "$d/eesupp" -a -d "$d/pkg" ; then
-		ROOTDIR=$d
-		printf "Warning:  ROOTDIR unspecified but there appears to be"
-		echo " a copy of MITgcm at \"$ROOTDIR\""
-		break
-	    fi
-	done
+        for d in . .. ../.. ../../.. ../../../.. ../../../../.. ; do
+            if [ -d "$d/model" -a -d "$d/eesupp" -a -d "$d/pkg" ]; then
+                ROOTDIR=$d
+                printf "Warning: ROOTDIR was not specified ;"
+                echo " try using a local copy of MITgcm found at \"$ROOTDIR\""
+                break
+            fi
+        done
     fi
 fi
+if test "x${ROOTDIR}" = x ; then
+    echo "Error: Cannot determine ROOTDIR for MITgcm code."
+    echo "  Please specify a ROOTDIR using either the command line"
+    echo "   option '-rootdir' or the Env.Var. 'MITGCM_ROOTDIR'."
+    exit 1
+fi
+if test ! -d ${ROOTDIR} ; then
+    echo "Error: the specified ROOTDIR (\"$ROOTDIR\") does not exist!"
+    exit 1
+fi
 
-tmp1=`uname`"_"`uname -m`
-tmp2=`echo $tmp1 | sed -e 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/'`
-tmp3=`echo $tmp2 | sed -e 's/power macintosh/ppc/'`
-tmp1=`echo $tmp3 | sed -e 's|x86_64|amd64|'`
-tmp2=`echo $tmp1 | sed -e 's/i[3-6]86/ia32/' | sed -e 's/athlon/ia32/'`
-tmp3=`echo $tmp2 | sed -e 's/cray sv1/craysv1/'`
-PLATFORM=$tmp3
-echo $PLATFORM | grep cygwin > /dev/null 2>&1  &&  PLATFORM=cygwin_ia32
-echo "  The platform appears to be:  $PLATFORM"
-echo "  And possible optfiles are: "
-OFLIST=`(cd $ROOTDIR/tools/build_options; ls | grep "^$PLATFORM")`
-for i in $OFLIST ; do
-    echo "    $i"
-done
+#---------------------------------------
+#-- start to build script LOC_SH_FIND
+#   by taking function "find_possible_optfile" from script "genmake2":
 
-find_possible_configs
+#head -n 1 $ROOTDIR/tools/genmake2 > $LOC_SH_FIND
+sed -n '1 p' $ROOTDIR/tools/genmake2 >> $LOC_SH_FIND
+echo '' >> $LOC_SH_FIND
+#-- will improve this by using 1 or 2 special lines (to be added to genmake2)
+sed -n '/^find_possible_optfile()/,/#  Just try to use FC, report/ p' \
+          $ROOTDIR/tools/genmake2 >> $LOC_SH_FIND
+echo '' >> $LOC_SH_FIND
 
-echo
-echo "  The default optfile is:  "$PLATFORM"_"$FC
+cat >> $LOC_SH_FIND <<EOF
+#-- Sequential part of script starts here ---------------
+ROOTDIR=\$1
+LOGFILE=\$2
 
+find_possible_optfile
+
+#echo "  The default optfile is:  "\$PLATFORM"_"\$FC
+
+EOF
+
+chmod 744 $LOC_SH_FIND
+echo "-- running: './$LOC_SH_FIND $ROOTDIR $LOGFILE' :"
+./$LOC_SH_FIND $ROOTDIR $LOGFILE
+
+if test $keep = 0 ; then
+  rm -r $LOC_SH_FIND $LOGFILE
+fi
+exit 0
