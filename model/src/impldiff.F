@@ -15,7 +15,7 @@ C     | o Solve implicit diffusion equation for vertical
 C     |   diffusivity.
 C     *==========================================================*
 C     | o Recoded from 2d intermediate fields to 3d to reduce
-C     |   TAMC storage
+C     |   TAF storage
 C     | o Fixed missing masks for fields a(), c()
 C     *==========================================================*
 C     \ev

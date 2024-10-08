@@ -252,12 +252,12 @@ C--   abbreviation
 
 C     Loop over tiles.
 #ifdef ALLOW_AUTODIFF_TAMC
-C--   HPF directive to help TAMC
+C--   HPF directive to help TAF
 CHPF$ INDEPENDENT
 #endif
       DO bj = myByLo(myThid),myByHi(myThid)
 #ifdef ALLOW_AUTODIFF_TAMC
-C--    HPF directive to help TAMC
+C--    HPF directive to help TAF
 CHPF$  INDEPENDENT
 #endif
        DO bi = myBxLo(myThid),myBxHi(myThid)

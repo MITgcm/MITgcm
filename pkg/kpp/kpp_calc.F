@@ -9,7 +9,7 @@
 C-- File kpp_calc.F:
 C--  Contents
 C--  o KPP_CALC         - Main KPP interface routine.
-C--  o KPP_CALC_DUMMY   - Dummy routine for TAMC
+C--  o KPP_CALC_DUMMY   - Dummy routine for TAF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -695,7 +695,7 @@ C !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE KPP_CALC_DUMMY                                |
 C     | o Compute all KPP fields defined in KPP.h                |
-C     | o Dummy routine for TAMC
+C     | o Dummy routine for TAF                                  |
 C     *==========================================================*
 
 C !USES: ===============================================================

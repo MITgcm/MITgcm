@@ -6,7 +6,7 @@ c     ==================================================================
 c     active_file.flow
 c     ==================================================================
 c     provides flow directives for routines in active_file.F
-c     required by TAMC/TAF
+c     required by TAF
 c     * active_read_xy
 c     * active_read_xyz
 c     * active_read_xz
@@ -41,4 +41,3 @@ cadj SUBROUTINE active_write_profile INPUT   = 1, 2, 3, 4,5,6,7,8,9,10
 cadj SUBROUTINE active_write_profile OUTPUT  =                      10
 cadj SUBROUTINE active_write_profile ACTIVE  =       3             ,10
 cadj SUBROUTINE active_write_profile DEPEND  = 1, 2,    4,5,6,7,8,9
-

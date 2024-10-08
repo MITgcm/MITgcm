@@ -6,7 +6,7 @@ c     ==================================================================
 c     active_file.flow
 c     ==================================================================
 c     provides flow directives for routines in active_file.F
-c     required by TAMC/TAF
+c     required by TAF
 c     * active_read_xy
 c     * active_read_xyz
 c     * active_read_xz

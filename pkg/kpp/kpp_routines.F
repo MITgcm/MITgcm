@@ -1169,9 +1169,9 @@ c local
       KRi_range(Nrp1) = p0
 
 #ifdef ALLOW_AUTODIFF_TAMC
-C--   dummy assignment to end declaration part for TAMC
+C--   dummy assignment to end declaration part for TAF
       i = 0
-C--   HPF directive to help TAMC
+C--   HPF directive to help TAF
 CHPF$ INDEPENDENT
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -1884,7 +1884,7 @@ c
 c     input:
 c     bi, bj  = array indices on which to apply calculations
 c     iMin, iMax, jMin, jMax = array boundaries
-c     ikey = key for TAMC/TAF automatic differentiation
+c     ikey = key for TAF automatic differentiation
 c     myThid  = thread id
 c
 c      ttalpha= thermal expansion coefficient without 1/rho factor
@@ -1925,7 +1925,7 @@ C--------------------------------------------------------------------------
 C
 C     local variables
 C     i,j,k :: loop indices
-C     kkey  :: key for TAMC/TAF automatic differentiation
+C     kkey  :: key for TAF automatic differentiation
 C
       INTEGER i, j, k
       INTEGER kkey
