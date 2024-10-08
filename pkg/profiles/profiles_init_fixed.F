@@ -51,7 +51,8 @@ C ==================== Routine Variables ==========================
       integer prof_i, prof_j
       integer vec_start(2), vec_count(2), profno_div1000, kk
       character*(MAX_LEN_FNAM) profilesfile, fnamedatanc
-      character*(MAX_LEN_FNAM) fnameequinc, adfnameequinc
+      character*(MAX_LEN_FNAM) fnameequinc
+      character*(MAX_LEN_FNAM) adfnameequinc, tlfnameequinc
       integer IL, JL, KL, err
       logical  exst
 
@@ -674,6 +675,9 @@ C===========================================================
       write(adfnameequinc,'(4a,i3.3,a,i3.3,a)')
      & profilesDir(1:JL),'ad',
      & profilesfile(1:IL),'.',iG,'.',jG,'.equi.nc'
+      write(tlfnameequinc,'(4a,i3.3,a,i3.3,a)')
+     & profilesDir(1:JL),'tl',
+     & profilesfile(1:IL),'.',iG,'.',jG,'.equi.nc'
 
       inquire( file=fnameequinc, exist=exst )
       if (.NOT.exst) then
@@ -696,12 +700,26 @@ C===========================================================
         err = NF_OPEN(adfnameequinc,NF_WRITE,fidadjoint(num_file,bi,bj))
       endif
 #endif
+#ifdef ALLOW_TANGENTLINEAR_RUN
+      inquire( file=tlfnameequinc, exist=exst )
+      if (.NOT.exst) then
+        call profiles_init_ncfile(num_file,fiddata(num_file,bi,bj),
+     &   tlfnameequinc, fidtangent(num_file,bi,bj),
+     &   ProfNo(num_file,bi,bj),ProfDepthNo(num_file,bi,bj),
+     & bi,bj, myThid)
+      else
+        err = NF_OPEN(tlfnameequinc,NF_WRITE,fidtangent(num_file,bi,bj))
+      endif
+#endif
       else
 
       write(fnameequinc,'(3a,i3.3,a,i3.3,a)')
      & profilesDir(1:JL),profilesfile(1:IL),'.',iG,'.',jG,'.equi.data'
       write(adfnameequinc,'(4a,i3.3,a,i3.3,a)')
      & profilesDir(1:JL),'ad',
+     & profilesfile(1:IL),'.',iG,'.',jG,'.equi.data'
+      write(tlfnameequinc,'(4a,i3.3,a,i3.3,a)')
+     & profilesDir(1:JL),'tl',
      & profilesfile(1:IL),'.',iG,'.',jG,'.equi.data'
 
       inquire( file=fnameequinc, exist=exst )
@@ -734,6 +752,24 @@ C===========================================================
      &   bi,bj, myThid)
       else
          open( fidadjoint(num_file,bi,bj),file=adfnameequinc,
+     &   form ='unformatted',status='unknown', access='direct',
+     &   recl=  (ProfDepthNo(num_file,bi,bj)+1)*WORDLENGTH*2 )
+      endif
+#endif
+#ifdef ALLOW_TANGENTLINEAR_RUN
+      inquire( file=tlfnameequinc, exist=exst )
+#ifdef PROFILES_USE_MDSFINDUNITS
+      call MDSFINDUNIT( fidtangent(num_file,bi,bj) , mythid )
+#else
+      call PROFILES_FINDUNIT( fidtangent(num_file,bi,bj) , mythid )
+#endif
+      if (.NOT.exst) then
+        call profiles_init_ncfile(num_file,fiddata(num_file,bi,bj),
+     &   tlfnameequinc, fidtangent(num_file,bi,bj),
+     &   ProfNo(num_file,bi,bj),ProfDepthNo(num_file,bi,bj),
+     &   bi,bj, myThid)
+      else
+         open( fidtangent(num_file,bi,bj),file=tlfnameequinc,
      &   form ='unformatted',status='unknown', access='direct',
      &   recl=  (ProfDepthNo(num_file,bi,bj)+1)*WORDLENGTH*2 )
       endif
