@@ -19,15 +19,15 @@ c     ==================================================================
      I                           active_num_file,
      I                           nactive_var,
      O                           active_var,
+     I                           g_active_var,
      I                           active_varnum,
      I                           irec,
      I                           lAdInit,
      I                           myOptimIter,
      I                           bi,
      I                           bj,
-     I                           mythid,
-     I                           dummy,
-     I                           g_active_var
+     I                           myThid,
+     I                           dummy
      &                         )
 
 C     !DESCRIPTION: \bv
@@ -53,9 +53,7 @@ c     nactive_var:     integer size of active_var
 c     active_var:      array
 c     irec:            record number
 c     myOptimIter:     number of optimization iteration (default: 0)
-c     mythid:          thread number for this instance
-c     doglobalread:    flag for global or local read/write
-c                      (default: .false.)
+c     myThid:          thread number for this instance
 c     lAdInit:         initialisation of corresponding adjoint
 c                      variable and write to active file
       integer nactive_var
@@ -63,7 +61,7 @@ c                      variable and write to active file
       _RL  g_active_var(nactive_var)
       integer irec,active_varnum,active_num_file
       integer myOptimIter
-      integer  bi,bj,mythid
+      integer  bi,bj,myThid
       logical lAdInit
       _RL     dummy
 
@@ -73,13 +71,13 @@ c                      variable and write to active file
      &     active_num_file,
      &     nactive_var,  active_var, active_varnum, lAdInit,
      &     irec, prof_ind_glob(active_num_file,irec,bi,bj),
-     &     TANGENT_SIMULATION, myOptimIter,bi,bj, mythid)
+     &     TANGENT_SIMULATION, myOptimIter,bi,bj, myThid)
 
       call active_read_profile_rl( fidtangent(active_num_file,bi,bj),
      &     active_num_file,
      &     nactive_var, g_active_var,active_varnum, lAdInit,
      &     irec, prof_ind_glob(active_num_file,irec,bi,bj),
-     &     TANGENT_SIMULATION, myOptimIter,bi,bj, mythid)
+     &     TANGENT_SIMULATION, myOptimIter,bi,bj, myThid)
 
 #endif
 
@@ -95,14 +93,14 @@ c     ==================================================================
      I                           active_num_file,
      I                           nactive_var,
      I                           active_var,
+     I                           g_active_var,
      I                           active_varnum,
      I                           irec,
      I                           myOptimIter,
      I                           bi,
      I                           bj,
-     I                           mythid,
+     I                           myThid,
      I                           dummy,
-     I                           g_active_var,
      I                           g_dummy
      &                                )
 
@@ -129,13 +127,13 @@ c     nactive_var:     integer size of active_var
 c     active_var:      array
 c     irec:            record number
 c     myOptimIter:     number of optimization iteration (default: 0)
-c     mythid:          thread number for this instance
+c     myThid:          thread number for this instance
       integer nactive_var,active_num_file
       _RL  active_var(nactive_var)
       _RL  g_active_var(nactive_var)
       integer irec,active_varnum
       integer myOptimIter
-      integer  bi,bj,mythid
+      integer  bi,bj,myThid
       _RL     dummy
       _RL     g_dummy
 
@@ -145,13 +143,13 @@ c     mythid:          thread number for this instance
      &     active_num_file,
      &     nactive_var, active_var, active_varnum,
      &     irec, prof_ind_glob(active_num_file,irec,bi,bj),
-     &     TANGENT_SIMULATION, myOptimIter,bi,bj, mythid)
+     &     TANGENT_SIMULATION, myOptimIter,bi,bj, myThid)
 
       call active_write_profile_rl( fidtangent(active_num_file,bi,bj) ,
      &     active_num_file,
      &     nactive_var, g_active_var, active_varnum,
      &     irec, prof_ind_glob(active_num_file,irec,bi,bj),
-     &     TANGENT_SIMULATION, myOptimIter,bi,bj, mythid)
+     &     TANGENT_SIMULATION, myOptimIter,bi,bj, myThid)
 
 #endif
 
