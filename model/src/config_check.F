@@ -784,18 +784,6 @@ c     ENDIF
         errCount = errCount + 1
       ENDIF
 
-      IF ( useRealFreshWaterFlux .AND. .NOT.exactConserv
-     &     .AND. implicDiv2DFlow.NE.1. ) THEN
-        WRITE(msgBuf,'(2A)') '** WARNING ** CONFIG_CHECK: ',
-     &   'RealFreshWater & implicDiv2DFlow < 1'
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-        WRITE(msgBuf,'(2A)') '** WARNING ** works better',
-     &   ' with exactConserv=.T. (+ #define EXACT_CONSERV)'
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-      ENDIF
-
 #ifdef EXACT_CONSERV
       IF (useRealFreshWaterFlux .AND. .NOT.exactConserv
      &            .AND. buoyancyRelation.EQ.'OCEANICP' ) THEN
@@ -848,6 +836,26 @@ c     ENDIF
      &   '1 time-step mismatch in AddFluid effects on T & S'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
+      ENDIF
+
+      IF ( implicDiv2DFlow.NE.oneRL .AND. .NOT.exactConserv ) THEN
+       IF ( useRealFreshWaterFlux ) THEN
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
+     &   'implicDiv2DFlow < 1 & realFreshWaterFlux'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+       IF ( selectAddFluid.EQ.1 ) THEN
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
+     &   'implicDiv2DFlow < 1 & selectAddFluid = 1'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+       IF ( useRealFreshWaterFlux .OR. selectAddFluid.EQ.1 ) THEN
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
+     &   'require exactConserv=.T. (+ #define EXACT_CONSERV)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+       ENDIF
       ENDIF
 
 C--   Pressure calculation and pressure gradient:
