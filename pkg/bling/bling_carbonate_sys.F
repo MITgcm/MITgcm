@@ -127,7 +127,6 @@ C$TAF LOOP = parallel
          DO i=iMin,iMax
 
           IF ( hFacC(i,j,k,bi,bj) .GT. 0. _d 0) THEN
-C$TAF init dic_caco3 = static, 2
 
 #ifdef CARBONCHEM_SOLVESAPHE
            calcium = cat(i,j,bi,bj)
