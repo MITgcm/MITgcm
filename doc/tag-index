@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ecco:
+  - implement sea-ice freeboard cost "m_freeboard".
 o tools/xmakedepend:
   - fix xmakedepend to accept suffix longer than 1.c and add dependencies to
     Makefile from included headers in F90 src files.
