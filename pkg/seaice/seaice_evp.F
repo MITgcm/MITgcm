@@ -763,8 +763,8 @@ CADJ STORE DWATN = comlev1_evp, key = evpkey, byte=isbyte
 CADJ STORE CbotC = comlev1_evp, key = evpkey, byte=isbyte
 # endif
 # ifdef SEAICE_ALLOW_SIDEDRAG
-CADJ STORE sideDragX = comlev1_evp, key = evpkey, byte=isbyte
-CADJ STORE sideDragY = comlev1_evp, key = evpkey, byte=isbyte
+CADJ STORE sideDragU = comlev1_evp, key = evpkey, byte=isbyte
+CADJ STORE sideDragV = comlev1_evp, key = evpkey, byte=isbyte
 # endif
 #endif
         DO bj=myByLo(myThid),myByHi(myThid)
