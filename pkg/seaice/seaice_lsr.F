@@ -547,12 +547,12 @@ C
       IF ( SEAICEsideDrag .NE. 0. _d 0 ) THEN
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO J=jMin,jMax
-          DO I=iMin,iMax
-           BU(I,J,bi,bj) = BU(I,J,bi,bj)
-     &          + seaiceMaskU(I,J,bi,bj) * sideDragU(I,J,bi,bj)
-           BV(I,J,bi,bj) = BV(I,J,bi,bj)
-     &          + seaiceMaskV(I,J,bi,bj) * sideDragV(I,J,bi,bj)
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           BU(i,j,bi,bj) = BU(i,j,bi,bj)
+     &          + seaiceMaskU(i,j,bi,bj) * sideDragU(i,j,bi,bj)
+           BV(i,j,bi,bj) = BV(i,j,bi,bj)
+     &          + seaiceMaskV(i,j,bi,bj) * sideDragV(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDDO
