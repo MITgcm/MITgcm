@@ -318,20 +318,26 @@ C
      &     SEAICE_debugPointJ
 
 C--   COMMON /SEAICE_PARM_C/ Character valued sea ice model parameters.
-C     AreaFile          :: File containing initial sea-ice concentration
-C     HsnowFile         :: File containing initial snow thickness
-C     HsaltFile         :: File containing initial sea ice salt content
-C     HeffFile          :: File containing initial sea-ice thickness
-C     uIceFile          :: File containing initial sea-ice U comp. velocity
-C     vIceFile          :: File containing initial sea-ice V comp. velocity
-C     u/vCoastLineFile :: Files containing the some measure of coastline
-C                         roughness (in m) at the U/V points (i.e. for
-C                         the U and V-equation). This can be the subgrid
-C                         scale length of the coastline in a grid cell
-C                         projected in the direction normal to the u/v
-C                         direction as in Liu et al. (2022), but it can
-C                         also be anything that is a good proxy of coast
-C                         line roughness
+C     AreaFile       :: File containing initial sea-ice concentration
+C     HsnowFile      :: File containing initial snow thickness
+C     HsaltFile      :: File containing initial sea ice salt content
+C     HeffFile       :: File containing initial sea-ice thickness
+C     uIceFile       :: File containing initial sea-ice U comp. velocity
+C     vIceFile       :: File containing initial sea-ice V comp. velocity
+C     uCoastLineFile :: File containing the some measure of coastline
+C                       roughness length (in m) at the U-points in the
+C                       X-direction (i.e. for the U-equation).
+C     vCoastLineFile :: Files containing the some measure of coastline
+C                       roughness length (in m) at the V-points in the
+C                       Y-direction (i.e. for the V-equation).
+C
+C                       This roughness length can be the subgrid
+C                       scale length of the coastline in a grid cell
+C                       projected in the direction normal to the u/v-
+C                       direction as in Liu et al. (2022), but it can
+C                       also be anything that is a good proxy of coast
+C                       line roughness.
+C
 C        !!! NOTE !!! Initial sea-ice thickness can also be set using
 C        SEAICE_initialHEFF below.  But a constant initial condition
 C        can mean large artificial fluxes of heat and freshwater in
@@ -428,7 +434,8 @@ C                           (default = 0, Lemieux suggests 15)
 C     SEAICEsideDrag     :: if > 0, turns on lateral static drag
 C                           if < 0, turns on lateral quadratic drag
 C                           both are different landfast ice parameterisations
-C                           (default = 0, Liu et al 2022 use 2e-4)
+C                           (Liu et al 2022 use 2e-4,
+C                            the default = 0 turns off the parameterisations)
 C
 C     SEAICE_wetAlbTemp  :: Temp (deg.C) above which wet-albedo values are used
 C     SEAICE_waterAlbedo :: water albedo
