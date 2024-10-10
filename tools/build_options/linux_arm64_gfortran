@@ -44,7 +44,7 @@ FFLAGS="$FFLAGS -fconvert=big-endian -fimplicit-none"
 #CFLAGS="$CFLAGS -fPIC"
 #FFLAGS="$FFLAGS -fPIC"
 #-  with FC 19, need to use this without -fPIC (which cancels -mcmodel option):
-# THE FOLLOWING OPTIONS ARE NOT SUPPORTED YET FOR THIS CONFIGURATION (arm64_linux_build_options) :
+#- NOTES: The following option is not supported yet for this type of processor (arm64):
 # CFLAGS="$CFLAGS -mcmodel=medium"
 # FFLAGS="$FFLAGS -mcmodel=medium"
 #- might want to use '-fdefault-real-8' for fizhi pkg:
