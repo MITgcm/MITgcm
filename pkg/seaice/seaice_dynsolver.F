@@ -415,6 +415,36 @@ C     diagnostics related to mechanics/dynamics/momentum equations
        CALL DIAGNOSTICS_FILL(eta    ,'SIeta   ',0,1,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(press  ,'SIpress ',0,1,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(deltaC ,'SIdelta ',0,1,0,1,1,myThid)
+# ifdef SEAICE_ALLOW_SIDEDRAG
+C     recompute lateral coast drag terms
+       IF ( DIAGNOSTICS_IS_ON('SIlatDgU',myThid) ) THEN
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+C     use sig1 as a temporary field
+          DO j=1,sNy
+           DO i=1,sNx+1
+            sig1(i,j) = sideDragU(i,j,bi,bj)*uIce(i,j,bi,bj)
+           ENDDO
+          ENDDO
+          CALL DIAGNOSTICS_FILL(sig1,'SIlatDgU',0,1,2,bi,bj,myThid)
+         ENDDO
+        ENDDO
+       ENDIF
+       IF ( DIAGNOSTICS_IS_ON('SIlatDgV',myThid) ) THEN
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+C     use sig1 as a temporary field
+          DO j=1,sNy+1
+           DO i=1,sNx
+            sig1(i,j) = sideDragV(i,j,bi,bj)*vIce(i,j,bi,bj)
+           ENDDO
+          ENDDO
+          CALL DIAGNOSTICS_FILL(sig1,'SIlatDgV',0,1,2,bi,bj,myThid)
+         ENDDO
+        ENDDO
+       ENDIF
+# endif /* SEAICE_ALLOW_SIDEDRAG */
+
        IF ( DIAGNOSTICS_IS_ON('SItensil',myThid) ) THEN
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)

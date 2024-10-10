@@ -163,6 +163,7 @@ C--   SEAICE parameters
      & SEAICE_drag_south, SEAICE_waterDrag_south,
      & SEAICE_dryIceAlb_south, SEAICE_wetIceAlb_south,
      & SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south, HO_south,
+     & SEAICEsideDrag, uCoastLineFile, vCoastLineFile,
      & SEAICE_cBasalStar, SEAICEbasalDragU0, SEAICEbasalDragK1,
      & SEAICEbasalDragK2, SEAICE_wetAlbTemp, SEAICE_waterAlbedo,
      & SEAICE_strength, SEAICE_cStar, SEAICE_eccen,
@@ -394,6 +395,7 @@ C        c1=1.5/N, c2=42*c1, c3=3.3
       SEAICE_drag        = 0.001  _d 0
       OCEAN_drag         = 0.001  _d 0
       SEAICE_waterDrag   = 0.0055 _d 0
+      SEAICEsideDrag     = 0.0    _d 0
       SEAICEdWatMin      = 0.25   _d 0
       SEAICE_dryIceAlb   = 0.75   _d 0
       SEAICE_wetIceAlb   = 0.66   _d 0
@@ -509,6 +511,8 @@ c     SEAICE_dTempFrz_dS = 0. _d 0
       HeffFile   = ' '
       uIceFile   = ' '
       vIceFile   = ' '
+      uCoastLineFile = ' '
+      vCoastLineFile = ' '
       IMAX_TICE  = 10
       postSolvTempIter = 2
 C     LSR parameters
@@ -1437,6 +1441,17 @@ C     in case of large values
        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
       ENDIF
+
+#ifdef SEAICE_ALLOW_SIDEDRAG
+      IF ( SEAICEsideDrag .NE. 0.0 _d 0 .AND. SEAICE_no_slip ) THEN
+       WRITE(msgBuf,'(3A)') '** WARNING ** SEAICE_READPARMS: ',
+     &      'SEAICEsideDrag .NE. 0.,',
+     &      ' resetting SEAICE_no_slip = .FALSE.'
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+       SEAICE_no_slip = .FALSE.
+      ENDIF
+#endif
 
       IF ( DIFF1 .EQ. UNSET_RL ) THEN
         DIFF1 = 0. _d 0

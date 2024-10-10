@@ -318,12 +318,26 @@ C
      &     SEAICE_debugPointJ
 
 C--   COMMON /SEAICE_PARM_C/ Character valued sea ice model parameters.
-C     AreaFile          :: File containing initial sea-ice concentration
-C     HsnowFile         :: File containing initial snow thickness
-C     HsaltFile         :: File containing initial sea ice salt content
-C     HeffFile          :: File containing initial sea-ice thickness
-C     uIceFile          :: File containing initial sea-ice U comp. velocity
-C     vIceFile          :: File containing initial sea-ice V comp. velocity
+C     AreaFile       :: File containing initial sea-ice concentration
+C     HsnowFile      :: File containing initial snow thickness
+C     HsaltFile      :: File containing initial sea ice salt content
+C     HeffFile       :: File containing initial sea-ice thickness
+C     uIceFile       :: File containing initial sea-ice U comp. velocity
+C     vIceFile       :: File containing initial sea-ice V comp. velocity
+C     uCoastLineFile :: File containing the some measure of coastline
+C                       roughness length (in m) at the U-points in the
+C                       X-direction (i.e. for the U-equation).
+C     vCoastLineFile :: Files containing the some measure of coastline
+C                       roughness length (in m) at the V-points in the
+C                       Y-direction (i.e. for the V-equation).
+C
+C                       This roughness length can be the subgrid
+C                       scale length of the coastline in a grid cell
+C                       projected in the direction normal to the u/v-
+C                       direction as in Liu et al. (2022), but it can
+C                       also be anything that is a good proxy of coast
+C                       line roughness.
+C
 C        !!! NOTE !!! Initial sea-ice thickness can also be set using
 C        SEAICE_initialHEFF below.  But a constant initial condition
 C        can mean large artificial fluxes of heat and freshwater in
@@ -335,9 +349,11 @@ C
       CHARACTER*(MAX_LEN_FNAM) HeffFile
       CHARACTER*(MAX_LEN_FNAM) uIceFile
       CHARACTER*(MAX_LEN_FNAM) vIceFile
+      CHARACTER*(MAX_LEN_FNAM) uCoastLineFile
+      CHARACTER*(MAX_LEN_FNAM) vCoastLineFile
       COMMON /SEAICE_PARM_C/
      &   AreaFile, HsnowFile, HsaltFile, HeffFile,
-     &   uIceFile, vIceFile
+     &   uIceFile, vIceFile, uCoastLineFile, vCoastLineFile
 
 C--   COMMON /SEAICE_PARM_RL/ Real valued parameters of sea ice model.
 C     SEAICE_deltaTtherm :: Seaice timestep for thermodynamic equations (s)
@@ -415,6 +431,11 @@ C     SEAICEbasalDragU0 (default = 5e-5)
 C     SEAICEbasalDragK1 (default = 8)
 C     SEAICEbasalDragK2  :: if > 0, turns on basal drag
 C                           (default = 0, Lemieux suggests 15)
+C     SEAICEsideDrag     :: if > 0, turns on lateral static drag
+C                           if < 0, turns on lateral quadratic drag
+C                           both are different landfast ice parameterisations
+C                           (Liu et al 2022 use 2e-4,
+C                            the default = 0 turns off the parameterisations)
 C
 C     SEAICE_wetAlbTemp  :: Temp (deg.C) above which wet-albedo values are used
 C     SEAICE_waterAlbedo :: water albedo
@@ -508,6 +529,7 @@ C
       _RL SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south, HO_south
       _RL SEAICE_cBasalStar, SEAICEbasalDragU0
       _RL SEAICEbasalDragK1, SEAICEbasalDragK2
+      _RL SEAICEsideDrag
       _RL SEAICE_wetAlbTemp, SEAICE_waterAlbedo
       _RL SEAICE_strength, SEAICE_cStar, SEAICEpressReplFac
       _RL SEAICE_tensilFac, SEAICE_tensilDepth
@@ -566,6 +588,7 @@ C
      &    SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south, HO_south,
      &    SEAICE_cBasalStar, SEAICEbasalDragU0,
      &    SEAICEbasalDragK1, SEAICEbasalDragK2,
+     &    SEAICEsideDrag,
      &    SEAICE_wetAlbTemp, SEAICE_waterAlbedo,
      &    SEAICE_strength, SEAICE_cStar, SEAICE_eccen, SEAICE_eccfr,
      &    SEAICEtdMU, SEAICEmcMu,

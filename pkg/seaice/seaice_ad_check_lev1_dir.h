@@ -30,6 +30,10 @@ CADJ STORE dwatn       = comlev1, key=ikey_dynamics, kind=isbyte
 # ifdef SEAICE_ALLOW_BOTTOMDRAG
 CADJ STORE cbotc       = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
+# ifdef SEAICE_ALLOW_SIDEDRAG
+CADJ STORE sideDragU   = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE sideDragV   = comlev1, key=ikey_dynamics, kind=isbyte
+# endif
 CADJ STORE seaicemasku = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE seaicemaskv = comlev1, key=ikey_dynamics, kind=isbyte
 # ifdef SEAICE_ALLOW_EVP
