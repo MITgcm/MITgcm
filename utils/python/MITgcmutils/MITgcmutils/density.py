@@ -592,7 +592,7 @@ def mdjwf(salt,theta,p,epsln=0):
     -------
     >>> dens.mdjwf(35.5, 3., 3000.)
     1041.83305
-    
+
     Notes
     -----
     - McDougall et al., 2003, JAOT 20(5), pp. 730-741
@@ -600,9 +600,9 @@ def mdjwf(salt,theta,p,epsln=0):
     """
 
     # make sure arguments are floating point
-    s = np.asfarray(salt)
-    t = np.asfarray(theta)
-    p = np.asfarray(p)
+    s = np.asarray(s, dtype=np.float64)
+    t = np.asarray(theta, dtype=np.float64)
+    p = np.asarray(p, dtype=np.float64)
 
     _check_dimensions(s,t,p)
 
@@ -645,22 +645,26 @@ def mdjwf(salt,theta,p,epsln=0):
     sp5 = np.sqrt(s1)
     p1t1=p1*t1
 
-    rhoNum = (eosMDJWFnum[11]  +  t1*(eosMDJWFnum[0]
-             +    t1*(eosMDJWFnum[1]     +    eosMDJWFnum[2]*t1) )
-             +    s1*(eosMDJWFnum[3]
-             +        eosMDJWFnum[4]    *  t1  +  eosMDJWFnum[5]*s1)
-             +    p1*(eosMDJWFnum[6]    +  eosMDJWFnum[7]*t2
-             +        eosMDJWFnum[8]    *  s1
-             +    p1*(eosMDJWFnum[9] +  eosMDJWFnum[10]*t2) ))
-
-    den = (eosMDJWFden[12]
-          + t1    * (eosMDJWFden[0] + t1 * (eosMDJWFden[1]
-          + t1    * (eosMDJWFden[2] + t1 *  eosMDJWFden[3]) ) )
-          + s1    * (eosMDJWFden[4]
-          + t1    * (eosMDJWFden[5] + eosMDJWFden[6]*t2)
-          + sp5 * (eosMDJWFden[7] + eosMDJWFden[8]*t2) )
-          + p1    * (eosMDJWFden[9]
-          + p1t1* (eosMDJWFden[10]*t2 + eosMDJWFden[11]*p1) ) )
+    num = ( eosMDJWFnum[11]
+            + t1*(eosMDJWFnum[0]
+                  + t1*(eosMDJWFnum[1] + eosMDJWFnum[2]*t1) )
+	    + s1*(eosMDJWFnum[3]
+                  + eosMDJWFnum[4]*t1  + eosMDJWFnum[5]*s1)
+	    + p1*(eosMDJWFnum[6] + eosMDJWFnum[7]*t2
+                  + eosMDJWFnum[8]*s1
+	          + p1*(eosMDJWFnum[9] + eosMDJWFnum[10]*t2) )
+    )
+    den = ( eosMDJWFden[12]
+            + t1*(eosMDJWFden[0]
+	          + t1*(eosMDJWFden[1]
+	                + t1*(eosMDJWFden[2] + t1*eosMDJWFden[3] ) ) )
+            + s1*(eosMDJWFden[4]
+	          + t1*(eosMDJWFden[5]
+	                + eosMDJWFden[6]*t2)
+	          + sp5*(eosMDJWFden[7] + eosMDJWFden[8]*t2) )
+	    + p1*(eosMDJWFden[9]
+	          + p1t1*(eosMDJWFden[10]*t2 + eosMDJWFden[11]*p1) )
+    )
 
     denom = 1.0/(epsln+den)
     rho = rhoNum*denom

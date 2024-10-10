@@ -1,4 +1,4 @@
-Version 0.2, 2023-04-17
+Version 0.2, 2024-10-10
 - Add folder examples
   o eg_utils.py
     > eg_blanklist
@@ -24,10 +24,15 @@ Version 0.2, 2023-04-17
   o teos10 computes rho from teos 48 polynomia
 - Edit modules:
   o llc.py moved to the llc folder
-  o llc was added to __init__.py 
+  o llc was added to __init__.py
 - Delete modules:
   o mdjwf.py moved to density
   o jmd95.py moved to density
+
+Version 0.1.3, 2024-05-12
+- Fix readstats for multiple regions and multiple lines of fields.
+  Return empty array instead of zeros for per-layer stats of 2-D variables.
+- Update for newer matplotlib.
 
 Version 0.1.2, 2021-01-11
 - Fix readstats for multiple fields in one file

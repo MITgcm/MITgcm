@@ -25,8 +25,7 @@ C     == Global variables ===
 #endif
 #ifdef ALLOW_AUTODIFF_MONITOR
 # ifdef ALLOW_DIAGNOSTICS
-#  include "DIAGNOSTICS_SIZE.h"
-#  include "DIAGNOSTICS.h"
+#  include "DIAGNOSTICS_P2SHARE.h"
 # endif
 #endif /* ALLOW_AUTODIFF_MONITOR */
 

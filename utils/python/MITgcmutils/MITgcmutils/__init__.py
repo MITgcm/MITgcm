@@ -1,4 +1,4 @@
-from numpy import NaN, Inf
+from numpy import nan, inf
 from .mds import rdmds, wrmds
 from .ptracers import iolabel,iolabel2num
 from .diagnostics import readstats
@@ -11,8 +11,6 @@ from . import examples
 from . import density as dens
 from . import mds
 
-__all__ = ['NaN', 'Inf', 'rdmds', 'wrmds', 'iolabel', 'iolabel2num',
+__all__ = ['nan', 'inf', 'rdmds', 'wrmds', 'iolabel', 'iolabel2num',
            'readstats', 'rdmnc', 'mnc_files','gen_blanklist', 'hfac',
-            'readbin','tilecmap','writebin','pfromz','cs','llc','dens']
-           
-
+           'readbin','tilecmap','writebin','pfromz','cs','llc','dens']

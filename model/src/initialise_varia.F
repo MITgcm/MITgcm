@@ -110,7 +110,11 @@ C     == Global variables ==
 #ifdef ALLOW_AUTODIFF
 # include "GRID.h"
 # include "FFIELDS.h"
-#endif
+# if ( defined ALLOW_CTRL && defined ALLOW_GENTIM2D_CONTROL && !defined ALLOW_TAPENADE )
+#  include "CTRL_SIZE.h"
+#  include "CTRL_DUMMY.h"
+# endif
+#endif /* ALLOW_AUTODIFF */
 
 #ifdef ALLOW_TAPENADE
 # ifdef ALLOW_GMREDI
@@ -251,6 +255,11 @@ C--   Initialize variable data for packages
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef NONLIN_FRSURF
 CADJ STORE recip_hFacC = tapelev_init, key = 1
+# endif
+# ifdef ALLOW_GENTIM2D_CONTROL
+C     It not clear, why this is needed and hopefully we will find a
+C     better way to avoid the recomputation warning.
+CADJ STORE xx_gentim2d_dummy = dummytape, key = 1
 # endif
 #endif
       CALL PACKAGES_INIT_VARIABLES( myThid )
