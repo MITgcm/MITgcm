@@ -12,27 +12,16 @@
 # dimensions:
 # 	iPROF = 63 ;
 # 	iDEPTH = 25 ;
-#	lTXT = 30 ;
 # variables:
-# 	char prof_descr(iPROF, lTXT) ;
 # 	double prof_depth(iDEPTH) ;
-# 	double prof_date(iPROF) ;
 # 	double prof_YYYYMMDD(iPROF) ;
 # 	double prof_HHMMSS(iPROF) ;
 # 	double prof_lon(iPROF) ;
 #	double prof_lat(iPROF) ;
-# 	double prof_basin(iPROF) ;
-#  	double prof_point(iPROF) ;
 # 	double prof_T(iPROF, iDEPTH) ;
 #  	double prof_Tweight(iPROF, iDEPTH) ;
-# 	double prof_Testim(iPROF, iDEPTH) ;
-# 	double prof_Terr(iPROF, iDEPTH) ;
-# 	double prof_Tflag(iPROF, iDEPTH) ;
 # 	double prof_S(iPROF, iDEPTH) ;
 # 	double prof_Sweight(iPROF, iDEPTH) ;
-# 	double prof_Sestim(iPROF, iDEPTH) ;
-# 	double prof_Serr(iPROF, iDEPTH) ;
-# 	double prof_Sflag(iPROF, iDEPTH) ;
 # 	double prof_PH(iPROF, iDEPTH) ;
 #	double prof_PHweight(iPROF, iDEPTH) ;
 # }
