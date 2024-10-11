@@ -1,0 +1,11 @@
+# Packages
+ &PACKAGES
+ useGMRedi      = .TRUE.,
+ usePTRACERS    = .TRUE.,
+ useGCHEM       = .TRUE.,
+ useECCO        = .TRUE.,
+# useGrdchk      = .TRUE.,
+ usePROFILEs    = .TRUE.,
+ useOBSFIT     = .TRUE.,
+ useDIAGNOSTICS = .TRUE.,
+ &
