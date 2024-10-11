@@ -1,11 +1,90 @@
-# ******************
-# PROFILES cost f',tion
-# ******************
+# **********************
+# PROFILES cost function
+# **********************
+#
+# NetCDF-file 'sample_prof.nc' only contains data for variables T, S, PH,
+# but if available bling allows many more variables, which are
+# left as example namelist entries without effect, because they are
+# not in 'sample_prof.nc'.
+#
+# >> ncdump -h sample_prof.nc
+# netcdf sample_prof {
+# dimensions:
+# 	iPROF = 63 ;
+# 	iDEPTH = 25 ;
+# variables:
+# 	double prof_depth(iDEPTH) ;
+# 	double prof_YYYYMMDD(iPROF) ;
+# 	double prof_HHMMSS(iPROF) ;
+# 	double prof_lon(iPROF) ;
+#	double prof_lat(iPROF) ;
+# 	double prof_T(iPROF, iDEPTH) ;
+#  	double prof_Tweight(iPROF, iDEPTH) ;
+# 	double prof_S(iPROF, iDEPTH) ;
+# 	double prof_Sweight(iPROF, iDEPTH) ;
+# 	double prof_PH(iPROF, iDEPTH) ;
+#	double prof_PHweight(iPROF, iDEPTH) ;
+# }
+
  &PROFILES_NML
 # profilesDir = 'PROF',
  profilesfiles(1) = 'sample_prof',
-# has T, S, and pH constraints. 
+ prof_make_nc = .true.,
+# has T, S, and pH constraints.
+# The default mult_profiles = 1,
+# here we turn off the cost contribution of T and S.
  mult_profiles(1,1)   = 0.0,
  mult_profiles(1,2)   = 0.0,
- mult_profiles(1,14)   = 1.0,
+ mult_profiles(1,14)  = 1.0,
+#
+ prof_names(:,1)='prof_T',
+ prof_names(:,2)='prof_S',
+ prof_names(:,3)='prof_U',
+ prof_names(:,4)='prof_V',
+ prof_names(:,5)='prof_ptr',
+ prof_names(:,6)='prof_ssh',
+ prof_names(:,7)='prof_DIC',
+ prof_names(:,8)='prof_ALK',
+ prof_names(:,9)='prof_O2',
+ prof_names(:,10)='prof_NO3',
+ prof_names(:,11)='prof_PO4',
+ prof_names(:,12)='prof_FE',
+ prof_names(:,13)='prof_PCO',
+ prof_names(:,14)='prof_PH',
+ prof_names(:,15)='prof_CHL',
+ prof_names(:,16)='prof_POC',
+#
+ prof_itracer(:,1)=1,
+ prof_itracer(:,2)=1,
+ prof_itracer(:,3)=1,
+ prof_itracer(:,4)=1,
+ prof_itracer(:,5)=1,
+ prof_itracer(:,6)=1,
+ prof_itracer(:,7)=1,
+ prof_itracer(:,8)=2,
+ prof_itracer(:,9)=3,
+ prof_itracer(:,10)=4,
+ prof_itracer(:,11)=5,
+ prof_itracer(:,12)=6,
+ prof_itracer(:,13)=1,
+ prof_itracer(:,14)=1,
+ prof_itracer(:,15)=1,
+ prof_itracer(:,16)=1,
+#
+ prof_namesmod(:,1)='theta',
+ prof_namesmod(:,2)='salt',
+ prof_namesmod(:,3)='uVel',
+ prof_namesmod(:,4)='vVel',
+ prof_namesmod(:,5)='pTracer',
+ prof_namesmod(:,6)='etaN',
+ prof_namesmod(:,7)='pTracer',
+ prof_namesmod(:,8)='pTracer',
+ prof_namesmod(:,9)='pTracer',
+ prof_namesmod(:,10)='pTracer',
+ prof_namesmod(:,11)='pTracer',
+ prof_namesmod(:,12)='pTracer',
+ prof_namesmod(:,13)='PCO',
+ prof_namesmod(:,14)='PH',
+ prof_namesmod(:,15)='CHL',
+ prof_namesmod(:,16)='POC',
  &
