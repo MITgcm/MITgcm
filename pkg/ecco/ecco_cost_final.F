@@ -42,6 +42,12 @@ c     == global variables ==
 # include "PROFILES_SIZE.h"
 # include "profiles.h"
 #endif
+cav(
+#ifdef ALLOW_OBSFIT
+# include "OBSFIT_SIZE.h"
+# include "OBSFIT.h"
+#endif
+cav)
 
 c     == routine arguments ==
 
@@ -58,6 +64,9 @@ c     == local variables ==
       integer bi,bj
       integer ifc
       integer num_var
+cav(
+c      integer num_var_obs
+cav)
 
 #ifndef ALLOW_PROFILES
       integer NFILESPROFMAX
@@ -65,6 +74,14 @@ c     == local variables ==
       integer NVARMAX
       parameter (NVARMAX=1)
 #endif
+cav(
+#ifndef ALLOW_OBSFIT
+      integer NFILESMAX_OBS
+      parameter (NFILESMAX_OBS=1)
+c      integer NVARMAX_OBS
+c      parameter (NVARMAX_OBS=1)
+#endif
+cav)
 
 #ifndef ALLOW_COST
 c This quick fix allows to compile and run fwd but, as far as
@@ -81,6 +98,11 @@ c the adjoint, pkg/autodiff most likely require cost though.
       _RL f_profiles(NFILESPROFMAX,NVARMAX)
       _RL f_profiles_mean(NVARMAX)
 #endif
+cav(
+#ifdef ALLOW_OBSFIT
+      _RL f_obsfit(NFILESMAX_OBS)
+#endif
+cav)
 #ifdef ALLOW_GENTIM2D_CONTROL
       _RL f_gentim2d(maxCtrlTim2D)
 #endif
@@ -99,6 +121,12 @@ c the adjoint, pkg/autodiff most likely require cost though.
       _RL no_profiles(NFILESPROFMAX,NVARMAX)
       _RL no_profiles_mean(NVARMAX)
 #endif
+cav(
+#ifdef ALLOW_OBSFIT
+      integer num_file_obs
+      _RL no_obsfit(NFILESMAX_OBS)
+#endif
+cav)
 #ifdef ALLOW_GENTIM2D_CONTROL
       _RL no_gentim2d(maxCtrlTim2D)
 #endif
@@ -137,6 +165,18 @@ c     == end of interface ==
        f_profiles_mean(num_var)= 0. _d 0
       enddo
 #endif
+cav(
+#ifdef ALLOW_OBSFIT
+      do num_file_obs=1,NFILESMAX_OBS
+c       do num_var_obs=1,NVARMAX_OBS
+c        f_obsfit(num_file,num_var)= 0. _d 0
+cav this is already global sum
+        f_obsfit(num_file_obs)= 
+     &          objf_obsfit(num_file_obs)
+c       enddo
+      enddo
+#endif
+cav)
 #ifdef ALLOW_GENCOST_CONTRIBUTION
        do num_var=1,NGENCOST
         f_gencost(num_var)= 0. _d 0
@@ -175,6 +215,18 @@ c     == end of interface ==
        no_profiles_mean(num_var)= 0. _d 0
       enddo
 #endif
+cav(
+#ifdef ALLOW_OBSFIT
+      do num_file_obs=1,NFILESMAX_OBS
+c       do num_var_obs=1,NVARMAX_OBS
+c        no_obsfit(num_file,num_var)= 0. _d 0
+cav this is already global sum
+        no_obsfit(num_file_obs)= 
+     &           num_obsfit(num_file_obs)
+c       enddo
+      enddo
+#endif
+cav)
 #ifdef ALLOW_GENCOST_CONTRIBUTION
        do num_var=1,NGENCOST
         no_gencost(num_var)= 0. _d 0
@@ -224,6 +276,18 @@ c--   Sum up all contributions.
      &           *objf_profiles_mean(num_var,bi,bj)
       enddo
 #endif
+cav(
+#ifdef ALLOW_OBSFIT
+cav don't add to all tiles
+c      do num_file=1,NFILESMAX_OBS
+c       do num_var=1,NVARMAX
+c          tile_fc(bi,bj) = tile_fc(bi,bj)
+c     &            + mult_obsfit(num_file,num_var)
+c     &            *objf_obsfit(num_file,num_var)
+c       enddo
+c      enddo
+#endif
+cav)
 #ifdef ALLOW_GENCOST_CONTRIBUTION
        do num_var=1,NGENCOST
           tile_fc(bi,bj) = tile_fc(bi,bj)
@@ -274,6 +338,17 @@ c--   Sum up all contributions.
      &           +objf_profiles_mean(num_var,bi,bj)
       enddo
 #endif
+cav(
+#ifdef ALLOW_OBSFIT
+cav do this outside of bi,bj loops
+c      do num_file=1,NFILESMAX_OBS
+c       do num_var=1,NVARMAX
+c          f_obsfit(num_file,num_var)=f_obsfit(num_file,num_var)
+c     &            +objf_obsfit(num_file,num_var)
+c       enddo
+c      enddo
+#endif
+cav)
 #ifdef ALLOW_GENCOST_CONTRIBUTION
        do num_var=1,NGENCOST
           f_gencost(num_var)=f_gencost(num_var)
@@ -320,6 +395,17 @@ c--   Sum up all contributions.
      &           +num_profiles_mean(num_var,bi,bj)
       enddo
 #endif
+cav(
+#ifdef ALLOW_OBSFIT
+cav do this outside of bi,bj loops
+c      do num_file=1,NFILESMAX_OBS
+c       do num_var=1,NVARMAX
+c          no_obsfit(num_file,num_var)=no_obsfit(num_file,num_var)
+c     &            +num_obsfit(num_file,num_var)
+c       enddo
+c      enddo
+#endif
+cav)
 #ifdef ALLOW_GENCOST_CONTRIBUTION
        do num_var=1,NGENCOST
           no_gencost(num_var)=no_gencost(num_var)
@@ -379,6 +465,15 @@ c--   Do global summation for each part of the cost function
        _GLOBAL_SUM_RL(f_profiles_mean(num_var), myThid )
       enddo
 #endif
+cav(
+#ifdef ALLOW_OBSFIT
+c      do num_file_obs=1,NFILESMAX_OBS
+c       do num_var_obs=1,NVARMAX_OBS
+c        _GLOBAL_SUM_RL(f_obsfit(num_file_obs,num_var_obs), myThid )
+c       enddo
+c      enddo
+#endif
+cav)
 #ifdef ALLOW_GENCOST_CONTRIBUTION
        do num_var=1,NGENCOST
         _GLOBAL_SUM_RL(f_gencost(num_var), myThid )
@@ -419,6 +514,15 @@ c--   Do global summation for each part of the cost function
        _GLOBAL_SUM_RL(no_profiles_mean(num_var), myThid )
       enddo
 #endif
+cav(
+#ifdef ALLOW_OBSFIT
+c      do num_file=1,NFILESMAX_OBS
+c       do num_var=1,NVARMAX
+c        _GLOBAL_SUM_RL(f_obsfit(num_file,num_var), myThid )
+c       enddo
+c      enddo
+#endif
+cav)
 #ifdef ALLOW_GENCOST_CONTRIBUTION
        do num_var=1,NGENCOST
         _GLOBAL_SUM_RL(no_gencost(num_var), myThid )
@@ -478,6 +582,23 @@ c--   Do global summation for each part of the cost function
       enddo
       endif
 #endif
+cav(
+#ifdef ALLOW_OBSFIT
+      if (useOBSFIT) then
+      do num_file_obs=1,NFILESMAX_OBS
+c       do num_var_obs=1,NVARMAX_OBS
+        if ( no_obsfit(num_file_obs).GT.zeroRL ) then
+         write(msgBuf,'(A,D22.15,i2.0)')
+     &     ' --> f_obsfit =',f_obsfit(num_file_obs),
+     &      num_file_obs
+         call print_message( msgBuf, standardmessageunit,
+     &                       SQUEEZE_RIGHT , mythid)
+        endif
+c       enddo
+      enddo
+      endif
+#endif
+cav)
 #ifdef ALLOW_GENCOST_CONTRIBUTION
        do num_var=1,NGENCOST
         if (no_gencost(num_var).GT.0) then
@@ -529,6 +650,19 @@ c--   Each process has calculated the global part for itself.
 cgf this sum is now done in cost_final if allow_cost
         fc = fc + glofc
 #endif
+
+cav(
+cost.h:c     glofc      - contributions from global mean constraints
+#ifdef ALLOW_OBSFIT
+      do num_file_obs=1,NFILESMAX_OBS
+c       do num_var_obs=1,NVARMAX_OBS
+        glofc = glofc
+     &          +  mult_obsfit(num_file_obs)
+     &            *objf_obsfit(num_file_obs)
+c       enddo
+      enddo
+#endif
+cav)
 
       locfc=locfc+glofc
 
@@ -589,6 +723,25 @@ C     only master thread of master CPU open and write to file
       enddo
       endif
 #endif
+cav(
+#ifdef ALLOW_OBSFIT
+      if (useOBSFIT) then
+      do num_file_obs=1,NFILESMAX_OBS
+c       do num_var_obs=1,NVARMAX_OBS
+        if ( no_obsfit(num_file_obs).GT.zeroRL ) then
+         IL  = ILNBLNK( obsfitfiles(num_file_obs) )
+         IL  = max (IL,30)
+         write(ifc,'(4A,2D22.15)')
+     &    obsfitfiles(num_file_obs)(1:IL),' ',
+     &    obsfit_nameval, ' = ',
+     &    f_obsfit(num_file_obs),
+     &    no_obsfit(num_file_obs)
+        endif
+c       enddo
+      enddo
+      endif
+#endif
+cav)
 #ifdef ALLOW_GENCOST_CONTRIBUTION
        do num_var=1,NGENCOST
         if (no_gencost(num_var).GT.0) then
