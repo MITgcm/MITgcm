@@ -71,7 +71,7 @@ c                      variable and write to active file
      &     active_num_file,
      &     nactive_var,  active_var, active_varnum, lAdInit,
      &     irec, prof_ind_glob(active_num_file,irec,bi,bj),
-     &     TANGENT_SIMULATION, myOptimIter,bi,bj, myThid)
+     &     FORWARD_SIMULATION, myOptimIter,bi,bj, myThid)
 
       call active_read_profile_rl( fidtangent(active_num_file,bi,bj),
      &     active_num_file,
@@ -143,7 +143,7 @@ c     myThid:          thread number for this instance
      &     active_num_file,
      &     nactive_var, active_var, active_varnum,
      &     irec, prof_ind_glob(active_num_file,irec,bi,bj),
-     &     TANGENT_SIMULATION, myOptimIter,bi,bj, myThid)
+     &     FORWARD_SIMULATION, myOptimIter,bi,bj, myThid)
 
       call active_write_profile_rl( fidtangent(active_num_file,bi,bj) ,
      &     active_num_file,
@@ -155,8 +155,3 @@ c     myThid:          thread number for this instance
 
       return
       end
-
-c     ==================================================================
-
-
-
