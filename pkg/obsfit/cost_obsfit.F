@@ -61,7 +61,7 @@ C bi,bj     :: Tile indices
       CHARACTER*(MAX_LEN_MBUF) msgbuf
       CHARACTER*(MAX_LEN_FNAM) obsfitfile, fnameequinc
       CHARACTER*(MAX_LEN_FNAM) fnamemisfit
-      INTEGER IL, JL, err, err2
+      INTEGER IL, JL, err
       INTEGER irec, ii, varid1, varid2
       INTEGER samples_cnt, obs_num, num_valid_samples
       _RL sample_mask_sum
@@ -287,8 +287,6 @@ C Global file for misfits
         JL  = ILNBLNK( obsfitDir )
         write(fnamemisfit,'(3a)')
      &      obsfitDir(1:JL),obsfitfile(1:IL),'.misfit.nc'
-        err2 = NF_OPEN(fnamemisfit,NF_WRITE,fidmisfit(num_file))
-        err2 = NF_INQ_VARID(fidmisfit(num_file),'misfit',varid2)
 
 C Loop over obs
         DO obs_num=1,NOBSMAX_OBS
@@ -334,17 +332,10 @@ C Read model equivalent from global file
                  num_obsfit(num_file)=
      &               num_obsfit(num_file)
      &               +obs_modmask
-
-C Write misfit to global netcdf file
-                 misfit=obs_modval-obs_data-offset
-                 err2 = NF_PUT_VARA_DOUBLE(fidmisfit(num_file),varid2,
-     &             obs_ind_glob(num_file,obs_num),1,misfit)
           ENDIF
 
          ENDIF !if (obs_num.LE.ObsNo(num_file)) then
         ENDDO !do obs_num...
-
-        err2=NF_CLOSE(fidmisfit(num_file))
 
        ENDIF !if myprocid = 0
 
