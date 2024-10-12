@@ -127,13 +127,13 @@ C !FUNCTIONS:
         STOP 'ABNORMAL END: S/R OBSFIT_INIT_FIXED'
       ENDIF
 
-c      IF ( obsfitDoGenGrid ) THEN
-c        WRITE(msgBuf,'(2A)') 'OBSFIT_INIT_FIXED: ',
-c     &  'obsfitDoGenGrid has not been tested yet'
-c        CALL PRINT_ERROR( msgBuf, myThid )
-c        CALL ALL_PROC_DIE( myThid )
-c        STOP 'ABNORMAL END: S/R OBSFIT_INIT_FIXED'
-c      ENDIF
+      IF ( obsfitDoGenGrid ) THEN
+        WRITE(msgBuf,'(2A)') 'OBSFIT_INIT_FIXED: ',
+     &  'obsfitDoGenGrid has not been tested yet'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( myThid )
+        STOP 'ABNORMAL END: S/R OBSFIT_INIT_FIXED'
+      ENDIF
 
       WRITE(msgbuf,'(a)') ' '
       CALL print_message( msgbuf, standardmessageunit,
