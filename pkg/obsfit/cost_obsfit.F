@@ -94,7 +94,7 @@ C !FUNCTIONS
       CALL print_message( msgbuf,
      &  standardmessageunit,SQUEEZE_RIGHT, myThid)
 
-        _BEGIN_MASTER( myThid )
+      _BEGIN_MASTER( myThid )
 
       DO num_file=1,NFILESMAX_OBS
 
@@ -126,21 +126,21 @@ c
 
 
 c Loop over samples
-         DO ii=1,NSAMPLESMAX
-           samples_buff(ii) = 0.
-           samples_mask_buff(ii) = 0.
-         ENDDO
+       DO ii=1,NSAMPLESMAX
+        samples_buff(ii) = 0.
+        samples_mask_buff(ii) = 0.
+       ENDDO
 
-         DO bj=1,nSy
-          DO bi=1,nSx
+       DO bj=1,nSy
+        DO bi=1,nSx
 
 C Open tiled files and read to buffer
-           DO sample_num=1,NSAMPLESMAX
-            IF (sample_num.LE.sampleNo(num_file,bi,bj)) THEN
+         DO sample_num=1,NSAMPLESMAX
+          IF (sample_num.LE.sampleNo(num_file,bi,bj)) THEN
 
-             sample_modvaltmp=0.
+            sample_modvaltmp=0.
 
-             CALL active_read_obs_tile(num_file,
+            CALL active_read_obs_tile(num_file,
      &           sample_modvaltmp,
      &           sample_num,.false.,optimcycle,bi,bj,myThid,
      &           obsfit_dummy(num_file,bi,bj))
@@ -153,154 +153,97 @@ C Combine all threads here
              samples_mask_buff(irec) = samples_mask_buff(irec)
      &                                 +sample_modmask(bi,bj)
 
-            ENDIF !if (sample_num.LE.sampleNo(num_file,bi,bj)) then
-           ENDDO !do sample_num=..
+          ENDIF !if (sample_num.LE.sampleNo(num_file,bi,bj)) then
+         ENDDO !do sample_num=..
                 
-          ENDDO !bj
-         ENDDO !bi
+        ENDDO !bj
+       ENDDO !bi
 
 C Combine all processes
-         DO ii=1,NSAMPLESMAX
+       DO ii=1,NSAMPLESMAX
           tmpgs = samples_buff(ii)
           _GLOBAL_SUM_RL(tmpgs, myThid) 
           samples_modval_glob(ii) = tmpgs
           tmpgs = samples_mask_buff(ii)
           _GLOBAL_SUM_RL(tmpgs, myThid)
           samples_mask_glob(ii) = tmpgs
-         ENDDO     
+       ENDDO     
 
-         IF ( myProcId .eq. 0 ) THEN
+       IF ( myProcId .eq. 0 ) THEN
 
 C Loop over obs
-         DO obs_num=1,NOBSMAX_OBS
-          IF (obs_num.LE.ObsNo(num_file)) THEN
+        DO obs_num=1,NOBSMAX_OBS
+         IF (obs_num.LE.ObsNo(num_file)) THEN
 
-           obs_modval=0.
-           sample_mask_sum=0
-           num_valid_samples=0
+          obs_modval=0.
+          sample_mask_sum=0
+          num_valid_samples=0
 
 C Calculate model equi of each obs by averaging NP samples               
-           DO sample_num=1,NSAMP_PER_OBS_MAX
-            IF (sample_num.LE.obs_np(num_file,obs_num)) THEN
+          DO sample_num=1,NSAMP_PER_OBS_MAX
+           IF (sample_num.LE.obs_np(num_file,obs_num)) THEN
 
-              irec = obs_sample1_ind(num_file,obs_num)
-     &                + sample_num-1
-               
-              obs_modval = obs_modval + samples_modval_glob(irec)
+            irec = obs_sample1_ind(num_file,obs_num)
+     &               + sample_num-1
+            obs_modval = obs_modval + samples_modval_glob(irec)
      &               *samples_mask_glob(irec)
-              sample_mask_sum = sample_mask_sum
+            sample_mask_sum = sample_mask_sum
      &               +samples_mask_glob(irec)
-              IF (samples_mask_glob(irec) .GT. 0. _d 0) THEN
-               num_valid_samples = num_valid_samples+1
-              ENDIF
-
+            IF (samples_mask_glob(irec) .GT. 0. _d 0) THEN
+              num_valid_samples = num_valid_samples+1
             ENDIF
-           ENDDO
+
+           ENDIF
+          ENDDO
            
 C Time averaging
-           IF (obsfitOperation(num_file).eq.1) THEN
-            obs_modval = obs_modval/obs_delT(num_file, obs_num)
-           ENDIF
+          IF (obsfitOperation(num_file).eq.1) THEN
+           obs_modval = obs_modval/obs_delT(num_file, obs_num)
+          ENDIF
  
 C Spatial averaging
-           IF (num_valid_samples.gt.0) THEN
-             obs_modval = obs_modval/sample_mask_sum
-             obs_modmask = 1
-           ELSE
-             obs_modval = -9999.
-             obs_modmask = 0
-           ENDIF
+          IF (num_valid_samples.gt.0) THEN
+           obs_modval = obs_modval/sample_mask_sum
+           obs_modmask = 1
+          ELSE
+           obs_modval = -9999.
+           obs_modmask = 0
+          ENDIF
 
-           if (obs_modval.eq.-9999) then
-             obs_modmask = 0
-           endif
+          IF (obs_modval.eq.-9999) THEN
+           obs_modmask = 0
+          ENDIF
 
 c Write to global netcdf file
-              CALL active_write_obs_glob(num_file,
+          CALL active_write_obs_glob(num_file,
      &         obs_modval,
      &         obs_num,optimcycle,myThid,
      &         obsfit_globaldummy(num_file))
 
-          ENDIF !if (obs_num.LE.ObsNo(num_file)) then
-         ENDDO !do obs_num=..
+         ENDIF !if (obs_num.LE.ObsNo(num_file)) then
+        ENDDO !do obs_num=..
 
-         err = NF_CLOSE(fidglobal(num_file))
-         IL  = ILNBLNK( obsfitfiles(num_file) )
-         write(obsfitfile,'(1a)')
+        err = NF_CLOSE(fidglobal(num_file))
+        IL  = ILNBLNK( obsfitfiles(num_file) )
+        write(obsfitfile,'(1a)')
      &      obsfitfiles(num_file)(1:IL)
-         IL  = ILNBLNK( obsfitfile )
-         JL  = ILNBLNK( obsfitDir )
-         write(fnameequinc,'(3a)')
+        IL  = ILNBLNK( obsfitfile )
+        JL  = ILNBLNK( obsfitDir )
+        write(fnameequinc,'(3a)')
      &      obsfitDir(1:JL),obsfitfile(1:IL),'.equi.nc'
-         err = NF_OPEN(fnameequinc,NF_NOWRITE,fidglobal(num_file))
+        err = NF_OPEN(fnameequinc,NF_NOWRITE,fidglobal(num_file))
 
-         IF (obs_is_ssh(num_file).GT.0) THEN
+        IF (obs_is_ssh(num_file).GT.0) THEN
 C Read data to calculate the mean offset between model and obs
-          offset=0.
-          mod_mean=0.
-          obs_mean=0.
-          nmodmean=0
-          nobsmean=0.
-
-C Loop over obs
-          DO obs_num=1,NOBSMAX_OBS
-           IF (obs_num.LE.ObsNo(num_file)) THEN
-
-            obs_modval=0.
-            obs_data=0.
-            obs_uncert=0.
-
-C Read observation and uncertainty
-            CALL obsfit_read_obs(num_file,1,
-     &           obs_ind_glob(num_file,obs_num),
-     &           obs_data,myThid)
-
-            CALL obsfit_read_obs(num_file,-1,
-     &           obs_ind_glob(num_file,obs_num),
-     &           obs_uncert,myThid)
-
-            IF (obs_data.GT.-9999) THEN
-             obs_mean=obs_mean+obs_data
-             nobsmean=nobsmean+1
-            ENDIF
-            IF (obs_modval.GT.-9999) THEN
-             mod_mean=mod_mean+obs_modval
-             nmodmean=nmodmean+1
-            ENDIF
-
-           ENDIF !if (obs_num.LE.ObsNo(num_file)) then
-          ENDDO !do obs_num...
-          mod_mean=mod_mean/nmodmean
-          obs_mean=obs_mean/nobsmean
-          offset=mod_mean-obs_mean
-         ELSE
-          offset=0.
-         ENDIF
-
-C Read data to calculate the cost
-C and write misfits to global file
-
-C Global file for misfits
-         IL  = ILNBLNK( obsfitfiles(num_file) )
-         write(obsfitfile,'(1a)')
-     &      obsfitfiles(num_file)(1:IL)
-         IL  = ILNBLNK( obsfitfile )
-         JL  = ILNBLNK( obsfitDir )
-         write(fnamemisfit,'(3a)')
-     &      obsfitDir(1:JL),obsfitfile(1:IL),'.misfit.nc'
-         err2 = NF_OPEN(fnamemisfit,NF_WRITE,fidmisfit(num_file))
-         err2 = NF_INQ_VARID(fidmisfit(num_file),'misfit',varid2)
+         offset=0.
+         mod_mean=0.
+         obs_mean=0.
+         nmodmean=0
+         nobsmean=0.
 
 C Loop over obs
          DO obs_num=1,NOBSMAX_OBS
           IF (obs_num.LE.ObsNo(num_file)) THEN
-
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE obs_modmask         = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
-CADJ STORE obsfit_globaldummy  = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
-#endif
 
            obs_modval=0.
            obs_data=0.
@@ -315,18 +258,73 @@ C Read observation and uncertainty
      &           obs_ind_glob(num_file,obs_num),
      &           obs_uncert,myThid)
 
-           IF (obs_data.eq.-9999) THEN
-             obs_uncert=0
+           IF (obs_data.GT.-9999) THEN
+            obs_mean=obs_mean+obs_data
+            nobsmean=nobsmean+1
+           ENDIF
+           IF (obs_modval.GT.-9999) THEN
+            mod_mean=mod_mean+obs_modval
+            nmodmean=nmodmean+1
            ENDIF
 
+          ENDIF !if (obs_num.LE.ObsNo(num_file)) then
+         ENDDO !do obs_num...
+         mod_mean=mod_mean/nmodmean
+         obs_mean=obs_mean/nobsmean
+         offset=mod_mean-obs_mean
+        ELSE
+         offset=0.
+        ENDIF
+
+C Read data to calculate the cost
+C and write misfits to global file
+
+C Global file for misfits
+        IL  = ILNBLNK( obsfitfiles(num_file) )
+        write(obsfitfile,'(1a)')
+     &      obsfitfiles(num_file)(1:IL)
+        IL  = ILNBLNK( obsfitfile )
+        JL  = ILNBLNK( obsfitDir )
+        write(fnamemisfit,'(3a)')
+     &      obsfitDir(1:JL),obsfitfile(1:IL),'.misfit.nc'
+        err2 = NF_OPEN(fnamemisfit,NF_WRITE,fidmisfit(num_file))
+        err2 = NF_INQ_VARID(fidmisfit(num_file),'misfit',varid2)
+
+C Loop over obs
+        DO obs_num=1,NOBSMAX_OBS
+         IF (obs_num.LE.ObsNo(num_file)) THEN
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE obs_modmask         = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE obsfit_globaldummy  = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+#endif
+
+          obs_modval=0.
+          obs_data=0.
+          obs_uncert=0.
+
+C Read observation and uncertainty
+          CALL obsfit_read_obs(num_file,1,
+     &           obs_ind_glob(num_file,obs_num),
+     &           obs_data,myThid)
+
+          CALL obsfit_read_obs(num_file,-1,
+     &           obs_ind_glob(num_file,obs_num),
+     &           obs_uncert,myThid)
+
+          IF (obs_data.eq.-9999) THEN
+           obs_uncert=0
+          ENDIF
+
 C Read model equivalent from global file
-              CALL active_read_obs_glob(num_file,
+          CALL active_read_obs_glob(num_file,
      &         obs_modval,
      &         obs_num,.false.,optimcycle,myThid,
      &         obsfit_globaldummy(num_file))
 
-           IF (obs_uncert.GT.0.
-     &            ) THEN
+          IF (obs_uncert.GT.0.) THEN
                  obs_weight=1/(obs_uncert*obs_uncert)
                  objf_obsfit(num_file)=
      &             objf_obsfit(num_file)
@@ -341,32 +339,32 @@ C Write misfit to global netcdf file
                  misfit=obs_modval-obs_data-offset
                  err2 = NF_PUT_VARA_DOUBLE(fidmisfit(num_file),varid2,
      &             obs_ind_glob(num_file,obs_num),1,misfit)
-           ENDIF
+          ENDIF
 
-          ENDIF !if (obs_num.LE.ObsNo(num_file)) then
-         ENDDO !do obs_num...
+         ENDIF !if (obs_num.LE.ObsNo(num_file)) then
+        ENDDO !do obs_num...
 
-         err2=NF_CLOSE(fidmisfit(num_file))
+        err2=NF_CLOSE(fidmisfit(num_file))
 
-        ENDIF !if myprocid = 0
+       ENDIF !if myprocid = 0
 
       ENDDO !do num_file=1,NFILESMAX_OBS
   
-        _END_MASTER( myThid )
+      _END_MASTER( myThid )
 
 c Print cost function values
       DO num_file=1,NFILESMAX_OBS
 c
-          objf_obsfit_glo =
+       objf_obsfit_glo =
      &             objf_obsfit(num_file)
-          num_obsfit_glo =
+       num_obsfit_glo =
      &             num_obsfit(num_file)
 c
-      write(msgbuf,'(a,I2,a,2D12.5)')
+       write(msgbuf,'(a,I2,a,2D12.5)')
      &  ' cost_obsfit(',num_file,')= ',
      &  objf_obsfit_glo,num_obsfit_glo
 
-      IF ( num_obsfit_glo .GT. 0. ) CALL print_message( msgbuf,
+       IF ( num_obsfit_glo .GT. 0. ) CALL print_message( msgbuf,
      &  standardmessageunit,SQUEEZE_RIGHT, myThid)
 c
       ENDDO
