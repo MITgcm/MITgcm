@@ -2,10 +2,12 @@ C----------------------------------------
 C subroutine obsfit_read_obs
 C----------------------------------------
 CADJ SUBROUTINE  obsfit_read_obs INPUT  = 1,2,3, 5
-CADJ SUBROUTINE  obsfit_read_obs DEPEND = 1,2,3 
-CADJ SUBROUTINE  obsfit_read_obs OUTPUT =       4 
-CADJ SUBROUTINE  NF_OPEN         INPUT = 
-CADJ SUBROUTINE  NF_CLOSE        INPUT =
+CADJ SUBROUTINE  obsfit_read_obs DEPEND = 1,2,3
+CADJ SUBROUTINE  obsfit_read_obs OUTPUT =       4
+CADJ FUNCTION NF_OPEN            INPUT  = 1,2,3
+CADJ FUNCTION NF_CLOSE           INPUT  = 1
+CADJ FUNCTION NF_INQ_VARID       INPUT  = 1,2,3
+CADJ FUNCTION NF_PUT_VARA_DOUBLE INPUT  = 1,2,3,5,4
 
 C----------------------------------------
 C subroutine active_read_obs_tile
@@ -46,4 +48,3 @@ CADJ SUBROUTINE active_write_obs_glob INPUT   = 1,2,3,4,5,6
 CADJ SUBROUTINE active_write_obs_glob OUTPUT  =           6
 CADJ SUBROUTINE active_write_obs_glob ACTIVE  =   2,      6
 CADJ SUBROUTINE active_write_obs_glob DEPEND  = 1,  3,4,5
-
