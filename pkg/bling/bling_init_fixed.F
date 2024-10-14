@@ -16,6 +16,9 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "BLING_VARS.h"
+#ifdef ALLOW_EXF
+# include "GCHEM_EXF.h" 
+#endif
 
 C     !INPUT PARAMETERS:
 C     myThid       :: my Thread Id number
@@ -23,7 +26,8 @@ C     myThid       :: my Thread Id number
 CEOP
 
 #ifdef ALLOW_BLING
-c     CHARACTER*(MAX_LEN_MBUF) msgBuf
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER errCount
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -56,14 +60,13 @@ C coefficients for determining saturation O2
       oB3= -8.17083 _d -3
       oC0= -4.88682 _d -7
 
+CAV - is this the right place for this?
 #ifdef ALLOW_EXF
       apco2mask = 'c'
       IF ( useSEAICE ) THEN
        apco2mask = ' '
       ENDIF
 #endif
-
-C     Set other constant/flag
 
       _END_MASTER(myThid)
 

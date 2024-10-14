@@ -1,4 +1,5 @@
 #include "GCHEM_OPTIONS.h"
+C!! needed?
 #ifdef ALLOW_BLING
 # include "BLING_OPTIONS.h"
 #endif
@@ -12,12 +13,16 @@ C !INTERFACE: ==========================================================
 C !DESCRIPTION:
 C calls subroutines that initialize any time dependent variables
 C for any tracer experiment
+C!! remove exf_init_fld from bling ini forcing
 
 C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_EXF
+#include "EXF_INTERP_SIZE.h"
+#endif /* ALLOW_EXF */
 #ifdef ALLOW_AUTODIFF
 # include "GRID.h"
 # include "DYNVARS.h"
@@ -25,6 +30,7 @@ C !USES: ===============================================================
 #include "GCHEM.h"
 #include "GCHEM_SIZE.h"
 #include "GCHEM_FIELDS.h"
+#include "GCHEM_EXF.h"
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
@@ -99,6 +105,75 @@ C--   Initialise other Geo-Chemistry pkg variables:
 #endif
       ENDIF
 #endif /* ALLOW_DARWIN */
+
+C-- Initialize Geo-Chemistry forcing fields
+
+#ifdef ALLOW_EXF
+
+      IF ( exf_silicafile .NE. ' ' ) THEN
+      CALL EXF_INIT_FLD (
+     &     'silica', exf_silicafile, silicamask,
+     &     silicaperiod, gchem_inscal_silica, silicaconst,
+     &     gchemSi, gSi0, gSi1,
+#ifdef USE_EXF_INTERPOLATION
+     &     silica_lon0, silica_lon_inc,
+     &     silica_lat0, silica_lat_inc,
+     &     silica_nlon, silica_nlat, xC, yC,
+     &     silica_interpMethod,
+#endif
+     &     mythid )
+      ENDIF
+
+      IF ( exf_PARfile .NE. ' ' ) THEN
+      CALL EXF_INIT_FLD (
+     &     'PAR', exf_PARfile, PARmask,
+     &     PARperiod, gchem_inscal_PAR, PARconst,
+     &     gchemPAR, gPAR0, gPAR1,
+#ifdef USE_EXF_INTERPOLATION
+     &     PAR_lon0, PAR_lon_inc,
+     &     PAR_lat0, PAR_lat_inc,
+     &     PAR_nlon, PAR_nlat, xC, yC,
+     &     PAR_interpMethod,
+#endif
+     &     mythid )
+      ENDIF
+
+      IF ( exf_ironfile .NE. ' ' ) THEN
+      CALL EXF_INIT_FLD (
+     &     'iron', exf_ironfile, ironmask,
+     &     ironperiod, gchem_inscal_iron, ironconst,
+     &     gchemFe, giron0, giron1,
+#ifdef USE_EXF_INTERPOLATION
+     &     iron_lon0, iron_lon_inc,
+     &     iron_lat0, iron_lat_inc,
+     &     iron_nlon, iron_nlat, xC, yC,
+     &     iron_interpMethod,
+#endif
+     &     mythid )
+      ENDIF
+
+      IF ( exf_apCO2file .NE. ' ' ) THEN
+      CALL EXF_INIT_FLD (
+     &     'apCO2', exf_apCO2file, apCO2mask,
+     &     apCO2period, gchem_inscal_apCO2, apCO2const,
+     &     gchemapCO2, apCO20, apCO21,
+#ifdef USE_EXF_INTERPOLATION
+     &     apCO2_lon0, apCO2_lon_inc,
+     &     apCO2_lat0, apCO2_lat_inc,
+     &     apCO2_nlon, apCO2_nlat, xC, yC,
+     &     apCO2_interpMethod,
+#endif
+     &     mythid )
+      ENDIF
+
+        _EXCH_XY_RL( gchemSi, myThid )
+        _EXCH_XY_RL( gchemPAR, myThid )
+        _EXCH_XY_RL( gchemFe, myThid )
+        _EXCH_XY_RL( gchemIce, myThid )
+        _EXCH_XY_RL( gchemWind, myThid )
+        _EXCH_XY_RL( gchemapCO2, myThid )
+
+#endif /* ALLOW_EXF */
 
       RETURN
       END

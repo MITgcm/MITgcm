@@ -1,0 +1,12 @@
+ &GCHEM_PARM01
+  useBLING=.TRUE.,
+  nsubtime=1,
+ &
+ &gchem_forcing_params
+  exf_ironFile='mah_flux_smooth.bin',
+  exf_silicafile = 'sillev1.bin',
+  ironperiod=-12.,
+  silicaperiod=-12.,
+ &
+ &gchem_interp_params
+ &

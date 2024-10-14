@@ -56,15 +56,15 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       IF ( .NOT.useGCHEM ) THEN
 C-    pkg GCHEM is not used
-        _BEGIN_MASTER(myThid)
+        _BEGIN_MASTER( myThid )
 C-    Track pkg activation status:
 C     print a (weak) warning if data.gchem is found
          CALL PACKAGES_UNUSED_MSG( 'useGCHEM', ' ', ' ' )
-        _END_MASTER(myThid)
+        _END_MASTER( myThid )
         RETURN
       ENDIF
 
-      _BEGIN_MASTER(myThid)
+      _BEGIN_MASTER( myThid )
 
 C- Set defaults values for parameters in GCHEM.h
        useCFC = .FALSE.
@@ -101,6 +101,9 @@ C- Open and read the data.gchem file
      O                   iUnit,
      I                   myThid )
       READ(UNIT=iUnit,NML=GCHEM_PARM01)
+#ifdef ALLOW_EXF
+      CALL GCHEM_EXF_READPARMS( iUnit, myThid )
+#endif /* ALLOW_EXF */
       WRITE(msgBuf,'(A)')
      &  ' GCHEM_READPARMS: finished reading data.gchem'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -127,38 +130,38 @@ c      nRetired = nRetired+1
        STOP 'ABNORMAL END: S/R GCHEM_READPARMS'
       ENDIF
 
-      _END_MASTER(myThid)
+      _END_MASTER( myThid )
 
 C  Everyone else must wait for the parameters to be loaded
       _BARRIER
 
 #ifdef ALLOW_CFC
       IF ( useCFC ) THEN
-        CALL CFC_READPARMS(myThid)
+        CALL CFC_READPARMS( myThid )
       ENDIF
 #endif
 
 #ifdef ALLOW_DIC
       IF ( useDIC ) THEN
-        CALL DIC_READPARMS(myThid)
+        CALL DIC_READPARMS( myThid )
       ENDIF
 #endif
 
 #ifdef ALLOW_BLING
       IF ( useBLING ) THEN
-        CALL BLING_READPARMS(myThid)
+        CALL BLING_READPARMS( myThid )
       ENDIF
 #endif
 
 #ifdef ALLOW_SPOIL
       IF ( useSPOIL ) THEN
-        CALL SPOIL_READPARMS(myThid)
+        CALL SPOIL_READPARMS( myThid )
       ENDIF
 #endif
 
 #ifdef ALLOW_DARWIN
       IF ( useDARWIN ) THEN
-        CALL DARWIN_READPARMS(myThid)
+        CALL DARWIN_READPARMS( myThid )
       ENDIF
 #endif
 
