@@ -102,7 +102,7 @@ C- Open and read the data.gchem file
      I                   myThid )
       READ(UNIT=iUnit,NML=GCHEM_PARM01)
 #ifdef ALLOW_EXF
-      CALL GCHEM_EXF_READPARMS( iUnit, myThid )
+      IF (useEXF) CALL GCHEM_EXF_READPARMS( iUnit, myThid )
 #endif /* ALLOW_EXF */
       WRITE(msgBuf,'(A)')
      &  ' GCHEM_READPARMS: finished reading data.gchem'

@@ -3,7 +3,7 @@
  useCAL=.TRUE.,
  useEXF=.TRUE.,
  useGMRedi=.TRUE.,
- usePROFILES=.TRUE.,
+# usePROFILES=.TRUE.,
  usePTRACERS=.TRUE.,
  useGCHEM=.TRUE.,
  useDiagnostics=.TRUE.,

@@ -169,8 +169,6 @@ C-- Initialize Geo-Chemistry forcing fields
         _EXCH_XY_RL( gchemSi, myThid )
         _EXCH_XY_RL( gchemPAR, myThid )
         _EXCH_XY_RL( gchemFe, myThid )
-        _EXCH_XY_RL( gchemIce, myThid )
-        _EXCH_XY_RL( gchemWind, myThid )
         _EXCH_XY_RL( gchemapCO2, myThid )
 
 #endif /* ALLOW_EXF */
