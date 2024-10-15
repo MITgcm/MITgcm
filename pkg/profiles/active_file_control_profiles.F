@@ -17,7 +17,7 @@ C     ==================================================================
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: ACTIVE_READ_PROFILE_RL(
+C     !ROUTINE: ACTIVE_READ_PROFILE_RL
 C     !INTERFACE:
       SUBROUTINE ACTIVE_READ_PROFILE_RL(
      I                                fid,
@@ -35,15 +35,11 @@ C     !INTERFACE:
      I                                myThid
      &                              )
 
-C     !DESCRIPTION: \bv
-C     ==================================================================
-C     SUBROUTINE active_read_profile_rl
-C     ==================================================================
-C     o Read an active 1D record from file.
-C       In forward-mode (theSimulationMode = FORWARD_SIMULATION)
-C       also read a mask from file.
+C     !DESCRIPTION:
 C
-C     \ev
+C     Read an active 1D record from file. In forward-mode
+C     (theSimulationMode = FORWARD_SIMULATION) also read a mask from
+C     file.
 
 C     !USES:
       IMPLICIT NONE
@@ -234,7 +230,7 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: ACTIVE_WRITE_PROFILE_RL(
+C     !ROUTINE: ACTIVE_WRITE_PROFILE_RL
 C     !INTERFACE:
       SUBROUTINE ACTIVE_WRITE_PROFILE_RL(
      I                                 fid,
@@ -251,15 +247,10 @@ C     !INTERFACE:
      I                                 myThid
      &                               )
 
-C     !DESCRIPTION: \bv
-C     ==================================================================
-C     SUBROUTINE active_write_profile_rl
-C     ==================================================================
-C     o Write an active 1D record to file.
-C       In forward-mode (theSimulationMode = FORWARD_SIMULATION)
-C       also write a mask to file.
+C     !DESCRIPTION:
 C
-C     \ev
+C     Write an active 1D record to file. In forward-mode
+C     (theSimulationMode = FORWARD_SIMULATION) also write a mask to file.
 
 C     !USES:
       IMPLICIT NONE

@@ -17,7 +17,7 @@ C     ==================================================================
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: G_ACTIVE_READ_PROFILE(
+C     !ROUTINE: G_ACTIVE_READ_PROFILE
 C     !INTERFACE:
       SUBROUTINE G_ACTIVE_READ_PROFILE(
      I                           active_num_file,
@@ -34,13 +34,9 @@ C     !INTERFACE:
      I                           dummy
      &                         )
 
-C     !DESCRIPTION: \bv
-C     ==================================================================
-C     SUBROUTINE g_active_read_profile
-C     ==================================================================
-C     o Read active 1D records from file for tangent linear simulation
+C     !DESCRIPTION:
 C
-C     \ev
+C     Read active 1D records from file for tangent linear simulation
 
 C     !USES:
       IMPLICIT NONE
@@ -74,18 +70,19 @@ C     !OUTPUT PARAMETERS:
       _RL     dummy
 
 #ifdef ALLOW_PROFILES
+CEOP
 
       CALL ACTIVE_READ_PROFILE_RL( fidforward(active_num_file,bi,bj),
      &     active_num_file,
      &     nactive_var,  active_var, active_varnum, lAdInit,
      &     irec, prof_ind_glob(active_num_file,irec,bi,bj),
-     &     FORWARD_SIMULATION, myOptimIter,bi,bj, myThid)
+     &     FORWARD_SIMULATION, myOptimIter, bi, bj, myThid )
 
       CALL ACTIVE_READ_PROFILE_RL( fidtangent(active_num_file,bi,bj),
      &     active_num_file,
      &     nactive_var, g_active_var,active_varnum, lAdInit,
      &     irec, prof_ind_glob(active_num_file,irec,bi,bj),
-     &     TANGENT_SIMULATION, myOptimIter,bi,bj, myThid)
+     &     TANGENT_SIMULATION, myOptimIter, bi, bj, myThid )
 
 #endif
 
@@ -94,7 +91,7 @@ C     !OUTPUT PARAMETERS:
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: G_ACTIVE_WRITE_PROFILE(
+C     !ROUTINE: G_ACTIVE_WRITE_PROFILE
 C     !INTERFACE:
       SUBROUTINE G_ACTIVE_WRITE_PROFILE(
      I                           active_num_file,
@@ -112,12 +109,8 @@ C     !INTERFACE:
      &                                )
 
 C     !DESCRIPTION: \bv
-C     ==================================================================
-C     SUBROUTINE g_active_write_profile
-C     ==================================================================
-C     o write active 1D records to file for tangent linear simulation
 C
-C     \ev
+C     write active 1D records to file for tangent linear simulation
 
 C     !USES:
       IMPLICIT NONE
@@ -147,18 +140,19 @@ C     myThid:          thread number for this instance
 C     !OUTPUT PARAMETERS:
 
 #ifdef ALLOW_PROFILES
+CEOP
 
-      CALL ACTIVE_WRITE_PROFILE_RL( fidforward(active_num_file,bi,bj) ,
+      CALL ACTIVE_WRITE_PROFILE_RL( fidforward(active_num_file,bi,bj),
      &     active_num_file,
      &     nactive_var, active_var, active_varnum,
      &     irec, prof_ind_glob(active_num_file,irec,bi,bj),
-     &     FORWARD_SIMULATION, myOptimIter,bi,bj, myThid)
+     &     FORWARD_SIMULATION, myOptimIter, bi, bj, myThid )
 
-      CALL ACTIVE_WRITE_PROFILE_RL( fidtangent(active_num_file,bi,bj) ,
+      CALL ACTIVE_WRITE_PROFILE_RL( fidtangent(active_num_file,bi,bj),
      &     active_num_file,
      &     nactive_var, g_active_var, active_varnum,
      &     irec, prof_ind_glob(active_num_file,irec,bi,bj),
-     &     TANGENT_SIMULATION, myOptimIter,bi,bj, myThid)
+     &     TANGENT_SIMULATION, myOptimIter, bi, bj, myThid )
 
 #endif
 
