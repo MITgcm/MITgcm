@@ -1,0 +1,6 @@
+gchem_add_tendency.f
+gchem_calc_tendency.f
+gchem_fields_load.f
+gchem_forcing_sep.f
+gchem_init_vari.f
+gchem_surfmean.f

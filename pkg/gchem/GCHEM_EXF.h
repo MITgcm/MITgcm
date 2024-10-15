@@ -30,8 +30,6 @@ C--   COMMON /GCHEM_FIELDS_R/
      &    gSi0, gSi1, gchemSi,
      &    gPAR0, gPAR1, gchemPAR,
      &    giron0, giron1, gchemFe,
-     &    gice0, gice1, gchemIce,
-     &    gwind0, gwind1, gchemWind,
      &    apCO20, apCO21, gchemapCO2
 
       _RL gSi0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -45,14 +43,6 @@ C--   COMMON /GCHEM_FIELDS_R/
       _RL giron0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL giron1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL gchemFe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
-      _RL gice0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL gice1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL gchemIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
-      _RL gwind0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL gwind1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL gchemWind(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       _RL apCO20(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL apCO21(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

@@ -19,14 +19,8 @@ C !USES: ===============================================================
 #include "GRID.h"
 #include "PARAMS.h"
 #ifdef ALLOW_EXF
-ctmp# include "EXF_PARAM.h"
 # include "EXF_INTERP_SIZE.h"
-ctmp# include "EXF_FIELDS.h"
 # include "GCHEM_EXF.h"
-C ?? Is this enough? from Darwin
-c#endif
-c#ifdef ALLOW_EXF
-c#include "EXF_INTERP_SIZE.h"
 #endif
 #include "GCHEM.h"
 
