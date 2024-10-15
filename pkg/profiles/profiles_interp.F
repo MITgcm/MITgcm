@@ -1,4 +1,7 @@
 #include "PROFILES_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 #ifdef ALLOW_ECCO
 # include "ECCO_OPTIONS.h"
 #endif
@@ -121,6 +124,13 @@ c horizontal interpolation:
         endif
       enddo
 
+#ifdef ALLOW_AUTODIFF_TAMC
+C     This is necessary, because TAF does not recognise prof_mask1D_cur
+C     as active and does not include it in the TL-version of this
+C     routine leading to prof_mask1D_cur=0 and also to
+C     objf_profiles_tl=0.
+C$TAF INCOMPLETE prof_mask1D_cur
+#endif
 c vertical interpolation:
       do kk=1,NLEVELMAX
          traj_cur_out(kk)=0
