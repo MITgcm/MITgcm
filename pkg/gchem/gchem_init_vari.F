@@ -110,8 +110,10 @@ C-- Initialize Geo-Chemistry forcing fields
 
 #ifdef ALLOW_EXF
 
-      IF ( exf_silicafile .NE. ' ' ) THEN
-      CALL EXF_INIT_FLD (
+      IF ( useEXF ) THEN
+
+       IF ( exf_silicafile .NE. ' ' ) THEN
+        CALL EXF_INIT_FLD (
      &     'silica', exf_silicafile, silicamask,
      &     silicaperiod, gchem_inscal_silica, silicaconst,
      &     gchemSi, gSi0, gSi1,
@@ -122,10 +124,10 @@ C-- Initialize Geo-Chemistry forcing fields
      &     silica_interpMethod,
 #endif
      &     mythid )
-      ENDIF
+       ENDIF
 
-      IF ( exf_PARfile .NE. ' ' ) THEN
-      CALL EXF_INIT_FLD (
+       IF ( exf_PARfile .NE. ' ' ) THEN
+        CALL EXF_INIT_FLD (
      &     'PAR', exf_PARfile, PARmask,
      &     PARperiod, gchem_inscal_PAR, PARconst,
      &     gchemPAR, gPAR0, gPAR1,
@@ -136,10 +138,10 @@ C-- Initialize Geo-Chemistry forcing fields
      &     PAR_interpMethod,
 #endif
      &     mythid )
-      ENDIF
+       ENDIF
 
-      IF ( exf_ironfile .NE. ' ' ) THEN
-      CALL EXF_INIT_FLD (
+       IF ( exf_ironfile .NE. ' ' ) THEN
+        CALL EXF_INIT_FLD (
      &     'iron', exf_ironfile, ironmask,
      &     ironperiod, gchem_inscal_iron, ironconst,
      &     gchemFe, giron0, giron1,
@@ -150,10 +152,10 @@ C-- Initialize Geo-Chemistry forcing fields
      &     iron_interpMethod,
 #endif
      &     mythid )
-      ENDIF
+       ENDIF
 
-      IF ( exf_apCO2file .NE. ' ' ) THEN
-      CALL EXF_INIT_FLD (
+       IF ( exf_apCO2file .NE. ' ' ) THEN
+        CALL EXF_INIT_FLD (
      &     'apCO2', exf_apCO2file, apCO2mask,
      &     apCO2period, gchem_inscal_apCO2, apCO2const,
      &     gchemapCO2, apCO20, apCO21,
@@ -164,13 +166,15 @@ C-- Initialize Geo-Chemistry forcing fields
      &     apCO2_interpMethod,
 #endif
      &     mythid )
+       ENDIF
+
+       _EXCH_XY_RL( gchemSi, myThid )
+       _EXCH_XY_RL( gchemPAR, myThid )
+       _EXCH_XY_RL( gchemFe, myThid )
+       _EXCH_XY_RL( gchemapCO2, myThid )
+
+C     useEXF
       ENDIF
-
-        _EXCH_XY_RL( gchemSi, myThid )
-        _EXCH_XY_RL( gchemPAR, myThid )
-        _EXCH_XY_RL( gchemFe, myThid )
-        _EXCH_XY_RL( gchemapCO2, myThid )
-
 #endif /* ALLOW_EXF */
 
       RETURN
