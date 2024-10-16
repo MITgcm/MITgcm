@@ -830,7 +830,7 @@ The ``make «MODE»all`` target consists of the following procedures:
 
 #. All routines are compiled and an executable is generated.
 
-The list ``AD_FILES`` and ``*_ad_diff.list`` files
+The list ``AD_FILES`` and ``_ad_diff.list`` files
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Not all routines are presented to the AD tool. Routines typically hidden
