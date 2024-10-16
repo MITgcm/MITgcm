@@ -1,7 +1,4 @@
 #include "BLING_OPTIONS.h"
-#ifdef ALLOW_EXF
-# include "EXF_OPTIONS.h"
-#endif
 
 CBOP
       subroutine BLING_INI_FORCING( myThid )
@@ -18,9 +15,6 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#ifdef ALLOW_EXF
-# include "EXF_INTERP_SIZE.h"
-#endif
 #include "BLING_VARS.h"
 #include "BLING_LOAD.h"
 
@@ -43,16 +37,6 @@ C First call requires that we initialize everything to zero for safety
          BLING_ldRec(bi,bj) = 0
        ENDDO
       ENDDO
-      CALL LEF_ZERO( dicwind0,myThid )
-      CALL LEF_ZERO( dicwind1,myThid )
-      CALL LEF_ZERO( atmosp0,myThid )
-      CALL LEF_ZERO( atmosp1,myThid )
-      CALL LEF_ZERO( silica0,myThid )
-      CALL LEF_ZERO( silica1,myThid )
-      CALL LEF_ZERO( ice0,myThid )
-      CALL LEF_ZERO( ice1,myThid )
-      CALL LEF_ZERO( feinput0,myThid )
-      CALL LEF_ZERO( feinput1,myThid )
 
 #ifdef USE_BLING_V1
 #ifdef USE_SIBLING
@@ -89,28 +73,11 @@ c set reasonable values to those that need at least something
              fIce(i,j,bi,bj)     = 0. _d 0
              fluxCO2(i,j,bi,bj)  = 0. _d 0
              InputFe(i,j,bi,bj)  = 1. _d -11*maskC(i,j,1,bi,bj)
-             silica(i,j,bi,bj)   = 7.6838 _d -3*maskC(i,j,1,bi,bj)
+             Silica(i,j,bi,bj)   = 7.6838 _d -3*maskC(i,j,1,bi,bj)
           ENDDO
          ENDDO
         ENDDO
        ENDDO
-
-#ifdef ALLOW_EXF
-      IF ( useEXF ) THEN
-       IF ( apco2file .NE. ' ' ) THEN
-      CALL EXF_INIT_FLD(
-     I     'apco2', apco2file, apco2mask,
-     I     apco2period, exf_inscal_apco2, apco2const,
-     O     apco2, apco20, apco21,
-# ifdef USE_EXF_INTERPOLATION
-     I     apco2_lon0, apco2_lon_inc,
-     I     apco2_lat0, apco2_lat_inc,
-     I     apco2_nlon, apco2_nlat, xC, yC, apco2_interpMethod,
-# endif
-     I     myThid )
-       ENDIF
-      ENDIF
-#endif /* ALLOW_EXF */
 
 #endif /* ALLOW_BLING */
       RETURN
