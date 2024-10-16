@@ -1615,7 +1615,7 @@ divided adjoint and serves as an example of how to configure the code.
 
    ::
 
-      ${ROOTDIR}/tools/genmake2  -mods=../code_ad -nocat4ad [ other options ]
+      ../../../tools/genmake2  -mods=../code_ad -nocat4ad [ other options ]
       make depend
       make adtaf
 
