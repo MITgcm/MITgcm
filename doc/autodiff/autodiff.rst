@@ -830,20 +830,20 @@ The ``make «MODE»all`` target consists of the following procedures:
 
 #. All routines are compiled and an executable is generated.
 
-The list ``AD_FILES`` and ``.list`` files
+The list ``AD_FILES`` and ``*_ad_diff.list`` files
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Not all routines are presented to the AD tool. Routines typically hidden
 are diagnostics routines which do not influence the cost function, but
 may create artificial flow dependencies such as I/O of active variables.
 
-:filelink:`genmake2 <tools/genmake2>` generates a list (or variable) ``AD_FILES`` which contains all
-routines that are shown to the AD tool. This list is put together from
-all files with suffix ``.list`` that :filelink:`genmake2 <tools/genmake2>` finds in its search
-directories. The list file for the core MITgcm routines is :filelink:`model/src/model_ad_diff.list`
-Note that no wrapper routine is shown to
-TAF. These are either not visible at all to the AD code, or hand-written
-AD code is available (see next section).
+:filelink:`genmake2 <tools/genmake2>` generates a list (or variable) ``AD_FILES``
+which contains all routines that are shown to the AD tool.
+This list is put together from all files with suffix ``_ad_diff.list``
+that :filelink:`genmake2 <tools/genmake2>` finds in its search directories.
+The list file for the core MITgcm routines is :filelink:`model/src/model_ad_diff.list`
+Note that no wrapper routine is shown to TAF. These are either not visible at
+all to the AD code, or hand-written AD code is available (see next section).
 
 Each package directory contains its package-specific list file
 ``«PKG»_ad_diff.list``. For example, :filelink:`pkg/ptracers` contains the file
@@ -885,7 +885,7 @@ directories. The flow directives for the core MITgcm routines of
 contains hand-written adjoint code for the MITgcm WRAPPER (:numref:`wrapper`).
 
 Flow directives for package-specific routines are contained in the
-corresponding package directories in the file ``«PKG»_ad.flow``, e.g.,
+corresponding package directories, generally in a file ``«PKG»_ad.flow``, e.g.,
 ptracers-specific directives are in :filelink:`ptracers_ad.flow <pkg/ptracers/ptracers_ad.flow>`.
 
 Store directives for 3-level checkpointing
