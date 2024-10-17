@@ -1,7 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/seaice: 
+o tools/build_options:
+  - update darwin_arm64_gfortran to be able to compile free-format F90 files.
+o pkg/seaice:
   - add new lateral drag parameterisation for landfast ice (Liu etal 2022, JGR)
 o verification/*/results:
   - update 5 adm + 3 tlm ref. output affected by TAF new version 6.4.5 & 6.5.0
