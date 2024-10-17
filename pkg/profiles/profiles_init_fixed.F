@@ -1,18 +1,16 @@
 #include "PROFILES_OPTIONS.h"
 #include "AD_CONFIG.h"
 
-C     *==========================================================*
-C     | subroutine profiles_init_fixed
-C     | o initialization for netcdf profiles data
-C     | started: Gael Forget 15-March-2006
-C     | extended: Gael Forget 14-June-2007
-C     *==========================================================*
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE profiles_init_fixed( myThid )
-
+C     *==========================================================*
+C     | SUBROUTINE profiles_init_fixed                           |
+C     | o initialization for netcdf profiles data                |
+C     *==========================================================*
       implicit none
 
-C ==================== Global Variables ===========================
+C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -27,12 +25,18 @@ C ==================== Global Variables ===========================
 # include "netcdf.inc"
 #endif
 
-C ==================== Routine Arguments ==========================
-
+C     === Routine arguments ===
+C     myThid -  Number of this instances
       integer myThid
 
-C ==================== Routine Variables ==========================
+c     == external functions ==
+      integer ILNBLNK
+      EXTERNAL ILNBLNK
+      integer MDS_RECLEN
+      EXTERNAL MDS_RECLEN
+      character*(max_len_mbuf) msgbuf
 
+C     === Local variables ===
 #ifdef ALLOW_PROFILES
 
       integer i,j,k,l,m,bi,bj,iG,jG,num_file,ProfNo_tile
@@ -72,14 +76,6 @@ C ==================== Routine Variables ==========================
       _RL tmp_avgbin(1000)
 #endif
 
-c     == external functions ==
-      integer ILNBLNK
-      EXTERNAL ILNBLNK
-      integer MDS_RECLEN
-      EXTERNAL MDS_RECLEN
-      character*(max_len_mbuf) msgbuf
-
-c--   == end of interface ==
 
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
@@ -1012,3 +1008,5 @@ c2) stop after other kind of errors
 
       RETURN
       END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

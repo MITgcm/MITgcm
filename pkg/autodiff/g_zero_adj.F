@@ -14,8 +14,7 @@ C     !INTERFACE:
      I                  NrIn, g_FieldFwd, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | o zero out a 1D adjoint field
-C     | author: Gael Forget
+C     | o zero out a 1D tangent linear field
 C     *==========================================================*
 C     \ev
 
@@ -49,8 +48,7 @@ C     !INTERFACE:
      I                  NrIn, g_FieldFwd, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | o zero out a local (no nsx,nsy dims.) adjoint field
-C     | author: Gael Forget
+C     | o zero out a local (no nsx,nsy dims.) tangent linear field
 C     *==========================================================*
 C     \ev
 
@@ -88,8 +86,7 @@ C     !INTERFACE:
      I                  NrIn, g_FieldFwd, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | o zero out a full (incl. nsx,nsy dims.) adjoint field
-C     | author: Gael Forget
+C     | o zero out a full (incl. nsx,nsy dims.) tangent linear field
 C     *==========================================================*
 C     \ev
 

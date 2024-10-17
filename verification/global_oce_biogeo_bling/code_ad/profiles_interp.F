@@ -6,12 +6,7 @@
 # include "ECCO_OPTIONS.h"
 #endif
 
-C     o==========================================================o
-C     | subroutine profiles_interp                               |
-C     | o 3D interpolation of model counterparts                 |
-C     |   for netcdf profiles data                               |
-C     | started: Gael Forget 15-March-2006                       |
-C     o==========================================================o
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE profiles_interp(
      O traj_cur_out,
@@ -26,10 +21,14 @@ C     o==========================================================o
      I bj,
      I myThid
      & )
-
+C     *==========================================================*
+C     | SUBROUTINE profiles_interp                               |
+C     | o 3D interpolation of model counterparts                 |
+C     |   for netcdf profiles data                               |
+C     *==========================================================*
       implicit none
 
-C ==================== Global Variables ===========================
+C     === Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "GRID.h"
@@ -53,9 +52,17 @@ C ==================== Global Variables ===========================
 #ifdef ALLOW_BLING
 #include "BLING_VARS.h"
 #endif
-C ==================== Routine Variables ==========================
+
+C     === Routine arguments ===
+C     myThid -  Number of this instances
       _RL  myTime
       integer myThid
+
+c     == external functions ==
+      integer ILNBLNK
+      EXTERNAL ILNBLNK
+
+C     === Local variables ===
       integer file_cur, itr_cur
       character*(8) var_cur
 #ifndef ALLOW_PROFILES
@@ -67,8 +74,6 @@ C ==================== Routine Variables ==========================
       integer  i_cur(NUM_INTERP_POINTS)
       integer  j_cur(NUM_INTERP_POINTS)
 #endif
-
-C ==================== Local Variables ==========================
       _RL tab_coeffs1(NUM_INTERP_POINTS)
       _RL tab_coeffs3(NUM_INTERP_POINTS)
       _RL ponderations(NUM_INTERP_POINTS),pondsSUM
@@ -76,11 +81,6 @@ C ==================== Local Variables ==========================
       _RL traj_cur(nR),mask_cur(nR)
       _RL tmp_coeff
 
-c     == external functions ==
-      integer ILNBLNK
-      EXTERNAL ILNBLNK
-
-c--   == end of interface ==
 
 c horizontal interpolation:
       do k=1,nr
@@ -199,3 +199,5 @@ c  subcase 2: only 1 wet point just above=>upper cell value
 
       RETURN
       END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
