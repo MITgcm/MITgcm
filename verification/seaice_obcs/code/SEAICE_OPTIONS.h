@@ -183,6 +183,10 @@ C     Use parameterisation of grounding ice for a better representation
 C     of fastice in shallow seas
 # undef SEAICE_ALLOW_BOTTOMDRAG
 
+C     Use parameterisation of explicit lateral drag for a better
+C     representation of fastice along coast lines and islands
+# define SEAICE_ALLOW_SIDEDRAG
+
 #endif /* SEAICE_CGRID */
 
 #ifdef SEAICE_BGRID_DYNAMICS
