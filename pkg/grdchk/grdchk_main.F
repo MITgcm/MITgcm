@@ -533,14 +533,9 @@ C-- end of if ichknum < ...
 C-- end of do icomp = ...
       ENDDO
 
-      IF (myProcId .EQ. grdchkwhichproc .AND. .NOT.useSingleCpuIO) THEN
-        CALL WRITE_REC_XYZ_RL(
-     &       'grd_findiff'   , tmpplot1, 1, 0, myThid)
-        CALL WRITE_REC_XYZ_RL(
-     &       'grd_ratio_ad'  , tmpplot2, 1, 0, myThid)
-        CALL WRITE_REC_XYZ_RL(
-     &       'grd_ratio_ftl' , tmpplot3, 1, 0, myThid)
-      ENDIF
+      CALL WRITE_REC_XYZ_RL('grd_findiff'   , tmpplot1, 1, 0, myThid)
+      CALL WRITE_REC_XYZ_RL('grd_ratio_ad'  , tmpplot2, 1, 0, myThid)
+      CALL WRITE_REC_XYZ_RL('grd_ratio_ftl' , tmpplot3, 1, 0, myThid)
 
 C--   Print the results of the gradient check.
       CALL GRDCHK_PRINT( ichknum, ierr_grdchk, myThid )
