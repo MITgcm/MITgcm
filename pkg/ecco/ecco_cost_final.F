@@ -42,6 +42,10 @@ c     == global variables ==
 # include "PROFILES_SIZE.h"
 # include "profiles.h"
 #endif
+#ifdef ALLOW_OBSFIT
+# include "OBSFIT_SIZE.h"
+# include "OBSFIT.h"
+#endif
 
 c     == routine arguments ==
 
@@ -65,6 +69,10 @@ c     == local variables ==
       integer NVARMAX
       parameter (NVARMAX=1)
 #endif
+#ifndef ALLOW_OBSFIT
+      integer NFILESMAX_OBS
+      parameter (NFILESMAX_OBS=1)
+#endif
 
 #ifndef ALLOW_COST
 c This quick fix allows to compile and run fwd but, as far as
@@ -80,6 +88,9 @@ c the adjoint, pkg/autodiff most likely require cost though.
 #ifdef ALLOW_PROFILES
       _RL f_profiles(NFILESPROFMAX,NVARMAX)
       _RL f_profiles_mean(NVARMAX)
+#endif
+#ifdef ALLOW_OBSFIT
+      _RL f_obsfit(NFILESMAX_OBS)
 #endif
 #ifdef ALLOW_GENTIM2D_CONTROL
       _RL f_gentim2d(maxCtrlTim2D)
@@ -98,6 +109,10 @@ c the adjoint, pkg/autodiff most likely require cost though.
       integer num_file
       _RL no_profiles(NFILESPROFMAX,NVARMAX)
       _RL no_profiles_mean(NVARMAX)
+#endif
+#ifdef ALLOW_OBSFIT
+      integer num_file_obs
+      _RL no_obsfit(NFILESMAX_OBS)
 #endif
 #ifdef ALLOW_GENTIM2D_CONTROL
       _RL no_gentim2d(maxCtrlTim2D)
@@ -137,6 +152,12 @@ c     == end of interface ==
        f_profiles_mean(num_var)= 0. _d 0
       enddo
 #endif
+#ifdef ALLOW_OBSFIT
+      do num_file_obs=1,NFILESMAX_OBS
+        f_obsfit(num_file_obs)= 
+     &          objf_obsfit(num_file_obs)
+      enddo
+#endif
 #ifdef ALLOW_GENCOST_CONTRIBUTION
        do num_var=1,NGENCOST
         f_gencost(num_var)= 0. _d 0
@@ -173,6 +194,12 @@ c     == end of interface ==
       enddo
       do num_var=1,NVARMAX
        no_profiles_mean(num_var)= 0. _d 0
+      enddo
+#endif
+#ifdef ALLOW_OBSFIT
+      do num_file_obs=1,NFILESMAX_OBS
+        no_obsfit(num_file_obs)= 
+     &           num_obsfit(num_file_obs)
       enddo
 #endif
 #ifdef ALLOW_GENCOST_CONTRIBUTION
@@ -478,6 +505,19 @@ c--   Do global summation for each part of the cost function
       enddo
       endif
 #endif
+#ifdef ALLOW_OBSFIT
+      if (useOBSFIT) then
+      do num_file_obs=1,NFILESMAX_OBS
+        if ( no_obsfit(num_file_obs).GT.zeroRL ) then
+         write(msgBuf,'(A,D22.15,i2.0)')
+     &     ' --> f_obsfit =',f_obsfit(num_file_obs),
+     &      num_file_obs
+         call print_message( msgBuf, standardmessageunit,
+     &                       SQUEEZE_RIGHT , mythid)
+        endif
+      enddo
+      endif
+#endif
 #ifdef ALLOW_GENCOST_CONTRIBUTION
        do num_var=1,NGENCOST
         if (no_gencost(num_var).GT.0) then
@@ -528,6 +568,14 @@ c--   Each process has calculated the global part for itself.
 #ifndef ALLOW_COST
 cgf this sum is now done in cost_final if allow_cost
         fc = fc + glofc
+#endif
+
+#ifdef ALLOW_OBSFIT
+      do num_file_obs=1,NFILESMAX_OBS
+        glofc = glofc
+     &          +  mult_obsfit(num_file_obs)
+     &            *objf_obsfit(num_file_obs)
+      enddo
 #endif
 
       locfc=locfc+glofc
@@ -585,6 +633,21 @@ C     only master thread of master CPU open and write to file
      &    prof_names(1,num_var), ' = ',
      &    f_profiles_mean(num_var),
      &    no_profiles_mean(num_var)
+        endif
+      enddo
+      endif
+#endif
+#ifdef ALLOW_OBSFIT
+      if (useOBSFIT) then
+      do num_file_obs=1,NFILESMAX_OBS
+        if ( no_obsfit(num_file_obs).GT.zeroRL ) then
+         IL  = ILNBLNK( obsfitfiles(num_file_obs) )
+         IL  = max (IL,30)
+         write(ifc,'(4A,2D22.15)')
+     &    obsfitfiles(num_file_obs)(1:IL),' ',
+     &    obsfit_nameval, ' = ',
+     &    f_obsfit(num_file_obs),
+     &    no_obsfit(num_file_obs)
         endif
       enddo
       endif
