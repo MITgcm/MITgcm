@@ -216,7 +216,7 @@ C  Tracers are already diluted by freswater input, P-E+R
 C  This accounts for tracer concentration in river runoff
 C  no input south of 60S (it is ice melt)
 
-#ifdef ALLOW_EXF
+#if (defined ALLOW_EXF & defined ALLOW_RUNOFF)
        DO j=jmin,jmax
         IF (YC(i,j,bi,bj).gt.-60.0) THEN
          DO i=imin,imax
