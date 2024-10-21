@@ -847,7 +847,7 @@ all to the AD code, or hand-written AD code is available (see next section).
 
 Each package directory contains its package-specific list file
 ``«PKG»_ad_diff.list``. For example, :filelink:`pkg/ptracers` contains the file
-:filelink:`ptracers_ad_diff.list <pkg/ptracers_ad_diff.list>`.
+:filelink:`ptracers_ad_diff.list <pkg/ptracers/ptracers_ad_diff.list>`.
 Thus, enabling a package will automatically
 extend the ``AD_FILES`` list of :filelink:`genmake2 <tools/genmake2>` to incorporate the
 package-specific routines. Note that you will need to regenerate the
