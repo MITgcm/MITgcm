@@ -838,7 +838,7 @@ are diagnostics routines which do not influence the cost function, but
 may create artificial flow dependencies such as I/O of active variables.
 
 :filelink:`genmake2 <tools/genmake2>` generates a list (or variable) ``AD_FILES``
-which contains all routines that are shown to the AD tool.
+that contains all routines that are shown to the AD tool.
 This list is put together from all files with suffix ``_ad_diff.list``
 that :filelink:`genmake2 <tools/genmake2>` finds in its search directories.
 The list file for the core MITgcm routines is :filelink:`model/src/model_ad_diff.list`
