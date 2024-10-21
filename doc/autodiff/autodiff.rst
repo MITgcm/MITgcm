@@ -879,7 +879,7 @@ directive tell the AD tool:
 The syntax for the flow directives can be found in the AD tool manuals.
 
 :filelink:`genmake2 <tools/genmake2>` generates a list (or variable) ``AD_FLOW_FILES``
-which contains all files with suffix ``.flow`` that it finds in its search
+that contains all files with suffix ``.flow`` that it finds in its search
 directories. The flow directives for the core MITgcm routines of
 :filelink:`eesupp/src/` and :filelink:`model/src/` reside in :filelink:`pkg/autodiff/`. This directory also
 contains hand-written adjoint code for the MITgcm WRAPPER (:numref:`wrapper`).
