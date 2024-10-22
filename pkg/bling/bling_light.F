@@ -42,8 +42,9 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "BLING_VARS.h"
-#ifdef USE_QSW
+#ifdef ALLOW_EXF
 #include "FFIELDS.h"
+#include "EXF_PARAM.h"
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -86,13 +87,13 @@ C !LOCAL VARIABLES: ====================================================
       _RL SumMLIrr  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tmp_ML    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
-#ifndef USE_QSW
+c#ifndef USE_QSW
       _RL solar, albedo
       _RL dayfrac, yday, delta
       _RL lat, sun1, dayhrs
       _RL cosz, frac, fluxi
       _RL sfac      (1-OLy:sNy+OLy)
-#endif
+c#endif
 #ifdef PHYTO_SELF_SHADING
       _RL k0_rd, chi_rd, e_rd
       _RL k0_bg, chi_bg, e_bg
@@ -109,6 +110,10 @@ C     kkey :: tape key (tile and level dependent)
       INTEGER tkey, kkey
 #endif
 CEOP
+
+#ifndef ALLOW_EXF
+      CHARACTER*(128) swdownfile
+#endif
 
 c  Remove light under ice
 c  If using Qsw and seaice/thsice, then ice fraction is already
@@ -155,58 +160,63 @@ c  in red and blue-green fractions (Morel 1988; Foujols et al. 2000)
 c ---------------------------------------------------------------------
 c  Surface insolation
 
-#ifndef USE_QSW
-c  From pkg/dic/dic_insol
-c  find light as function of date and latitude
-c  based on paltridge and parson
+#ifndef ALLOW_EXF
+      swdownfile = ' '
+#endif
 
-      solar  = 1360. _d 0   !solar constant
-      albedo = 0.6 _d 0     !planetary albedo
+C If no EXF shortwave, calculate from time and latitude
+      IF (swdownfile.EQ.' ') THEN
+C  From pkg/dic/dic_insol
+C  find light as function of date and latitude
+C  based on paltridge and parson
 
-C     Case where a 2-d output array is needed: for now, stop here.
-      IF ( usingCurvilinearGrid .OR. rotateGrid ) THEN
-       STOP 'ABNORMAL END: S/R INSOL: 2-D output not implemented'
-      ENDIF
+       solar  = 1360. _d 0   !solar constant
+       albedo = 0.6 _d 0     !planetary albedo
 
-C find day (****NOTE for year starting in winter*****)
+C Case where a 2-d output array is needed: for now, stop here.
+       IF ( usingCurvilinearGrid .OR. rotateGrid ) THEN
+        STOP 'ABNORMAL END: S/R INSOL: 2-D output not implemented'
+       ENDIF
+
+C Find day (****NOTE for year starting in winter*****)
 C fraction of year
-      dayfrac=mod(myTime,360. _d 0*86400. _d 0)
+       dayfrac=mod(myTime,360. _d 0*86400. _d 0)
      &                 /(360. _d 0*86400. _d 0)
 C convert to radians
-      yday = 2. _d 0*PI*dayfrac
+       yday = 2. _d 0*PI*dayfrac
 C cosine zenith angle (paltridge+platt)
-      delta = (0.006918 _d 0
+       delta = (0.006918 _d 0
      &       -(0.399912 _d 0*cos(yday))
      &       +(0.070257 _d 0*sin(yday))
      &       -(0.006758 _d 0*cos(2. _d 0*yday))
      &       +(0.000907 _d 0*sin(2. _d 0*yday))
      &       -(0.002697 _d 0*cos(3. _d 0*yday))
      &       +(0.001480 _d 0*sin(3. _d 0*yday)) )
-      DO j=1-OLy,sNy+OLy
+        DO j=1-OLy,sNy+OLy
 C latitude in radians
-       lat=YC(1,j,1,bj)*deg2rad
+         lat=YC(1,j,1,bj)*deg2rad
 C     latitute in radians, backed out from coriolis parameter
 C     (makes latitude independent of grid)
-       IF ( usingCartesianGrid .OR. usingCylindricalGrid )
-     &      lat = asin( fCori(1,j,1,bj)/(2. _d 0*omega) )
-       sun1 = -sin(delta)/cos(delta) * sin(lat)/cos(lat)
-       IF (sun1.LE.-0.999 _d 0) sun1=-0.999 _d 0
-       IF (sun1.GE. 0.999 _d 0) sun1= 0.999 _d 0
-       dayhrs = abs(acos(sun1))
+         IF ( usingCartesianGrid .OR. usingCylindricalGrid )
+     &    lat = asin( fCori(1,j,1,bj)/(2. _d 0*omega) )
+          sun1 = -sin(delta)/cos(delta) * sin(lat)/cos(lat)
+         IF (sun1.LE.-0.999 _d 0) sun1=-0.999 _d 0
+         IF (sun1.GE. 0.999 _d 0) sun1= 0.999 _d 0
+          dayhrs = abs(acos(sun1))
 C average zenith angle
-       cosz = ( sin(delta)*sin(lat)
+          cosz = ( sin(delta)*sin(lat)
      &        +(cos(delta)*cos(lat)*sin(dayhrs)/dayhrs) )
-       IF (cosz.LE.5. _d -3) cosz= 5. _d -3
+              IF (cosz.LE.5. _d -3) cosz= 5. _d -3
 C fraction of daylight in day
-       frac = dayhrs/PI
+          frac = dayhrs/PI
 C daily average photosynthetically active solar radiation just below surface
-       fluxi = solar*(1. _d 0-albedo)*cosz*frac*parfrac
+          fluxi = solar*(1. _d 0-albedo)*cosz*frac*parfrac
 
 C convert to sfac
-       sfac(j) = MAX(1. _d -5,fluxi)
-      ENDDO !j
-#endif /* ndef USE_QSW */
+          sfac(j) = MAX(1. _d -5,fluxi)
+       ENDDO !j
 
+      ENDIF
 C get time (in h) within the day:
       utcTime = MOD( myTime/3600. _d 0, 24. _d 0 )
 #ifdef ALLOW_CAL
@@ -227,12 +237,13 @@ c  instantaneous light, mixed layer averaged light
       DO j=jmin,jmax
        DO i=imin,imax
 c  Photosynthetically-available radiations (PAR)
-#ifdef USE_QSW
-         irr_surf(i,j) = MAX( epsln,
-     &                 -parfrac*Qsw(i,j,bi,bj)*maskC(i,j,1,bi,bj))
-#else
+        IF (swdownfile.EQ.' ') THEN
          irr_surf(i,j) = sfac(j)
-#endif
+        ELSE
+#ifdef ALLOW_EXF
+         irr_surf(i,j) = max(epsln,
+     &                 -parfrac*Qsw(i,j,bi,bj)*maskC(i,j,1,bi,bj))
+        ENDIF
 c  Remove light under ice
          IF ( .NOT. QSW_underice ) THEN
           irr_surf(i,j) = irr_surf(i,j)*(1. _d 0 - FIce(i,j,bi,bj))

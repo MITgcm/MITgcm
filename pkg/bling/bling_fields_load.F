@@ -1,7 +1,4 @@
 #include "BLING_OPTIONS.h"
-#ifdef ALLOW_EXF
-# include "EXF_OPTIONS.h"
-#endif
 
 CBOP
       SUBROUTINE BLING_FIELDS_LOAD (
@@ -21,11 +18,6 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#ifdef ALLOW_EXF
-# include "EXF_PARAM.h"
-# include "EXF_INTERP_SIZE.h"
-# include "EXF_FIELDS.h"
-#endif
 #include "BLING_VARS.h"
 #include "BLING_LOAD.h"
 #ifdef ALLOW_THSICE
@@ -34,6 +26,12 @@ C     === Global variables ===
 #ifdef ALLOW_SEAICE
 # include "SEAICE_SIZE.h"
 # include "SEAICE.h"
+#endif
+#ifdef ALLOW_EXF
+# include "GCHEM_EXF.h"
+# include "EXF_PARAM.h"
+# include "EXF_INTERP_SIZE.h"
+# include "EXF_FIELDS.h"
 #endif
 
 C !INPUT PARAMETERS: ===================================================
@@ -270,25 +268,31 @@ C Atm pressure in Pascals, convert to atm
       ENDDO
 
 C-----------------------------------------------------------
-C Get Atmospheric carbon dioxide concentration from PKG/EXF
+C Get EXF fields from gchem
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
 #ifdef ALLOW_EXF
-C     Atmospheric carbon dioxide concentration
-      IF ( useEXF ) THEN
-       IF ( apco2file .NE. ' '  ) THEN
-        CALL EXF_SET_FLD(
-     I     'apco2', apco2file, apco2mask,
-     I     apco2StartTime, apco2period, apco2RepCycle,
-     I     exf_inscal_apco2,
-     I     apco2_exfremo_intercept, apco2_exfremo_slope,
-     U     apco2, apco20, apco21,
-# ifdef USE_EXF_INTERPOLATION
-     I     apco2_lon0, apco2_lon_inc, apco2_lat0, apco2_lat_inc,
-     I     apco2_nlon, apco2_nlat, xC, yC, apco2_interpMethod,
-# endif
-     I     myTime, myIter, myThid )
-       ENDIF
-      ENDIF
+         IF ( useEXF ) THEN
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            IF ( exf_silicafile .NE. ' '  ) THEN
+             silica(i,j,bi,bj) = gchemSi(i,j,bi,bj)
+            ENDIF
+c            IF ( exf_PARfile .NE. ' '  ) THEN
+c             PAR(i,j,bi,bj) = gchemPAR(i,j,bi,bj)
+c            ENDIF
+            IF ( exf_ironfile .NE. ' '  ) THEN
+             inputFe(i,j,bi,bj) = gchemFe(i,j,bi,bj)
+            ENDIF
+            IF ( exf_apCO2file .NE. ' '  ) THEN
+             apCO2(i,j,bi,bj) = gchemapCO2(i,j,bi,bj)
+            ENDIF
+           ENDDO
+          ENDDO
+         ENDIF
 #endif
+       ENDDO
+      ENDDO
 
 #endif /* ALLOW_BLING */
       RETURN

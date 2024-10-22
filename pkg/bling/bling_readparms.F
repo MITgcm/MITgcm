@@ -21,6 +21,7 @@ C     === Global variables ===
 # include "EXF_PARAM.h"
 # include "EXF_INTERP_SIZE.h"
 # include "EXF_INTERP_PARAM.h"
+# include "GCHEM_EXF.h"
 #endif /* ALLOW_EXF */
 #include "BLING_VARS.h"
 
@@ -187,18 +188,7 @@ C ==========================================================
      &          bling_k_Fe2dFile, bling_k_Fe_diaz2dFile,
      &          bling_gamma_POM2dFile, bling_wsink0_2dFile,
      &          bling_phi_sm2dFile,bling_phi_lg2dFile,
-     &          bling_pCO2,
-     &          river_conc_po4, river_dom_to_nut
-#ifdef ALLOW_EXF
-     &         ,apco2file, apco2startdate1, apco2startdate2,
-     &          apco2RepCycle, apco2period, apco2StartTime,
-     &          exf_inscal_apco2, exf_outscal_apco2, apco2const,
-     &          apco2_exfremo_intercept, apco2_exfremo_slope
-#ifdef USE_EXF_INTERPOLATION
-     &         ,apco2_lon0, apco2_lon_inc, apco2_lat0, apco2_lat_inc,
-     &          apco2_nlon, apco2_nlat, apco2_interpMethod
-#endif /* USE_EXF_INTERPOLATION */
-#endif /* ALLOW_EXF */
+     &          bling_pCO2
 
 C ==========================================================
 C   secperday        :: Seconds in a day = 24*60*60
@@ -427,33 +417,6 @@ C     Default values
       bling_pCO2             = 278. _d -6
       river_conc_po4         = 0.007 _d 0
       river_dom_to_nut       = 0. _d 0
-
-#ifdef ALLOW_EXF
-      apco2startdate1         = 0
-      apco2startdate2         = 0
-      apco2StartTime          = UNSET_RL
-      apco2period             = 0.0 _d 0
-      apco2RepCycle           = repeatPeriod
-      apco2const              = 0.0 _d 0
-      apco2_exfremo_intercept = 0.0 _d 0
-      apco2_exfremo_slope     = 0.0 _d 0
-      apco2file               = ' '
-      exf_inscal_apco2        =  1. _d 0
-      exf_outscal_apco2       =  1. _d 0
-#ifdef USE_EXF_INTERPOLATION
-C--   set default input location to match (in case of simple Lat-Long grid)
-C     model grid cell-center position (leading to trivial interpolation)
-      apco2_lon0         = inp_lon0
-      apco2_lat0         = inp_lat0
-      apco2_nlon         = inp_gNx
-      apco2_nlat         = inp_gNy
-      apco2_lon_inc      = inp_dLon
-      DO j=1,MAX_LAT_INC
-        apco2_lat_inc(j) = inp_dLat(j)
-      ENDDO
-      apco2_interpMethod = 1
-#endif /* USE_EXF_INTERPOLATION */
-#endif /* ALLOW_EXF */
 
 C     default periodic forcing to same as for physics
       bling_forcingPeriod = externForcingPeriod
