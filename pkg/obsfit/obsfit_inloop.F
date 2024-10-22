@@ -7,15 +7,17 @@
 #endif
 
 CBOP
-C !ROUTINE: OBSFIT_INLOOP
+C     !ROUTINE: OBSFIT_INLOOP
 
-C !INTERFACE: ==========================================================
+C     !INTERFACE: 
       SUBROUTINE OBSFIT_INLOOP( myTime, myThid )
 
-C !DESCRIPTION:
-C Computes and writes model counterparts for obsfit data  
+C     !DESCRIPTION:
+C     ==================================================================
+C     | Computes and writes model counterparts for ObsFit data  
+C     ==================================================================
 
-C !USES: ===============================================================
+C     !USES:
       IMPLICIT NONE
 C     == Global variables ===
 #include "SIZE.h"
@@ -38,15 +40,15 @@ C     == Global variables ===
 # include "tamc.h"
 #endif
 
-C !INPUT PARAMETERS: 
-C myTime    :: Current time in simulation
-C myThid    :: my Thread Id number
+C     !INPUT PARAMETERS: 
+C     myTime    :: Current time in simulation
+C     myThid    :: my Thread Id number
       _RL     myTime
       INTEGER myThid
 CEOP
 
 #ifdef ALLOW_OBSFIT
-C !LOCAL VARIABLES: 
+C     !LOCAL VARIABLES:
       INTEGER k,bi,bj,sample_num,num_file
       INTEGER sample_i(NUM_INTERP_PTS_OBS)
       INTEGER sample_j(NUM_INTERP_PTS_OBS)
@@ -73,7 +75,7 @@ C !LOCAL VARIABLES:
       itdkey = bi + (bj - 1)*nSx + (ikey_dynamics - 1)*nSx*nSy
 #endif
 
-        _BEGIN_MASTER( myThid )
+      _BEGIN_MASTER( myThid )
 
       DO bj=1,nSy
        DO bi=1,nSx
@@ -88,22 +90,18 @@ C !LOCAL VARIABLES:
      &      (myTime+deltaTclock))) THEN
 
             DO k=1,NUM_INTERP_PTS_OBS
-             sample_i(k)= sample_interp_i(num_file,sample_num,k,bi,bj)
-             sample_j(k)= sample_interp_j(num_file,sample_num,k,bi,bj)
-             sample_k(k)= sample_interp_k(num_file,sample_num,k,bi,bj)
-             sample_w(k)= sample_interp_w(num_file,sample_num,k,bi,bj)
+             sample_i(k)=sample_interp_i(num_file,sample_num,k,bi,bj)
+             sample_j(k)=sample_interp_j(num_file,sample_num,k,bi,bj)
+             sample_k(k)=sample_interp_k(num_file,sample_num,k,bi,bj)
+             sample_w(k)=sample_interp_w(num_file,sample_num,k,bi,bj)
             ENDDO
-
-cCADJ STORE sample_modval  = comlev1_bibj, key=itdkey, kind=isbyte
-cCADJ STORE saved_modval  = comlev1_bibj, key=itdkey, kind=isbyte
-cCADJ STORE sample_modmask  = comlev1_bibj, key=itdkey, kind=isbyte
 
             sample_modval=0
             saved_modval=0
 
 C If averaging or integrating in time, read previously 
 C recorded value and add to it
-            IF (obsfitOperation(num_file).gt.0) THEN
+            IF (obsfitOperation(num_file).GT.0) THEN
              CALL active_read_obs_tile(num_file,
      &          saved_modval,
      &          sample_num,.false.,optimcycle,bi,bj,myThid,
@@ -118,7 +116,7 @@ C recorded value and add to it
             sample_modval=sample_modval*
      &                   obsfit_facmod(num_file)
 
-            IF (obsfitOperation(num_file).gt.0) THEN
+            IF (obsfitOperation(num_file).GT.0) THEN
                sample_modval = saved_modval+sample_modval*deltaTclock
             ENDIF
 
@@ -138,9 +136,11 @@ C recorded value and add to it
        ENDDO
       ENDDO
 
-        _END_MASTER( myThid )
+      _END_MASTER( myThid )
 
 #endif
 
       RETURN
       END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

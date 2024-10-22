@@ -1,14 +1,15 @@
 #include "OBSFIT_OPTIONS.h"
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C !ROUTINE: OBSFIT_READPARMS
+C     !ROUTINE: OBSFIT_READPARMS
 
-C !INTERFACE:
+C     !INTERFACE:
       SUBROUTINE OBSFIT_READPARMS( myThid )
 
 C     !DESCRIPTION:
-C     Initialize OBSFIT variables and constants.
+C     ==================================================================
+C     | Initialize ObsFit variables and constants
+C     ==================================================================
 
 C     !USES:
       IMPLICIT NONE
@@ -45,18 +46,18 @@ C     !FUNCTIONS:
      &                   obsfitDoGenGrid
 
       IF ( .NOT.useOBSFIT ) THEN
-C     pkg OBSFIT is not used
-        _BEGIN_MASTER(myThid)
-C     Track pkg activation status:
-C     print a (weak) warning if data.obsfit is found
-         CALL PACKAGES_UNUSED_MSG( 'useOBSFIT', ' ', ' ' )
-        _END_MASTER(myThid)
-        RETURN
+C pkg/obsfit is not used
+       _BEGIN_MASTER(myThid)
+C Track pkg activation status:
+C print a (weak) warning if data.obsfit is found
+       CALL PACKAGES_UNUSED_MSG( 'useOBSFIT', ' ', ' ' )
+       _END_MASTER(myThid)
+       RETURN
       ENDIF
 
       _BEGIN_MASTER(myThid)
 
-C     Default values for OBSFIT
+C Default values for ObsFit
       obsfitDir=' '
 
       DO num_file=1,NFILESMAX_OBS
@@ -64,8 +65,8 @@ C     Default values for OBSFIT
       ENDDO
 
       DO num_file=1,NFILESMAX_OBS
-        mult_obsfit(num_file) = 1. _d 0
-        obsfit_facmod(num_file) = 1. _d 0
+       mult_obsfit(num_file) = 1. _d 0
+       obsfit_facmod(num_file) = 1. _d 0
       ENDDO
 
       obsfitDoNcOutput=.false.
@@ -76,7 +77,7 @@ C     Default values for OBSFIT
        obsfitDoGenGrid=.false.
       ENDIF
       
-C     Read OBSFIT cost data file
+C Read ObsFit cost data file
       WRITE(msgBuf,'(A)') 'OBSFIT_READPARMS: opening data.obsfit'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, 1)
@@ -101,27 +102,29 @@ C     Read OBSFIT cost data file
 
       DO num_file=1,NFILESMAX_OBS
 
-          IF ( obsfitFiles(num_file) .NE. ' ' ) THEN
-           IL  = ILNBLNK( obsfitFiles(num_file) )
-           fname = obsfitFiles(num_file)(1:IL)//'.nc'
-           inquire( file=fname, exist=exst )
-           IF (.NOT.exst) THEN
-C     Warn user as we override obsfitFiles
-            WRITE(msgBuf,'(3A)')
-     &       '** WARNING ** OBSFIT_READPARMS: missing file: ',
-     &       obsfitFiles(num_file)(1:IL),' gets switched off'
-            CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid)
-C     Switch off this file (and potential cost function term)
-             obsfitFiles(num_file) = ' '
-            ENDIF
-          ENDIF
-        ENDDO
+       IF ( obsfitFiles(num_file) .NE. ' ' ) THEN
+        IL  = ILNBLNK( obsfitFiles(num_file) )
+        fname = obsfitFiles(num_file)(1:IL)//'.nc'
+        INQUIRE( file=fname, exist=exst ) 
+        IF (.NOT.exst) THEN
+C Warn user as we override obsfitFiles
+         WRITE(msgBuf,'(3A)')
+     &    '** WARNING ** OBSFIT_READPARMS: missing file: ',
+     &     obsfitFiles(num_file)(1:IL),' gets switched off'
+         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &     SQUEEZE_RIGHT, myThid)
+C Switch off this file (and potential cost function term)
+         obsfitFiles(num_file) = ' '
+        ENDIF
+       ENDIF
+      ENDDO
 
       _END_MASTER(myThid)
 
-C--   Everyone else must wait for the parameters to be loaded
+C Everyone else must wait for the parameters to be loaded
       _BARRIER
 
       RETURN
       END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

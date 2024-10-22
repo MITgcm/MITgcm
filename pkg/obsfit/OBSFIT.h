@@ -1,23 +1,23 @@
 CBOP
 C     !ROUTINE: OBSFIT.h
+
 C     !INTERFACE:
 C     #include "OBSFIT.h"
 
 C     !DESCRIPTION:
-C     *================================================================*
-C     | OBSFIT.h
-C     | o Header file defining "obsfit" parameters and variables
-C     *================================================================*
+C     ==================================================================
+C     | Header file defining ObsFit parameters and variables
+C     ==================================================================
 CEOP
 
-C    OBSFIT logical parameters
+C ObsFit LOGICAL parameters
       LOGICAL obsfitDoNcOutput
       LOGICAL obsfitDoGenGrid
 
       COMMON /OBSFIT_PACKAGE/
-     &       obsfitDoNcOutput, obsfitDoGenGrid
+     & obsfitDoNcOutput, obsfitDoGenGrid
 
-C    OBSFIT real parameters
+C ObsFit real parameters
       _RL sample_timeS(NFILESMAX_OBS,NSAMPLESMAX,nsx,nsy)
       _RL sample_timeE(NFILESMAX_OBS,NSAMPLESMAX,nsx,nsy)
       _RL sample_lon(NFILESMAX_OBS,NSAMPLESMAX,nsx,nsy)
@@ -33,7 +33,7 @@ C    OBSFIT real parameters
      & sample_depth, sample_weight, sample_modmask,
      & obs_modmask, obs_delT
 
-C    OBSFIT integer parameters
+C ObsFit integer parameters
       INTEGER sample_type(NFILESMAX_OBS,NSAMPLESMAX,nsx,nsy)
       INTEGER obs_ind_glob(NFILESMAX_OBS,NOBSMAX_OBS)
       INTEGER obs_np(NFILESMAX_OBS,NOBSMAX_OBS)
@@ -58,7 +58,7 @@ C    OBSFIT integer parameters
      & fidglobal, fidadglobal, fidtanglobal, fidmisfit,
      & obs_sample1_ind, obs_is_ssh
 
-C    OBSFIT character strings
+C ObsFit character strings
       CHARACTER*(8)  obsfit_nameval
       CHARACTER*(12) obsfit_namemask
       CHARACTER*(14) obsfit_nameuncert
@@ -67,7 +67,7 @@ C    OBSFIT character strings
       COMMON /OBSFIT_C/ obsfit_nameval, obsfit_namemask,
      & obsfit_nameuncert, obsfit_nameequi
 
-C    Grid parameters
+C Grid parameters
       INTEGER sample_interp_i(NFILESMAX_OBS,NSAMPLESMAX,
      &     NUM_INTERP_PTS_OBS,nsx,nsy)
       INTEGER sample_interp_j(NFILESMAX_OBS,NSAMPLESMAX,
@@ -76,7 +76,7 @@ C    Grid parameters
      &     NUM_INTERP_PTS_OBS,nsx,nsy)
       _RL sample_interp_w(NFILESMAX_OBS,NSAMPLESMAX,
      &     NUM_INTERP_PTS_OBS,nsx,nsy)
-C     Generic grid
+C Generic grid
       _RL sample_interp_xC11(NFILESMAX_OBS,NSAMPLESMAX,nsx,nsy)
       _RL sample_interp_yC11(NFILESMAX_OBS,NSAMPLESMAX,nsx,nsy)
       _RL sample_interp_xCNINJ(NFILESMAX_OBS,NSAMPLESMAX,nsx,nsy)
@@ -88,7 +88,7 @@ C     Generic grid
      & sample_interp_xC11, sample_interp_yC11,
      & sample_interp_xCNINJ, sample_interp_yCNINJ  
 
-C    OBSFIT buffers
+C ObsFit buffers
       _RL obsfit_data_buff(1000)
       _RL obsfit_uncert_buff(1000)
       INTEGER obsfit_minind_buff
@@ -99,26 +99,28 @@ C    OBSFIT buffers
       COMMON /OBSFIT_BUFF_I/
      & obsfit_minind_buff, obsfit_maxind_buff, obsfit_curfile_buff
 
-C    Cost
+C Cost
       _RL objf_obsfit(NFILESMAX_OBS)
       _RL num_obsfit(NFILESMAX_OBS)
       _RL mult_obsfit(NFILESMAX_OBS)
       _RL obsfit_facmod(NFILESMAX_OBS)
+      
       COMMON /OBSFIT_COST_R/
-     &                objf_obsfit,
-     &                num_obsfit,
-     &                mult_obsfit,
-     &                obsfit_facmod
+     & objf_obsfit, num_obsfit,
+     & mult_obsfit, obsfit_facmod
      
+C Input files     
       CHARACTER*(MAX_LEN_FNAM) obsfitDir
       CHARACTER*(MAX_LEN_FNAM) obsfitFiles(NFILESMAX_OBS)
+      
       COMMON /OBSFIT_COST_C/
-     &        obsfitDir, obsfitFiles
-     
+     & obsfitDir, obsfitFiles
+
+C File reading     
       _RL obsfit_dummy(NFILESMAX_OBS,nsx,nsy)
       _RL obsfit_globaldummy(NFILESMAX_OBS)
+      
       COMMON /OBSFIT_CTRL_DUMMY/
-     &                obsfit_dummy,
-     &                obsfit_globaldummy
+     & obsfit_dummy, obsfit_globaldummy
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

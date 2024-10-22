@@ -1,5 +1,4 @@
 #include "OBSFIT_OPTIONS.h"
-
 C--  File active_file_control_obs_tile_rl.F:
 C--   Contents
 C--   o active_read_obs_tile_rl
@@ -9,6 +8,7 @@ C--   o active_write_obs_glob_rl
 
 CBOP
 C     !ROUTINE: ACTIVE_READ_OBS_TILE
+
 C     !INTERFACE:
       SUBROUTINE ACTIVE_READ_OBS_TILE(
      I                               active_num_file,
@@ -20,16 +20,15 @@ C     !INTERFACE:
      I                               bj,
      I                               myThid,
      I                               dummy )
-
 C     !DESCRIPTION: 
 C     ==================================================================
-C     | SUBROUTINE ACTIVE_READ_OBS_TILE
-C     | Read an active record from an obsfit .equi. tiled file
-C     | (can be netcdf or binary)  
+C     | Read an active record ("sample-equivalent") from an ObsFit 
+C     | .equi. tiled file (can be netcdf or binary)  
 C     ==================================================================
 
-C !USES:
+C     !USES: 
       IMPLICIT NONE
+C     == Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #ifdef ALLOW_OBSFIT
@@ -37,14 +36,14 @@ C !USES:
 # include "OBSFIT.h"
 #endif
 
-C !INPUT PARAMETERS:
-c     active_var_file: filename
-c     active_var:      array
-c     irec:            record number
-c     myOptimIter:     number of optimization iteration (default: 0)
-c     myThid:          thread number for this instance
-c     lAdInit:         initialisation of corresponding adjoint
-c                      variable and write to active file
+C     !INPUT PARAMETERS:
+C     active_num_file: file number
+C     active_var:      array
+C     irec:            record number
+C     myOptimIter:     number of optimization iteration (default: 0)
+C     myThid:          thread number for this instance
+C     lAdInit:         initialisation of corresponding adjoint
+C                      variable and write to active file
       INTEGER  active_num_file
       _RL      active_var
       INTEGER  irec
@@ -56,7 +55,7 @@ CEOP
 
 #ifdef ALLOW_OBSFIT
 
-      CALL active_read_obs_tile_rl( fidfwd_obs(active_num_file,bi,bj),
+      CALL ACTIVE_READ_OBS_TILE_RL( fidfwd_obs(active_num_file,bi,bj),
      &     active_num_file,
      &     active_var, lAdInit,
      &     irec, sample_ind_glob(active_num_file,irec,bi,bj),
@@ -71,6 +70,7 @@ C     ==================================================================
 
 CBOP
 C     !ROUTINE: ACTIVE_WRITE_OBS_TILE
+
 C     !INTERFACE:
       SUBROUTINE ACTIVE_WRITE_OBS_TILE(
      I                           active_num_file,
@@ -84,13 +84,12 @@ C     !INTERFACE:
 
 C     !DESCRIPTION: 
 C     ==================================================================
-C     | SUBROUTINE ACTIVE_WRITE_OBS_TILE
-C     | Write to a file the model-equivalent value to an  
-c     | observation sample during the model run
+C     | Write to a file a sampled value during the model run
 C     ==================================================================
 
-C !USES:
+C     !USES:
       IMPLICIT NONE
+C     == Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #ifdef ALLOW_OBSFIT
@@ -98,12 +97,12 @@ C !USES:
 # include "OBSFIT.h"
 #endif
 
-C !INPUT PARAMETERS:
-c     active_var_file: filename
-c     active_var:      array
-c     irec:            record number
-c     myOptimIter:     number of optimization iteration (default: 0)
-c     myThid:          thread number for this instance
+C     !INPUT PARAMETERS:
+C     active_num_file: file number
+C     active_var:      array
+C     irec:            record number
+C     myOptimIter:     number of optimization iteration (default: 0)
+C     myThid:          thread number for this instance
       INTEGER  active_num_file
       _RL      active_var
       INTEGER  irec
@@ -114,7 +113,7 @@ CEOP
 
 #ifdef ALLOW_OBSFIT
 
-      CALL active_write_obs_tile_rl( fidfwd_obs(active_num_file,bi,bj),
+      CALL ACTIVE_WRITE_OBS_TILE_RL( fidfwd_obs(active_num_file,bi,bj),
      &     active_num_file,
      &     active_var, 
      &     irec, sample_ind_glob(active_num_file,irec,bi,bj),
@@ -127,9 +126,9 @@ CEOP
 
 C     ==================================================================
 
-
 CBOP
 C     !ROUTINE: ACTIVE_READ_OBS_GLOB
+
 C     !INTERFACE:
       SUBROUTINE ACTIVE_READ_OBS_GLOB(
      I                               active_num_file,
@@ -142,13 +141,13 @@ C     !INTERFACE:
 
 C     !DESCRIPTION: 
 C     ==================================================================
-C     | SUBROUTINE ACTIVE_READ_OBS_GLOB
-C     | Read an active record from an obsfit .equi. tiled file
-C     | (can be netcdf or binary)  
+C     | Read an active record ("observation-equivalent") from a
+C     | global file
 C     ==================================================================
 
-C !USES:
+C     !USES:
       IMPLICIT NONE
+C     == Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #ifdef ALLOW_OBSFIT
@@ -156,14 +155,14 @@ C !USES:
 # include "OBSFIT.h"
 #endif
 
-C !INPUT PARAMETERS:
-c     active_var_file: filename
-c     active_var:      array
-c     irec:            record number
-c     myOptimIter:     number of optimization iteration (default: 0)
-c     myThid:          thread number for this instance
-c     lAdInit:         initialisation of corresponding adjoint
-c                      variable and write to active file
+C     !INPUT PARAMETERS:
+C     active_num_file: file number
+C     active_var:      array
+C     irec:            record number
+C     myOptimIter:     number of optimization iteration (default: 0)
+C     myThid:          thread number for this instance
+C     lAdInit:         initialisation of corresponding adjoint
+C                      variable and write to active file
       INTEGER  active_num_file
       _RL      active_var
       INTEGER  irec
@@ -175,7 +174,7 @@ CEOP
 
 #ifdef ALLOW_OBSFIT
 
-      CALL active_read_obs_glob_rl( 
+      CALL ACTIVE_READ_OBS_GLOB_RL( 
      &     fidglobal(active_num_file),
      &     active_num_file,
      &     active_var, lAdInit,
@@ -191,6 +190,7 @@ C     ==================================================================
 
 CBOP
 C     !ROUTINE: ACTIVE_WRITE_OBS_GLOB
+
 C     !INTERFACE:
       SUBROUTINE ACTIVE_WRITE_OBS_GLOB(
      I                           active_num_file,
@@ -202,13 +202,12 @@ C     !INTERFACE:
 
 C     !DESCRIPTION: 
 C     ==================================================================
-C     | SUBROUTINE ACTIVE_WRITE_OBS_GLOB
-C     | Write to a file the model-equivalent value to an  
-c     | observation sample during the model run
+C     | Write to a global file a model counterpart to an observation
 C     ==================================================================
 
-C !USES:
+C     !USES:
       IMPLICIT NONE
+C     == Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #ifdef ALLOW_OBSFIT
@@ -216,12 +215,12 @@ C !USES:
 # include "OBSFIT.h"
 #endif
 
-C !INPUT PARAMETERS:
-c     active_var_file: filename
-c     active_var:      array
-c     irec:            record number
-c     myOptimIter:     number of optimization iteration (default: 0)
-c     myThid:          thread number for this instance
+C     !INPUT PARAMETERS:
+C     active_num_file: file number
+C     active_var:      array
+C     irec:            record number
+C     myOptimIter:     number of optimization iteration (default: 0)
+C     myThid:          thread number for this instance
       INTEGER  active_num_file
       _RL      active_var
       INTEGER  irec
@@ -232,7 +231,7 @@ CEOP
 
 #ifdef ALLOW_OBSFIT
 
-      CALL active_write_obs_glob_rl( 
+      CALL ACTIVE_WRITE_OBS_GLOB_RL( 
      &     fidglobal(active_num_file),
      &     active_num_file,
      &     active_var, 
@@ -244,6 +243,4 @@ CEOP
       RETURN
       END
 
-C     ==================================================================
-
-
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

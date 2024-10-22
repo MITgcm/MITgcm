@@ -1,22 +1,24 @@
 #include "OBSFIT_OPTIONS.h"
 
 CBOP
-C !ROUTINE: OBSFIT_INIT_EQUIFILES
+C     !ROUTINE: OBSFIT_INIT_EQUIFILES
 
-C !INTERFACE: 
+C     !INTERFACE: 
       SUBROUTINE OBSFIT_INIT_EQUIFILES( 
-     I                               num_file,
-     I                               fid1,
-     I                               file2,
-     O                               fid2,
-     I                               length,
-     I                               bi,
-     I                               bj,
-     I                               myThid )
+     I                                  num_file,
+     I                                  fid1,
+     I                                  file2,
+     O                                  fid2,
+     I                                  length,
+     I                                  bi,
+     I                                  bj,
+     I                                  myThid )
 
-C !DESCRIPTION:
-C Initialization of model counterparts files             
-C for obsfit data 
+C     !DESCRIPTION:
+C     ==================================================================
+C     | Initialization of model counterparts files             
+C     | for ObsFit observations 
+C     ==================================================================
 
 C !USES:
       IMPLICIT NONE
@@ -32,16 +34,16 @@ C     == Global variables ===
 #endif
 CEOP
 
-C !INPUT PARAMETERS:
+C     !INPUT PARAMETERS:
       INTEGER num_file, fid1, fid2
       INTEGER bi, bj, myThid, length
       CHARACTER*(MAX_LEN_FNAM) file2
 
 #ifdef ALLOW_OBSFIT
-C !LOCAL VARIABLES:
+C     !LOCAL VARIABLES:
       INTEGER dimid,varid(3),varid0,err
       INTEGER irec
-      Real*8  tmp_vec(2)
+      _RL tmp_vec(2)
 
       IF (obsfitDoNcOutput) THEN
       
@@ -52,7 +54,7 @@ C Create a netcdf file
      &  varid(1))
        err = NF_PUT_ATT_INT(fid2,varid(1),'_FillValue',NF_INT,1,-9999)
 
-        err = NF_INQ_VARID(fid1,obsfit_nameval,varid0)
+       err = NF_INQ_VARID(fid1,obsfit_nameval,varid0)
        IF (err.EQ.NF_NOERR) THEN
 
          err = NF_DEF_VAR(fid2,obsfit_nameequi,
@@ -94,3 +96,5 @@ C Create a binary file
 #endif
 
       END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

@@ -4,9 +4,9 @@
 #endif
 
 CBOP
-C !ROUTINE: OBSFIT_INTERP
+C     !ROUTINE: OBSFIT_INTERP
 
-C !INTERFACE: 
+C     !INTERFACE: 
       SUBROUTINE OBSFIT_INTERP(
      O                          modval_cur_out,
      I                          i_cur,
@@ -20,10 +20,12 @@ C !INTERFACE:
      I                          bj,
      I                          myThid )
 
-C !DESCRIPTION:
-C 3D interpolation of model counterparts for obsfit data   
+C     !DESCRIPTION:
+C     ==================================================================
+C     | 3D interpolation of model counterparts for ObsFit data   
+C     ==================================================================
 
-C !USES: 
+C     !USES:
       IMPLICIT NONE
 C     == Global variables ===
 #include "SIZE.h"
@@ -50,9 +52,9 @@ C     == Global variables ===
 #include "BLING_VARS.h"
 #endif
 
-C !INPUT PARAMETERS: 
-C myTime    :: Current time in simulation
-C myThid    :: my Thread Id number
+C     !INPUT PARAMETERS: 
+C     myTime    :: Current time in simulation
+C     myThid    :: my Thread Id number
       _RL      mytime
       INTEGER  myThid
       INTEGER  file_cur, var_cur
@@ -70,57 +72,58 @@ CEOP
 
 #ifdef ALLOW_OBSFIT
 
-C !LOCAL VARIABLES:
+C     !LOCAL VARIABLES:
       _RL      tab_coeffs1(NUM_INTERP_PTS_OBS)
       _RL      tab_coeffs3(NUM_INTERP_PTS_OBS)
       _RL      weighing_pts(NUM_INTERP_PTS_OBS),weighingSUM
       INTEGER  q,k,kk,kcur,bi,bj
       _RL      modval_cur,mask_cur
       _RL      tmp_coeff
-      character*(MAX_LEN_MBUF) msgBuf
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-C !FUNCTIONS:
+C     !FUNCTIONS:
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
 
-
 C Horizontal interpolation:
-        weighingSUM=0. _d 0
-        DO q=1,NUM_INTERP_PTS_OBS
-         IF (var_cur.EQ.1) THEN
-               tab_coeffs1(q)=theta(i_cur(q),j_cur(q),k_cur(q),bi,bj)
-         ELSEIF (var_cur.EQ.2) THEN
-               tab_coeffs1(q)=salt(i_cur(q),j_cur(q),k_cur(q),bi,bj)
-         ELSEIF (var_cur.EQ.3) THEN
-               tab_coeffs1(q)=uvel(i_cur(q),j_cur(q),k_cur(q),bi,bj)
-         ELSEIF (var_cur.EQ.4) THEN
-               tab_coeffs1(q)=vvel(i_cur(q),j_cur(q),k_cur(q),bi,bj)
-         ELSEIF (var_cur.EQ.5) THEN
-               tab_coeffs1(q)=etan(i_cur(q),j_cur(q),bi,bj)
-         ELSE
-               tab_coeffs1(q)=0. _d 0
-         ENDIF
-         tab_coeffs3(q)=maskC(i_cur(q),j_cur(q),k_cur(q),bi,bj)
-         weighing_pts(q)=tab_coeffs3(q)*weights_cur(q)
-         weighingSUM=weighingSUM+weighing_pts(q)
-        ENDDO
-
-        IF (weighingSUM.GT.0) THEN
-         modval_cur=0. _d 0
-         mask_cur=1. _d 0
-         DO q=1,NUM_INTERP_PTS_OBS
-           modval_cur=modval_cur
-     &     +tab_coeffs1(q)*weighing_pts(q)/weighingSUM
-         ENDDO
+      weighingSUM=0. _d 0
+       DO q=1,NUM_INTERP_PTS_OBS
+        IF (var_cur.EQ.1) THEN
+         tab_coeffs1(q)=theta(i_cur(q),j_cur(q),k_cur(q),bi,bj)
+        ELSEIF (var_cur.EQ.2) THEN
+         tab_coeffs1(q)=salt(i_cur(q),j_cur(q),k_cur(q),bi,bj)
+        ELSEIF (var_cur.EQ.3) THEN
+         tab_coeffs1(q)=uvel(i_cur(q),j_cur(q),k_cur(q),bi,bj)
+        ELSEIF (var_cur.EQ.4) THEN
+         tab_coeffs1(q)=vvel(i_cur(q),j_cur(q),k_cur(q),bi,bj)
+        ELSEIF (var_cur.EQ.5) THEN
+         tab_coeffs1(q)=etan(i_cur(q),j_cur(q),bi,bj)
         ELSE
-         modval_cur=0. _d 0
-         mask_cur=0. _d 0
+         tab_coeffs1(q)=0. _d 0
         ENDIF
+        tab_coeffs3(q)=maskC(i_cur(q),j_cur(q),k_cur(q),bi,bj)
+        weighing_pts(q)=tab_coeffs3(q)*weights_cur(q)
+        weighingSUM=weighingSUM+weighing_pts(q)
+       ENDDO
 
-        modval_cur_out = modval_cur
-        sample_modmask(bi,bj) = mask_cur
+       IF (weighingSUM.GT.0) THEN
+        modval_cur=0. _d 0
+        mask_cur=1. _d 0
+       DO q=1,NUM_INTERP_PTS_OBS
+        modval_cur=modval_cur
+     &   +tab_coeffs1(q)*weighing_pts(q)/weighingSUM
+       ENDDO
+      ELSE
+       modval_cur=0. _d 0
+       mask_cur=0. _d 0
+      ENDIF
+
+      modval_cur_out = modval_cur
+      sample_modmask(bi,bj) = mask_cur
 
 #endif /* ALLOW_OBSFIT */
 
       RETURN
       END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

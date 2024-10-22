@@ -7,18 +7,19 @@
 #endif
 
 CBOP
-C !ROUTINE: COST_OBSFIT
+C     !ROUTINE: COST_OBSFIT
 
-C !INTERFACE:
-      SUBROUTINE COST_OBSFIT(
-     I                     myIter, myTime, myThid )
+C     !INTERFACE:
+      SUBROUTINE COST_OBSFIT( myIter, myTime, myThid )
 
-C !DESCRIPTION:
-C Computes the cost function for obsfit data
+C     !DESCRIPTION:
+C     ==================================================================
+C     | Computes the cost function for ObsFit data
+C     ==================================================================
 
-C !USES:
+C     !USES:
       IMPLICIT NONE
-C == Global variables ===
+C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -39,17 +40,17 @@ C == Global variables ===
 # include "tamc.h"
 #endif
 
-C !INPUT PARAMETERS:
-C myTime    :: Current time in simulation
-C myIter    :: Current time-step number
-C myThid    :: my Thread Id number
+C     !INPUT PARAMETERS:
+C     myTime    :: Current time in simulation
+C     myIter    :: Current time-step number
+C     myThid    :: my Thread Id number
       _RL     myTime
       INTEGER myIter, myThid
 CEOP
 
 #ifdef ALLOW_OBSFIT
-C !LOCAL VARIABLES:
-C bi,bj     :: Tile indices
+C     !LOCAL VARIABLES:
+C     bi,bj     :: Tile indices
       INTEGER num_file,sample_num
       INTEGER bi,bj,iG,jG
       _RL sample_modval
@@ -76,7 +77,7 @@ C bi,bj     :: Tile indices
       _RL offset, mod_mean, obs_mean, misfit
 
 
-C !FUNCTIONS
+C     !FUNCTIONS
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
 
@@ -101,17 +102,17 @@ C File maintenance
 
          IF ( (sampleNo(num_file,bi,bj).GT.0).AND.
      &         (obsfitDoNcOutput) ) THEN
-C need to close the file so that the data is not lost when run finishes
+C Need to close the file so that the data is not lost when run finishes
            err = NF_CLOSE(fidfwd_obs(num_file,bi,bj))
-C then re-open it to compute cost function
+C Then re-open it to compute cost function
            iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
            jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
            IL  = ILNBLNK( obsfitfiles(num_file) )
-           write(obsfitfile,'(1a)')
+           WRITE(obsfitfile,'(1a)')
      &     obsfitfiles(num_file)(1:IL)
            IL  = ILNBLNK( obsfitfile )
            JL  = ILNBLNK( obsfitDir )
-           write(fnameequinc,'(3a,i3.3,a,i3.3,a)')
+           WRITE(fnameequinc,'(3a,i3.3,a,i3.3,a)')
      &     obsfitDir(1:JL),obsfitfile(1:IL),'.',iG,'.',jG,'.equi.nc'
            err = NF_OPEN(fnameequinc,NF_NOWRITE,
      &     fidfwd_obs(num_file,bi,bj))
@@ -119,7 +120,6 @@ C then re-open it to compute cost function
 
         ENDDO
        ENDDO
-
 
 C Loop over samples
        DO ii=1,NSAMPLESMAX
@@ -181,7 +181,7 @@ C Calculate model equi of each obs by averaging NP samples
 
             irec = obs_sample1_ind(num_file,obs_num) + sample_num-1
             obs_modval = obs_modval + samples_modval_glob(irec)
-     &           *samples_mask_glob(irec)
+     &       *samples_mask_glob(irec)
             sample_mask_sum = sample_mask_sum + samples_mask_glob(irec)
             IF (samples_mask_glob(irec) .GT. 0. _d 0) THEN
              num_valid_samples = num_valid_samples+1
@@ -196,7 +196,7 @@ C Time averaging
           ENDIF
 
 C Spatial averaging
-          IF (num_valid_samples.gt.0) THEN
+          IF (num_valid_samples.GT.0) THEN
            obs_modval = obs_modval/sample_mask_sum
            obs_modmask = 1
           ELSE
@@ -219,10 +219,10 @@ C Write to global netcdf file
 
         err = NF_CLOSE(fidglobal(num_file))
         IL  = ILNBLNK( obsfitfiles(num_file) )
-        write(obsfitfile,'(1a)') obsfitfiles(num_file)(1:IL)
+        WRITE(obsfitfile,'(1a)') obsfitfiles(num_file)(1:IL)
         IL  = ILNBLNK( obsfitfile )
         JL  = ILNBLNK( obsfitDir )
-        write(fnameequinc,'(3a)')
+        WRITE(fnameequinc,'(3a)')
      &      obsfitDir(1:JL),obsfitfile(1:IL),'.equi.nc'
         err = NF_OPEN(fnameequinc,NF_NOWRITE,fidglobal(num_file))
 
@@ -239,7 +239,7 @@ C Loop over obs
           IF (obs_num.LE.ObsNo(num_file)) THEN
 
            obs_modval=0.
-           obs_data=0.
+           obs_data  =0.
            obs_uncert=0.
 
 C Read observation and uncertainty
@@ -363,3 +363,5 @@ C Print cost function values
 
       RETURN
       END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

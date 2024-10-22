@@ -1,28 +1,30 @@
 #include "CPP_EEOPTIONS.h"
 
 CBOP
-C !ROUTINE: OBSFIT_FINDUNIT
+C     !ROUTINE: OBSFIT_FINDUNIT
 
-C !INTERFACE: 
+C     !INTERFACE: 
       SUBROUTINE OBSFIT_FINDUNIT( ioUnit, myThid )
 
-C !DESCRIPTION:
-C Returns a valid, unused unit number for f77 I/O
-C The routine stops the program is an error occurs in the process
-C of searching the I/O channels.
+C     !DESCRIPTION:
+C     ==================================================================
+C     | Returns a valid, unused unit number for f77 I/O
+C     | The routine stops the program is an error occurs in the process
+C     | of searching the I/O channels
+C     ==================================================================
 
-C !USES:
+C     !USES:
       IMPLICIT NONE
 C     == Global variables ===
 #include "EEPARAMS.h"
 
-C !INPUT PARAMETERS:
-C ioUnit    :: unit number
-C myThid    :: my Thread Id number
+C     !INPUT PARAMETERS:
+C     ioUnit    :: unit number
+C     myThid    :: my Thread Id number
       INTEGER ioUnit
       INTEGER myThid
 
-C !LOCAL VARIABLES:
+C     !LOCAL VARIABLES:
       INTEGER ii
       LOGICAL op
       INTEGER ios
@@ -69,3 +71,5 @@ C Was there an available unit number
 
       RETURN
       END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

@@ -1,15 +1,17 @@
 #include "OBSFIT_OPTIONS.h"
 
 CBOP
-C !ROUTINE: OBSFIT_INI_IO
+C     !ROUTINE: OBSFIT_INI_IO
 
-C !INTERFACE: 
+C     !INTERFACE: 
       SUBROUTINE OBSFIT_INI_IO( myThid )
 
-C !DESCRIPTION:
-C Create directory for obsfit output if needed
+C     !DESCRIPTION:
+C     ==================================================================
+C     | Create directory for obsfit output if needed
+C     ==================================================================
 
-C !USES: 
+C     !USES: 
       IMPLICIT NONE
 C     == Global variables ===
 #include "SIZE.h"
@@ -19,11 +21,11 @@ C     == Global variables ===
 #include "OBSFIT_SIZE.h"
 #include "OBSFIT.h"
 
-C !INPUT PARAMETERS: 
-C myThid    :: my Thread Id number
+C     !INPUT PARAMETERS: 
+C     myThid    :: my Thread Id number
       INTEGER myThid
 
-C !FUNCTIONS
+C     !FUNCTIONS
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
 CEOP
@@ -40,13 +42,13 @@ C !LOCAL VARIABLES:
 
       IF ( obsfitDir .NE. ' ' ) THEN
        iL = ILNBLNK( obsfitDir )
-C      append "/", if necessary
+C Append "/", if necessary
        IF ( iL.LT.MAX_LEN_FNAM .AND. obsfitDir(iL:iL).NE.'/' ) THEN
         namBuf(1:iL) = obsfitDir(1:iL)
         WRITE(obsfitDir(1:iL+1),'(2A)') namBuf(1:iL),'/'
        ENDIF
 #ifdef HAVE_SYSTEM
-C      create directory
+C Create directory
        iL = ILNBLNK( obsfitDir ) -1
        WRITE(namBuf,'(2A)') ' mkdir -p ', obsfitDir(1:iL)
        pIL = 1 + ILNBLNK( namBuf )
@@ -67,3 +69,5 @@ C      create directory
 
       RETURN
       END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
