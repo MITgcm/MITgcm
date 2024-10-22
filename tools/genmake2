@@ -3589,14 +3589,6 @@ ad_inpF90_code.$FS90: \$(AD_F90FILES) \$(AD_FLOW_FILES)
 
 EOF
 fi
-cat >>$MAKEFILE <<EOF
-# this is an unused target and could be removed
-adtafonly: ad_input_code.$FS
-	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) -fixed \$(TAF_F77_FLAGS) ad_input_code.$FS
-	ls -l ad_input_code_ad.$FS
-	cat ad_input_code_ad.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ad_taf_output.$FS
-
-EOF
 
 if test $CAT_SRC_FOR_TAF = 1 ; then
 if test -z "$AD_F90FILES" ; then
@@ -3714,14 +3706,6 @@ ftl_inpF90_code.$FS90: \$(AD_F90FILES) \$(AD_FLOW_FILES)
 
 EOF
 fi
-
-cat >>$MAKEFILE <<EOF
-# this is an unused target and could be removed
-ftltafonly:
-	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) -fixed \$(TAF_F77_FLAGS) ftl_input_code.$FS
-	ls -l ftl_input_code_tl.$FS
-	cat ftl_input_code_tl.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ftl_taf_output.$FS
-EOF
 
 if test $CAT_SRC_FOR_TAF = 1 ; then
 if test -z "$AD_F90FILES" ; then
