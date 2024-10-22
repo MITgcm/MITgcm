@@ -133,6 +133,10 @@ C     == global variables ==
 # include "EXF_INTERP_SIZE.h"
 # include "EXF_INTERP_PARAM.h"
 #endif /* ALLOW_TAPENADE */
+#if ( defined ALLOW_DOWNWARD_RADIATION ) || \
+      ( defined ALLOW_ATM_TEMP && defined ALLOW_BULKFORMULAE )
+# include "DYNVARS.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == routine arguments ==
@@ -144,8 +148,43 @@ C     !LOCAL VARIABLES:
 C     == local variables ==
       INTEGER bi,bj
       INTEGER i,j,ks
+#if ( defined ALLOW_DOWNWARD_RADIATION ) || \
+      ( defined ALLOW_ATM_TEMP && defined ALLOW_BULKFORMULAE )
+      INTEGER kl
+      _RL SSTtmp
+#endif
 C     == end of interface ==
 CEOP
+
+#if ( defined ALLOW_DOWNWARD_RADIATION ) || \
+      ( defined ALLOW_ATM_TEMP && defined ALLOW_BULKFORMULAE )
+C     Compute the surface temperature either as copy of the global
+C     variable surfLevTemp or by extrapolation to the actual surface
+C     (W-point).
+      kl = 2
+      IF ( usingPCoords ) kl = Nr-1
+      DO bj = myByLo(myThid),myByHi(myThid)
+       DO bi = myBxLo(myThid),myBxHi(myThid)
+        IF ( Nr.GE.2 .AND. sstExtrapol.GT.0. _d 0 ) THEN
+         DO j = 1,sNy
+          DO i = 1,sNx
+           SSTtmp = sstExtrapol
+     &          *( surfLevTemp(i,j,bi,bj)-theta(i,j,kl,bi,bj) )
+     &          *  maskC(i,j,kl,bi,bj)
+           exf_Tsf(i,j,bi,bj) = surfLevTemp(i,j,bi,bj) + cen2kel
+     &          + MAX( SSTtmp, 0. _d 0 )
+          ENDDO
+         ENDDO
+        ELSE
+         DO j = 1,sNy
+          DO i = 1,sNx
+           exf_Tsf(i,j,bi,bj) = surfLevTemp(i,j,bi,bj) + cen2kel
+          ENDDO
+         ENDDO
+        ENDIF
+       ENDDO
+      ENDDO
+#endif
 
 C     Get values of climatological fields.
       CALL EXF_GETCLIM( myTime, myIter, myThid )
