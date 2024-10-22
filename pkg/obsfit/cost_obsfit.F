@@ -73,9 +73,8 @@ C     bi,bj     :: Tile indices
       _RL samples_modval_glob(NSAMPLESMAX)
       _RL samples_mask_glob(NSAMPLESMAX)
       _RL tmpgs
-      INTEGER nmodmean, nobsmean
+      INTEGER nobsmean
       _RL offset, mod_mean, obs_mean, misfit
-
 
 C     !FUNCTIONS
       INTEGER  ILNBLNK
@@ -150,7 +149,7 @@ C Combine all threads here
      &                                 +sample_modmask(bi,bj)
 
           ENDIF !if (sample_num.LE.sampleNo(num_file,bi,bj)) then
-         ENDDO !do sample_num=..
+         ENDDO !do sample_num
 
         ENDDO !bj
        ENDDO !bi
@@ -215,7 +214,7 @@ C Write to global netcdf file
      &         obsfit_globaldummy(num_file))
 
          ENDIF !if (obs_num.LE.ObsNo(num_file)) then
-        ENDDO !do obs_num=..
+        ENDDO !do obs_num
 
         err = NF_CLOSE(fidglobal(num_file))
         IL  = ILNBLNK( obsfitfiles(num_file) )
@@ -231,8 +230,7 @@ C Read data to calculate the mean offset between model and obs
          offset=0.
          mod_mean=0.
          obs_mean=0.
-         nmodmean=0
-         nobsmean=0.
+         nobsmean=0
 
 C Loop over obs
          DO obs_num=1,NOBSMAX_OBS
@@ -241,6 +239,12 @@ C Loop over obs
            obs_modval=0.
            obs_data  =0.
            obs_uncert=0.
+
+C Read model equivalent from global file
+           CALL ACTIVE_READ_OBS_GLOB(num_file,
+     &         obs_modval,
+     &         obs_num,.FALSE.,optimcycle,myThid,
+     &         obsfit_globaldummy(num_file))
 
 C Read observation and uncertainty
            CALL OBSFIT_READ_OBS(num_file,1,
@@ -251,20 +255,19 @@ C Read observation and uncertainty
      &           obs_ind_glob(num_file,obs_num),
      &           obs_uncert,myThid)
 
-           IF (obs_data.GT.-9999) THEN
-            obs_mean=obs_mean+obs_data
-            nobsmean=nobsmean+1
-           ENDIF
-           IF (obs_modval.GT.-9999) THEN
-            mod_mean=mod_mean+obs_modval
-            nmodmean=nmodmean+1
-           ENDIF
+            IF ((obs_data.GT.-9999).AND.(obs_modmask.GT.0)) THEN
+             obs_mean=obs_mean+obs_data
+             mod_mean=mod_mean+obs_modval
+             nobsmean=nobsmean+1
+            ENDIF
 
           ENDIF !if (obs_num.LE.ObsNo(num_file)) then
-         ENDDO !do obs_num...
-         mod_mean=mod_mean/nmodmean
+         ENDDO !do obs_num
+         
          obs_mean=obs_mean/nobsmean
+         mod_mean=mod_mean/nobsmean
          offset=mod_mean-obs_mean
+         
         ELSE
          offset=0.
         ENDIF
@@ -328,7 +331,7 @@ C Write misfit to global netcdf file
           ENDIF
 
          ENDIF !if (obs_num.LE.ObsNo(num_file)) then
-        ENDDO !do obs_num...
+        ENDDO !do obs_num
 
         err = NF_CLOSE(fidmisfit(num_file))
 
