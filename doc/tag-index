@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o utils/python/MITgcmutils/:
+  - augment (llc, examples, ...) and update python utils
 o tools/build_options:
   - update darwin_arm64_gfortran to be able to compile free-format F90 files.
 o pkg/seaice:
