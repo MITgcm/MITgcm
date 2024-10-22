@@ -20,13 +20,13 @@ C Use this file for selecting options within the GAD package
 C     Package-specific Options & Macros go here
 
 C This flag selects the form of COSINE(lat) scaling of horizontal
-C bi-harmonic diffusivity. *only for use on a lat-lon grid*
+C bi-harmonic diffusivity -- only on lat-lon grid.
 C Setting this flag here only affects tracer diffusivity; to use it
 C in the momentum equations it needs to be set in MOM_COMMON_OPTIONS.h
 #define COSINEMETH_III
 
 C This selects isotropic scaling of horizontal harmonic and bi-harmonic
-C diffusivity when using the COSINE(lat) scaling. *only for lat-lon grid*
+C diffusivity when using the COSINE(lat) scaling -- only on lat-lon grid.
 C Setting this flag here only affects tracer diffusivity; to use it
 C in the momentum equations it needs to be set in MOM_COMMON_OPTIONS.h
 #undef ISOTROPIC_COS_SCALING
