@@ -534,8 +534,12 @@ C-- end of do icomp = ...
       ENDDO
 
       CALL WRITE_REC_XYZ_RL('grd_findiff'   , tmpplot1, 1, 0, myThid)
+# ifdef ALLOW_ADJOINT_RUN
       CALL WRITE_REC_XYZ_RL('grd_ratio_ad'  , tmpplot2, 1, 0, myThid)
+# endif
+# ifdef  ALLOW_TANGENTLINEAR_RUN
       CALL WRITE_REC_XYZ_RL('grd_ratio_ftl' , tmpplot3, 1, 0, myThid)
+# endif
 
 C--   Print the results of the gradient check.
       CALL GRDCHK_PRINT( ichknum, ierr_grdchk, myThid )
