@@ -3473,7 +3473,7 @@ CPPCMD = cat \$< | ${CPP} \$(DEFINES) \$(INCLUDES) | ${S64}
 	\$(F90C) \$(F90FLAGS) \$(F90OPTIM) -c \$<
 .f$FS90.o:
 	cp \$< \$(basename  \$<).$FS90
-	\$(F90C) \$(F90FLAGS) \$(F90OPTIM) -c \$(F90FIXEDFORMAT) \$(basename  \$<).f90
+	\$(F90C) \$(F90FLAGS) \$(F90OPTIM) -c \$(F90FIXEDFORMAT) \$(basename  \$<).$FS90
 .c.o:
 	\$(CC) \$(CFLAGS) \$(DEFINES) \$(INCLUDES) -c \$<
 .flow.flowdir:
