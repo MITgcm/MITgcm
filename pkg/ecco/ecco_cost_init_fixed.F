@@ -88,6 +88,7 @@ c     == end of interface ==
 #else
       eccoiter=0
 #endif
+      eccoWriteCostFunction = .TRUE.
 
 #ifndef ECCO_VARIABLE_AREAVOLGLOB
       DO bj=myByLo(myThid),myByHi(myThid)
