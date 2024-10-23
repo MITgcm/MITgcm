@@ -49,6 +49,9 @@ C o Exclude/allow external forcing-fields load
 C   this allows to read & do simple linear time interpolation of oceanic
 C   forcing fields, if no specific pkg (e.g., EXF) is used to compute them.
 #undef EXCLUDE_FFIELDS_LOAD
+C   If defined, use same method (with pkg/autodiff compiled or not) for checking
+C   when to load new reccord ; by default, use simpler method with pkg/autodiff.
+#undef STORE_LOADEDREC_TEST
 
 C o Include/exclude phi_hyd calculation code
 #define INCLUDE_PHIHYD_CALCULATION_CODE
@@ -64,8 +67,7 @@ C o Include/exclude calling S/R CONVECTIVE_ADJUSTMENT
 #define INCLUDE_CONVECT_CALL
 
 C o Include/exclude calling S/R CONVECTIVE_ADJUSTMENT_INI, turned off by
-C   default because it is an unpopular historical left-over, here we
-C   turn it on to reproduce old results
+C   default because it is an unpopular historical left-over
 #define INCLUDE_CONVECT_INI_CALL
 
 C o Include/exclude call to S/R CALC_DIFFUSIVITY
@@ -111,7 +113,7 @@ C o Allow the use of Non-Linear Free-Surface formulation
 C   this implies that grid-cell thickness (hFactors) varies with time
 #define NONLIN_FRSURF
 C o Disable code for rStar coordinate and/or code for Sigma coordinate
-#undef  DISABLE_RSTAR_CODE
+c#define DISABLE_RSTAR_CODE
 #define DISABLE_SIGMA_CODE
 
 C o Include/exclude nonHydrostatic code
@@ -134,7 +136,14 @@ C   The following has low memory footprint, but not suitable for AD
 C   The following one suitable for AD but does not vectorize
 #undef SOLVE_DIAGONAL_KINNER
 
+C   Implementation alternative (might be faster on some platforms ?)
+#undef USE_MASK_AND_NO_IF
+
 C-- Retired code options:
+
+C-  These 2 flags: ISOTROPIC_COS_SCALING & COSINEMETH_III have no effect
+C   here as they are reset in GAD_OPTIONS.h and in MOM_COMMON_OPTIONS.h
+C   for tracer diffusivity and momentum viscosity respectively
 
 C o Use LONG.bin, LATG.bin, etc., initialization for ini_curviliear_grid.F
 C   Default is to use "new" grid files (OLD_GRID_IO undef) but OLD_GRID_IO
@@ -146,14 +155,6 @@ C-- Other option files:
 C o Execution environment support options
 #include "CPP_EEOPTIONS.h"
 
-C o Include/exclude single header file containing multiple packages options
-C   (AUTODIFF, COST, CTRL, ECCO, EXF ...) instead of the standard way where
-C   each of the above pkg get its own options from its specific option file.
-C   Although this method, inherited from ECCO setup, has been traditionally
-C   used for all adjoint built, work is in progress to allow to use the
-C   standard method also for adjoint built.
-c#ifdef PACKAGES_CONFIG_H
-c# include "ECCO_CPPOPTIONS.h"
-c#endif
+C-  Place where multi-pkg header file ECCO_CPPOPTIONS.h use to be included
 
 #endif /* CPP_OPTIONS_H */

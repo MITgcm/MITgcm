@@ -141,28 +141,9 @@ C   Implementation alternative (might be faster on some platforms ?)
 
 C-- Retired code options:
 
-C o ALLOW isotropic scaling of harmonic and bi-harmonic terms when
-C   using an locally isotropic spherical grid with (dlambda) x (dphi*cos(phi))
-C *only for use on a lat-lon grid*
-C   Setting this flag here affects both momentum and tracer equation unless
-C   it is set/unset again in other header fields (e.g., GAD_OPTIONS.h).
-C   The definition of the flag is commented to avoid interference with
-C   such other header files.
-C   The preferred method is specifying a value for viscAhGrid or viscA4Grid
-C   in data which is then automatically scaled by the grid size;
-C   the old method of specifying viscAh/viscA4 and this flag is provided
-C   for completeness only (and for use with the adjoint).
-c#define ISOTROPIC_COS_SCALING
-
-C o This flag selects the form of COSINE(lat) scaling of bi-harmonic term.
-C *only for use on a lat-lon grid*
-C   Has no effect if ISOTROPIC_COS_SCALING is undefined.
-C   Has no effect on vector invariant momentum equations.
-C   Setting this flag here affects both momentum and tracer equation unless
-C   it is set/unset again in other header fields (e.g., GAD_OPTIONS.h).
-C   The definition of the flag is commented to avoid interference with
-C   such other header files.
-c#define COSINEMETH_III
+C-  These 2 flags: ISOTROPIC_COS_SCALING & COSINEMETH_III have no effect
+C   here as they are reset in GAD_OPTIONS.h and in MOM_COMMON_OPTIONS.h
+C   for tracer diffusivity and momentum viscosity respectively
 
 C o Use LONG.bin, LATG.bin, etc., initialization for ini_curviliear_grid.F
 C   Default is to use "new" grid files (OLD_GRID_IO undef) but OLD_GRID_IO
@@ -174,14 +155,6 @@ C-- Other option files:
 C o Execution environment support options
 #include "CPP_EEOPTIONS.h"
 
-C o Include/exclude single header file containing multiple packages options
-C   (AUTODIFF, COST, CTRL, ECCO, EXF ...) instead of the standard way where
-C   each of the above pkg get its own options from its specific option file.
-C   Although this method, inherited from ECCO setup, has been traditionally
-C   used for all adjoint built, work is in progress to allow to use the
-C   standard method also for adjoint built.
-c#ifdef PACKAGES_CONFIG_H
-c# include "ECCO_CPPOPTIONS.h"
-c#endif
+C-  Place where multi-pkg header file ECCO_CPPOPTIONS.h use to be included
 
 #endif /* CPP_OPTIONS_H */
