@@ -107,14 +107,12 @@ C ==========================================================
      &                     k_NO3,
      &                     k_PtoN,
      &                     k_FetoN,
-# ifdef SIZE_DEP_LIM
      &                     k_NO3_sm,
      &                     k_NO3_lg,
      &                     k_PO4_sm,
      &                     k_PO4_lg,
      &                     k_Fe_sm,
      &                     k_Fe_lg,
-# endif
      &                     PtoN_min,
      &                     PtoN_max,
      &                     FetoN_min,
