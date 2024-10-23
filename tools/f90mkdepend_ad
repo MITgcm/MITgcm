@@ -36,7 +36,7 @@ for key in "$@" ; do
         FS90="${key#*=}"
         ;;
     *)
-        echo "f90mkdepend: Unknown option: $key"
+        echo "f90mkdepend_ad: Unknown option: $key"
         exit 1
         ;;
     esac
@@ -46,22 +46,25 @@ done
 shopt -s nullglob
 
 # TAF generated file should end with _ad for adjoint OR _tl for tangent linear
-file_end=""
+adsuff=""
 if ls *_tl.$FS90 1> /dev/null 2>&1; then
-    file_end="_tl"
+    adsuff="_tl"
 elif ls *_ad.$FS90 1> /dev/null 2>&1; then
-    file_end="_ad"
+    adsuff="_ad"
+else
+    echo "WARNING f90mkdepend_ad: no TAF generated code"
+    exit 0
 fi
 
 # init files
-log_file="f90mkdepend$file_end.log"
+log_file="f90mkdepend$adsuff.log"
 dep_file="Makefile_ad.dep"
 
 cat /dev/null > $log_file
 cat /dev/null > $dep_file
 
 # append module dependencies to Makefile
-for filename in *$file_end.$FS90 *$file_end.$FS; do
+for filename in *$adsuff.$FS90 *$adsuff.$FS; do
   # Check for "use" to speed up processing
   if grep -i '^ *use ' $filename > /dev/null; then
     # Extract module name in lower case
@@ -74,10 +77,10 @@ for filename in *$file_end.$FS90 *$file_end.$FS; do
       # Ignore modules that don't have an appropriately named source file
       if [ -f $m.$FS90 ] || [ -f $m.$FS ]; then
         # Module for _ad/tl will come from a TAF _ad/tl file
-        depline="$depline $m$file_end.o"
+        depline="$depline $m$adsuff.o"
       elif [ -f ${m%_mod}.$FS90 ] || [ -f ${m%_mod}.$FS ]; then
         # Source file name is module name without "_mod"
-        depline="$depline ${m%_mod}$file_end.o"
+        depline="$depline ${m%_mod}$adsuff.o"
       else
         echo "WARNING: f90mkdepend_ad: in $filename no source file found for module $m" 1>&2
       fi
