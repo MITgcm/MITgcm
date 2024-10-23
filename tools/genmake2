@@ -3387,6 +3387,7 @@ Clean:
 	@\$(MAKE) -f \$(MAKEFILE) cleanlinks
 	-rm -f \$(SPECIAL_FILES) f90mkdepend.log $MAKEFILE.old
 	-rm -f taf_ad.f90
+	-rm -f f90mkdepend_taf.log
 	-rm -f taf_command taf_output taf_ad.log taf_ad_flow.log taf_ftl.log
 
 # remove also the executable, files that "genmake2" generates (except Makefile)
@@ -3601,7 +3602,7 @@ ad_taf_output.$FS: ad_input_code.$FS
 	cat ad_input_code_ad.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ad_taf_output.$FS
 
 \$(EXE_ADJ): \$(SPECIAL_FILES) \$(H_SRC_FILES) ad_taf_output.o \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
-	\$(TOOLSDIR)/f90mkdepend_ad -fs $FS -fs90 $FS90 >> \$(MAKEFILE)
+	\$(TOOLSDIR)/f90mkdepend_taf -fs $FS -fs90 $FS90 >> \$(MAKEFILE)
 	\$(LINK) -o \${EXE_ADJ} \$(FFLAGS) \$(FOPTIM) ad_taf_output.o \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
 
 adobj: ad_taf_output.o \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o)
@@ -3622,7 +3623,7 @@ ad_taf_outpF90.$FS90: ad_taf_output.$FS
 	cat ad_inpF90_code_ad.$FS90 > ad_taf_outpF90.$FS90
 
 \$(EXE_ADJ): \$(SPECIAL_FILES) \$(H_SRC_FILES) ad_taf_outpF90.o ad_taf_output.o \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
-	\$(TOOLSDIR)/f90mkdepend_ad -fs $FS -fs90 $FS90 >> \$(MAKEFILE)
+	\$(TOOLSDIR)/f90mkdepend_taf -fs $FS -fs90 $FS90 >> \$(MAKEFILE)
 	\$(LINK) -o \${EXE_ADJ} \$(FFLAGS) \$(FOPTIM) ad_taf_outpF90.o ad_taf_output.o \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
 
 adobj: ad_taf_outpF90.o ad_taf_output.o \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o)
@@ -3654,7 +3655,7 @@ cat >>$MAKEFILE <<EOF
 	cat \$(AD_FILES:.$FS=_ad.$FS) > ad_taf_output.$FS
 
 \$(EXE_ADJ): \$(SPECIAL_FILES) \$(H_SRC_FILES) ad_taf_output.$FS \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
-	\$(TOOLSDIR)/f90mkdepend_ad -fs $FS -fs90 $FS90 >> \$(MAKEFILE)
+	\$(TOOLSDIR)/f90mkdepend_taf -fs $FS -fs90 $FS90 >> \$(MAKEFILE)
 	\$(MAKE) -f \$(MAKEFILE) adobjfiles
 	\$(LINK) -o \${EXE_ADJ} \$(FFLAGS) \$(FOPTIM) \$(AD_F90FILES:.$FS90=_ad.o) \$(AD_FILES:.$FS=_ad.o) \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
 
@@ -3717,7 +3718,7 @@ ftl_taf_output.$FS: ftl_input_code.$FS
 	cat ftl_input_code_tl.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ftl_taf_output.$FS
 
 \$(EXE_TLM): \$(SPECIAL_FILES) \$(H_SRC_FILES) ftl_taf_output.o \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
-	\$(TOOLSDIR)/f90mkdepend_ad -fs $FS -fs90 $FS90 >> \$(MAKEFILE)
+	\$(TOOLSDIR)/f90mkdepend_taf -fs $FS -fs90 $FS90 >> \$(MAKEFILE)
 	\$(LINK) -o \${EXE_TLM} \$(FFLAGS) \$(FOPTIM) ftl_taf_output.o \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
 
 ftlobj: ftl_taf_output.o \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o)
@@ -3738,7 +3739,7 @@ ftl_taf_outpF90.$FS90: ftl_taf_output.$FS
 	cat ftl_inpF90_code_tl.$FS90 > ftl_taf_outpF90.$FS90
 
 \$(EXE_TLM): \$(SPECIAL_FILES) \$(H_SRC_FILES) ftl_taf_output.o ftl_taf_outpF90.o \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
-	\$(TOOLSDIR)/f90mkdepend_ad -fs $FS -fs90 $FS90 >> \$(MAKEFILE)
+	\$(TOOLSDIR)/f90mkdepend_taf -fs $FS -fs90 $FS90 >> \$(MAKEFILE)
 	\$(LINK) -o \${EXE_TLM} \$(FFLAGS) \$(FOPTIM) ftl_taf_output.o ftl_taf_outpF90.o \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
 
 ftlobj: ftl_taf_output.o ftl_taf_outpF90.o \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o)
@@ -3770,7 +3771,7 @@ cat >>$MAKEFILE <<EOF
 	cat \$(AD_FILES:.$FS=_tl.$FS) > ftl_taf_output.$FS
 
 \$(EXE_TLM): \$(SPECIAL_FILES) \$(H_SRC_FILES) ftl_taf_output.$FS \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
-	\$(TOOLSDIR)/f90mkdepend_ad -fs $FS -fs90 $FS90 >> \$(MAKEFILE)
+	\$(TOOLSDIR)/f90mkdepend_taf -fs $FS -fs90 $FS90 >> \$(MAKEFILE)
 	\$(MAKE) -f \$(MAKEFILE) ftlobjfiles
 	\$(LINK) -o \${EXE_TLM} \$(FFLAGS) \$(FOPTIM) \$(AD_F90FILES:.$FS90=_tl.o) \$(AD_FILES:.$FS=_tl.o) \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
 

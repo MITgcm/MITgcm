@@ -36,7 +36,7 @@ for key in "$@" ; do
         FS90="${key#*=}"
         ;;
     *)
-        echo "f90mkdepend_ad: Unknown option: $key"
+        echo "f90mkdepend_taf: Unknown option: $key"
         exit 1
         ;;
     esac
@@ -52,13 +52,13 @@ if ls *_tl.$FS90 1> /dev/null 2>&1; then
 elif ls *_ad.$FS90 1> /dev/null 2>&1; then
     adsuff="_ad"
 else
-    echo "WARNING f90mkdepend_ad: no TAF generated code"
+    echo "WARNING: f90mkdepend_taf: no TAF generated code"
     exit 0
 fi
 
 # init files
-log_file="f90mkdepend$adsuff.log"
-dep_file="Makefile_ad.dep"
+log_file="f90mkdepend_taf.log"
+dep_file="Makefile_taf.dep"
 
 cat /dev/null > $log_file
 cat /dev/null > $dep_file
@@ -82,7 +82,7 @@ for filename in *$adsuff.$FS90 *$adsuff.$FS; do
         # Source file name is module name without "_mod"
         depline="$depline ${m%_mod}$adsuff.o"
       else
-        echo "WARNING: f90mkdepend_ad: in $filename no source file found for module $m" 1>&2
+        echo "WARNING: f90mkdepend_taf: in $filename no source file found for module $m" 1>&2
       fi
     done
     echo $depline >> $dep_file
