@@ -3394,7 +3394,7 @@ Clean:
 #         and output from a run (plus log files from testreport)
 CLEAN:
 	@\$(MAKE) -f \$(MAKEFILE) Clean
-	-rm -f \$(EXECUTABLE) \$(EXE_ADJ) \$(EXE_TLM) *.dep *.bak
+	-rm -f \$(EXECUTABLE) \$(EXE_ADJ) \$(EXE_TLM) *.bak
 	-rm -f $LOGFILE genmake_state genmake_*optfile
 	-rm -f SIZE.h.mpi genmake.tr_log make.tr_log
 	-rm -rf mpi_headers mnc_test_*

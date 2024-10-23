@@ -47,9 +47,12 @@ shopt -s nullglob
 
 # TAF generated file should end with _ad for adjoint OR _tl for tangent linear
 adsuff=""
-if ls *_tl.$FS90 1> /dev/null 2>&1; then
+tl_files=(*_tl.$FS90)
+ad_files=(*_ad.$FS90)
+
+if [ ${#tl_files[@]} -gt 0 ]; then
     adsuff="_tl"
-elif ls *_ad.$FS90 1> /dev/null 2>&1; then
+elif [ ${#ad_files[@]} -gt 0 ]; then
     adsuff="_ad"
 else
     echo "WARNING: f90mkdepend_taf: no TAF generated code"
@@ -64,7 +67,8 @@ cat /dev/null > $log_file
 cat /dev/null > $dep_file
 
 # append module dependencies to Makefile
-for filename in *$adsuff.$FS90 *$adsuff.$FS; do
+adfiles=$(ls *$adsuff.$FS90 *$adsuff.$FS ftl_taf_outp* ad_taf_outp* 2> /dev/null)
+for filename in $adfiles; do
   # Check for "use" to speed up processing
   if grep -i '^ *use ' $filename > /dev/null; then
     # Extract module name in lower case
