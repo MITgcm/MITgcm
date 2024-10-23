@@ -88,5 +88,8 @@ C  coeffs are used).
 C When calculating the fraction of sinking organic matter, use model biomass diagnostics.
 #define NEW_FRAC_EXP
 
+C Multiply nutrient limitation terms instead of using a minimum function (BLING_v1 only)
+#undef MULT_NUT_LIM
+
 #endif /* ALLOW_BLING */
 #endif /* BLING_OPTIONS_H */
