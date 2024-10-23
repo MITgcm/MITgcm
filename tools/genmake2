@@ -532,7 +532,7 @@ find_possible_optfile()  {
     tmp1=`uname`"_"`uname -m`
     tmp2=`echo $tmp1 | sed -e 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/'`
     tmp3=`echo $tmp2 | sed -e 's/power macintosh/ppc/'`
-    tmp1=`echo $tmp3 | sed -e 's|x86_64|amd64|'`
+    tmp1=`echo $tmp3 | sed -e 's|x86_64|amd64|' | sed -e 's|aarch64|arm64|'`
     tmp2=`echo $tmp1 | sed -e 's/i[3-6]86/ia32/' | sed -e 's/athlon/ia32/'`
     tmp3=`echo $tmp2 | sed -e 's/cray sv1/craysv1/'`
     PLATFORM=$tmp3
@@ -3473,7 +3473,7 @@ CPPCMD = cat \$< | ${CPP} \$(DEFINES) \$(INCLUDES) | ${S64}
 	\$(F90C) \$(F90FLAGS) \$(F90OPTIM) -c \$<
 .f$FS90.o:
 	cp \$< \$(basename  \$<).$FS90
-	\$(F90C) \$(F90FLAGS) \$(F90OPTIM) -c \$(F90FIXEDFORMAT) \$(basename  \$<).f90
+	\$(F90C) \$(F90FLAGS) \$(F90OPTIM) -c \$(F90FIXEDFORMAT) \$(basename  \$<).$FS90
 .c.o:
 	\$(CC) \$(CFLAGS) \$(DEFINES) \$(INCLUDES) -c \$<
 .flow.flowdir:
@@ -3589,14 +3589,6 @@ ad_inpF90_code.$FS90: \$(AD_F90FILES) \$(AD_FLOW_FILES)
 
 EOF
 fi
-cat >>$MAKEFILE <<EOF
-# this is an unused target and could be removed
-adtafonly: ad_input_code.$FS
-	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) -fixed \$(TAF_F77_FLAGS) ad_input_code.$FS
-	ls -l ad_input_code_ad.$FS
-	cat ad_input_code_ad.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ad_taf_output.$FS
-
-EOF
 
 if test $CAT_SRC_FOR_TAF = 1 ; then
 if test -z "$AD_F90FILES" ; then
@@ -3623,9 +3615,6 @@ ad_taf_output.$FS: ad_inpF90_code.$FS90 ad_input_code.$FS
 	ls -l ad_inpF90_code_ad.$FS90 ad_input_code_ad.$FS
 	cat ad_input_code_ad.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ad_taf_output.$FS
 
-EOF
-if test -n "$AD_F90FILES" ; then
-cat >>$MAKEFILE <<EOF
 # We need the extra target for ad_taf_outpF90.$FS90, because the file is
 # generated together with ad_taf_output.$FS.
 ad_taf_outpF90.$FS90: ad_taf_output.$FS
@@ -3637,7 +3626,6 @@ ad_taf_outpF90.$FS90: ad_taf_output.$FS
 adobj: ad_taf_outpF90.o ad_taf_output.o \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o)
 
 EOF
-fi
 fi
 
 else
@@ -3715,14 +3703,6 @@ ftl_inpF90_code.$FS90: \$(AD_F90FILES) \$(AD_FLOW_FILES)
 EOF
 fi
 
-cat >>$MAKEFILE <<EOF
-# this is an unused target and could be removed
-ftltafonly:
-	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) -fixed \$(TAF_F77_FLAGS) ftl_input_code.$FS
-	ls -l ftl_input_code_tl.$FS
-	cat ftl_input_code_tl.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ftl_taf_output.$FS
-EOF
-
 if test $CAT_SRC_FOR_TAF = 1 ; then
 if test -z "$AD_F90FILES" ; then
 cat >>$MAKEFILE <<EOF
@@ -3775,6 +3755,14 @@ ftl_taf_output.$FS: \$(AD_FLOW_FILES) \$(AD_F90FILES) \$(AD_FILES)
 	\$(MAKE) -f \$(MAKEFILE) remove_comments
 	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) -free \$(TAF_F90_FLAGS) \$(AD_F90FILES) -fixed \$(TAF_F77_FLAGS) \$(AD_FLOW_FILES) \$(AD_FILES)
 	\$(MAKE) -f \$(MAKEFILE) ftl_sed
+	\$(TOOLSDIR)/f90mkdepend_ad -fs $FS -fs90 $FS90 >> \$(MAKEFILE)
+EOF
+if test -n "$AD_F90FILES" ; then
+cat >>$MAKEFILE <<EOF
+	cat \$(AD_F90FILES:.$FS90=_ad.$FS90) > ftl_taf_outpF90.$FS90
+EOF
+fi
+cat >>$MAKEFILE <<EOF
 	cat \$(AD_FILES:.$FS=_tl.$FS) > ftl_taf_output.$FS
 
 \$(EXE_TLM): \$(SPECIAL_FILES) \$(H_SRC_FILES) ftl_taf_output.$FS \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
