@@ -376,7 +376,7 @@ C     ... and energy diagnostic
           DO bi=myBxLo(myThid),myBxHi(myThid)
            DO j=1,sNy
             DO i=1,sNx
-             mTmp(i,j,bi,bj) = 0.5 _d 0 * 0.5 _d 0 * (
+             mTmp(i,j,bi,bj) = 0.25 _d 0 * (
      &              uIce (i,j,bi,bj)**2 + uIce (i+1,j,  bi,bj)**2
      &            + vIce (i,j,bi,bj)**2 + vIce (i,  j+1,bi,bj)**2 )
      &            * (SEAICE_rhoIce*HEFF(i,j,bi,bj) 
