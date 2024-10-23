@@ -3615,9 +3615,6 @@ ad_taf_output.$FS: ad_inpF90_code.$FS90 ad_input_code.$FS
 	ls -l ad_inpF90_code_ad.$FS90 ad_input_code_ad.$FS
 	cat ad_input_code_ad.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ad_taf_output.$FS
 
-EOF
-if test -n "$AD_F90FILES" ; then
-cat >>$MAKEFILE <<EOF
 # We need the extra target for ad_taf_outpF90.$FS90, because the file is
 # generated together with ad_taf_output.$FS.
 ad_taf_outpF90.$FS90: ad_taf_output.$FS
@@ -3629,7 +3626,6 @@ ad_taf_outpF90.$FS90: ad_taf_output.$FS
 adobj: ad_taf_outpF90.o ad_taf_output.o \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o)
 
 EOF
-fi
 fi
 
 else
@@ -3759,6 +3755,14 @@ ftl_taf_output.$FS: \$(AD_FLOW_FILES) \$(AD_F90FILES) \$(AD_FILES)
 	\$(MAKE) -f \$(MAKEFILE) remove_comments
 	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) -free \$(TAF_F90_FLAGS) \$(AD_F90FILES) -fixed \$(TAF_F77_FLAGS) \$(AD_FLOW_FILES) \$(AD_FILES)
 	\$(MAKE) -f \$(MAKEFILE) ftl_sed
+	\$(TOOLSDIR)/f90mkdepend_ad -fs $FS -fs90 $FS90 >> \$(MAKEFILE)
+EOF
+if test -n "$AD_F90FILES" ; then
+cat >>$MAKEFILE <<EOF
+	cat \$(AD_F90FILES:.$FS90=_ad.$FS90) > ftl_taf_outpF90.$FS90
+EOF
+fi
+cat >>$MAKEFILE <<EOF
 	cat \$(AD_FILES:.$FS=_tl.$FS) > ftl_taf_output.$FS
 
 \$(EXE_TLM): \$(SPECIAL_FILES) \$(H_SRC_FILES) ftl_taf_output.$FS \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
