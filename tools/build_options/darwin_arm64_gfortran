@@ -73,7 +73,10 @@ else
     fi
 fi
 
-F90FLAGS=$FFLAGS
+# add undocumented flag -x f95 to force gfortran to interpret any
+# suffix as a f90-freeformat file, add -ffree-form to suppress the
+# associated warning
+F90FLAGS="$FFLAGS -x f95 -ffree-form"
 F90OPTIM=$FOPTIM
 
 INCLUDEDIRS=''
