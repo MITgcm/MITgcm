@@ -1,4 +1,7 @@
 #include "MOM_FLUXFORM_OPTIONS.h"
+#ifdef ALLOW_MOM_COMMON
+# include "MOM_COMMON_OPTIONS.h"
+#endif
 
 CBOP
 C !ROUTINE: MOM_V_YVISCFLUX
@@ -44,25 +47,25 @@ C  yViscFluxV           :: viscous fluxes
 
 C !LOCAL VARIABLES: ====================================================
 C  i,j                  :: loop indices
-      INTEGER I,J
+      INTEGER i,j
 CEOP
 
 C     - Laplacian  and bi-harmonic terms
-      DO j=1-Oly,sNy+Oly-1
-       DO i=1-Olx,sNx+Olx-1
+      DO j=1-OLy,sNy+OLy-1
+       DO i=1-OLx,sNx+OLx-1
         yViscFluxV(i,j) =
      &    _dxF(i,j,bi,bj)*drF(k)*_hFacC(i,j,k,bi,bj)
      &     *(
      &       -viscAh_D(i,j)*( vFld(i,j+1)-vFld(i,j) )
 #ifdef ISOTROPIC_COS_SCALING
-     &       *cosFacU(J,bi,bj)
+     &       *cosFacU(j,bi,bj)
 #endif
      &       +viscA4_D(i,j)*(del2v(i,j+1)-del2v(i,j))
 #ifdef ISOTROPIC_COS_SCALING
 #ifdef COSINEMETH_III
-     &       *sqCosFacU(J,bi,bj)
+     &       *sqCosFacU(j,bi,bj)
 #else
-     &       *cosFacU(J,bi,bj)
+     &       *cosFacU(j,bi,bj)
 #endif
 #endif
      &      )*_recip_dyF(i,j,bi,bj)
