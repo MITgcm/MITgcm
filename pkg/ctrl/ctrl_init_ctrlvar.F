@@ -112,7 +112,7 @@ C     for existing perturbation file g_xx_, otherwise
 C     initialize to zero and warn user
       IF (yadprefix.EQ.'g_') THEN
         il = ILNBLNK(fname(2))
-        WRITE(gfname(1:il+5),'(2a)') fname(2)(1:il),'.data'
+        WRITE(gfname,'(2a)') fname(2)(1:il),'.data'
         INQUIRE(file=gfname,exist=g_exst)
         IF (.NOT. g_exst) THEN
             WRITE(msgBuf,'(3A)')'** WARNING ** CTRL_INIT_CTRLVAR: ',
