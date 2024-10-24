@@ -1,0 +1,50 @@
+C----------------------------------------
+C subroutine obsfit_read_obs
+C----------------------------------------
+CADJ SUBROUTINE  obsfit_read_obs INPUT  = 1,2,3, 5
+CADJ SUBROUTINE  obsfit_read_obs DEPEND = 1,2,3
+CADJ SUBROUTINE  obsfit_read_obs OUTPUT =       4
+CADJ FUNCTION NF_OPEN            INPUT  = 1,2,3
+CADJ FUNCTION NF_CLOSE           INPUT  = 1
+CADJ FUNCTION NF_INQ_VARID       INPUT  = 1,2,3
+CADJ FUNCTION NF_PUT_VARA_DOUBLE INPUT  = 1,2,3,5,4
+
+C----------------------------------------
+C subroutine active_read_obs_tile
+C----------------------------------------
+CADJ SUBROUTINE active_read_obs_tile FTLNAME = g_active_read_obs_tile
+CADJ SUBROUTINE active_read_obs_tile ADNAME  = adactive_read_obs_tile
+CADJ SUBROUTINE active_read_obs_tile INPUT   = 1, 3,4,5,6,7,8,9
+CADJ SUBROUTINE active_read_obs_tile OUTPUT  =   2
+CADJ SUBROUTINE active_read_obs_tile ACTIVE  =   2
+CADJ SUBROUTINE active_read_obs_tile DEPEND  = 1, 3,4,5,6,7,8
+
+C----------------------------------------
+C subroutine active_write_obs_tile
+C----------------------------------------
+CADJ SUBROUTINE active_write_obs_tile FTLNAME = g_active_write_obs_tile
+CADJ SUBROUTINE active_write_obs_tile ADNAME  = adactive_write_obs_tile
+CADJ SUBROUTINE active_write_obs_tile INPUT   = 1,2,3,4,5,6,7,8
+CADJ SUBROUTINE active_write_obs_tile OUTPUT  =               8
+CADJ SUBROUTINE active_write_obs_tile ACTIVE  =   2,          8
+CADJ SUBROUTINE active_write_obs_tile DEPEND  = 1,  3,4,5,6,7
+
+C----------------------------------------
+C subroutine active_read_obs_glob
+C----------------------------------------
+CADJ SUBROUTINE active_read_obs_glob FTLNAME = g_active_read_obs_glob
+CADJ SUBROUTINE active_read_obs_glob ADNAME  = adactive_read_obs_glob
+CADJ SUBROUTINE active_read_obs_glob INPUT   = 1, 3,4,5,6,7
+CADJ SUBROUTINE active_read_obs_glob OUTPUT  =   2
+CADJ SUBROUTINE active_read_obs_glob ACTIVE  =   2
+CADJ SUBROUTINE active_read_obs_glob DEPEND  = 1, 3,4,5,6
+
+C----------------------------------------
+C subroutine active_write_obs_glob
+C----------------------------------------
+CADJ SUBROUTINE active_write_obs_glob FTLNAME = g_active_write_obs_glob
+CADJ SUBROUTINE active_write_obs_glob ADNAME  = adactive_write_obs_glob
+CADJ SUBROUTINE active_write_obs_glob INPUT   = 1,2,3,4,5,6
+CADJ SUBROUTINE active_write_obs_glob OUTPUT  =           6
+CADJ SUBROUTINE active_write_obs_glob ACTIVE  =   2,      6
+CADJ SUBROUTINE active_write_obs_glob DEPEND  = 1,  3,4,5
