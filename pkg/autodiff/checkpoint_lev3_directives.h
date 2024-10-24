@@ -11,6 +11,7 @@ c
 #else
 c
 CADJ STORE etan  = tapelev3, key = ilev_3
+CADJ STORE saltflux = tapelev3, key = ilev_3
 #ifndef EXCLUDE_FFIELDS_LOAD
 CADJ STORE taux0 = tapelev3, key = ilev_3
 CADJ STORE taux1 = tapelev3, key = ilev_3
