@@ -155,6 +155,6 @@ C-- Other option files:
 C o Execution environment support options
 #include "CPP_EEOPTIONS.h"
 
-C-  Place where multi-pkg header file ECCO_CPPOPTIONS.h use to be included
+C-  Place where multi-pkg header file ECCO_CPPOPTIONS.h used to be included
 
 #endif /* CPP_OPTIONS_H */
