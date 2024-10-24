@@ -443,7 +443,7 @@ C     kSurface  :: index of surface level
       _RL tmpFac, delPI
       _RL recip_Cp
 #ifdef SHORTWAVE_HEATING
-      _RL swfracb(2)
+      _RL swfracb(2), swfac
 #endif
 #endif /* USE_OLD_EXTERNAL_FORCING */
 CEOP
@@ -683,26 +683,19 @@ C-    Neither Z-Coords nor kSurface=Nr : not implemented
 #ifdef SHORTWAVE_HEATING
 C Penetrating SW radiation
 c     IF ( usePenetratingSW ) THEN
-C     Put depth of interface above & below current level in swfracb (1 & 2)
-C     and SWFRAC returns fraction of light that crosses these interfaces ;
 C     note: here km is for the mask below current level k
        IF ( usingZCoords ) THEN
-        swfracb(1) = rF(k)
-        swfracb(2) = rF(k+1)
         km = MIN(k+1,Nr)
        ELSE
 C     this is the oceanic pressure coordinate case
-        swfracb(1) = -rF(k+1)*recip_rhoConst*recip_gravity
-        swfracb(2) = -rF(k)*recip_rhoConst*recip_gravity
         km = MAX(k-1,1)
        ENDIF
-       CALL SWFRAC(
-     I             2, oneRL,
-     U             swfracb,
-     I             myTime, myIter, myThid )
-       IF ( k.EQ.km ) swfracb(2) = 0. _d 0
+       swfac = 1. _d 0
+       IF ( k.EQ.km ) swfac = 0. _d 0
        DO j=0,sNy+1
         DO i=0,sNx+1
+         swfracb(1)=SWFrac3D(i,j,k,bi,bj)
+         swfracb(2)=SWFrac3D(i,j,km,bi,bj)*swfac
          gT_arr(i,j) = gT_arr(i,j)
      &        - Qsw(i,j,bi,bj)*( swfracb(1)*maskC(i,j,k,bi,bj)
      &                         - swfracb(2)*maskC(i,j,km,bi,bj) )
