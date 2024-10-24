@@ -1,63 +1,11 @@
 #!/bin/bash
 #
-# Generate some make file dependency entries for a Fortran 90 file that employs "use".
+# Generate make file dependency entries for TAF generated AD files
+# passed as arguments
 #
-# For every "use" statement, generate a dependency on lowercase(modulename).o
-#
-# Note: We assume that the name of a module and the same of source are the same.
-#       The name of the source file should be all lower case (except for the extension).
 
-# set defaults
-FS=f
-FS90=f90
-
-# process option arguments
-key_prev=
-for key in "$@" ; do
-
-    # If the previous option needs an argument, assign it.
-    if test -n "$key_prev"; then
-	    eval "$key_prev=\$key"
-	    key_prev=
-	    continue
-    fi
-
-    case $key in
-    -fs)
-        key_prev='FS'
-        ;;
-    -fs=*)
-        FS="${key#*=}"
-        ;;
-    -fs90)
-        key_prev='FS90'
-        ;;
-    -fs90=*)
-        FS90="${key#*=}"
-        ;;
-    *)
-        echo "f90mkdepend_taf: Unknown option: $key"
-        exit 1
-        ;;
-    esac
-done
-
-# don't complain if *.f90 doesn't match any files
+# don't complain if *.F90 doesn't match any files
 shopt -s nullglob
-
-# TAF generated file should end with _ad for adjoint OR _tl for tangent linear
-adsuff=""
-tl_files=(*_tl.$FS90)
-ad_files=(*_ad.$FS90)
-
-if [ ${#tl_files[@]} -gt 0 ]; then
-    adsuff="_tl"
-elif [ ${#ad_files[@]} -gt 0 ]; then
-    adsuff="_ad"
-else
-    echo "WARNING: f90mkdepend_taf: no TAF generated code"
-    exit 0
-fi
 
 # init files
 log_file="f90mkdepend_taf.log"
@@ -67,27 +15,28 @@ cat /dev/null > $log_file
 cat /dev/null > $dep_file
 
 # append module dependencies to Makefile
-adfiles=$(ls *$adsuff.$FS90 *$adsuff.$FS ftl_taf_outp* ad_taf_outp* 2> /dev/null)
-for filename in $adfiles; do
-  # Check for "use" to speed up processing
-  if grep -i '^ *use ' $filename > /dev/null; then
-    # Extract module name in lower case
-    modreflist=$(grep -i '^ *use ' $filename | awk '{print tolower($2)}' | sed -e 's/,.*$//' -e 's/\r$//')
+adfiles=$*
+for filename in ${adfiles}; do
+  # quick check for "use" to speed up processing
+  if grep -iq '^ *use ' $filename; then
+    # extract module name in lower case
+    modreflist=$(grep -i '^ *use ' $filename | awk '{print tolower($2)}' | sed -e 's/,.*$//' -e 's/\r$//' | sort | uniq )
 
-    echo "$filename => $modreflist" >> $log_file 
+    echo "$filename => $modreflist" >> $log_file
 
+    # determine AD suffix
+    adsuff=$(echo ${filename%.*} | sed -e 's/.*_//')
     depline="$filename:"
     for m in $modreflist; do
-      # Ignore modules that don't have an appropriately named source file
-      if [ -f $m.$FS90 ] || [ -f $m.$FS ]; then
-        # Module for _ad/tl will come from a TAF _ad/tl file
-        depline="$depline $m$adsuff.o"
-      elif [ -f ${m%_mod}.$FS90 ] || [ -f ${m%_mod}.$FS ]; then
-        # Source file name is module name without "_mod"
-        depline="$depline ${m%_mod}$adsuff.o"
-      else
-        echo "WARNING: f90mkdepend_taf: in $filename no source file found for module $m" 1>&2
-      fi
+	# I am sure that this can be shorter with only one grep command
+	mm=$(grep -Hi "${m}$" ${adfiles} | grep -i module | grep -v end | awk -F: '{print $1}')
+	if  [ $mm == $filename ] ; then
+	    echo "INFO: f90mkdepend_taf: $filename contains module $m" 1>&2
+        elif [[ ${#mm} > 0 ]] && [ -f ${mm} ] ; then
+	    depline="$depline ${mm%.*}.o"
+	else
+            echo "WARNING: f90mkdepend_taf: in $filename no source file found for module $m" 1>&2
+	fi
     done
     echo $depline >> $dep_file
   fi
