@@ -1,54 +1,36 @@
 #!/bin/bash
-#
-# tested on MacBook Pro with macOS Monterey
-# uname -a
-# Darwin bkli04m056 21.3.0 Darwin Kernel Version 21.3.0: Wed Jan  5 21:37:58 PST 2022; root:xnu-8019.80.24~20/RELEASE_ARM64_T6000 arm64
-# gcc, gfortran, netcdf/netcdf-fortran, and openmpi obtained from
-# https://www.macports.org
-# sudo port install gcc11
-# sudo port select --set gcc mp-gcc11
-# similar results can be achieved using homebrew
 
-# Note: at the time of creating this file (Mar2022), the
-# gfortran-build of http://hpc.sourceforge.net does not work with
-# testreport (also: cannot compile like the "etime" test and leads to
-# multile warnings at the link step), because the model compiled with
-# this gfortran does not print the last line before the stop statement
-# without an additional flush-statement.
+# Build options for gfortran compiler (GNU) for Linux on ARM64 hardware (e.g., in VMs or containers)
+#      note: this optfile shares many similarities with "linux_amd64_gfortran"
+#
+# Was tested on Macbook air (M3 generation) in a Ubuntu Docker container (ECCO-Docker v0.2.2)
+#
+# Gael Forget. (2024). gaelforget/ECCO-Docker: update to latest MITgcm.jl , Climatology.jl ,
+#      and Dockerfile (v0.2.2). Zenodo. https://doi.org/10.5281/zenodo.12581248
 
 if test "x$MPI" = xtrue ; then
-  CC=mpicc
-  FC=mpif77
-  F90C=mpif90
-  LINK=$F90C
+  CC=${CC:=mpicc}
+  FC=${FC:=mpif77}
+  F90C=${F90C:=mpif90}
 else
   CC=gcc
   FC=gfortran
   F90C=gfortran
-  LINK=$F90C
 fi
 
-FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X ## _"
-S64='$(TOOLSDIR)/set64bitConst.sh'
 DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR'
-CPP='/usr/bin/cpp -traditional -P'
-GET_FC_VERSION="--version"
 EXTENDED_SRC_FLAG='-ffixed-line-length-132'
+F90FIXEDFORMAT='-ffixed-form'
+GET_FC_VERSION="--version"
 OMPFLAG='-fopenmp'
-
-#MAKEDEPEND=tools_xmakedepend
 
 NOOPTFLAGS='-O0'
 NOOPTFILES=''
 
-FFLAGS="$FFLAGS -fconvert=big-endian"
-# for big objects:
-#FFLAGS="$FFLAGS -fPIC"
-#- might want to use '-fdefault-real-8' for fizhi pkg:
-#FFLAGS="$FFLAGS -fdefault-real-8 -fdefault-double-8"
+CFLAGS='-O0'
 
 #- for setting specific options, check compiler version:
-fcVers=`$FC -dumpversion | head -n 1 | sed 's/^[^0-9]* //;s/\..*$//'`
+fcVers=`$CC -dumpversion | head -n 1 | sed 's/^[^0-9]* //;s/\..*$//'`
 if ! [[ $fcVers =~ ^[0-9]+$ ]] ; then
   echo "    un-recognized Compiler-version '$fcVers' ; ignored (-> set to 0)" ; fcVers=0 ;
 else echo "    get Compiler-version: '$fcVers'" ; fi
@@ -56,27 +38,47 @@ else echo "    get Compiler-version: '$fcVers'" ; fi
 if [ $fcVers -ge 10 ] ; then
   FFLAGS="$FFLAGS -fallow-argument-mismatch"
 fi
+#- Requires gfortran from 2006 onwards for -fconvert=big-endian
+FFLAGS="$FFLAGS -fconvert=big-endian -fimplicit-none"
+#- for big setups, compile & link with "-fPIC" or set memory-model to "small":
+#CFLAGS="$CFLAGS -fPIC"
+#FFLAGS="$FFLAGS -fPIC"
+#-  with FC 19, need to use this without -fPIC (which cancels -mcmodel option):
+#- NOTES: The following option is not supported yet for this type of processor (arm64):
+# CFLAGS="$CFLAGS -mcmodel=medium"
+# FFLAGS="$FFLAGS -mcmodel=medium"
+#- might want to use '-fdefault-real-8' for fizhi pkg:
+#FFLAGS="$FFLAGS -fdefault-real-8 -fdefault-double-8"
 
-#  For IEEE, use the "-ffloat-store" option
-if test "x$IEEE" = x ; then
-    FFLAGS="$FFLAGS -Wunused -Wuninitialized"
-    FOPTIM='-O3 -ftree-vectorize -funroll-loops'
-    NOOPTFLAGS='-O2 -funroll-loops'
-#    NOOPTFILES='gad_c4_adv_x.F gad_u3_adv_x.F'
+if test "x$IEEE" = x ; then     #- with optimisation:
+   #- full optimisation
+    FOPTIM='-O3 -funroll-loops'
+    NOOPTFILES="$NOOPTFILES ini_masks_etc.F"
+   #- can use -O2 (safe optimisation) to avoid Pb with some gcc version of -O3:
+   #FOPTIM='-O2 -funroll-loops'
 else
+   # these may also be useful, but require specific gfortran versions:
+   # -Wnonstd-intrinsics        for gfortran <= 4.3
+   # -Wintrinsics-std           for gfortran >= 4.4
+   # -Wno-tabs                  for gfortran >= 4.3
+   # -Wno-unused-dummy-argument for gfortran >= 4.6
+   #FFLAGS="$FFLAGS -Waliasing -Wampersand -Wsurprising -Wline-truncation"
+   #- or simply:
     FFLAGS="$FFLAGS -Wall"
-    if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
-	FOPTIM='-O0'
-    else                          #- development/check options:
-	FOPTIM='-O0 -g -fbounds-check'
-	FOPTIM="$FOPTIM -ffpe-trap=invalid,zero,overflow -finit-real=inf"
+    if [ $fcVers -ge 10 ] ; then
+      FFLAGS="$FFLAGS -Wno-unused-dummy-argument"
     fi
+   #- to get plenty of warnings: -Wall -Wextra (older form: -Wall -W) or:
+   #FFLAGS="$FFLAGS -Wconversion -Wimplicit-interface -Wunused-labels"
+  if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
+    FOPTIM='-O0'
+  else                          #- development/check options:
+    FOPTIM='-O0 -g -fbounds-check'
+    FOPTIM="$FOPTIM -ffpe-trap=invalid,zero,overflow -finit-real=inf"
+  fi
 fi
 
-# add undocumented flag -x f95 to force gfortran to interpret any
-# suffix as a f90-freeformat file, add -ffree-form to suppress the
-# associated warning
-F90FLAGS="$FFLAGS -x f95 -ffree-form"
+F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
 
 INCLUDEDIRS=''
@@ -87,7 +89,7 @@ if [ "x$NETCDF_ROOT" != x ] ; then
     INCLUDEDIR="${NETCDF_ROOT}/include"
     INCLUDES="-I${NETCDF_ROOT}/include"
     LIBDIR="${NETCDF_ROOT}/lib"
-    LIBS="-L${NETCDF_ROOT}/lib -lnetcdf -lcurl"
+    LIBS="-L${NETCDF_ROOT}/lib"
 elif [ "x$NETCDF_HOME" != x ]; then
     INCLUDEDIR="${NETCDF_HOME}/include"
     INCLUDES="-I${NETCDF_HOME}/include"
@@ -105,20 +107,11 @@ elif [ "x$NETCDF_INCDIR" != x -a "x$NETCDF_LIBDIR" != x ]; then
     INCLUDES="-I${NETCDF_INCDIR}"
     LIBDIR="${NETCDF_LIBDIR}"
     LIBS="-L${NETCDF_LIBDIR}"
-elif [[ -n $( nf-config --includedir ) && ($? == 0) ]] ; then
+elif [[ -n $( nf-config --includedir 2> /dev/null ) && ($? == 0) ]] ; then
     # NETCDF env variables are not set, trying nf-config instead
     INCLUDEDIR=$( nf-config --includedir )
     INCLUDES="-I$INCLUDEDIR"
-    # although this would is the best option, the resulting -arch arm64 is
-    # not supported by gfortran from hpc.sourceforge.net
     LIBS=$( nf-config --flibs )
-    # if FC=gfortran from hpc.sourceforge.net, then this works:
-    # LIBDIR=$( nf-config --prefix )/lib
-    # LIBS="-L$LIBDIR"
-elif test -d /opt/local/include ; then
-    # if netcdf has been install by macports, this is where it is:
-    INCLUDES='-I/opt/local/include'
-    LIBS='-L/opt/local/lib'
 elif test -d /usr/include/netcdf-3 ; then
     INCLUDES='-I/usr/include/netcdf-3'
     LIBS='-L/usr/lib/netcdf-3 -L/usr/lib64/netcdf-3'
@@ -142,9 +135,8 @@ fi
 if [ "x$MPI" = xtrue ] ; then
    if [ -z "$MPI_INC_DIR" ] ; then
       # MPI env variables are not set, trying pkg-config insteal
-      # this works for macport installs of openmpi
-      if [[ -n $( pkg-config --cflags-only-I mpich ) && ($? == 0) ]] ; then
-         MPI_INC_DIR=$(pkg-config --cflags-only-I mpich | awk '{ print $1 }' | sed -e "s/-I//" )
+      if [[ -n $( pkg-config --cflags-only-I ompi ) && ($? == 0) ]] ; then
+         MPI_INC_DIR=$(pkg-config --cflags-only-I ompi | awk '{ print $1 }' | sed -e "s/-I//" )
       else
          echo MPI_HOME is not set and pkg-config not available, aborting
          exit 1
