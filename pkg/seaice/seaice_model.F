@@ -112,7 +112,7 @@ C     needed in S/R SEAICE_DYNSOLVER
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
             mTmp(i,j,bi,bj)=SEAICE_rhoIce*HEFF(i,j,bi,bj)
-     &                     +addSnow*SEAICE_rhoSnow*HSNOW(i,j,bi,bj) 
+     &                     +addSnow*SEAICE_rhoSnow*HSNOW(i,j,bi,bj)
            ENDDO
           ENDDO
          ENDDO
@@ -379,8 +379,8 @@ C     ... and energy diagnostic
              mTmp(i,j,bi,bj) = 0.25 _d 0 * (
      &              uIce (i,j,bi,bj)**2 + uIce (i+1,j,  bi,bj)**2
      &            + vIce (i,j,bi,bj)**2 + vIce (i,  j+1,bi,bj)**2 )
-     &            * (SEAICE_rhoIce*HEFF(i,j,bi,bj) 
-     &            + addSnow*SEAICE_rhoSnow*HSNOW(i,j,bi,bj) 
+     &            * (SEAICE_rhoIce*HEFF(i,j,bi,bj)
+     &            + addSnow*SEAICE_rhoSnow*HSNOW(i,j,bi,bj)
      &            - mTmp(i,j,bi,bj))
      &             *recip_deltaTtherm
             ENDDO
