@@ -128,15 +128,6 @@ CEOP
         ENDDO
        ENDDO
 
-       CALL EXCH_XY_RS( Qnet , myThid )
-       CALL EXCH_XY_RS( EmPmR , myThid )
-       CALL EXCH_XY_RS( Qsw , myThid )
-       CALL EXCH_XY_RS( SST , myThid )
-       CALL EXCH_XY_RS( SSS , myThid )
-       CALL EXCH_XY_RS( pLoad , myThid )
-       CALL EXCH_XY_RS( saltFlux , myThid )
-       CALL EXCH_UV_XY_RS( fu, fv, .TRUE., myThid )
-
 # ifdef ALLOW_STREAMICE
        IF ( useStreamIce ) THEN
         DO bj = myByLo(myThid), myByHi(myThid)
