@@ -5,6 +5,9 @@
 #ifdef ALLOW_ECCO
 # include "ECCO_OPTIONS.h"
 #endif
+#ifdef ALLOW_BLING
+# include "BLING_OPTIONS.h"
+#endif
 
 CBOP
 C !ROUTINE: PROFILES_INTERP
@@ -12,17 +15,14 @@ C !ROUTINE: PROFILES_INTERP
 C !INTERFACE: ==========================================================
       SUBROUTINE PROFILES_INTERP(
      O traj_cur_out,
-     I i_cur,
-     I j_cur,
+     I i_cur, j_cur,
      I weights_cur,
      I var_cur,
      I itr_cur,
      I file_cur,
      I myTime,
-     I bi,
-     I bj,
-     I myThid
-     & )
+     I bi, bj,
+     I myThid )
 
 C !DESCRIPTION:
 C 3D interpolation of model counterparts for netcdf profiles data
@@ -32,12 +32,9 @@ C !USES: ===============================================================
 C     == Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
+#include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
-#include "PARAMS.h"
-#ifdef ALLOW_CAL
-# include "cal.h"
-#endif
 #ifdef ALLOW_ECCO
 # include "ECCO_SIZE.h"
 # include "ECCO.h"
@@ -47,27 +44,22 @@ C     == Global variables ===
 # include "profiles.h"
 #endif
 #ifdef ALLOW_PTRACERS
-#include "PTRACERS_SIZE.h"
-#include "PTRACERS_FIELDS.h"
+# include "PTRACERS_SIZE.h"
+# include "PTRACERS_FIELDS.h"
 #endif
 #ifdef ALLOW_BLING
-#include "BLING_VARS.h"
+# include "BLING_VARS.h"
 #endif
 
 C !INPUT PARAMETERS: ===================================================
-C myTime      :: Current time in simulation
-C myThid      :: my Thread Id number
-C bi,bj       :: Tile indices
-C var_cur     :: current variable name
-C file_cur    :: current filenumber
-C itr_cur     :: index of current variable
 C i/j_cur     :: i/j - index arrays of model grid points
 C weights_cur :: weights array for profile data
-      _RL  myTime
-      INTEGER myThid
-      INTEGER bi, bj
-      INTEGER file_cur, itr_cur
-      CHARACTER*(8) var_cur
+C var_cur     :: current variable name
+C itr_cur     :: index of current variable
+C file_cur    :: current filenumber
+C myTime      :: Current time in simulation
+C bi,bj       :: Tile indices
+C myThid      :: my Thread Id number
 #ifdef ALLOW_PROFILES
       INTEGER i_cur(NUM_INTERP_POINTS)
       INTEGER j_cur(NUM_INTERP_POINTS)
@@ -76,6 +68,12 @@ C weights_cur :: weights array for profile data
       INTEGER i_cur, j_cur
       _RL weights_cur
 #endif
+      CHARACTER*(8) var_cur
+      INTEGER itr_cur
+      INTEGER file_cur
+      _RL  myTime
+      INTEGER bi, bj
+      INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
 C traj_cur_out :: profile of interpolated model data
@@ -115,16 +113,15 @@ C-- horizontal interpolation:
          tab_coeffs1(q)=0. _d 0
 #endif
 #ifdef ALLOW_BLING
-        elseif (var_cur.EQ.'PCO') then
+        ELSEIF (var_cur.EQ.'PCO') THEN
                tab_coeffs1(q)=pCO2(i_cur(q),j_cur(q),bi,bj)
-        elseif (var_cur.EQ.'PH') then
+        ELSEIF (var_cur.EQ.'PH') THEN
                tab_coeffs1(q)=pH(i_cur(q),j_cur(q),k,bi,bj)
-        elseif (var_cur.EQ.'CHL') then
+        ELSEIF (var_cur.EQ.'CHL') THEN
                tab_coeffs1(q)=CHL(i_cur(q),j_cur(q),k,bi,bj)
-        elseif (var_cur.EQ.'POC') then
+        ELSEIF (var_cur.EQ.'POC') THEN
                tab_coeffs1(q)=POC(i_cur(q),j_cur(q),k,bi,bj)
 #endif
-
 #ifdef ALLOW_ECCO
         ELSEIF (var_cur.EQ.'eta') THEN
          tab_coeffs1(q)=m_eta(i_cur(q),j_cur(q),bi,bj)
@@ -142,10 +139,10 @@ C-- horizontal interpolation:
         pondsSUM = pondsSUM+ponderations(q)
        ENDDO
 
-       IF (pondsSUM.GT.0) THEN
+       IF (pondsSUM.GT.zeroRL) THEN
         traj_cur(k)=0. _d 0
         mask_cur(k)=1. _d 0
-        pondsSUM   = 1./pondsSUM
+        pondsSUM = 1. _d 0/pondsSUM
         DO q=1,NUM_INTERP_POINTS
          traj_cur(k)=traj_cur(k)
      &        +tab_coeffs1(q)*ponderations(q)*pondsSUM
@@ -165,8 +162,8 @@ C$TAF INCOMPLETE prof_mask1D_cur
 #endif
 C--   vertical interpolation:
       DO kk=1,NLEVELMAX
-       traj_cur_out(kk)=0
-       prof_mask1D_cur(kk,bi,bj)=0
+       traj_cur_out(kk)=0. _d 0
+       prof_mask1D_cur(kk,bi,bj)=0. _d 0
       ENDDO
       DO kk=1,ProfDepthNo(file_cur,bi,bj)
 C--   case 1: above first grid center=> first grid center value
@@ -176,7 +173,7 @@ C--   case 1: above first grid center=> first grid center value
 C--   case 2: just below last grid center=> last cell value
        ELSEIF (prof_depth(file_cur,kk,bi,bj).GE.-rC(Nr)) THEN
         IF ( prof_depth(file_cur,kk,bi,bj) .LT.
-     &       (-rC(Nr)+drC(Nr)/2) ) THEN
+     &       (-rC(Nr)+drC(Nr)*halfRS) ) THEN
          traj_cur_out(kk)=traj_cur(Nr)
          prof_mask1D_cur(kk,bi,bj)=mask_cur(Nr)
         ENDIF
@@ -194,14 +191,14 @@ C--   case 3: between two grid centers
      &        'ERROR in PROFILES_INTERP: unexpected case 1'
          ierr = ierr + 1
         ENDIF
-        IF (mask_cur(kcur+1).EQ.1.) THEN
+        IF (mask_cur(kcur+1).EQ.oneRL) THEN
 C--   subcase 1: 2 wet points=>linear interpolation
          tmp_coeff=(prof_depth(file_cur,kk,bi,bj)+rC(kcur))/
      &        (-rC(kcur+1)+rC(kcur))
          traj_cur_out(kk)=(1-tmp_coeff)*traj_cur(kcur)
      &        +tmp_coeff*traj_cur(kcur+1)
-         prof_mask1D_cur(kk,bi,bj)=1
-         IF (mask_cur(kcur).EQ.0.) THEN
+         prof_mask1D_cur(kk,bi,bj)=1. _d 0
+         IF (mask_cur(kcur).EQ.zeroRL) THEN
           WRITE(errorMessageUnit,'(A)')
      &         'ERROR in PROFILES_INTERP: unexpected case 2'
           ierr = ierr + 1
@@ -215,7 +212,8 @@ C--   subcase 2: only 1 wet point just above=>upper cell value
       ENDDO
 
       IF ( ierr .GT. 0 ) THEN
-       CALL ALL_PROC_DIE( myThid )
+C--    cannot call ALL_PROC_DIE from here: see issue #439, 2021-03-05 comment
+c      CALL ALL_PROC_DIE( myThid )
        STOP 'ABNORMAL END: S/R PROFILES_INTERP'
       ENDIF
 #endif /* ALLOW_PROFILES */
