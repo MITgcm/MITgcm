@@ -50,6 +50,9 @@ C     == Global variables ===
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_FIELDS.h"
 #endif
+#ifdef ALLOW_BLING
+#include "BLING_VARS.h"
+#endif
 
 C !INPUT PARAMETERS: ===================================================
 C myTime      :: Current time in simulation
@@ -111,6 +114,17 @@ C-- horizontal interpolation:
 #else
          tab_coeffs1(q)=0. _d 0
 #endif
+#ifdef ALLOW_BLING
+        elseif (var_cur.EQ.'PCO') then
+               tab_coeffs1(q)=pCO2(i_cur(q),j_cur(q),bi,bj)
+        elseif (var_cur.EQ.'PH') then
+               tab_coeffs1(q)=pH(i_cur(q),j_cur(q),k,bi,bj)
+        elseif (var_cur.EQ.'CHL') then
+               tab_coeffs1(q)=CHL(i_cur(q),j_cur(q),k,bi,bj)
+        elseif (var_cur.EQ.'POC') then
+               tab_coeffs1(q)=POC(i_cur(q),j_cur(q),k,bi,bj)
+#endif
+
 #ifdef ALLOW_ECCO
         ELSEIF (var_cur.EQ.'eta') THEN
          tab_coeffs1(q)=m_eta(i_cur(q),j_cur(q),bi,bj)
