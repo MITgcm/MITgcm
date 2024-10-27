@@ -532,7 +532,7 @@ find_possible_optfile()  {
     tmp1=`uname`"_"`uname -m`
     tmp2=`echo $tmp1 | sed -e 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/'`
     tmp3=`echo $tmp2 | sed -e 's/power macintosh/ppc/'`
-    tmp1=`echo $tmp3 | sed -e 's|x86_64|amd64|'`
+    tmp1=`echo $tmp3 | sed -e 's|x86_64|amd64|' | sed -e 's|aarch64|arm64|'`
     tmp2=`echo $tmp1 | sed -e 's/i[3-6]86/ia32/' | sed -e 's/athlon/ia32/'`
     tmp3=`echo $tmp2 | sed -e 's/cray sv1/craysv1/'`
     PLATFORM=$tmp3
