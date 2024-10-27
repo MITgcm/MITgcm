@@ -1,4 +1,7 @@
 #include "CTRL_OPTIONS.h"
+#ifdef ALLOW_STREAMICE
+# include "STREAMICE_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: CTRL_MAP_FORCING
@@ -22,17 +25,12 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "FFIELDS.h"
-#include "DYNVARS.h"
-#include "GRID.h"
 #include "CTRL_SIZE.h"
 #include "CTRL.h"
 #include "CTRL_GENARR.h"
 #include "CTRL_DUMMY.h"
 #ifdef ALLOW_STREAMICE
 # include "STREAMICE.h"
-#endif
-#ifdef ALLOW_AUTODIFF
-#include "AUTODIFF_MYFIELDS.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
