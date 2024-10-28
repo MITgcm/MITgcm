@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/profiles:
+  - fix missing pieces in this pkg for Tang-Lin model and get this tested in
+    verification exp. global_oce_biogeo_bling.
 o pkg/seaice:
   - if SEAICEaddSnowMass=T, include HSNOW in diagnostics "SIenph  ".
 o utils/python/MITgcmutils/:
