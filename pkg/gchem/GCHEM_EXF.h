@@ -156,6 +156,78 @@ C Iron forcing parameters for exf
       _RL  iron_lat_inc(MAX_LAT_INC)
 #endif
 
+C Ice forcing parameters for exf
+
+      _RL iceStartTime
+
+      COMMON/gchem_forcing_ice_c/
+     &    icemask
+      COMMON/gchem_forcing_ice_i/
+     &    icestartdate1, icestartdate2
+      COMMON/gchem_forcing_ice_r/
+     &    iceStartTime,
+     &    iceperiod, iceRepCycle, iceconst,
+     &    ice_exfremo_intercept, ice_exfremo_slope,
+     &    gchem_inscal_ice
+      CHARACTER*1 icemask
+      INTEGER icestartdate1
+      INTEGER icestartdate2
+      _RL iceperiod
+      _RL iceRepCycle
+      _RL iceconst
+      _RL ice_exfremo_intercept
+      _RL ice_exfremo_slope
+      _RL gchem_inscal_ice
+
+#ifdef USE_EXF_INTERPOLATION
+      COMMON/gchem_interp_ice_i/
+     &    ice_nlon, ice_nlat, ice_interpMethod
+      COMMON/gchem_interp_ice_r/
+     &    ice_lon0, ice_lat0, ice_lon_inc,
+     &    ice_lat_inc
+      INTEGER ice_interpMethod, ice_nlon, ice_nlat
+      _RL  ice_lon0
+      _RL  ice_lat0
+      _RL  ice_lon_inc
+      _RL  ice_lat_inc(MAX_LAT_INC)
+#endif
+
+C Wind forcing parameters for exf
+
+      _RL windStartTime
+
+      COMMON/gchem_forcing_wind_c/
+     &    windmask
+      COMMON/gchem_forcing_wind_i/
+     &    windstartdate1, windstartdate2
+      COMMON/gchem_forcing_wind_r/
+     &    windStartTime,
+     &    windperiod, windRepCycle, windconst,
+     &    wind_exfremo_intercept, wind_exfremo_slope,
+     &    gchem_inscal_wind
+      CHARACTER*1 windmask
+      INTEGER windstartdate1
+      INTEGER windstartdate2
+      _RL windperiod
+      _RL windRepCycle
+      _RL windconst
+      _RL wind_exfremo_intercept
+      _RL wind_exfremo_slope
+      _RL gchem_inscal_wind
+
+#ifdef USE_EXF_INTERPOLATION
+      COMMON/gchem_interp_wind_i/
+     &    wind_nlon, wind_nlat, wind_interpMethod
+      COMMON/gchem_interp_wind_r/
+     &    wind_lon0, wind_lat0, wind_lon_inc,
+     &    wind_lat_inc
+      INTEGER wind_interpMethod, wind_nlon, wind_nlat
+      _RL  wind_lon0
+      _RL  wind_lat0
+      _RL  wind_lon_inc
+      _RL  wind_lat_inc(MAX_LAT_INC)
+#endif
+
 C Atmos pCO2 forcing parameters for exf
 
       _RL apCO2StartTime
