@@ -6,31 +6,47 @@ C     !INTERFACE:
 C #include GCHEM_EXF.h
 
 C     !DESCRIPTION:
-C Contains fields and parameters for reading 
-C BGC forcing with pkg/exf routines, to be 
+C Contains fields and parameters for reading
+C BGC forcing with pkg/exf routines, to be
 C used with pkg/dic or pkg/bling (and maybe pkg/darwin).
 
 C Requires: EXF_OPTIONS.h
 C Requires: SIZE.h
 
+      _RL GCHEM_pCO2
+      PARAMETER( GCHEM_pCO2=380.5D-6 )
+
+C--   COMMON /GCHEM_LOAD_I/
+      COMMON /GCHEM_LOAD_I/ GCHEM_ldRec
+      INTEGER GCHEM_ldRec(nSx,nSy)
+
 C--   COMMON /GCHEM_FIELDS_C/
       COMMON /GCHEM_FIELDS_C/
-     &    exf_silicafile,
-     &    exf_PARfile,
-     &    exf_ironfile,
-     &    exf_apCO2file
+     &    gchem_iceFile,
+     &    gchem_windFile,
+     &    gchem_atmospFile,
+     &    gchem_silicafile,
+     &    gchem_PARfile,
+     &    gchem_ironfile,
+     &    gchem_apCO2file
 
-      CHARACTER*128 exf_silicafile
-      CHARACTER*128 exf_PARfile
-      CHARACTER*128 exf_ironfile
-      CHARACTER*128 exf_apCO2file
+      CHARACTER*128 gchem_iceFile
+      CHARACTER*128 gchem_windFile
+      CHARACTER*128 gchem_silicafile
+      CHARACTER*128 gchem_PARfile
+      CHARACTER*128 gchem_ironfile
+      CHARACTER*128 gchem_apCO2file
+      CHARACTER*128 gchem_atmospFile
 
 C--   COMMON /GCHEM_FIELDS_R/
       COMMON /GCHEM_FIELDS_R/
      &    gSi0, gSi1, gchemSi,
      &    gPAR0, gPAR1, gchemPAR,
      &    giron0, giron1, gchemFe,
-     &    apCO20, apCO21, gchemapCO2
+     &    apCO20, apCO21, gchemapCO2,
+     &    gchemIce0, gchemIce1, gchemIce,
+     &    gchemWind0, gchemWind1, gchemWind,
+     &    gchemAP0, gchemAP1, gchemAtmosP
 
       _RL gSi0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL gSi1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -47,6 +63,18 @@ C--   COMMON /GCHEM_FIELDS_R/
       _RL apCO20(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL apCO21(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL gchemapCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+      _RL gchemIce0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL gchemIce1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL gchemIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+      _RL gchemWind0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL gchemWind1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL gchemWind(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+      _RL gchemAP0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL gchemAP1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL gchemAtmosP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C Surface silica forcing parameters for exf
 
@@ -265,4 +293,3 @@ C Atmos pCO2 forcing parameters for exf
 #endif
 
 #endif /* ALLOW_GCHEM */
-

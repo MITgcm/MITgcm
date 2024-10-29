@@ -14,7 +14,7 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "GCHEM.h"
 #ifdef ALLOW_EXF
-# include "GCHEM_EXF.h" 
+# include "GCHEM_EXF.h"
 # include "EXF_PARAM.h"
 #endif
 
@@ -89,7 +89,7 @@ c#endif
       _BEGIN_MASTER( myThid )
       errCount = 0
 
-      IF ( exf_silicafile .NE. ' ' ) THEN
+      IF ( gchem_silicafile .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START silica',
      &  myThid)
@@ -101,7 +101,7 @@ c#endif
      I                         myThid )
       ENDIF
 
-      IF ( exf_PARfile .NE. ' ' ) THEN
+      IF ( gchem_PARfile .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START PAR',
      &  myThid)
@@ -113,7 +113,7 @@ c#endif
      I                         myThid )
       ENDIF
 
-      IF ( exf_ironfile .NE. ' ' ) THEN
+      IF ( gchem_ironfile .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START iron',
      &  myThid)
@@ -125,7 +125,7 @@ c#endif
      I                         myThid )
       ENDIF
 
-      IF ( exf_apCO2file .NE. ' ' ) THEN
+      IF ( gchem_apCO2file .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START pCO2',
      &  myThid)

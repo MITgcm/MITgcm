@@ -101,9 +101,7 @@ C- Open and read the data.gchem file
      O                   iUnit,
      I                   myThid )
       READ(UNIT=iUnit,NML=GCHEM_PARM01)
-#ifdef ALLOW_EXF
-      IF (useEXF) CALL GCHEM_EXF_READPARMS( iUnit, myThid )
-#endif /* ALLOW_EXF */
+      CALL GCHEM_EXF_READPARMS( iUnit, myThid )
       WRITE(msgBuf,'(A)')
      &  ' GCHEM_READPARMS: finished reading data.gchem'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,

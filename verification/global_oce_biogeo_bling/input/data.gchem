@@ -2,3 +2,11 @@
   useBLING=.TRUE.,
   nsubtime=1,
  &
+
+ &GCHEM_FORCING_PARAMS
+  GCHEM_windFile='tren_speed.bin',
+  GCHEM_iceFile='fice.bin',
+  GCHEM_silicaFile='sillev1.bin',
+  GCHEM_ironFile='mah_flux_smooth.bin',
+ &
+

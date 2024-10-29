@@ -47,7 +47,11 @@ C !LOCAL VARIABLES: ====================================================
       INTEGER j, errCount
 
       NAMELIST /GCHEM_FORCING_PARAMS/
-     &    exf_silicafile,
+     &    gchem_iceFile,
+     &    gchem_windFile,
+     &    gchem_atmospFile,
+C
+     &    gchem_silicafile,
      &    silicaperiod,
      &    silicaRepCycle,
      &    silicaStartTime,
@@ -59,7 +63,7 @@ C !LOCAL VARIABLES: ====================================================
      &    silicamask,
      &    gchem_inscal_silica,
 C
-     &    exf_PARfile,
+     &    gchem_PARfile,
      &    PARperiod,
      &    PARRepCycle,
      &    PARStartTime,
@@ -71,7 +75,7 @@ C
      &    PARmask,
      &    gchem_inscal_PAR,
 C
-     &    exf_ironfile,
+     &    gchem_ironfile,
      &    ironperiod,
      &    ironRepCycle,
      &    ironStartTime,
@@ -83,7 +87,7 @@ C
      &    ironmask,
      &    gchem_inscal_iron,
 C
-     &    exf_apCO2file,
+     &    gchem_apCO2file,
      &    apCO2period,
      &    apCO2RepCycle,
      &    apCO2StartTime,
@@ -133,10 +137,13 @@ C
 
 C Open and read the data.gchem file
 
+      gchem_iceFile    = ' '
+      gchem_windFile   = ' '
+      gchem_atmospFile = ' '
 c      gchem_useEXFwind = .FALSE.
 c      gchem_useQsw = .FALSE.
 
-      exf_silicafile = ' '
+      gchem_silicafile = ' '
       silicaperiod             = 0.0 _d 0
       silicaRepCycle           = repeatPeriod
       silicaStartTime          = UNSET_RL
@@ -149,7 +156,7 @@ c      gchem_useQsw = .FALSE.
 
       gchem_inscal_silica    =  1. _d 0
 
-      exf_PARfile = ' '
+      gchem_PARfile = ' '
       PARperiod             = 0.0 _d 0
       PARRepCycle           = repeatPeriod
       PARStartTime          = UNSET_RL
@@ -162,7 +169,7 @@ c      gchem_useQsw = .FALSE.
 
       gchem_inscal_PAR    =  1. _d 0
 
-      exf_ironfile = ' '
+      gchem_ironfile = ' '
       ironperiod             = 0.0 _d 0
       ironRepCycle           = repeatPeriod
       ironStartTime          = UNSET_RL
@@ -175,7 +182,7 @@ c      gchem_useQsw = .FALSE.
 
       gchem_inscal_iron    =  1. _d 0
 
-      exf_apCO2file = ' '
+      gchem_apCO2file = ' '
       apCO2period             = 0.0 _d 0
       apCO2RepCycle           = repeatPeriod
       apCO2StartTime          = UNSET_RL
@@ -280,4 +287,3 @@ c      ENDIF
 
       RETURN
       END
-
