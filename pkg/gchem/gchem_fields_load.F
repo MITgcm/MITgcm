@@ -22,8 +22,8 @@ C !USES: ===============================================================
 # include "EXF_INTERP_SIZE.h"
 # include "EXF_PARAM.h"
 # include "EXF_FIELDS.h"
-# include "GCHEM_EXF.h"
 #endif
+#include "GCHEM_EXF.h"
 #include "GCHEM.h"
 
 C !INPUT PARAMETERS: ===================================================

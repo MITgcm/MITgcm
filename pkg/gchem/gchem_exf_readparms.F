@@ -39,7 +39,7 @@ C !OUTPUT PARAMETERS: ==================================================
 C  none
 CEOP
 
-#ifdef ALLOW_GCHEM
+#if ( defined ALLOW_GCHEM && defined ALLOW_EXF )
 
 C !LOCAL VARIABLES: ====================================================
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -283,7 +283,16 @@ c      ENDIF
         STOP 'ABNORMAL END: S/R GCHEM_EXF_READPARMS'
       ENDIF
 
-#endif /* ALLOW_GCHEM */
+#else
+C     need to intialise these files
+      gchem_iceFile    = ' '
+      gchem_windFile   = ' '
+      gchem_atmospFile = ' '
+      gchem_silicafile = ' '
+      gchem_PARfile    = ' '
+      gchem_ironfile   = ' '
+      gchem_apCO2file  = ' '
+#endif /* ALLOW_GCHEM and ALLOW_EXF */
 
       RETURN
       END
