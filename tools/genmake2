@@ -3291,7 +3291,7 @@ Clean:
 	@\$(MAKE) -f \$(MAKEFILE) cleanlinks
 	-rm -rf *.flowdir
 	-rm -f \$(SPECIAL_FILES) f90mkdepend.log $MAKEFILE.old
-	-rm -f taf_command taf_output taf_ad.log taf_ad_flow.log taf_ftl.log taf_ad.f90 taf_tl.f90
+	-rm -f taf_command taf_output taf_ad.log taf_ad_flow.log taf_ftl.log
 
 # remove also the executable, files that "genmake2" generates (except Makefile)
 #         and output from a run (plus log files from testreport)
