@@ -1,11 +1,14 @@
 #include "DIAG_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP 0
+CBOP
 C     !ROUTINE: DIAGNOSTICS_SWITCH_ONOFF
 
 C     !INTERFACE:
-      SUBROUTINE DIAGNOSTICS_SWITCH_ONOFF( 
+      SUBROUTINE DIAGNOSTICS_SWITCH_ONOFF(
      I                       seqFlag, myTime, myIter, myThid )
 
 C     !DESCRIPTION:
@@ -38,7 +41,10 @@ C     myThid   :: my Thread Id number
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
-CEOP
+
+C     !FUNCTIONS
+      LOGICAL  DIFF_PHASE_MULTIPLE
+      EXTERNAL DIFF_PHASE_MULTIPLE
 
 C     !LOCAL VARIABLES:
 C      newIter :: future iteration number
@@ -51,16 +57,15 @@ c     INTEGER newIter
       _RL     phiSec, freqSec
       INTEGER nInterval
       _RL     xInterval
+      LOGICAL firstCall
       LOGICAL dBugFlag
       INTEGER dBugUnit
 #ifdef ALLOW_FIZHI
       LOGICAL  ALARM2NEXT
       EXTERNAL ALARM2NEXT
-      CHARACTER *9 tagname
+      CHARACTER*9 tagname
 #endif
-
-      LOGICAL  DIFF_PHASE_MULTIPLE
-      EXTERNAL DIFF_PHASE_MULTIPLE
+CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -68,8 +73,16 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       dBugUnit = errorMessageUnit
 
 C--   Track diagnostics pkg activation status:
-      IF ( myIter.EQ.nIter0 ) THEN
-c       IF ( diag_pkgStatus.NE.10 ) STOP
+      firstCall = myIter.EQ.nIter0
+      IF ( seqFlag.EQ.-1 ) THEN
+#ifdef ALLOW_DIVIDED_ADJOINT
+        CALL DIAGS_TRACK_DIVA( firstCall, myIter, myThid )
+#else
+        firstCall = (myIter+1).EQ.nEndIter
+#endif
+      ENDIF
+      IF ( firstCall .AND. ( seqFlag.EQ.1 .OR. seqFlag.EQ.-1 ) ) THEN
+c       IF ( seqFlag.EQ.1 .AND. diag_pkgStatus.NE.10 ) STOP
         _BARRIER
         _BEGIN_MASTER(myThid)
         diag_pkgStatus = ready2fillDiags

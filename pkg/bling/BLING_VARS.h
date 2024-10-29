@@ -244,6 +244,9 @@ C ==========================================================
 C ==========================================================
 C   Ecosystem variables and parameters
 C ==========================================================
+C     irr_mem       :: Phyto irradiance memory
+C          this is a temporally smoothed field carried between timesteps,
+C          to represent photoadaptation.
 C   chlsat_locTimWindow(1:2) :: local-time window (in h) for
 C          satellite-equivalent chlorophyll diagnostic (and cost)
 
