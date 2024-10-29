@@ -1,6 +1,13 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools/genmake2:
+  - remove step that generates *.flowdir
+o pkg/profiles:
+  - fix missing pieces in this pkg for Tang-Lin model and get this tested in
+    verification exp. global_oce_biogeo_bling.
+o pkg/seaice:
+  - if SEAICEaddSnowMass=T, include HSNOW in diagnostics "SIenph  ".
 o utils/python/MITgcmutils/:
   - augment (llc, examples, ...) and update python utils
 o tools/build_options:
