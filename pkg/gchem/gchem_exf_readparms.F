@@ -91,7 +91,29 @@ C
      &    apCO2_exfremo_intercept,
      &    apCO2_exfremo_slope,
      &    apCO2mask,
-     &    gchem_inscal_apCO2
+     &    gchem_inscal_apCO2,
+C
+     &    windperiod,
+     &    windRepCycle,
+     &    windStartTime,
+     &    windstartdate1,
+     &    windstartdate2,
+     &    windconst,
+     &    wind_exfremo_intercept,
+     &    wind_exfremo_slope,
+     &    windmask,
+     &    gchem_inscal_wind,
+C
+     &    apresperiod,
+     &    apresRepCycle,
+     &    apresStartTime,
+     &    apresstartdate1,
+     &    apresstartdate2,
+     &    apresconst,
+     &    apres_exfremo_intercept,
+     &    apres_exfremo_slope,
+     &    apresmask,
+     &    gchem_inscal_apres
 
 #ifdef USE_EXF_INTERPOLATION
       NAMELIST /GCHEM_INTERP_PARAMS/
@@ -127,6 +149,22 @@ C
      &    apCO2_lon_inc,
      &    apCO2_interpMethod,
      &    apCO2_lat_inc
+C
+     &    wind_lon0,
+     &    wind_lat0,
+     &    wind_nlon,
+     &    wind_nlat,
+     &    wind_lon_inc,
+     &    wind_interpMethod,
+     &    wind_lat_inc
+C
+     &    apres_lon0,
+     &    apres_lat0,
+     &    apres_nlon,
+     &    apres_nlat,
+     &    apres_lon_inc,
+     &    apres_interpMethod,
+     &    apres_lat_inc
 #endif
 
 C Open and read the data.gchem file
@@ -175,6 +213,27 @@ C Open and read the data.gchem file
       apCO2mask               = 'c'
       gchem_inscal_apCO2      = 1. _d 0
 
+      windperiod             = 0.0 _d 0
+      windRepCycle           = repeatPeriod
+      windStartTime          = UNSET_RL
+      windstartdate1         = 0
+      windstartdate2         = 0
+      windconst              = 0 _d 0
+      wind_exfremo_intercept = 0.0 _d 0
+      wind_exfremo_slope     = 0.0 _d 0
+      windmask               = 'c'
+      gchem_inscal_wind      = 1. _d 0
+
+      apresperiod             = 0.0 _d 0
+      apresRepCycle           = repeatPeriod
+      apresStartTime          = UNSET_RL
+      apresstartdate1         = 0
+      apresstartdate2         = 0
+      apresconst              = UNSET_RL
+      apres_exfremo_intercept = 0.0 _d 0
+      apres_exfremo_slope     = 0.0 _d 0
+      apresmask               = 'c'
+      gchem_inscal_apres      = 1. _d 0
 
 #ifdef USE_EXF_INTERPOLATION
 
@@ -205,18 +264,30 @@ C Open and read the data.gchem file
       apCO2_lon_inc = inp_dLon
       apCO2_interpMethod  = 1
 
+      wind_lon0 = inp_lon0
+      wind_lat0 = inp_lat0
+      wind_nlon = inp_gNx
+      wind_nlat = inp_gNy
+      wind_lon_inc = inp_dLon
+      wind_interpMethod  = 1
+
+      apres_lat0 = inp_lat0
+      apres_nlon = inp_gNx
+      apres_nlat = inp_gNy
+      apres_lon_inc = inp_dLon
+      apres_interpMethod  = 1
+
       DO j=1,MAX_LAT_INC
         silica_lat_inc(j) = inp_dLat(j)
         PAR_lat_inc(j) = inp_dLat(j)
         iron_lat_inc(j) = inp_dLat(j)
         apCO2_lat_inc(j) = inp_dLat(j)
+        wind_lat_inc(j) = inp_dLat(j)
+        apres_lat_inc(j) = inp_dLat(j)
       ENDDO
 #endif /* USE_EXF_INTERPOLATION */
 
 C ======================================================================
-
-      silicaconst = UNSET_RL
-      PARconst = UNSET_RL
 
       READ(UNIT=iUnit, NML=GCHEM_FORCING_PARAMS)
 #ifdef USE_EXF_INTERPOLATION
@@ -258,6 +329,20 @@ C ======================================================================
         WRITE(msgBuf,'(3A)') 'GCHEM_EXF_READPARMS: The use of ',
      &   'useExfYearlyFields AND ',
      &   'apCO2RepCycle is not implemented'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+       IF ( windRepCycle.NE.0. ) THEN
+        WRITE(msgBuf,'(3A)') 'GCHEM_EXF_READPARMS: The use of ',
+     &   'useExfYearlyFields AND ',
+     &   'windRepCycle is not implemented'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+       IF ( apresRepCycle.NE.0. ) THEN
+        WRITE(msgBuf,'(3A)') 'GCHEM_EXF_READPARMS: The use of ',
+     &   'useExfYearlyFields AND ',
+     &   'apresRepCycle is not implemented'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF

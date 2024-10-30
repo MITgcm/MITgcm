@@ -97,31 +97,31 @@ C     data for the period ahead and the period behind myTime.
 
          _BARRIER
 
-         IF ( GCHEM_windFile .NE. ' '  ) THEN
+         IF ( GCHEM_windFile .NE. ' ' ) THEN
           CALL READ_REC_XY_RS( GCHEM_windFile,gchemWind0,intime0,
      &         myIter,myThid )
           CALL READ_REC_XY_RS( GCHEM_windFile,gchemWind1,intime1,
      &         myIter,myThid )
          ENDIF
-         IF ( GCHEM_atmospFile .NE. ' '  ) THEN
+         IF ( GCHEM_atmospFile .NE. ' ' ) THEN
           CALL READ_REC_XY_RS( GCHEM_atmospFile,gchemAP0,intime0,
      &         myIter,myThid )
           CALL READ_REC_XY_RS( GCHEM_atmospFile,gchemAP1,intime1,
      &         myIter,myThid )
          ENDIF
-         IF ( gchem_silicaFile .NE. ' '  ) THEN
+         IF ( gchem_silicaFile .NE. ' ' ) THEN
           CALL READ_REC_XY_RS( gchem_silicaFile,gchemSi0,intime0,
      &         myIter,myThid )
           CALL READ_REC_XY_RS( GCHEM_silicaFile,gchemSi1,intime1,
      &         myIter,myThid )
          ENDIF
-         IF ( gchem_iceFile .NE. ' '  ) THEN
+         IF ( gchem_iceFile .NE. ' ' ) THEN
           CALL READ_REC_XY_RS( GCHEM_iceFile,gchemIce0,intime0,
      &         myIter,myThid )
           CALL READ_REC_XY_RS( GCHEM_iceFile,gchemIce1,intime1,
      &         myIter,myThid )
          ENDIF
-         IF ( gchem_ironFile .NE. ' '  ) THEN
+         IF ( gchem_ironFile .NE. ' ' ) THEN
           CALL READ_REC_XY_RS( GCHEM_ironFile,gchemIron0,intime0,
      &         myIter,myThid )
           CALL READ_REC_XY_RS( GCHEM_ironFile,gchemIron1,intime1,
@@ -152,7 +152,7 @@ C-     end if-bloc (time to load new fields)
 
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
-          IF ( GCHEM_windFile .NE. ' '  ) THEN
+          IF ( GCHEM_windFile .NE. ' ' ) THEN
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
              gchemWind(i,j,bi,bj) = bWght*gchemWind0(i,j,bi,bj)
@@ -161,7 +161,7 @@ C-     end if-bloc (time to load new fields)
            ENDDO
           ENDIF
 
-          IF ( GCHEM_atmospFile .NE. ' '  ) THEN
+          IF ( GCHEM_atmospFile .NE. ' ' ) THEN
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
              gchemAtmosP(i,j,bi,bj) = bWght*gchemAP0(i,j,bi,bj)
@@ -170,7 +170,7 @@ C-     end if-bloc (time to load new fields)
            ENDDO
           ENDIF
 
-          IF ( GCHEM_silicaFile .NE. ' '  ) THEN
+          IF ( GCHEM_silicaFile .NE. ' ' ) THEN
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
              gchemSi(i,j,bi,bj) = bWght*gchemSi0(i,j,bi,bj)
@@ -179,7 +179,7 @@ C-     end if-bloc (time to load new fields)
            ENDDO
           ENDIF
 
-          IF ( GCHEM_iceFile .NE. ' '  ) THEN
+          IF ( GCHEM_iceFile .NE. ' ' ) THEN
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
              gchemIce(i,j,bi,bj) = bWght*gchemIce0(i,j,bi,bj)
@@ -188,7 +188,7 @@ C-     end if-bloc (time to load new fields)
            ENDDO
           ENDIF
 
-          IF ( GCHEM_ironFile .NE. ' '  ) THEN
+          IF ( GCHEM_ironFile .NE. ' ' ) THEN
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
              gchemFe(i,j,bi,bj) = bWght*gchemIron0(i,j,bi,bj)
@@ -204,9 +204,23 @@ C--   endif .not. useEXF
 c     ENDIF
 
 C-----------------------------------------------------------
-C Get ice fraction from PKG/SEAICE or PKG/THSICE
+C If an ice file is given in data.gchem, read it
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
+          CALL EXF_SET_FLD(
+     &     'gchemIce', gchem_icefile, icemask,
+     &     iceStartTime, iceperiod, iceRepCycle,
+     &     gchem_inscal_ice,
+     &     ice_exfremo_intercept, ice_exfremo_slope,
+     &     gchemIce, gchemIce0, gchemIce1,
+#  ifdef USE_EXF_INTERPOLATION
+     &     ice_lon0, ice_lon_inc,
+     &     ice_lat0, ice_lat_inc,
+     &     ice_nlon, ice_nlat, xC, yC,
+     &     ice_interpMethod,
+#  endif
+     &     mytime, myiter, mythid )
+C Otherwise get ice fraction from PKG/SEAICE or PKG/THSICE
 # ifdef ALLOW_SEAICE
          IF ( useSEAICE ) THEN
            DO j=1-OLy,sNy+OLy
@@ -233,10 +247,26 @@ C-----------------------------------------------------------
 C     forcing load fields with pkg/exf tools
       IF ( useEXF ) THEN
 
-C Get winds from PKG/EXF
-       DO bj = myByLo(myThid), myByHi(myThid)
+      DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         IF ( uwindfile .NE. ' '  .AND. vwindfile .NE. ' '  ) THEN
+
+C If a wind file is given in data.gchem, read it
+         IF ( gchem_WindFile .NE. ' ' ) THEN
+          CALL EXF_SET_FLD(
+     &     'gchemWind', gchem_windfile, windmask,
+     &     windStartTime, windperiod, windRepCycle,
+     &     gchem_inscal_wind,
+     &     wind_exfremo_intercept, wind_exfremo_slope,
+     &     gchemWind, gchemWind0, gchemWind1,
+#  ifdef USE_EXF_INTERPOLATION
+     &     wind_lon0, wind_lon_inc,
+     &     wind_lat0, wind_lat_inc,
+     &     wind_nlon, wind_nlat, xC, yC,
+     &     wind_interpMethod,
+#  endif
+     &     mytime, myiter, mythid )
+C Otherwise get winds from PKG/EXF
+         ELSEIF ( uwindfile .NE. ' ' .AND. vwindfile .NE. ' ' ) THEN
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
             gchemWind(i,j,bi,bj) = wspeed(i,j,bi,bj)
@@ -244,9 +274,23 @@ C Get winds from PKG/EXF
           ENDDO
          ENDIF
 
-C-----------------------------------------------------------
-C Get atmospheric pressure from PKG/EXF
-         IF ( apressurefile .NE. ' '  ) THEN
+C If a pressure files is given in data.gchem, read it
+         IF ( gchem_atmosPfile .EQ. ' ' ) THEN
+          CALL EXF_SET_FLD(
+     &     'gchemAtmosP', gchem_atmosPfile, apresmask,
+     &     apresStartTime, apresperiod, apresRepCycle,
+     &     gchem_inscal_apres,
+     &     apres_exfremo_intercept, apres_exfremo_slope,
+     &     gchemAtmosP, gchemAP0, gchemAP1,
+#  ifdef USE_EXF_INTERPOLATION
+     &     apres_lon0, apres_lon_inc,
+     &     apres_lat0, apres_lat_inc,
+     &     apres_nlon, apres_nlat, xC, yC,
+     &     apres_interpMethod,
+#  endif
+     &     mytime, myiter, mythid )
+C Otherwise get atmospheric pressure from PKG/EXF
+         ELSEIF ( apressurefile .NE. ' ' ) THEN
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
 C Atm pressure in Pascals, convert to atm
@@ -257,7 +301,7 @@ C Atm pressure in Pascals, convert to atm
         ENDDO
        ENDDO
 
-       IF ( gchem_silicafile .NE. ' '  ) THEN
+       IF ( gchem_silicafile .NE. ' ' ) THEN
         CALL EXF_SET_FLD(
      &     'silica', gchem_silicafile, silicamask,
      &     silicaStartTime, silicaperiod, silicaRepCycle,
