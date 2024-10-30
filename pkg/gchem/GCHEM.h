@@ -68,4 +68,22 @@ CEOP
       _RL     gchem_ForcingPeriod
       _RL     gchem_ForcingCycle
 
+C--   COMMON /GCHEM_FIELDS_C/
+      COMMON /GCHEM_FIELDS_C/
+     &    gchem_iceFile,
+     &    gchem_windFile,
+     &    gchem_atmospFile,
+     &    gchem_silicafile,
+     &    gchem_PARfile,
+     &    gchem_ironfile,
+     &    gchem_apCO2file
+
+      CHARACTER*128 gchem_iceFile
+      CHARACTER*128 gchem_windFile
+      CHARACTER*128 gchem_silicafile
+      CHARACTER*128 gchem_PARfile
+      CHARACTER*128 gchem_ironfile
+      CHARACTER*128 gchem_apCO2file
+      CHARACTER*128 gchem_atmospFile
+
 #endif /* ALLOW_GCHEM */

@@ -23,7 +23,9 @@ C !USES: ===============================================================
 # include "EXF_PARAM.h"
 # include "EXF_FIELDS.h"
 #endif
+#include "GCHEM_SIZE.h"
 #include "GCHEM_EXF.h"
+#include "GCHEM_FIELDS.h"
 #include "GCHEM.h"
 
 C !INPUT PARAMETERS: ===================================================
@@ -108,9 +110,9 @@ C     data for the period ahead and the period behind myTime.
      &         myIter,myThid )
          ENDIF
          IF ( gchem_silicaFile .NE. ' '  ) THEN
-          CALL READ_REC_XY_RS( gchem_silicaFile,gSi0,intime0,
+          CALL READ_REC_XY_RS( gchem_silicaFile,gchemSi0,intime0,
      &         myIter,myThid )
-          CALL READ_REC_XY_RS( GCHEM_silicaFile,gSi1,intime1,
+          CALL READ_REC_XY_RS( GCHEM_silicaFile,gchemSi1,intime1,
      &         myIter,myThid )
          ENDIF
          IF ( gchem_iceFile .NE. ' '  ) THEN
@@ -120,9 +122,9 @@ C     data for the period ahead and the period behind myTime.
      &         myIter,myThid )
          ENDIF
          IF ( gchem_ironFile .NE. ' '  ) THEN
-          CALL READ_REC_XY_RS( GCHEM_ironFile,giron0,intime0,
+          CALL READ_REC_XY_RS( GCHEM_ironFile,gchemIron0,intime0,
      &         myIter,myThid )
-          CALL READ_REC_XY_RS( GCHEM_ironFile,giron1,intime1,
+          CALL READ_REC_XY_RS( GCHEM_ironFile,gchemIron1,intime1,
      &         myIter,myThid )
          ENDIF
 
@@ -133,10 +135,10 @@ C--   fill-in overlap after loading temp arrays:
          _EXCH_XY_RS(gchemAP1, myThid )
          _EXCH_XY_RS(gchemIce0, myThid )
          _EXCH_XY_RS(gchemIce1, myThid )
-         _EXCH_XY_RS(giron0, myThid )
-         _EXCH_XY_RS(giron1, myThid )
-         _EXCH_XY_RS(gSi0, myThid )
-         _EXCH_XY_RS(gSi1, myThid )
+         _EXCH_XY_RS(gchemIron0, myThid )
+         _EXCH_XY_RS(gchemIron1, myThid )
+         _EXCH_XY_RS(gchemSi0, myThid )
+         _EXCH_XY_RS(gchemSi1, myThid )
 
 C-    save newly loaded time-record
          DO bj = myByLo(myThid), myByHi(myThid)
@@ -171,8 +173,8 @@ C-     end if-bloc (time to load new fields)
           IF ( GCHEM_silicaFile .NE. ' '  ) THEN
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
-             gchemSi(i,j,bi,bj) = bWght*gSi0(i,j,bi,bj)
-     &                          + aWght*gSi1(i,j,bi,bj)
+             gchemSi(i,j,bi,bj) = bWght*gchemSi0(i,j,bi,bj)
+     &                          + aWght*gchemSi1(i,j,bi,bj)
             ENDDO
            ENDDO
           ENDIF
@@ -189,8 +191,8 @@ C-     end if-bloc (time to load new fields)
           IF ( GCHEM_ironFile .NE. ' '  ) THEN
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
-             gchemFe(i,j,bi,bj) = bWght*giron0(i,j,bi,bj)
-     &                          + aWght*giron1(i,j,bi,bj)
+             gchemFe(i,j,bi,bj) = bWght*gchemIron0(i,j,bi,bj)
+     &                          + aWght*gchemIron1(i,j,bi,bj)
             ENDDO
            ENDDO
           ENDIF
@@ -261,7 +263,7 @@ C Atm pressure in Pascals, convert to atm
      &     silicaStartTime, silicaperiod, silicaRepCycle,
      &     gchem_inscal_silica,
      &     silica_exfremo_intercept, silica_exfremo_slope,
-     &     gchemSi, gSi0, gSi1,
+     &     gchemSi, gchemSi0, gchemSi1,
 #  ifdef USE_EXF_INTERPOLATION
      &     silica_lon0, silica_lon_inc,
      &     silica_lat0, silica_lat_inc,
@@ -277,7 +279,7 @@ C Atm pressure in Pascals, convert to atm
      &     PARStartTime, PARperiod, PARRepCycle,
      &     gchem_inscal_PAR,
      &     PAR_exfremo_intercept, PAR_exfremo_slope,
-     &     gchemPAR, gPAR0, gPAR1,
+     &     gchemPAR, gchemPAR0, gchemPAR1,
 #  ifdef USE_EXF_INTERPOLATION
      &     PAR_lon0, PAR_lon_inc,
      &     PAR_lat0, PAR_lat_inc,
@@ -293,7 +295,7 @@ C Atm pressure in Pascals, convert to atm
      &     ironStartTime, ironperiod, ironRepCycle,
      &     gchem_inscal_iron,
      &     iron_exfremo_intercept, iron_exfremo_slope,
-     &     gchemFe, giron0, giron1,
+     &     gchemFe, gchemIron0, gchemIron1,
 #  ifdef USE_EXF_INTERPOLATION
      &     iron_lon0, iron_lon_inc,
      &     iron_lat0, iron_lat_inc,
@@ -309,7 +311,7 @@ C Atm pressure in Pascals, convert to atm
      &     apCO2StartTime, apCO2period, apCO2RepCycle,
      &     gchem_inscal_apCO2,
      &     apCO2_exfremo_intercept, apCO2_exfremo_slope,
-     &     gchemapCO2, apCO20, apCO21,
+     &     gchemApCO2, gchemApCO20, gchemApCO21,
 #  ifdef USE_EXF_INTERPOLATION
      &     apCO2_lon0, apCO2_lon_inc,
      &     apCO2_lat0, apCO2_lat_inc,

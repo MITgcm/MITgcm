@@ -16,66 +16,6 @@ C Requires: SIZE.h
       _RL GCHEM_pCO2
       PARAMETER( GCHEM_pCO2=380.5D-6 )
 
-C--   COMMON /GCHEM_LOAD_I/
-      COMMON /GCHEM_LOAD_I/ GCHEM_ldRec
-      INTEGER GCHEM_ldRec(nSx,nSy)
-
-C--   COMMON /GCHEM_FIELDS_C/
-      COMMON /GCHEM_FIELDS_C/
-     &    gchem_iceFile,
-     &    gchem_windFile,
-     &    gchem_atmospFile,
-     &    gchem_silicafile,
-     &    gchem_PARfile,
-     &    gchem_ironfile,
-     &    gchem_apCO2file
-
-      CHARACTER*128 gchem_iceFile
-      CHARACTER*128 gchem_windFile
-      CHARACTER*128 gchem_silicafile
-      CHARACTER*128 gchem_PARfile
-      CHARACTER*128 gchem_ironfile
-      CHARACTER*128 gchem_apCO2file
-      CHARACTER*128 gchem_atmospFile
-
-C--   COMMON /GCHEM_FIELDS_R/
-      COMMON /GCHEM_FIELDS_R/
-     &    gSi0, gSi1, gchemSi,
-     &    gPAR0, gPAR1, gchemPAR,
-     &    giron0, giron1, gchemFe,
-     &    apCO20, apCO21, gchemapCO2,
-     &    gchemIce0, gchemIce1, gchemIce,
-     &    gchemWind0, gchemWind1, gchemWind,
-     &    gchemAP0, gchemAP1, gchemAtmosP
-
-      _RL gSi0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL gSi1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL gchemSi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
-      _RL gPAR0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL gPAR1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL gchemPAR(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
-      _RL giron0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL giron1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL gchemFe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
-      _RL apCO20(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL apCO21(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL gchemapCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
-      _RL gchemIce0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL gchemIce1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL gchemIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
-      _RL gchemWind0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL gchemWind1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL gchemWind(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
-      _RL gchemAP0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL gchemAP1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL gchemAtmosP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
 C Surface silica forcing parameters for exf
 
       _RL silicaStartTime

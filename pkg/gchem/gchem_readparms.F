@@ -43,6 +43,9 @@ C  to test the flag before any corresponding pkg S/R call
      &                   useBLING,
      &                   useSPOIL,
      &                   useDARWIN,
+     &     gchem_iceFile, gchem_windFile, gchem_atmospFile,
+     &     gchem_silicafile, gchem_PARfile, gchem_ironfile,
+     &     gchem_apCO2file,
      &           fileName1, fileName2, fileName3,
      &           fileName4, fileName5,
      &           gchem_int1, gchem_int2, gchem_int3,
@@ -78,6 +81,13 @@ C- Set defaults values for parameters in GCHEM.h
        fileName3=' '
        fileName4=' '
        fileName5=' '
+       gchem_iceFile    = ' '
+       gchem_windFile   = ' '
+       gchem_atmospFile = ' '
+       gchem_silicafile = ' '
+       gchem_PARfile    = ' '
+       gchem_ironfile   = ' '
+       gchem_apCO2file  = ' '
        nsubtime = 1
        gchem_int1=0
        gchem_int2=0
@@ -101,7 +111,7 @@ C- Open and read the data.gchem file
      O                   iUnit,
      I                   myThid )
       READ(UNIT=iUnit,NML=GCHEM_PARM01)
-      CALL GCHEM_EXF_READPARMS( iUnit, myThid )
+      IF (useEXF) CALL GCHEM_EXF_READPARMS( iUnit, myThid )
       WRITE(msgBuf,'(A)')
      &  ' GCHEM_READPARMS: finished reading data.gchem'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,

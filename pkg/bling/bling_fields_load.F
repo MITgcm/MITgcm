@@ -19,7 +19,7 @@ C     === Global variables ===
 #include "GRID.h"
 #include "BLING_VARS.h"
 #ifdef ALLOW_GCHEM
-# include "GCHEM_EXF.h"
+# include "GCHEM_FIELDS.h"
 #endif
 
 C !INPUT PARAMETERS: ===================================================

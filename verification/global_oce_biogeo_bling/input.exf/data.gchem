@@ -1,12 +1,12 @@
  &GCHEM_PARM01
   useBLING=.TRUE.,
   nsubtime=1,
- &
- &gchem_forcing_params
   GCHEM_windFile='tren_speed.bin',
   GCHEM_iceFile='fice.bin',
   GCHEM_ironFile='mah_flux_smooth.bin',
   GCHEM_silicafile = 'sillev1.bin',
+ &
+ &gchem_forcing_params
   ironperiod=-12.,
   silicaperiod=-12.,
  &

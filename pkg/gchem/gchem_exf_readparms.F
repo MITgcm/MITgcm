@@ -47,11 +47,7 @@ C !LOCAL VARIABLES: ====================================================
       INTEGER j, errCount
 
       NAMELIST /GCHEM_FORCING_PARAMS/
-     &    gchem_iceFile,
-     &    gchem_windFile,
-     &    gchem_atmospFile,
 C
-     &    gchem_silicafile,
      &    silicaperiod,
      &    silicaRepCycle,
      &    silicaStartTime,
@@ -63,7 +59,6 @@ C
      &    silicamask,
      &    gchem_inscal_silica,
 C
-     &    gchem_PARfile,
      &    PARperiod,
      &    PARRepCycle,
      &    PARStartTime,
@@ -75,7 +70,6 @@ C
      &    PARmask,
      &    gchem_inscal_PAR,
 C
-     &    gchem_ironfile,
      &    ironperiod,
      &    ironRepCycle,
      &    ironStartTime,
@@ -87,7 +81,6 @@ C
      &    ironmask,
      &    gchem_inscal_iron,
 C
-     &    gchem_apCO2file,
      &    apCO2period,
      &    apCO2RepCycle,
      &    apCO2StartTime,
@@ -137,13 +130,6 @@ C
 
 C Open and read the data.gchem file
 
-      gchem_iceFile    = ' '
-      gchem_windFile   = ' '
-      gchem_atmospFile = ' '
-c      gchem_useEXFwind = .FALSE.
-c      gchem_useQsw = .FALSE.
-
-      gchem_silicafile = ' '
       silicaperiod             = 0.0 _d 0
       silicaRepCycle           = repeatPeriod
       silicaStartTime          = UNSET_RL
@@ -156,7 +142,6 @@ c      gchem_useQsw = .FALSE.
 
       gchem_inscal_silica    =  1. _d 0
 
-      gchem_PARfile = ' '
       PARperiod             = 0.0 _d 0
       PARRepCycle           = repeatPeriod
       PARStartTime          = UNSET_RL
@@ -169,7 +154,6 @@ c      gchem_useQsw = .FALSE.
 
       gchem_inscal_PAR    =  1. _d 0
 
-      gchem_ironfile = ' '
       ironperiod             = 0.0 _d 0
       ironRepCycle           = repeatPeriod
       ironStartTime          = UNSET_RL
@@ -182,7 +166,6 @@ c      gchem_useQsw = .FALSE.
 
       gchem_inscal_iron    =  1. _d 0
 
-      gchem_apCO2file = ' '
       apCO2period             = 0.0 _d 0
       apCO2RepCycle           = repeatPeriod
       apCO2StartTime          = UNSET_RL
@@ -283,15 +266,6 @@ c      ENDIF
         STOP 'ABNORMAL END: S/R GCHEM_EXF_READPARMS'
       ENDIF
 
-#else
-C     need to intialise these files
-      gchem_iceFile    = ' '
-      gchem_windFile   = ' '
-      gchem_atmospFile = ' '
-      gchem_silicafile = ' '
-      gchem_PARfile    = ' '
-      gchem_ironfile   = ' '
-      gchem_apCO2file  = ' '
 #endif /* ALLOW_GCHEM and ALLOW_EXF */
 
       RETURN
