@@ -1,5 +1,7 @@
 #include "GCHEM_OPTIONS.h"
-#include "EXF_OPTIONS.h"
+#ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+#endif
 
 CBOP
 C !ROUTINE: GCHEM_EXF_READPARMS
@@ -43,7 +45,6 @@ CEOP
 
 C !LOCAL VARIABLES: ====================================================
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      LOGICAL gchem_haveapCO2
       INTEGER j, errCount
 
       NAMELIST /GCHEM_FORCING_PARAMS/
@@ -138,9 +139,8 @@ C Open and read the data.gchem file
       silicaconst              = UNSET_RL
       silica_exfremo_intercept = 0.0 _d 0
       silica_exfremo_slope     = 0.0 _d 0
-      silicamask = 'c'
-
-      gchem_inscal_silica    =  1. _d 0
+      silicamask               = 'c'
+      gchem_inscal_silica      = 1. _d 0
 
       PARperiod             = 0.0 _d 0
       PARRepCycle           = repeatPeriod
@@ -150,9 +150,8 @@ C Open and read the data.gchem file
       PARconst              = UNSET_RL
       PAR_exfremo_intercept = 0.0 _d 0
       PAR_exfremo_slope     = 0.0 _d 0
-      PARmask = 'c'
-
-      gchem_inscal_PAR    =  1. _d 0
+      PARmask               = 'c'
+      gchem_inscal_PAR      = 1. _d 0
 
       ironperiod             = 0.0 _d 0
       ironRepCycle           = repeatPeriod
@@ -162,9 +161,8 @@ C Open and read the data.gchem file
       ironconst              = 0 _d 0
       iron_exfremo_intercept = 0.0 _d 0
       iron_exfremo_slope     = 0.0 _d 0
-      ironmask = 'c'
-
-      gchem_inscal_iron    =  1. _d 0
+      ironmask               = 'c'
+      gchem_inscal_iron      = 1. _d 0
 
       apCO2period             = 0.0 _d 0
       apCO2RepCycle           = repeatPeriod
@@ -174,9 +172,8 @@ C Open and read the data.gchem file
       apCO2const              = UNSET_RL
       apCO2_exfremo_intercept = 0.0 _d 0
       apCO2_exfremo_slope     = 0.0 _d 0
-      apCO2mask = 'c'
-
-      gchem_inscal_apCO2    =  1. _d 0
+      apCO2mask               = 'c'
+      gchem_inscal_apCO2      = 1. _d 0
 
 
 #ifdef USE_EXF_INTERPOLATION
@@ -226,13 +223,13 @@ C ======================================================================
       READ(UNIT=iUnit, NML=GCHEM_INTERP_PARAMS)
 #endif
 
-c      IF (.NOT.GCHEM_haveapCO2) THEN
-c        WRITE(msgBuf,'(2A,E13.6,A)')
-c     &    '** WARNING ** GCHEM_EXF_READPARMS: ',
-c     &    'default atmos pCO2 of ',apCO2const,' atm is used'
-c        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-c     &                      SQUEEZE_RIGHT, myThid )
-c      ENDIF
+      IF (gchem_apCO2file.EQ.' ') THEN
+        WRITE(msgBuf,'(2A,E13.6,A)')
+     &    '** WARNING ** GCHEM_EXF_READPARMS: ',
+     &    'default atmos pCO2 of ',GCHEM_pCO2,' atm is used'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+      ENDIF
 
       errCount = 0
       IF ( useExfYearlyFields ) THEN
@@ -247,6 +244,13 @@ c      ENDIF
         WRITE(msgBuf,'(3A)') 'GCHEM_EXF_READPARMS: The use of ',
      &   'useExfYearlyFields AND ',
      &   'ironRepCycle is not implemented'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+       IF ( silicaRepCycle.NE.0. ) THEN
+        WRITE(msgBuf,'(3A)') 'GCHEM_EXF_READPARMS: The use of ',
+     &   'useExfYearlyFields AND ',
+     &   'silicaRepCycle is not implemented'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
