@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/autodiff:
+  - TAF-store directives for saltFlux (needed for #define EXCLUDE_FFIELDS_LOAD)
+  - little cleaning of ctrl_map_forcing.F (remove duplicated EXCH calls, ...).
 o tools/genmake2:
   - remove step that generates *.flowdir
 o pkg/profiles:
