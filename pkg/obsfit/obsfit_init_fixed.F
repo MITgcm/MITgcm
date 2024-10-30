@@ -75,10 +75,12 @@ C     !LOCAL VARIABLES:
       INTEGER IL, JL, KL, err, err_s
       INTEGER varid(2)
       INTEGER varid_intp1, varid_intp2, varid_intp11, varid_intp22
-      INTEGER varid_intp3, varid_intp4, varid_intp5, q, iINTERP
+      INTEGER varid_intp3, varid_intp4, varid_intp5, varid_intp6
+      INTEGER q, iINTERP
       _RL tmp_i(1000,NUM_INTERP_PTS_OBS)
       _RL tmp_j(1000,NUM_INTERP_PTS_OBS)
-      _RL tmp_weights(1000,NUM_INTERP_PTS_OBS),tmp_sum_weights
+      _RL tmp_k(1000,NUM_INTERP_PTS_OBS)
+      _RL tmp_frac(1000,NUM_INTERP_PTS_OBS),tmp_sum_fracs
       _RL tmp_xC11(1000),tmp_yC11(1000)
       _RL tmp_xCNINJ(1000),tmp_yCNINJ(1000)
       INTEGER stopGenericGrid
@@ -129,13 +131,13 @@ C     !FUNCTIONS:
        STOP 'ABNORMAL END: S/R OBSFIT_INIT_FIXED'
       ENDIF
 
-      IF ( obsfitDoGenGrid ) THEN
-       WRITE(msgBuf,'(2A)') 'OBSFIT_INIT_FIXED: ',
-     &  'obsfitDoGenGrid has not been tested yet'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       CALL ALL_PROC_DIE( myThid )
-       STOP 'ABNORMAL END: S/R OBSFIT_INIT_FIXED'
-      ENDIF
+c      IF ( obsfitDoGenGrid ) THEN
+c       WRITE(msgBuf,'(2A)') 'OBSFIT_INIT_FIXED: ',
+c     &  'obsfitDoGenGrid has not been tested yet'
+c       CALL PRINT_ERROR( msgBuf, myThid )
+c       CALL ALL_PROC_DIE( myThid )
+c       STOP 'ABNORMAL END: S/R OBSFIT_INIT_FIXED'
+c      ENDIF
 
       WRITE(msgbuf,'(a)') ' '
       CALL print_message( msgbuf, standardmessageunit,
@@ -206,14 +208,28 @@ C===========================================================
 
 C Read number of observations:
         fid = fiddata_obs(num_file)
-        err = NF_INQ_DIMID(fid,'iOBS', dimid )
-        err = NF_INQ_DIMLEN(fid, dimid, obsNo(num_file) )
-      
+        err = NF_INQ_DIMID(fid,'iOBS', dimid)
+        err = NF_INQ_DIMLEN(fid, dimid, obsNo(num_file))
+
         WRITE(msgbuf,'(a,i9)')
      &   '  # of observations in file                   =',
      &   obsNo(num_file)
         CALL print_message(
      &   msgbuf, standardmessageunit, SQUEEZE_RIGHT, myThid)
+
+C Read number of interpolation points (generic grid only):
+        err = NF_INQ_DIMID(fid,'iINTERP', dimid)
+        IF (err.EQ.NF_NOERR) THEN
+         err = NF_INQ_DIMLEN(fid, dimid, iINTERP)
+        ELSE 
+         iINTERP = NUM_INTERP_PTS_OBS
+        ENDIF
+
+        WRITE(msgbuf,'(a,i9)')
+     &     '  # of interpolation points                   =',
+     &     iINTERP
+        CALL print_message(
+     &     msgbuf, standardmessageunit, SQUEEZE_RIGHT, myThid)
 
 C Read number of samples (if missing, assume it's 1):
         loopThroughSamples=1
@@ -287,14 +303,15 @@ C Weight for each sample (if missing, assume all samples weigh equally):
         ENDIF
 
         IF (obsfitDoGenGrid) THEN
-C Read interpolation information (grid points, coeffs, etc.)
+C Read interpolation information (grid points, fractions, etc.)
          err = NF_INQ_VARID(fid,'sample_interp_XC11',varid_intp1)
          err = NF_INQ_VARID(fid,'sample_interp_YC11',varid_intp2)
          err = NF_INQ_VARID(fid,'sample_interp_XCNINJ',varid_intp11)
          err = NF_INQ_VARID(fid,'sample_interp_YCNINJ',varid_intp22)
-         err = NF_INQ_VARID(fid,'sample_interp_w',varid_intp3)
+         err = NF_INQ_VARID(fid,'sample_interp_frac',varid_intp3)
          err = NF_INQ_VARID(fid,'sample_interp_i',varid_intp4)
          err = NF_INQ_VARID(fid,'sample_interp_j',varid_intp5)
+         err = NF_INQ_VARID(fid,'sample_interp_k',varid_intp6)
          IF (err.NE.NF_NOERR) THEN
           IL  = ILNBLNK( obsfitFile )
           WRITE(msgBuf,'(3A)')
@@ -491,30 +508,6 @@ C Read number of samples per obs
            stopObsfit=1
           ENDIF
 
-C If obsfitDoGenGrid then also read in the interpolation coeffs and indices
-          IF (obsfitDoGenGrid) THEN
-           err = NF_GET_VARA_DOUBLE(fid,varid_intp1,vec_start,
-     &      vec_count, tmp_xC11)
-           err = NF_GET_VARA_DOUBLE(fid,varid_intp2,vec_start,
-     &      vec_count, tmp_yC11)
-           err = NF_GET_VARA_DOUBLE(fid,varid_intp11,vec_start,
-     &      vec_count, tmp_xCNINJ)
-           err = NF_GET_VARA_DOUBLE(fid,varid_intp22,vec_start,
-     &      vec_count, tmp_yCNINJ)
-           DO q=1,NUM_INTERP_PTS_OBS
-            vec_start2(1)=q
-            vec_start2(2)=1+1000*(kk-1)
-            vec_count2(1)=1
-            vec_count2(2)=min(1000,ObsNo(num_file)-1000*(kk-1))
-            err = NF_GET_VARA_DOUBLE(fid,varid_intp3,vec_start2,
-     &      vec_count2, tmp_weights(1,q))
-            err = NF_GET_VARA_DOUBLE(fid,varid_intp4,vec_start2,
-     &      vec_count2, tmp_i(1,q))
-            err = NF_GET_VARA_DOUBLE(fid,varid_intp5,vec_start2,
-     &      vec_count2, tmp_j(1,q))
-           ENDDO
-          ENDIF
-
 C Loop through this chunk
           DO m=1,min(1000,ObsNo(num_file)-1000*(kk-1))
            IF ( stopObsfit .EQ. 0) THEN 
@@ -642,9 +635,9 @@ C Main loop: look for valid samples (in tile)
           err = NF_INQ_DIMID(fid,'iSAMPLE', dimid )
 C If isample is not a dimension, use iobs for size of sampleno
           IF (err.NE.NF_NOERR) THEN
-           SampleNo(num_file,bi,bj) = ObsNo(num_file)
+           sampleNo(num_file,bi,bj) = ObsNo(num_file)
           ELSE
-           err = NF_INQ_DIMLEN(fid, dimid, SampleNo(num_file,bi,bj) )
+           err = NF_INQ_DIMLEN(fid, dimid, sampleNo(num_file,bi,bj) )
           ENDIF
          
           DO k=1,NSAMPLESMAX
@@ -658,7 +651,7 @@ C If isample is not a dimension, use iobs for size of sampleno
             sample_interp_i(num_file,k,q,bi,bj) = 1
             sample_interp_j(num_file,k,q,bi,bj) = 1
             sample_interp_k(num_file,k,q,bi,bj) = 1
-            sample_interp_w(num_file,k,q,bi,bj) = 0. _d 0
+            sample_interp_frac(num_file,k,q,bi,bj) = 0. _d 0
            ENDDO
            sample_interp_xC11(num_file,k,bi,bj)=-999. _d 0
            sample_interp_yC11(num_file,k,bi,bj)=-999. _d 0
@@ -666,8 +659,8 @@ C If isample is not a dimension, use iobs for size of sampleno
            sample_interp_yCNINJ(num_file,k,bi,bj)=-999. _d 0
           ENDDO
 
-          SampleNo_tile=0
-          Obsno_div1000=max(0,int(SampleNo(num_file,bi,bj)/1000))
+          sampleNo_tile=0
+          Obsno_div1000=max(0,int(sampleNo(num_file,bi,bj)/1000))
       
           ntype_ssh=0
           ntype_other=0
@@ -679,11 +672,11 @@ C If isample is not a dimension, use iobs for size of sampleno
 
 C Read a chunk
             vec_start=1+1000*(kk-1)
-            vec_count=min(1000,SampleNo(num_file,bi,bj)-1000*(kk-1))
+            vec_count=min(1000,sampleNo(num_file,bi,bj)-1000*(kk-1))
 
             IF ( (vec_count.LE.0).OR.(vec_count.GT.1000).OR.
      &        (vec_start.LE.0).OR.
-     &        (vec_count+vec_start-1.GT.SampleNo(num_file,bi,bj)) )
+     &        (vec_count+vec_start-1.GT.sampleNo(num_file,bi,bj)) )
      &        THEN
              IL  = ILNBLNK( obsfitFile )
              WRITE(msgBuf,'(3A)')
@@ -705,7 +698,35 @@ C Read a chunk
              err = NF_GET_VARA_DOUBLE(fid,varid5,vec_start,
      &        vec_count, tmp_weight2)
             ENDIF
-            
+ 
+C If obsfitDoGenGrid then also read in the interpolation fractions 
+C and indices 
+            IF (obsfitDoGenGrid) THEN
+             err = NF_GET_VARA_DOUBLE(fid,varid_intp1,vec_start,
+     &        vec_count, tmp_xC11)
+             err = NF_GET_VARA_DOUBLE(fid,varid_intp2,vec_start,
+     &        vec_count, tmp_yC11)
+             err = NF_GET_VARA_DOUBLE(fid,varid_intp11,vec_start,
+     &        vec_count, tmp_xCNINJ)
+             err = NF_GET_VARA_DOUBLE(fid,varid_intp22,vec_start,
+     &        vec_count, tmp_yCNINJ)
+             DO q=1,iINTERP
+              vec_start2(1)=q
+              vec_start2(2)=1+1000*(kk-1)
+              vec_count2(1)=1
+              vec_count2(2)=min(1000,
+     &         sampleNo(num_file,bi,bj)-1000*(kk-1))
+              err = NF_GET_VARA_DOUBLE(fid,varid_intp3,vec_start2,
+     &         vec_count2, tmp_frac(1,q))
+              err = NF_GET_VARA_DOUBLE(fid,varid_intp4,vec_start2,
+     &         vec_count2, tmp_i(1,q))
+              err = NF_GET_VARA_DOUBLE(fid,varid_intp5,vec_start2,
+     &         vec_count2, tmp_j(1,q))
+              err = NF_GET_VARA_DOUBLE(fid,varid_intp6,vec_start2,
+     &         vec_count2, tmp_k(1,q))
+             ENDDO
+            ENDIF
+
             IF (err.NE.NF_NOERR) THEN
              WRITE(msgBuf,'(3A)')
      &        'OBSFIT_INIT_FIXED: file ', obsfitFile(1:IL),
@@ -715,7 +736,7 @@ C Read a chunk
             ENDIF
 
 C Loop through this chunk
-            DO m=1,min(1000,SampleNo(num_file,bi,bj)-1000*(kk-1))
+            DO m=1,min(1000,sampleNo(num_file,bi,bj)-1000*(kk-1))
              IF ( stopObsfit .EQ. 0) THEN
       
               obsIsInRunTime=1
@@ -735,7 +756,17 @@ C Loop through this chunk
               lat_cur=tmp_lat2(m)
               depth_cur=tmp_depth2(m)
               
-C Determine whether sample is in current tile domain (lat-lon grid case)
+C Keep track of which variables in the file
+              IF (type_cur.EQ.5) THEN
+                 ntype_ssh=ntype_ssh+1
+              ELSE
+                 ntype_other=ntype_other+1
+              ENDIF
+
+C===========================================================
+C lat-lon grid case
+C===========================================================              
+C Determine whether sample is in current tile domain
               IF ((.NOT.obsfitDoGenGrid).AND.
      &          (sampleIsInTile.EQ.1)) THEN
                IF (xC(sNx+1,1,bi,bj).LT.xC(1,1,bi,bj)) THEN
@@ -858,101 +889,95 @@ C Value of i, west of the data point:
 
                IF (sampleIsInTile.EQ.1) THEN
 C If yes then store sample index position and number of samples:
-                SampleNo_tile=SampleNo_tile+1
-                sample_ind_glob(num_file,SampleNo_tile,bi,bj)
+                sampleNo_tile=sampleNo_tile+1
+                sample_ind_glob(num_file,sampleNo_tile,bi,bj)
      &           =m+1000*(kk-1)
 
-                sample_timeS(num_file,SampleNo_tile,bi,bj)=
+                sample_timeS(num_file,sampleNo_tile,bi,bj)=
      &           tmp_sample_time(m+1000*(kk-1))
 C "-1" to avoid counting in an extra time step 
 C when time averaging
                 IF (obsfitOperation(num_file).eq.0) THEN 
-                 sample_timeE(num_file,SampleNo_tile,bi,bj)=
-     &           sample_timeS(num_file,SampleNo_tile,bi,bj)
+                 sample_timeE(num_file,sampleNo_tile,bi,bj)=
+     &           sample_timeS(num_file,sampleNo_tile,bi,bj)
      &           +tmp_sample_delT(m+1000*(kk-1))
                 ELSE
-                 sample_timeE(num_file,SampleNo_tile,bi,bj)=
-     &           sample_timeS(num_file,SampleNo_tile,bi,bj)
+                 sample_timeE(num_file,sampleNo_tile,bi,bj)=
+     &           sample_timeS(num_file,sampleNo_tile,bi,bj)
      &           +tmp_sample_delT(m+1000*(kk-1))-1
                 ENDIF
-                sample_lon(num_file,SampleNo_tile,bi,bj)=lon_cur
-                sample_lat(num_file,SampleNo_tile,bi,bj)=lat_cur
-                sample_depth(num_file,SampleNo_tile,bi,bj)=depth_cur
+                sample_lon(num_file,sampleNo_tile,bi,bj)=lon_cur
+                sample_lat(num_file,sampleNo_tile,bi,bj)=lat_cur
+                sample_depth(num_file,sampleNo_tile,bi,bj)=depth_cur
                 IF (weighSamples.EQ.1) THEN  
-                 sample_weight(num_file,SampleNo_tile,bi,bj)=
+                 sample_weight(num_file,sampleNo_tile,bi,bj)=
      &           tmp_weight2(m)
                 ENDIF
 
-                sample_type(num_file,SampleNo_tile,bi,bj)=type_cur
-C Keep track of which variables in the file
-                IF (type_cur.EQ.5) THEN
-                 ntype_ssh=ntype_ssh+1
-                ELSE
-                 ntype_other=ntype_other+1
-                ENDIF
+                sample_type(num_file,sampleNo_tile,bi,bj)=type_cur
 
-C Then store interpolation coeffs and indices
+C Store interpolation fractions and indices
                 lon_fac=(lon_cur-lon_1)/(lon_2-lon_1)
                 lat_fac=(lat_cur-lat_1)/(lat_2-lat_1)
                 
                 w(1)=(1-lon_fac)*(1-lat_fac)*(1-depth_fac)
-                sample_interp_i(num_file,SampleNo_tile,1,bi,bj)
+                sample_interp_i(num_file,sampleNo_tile,1,bi,bj)
      &              =sample_i
-                sample_interp_j(num_file,SampleNo_tile,1,bi,bj)
+                sample_interp_j(num_file,sampleNo_tile,1,bi,bj)
      &              =sample_j
-                sample_interp_k(num_file,SampleNo_tile,1,bi,bj)
+                sample_interp_k(num_file,sampleNo_tile,1,bi,bj)
      &              =sample_k1
                 w(2)=lon_fac*(1-lat_fac)*(1-depth_fac)
-                sample_interp_i(num_file,SampleNo_tile,2,bi,bj)
+                sample_interp_i(num_file,sampleNo_tile,2,bi,bj)
      &              =sample_i+1
-                sample_interp_j(num_file,SampleNo_tile,2,bi,bj)
+                sample_interp_j(num_file,sampleNo_tile,2,bi,bj)
      &              =sample_j
-                sample_interp_k(num_file,SampleNo_tile,2,bi,bj)
+                sample_interp_k(num_file,sampleNo_tile,2,bi,bj)
      &              =sample_k1
                 w(3)=(1-lon_fac)*lat_fac*(1-depth_fac)
-                sample_interp_i(num_file,SampleNo_tile,3,bi,bj)
+                sample_interp_i(num_file,sampleNo_tile,3,bi,bj)
      &              =sample_i
-                sample_interp_j(num_file,SampleNo_tile,3,bi,bj)
+                sample_interp_j(num_file,sampleNo_tile,3,bi,bj)
      &              =sample_j+1
-                sample_interp_k(num_file,SampleNo_tile,3,bi,bj)
+                sample_interp_k(num_file,sampleNo_tile,3,bi,bj)
      &              =sample_k1
                 w(4)=lon_fac*lat_fac*(1-depth_fac)
-                sample_interp_i(num_file,SampleNo_tile,4,bi,bj)
+                sample_interp_i(num_file,sampleNo_tile,4,bi,bj)
      &              =sample_i+1
-                sample_interp_j(num_file,SampleNo_tile,4,bi,bj)
+                sample_interp_j(num_file,sampleNo_tile,4,bi,bj)
      &              =sample_j+1
-                sample_interp_k(num_file,SampleNo_tile,4,bi,bj)
+                sample_interp_k(num_file,sampleNo_tile,4,bi,bj)
      &              =sample_k1
                 w(5)=(1-lon_fac)*(1-lat_fac)*depth_fac
-                sample_interp_i(num_file,SampleNo_tile,5,bi,bj)
+                sample_interp_i(num_file,sampleNo_tile,5,bi,bj)
      &              =sample_i
-                sample_interp_j(num_file,SampleNo_tile,5,bi,bj)
+                sample_interp_j(num_file,sampleNo_tile,5,bi,bj)
      &              =sample_j
-                sample_interp_k(num_file,SampleNo_tile,5,bi,bj)
+                sample_interp_k(num_file,sampleNo_tile,5,bi,bj)
      &              =sample_k2
                 w(6)=lon_fac*(1-lat_fac)*depth_fac
-                sample_interp_i(num_file,SampleNo_tile,6,bi,bj)
+                sample_interp_i(num_file,sampleNo_tile,6,bi,bj)
      &              =sample_i+1
-                sample_interp_j(num_file,SampleNo_tile,6,bi,bj)
+                sample_interp_j(num_file,sampleNo_tile,6,bi,bj)
      &              =sample_j
-                sample_interp_k(num_file,SampleNo_tile,6,bi,bj)
+                sample_interp_k(num_file,sampleNo_tile,6,bi,bj)
      &              =sample_k2
                 w(7)=(1-lon_fac)*lat_fac*depth_fac
-                sample_interp_i(num_file,SampleNo_tile,7,bi,bj)
+                sample_interp_i(num_file,sampleNo_tile,7,bi,bj)
      &              =sample_i
-                sample_interp_j(num_file,SampleNo_tile,7,bi,bj)
+                sample_interp_j(num_file,sampleNo_tile,7,bi,bj)
      &              =sample_j+1
-                sample_interp_k(num_file,SampleNo_tile,7,bi,bj)
+                sample_interp_k(num_file,sampleNo_tile,7,bi,bj)
      &              =sample_k2
                 w(8)=lon_fac*lat_fac*depth_fac
-                sample_interp_i(num_file,SampleNo_tile,8,bi,bj)
+                sample_interp_i(num_file,sampleNo_tile,8,bi,bj)
      &              =sample_i+1
-                sample_interp_j(num_file,SampleNo_tile,8,bi,bj)
+                sample_interp_j(num_file,sampleNo_tile,8,bi,bj)
      &              =sample_j+1
-                sample_interp_k(num_file,SampleNo_tile,8,bi,bj)
+                sample_interp_k(num_file,sampleNo_tile,8,bi,bj)
      &              =sample_k2
       
-C Ignore points that are in not "wet"
+C Ignore points that are not "wet"
 
                 IF (tmp_type.EQ.3) THEN
 c Zonal velocity
@@ -990,15 +1015,17 @@ c Meridional velocity
                  wtot=wtot+w(q)
                 ENDDO
                 DO q = 1,NUM_INTERP_PTS_OBS
-                 sample_interp_w(num_file,SampleNo_tile,q,bi,bj)
+                 sample_interp_frac(num_file,sampleNo_tile,q,bi,bj)
      &               =w(q)/wtot
                 ENDDO
 
                ENDIF
 
-
-C Determine whether sample is in current tile domain (generic grid case)
-              ELSEIF (obsIsInRunTime.EQ.1) THEN
+C===========================================================
+C Generic grid case
+C===========================================================              
+C Determine whether sample is in current tile domain
+              ELSEIF (sampleIsInTile.EQ.1) THEN
 
                IF (stopGenericGrid.EQ.0) THEN
 
@@ -1011,69 +1038,52 @@ C Determine whether sample is in current tile domain (generic grid case)
      &           .LT.0.0001 _d 0)
      &           .AND.(obsIsInRunTime.EQ.1)) THEN
 
-C If yes then store sample_time and interpolation coeffs and indices:
-C determine value of k down of data point
-                 sample_k1 = -10
-                 sample_k2 = -10
-                 depth_1 = -10
-                 depth_2 = -10
-C Case 1: above first depth level
-                 IF (-rC(1).GT.depth_cur) THEN
-                  sample_k1=1
-                  sample_k2=1
-                  depth_fac=1. _d 0
-                 ENDIF
-C Case 2: below last depth level
-                 IF (-rC(Nr).LE.depth_cur) THEN
-                  sample_k1=Nr
-                  sample_k2=Nr
-                  depth_fac=1. _d 0
-                 ENDIF
-C Case 3: between two depth levels
-                 DO k=1,Nr-1
-                  IF ((-rC(k).LE.depth_cur).AND.
-     &             (-rC(k+1).GT.depth_cur)) THEN
-                   sample_k1=k
-                   sample_k2=k+1
-                   depth_1=-rC(k)
-                   depth_2=-rC(k+1)
-                   depth_fac=(depth_cur-depth_1)/(depth_2-depth_1)
-                  ENDIF
-                 ENDDO
-C If yes then store sample_time and interpolation coeffs and indices:
-                 SampleNo_tile=SampleNo_tile+1
-                 sample_type(num_file,SampleNo_tile,bi,bj)=type_cur
+C Do nothing
+                ELSE
+                 sampleIsInTile=0
+                ENDIF
 
-                 sample_timeS(num_file,SampleNo_tile,bi,bj)=
-     &           tmp_sample_time(m+1000*(kk-1))
+                IF (sampleIsInTile.EQ.1) THEN
+C If yes then store sample_time and interpolation fractions and indices:
+                 sampleNo_tile=sampleNo_tile+1
+                 sample_type(num_file,sampleNo_tile,bi,bj)=type_cur
+
+                 sample_timeS(num_file,sampleNo_tile,bi,bj)=
+     &            tmp_sample_time(m+1000*(kk-1))
 C "-1" to avoid counting in an extra time step 
 C when time averaging
                  IF (obsfitOperation(num_file).eq.0) THEN
-                  sample_timeE(num_file,SampleNo_tile,bi,bj)=
-     &            sample_timeS(num_file,SampleNo_tile,bi,bj)
+                  sample_timeE(num_file,sampleNo_tile,bi,bj)=
+     &            sample_timeS(num_file,sampleNo_tile,bi,bj)
      &            +tmp_sample_delT(m+1000*(kk-1))
                  ELSE
-                  sample_timeE(num_file,SampleNo_tile,bi,bj)=
-     &            sample_timeS(num_file,SampleNo_tile,bi,bj)
+                  sample_timeE(num_file,sampleNo_tile,bi,bj)=
+     &            sample_timeS(num_file,sampleNo_tile,bi,bj)
      &            +tmp_sample_delT(m+1000*(kk-1))-1
                  ENDIF
-                 sample_interp_xC11(num_file,SampleNo_tile,bi,bj)=
+                 IF (weighSamples.EQ.1) THEN
+                  sample_weight(num_file,sampleNo_tile,bi,bj)=
+     &             tmp_weight2(m)
+                 ENDIF
+                 sample_interp_xC11(num_file,sampleNo_tile,bi,bj)=
      &            tmp_xC11(m)
-                 sample_interp_yC11(num_file,SampleNo_tile,bi,bj)=
+                 sample_interp_yC11(num_file,sampleNo_tile,bi,bj)=
      &            tmp_yC11(m)
-                 sample_interp_xCNINJ(num_file,SampleNo_tile,bi,bj)=
+                 sample_interp_xCNINJ(num_file,sampleNo_tile,bi,bj)=
      &            tmp_xCNINJ(m)
-                 sample_interp_yCNINJ(num_file,SampleNo_tile,bi,bj)=
+                 sample_interp_yCNINJ(num_file,sampleNo_tile,bi,bj)=
      &            tmp_yCNINJ(m)
-                 tmp_sum_weights=0. _d 0
-                 DO q = 1,NUM_INTERP_PTS_OBS
-                  sample_interp_w(num_file,SampleNo_tile,q,bi,bj)
-     &             =tmp_weights(m,q)
-                  sample_interp_i(num_file,SampleNo_tile,q,bi,bj)
+                 tmp_sum_fracs=0. _d 0
+                 DO q = 1,iINTERP
+                  sample_interp_frac(num_file,sampleNo_tile,q,bi,bj)
+     &             =tmp_frac(m,q)
+                  sample_interp_i(num_file,sampleNo_tile,q,bi,bj)
      &             =tmp_i(m,q)
-                  sample_interp_j(num_file,SampleNo_tile,q,bi,bj)
+                  sample_interp_j(num_file,sampleNo_tile,q,bi,bj)
      &             =tmp_j(m,q)
-                  tmp_sum_weights=tmp_sum_weights+tmp_weights(m,q)
+                  sample_interp_k(num_file,sampleNo_tile,q,bi,bj)
+     &             =tmp_k(m,q)
+                  tmp_sum_fracs=tmp_sum_fracs+tmp_frac(m,q)
 
 C More test of the inputs: is the offline-computed
 C interpolation information consistent (self and with grid)
@@ -1088,7 +1098,7 @@ C interpolation information consistent (self and with grid)
                   stopGenericGrid=1
                  ENDIF
 #ifdef ALLOW_OBSFIT_EXCLUDE_CORNERS
-                IF ( tmp_weights(m,q) .NE. 0. _d 0) THEN
+                IF ( tmp_frac(m,q) .NE. 0. _d 0) THEN
                  IF ( ((tmp_i(m,q).EQ.0).AND.(tmp_j(m,q).EQ.0))
      &            .OR.((tmp_i(m,q).EQ.sNx+1).AND.(tmp_j(m,q).EQ.sNy+1))
      &            .OR.((tmp_i(m,q).EQ.0).AND.(tmp_j(m,q).EQ.sNy+1))
@@ -1103,8 +1113,8 @@ C interpolation information consistent (self and with grid)
                  ENDIF
                 ENDIF
 #endif /* ALLOW_OBSFIT_EXCLUDE_CORNERS */
-               IF ( (tmp_weights(m,q).LT.0. _d 0).OR.
-     &          (tmp_weights(m,q).GT.1. _d 0) ) THEN
+               IF ( (tmp_frac(m,q).LT.0. _d 0).OR.
+     &          (tmp_frac(m,q).GT.1. _d 0) ) THEN
                 WRITE(msgBuf,'(4A)')
      &           'OBSFIT_INIT_FIXED: file ', obsfitFile(1:IL),
      &           '.nc includes inconsistent interpolation ',
@@ -1115,7 +1125,7 @@ C interpolation information consistent (self and with grid)
 
               ENDDO
 
-              IF ( abs(tmp_sum_weights -1. _d 0 ) .GT. 0.0001 _d 0) THEN
+              IF ( abs(tmp_sum_fracs -1. _d 0 ) .GT. 0.0001 _d 0) THEN
                WRITE(msgBuf,'(4A)')
      &          'OBSFIT_INIT_FIXED: file ', obsfitFile(1:IL),
      &          '.nc includes inconsistent interpolation ',
@@ -1124,7 +1134,7 @@ C interpolation information consistent (self and with grid)
                stopGenericGrid=1
               ENDIF
 
-              sample_ind_glob(num_file,SampleNo_tile,bi,bj)
+              sample_ind_glob(num_file,sampleNo_tile,bi,bj)
      &         =m+1000*(kk-1)
 
              ENDIF
@@ -1134,7 +1144,7 @@ C interpolation information consistent (self and with grid)
 C ==============================================================================
  
 C Check that maximum size was not reached:
-           IF (SampleNo_tile.GE.NSAMPLESMAX) then
+           IF (sampleNo_tile.GE.NSAMPLESMAX) then
             WRITE(msgBuf,'(3A)')
      &       'OBSFIT_INIT_FIXED: file ', obsfitFile(1:IL),
      &       '.nc was not read properly (increase NSAMPLESMAX).'
@@ -1148,7 +1158,7 @@ C Check that maximum size was not reached:
        ENDDO !kk
 
 C Number of valid samples in the file
-       SampleNo(num_file,bi,bj)=SampleNo_tile
+       sampleNo(num_file,bi,bj)=sampleNo_tile
        
        WRITE(msgbuf,'(a,i4,a,i4)')
      &  '  current tile is bi,bj                      =',
@@ -1158,7 +1168,7 @@ C Number of valid samples in the file
 
        WRITE(msgbuf,'(a,i9)')
      &  '  # of samples within tile and time period  =',
-     &  SampleNo(num_file,bi,bj)
+     &  sampleNo(num_file,bi,bj)
         CALL print_message(
      &   msgbuf, standardmessageunit, SQUEEZE_RIGHT, myThid)
 
@@ -1174,7 +1184,7 @@ C===========================================================
 C Create files for model counterparts to samples
 C===========================================================
 
-        IF (SampleNo(num_file,bi,bj).GT.0) THEN
+        IF (sampleNo(num_file,bi,bj).GT.0) THEN
          iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
          jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
 
@@ -1196,7 +1206,7 @@ C===========================================================
       
             CALL obsfit_init_equifiles(num_file,
      &       fiddata_obs(num_file),fnameequinc,
-     &       fidfwd_obs(num_file,bi,bj),SampleNo(num_file,bi,bj),
+     &       fidfwd_obs(num_file,bi,bj),sampleNo(num_file,bi,bj),
      &       bi,bj,myThid)
      
           ELSE
@@ -1209,7 +1219,7 @@ C===========================================================
            IF (.NOT.exst) THEN
             CALL obsfit_init_equifiles(num_file,fiddata_obs(num_file),
      &       adfnameequinc, fidadj_obs(num_file,bi,bj),
-     &       SampleNo(num_file,bi,bj),
+     &       sampleNo(num_file,bi,bj),
      &       bi,bj,myThid)
            ELSE
             err = NF_OPEN(adfnameequinc,NF_WRITE,
@@ -1221,14 +1231,15 @@ C===========================================================
            IF (.NOT.exst) THEN
             CALL obsfit_init_equifiles(num_file,fiddata_obs(num_file),
      &       tanfnameequinc, fidtan_obs(num_file,bi,bj),
-     &       SampleNo(num_file,bi,bj),
+     &       sampleNo(num_file,bi,bj),
      &       bi,bj,myThid)
            ELSE
             err = NF_OPEN(tanfnameequinc,NF_WRITE,
      &       fidtan_obs(num_file,bi,bj))
            ENDIF
 #endif
-          ELSE
+          ELSE !NOT obsfitDoNcOutput
+
 
            WRITE(fnameequinc,'(3a,i3.3,a,i3.3,a)')
      &      obsfitDir(1:JL),obsfitFile(1:IL),'.',iG,'.',jG,
@@ -1249,7 +1260,7 @@ C===========================================================
            IF (.NOT.exst) THEN
             CALL obsfit_init_equifiles(num_file,fiddata_obs(num_file),
      &       fnameequinc,fidfwd_obs(num_file,bi,bj),
-     &       SampleNo(num_file,bi,bj),
+     &       sampleNo(num_file,bi,bj),
      &       bi,bj,myThid)
            ELSE
             OPEN( fidfwd_obs(num_file,bi,bj),file=fnameequinc,
@@ -1267,7 +1278,7 @@ C===========================================================
 
             CALL obsfit_init_equifiles(num_file,fiddata_obs(num_file),
      &       adfnameequinc, fidadj_obs(num_file,bi,bj),
-     &       SampleNo(num_file,bi,bj),
+     &       sampleNo(num_file,bi,bj),
      &       bi,bj,myThid)
            ELSE
             OPEN( fidadj_obs(num_file,bi,bj),file=adfnameequinc,
@@ -1286,7 +1297,7 @@ C===========================================================
 
              CALL obsfit_init_equifiles(num_file,fiddata_obs(num_file),
      &         tanfnameequinc, fidtan_obs(num_file,bi,bj),
-     &         SampleNo(num_file,bi,bj),
+     &         sampleNo(num_file,bi,bj),
      &         bi,bj,myThid)
             ELSE
              OPEN( fidtan_obs(num_file,bi,bj),file=tanfnameequinc,
@@ -1295,9 +1306,9 @@ C===========================================================
             ENDIF
 #endif
 
-           ENDIF
+           ENDIF !if ObsfitDoNcOutput
 
-          ENDIF
+          ENDIF !if (sampleNo(num_file,bi,bj).GT.0)
 
          ENDDO !bj
         ENDDO !bi
@@ -1312,7 +1323,7 @@ C===========================================================
         DO bj=1,nSy
          DO bi=1,nSx
           ObsNo(num_file)=0
-          SampleNo(num_file,bi,bj)=0
+          sampleNo(num_file,bi,bj)=0
           DO k=1,NOBSMAX_OBS
            obs_np(num_file,k)=-999. _d 0
           ENDDO
@@ -1327,7 +1338,7 @@ C===========================================================
             sample_interp_i(num_file,k,q,bi,bj) = 1
             sample_interp_j(num_file,k,q,bi,bj) = 1
             sample_interp_k(num_file,k,q,bi,bj) = 1
-            sample_interp_w(num_file,k,q,bi,bj) = 0. _d 0
+            sample_interp_frac(num_file,k,q,bi,bj) = 0. _d 0
            ENDDO
            sample_interp_xC11(num_file,k,bi,bj)=-999. _d 0
            sample_interp_yC11(num_file,k,bi,bj)=-999. _d 0
@@ -1338,7 +1349,7 @@ C===========================================================
         ENDDO !bi
 
        ENDIF !if (IL.NE.0) then
-      ENDDO !      do num_file=1,NFILESMAX_OBS
+      ENDDO !do num_file=1,NFILESMAX_OBS
 
 C===========================================================
 C error cases:
@@ -1394,7 +1405,7 @@ c       close(fid)
        WRITE(msgBuf,'(3A)')
      & 'OBSFIT_INIT_FIXED : ',
      & 'when using obsfitDoGenGrid ',
-     & 'you have to provide interpolation coeffs etc. '
+     & 'you have to provide interpolation fractions etc. '
        CALL PRINT_ERROR( msgBuf, myThid)
        WRITE(msgBuf,'(2A)')
      & 'and some of your nc files dont have them. ',

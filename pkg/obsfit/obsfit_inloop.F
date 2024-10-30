@@ -53,8 +53,8 @@ C     !LOCAL VARIABLES:
       INTEGER sample_i(NUM_INTERP_PTS_OBS)
       INTEGER sample_j(NUM_INTERP_PTS_OBS)
       INTEGER sample_k(NUM_INTERP_PTS_OBS)
+      _RL     sample_frac(NUM_INTERP_PTS_OBS)
       _RL     sample_modval, saved_modval
-      _RL     sample_w(NUM_INTERP_PTS_OBS)
 #ifndef ALLOW_CTRL
       INTEGER optimcycle
 #endif
@@ -93,7 +93,8 @@ C     !LOCAL VARIABLES:
              sample_i(k)=sample_interp_i(num_file,sample_num,k,bi,bj)
              sample_j(k)=sample_interp_j(num_file,sample_num,k,bi,bj)
              sample_k(k)=sample_interp_k(num_file,sample_num,k,bi,bj)
-             sample_w(k)=sample_interp_w(num_file,sample_num,k,bi,bj)
+             sample_frac(k)=sample_interp_frac
+     &                                  (num_file,sample_num,k,bi,bj)
             ENDDO
 
             sample_modval=0
@@ -109,7 +110,7 @@ C recorded value and add to it
             ENDIF
 
             CALL obsfit_interp(sample_modval,
-     &         sample_i,sample_j,sample_k,sample_w,
+     &         sample_i,sample_j,sample_k,sample_frac,
      &         sample_type(num_file,sample_num,bi,bj),
      &         num_file,myTime,bi,bj,myThid)
 

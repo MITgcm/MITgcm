@@ -23,5 +23,7 @@ C To use file units between 9 and 99 (seems to conflict
 C with NF_OPEN some times, but is needed when using g77)
 # undef OBSFIT_USE_MDSFINDUNITS
 
+#undef ALLOW_OBSFIT_EXCLUDE_CORNERS
+
 #endif /* ALLOW_OBSFIT */
 #endif /* OBSFIT_OPTIONS_H */
