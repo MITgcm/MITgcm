@@ -23,7 +23,9 @@ C     === Global variables ===
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
 #include "PTRACERS_FIELDS.h"
-#include "BLING_LOAD.h"
+#ifdef ALLOW_GCHEM
+# include "GCHEM_FIELDS.h"
+#endif
 
 C     === Routine arguments ===
 C     myThid               :: thread Id. number
@@ -48,16 +50,14 @@ C local variables for carbon chem
 CEOP
 
 #ifndef USE_SIBLING
-      IF ( periodicExternalForcing ) THEN
 
 #ifdef ALLOW_OFFLINE
+      IF ( periodicExternalForcing ) THEN
        IF ( useOffLine ) THEN
          CALL OFFLINE_FIELDS_LOAD( startTime, nIter0, myThid )
        ENDIF
-#endif
-
-c end periodicExternalForcing
       ENDIF
+#endif
 c end SiBLING
 #endif
 

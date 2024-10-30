@@ -16,7 +16,6 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "BLING_VARS.h"
-#include "BLING_LOAD.h"
 #include "GCHEM_FIELDS.h"
 
 C !INPUT PARAMETERS: ===================================================
@@ -31,13 +30,6 @@ c !LOCAL VARIABLES: ===================================================
 #ifdef USE_BLING_V1
        CHARACTER*(MAX_LEN_MBUF) msgBuf
 #endif
-
-C First call requires that we initialize everything to zero for safety
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-         BLING_ldRec(bi,bj) = 0
-       ENDDO
-      ENDDO
 
 #ifdef USE_BLING_V1
 #ifdef USE_SIBLING
@@ -63,7 +55,7 @@ C First call requires that we initialize everything to zero for safety
 #endif
 #endif /* USE_BLING_V1 */
 
-c set reasonable values to those that need at least something
+C Initialize to zero. Reasonable values are given in pkg/gchem
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1-OLy,sNy+OLy

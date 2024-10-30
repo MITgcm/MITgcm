@@ -179,16 +179,13 @@ C   BLING forcing
 C ==========================================================
 
       NAMELIST /BLING_FORCING/
-     &          bling_windFile, bling_atmospFile, bling_iceFile,
-     &          bling_ironFile, bling_silicaFile,
      &          bling_psmFile, bling_plgFile, bling_PdiazFile,
      &          bling_forcingPeriod, bling_forcingCycle,
      &          bling_Pc_2dFile, bling_Pc_2d_diazFile,
      &          bling_alpha_photo2dFile,bling_phi_DOM2dFile,
      &          bling_k_Fe2dFile, bling_k_Fe_diaz2dFile,
      &          bling_gamma_POM2dFile, bling_wsink0_2dFile,
-     &          bling_phi_sm2dFile,bling_phi_lg2dFile,
-     &          bling_pCO2
+     &          bling_phi_sm2dFile,bling_phi_lg2dFile
 
 C ==========================================================
 C   secperday        :: Seconds in a day = 24*60*60
@@ -280,11 +277,6 @@ C   chlsat_locTimWindow(1:2) :: local-time window (in h) for
 C                       satellite-equivalent chlorophyll diagnostic (and cost)
 
       _RL secperday
-#ifdef ALLOW_EXF
-#ifdef USE_EXF_INTERPOLATION
-      INTEGER j
-#endif /* USE_EXF_INTERPOLATION */
-#endif /* ALLOW_EXF */
 
       _BEGIN_MASTER(myThid)
       errCount = 0
@@ -395,11 +387,6 @@ C     Default values
       chlsat_locTimWindow(1) = 12.0 _d 0
       chlsat_locTimWindow(2) = 13.5 _d 0
 
-      bling_windFile         = ' '
-      bling_atmospFile       = ' '
-      bling_iceFile          = ' '
-      bling_ironFile         = ' '
-      bling_silicaFile       = ' '
       bling_psmFile          = ' '
       bling_plgFile          = ' '
       bling_pdiazFile        = ' '
@@ -414,13 +401,10 @@ C     Default values
       bling_phi_sm2dFile     = ' '
       bling_phi_lg2dFile     = ' '
 
-      bling_pCO2             = 278. _d -6
+C     Now set in pkg/gchem
+C     bling_pCO2             = 278. _d -6
       river_conc_po4         = 0.007 _d 0
       river_dom_to_nut       = 0. _d 0
-
-C     default periodic forcing to same as for physics
-      bling_forcingPeriod = externForcingPeriod
-      bling_forcingCycle  = externForcingCycle
 
       WRITE(msgBuf,'(A)') ' BLING_READPARMS: opening data.bling'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,

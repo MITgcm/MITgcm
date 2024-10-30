@@ -132,11 +132,8 @@ C   Bling inputs (specified in data.bling)
 C ==========================================================
 
        COMMON /BLING_INPUTS/
-     &        bling_windFile, bling_atmospFile, bling_iceFile,
-     &        bling_ironFile, bling_silicaFile,
      &        bling_psmFile, bling_plgFile, bling_pdiazFile,
      &        bling_forcingPeriod, bling_forcingCycle,
-     &        bling_pCO2,
      &        river_conc_po4, river_dom_to_nut,
      &        bling_Pc_2dFile, bling_Pc_2d_diazFile,
      &        bling_alpha_photo2dFile,bling_phi_DOM2dFile,
@@ -144,25 +141,14 @@ C ==========================================================
      &        bling_gamma_POM2dFile, bling_wsink0_2dFile,
      &        bling_phi_lg2dFile, bling_phi_sm2dFile
 
-C      bling_windFile      :: file name of wind speeds
-C      bling_atmospFile    :: file name of atmospheric pressure
-C      bling_iceFile       :: file name of sea ice fraction
-C      bling_ironFile      :: file name of aeolian iron flux
-C      bling_silicaFile    :: file name of surface silica
 C      bling_psmFile       :: file name of init small phyto biomass
 C      bling_plgFile       :: file name of init lg phyto biomass
 C      bling_pdiazFile     :: file name of init diaz biomass
 C      bling_forcingPeriod :: period of forcing for biogeochemistry (seconds)
 C      bling_forcingCycle  :: periodic forcing parameter for biogeochemistry
-C      bling_pCO2          :: Atmospheric pCO2 to be read in data.bling
 C      river_conc_trac     :: River concentration, bgc tracers
 C      apco2               :: Atmospheric pCO2 to be read in with exf pkg
 
-      CHARACTER*(MAX_LEN_FNAM) bling_windFile
-      CHARACTER*(MAX_LEN_FNAM) bling_atmospFile
-      CHARACTER*(MAX_LEN_FNAM) bling_iceFile
-      CHARACTER*(MAX_LEN_FNAM) bling_ironFile
-      CHARACTER*(MAX_LEN_FNAM) bling_silicaFile
       CHARACTER*(MAX_LEN_FNAM) bling_psmFile
       CHARACTER*(MAX_LEN_FNAM) bling_plgFile
       CHARACTER*(MAX_LEN_FNAM) bling_pdiazFile
@@ -178,7 +164,6 @@ C      apco2               :: Atmospheric pCO2 to be read in with exf pkg
       CHARACTER*(MAX_LEN_FNAM) bling_phi_sm2dFile
       _RL     bling_forcingPeriod
       _RL     bling_forcingCycle
-      _RL     bling_pCO2
       _RL     river_conc_po4
       _RL     river_dom_to_nut
 

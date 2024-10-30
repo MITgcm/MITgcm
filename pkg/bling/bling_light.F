@@ -243,11 +243,12 @@ c  Photosynthetically-available radiations (PAR)
 #ifdef ALLOW_EXF
          irr_surf(i,j) = max(epsln,
      &                 -parfrac*Qsw(i,j,bi,bj)*maskC(i,j,1,bi,bj))
+#endif
         ENDIF
 c  Remove light under ice
-         IF ( .NOT. QSW_underice ) THEN
-          irr_surf(i,j) = irr_surf(i,j)*(1. _d 0 - FIce(i,j,bi,bj))
-         ENDIF
+        IF ( .NOT. QSW_underice ) THEN
+         irr_surf(i,j) = irr_surf(i,j)*(1. _d 0 - FIce(i,j,bi,bj))
+        ENDIF
        ENDDO
       ENDDO
 
