@@ -3336,10 +3336,9 @@ EOF
 echo 'TAP_SUPPORT_OBJFILES = $(TAPENADE_SUPPORT_C_SRC_FILES:.c=.o)' >> $MAKEFILE
 fi
 
-echo 'FLOWFILES =  $(AD_FLOW_FILES:.flow=.flowdir)' >> $MAKEFILE
 echo >> $MAKEFILE
 echo '.SUFFIXES:' >> $MAKEFILE
-echo '.SUFFIXES: .o .'$FS' .p .F .c .f'$FS90' .'$FS90' .FF90 .F90 .flowdir .flow' >> $MAKEFILE
+echo '.SUFFIXES: .o .'$FS' .p .F .c .f'$FS90' .'$FS90' .FF90 .F90 .flow' >> $MAKEFILE
 
 cat >>$MAKEFILE <<EOF
 
@@ -3378,13 +3377,14 @@ small_f: \$(F90_PP_SRC_FILES) \$(F77_PP_SRC_FILES)
 clean:
 	-rm -rf *.p *.$FS90 *.mod ${RMFILES} work.{pc,pcl} *.template
 	-rm -rf *.o
-	-rm -rf *.$FS *.flowdir
+	-rm -rf *.$FS
 	-rm -rf *.f$FS90 \$(AD_CLEAN) ad_input*
 
 # remove most of the files that "make" and "make depend" generate
 Clean:
 	@\$(MAKE) -f \$(MAKEFILE) clean
 	@\$(MAKE) -f \$(MAKEFILE) cleanlinks
+	-rm -rf *.flowdir
 	-rm -f \$(SPECIAL_FILES) f90mkdepend.log $MAKEFILE.old
 	-rm -f taf_ad.f90
 	-rm -f f90mkdepend_taf.log
@@ -3477,8 +3477,6 @@ CPPCMD = cat \$< | ${CPP} \$(DEFINES) \$(INCLUDES) | ${S64}
 	\$(F90C) \$(F90FLAGS) \$(F90OPTIM) -c \$(F90FIXEDFORMAT) \$(basename  \$<).$FS90
 .c.o:
 	\$(CC) \$(CFLAGS) \$(DEFINES) \$(INCLUDES) -c \$<
-.flow.flowdir:
-	\$(CPPCMD) > \$@
 
 # Special exceptions that use the ( .F - .p - .$FS - .o ) rule-chain
 .F.p:
@@ -3575,8 +3573,7 @@ ad_input_code.$FS: \$(AD_FILES) \$(AD_FLOW_FILES)
 	cmp ad_config.template AD_CONFIG.h || cat ad_config.template > AD_CONFIG.h
 	@-rm -f ad_config.template
 	@\$(MAKE) -f \$(MAKEFILE) \$(F77_PP_SRC_FILES)
-	@\$(MAKE) -f \$(MAKEFILE) \$(FLOWFILES)
-	cat \$(FLOWFILES) \$(AD_FILES) | sed -f \$(TOOLSDIR)/remove_comments_sed > ad_input_code.$FS
+	cat \$(AD_FLOW_FILES) \$(AD_FILES) | sed -f \$(TOOLSDIR)/remove_comments_sed > ad_input_code.$FS
 
 EOF
 if test -n "$AD_F90FILES" ; then
@@ -3691,7 +3688,6 @@ ftl_input_code.$FS: \$(AD_FILES) \$(AD_FLOW_FILES)
 	cmp ad_config.template AD_CONFIG.h || cat ad_config.template > AD_CONFIG.h
 	@-rm -f ad_config.template
 	@\$(MAKE) -f \$(MAKEFILE) \$(F77_PP_SRC_FILES)
-	@\$(MAKE) -f \$(MAKEFILE) \$(AD_FLOW_FILES)
 	cat \$(AD_FLOW_FILES) \$(AD_FILES) | sed -f \$(TOOLSDIR)/remove_comments_sed > ftl_input_code.$FS
 
 EOF
