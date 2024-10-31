@@ -47,7 +47,7 @@ CEOP
      &     SHELFICElatentHeat, SHELFICEHeatCapacity_Cp,
      &     no_slip_shelfice, SHELFICEDragLinear,
      &     SHELFICEDragQuadratic, SHELFICEselectDragQuadr,
-     &     SHELFICEthetaSurface,
+     &     SHELFICEthetaSurface, SHELFICEsalinity,
      &     useISOMIPTD,
      &     SHELFICEconserve, SHELFICEboundaryLayer,
      &     SHI_withBL_realFWflux, SHI_withBL_uStarTopDz,
@@ -114,8 +114,10 @@ C Set defaults values for parameters in SHELFICE.h
       SHELFICEsaltToHeatRatio  =   5.05 _d -03
       SHELFICEheatTransCoeff   =    1.0 _d -04
       SHELFICEsaltTransCoeff   = UNSET_RL
+C--   Molecular thermal conductivity ice shelf (m^2/s)
       SHELFICEkappa            =   1.54 _d -06
       SHELFICEthetaSurface     = - 20.0 _d 0
+      SHELFICEsalinity         = 0.0 _d 0
       no_slip_shelfice         = no_slip_bottom
       SHELFICEDragLinear       = bottomDragLinear
       SHELFICEDragQuadratic    = UNSET_RL

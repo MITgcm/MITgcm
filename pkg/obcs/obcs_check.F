@@ -211,6 +211,11 @@ C
      &  'Vrelaxobcsbound =',
      & ' /* boundary relaxation time scale, v-velocity ( s ). */')
       ENDIF
+      CALL WRITE_0D_L( useSeaiceSponge, INDEX_NONE,
+     & 'useSeaiceSponge =', '  /* use sponge for sea ice variables */')
+      CALL WRITE_0D_L( useSeaiceNeumann, INDEX_NONE,
+     & 'useSeaiceNeumann =',
+     & '  /* use Neumann conditions for sea ice variables */')
 C
       ln = ILNBLNK(insideOBmaskFile)
       IF ( ln.GT.0 ) THEN
