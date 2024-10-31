@@ -391,6 +391,17 @@ CADJ STORE vicec = comlev1_dynsol, kind=isbyte, key = nlkey
      O     CbotC,
      I     ipass, myTime, myIter, myThid )
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */
+
+#ifdef SEAICE_ALLOW_SIDEDRAG
+      IF ( SEAICEsideDrag .NE. 0. _d 0 ) CALL SEAICE_SIDEDRAG_STRESS(
+     I     uIceC, vIceC, coastRoughU, coastRoughV, AREA,
+     O     sideDragU, sideDragV,
+     I     ipass, myTime, myIter, myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE sideDragU = comlev1_dynsol, kind=isbyte, key = nlkey
+CADJ STORE sideDragV = comlev1_dynsol, kind=isbyte, key = nlkey
+#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* SEAICE_ALLOW_SIDEDRAG */
 C
 C     some abbreviations
 C
@@ -531,6 +542,23 @@ C
      I     etaPlusZeta, zetaMinusEta, etaZ, zetaZ, dragSym,
      O     AU, BU, CU, AV, BV, CV, uRt1, uRt2, vRt1, vRt2,
      I     iMin, iMax, jMin, jMax, myTime, myIter, myThid )
+
+#ifdef SEAICE_ALLOW_SIDEDRAG
+      IF ( SEAICEsideDrag .NE. 0. _d 0 ) THEN
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           BU(i,j,bi,bj) = BU(i,j,bi,bj)
+     &          + seaiceMaskU(i,j,bi,bj) * sideDragU(i,j,bi,bj)
+           BV(i,j,bi,bj) = BV(i,j,bi,bj)
+     &          + seaiceMaskV(i,j,bi,bj) * sideDragV(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+#endif /* SEAICE_ALLOW_SIDEDRAG */
 
 #ifndef OBCS_UVICE_OLD
 C--     prevent tri-diagonal solver from modifying OB values:
