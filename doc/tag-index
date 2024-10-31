@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint69b (2024/10/31)
 o pkg/autodiff:
   - TAF-store directives for saltFlux (needed for #define EXCLUDE_FFIELDS_LOAD)
   - little cleaning of ctrl_map_forcing.F (remove duplicated EXCH calls, ...).
