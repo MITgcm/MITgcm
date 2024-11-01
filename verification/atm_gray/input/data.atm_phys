@@ -1,0 +1,16 @@
+#
+ &ATM_PHYS_PARM01
+#atmPhys_addTendT=.FALSE.,
+#atmPhys_addTendS=.FALSE.,
+#atmPhys_addTendU=.FALSE.,
+#atmPhys_addTendV=.FALSE.,
+ atmPhys_tauDampUV = 86400.,
+ atmPhys_dampUVfac = 20*0., 0.125, 0.25, 0.5, 1., 2., 4.,
+#- initial SST file:
+#atmPhys_SSTFile='SST_APE_1.bin',
+ atmPhys_SSTFile='SST_symEx3.bin',
+#- Q-flux file:
+ atmPhys_QflxFile='Qflux_w90.bin',
+#- update SST (default = False = keep the same SST):
+ atmPhys_stepSST=.TRUE.,
+ &
