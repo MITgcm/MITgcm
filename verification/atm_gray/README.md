@@ -16,9 +16,9 @@ The **primary** test, using input files from `input/` dir,
 has an interactive SST with a 10m mixed layer depth and a prescribed,
 time-invariant Q-flux. It also includes a weak damping of stratospheric winds.
 
-The **secondary** test, using files from `input.ape/` dir, is the same as the primary test but
-use prescribed idealized SST from Neale and Hoskins, 2001, Aqua-Planet Experiment (APE) project
-without stratospheric wind damping.
+The **secondary** test, using files from `input.ape/` dir, is the same as the primary
+test but without stratospheric wind damping, and uses prescribed idealized SST from
+Neale and Hoskins, 2001, Aqua-Planet Experiment (APE) project.
 
 ### Instructions:
 Configure and compile the code:
@@ -59,6 +59,6 @@ There is comparison output in the directory:
   `results/output.ape.txt`
 
 ### Notes:
-There special compiler options inside `build/genmake_local` to compile some
-of the files from `pkg/atm_phy` that requires to explicitly provide an optfile
-to `genmake2` command.
+There are special compiler options inside `build/genmake_local` to allow to compile
+some of the files from `pkg/atm_phy` ; this requires to provide explicitly an optfile
+to the `genmake2` command.
