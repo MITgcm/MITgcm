@@ -10,13 +10,13 @@ This experiment contains 2 aqua-planet like set-ups (with corresponding `input[.
 that can be run with the same executable (built from `build/` dir using customized
 code from `code/`); binary input files have been generated using matlab script
 `gendata.m` from the `input` dir.
+Both test experiments start from a spin-up state using pickup files written after 1 year.
 
 The **primary** test, using input files from `input/` dir,
 has an interactive SST with a 10m mixed layer depth and a prescribed,
-time-invariant Q-flux.  It also includes a weak damping of stratospheric winds.
-This test experiment starts from a spin-up state using pickup files (@ t= 1.yr).
+time-invariant Q-flux. It also includes a weak damping of stratospheric winds.
 
-The **secondary** test `input.ape/` dir is the same as the primary test but
+The **secondary** test, using files from `input.ape/` dir, is the same as the primary test but
 use prescribed idealized SST from Neale and Hoskins, 2001, Aqua-Planet Experiment (APE) project
 without stratospheric wind damping.
 
