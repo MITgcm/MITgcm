@@ -2,7 +2,7 @@ c     ==================================================================
 c     HEADER G_COST
 c     ==================================================================
 c
-c     o Header for model-data comparison; adjoint part.
+c     o Header for model-data comparison; tangent linear part.
 c
 c     started: Christian Eckert eckert@mit.edu  06-Apr-2000
 c     changed: Christian Eckert eckert@mit.edu
