@@ -115,9 +115,9 @@ C     === Local variables ===
       WRITE(msgBuf,'(a)') 'general packages parameters :'
       JL  = ILNBLNK( profilesDir )
       IF (JL.NE.0) THEN
-        WRITE(msgBuf,'(a,a)') '  profilesDir ',profilesDir(1:JL)
+        WRITE(msgBuf,'(2a)') '  profilesDir ',profilesDir(1:JL)
       ELSE
-        WRITE(msgBuf,'(a,a)') '  profilesDir ','./'
+        WRITE(msgBuf,'(2a)') '  profilesDir ','./'
       ENDIF
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
@@ -158,12 +158,12 @@ C     === Local variables ===
       profilesfile=' '
       IL  = ILNBLNK( profilesfiles(num_file) )
       IF (IL.NE.0) THEN
-        WRITE(profilesfile,'(1a)')
+        WRITE(profilesfile,'(a)')
      &     profilesfiles(num_file)(1:IL)
         WRITE(msgBuf,'(a)') ' '
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
-        WRITE(msgBuf,'(a,i3,a,a)')
+        WRITE(msgBuf,'(a,i3,2a)')
      &     'profiles file #',num_file,' is ', profilesfile(1:IL)
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
@@ -195,7 +195,7 @@ c1)  read the number of profiles :
         iINTERP=NUM_INTERP_POINTS
       ENDIF
 
-      WRITE(msgBuf,'(a,i4,a,i4)')
+      WRITE(msgBuf,'(2(a,i4))')
      &   '  current tile is bi,bj                      =',
      &   bi,',',bj
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -664,12 +664,12 @@ C===========================================================
 
       IF (profilesDoNcOutput) THEN
 
-      WRITE(fnameequinc,'(3a,i3.3,a,i3.3,a)')
+      WRITE(fnameequinc,'(3a,2(i3.3,a))')
      & profilesDir(1:JL),profilesfile(1:IL),'.',iG,'.',jG,'.equi.nc'
-      WRITE(adfnameequinc,'(4a,i3.3,a,i3.3,a)')
+      WRITE(adfnameequinc,'(4a,2(i3.3,a))')
      & profilesDir(1:JL),'ad',
      & profilesfile(1:IL),'.',iG,'.',jG,'.equi.nc'
-      WRITE(tlfnameequinc,'(4a,i3.3,a,i3.3,a)')
+      WRITE(tlfnameequinc,'(4a,2(i3.3,a))')
      & profilesDir(1:JL),'tl',
      & profilesfile(1:IL),'.',iG,'.',jG,'.equi.nc'
 
@@ -707,12 +707,12 @@ C===========================================================
 #endif
       ELSE
 
-      WRITE(fnameequinc,'(3a,i3.3,a,i3.3,a)')
+      WRITE(fnameequinc,'(3a,2(i3.3,a))')
      & profilesDir(1:JL),profilesfile(1:IL),'.',iG,'.',jG,'.equi.data'
-      WRITE(adfnameequinc,'(4a,i3.3,a,i3.3,a)')
+      WRITE(adfnameequinc,'(4a,2(i3.3,a))')
      & profilesDir(1:JL),'ad',
      & profilesfile(1:IL),'.',iG,'.',jG,'.equi.data'
-      WRITE(tlfnameequinc,'(4a,i3.3,a,i3.3,a)')
+      WRITE(tlfnameequinc,'(4a,2(i3.3,a))')
      & profilesDir(1:JL),'tl',
      & profilesfile(1:IL),'.',iG,'.',jG,'.equi.data'
 
@@ -903,7 +903,7 @@ c1) you want to provide interpolation information
          jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
 cgf XC grid
        CALL MDSFINDUNIT( fid , myThid )
-       WRITE(fnameequinc,'(a,i3.3,a,i3.3,a,i4.4,a,i4.4,a)')
+       WRITE(fnameequinc,'(a,2(i3.3,a),2(i4.4,a))')
      & 'profilesXCincl1PointOverlap.',iG,'.',jG,'.',sNx,'.',sNy,'.data'
          k=MDS_RECLEN(64,(sNx+2)*(sNy+2),myThid)
             WRITE(standardMessageUnit,'(A,/,2A)')
@@ -923,7 +923,7 @@ cgf XC grid
        close(fid)
 cgf YC grid
        CALL MDSFINDUNIT( fid , myThid )
-       WRITE(fnameequinc,'(a,i3.3,a,i3.3,a,i4.4,a,i4.4,a)')
+       WRITE(fnameequinc,'(a,2(i3.3,a),2(i4.4,a))')
      & 'profilesYCincl1PointOverlap.',iG,'.',jG,'.',sNx,'.',sNy,'.data'
          k=MDS_RECLEN(64,(sNx+2)*(sNy+2),myThid)
             WRITE(standardMessageUnit,'(A,/,A)')
