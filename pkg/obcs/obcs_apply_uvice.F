@@ -40,9 +40,7 @@ C    myThid   :: my Thread Id number
       _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER myThid
 
-#ifdef ALLOW_SEAICE
-#ifdef SEAICE_CGRID
-#ifndef OBCS_UVICE_OLD
+#if ( defined ALLOW_SEAICE && defined SEAICE_CGRID && !defined OBCS_UVICE_OLD )
 
 C     !LOCAL VARIABLES:
 C    bi, bj   :: indices of current tile
@@ -53,20 +51,79 @@ C    i, j     :: Loop counters
       _RL uvIceApplyFac
 CEOP
 
-C--   Set model variables to OB values on North/South Boundaries:
-C     2 steps: 1) set tangential component ; 2) set normal component.
-C     This ensures that the normal component is set correctly even
-C     when it conficts with tangential setting from an other OB.
-
       uvIceApplyFac = OBCS_uvApplyFac
 c     IF ( OBCS_monitorFreq.EQ.1. ) uvIceApplyFac =  -1.
-c     IF ( OBCS_monitorFreq.EQ.deltaTmom*0.5 ) uvIceApplyFac = 0.
-c     IF ( OBCS_monitorFreq.EQ.deltaTmom ) uvIceApplyFac = 1.
+c     IF ( OBCS_monitorFreq.EQ.deltaTMom*0.5 ) uvIceApplyFac = 0.
+c     IF ( OBCS_monitorFreq.EQ.deltaTMom ) uvIceApplyFac = 1.
 c     WRITE(standardMessageUnit,*)
 c          'OBCS_APPLY_UVICE: uvIceApplyFac=', uvIceApplyFac
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+
+        IF ( useSeaiceNeumann ) THEN
+C--   Neumann BC for seaice: before applying OB-value to ice-velocity, copy
+C     interior ice-velocity field (next to OB) to OB-array: OB[N,S,E,W][u,v]ice
+
+# ifdef ALLOW_OBCS_NORTH
+         IF ( tileHasOBN(bi,bj) ) THEN
+C     Northern boundary
+          DO i=1-OLx,sNx+OLx
+           Jobc = OB_Jn(i,bi,bj)
+           IF ( Jobc.NE.OB_indexNone ) THEN
+            OBNuice(i,bi,bj) = uFld(i,Jobc-1,bi,bj)
+            OBNvice(i,bi,bj) = vFld(i,Jobc-1,bi,bj)
+           ENDIF
+          ENDDO
+         ENDIF
+# endif /* ALLOW_OBCS_NORTH */
+
+# ifdef ALLOW_OBCS_SOUTH
+         IF ( tileHasOBS(bi,bj) ) THEN
+C     Southern boundary
+          DO i=1-OLx,sNx+OLx
+           Jobc = OB_Js(i,bi,bj)
+           IF ( Jobc.NE.OB_indexNone ) THEN
+            OBSuice(i,bi,bj) = uFld(i,Jobc+1,bi,bj)
+            OBSvice(i,bi,bj) = vFld(i,Jobc+2,bi,bj)
+           ENDIF
+          ENDDO
+         ENDIF
+# endif /* ALLOW_OBCS_SOUTH */
+
+# ifdef ALLOW_OBCS_EAST
+         IF ( tileHasOBE(bi,bj) ) THEN
+C     Eastern boundary
+          DO j=1-OLy,sNy+OLy
+           Iobc = OB_Ie(j,bi,bj)
+           IF ( Iobc.NE.OB_indexNone ) THEN
+            OBEuice(j,bi,bj) = uFld(Iobc-1,j,bi,bj)
+            OBEvice(j,bi,bj) = vFld(Iobc-1,j,bi,bj)
+           ENDIF
+          ENDDO
+         ENDIF
+# endif /* ALLOW_OBCS_EAST */
+
+# ifdef ALLOW_OBCS_WEST
+         IF ( tileHasOBW(bi,bj) ) THEN
+C     Western boundary
+          DO j=1-OLy,sNy+OLy
+           Iobc = OB_Iw(j,bi,bj)
+           IF ( Iobc.NE.OB_indexNone ) THEN
+            OBWuice(j,bi,bj) = uFld(Iobc+2,j,bi,bj)
+            OBWvice(j,bi,bj) = vFld(Iobc+1,j,bi,bj)
+           ENDIF
+          ENDDO
+         ENDIF
+# endif /* ALLOW_OBCS_WEST */
+
+C-      end if useSeaiceNeumann block
+        ENDIF
+
+C--   Set model variables to OB values on N/S/E/W Boundaries:
+C     2 steps: 1) set tangential component ; 2) set normal component.
+C     This ensures that the normal component is set correctly even
+C     when it conficts with tangential setting from an other OB.
 
 C--   Set Tangential component first:
 
@@ -201,9 +258,7 @@ C     Western boundary
 
       CALL EXCH_UV_XY_RL( uFld, vFld,.TRUE.,myThid)
 
-#endif /* ndef OBCS_UVICE_OLD */
-#endif /* SEAICE_CGRID */
-#endif /* ALLOW_SEAICE */
+#endif /* ALLOW_SEAICE and SEAICE_CGRID and not OBCS_UVICE_OLD */
 
       RETURN
       END
