@@ -504,6 +504,7 @@ C     Avoid using both type of diffusion scheme (DIFF1 & SEAICEdiffKh)
 
 C--
 #ifdef ALLOW_AUTODIFF_TAMC
+      IF ( SEAICEuseLSR ) THEN
       IF ( SEAICEnonLinIterMax .GT. MPSEUDOTIMESTEPS ) THEN
        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
      &  ' need to increase MPSEUDOTIMESTEPS in SEAICE_PARAMS.h'
@@ -532,6 +533,8 @@ C--
      &  ' NMAX_TICE, MAX_TICE = ', NMAX_TICE, IMAX_TICE
        CALL PRINT_ERROR( msgBuf, myThid )
        errCount = errCount + 1
+      ENDIF
+C     endif SEAICEuseLSR
       ENDIF
       IF ( SEAICE_maskRHS ) THEN
        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICE_maskRHS not allowed'
@@ -1166,7 +1169,7 @@ C--   SEAICE_ALLOW_FREEDRIFT and SEAICEuseFREEDRIFT
 
       IF ( SEAICEpressReplFac .LT. 0. _d 0 .OR.
      &     SEAICEpressReplFac .GT. 1. _d 0 ) THEN
-       WRITE(msgBuf,'(A,I2)')
+       WRITE(msgBuf,'(A,F5.2)')
      &      'SEAICE_CHECK: SEAICEpressReplFac = ', SEAICEpressReplFac
        CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: cannot be < 0 or > 1'
@@ -1209,7 +1212,7 @@ C--   Some sanity checks for SEAICEdWatMin
 
 #ifndef SEAICE_ALLOW_BOTTOMDRAG
       IF ( SEAICEbasalDragK2 .GT. 0. _d 0 ) THEN
-       WRITE(msgBuf,'(A,I2)')
+       WRITE(msgBuf,'(A,E12.5)')
      &      'SEAICE_CHECK: SEAICEbasalDragK2 = ', SEAICEbasalDragK2
        CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: is greater than 0, ',
@@ -1218,6 +1221,32 @@ C--   Some sanity checks for SEAICEdWatMin
        errCount = errCount + 1
       ENDIF
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */
+
+#ifndef SEAICE_ALLOW_SIDEDRAG
+      IF ( SEAICEsideDrag .NE. 0. _d 0 ) THEN
+       WRITE(msgBuf,'(A,E12.5,A)')
+     &      'SEAICE_CHECK: SEAICEsideDrag = ', SEAICEsideDrag,
+     &      ' is set, but SEAICE_ALLOW_SIDEDRAG is not defined'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       errCount = errCount + 1
+      ENDIF
+      IF ( uCoastLineFile .NE. ' ' ) THEN
+       i = ILNBLNK(uCoastLineFile)
+       WRITE(msgBuf,'(3A)')
+     &      'SEAICE_CHECK: uCoastLineFile = ', uCoastLineFile(1:i),
+     &      ' is set, but SEAICE_ALLOW_SIDEDRAG is not defined'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       errCount = errCount + 1
+      ENDIF
+      IF( vCoastLineFile .NE. ' ' ) THEN
+       i = ILNBLNK(vCoastLineFile)
+       WRITE(msgBuf,'(3A)')
+     &      'SEAICE_CHECK: vCoastLineFile = ', vCoastLineFile(1:i),
+     &      ' is set, but SEAICE_ALLOW_SIDEDRAG is not defined'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       errCount = errCount + 1
+      ENDIF
+#endif
 
 #ifdef SEAICE_ITD
 C     The ice thickness distribution (ITD) module can only be used with
