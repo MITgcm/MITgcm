@@ -6,7 +6,7 @@
 CBOP
 C     !ROUTINE: GRDCHK_GET_POSITION
 C     !INTERFACE:
-      SUBROUTINE GRDCHK_GET_POSITION( mythid )
+      SUBROUTINE GRDCHK_GET_POSITION( myThid )
 
 C     !DESCRIPTION:
 C     o Get the location of a given component of the control vector for
@@ -118,58 +118,58 @@ cph)
                icomptest = icomptest + 1
               ENDIF
               wetlocal = maskC(i,j,k,bi,bj)
-             ELSE IF ( ncvargrd(grdchkvarindex) .EQ. 's' ) THEN
+             ELSEIF ( ncvargrd(grdchkvarindex) .EQ. 's' ) THEN
               IF ( _maskS(i,j,k,bi,bj) .GT. 0.) THEN
                icomptest = icomptest + 1
               ENDIF
               wetlocal = _maskS(i,j,k,bi,bj)
-             ELSE IF ( ncvargrd(grdchkvarindex) .EQ. 'w' ) THEN
+             ELSEIF ( ncvargrd(grdchkvarindex) .EQ. 'w' ) THEN
               IF ( _maskW(i,j,k,bi,bj) .GT. 0.) THEN
                icomptest = icomptest + 1
               ENDIF
               wetlocal = _maskW(i,j,k,bi,bj)
 #ifdef ALLOW_SHELFICE
 C--   Ice shelf mask.
-             ELSE IF ( ncvargrd(grdchkvarindex) .EQ. 'i' ) THEN
+             ELSEIF ( ncvargrd(grdchkvarindex) .EQ. 'i' ) THEN
               IF ( maskSHI(i,j,k,bi,bj) .GT. 0.) THEN
                icomptest = icomptest + 1
               ENDIF
               wetlocal = maskSHI(i,j,k,bi,bj)
 #endif /* ALLOW_SHELFICE */
 #ifdef ALLOW_OBCS_CONTROL
-             ELSE IF ( ncvargrd(grdchkvarindex) .EQ. 'm' ) THEN
+             ELSEIF ( ncvargrd(grdchkvarindex) .EQ. 'm' ) THEN
               IF ( ncvarfname(grdchkvarindex)
      &             .EQ. xx_obcsn_file ) THEN
 #ifdef ALLOW_OBCSN_CONTROL
                IF (grdchk_maskxz(i,k,bi,bj,iobcs) .GT. 0.
-     &              .AND. j .EQ. OB_Jn(I,bi,bj) ) THEN
+     &              .AND. j .EQ. OB_Jn(i,bi,bj) ) THEN
                 icomptest = icomptest + 1
                ENDIF
                wetlocal = grdchk_maskxz(i,k,bi,bj,iobcs)
 #endif
-              ELSE IF ( ncvarfname(grdchkvarindex)
+              ELSEIF ( ncvarfname(grdchkvarindex)
      &                    .EQ. xx_obcss_file ) THEN
 #ifdef ALLOW_OBCSS_CONTROL
                IF (grdchk_maskxz(i,k,bi,bj,iobcs) .GT. 0.
-     &              .AND. j .EQ. OB_Js(I,bi,bj) ) THEN
+     &              .AND. j .EQ. OB_Js(i,bi,bj) ) THEN
                 icomptest = icomptest + 1
                ENDIF
                wetlocal = grdchk_maskxz(i,k,bi,bj,iobcs)
 #endif
-              ELSE IF ( ncvarfname(grdchkvarindex)
+              ELSEIF ( ncvarfname(grdchkvarindex)
      &              .EQ. xx_obcse_file ) THEN
 #ifdef ALLOW_OBCSE_CONTROL
                IF (grdchk_maskyz(j,k,bi,bj,iobcs) .GT. 0.
-     &              .AND. i .EQ. OB_Ie(J,bi,bj) ) THEN
+     &              .AND. i .EQ. OB_Ie(j,bi,bj) ) THEN
                 icomptest = icomptest + 1
                ENDIF
                wetlocal = grdchk_maskyz(j,k,bi,bj,iobcs)
 #endif
-              ELSE IF ( ncvarfname(grdchkvarindex)
+              ELSEIF ( ncvarfname(grdchkvarindex)
      &              .EQ. xx_obcsw_file ) THEN
 #ifdef ALLOW_OBCSW_CONTROL
                IF ( grdchk_maskyz(j,k,bi,bj,iobcs) .GT. 0.
-     &              .AND. i .EQ. OB_Iw(J,bi,bj) ) THEN
+     &              .AND. i .EQ. OB_Iw(j,bi,bj) ) THEN
                 icomptest = icomptest + 1
                ENDIF
                wetlocal = grdchk_maskyz(j,k,bi,bj,iobcs)
@@ -198,7 +198,7 @@ C--   Ice shelf mask.
      &              itile, jtile
                GOTO 1234
               ENDIF
-             ELSE IF ( pastit .EQ. 0 .AND. wetlocal .NE.0 ) THEN
+             ELSEIF ( pastit .EQ. 0 .AND. wetlocal .NE.0 ) THEN
               nbeg = icomptest
               nend = nbeg + nend
               ierr     = 0
@@ -216,7 +216,7 @@ C--   Ice shelf mask.
            iwrk = 1
           ENDDO
           jwrk = 1
-         ELSE IF (ierr .NE. 0) THEN
+         ELSEIF (ierr .NE. 0) THEN
           itest     = itest + nwettile(bi,bj,k,iobcs)
           iwrk      = 1
           jwrk      = 1
