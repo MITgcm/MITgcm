@@ -12,6 +12,10 @@ C For the original 6-tracer model of Galbraith et al (2010),
 C define USE_BLING_V1 - but note the different order of tracers in data.ptracers
 #undef USE_BLING_V1
 
+C Use Liebig function instead of geometric mean of the
+C nutrient limitations to calculate maximum phyto growth rate (BLING_V1 only)
+#define MIN_NUT_LIM
+
 C Options for BLING+Nitrogen code:
 C SiBLING: add a 9th tracer for silica
 #undef USE_SIBLING
@@ -24,10 +28,6 @@ c #undef USE_SGS_SED
 
 C Prevents negative values in nutrient fields
 #define BLING_NO_NEG
-
-C Use Liebig function instead of geometric mean of the
-C nutrient limitations to calculate maximum phyto growth rate
-#define MIN_NUT_LIM
 
 C Allow different phytoplankton groups to have different growth rates and
 C nutrient/light limitations. Parameters implemented have yet to be tuned
