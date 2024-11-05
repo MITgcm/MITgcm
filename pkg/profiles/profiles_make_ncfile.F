@@ -25,8 +25,12 @@ C     \ev
 #include "netcdf.inc"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     myThid -  Number of this instances
+C     myThid  :: my Thread Id number
       INTEGER myThid
+
+C !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 
 C     ========= Local variables =======================
       INTEGER num_file,num_var,prof_num,k
@@ -49,10 +53,6 @@ C     ========= Local variables =======================
       CHARACTER*(MAX_LEN_FNAM) fnameequinc
       CHARACTER*(MAX_LEN_FNAM) fnamedata
       LOGICAL exst
-
-C !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
 
       _BEGIN_MASTER( myThid )
 
