@@ -1,4 +1,7 @@
 #include "EXF_OPTIONS.h"
+#ifdef ALLOW_BLING
+# include "BLING_OPTIONS.h"
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -209,7 +212,7 @@ C       Print some statistics about input forcing fields
 #endif
 #ifdef ALLOW_BLING
         IF ( apco2file .NE. ' ' ) THEN
-          CALL MON_WRITESTATS_RL( 1, apco2, '_apco2',
+          CALL MON_WRITESTATS_RL( 1, apCO2, '_apco2',
      &             maskInC, maskInC, rA , drF, dummyRL, myThid )
         ENDIF
 #endif
