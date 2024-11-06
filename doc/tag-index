@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/profiles:
+  - add option to write model-equivalent profiles in a netcdf file, thus
+    removing the need for post-processing tiled output files.
 o pkg/grdchk:
   - write either "grd_ratio_ad" or "grd_ratio_ftl" depending on type of run
     and remove limitation to "useSingleCpuIO=F" when writing 2D files ;

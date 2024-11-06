@@ -701,7 +701,9 @@ C! ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
       call print_message( msgbuf,
      &  standardMessageUnit,SQUEEZE_RIGHT , myThid)
 
-c     call profiles_make_ncfile(myThid)
+      IF ( prof_make_nc ) THEN
+       call profiles_make_ncfile(myThid)
+      ENDIF
 
 C===========================================================
 
