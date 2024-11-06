@@ -26,7 +26,7 @@ C Prevents negative values in nutrient fields
 #define BLING_NO_NEG
 
 C Use Liebig function instead of geometric mean of the
-C nutrient limitations to calculate maximum phyto growth rate 
+C nutrient limitations to calculate maximum phyto growth rate
 #define MIN_NUT_LIM
 
 C Allow different phytoplankton groups to have different growth rates and
