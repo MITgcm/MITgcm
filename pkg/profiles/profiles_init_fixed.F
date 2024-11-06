@@ -611,7 +611,7 @@ c check that maximum size was not reached:
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
 
-c6) available variablesin the data set
+c6) available variables in the data set
 
       DO k=1,NVARMAX
         prof_num_var_cur(num_file,k,bi,bj)=0
