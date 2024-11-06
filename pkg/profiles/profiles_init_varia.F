@@ -31,9 +31,14 @@ c     == global variables ==
 # include "profiles.h"
 #endif
 
+#ifdef ALLOW_GRDCHK
+# include "netcdf.inc"
+#endif
+
 c     == routine arguments ==
 
       integer mythid
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 c     == local variables ==
 
@@ -41,8 +46,17 @@ c     == local variables ==
       integer itlo,ithi
       integer jtlo,jthi
       integer num_file,num_var
+#ifdef ALLOW_GRDCHK
+      integer err, iG, jG, IL, JL
+      character*(max_len_fnam) profilesfile
+      character*(max_len_fnam) fnameequinc
+#endif /* ALLOW_GRDCHK */
 
 c     == external functions ==
+#ifdef ALLOW_GRDCHK
+      INTEGER ILNBLNK
+      EXTERNAL ILNBLNK
+#endif /* ALLOW_GRDCHK */
 
 c     == end of interface ==
       jtlo = mybylo(mythid)
@@ -64,6 +78,44 @@ c--   Initialize the tiled cost function contributions.
            objf_profiles_mean(num_var,bi,bj)= 0. _d 0
            num_profiles_mean(num_var,bi,bj) = 0. _d 0
           enddo
+#ifdef ALLOW_GRDCHK
+          if (profilesDoNcOutput) then
+           do num_file=1,NFILESPROFMAX
+            if (ProfNo(num_file,bi,bj).GT.0) then
+C Close .equi file so data in buffer is not lost when run finishes
+             err = NF_CLOSE(fidforward(num_file,bi,bj))
+        if (err /= NF_NOERR) then
+            WRITE(msgBuf,'(a,i,a)') 'ESCO: p_init_varia 1:',err,
+     &      nf_strerror(err)
+            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                          SQUEEZE_RIGHT,myThid )
+        endif
+
+C determine model equivalent file name
+             iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
+             jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
+             IL  = ILNBLNK( profilesfiles(num_file) )
+             write(profilesfile,'(a)')
+     &       profilesfiles(num_file)(1:IL)
+             IL  = ILNBLNK( profilesfile )
+             JL  = ILNBLNK( profilesDir )
+             write(fnameequinc,'(3a,2(i3.3,a))')
+     &       profilesDir(1:JL),profilesfile(1:IL),'.',
+     &       iG,'.',jG,'.equi.nc'
+
+c re-open to reset write permissions
+             err = NF_OPEN(fnameequinc,NF_WRITE,
+     &       fidforward(num_file,bi,bj))
+        if (err /= NF_NOERR) then
+            WRITE(msgBuf,'(a,i,a)') 'ESCO: p_init_varia 2:',err,
+     &      nf_strerror(err)
+            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                          SQUEEZE_RIGHT,myThid )
+        endif
+            endif
+           enddo
+          endif
+#endif /* ALLOW_GRDCHK */
         enddo
       enddo
 

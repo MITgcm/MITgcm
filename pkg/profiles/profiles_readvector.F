@@ -43,7 +43,19 @@ c--   == end of interface ==
      &  (irec.GT.profiles_maxind_buff(bi,bj)).OR.
      & (profiles_curfile_buff(bi,bj).NE.fNb) ) then
       err = NF_INQ_DIMID(fiddata(fNb,bi,bj),'iPROF', varid1)
+        if (err /= NF_NOERR) then
+            WRITE(msgBuf,'(a,i,a)') 'ESCO: p_readvector 1:',err,
+     &      nf_strerror(err)
+            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                          SQUEEZE_RIGHT,myThid )
+        endif
       err = NF_INQ_DIMLEN(fiddata(fNb,bi,bj), varid1, tmpprofno)
+        if (err /= NF_NOERR) then
+            WRITE(msgBuf,'(a,i,a)') 'ESCO: p_readvector 2:',err,
+     &      nf_strerror(err)
+            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                          SQUEEZE_RIGHT,myThid )
+        endif
 
       if (profiles_curfile_buff(bi,bj).NE.fNb) then
 c no asumption on whether a forward or a backward loop is calling
@@ -80,12 +92,36 @@ c implies that a forward loop is calling
       if (vec_quantities(fNb,kkk,bi,bj).EQV..TRUE.) then
       err = NF_INQ_VARID(fiddata(fNb,bi,bj),prof_names(fNb,kkk),
      & varid1 )
+        if (err /= NF_NOERR) then
+            WRITE(msgBuf,'(a,i,a)') 'ESCO: p_readvector 3:',err,
+     &      nf_strerror(err)
+            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                          SQUEEZE_RIGHT,myThid )
+        endif
       err = NF_GET_VARA_DOUBLE(fiddata(fNb,bi,bj), varid1 , vec_start,
      & vec_count, vec_tmp1)
+        if (err /= NF_NOERR) then
+            WRITE(msgBuf,'(a,i,a)') 'ESCO: p_readvector 4:',err,
+     &      nf_strerror(err)
+            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                          SQUEEZE_RIGHT,myThid )
+        endif
       err = NF_INQ_VARID(fiddata(fNb,bi,bj),prof_namesweight(fNb,kkk)
      & , varid1 )
+        if (err /= NF_NOERR) then
+            WRITE(msgBuf,'(a,i,a)') 'ESCO: p_readvector 5:',err,
+     &      nf_strerror(err)
+            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                          SQUEEZE_RIGHT,myThid )
+        endif
       err = NF_GET_VARA_DOUBLE(fiddata(fNb,bi,bj), varid1 , vec_start,
      & vec_count, vec_tmp2)
+        if (err /= NF_NOERR) then
+            WRITE(msgBuf,'(a,i,a)') 'ESCO: p_readvector 6:',err,
+     &      nf_strerror(err)
+            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                          SQUEEZE_RIGHT,myThid )
+        endif
 #ifdef ALLOW_PROFILES_CLIMMASK
       err = NF_INQ_VARID(fiddata(fNb,bi,bj),prof_namesclim(fNb,kkk)
      & , varid1 )
