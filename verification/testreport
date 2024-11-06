@@ -1868,8 +1868,8 @@ for dir in $TESTDIRS ; do
 	      if test -f $gmkLog ; then
 		ADtool=`grep '^Tapenade ' $gmkLog | tail -n 1`
 		echo "from '$gmkLog', get: $ADtool" >> $DRESULTS/genmake_state
-		ADvers=`echo $ADtool | awk '{print $1,$2,$3}'`
-		sed "s/ by Tapenade/ by $ADvers/" $SUMMARY > tmp.tr_log
+		ADvers=`echo $ADtool | awk '{print $2,$3}'`
+		sed "s/ by Tapenade/ by Tapenade $ADvers/" $SUMMARY > tmp.tr_log
 		mv -f tmp.tr_log $SUMMARY
 	      fi
 	    fi
