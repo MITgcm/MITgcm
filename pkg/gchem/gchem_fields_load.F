@@ -204,22 +204,33 @@ C--   endif .not. useEXF
 c     ENDIF
 
 C-----------------------------------------------------------
+C Ice: if there's a file in data.gchem, ignore pkg/seaice/thsce
+
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
 C If an ice file is given in data.gchem, read it
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-          CALL EXF_SET_FLD(
-     &     'gchemIce', gchem_icefile, icemask,
-     &     iceStartTime, iceperiod, iceRepCycle,
-     &     gchem_inscal_ice,
-     &     ice_exfremo_intercept, ice_exfremo_slope,
-     &     gchemIce, gchemIce0, gchemIce1,
+         IF ( gchem_IceFile .NE. ' ' ) THEN
+# ifdef ALLOW_EXF
+C     forcing load fields with pkg/exf tools
+          IF ( useEXF ) THEN
+           CALL EXF_SET_FLD(
+     &      'gchemIce', gchem_icefile, icemask,
+     &      iceStartTime, iceperiod, iceRepCycle,
+     &      gchem_inscal_ice,
+     &      ice_exfremo_intercept, ice_exfremo_slope,
+     &      gchemIce, gchemIce0, gchemIce1,
 #  ifdef USE_EXF_INTERPOLATION
-     &     ice_lon0, ice_lon_inc,
-     &     ice_lat0, ice_lat_inc,
-     &     ice_nlon, ice_nlat, xC, yC,
-     &     ice_interpMethod,
+     &      ice_lon0, ice_lon_inc,
+     &      ice_lat0, ice_lat_inc,
+     &      ice_nlon, ice_nlat, xC, yC,
+     &      ice_interpMethod,
 #  endif
-     &     mytime, myiter, mythid )
+     &      mytime, myiter, mythid )
+          ENDIF
+        ENDDO
+       ENDDO
+# endif
+       ELSE
 C Otherwise get ice fraction from PKG/SEAICE or PKG/THSICE
 # ifdef ALLOW_SEAICE
          IF ( useSEAICE ) THEN
@@ -239,6 +250,7 @@ C Otherwise get ice fraction from PKG/SEAICE or PKG/THSICE
            ENDDO
          ENDIF
 # endif
+        ENDIF
        ENDDO
       ENDDO
 
