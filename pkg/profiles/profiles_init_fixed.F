@@ -38,7 +38,7 @@ c     == external functions ==
 #ifdef ALLOW_PROFILES
 C     === Local variables ===
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER i,j,k,l,m,bi,bj,iG,jG,num_file,ProfNo_tile
+      INTEGER i,j,k,l,m,bi,bj,iG,jG,num_file,num_var,ProfNo_tile
       INTEGER stopProfiles
       INTEGER fid, dimid, varid1, varid1a, varid1b
       INTEGER varid2,varid3
@@ -144,9 +144,9 @@ C     === Local variables ===
 
       DO m=1,NLEVELMAX
        DO l=1,1000
-        DO k=1,NVARMAX
-         profiles_data_buff(m,l,k,bi,bj)=0. _d 0
-         profiles_weight_buff(m,l,k,bi,bj)=0. _d 0
+        DO num_var=1,NVARMAX
+         profiles_data_buff(m,l,num_var,bi,bj)=0. _d 0
+         profiles_weight_buff(m,l,num_var,bi,bj)=0. _d 0
         ENDDO
        ENDDO
       ENDDO
@@ -663,45 +663,45 @@ c check that maximum size was not reached:
 
 c6) available variables in the data set
 
-      DO k=1,NVARMAX
-        prof_num_var_cur(num_file,k,bi,bj)=0
+      DO num_var=1,NVARMAX
+        prof_num_var_cur(num_file,num_var,bi,bj)=0
       ENDDO
       prof_num_var_tot(num_file,bi,bj)=0
 
-      DO k=1,NVARMAX
-       JL  = ILNBLNK( prof_names(num_file,k) )
-       err = NF_INQ_VARID(fid,prof_names(num_file,k)(1:JL), varid1 )
+      DO num_var=1,NVARMAX
+       JL  = ILNBLNK( prof_names(num_file,num_var) )
+       err = NF_INQ_VARID(fid,prof_names(num_file,num_var)(1:JL),varid1)
        IF (err.EQ.NF_NOERR) THEN
-        vec_quantities(num_file,k,bi,bj)=.TRUE.
+        vec_quantities(num_file,num_var,bi,bj)=.TRUE.
         prof_num_var_tot(num_file,bi,bj)=
      &       prof_num_var_tot(num_file,bi,bj)+1
-        prof_num_var_cur(num_file,k,bi,bj)=
+        prof_num_var_cur(num_file,num_var,bi,bj)=
      &       prof_num_var_tot(num_file,bi,bj)
        ELSE
         WRITE(msgBuf,'(4A)') 'S/R PROFILES_INIT_FIXED: ',
-     &       prof_names(num_file,k)(1:JL),
+     &       prof_names(num_file,num_var)(1:JL),
      &       ' does not exist,',
      &       ' setting corresponding vec_quantities = F'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
-        vec_quantities(num_file,k,bi,bj)=.FALSE.
+        vec_quantities(num_file,num_var,bi,bj)=.FALSE.
        ENDIF
       ENDDO
 
-      DO k=1,NVARMAX
-       IF (vec_quantities(num_file,k,bi,bj)) THEN
-        KL  = ILNBLNK( prof_names(num_file,k) )
-        JL  = ILNBLNK( prof_namesmod(num_file,k) )
-        IF (prof_namesmod(num_file,k).EQ.'pTracer') THEN
-         WRITE(msgBuf,'(a,I3,5a,I3)') '  variable #',k,' is ' ,
-     &        prof_names(num_file,k)(1:KL),' and ',
-     &        prof_namesmod(num_file,k)(1:JL),' #',
-     &        prof_itracer(num_file,k)
+      DO num_var=1,NVARMAX
+       IF (vec_quantities(num_file,num_var,bi,bj)) THEN
+        KL  = ILNBLNK( prof_names(num_file,num_var) )
+        JL  = ILNBLNK( prof_namesmod(num_file,num_var) )
+        IF (prof_namesmod(num_file,num_var).EQ.'pTracer') THEN
+         WRITE(msgBuf,'(a,I3,5a,I3)') '  variable #',num_var,' is ' ,
+     &        prof_names(num_file,num_var)(1:KL),' and ',
+     &        prof_namesmod(num_file,num_var)(1:JL),' #',
+     &        prof_itracer(num_file,num_var)
         ELSE
-         WRITE(msgBuf,'(a,I3,4a)') '  variable #',k,
+         WRITE(msgBuf,'(a,I3,4a)') '  variable #',num_var,
      &        ' is            ' ,
-     &        prof_names(num_file,k)(1:KL),' and ',
-     &        prof_namesmod(num_file,k)(1:JL)
+     &        prof_names(num_file,num_var)(1:KL),' and ',
+     &        prof_namesmod(num_file,num_var)(1:JL)
         ENDIF
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
@@ -847,9 +847,9 @@ C obtain existing NetCDF file id
 C===========================================================
       ELSE
        ProfNo(num_file,bi,bj)=0
-       DO k=1,NVARMAX
-        prof_num_var_cur(num_file,k,bi,bj)=0
-        vec_quantities(num_file,k,bi,bj)=.FALSE.
+       DO num_var=1,NVARMAX
+        prof_num_var_cur(num_file,num_var,bi,bj)=0
+        vec_quantities(num_file,num_var,bi,bj)=.FALSE.
        ENDDO
        prof_num_var_tot(num_file,bi,bj)=0
        DO k=1,NOBSGLOB

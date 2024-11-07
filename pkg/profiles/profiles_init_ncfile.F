@@ -58,8 +58,6 @@ c1) creation :
 
        DO num_var=1,NVARMAX
         err = NF_INQ_VARID(fid1,prof_names(num_file,num_var), varid0 )
-        CALL PROFILES_NF_ERROR( 'INIT_NCFILE 6: NF_INQ_VARID',
-     &       err,bi,bj,myThid )
 
         IF (err.EQ.NF_NOERR) THEN
 
@@ -85,6 +83,13 @@ c1) creation :
      &        '_FillValue', NF_DOUBLE,1, 0. _d 0)
          CALL PROFILES_NF_ERROR( 'INIT_NCFILE10: NF_PUT_ATT_DOUBLE',
      &        err,bi,bj,myThid )
+
+        ELSE
+         WRITE(msgBuf,'(2A)')
+     &        'S/R PROFILES_INIT_NCFILE: no variable ',
+     &        prof_names(num_file,num_var)
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
 
         ENDIF
        ENDDO
