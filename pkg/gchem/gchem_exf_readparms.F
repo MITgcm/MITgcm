@@ -148,7 +148,7 @@ C
      &    apCO2_nlat,
      &    apCO2_lon_inc,
      &    apCO2_interpMethod,
-     &    apCO2_lat_inc
+     &    apCO2_lat_inc,
 C
      &    wind_lon0,
      &    wind_lat0,
@@ -156,7 +156,7 @@ C
      &    wind_nlat,
      &    wind_lon_inc,
      &    wind_interpMethod,
-     &    wind_lat_inc
+     &    wind_lat_inc,
 C
      &    apres_lon0,
      &    apres_lat0,
