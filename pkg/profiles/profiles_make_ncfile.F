@@ -95,7 +95,8 @@ C Need to close the file so that the data is not lost when run finishes
           JL  = ILNBLNK( profilesDir )
           WRITE(fnameequinc,'(3a,i3.3,a,i3.3,a)')
      &    profilesDir(1:JL),profFile(1:IL),'.',iG,'.',jG,'.equi.nc'
-          err = NF_OPEN(fnameequinc,NF_NOWRITE,
+          JL  = ILNBLNK( fnameequinc )
+          err = NF_OPEN( fnameequinc(1:JL) ,NF_NOWRITE,
      &    fidforward(num_file,bi,bj))
          ENDIF
 
@@ -184,10 +185,11 @@ C Create new netcdf global file for model-equivalent
          WRITE(fnameequinc,'(3a)')
      &    profilesDir(1:JL),profFile(1:IL),'.equi.nc'
 
-         inquire( file=fnameequinc, exist=exst )
+         JL  = ILNBLNK( fnameequinc )
+         inquire( file= fnameequinc(1:JL), exist=exst )
          IF (.NOT.exst) THEN
 
-          err = NF_CREATE(fnameequinc,NF_CLOBBER,fid2)
+          err = NF_CREATE(fnameequinc(1:JL),NF_CLOBBER,fid2)
           err = NF_DEF_DIM(fid2,'iDEPTH',Zlength,dimid1)
           err = NF_DEF_DIM(fid2,'iPROF',length,dimid2)
           vecid(1)=dimid1
@@ -215,7 +217,8 @@ C Define variables and attributes
           err = NF_ENDDEF(fid2)
 
          ELSE
-          err = NF_OPEN(fnameequinc, NF_WRITE, fid2)
+          JL  = ILNBLNK( fnameequinc )
+          err = NF_OPEN( fnameequinc(1:JL), NF_WRITE, fid2)
          ENDIF
 
 C Write profiles

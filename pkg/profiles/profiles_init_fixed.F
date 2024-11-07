@@ -669,43 +669,43 @@ c6) available variables in the data set
       prof_num_var_tot(num_file,bi,bj)=0
 
       DO k=1,NVARMAX
-        JL  = ILNBLNK( prof_names(num_file,k) )
-        err = NF_INQ_VARID(fid,prof_names(num_file,k)(1:JL), varid1 )
-        IF (err.EQ.NF_NOERR) THEN
-          vec_quantities(num_file,k,bi,bj)=.TRUE.
-          prof_num_var_tot(num_file,bi,bj)=
-     &     prof_num_var_tot(num_file,bi,bj)+1
-          prof_num_var_cur(num_file,k,bi,bj)=
-     &     prof_num_var_tot(num_file,bi,bj)
-        ELSE
-         WRITE(msgBuf,'(4A)') 'S/R PROFILES_INIT_FIXED: ',
-     &        prof_names(num_file,k)(1:JL),
-     &        'does not exist, ',
-     &        'setting corresponding vec_quantities = F'
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &        SQUEEZE_RIGHT, myThid )
-         vec_quantities(num_file,k,bi,bj)=.FALSE.
-        ENDIF
+       JL  = ILNBLNK( prof_names(num_file,k) )
+       err = NF_INQ_VARID(fid,prof_names(num_file,k)(1:JL), varid1 )
+       IF (err.EQ.NF_NOERR) THEN
+        vec_quantities(num_file,k,bi,bj)=.TRUE.
+        prof_num_var_tot(num_file,bi,bj)=
+     &       prof_num_var_tot(num_file,bi,bj)+1
+        prof_num_var_cur(num_file,k,bi,bj)=
+     &       prof_num_var_tot(num_file,bi,bj)
+       ELSE
+        WRITE(msgBuf,'(4A)') 'S/R PROFILES_INIT_FIXED: ',
+     &       prof_names(num_file,k)(1:JL),
+     &       ' does not exist,',
+     &       ' setting corresponding vec_quantities = F'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        vec_quantities(num_file,k,bi,bj)=.FALSE.
+       ENDIF
       ENDDO
 
       DO k=1,NVARMAX
-        IF (vec_quantities(num_file,k,bi,bj)) THEN
-          KL  = ILNBLNK( prof_names(num_file,k) )
-          JL  = ILNBLNK( prof_namesmod(num_file,k) )
-          IF (prof_namesmod(num_file,k).EQ.'pTracer') THEN
-      WRITE(msgBuf,'(a,I3,5a,I3)') '  variable #',k,' is ' ,
-     & prof_names(num_file,k)(1:KL),' and ',
-     & prof_namesmod(num_file,k)(1:JL),' #',
-     & prof_itracer(num_file,k)
-          ELSE
-      WRITE(msgBuf,'(a,I3,4a)') '  variable #',k,
-     & ' is            ' ,
-     & prof_names(num_file,k)(1:KL),' and ',
-     & prof_namesmod(num_file,k)(1:JL)
-          ENDIF
-          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                        SQUEEZE_RIGHT, myThid )
+       IF (vec_quantities(num_file,k,bi,bj)) THEN
+        KL  = ILNBLNK( prof_names(num_file,k) )
+        JL  = ILNBLNK( prof_namesmod(num_file,k) )
+        IF (prof_namesmod(num_file,k).EQ.'pTracer') THEN
+         WRITE(msgBuf,'(a,I3,5a,I3)') '  variable #',k,' is ' ,
+     &        prof_names(num_file,k)(1:KL),' and ',
+     &        prof_namesmod(num_file,k)(1:JL),' #',
+     &        prof_itracer(num_file,k)
+        ELSE
+         WRITE(msgBuf,'(a,I3,4a)') '  variable #',k,
+     &        ' is            ' ,
+     &        prof_names(num_file,k)(1:KL),' and ',
+     &        prof_namesmod(num_file,k)(1:JL)
         ENDIF
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+       ENDIF
       ENDDO
 
 C===========================================================
@@ -738,7 +738,9 @@ C===========================================================
      &   bi,bj,myThid)
         ELSE
 C obtain existing NetCDF file id
-         err = NF_OPEN(fnameequinc,NF_WRITE,fidforward(num_file,bi,bj))
+         JL  = ILNBLNK( fnameequinc )
+         err = NF_OPEN( fnameequinc(1:JL), NF_WRITE,
+     &        fidforward(num_file,bi,bj))
          CALL PROFILES_NF_ERROR( 'INIT_FIXED21: NF_OPEN:',
      &        err,bi,bj,myThid )
         ENDIF
@@ -751,7 +753,8 @@ C obtain existing NetCDF file id
      &   bi,bj, myThid)
         ELSE
 C obtain existing NetCDF file id
-         err = NF_OPEN(adfnameequinc,NF_WRITE,
+         JL  = ILNBLNK( adfnameequinc )
+         err = NF_OPEN( adfnameequinc(1:JL), NF_WRITE,
      &        fidadjoint(num_file,bi,bj))
          CALL PROFILES_NF_ERROR( 'INIT_FIXED22: NF_OPEN:',
      &        err,bi,bj,myThid )
@@ -766,7 +769,9 @@ C obtain existing NetCDF file id
      &        bi,bj, myThid)
         ELSE
 C obtain existing NetCDF file id
-         err = NF_OPEN(tlfnameequinc,NF_WRITE,fidtangent(num_file,bi,bj))
+         JL  = ILNBLNK( tlfnameequinc )
+         err = NF_OPEN( tlfnameequinc(1:JL), NF_WRITE,
+     &        fidtangent(num_file,bi,bj))
          CALL PROFILES_NF_ERROR( 'INIT_FIXED23: NF_OPEN:',
      &        err,bi,bj,myThid )
         ENDIF

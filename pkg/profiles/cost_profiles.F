@@ -145,7 +145,8 @@ c then re-open it to compute cost function
            write(fnameequinc,'(3a,2(i3.3,a))')
      &     profilesDir(1:JL),profilesfile(1:IL),'.',iG,'.',jG,'.equi.nc'
 c
-           err = NF_OPEN(fnameequinc,NF_NOWRITE,
+           JL  = ILNBLNK( fnameequinc )
+           err = NF_OPEN(fnameequinc(1:JL) ,NF_NOWRITE,
      &     fidforward(num_file,bi,bj))
            CALL PROFILES_NF_ERROR('COST 2: NF_OPEN', err,bi,bj,myThid)
          endif
@@ -426,7 +427,8 @@ c then re-open it to compute cost function
            write(fnameequinc,'(3a,2(i3.3,a))')
      &     profilesDir(1:JL),profilesfile(1:IL),'.',iG,'.',jG,'.equi.nc'
 c
-           err = NF_OPEN(fnameequinc,NF_NOWRITE,
+           JL  = ILNBLNK( fnameequinc )
+           err = NF_OPEN(fnameequinc(1:JL) ,NF_NOWRITE,
      &     fidforward(num_file,bi,bj))
            CALL PROFILES_NF_ERROR('COST 4: NF_OPEN', err,bi,bj,myThid)
           endif

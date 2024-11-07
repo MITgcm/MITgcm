@@ -99,7 +99,8 @@ C determine model equivalent file name
      &       iG,'.',jG,'.equi.nc'
 
 c re-open to reset write permissions
-             err = NF_OPEN(fnameequinc,NF_WRITE,
+             JL  = ILNBLNK( fnameequinc )
+             err = NF_OPEN( fnameequinc(1:JL),NF_WRITE,
      &       fidforward(num_file,bi,bj))
              CALL PROFILES_NF_ERROR( 'INIT_VAIRA 2: NF_OPEN',
      &            err,bi,bj,myThid )
