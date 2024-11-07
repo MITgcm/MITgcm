@@ -227,32 +227,30 @@ C     forcing load fields with pkg/exf tools
 #  endif
      &      mytime, myiter, mythid )
           ENDIF
-        ENDDO
-       ENDDO
 # endif
-       ELSE
+         ELSE
 C Otherwise get ice fraction from PKG/SEAICE or PKG/THSICE
 # ifdef ALLOW_SEAICE
-         IF ( useSEAICE ) THEN
+          IF ( useSEAICE ) THEN
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
              gchemIce(i,j,bi,bj) = AREA(i,j,bi,bj)
             ENDDO
            ENDDO
-         ENDIF
+          ENDIF
 # endif
 # ifdef ALLOW_THSICE
-         IF ( useThSIce ) THEN
+          IF ( useThSIce ) THEN
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
              gchemIce(i,j,bi,bj) = iceMask(i,j,bi,bj)
             ENDDO
            ENDDO
-         ENDIF
+          ENDIF
 # endif
-        ENDIF
+         ENDIF
+        ENDDO
        ENDDO
-      ENDDO
 
 C-----------------------------------------------------------
 # ifdef ALLOW_EXF
