@@ -206,12 +206,14 @@ c1)  read the number of profiles :
         CALL PROFILES_NF_ERROR( 'INIT_FIXED 8: NF_INQ_DIMLEN:',
      &      err,bi,bj,myThid )
       ELSE
+       IF (debugLevel .GE. debLevA) THEN
         WRITE(msgBuf,'(2A,I3)')
-     &      'S/R PROFILES_INIT_FIXED: dimension iINTERP does not exist',
+     &      'S/R PROFILES_INIT_FIXED: no iINTERP dim in data file',
      &      ' using iINTERP = NUM_INTERP_POINTS =', NUM_INTERP_POINTS
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &      SQUEEZE_RIGHT, myThid )
-        iINTERP=NUM_INTERP_POINTS
+       ENDIF
+       iINTERP=NUM_INTERP_POINTS
       ENDIF
 
       WRITE(msgBuf,'(2(a,i4))')
@@ -678,12 +680,13 @@ c6) available variables in the data set
         prof_num_var_cur(num_file,num_var,bi,bj)=
      &       prof_num_var_tot(num_file,bi,bj)
        ELSE
-        WRITE(msgBuf,'(4A)') 'S/R PROFILES_INIT_FIXED: ',
-     &       prof_names(num_file,num_var)(1:JL),
-     &       ' does not exist,',
-     &       ' setting corresponding vec_quantities = F'
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
+        IF (debugLevel .GE. debLevA) THEN
+         WRITE(msgBuf,'(3A)') 'S/R PROFILES_INIT_FIXED: no',
+     &        prof_names(num_file,num_var)(1:JL),
+     &        ', setting corresponding vec_quantities = F'
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+        ENDIF
         vec_quantities(num_file,num_var,bi,bj)=.FALSE.
        ENDIF
       ENDDO
