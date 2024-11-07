@@ -96,37 +96,21 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
         err = NF_INQ_VARID(fid,
      &       prof_names(active_num_file,active_varnum), varId )
-        if (err /= NF_NOERR) then
-            WRITE(msgBuf,'(a,i,a)') 'ESCO: afc_profiles 1:',err,
-     &      nf_strerror(err)
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                          SQUEEZE_RIGHT,myThid )
-        endif
+        CALL PROFILES_NF_ERROR( 'active_read 1: NF_INQ_VARID:',
+     &      err,bi,bj,myThid )
         err = NF_GET_VARA_DOUBLE(fid, varId , vec_start, vec_count,
      &       active_var)
-        if (err /= NF_NOERR) then
-            WRITE(msgBuf,'(a,i,a)') 'ESCO: afc_profiles 2:',err,
-     &      nf_strerror(err)
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                          SQUEEZE_RIGHT,myThid )
-        endif
+        CALL PROFILES_NF_ERROR( 'active_read 2: NF_GET_VARA_DOUBLE:',
+     &      err,bi,bj,myThid )
 
         err = NF_INQ_VARID(fid,prof_namesmask(active_num_file,
      &       active_varnum), varId)
-        if (err /= NF_NOERR) then
-            WRITE(msgBuf,'(a,i,a)') 'ESCO: afc_profiles 3:',err,
-     &      nf_strerror(err)
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                          SQUEEZE_RIGHT,myThid )
-        endif
+        CALL PROFILES_NF_ERROR( 'active_read 3: NF_INQ_VARID:',
+     &      err,bi,bj,myThid )
         err = NF_GET_VARA_DOUBLE(fid, varId , vec_start, vec_count,
      &       prof_mask1D_cur(1,bi,bj))
-        if (err /= NF_NOERR) then
-            WRITE(msgBuf,'(a,i,a)') 'ESCO: afc_profiles 4:',err,
-     &      nf_strerror(err)
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                          SQUEEZE_RIGHT,myThid )
-        endif
+        CALL PROFILES_NF_ERROR( 'active_read 4: NF_GET_VARA_DOUBLE:',
+     &      err,bi,bj,myThid )
 
        ELSE
 
@@ -163,20 +147,12 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
         err = NF_INQ_VARID(fid,
      &       prof_names(active_num_file,active_varnum), varId )
-        if (err /= NF_NOERR) then
-            WRITE(msgBuf,'(a,i,a)') 'ESCO: afc_profiles 5:',err,
-     &      nf_strerror(err)
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                          SQUEEZE_RIGHT,myThid )
-        endif
+        CALL PROFILES_NF_ERROR( 'active_read 5: NF_INQ_VARID:',
+     &      err,bi,bj,myThid )
         err = NF_GET_VARA_DOUBLE(fid, varId , vec_start, vec_count,
      &       active_data_t)
-        if (err /= NF_NOERR) then
-            WRITE(msgBuf,'(a,i,a)') 'ESCO: afc_profiles 6:',err,
-     &      nf_strerror(err)
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                          SQUEEZE_RIGHT,myThid )
-        endif
+        CALL PROFILES_NF_ERROR( 'active_read 6: NF_GET_VARA_DOUBLE:',
+     &      err,bi,bj,myThid )
 
 C     Add active_var from appropriate location to data.
         DO i = 1,nactive_var
@@ -186,20 +162,12 @@ C     Store the result on disk.
 
         err = NF_INQ_VARID(fid,
      &       prof_names(active_num_file,active_varnum), varId )
-        if (err /= NF_NOERR) then
-            WRITE(msgBuf,'(a,i,a)') 'ESCO: afc_profiles 7:',err,
-     &      nf_strerror(err)
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                          SQUEEZE_RIGHT,myThid )
-        endif
+        CALL PROFILES_NF_ERROR( 'active_read 7: NF_INQ_VARID:',
+     &      err,bi,bj,myThid )
         err = NF_PUT_VARA_DOUBLE(fid, varId , vec_start, vec_count,
      &       active_data_t)
-        if (err /= NF_NOERR) then
-            WRITE(msgBuf,'(a,i,a)') 'ESCO: afc_profiles 8:',err,
-     &      nf_strerror(err)
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                          SQUEEZE_RIGHT,myThid )
-        endif
+        CALL PROFILES_NF_ERROR( 'active_read 8: NF_PUT_VARA_DOUBLE:',
+     &      err,bi,bj,myThid )
 
 C     Set active_var to zero.
         DO i = 1,nactive_var
@@ -253,20 +221,12 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
         err = NF_INQ_VARID(fid,
      &       prof_names(active_num_file,active_varnum), varId )
-        if (err /= NF_NOERR) then
-            WRITE(msgBuf,'(a,i,a)') 'ESCO: afc_profiles 9:',err,
-     &      nf_strerror(err)
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                          SQUEEZE_RIGHT,myThid )
-        endif
+        CALL PROFILES_NF_ERROR( 'active_read 9: NF_INQ_VARID:',
+     &      err,bi,bj,myThid )
         err = NF_GET_VARA_DOUBLE(fid, varId , vec_start, vec_count,
      &       active_var)
-        if (err /= NF_NOERR) then
-            WRITE(msgBuf,'(a,i,a)') 'ESCO: afc_profiles10:',err,
-     &      nf_strerror(err)
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                          SQUEEZE_RIGHT,myThid )
-        endif
+        CALL PROFILES_NF_ERROR( 'active_read 10: NF_GET_VARA_DOUBLE:',
+     &      err,bi,bj,myThid )
 
        ELSE
 
@@ -366,53 +326,29 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
         err = NF_INQ_VARID(fid,
      &       prof_names(active_num_file,active_varnum), varId )
-        if (err /= NF_NOERR) then
-            WRITE(msgBuf,'(a,i,a)') 'ESCO: afc_profiles11:',err,
-     &      nf_strerror(err)
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                          SQUEEZE_RIGHT,myThid )
-        endif
+        CALL PROFILES_NF_ERROR( 'active_write 1: NF_INQ_VARID:',
+     &      err,bi,bj,myThid )
         err = NF_PUT_VARA_DOUBLE(fid, varId , vec_start, vec_count,
      &       active_var)
-        if (err /= NF_NOERR) then
-            WRITE(msgBuf,'(a,i,a)') 'ESCO: afc_profiles12:',err,
-     &      nf_strerror(err)
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                          SQUEEZE_RIGHT,myThid )
-        endif
+        CALL PROFILES_NF_ERROR( 'active_write 2: NF_PUT_VARA_DOUBLE',
+     &      err,bi,bj,myThid )
 
         err = NF_INQ_VARID(fid,prof_namesmask(active_num_file,
      &       active_varnum), varId )
-        if (err /= NF_NOERR) then
-            WRITE(msgBuf,'(a,i,a)') 'ESCO: afc_profiles13:',err,
-     &      nf_strerror(err)
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                          SQUEEZE_RIGHT,myThid )
-        endif
+        CALL PROFILES_NF_ERROR( 'active_write 3: NF_INQ_VARID:',
+     &      err,bi,bj,myThid )
         err = NF_PUT_VARA_DOUBLE(fid, varId , vec_start, vec_count,
      &       prof_mask1D_cur(1,bi,bj))
-        if (err /= NF_NOERR) then
-            WRITE(msgBuf,'(a,i,a)') 'ESCO: afc_profiles14:',err,
-     &      nf_strerror(err)
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                          SQUEEZE_RIGHT,myThid )
-        endif
+        CALL PROFILES_NF_ERROR( 'active_write 4: NF_PUT_VARA_DOUBLE',
+     &      err,bi,bj,myThid )
 
         err = NF_INQ_VARID(fid,'prof_ind_glob', varId )
-        if (err /= NF_NOERR) then
-            WRITE(msgBuf,'(a,i,a)') 'ESCO: afc_profiles15:',err,
-     &      nf_strerror(err)
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                          SQUEEZE_RIGHT,myThid )
-        endif
+        CALL PROFILES_NF_ERROR( 'active_write 5: NF_INQ_VARID:',
+     &      err,bi,bj,myThid )
         err = NF_PUT_VAR1_INT(fid, varId , vec_start(2),
      &       irecglob)
-        if (err /= NF_NOERR) then
-            WRITE(msgBuf,'(a,i,a)') 'ESCO: afc_profiles16:',err,
-     &      nf_strerror(err)
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                          SQUEEZE_RIGHT,myThid )
-        endif
+        CALL PROFILES_NF_ERROR( 'active_write 6: NF_PUT_VAR1_INT',
+     &      err,bi,bj,myThid )
 
        ELSE
 
@@ -451,20 +387,12 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
         err = NF_INQ_VARID(fid,
      &       prof_names(active_num_file,active_varnum), varId )
-        if (err /= NF_NOERR) then
-            WRITE(msgBuf,'(a,i,a)') 'ESCO: afc_profiles17:',err,
-     &      nf_strerror(err)
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                          SQUEEZE_RIGHT,myThid )
-        endif
+        CALL PROFILES_NF_ERROR( 'active_write 6: NF_INQ_VARID:',
+     &      err,bi,bj,myThid )
         err = NF_GET_VARA_DOUBLE(fid, varId , vec_start, vec_count,
      &       active_data_t)
-        if (err /= NF_NOERR) then
-            WRITE(msgBuf,'(a,i,a)') 'ESCO: afc_profiles18:',err,
-     &      nf_strerror(err)
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                          SQUEEZE_RIGHT,myThid )
-        endif
+        CALL PROFILES_NF_ERROR( 'active_write 6: NF_GET_VARA_DOUBLE',
+     &      err,bi,bj,myThid )
 
 C     Add active_var to data.
         DO i = 1,nactive_var
@@ -474,20 +402,12 @@ C     Add active_var to data.
 
         err = NF_INQ_VARID(fid,
      &       prof_names(active_num_file,active_varnum), varId )
-        if (err /= NF_NOERR) then
-            WRITE(msgBuf,'(a,i,a)') 'ESCO: afc_profiles19:',err,
-     &      nf_strerror(err)
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                          SQUEEZE_RIGHT,myThid )
-        endif
+        CALL PROFILES_NF_ERROR( 'active_write 8: NF_INQ_VARID:',
+     &      err,bi,bj,myThid )
         err = NF_PUT_VARA_DOUBLE(fid, varId , vec_start, vec_count,
      &       active_data_t)
-        if (err /= NF_NOERR) then
-            WRITE(msgBuf,'(a,i,a)') 'ESCO: afc_profiles20:',err,
-     &      nf_strerror(err)
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                          SQUEEZE_RIGHT,myThid )
-        endif
+        CALL PROFILES_NF_ERROR( 'active_write 9: NF_PUT_VARA_DOUBLE',
+     &      err,bi,bj,myThid )
 
        ELSE
 
@@ -532,20 +452,12 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
         err = NF_INQ_VARID(fid,
      &       prof_names(active_num_file,active_varnum), varId )
-        if (err /= NF_NOERR) then
-            WRITE(msgBuf,'(a,i,a)') 'ESCO: afc_profiles21:',err,
-     &      nf_strerror(err)
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                          SQUEEZE_RIGHT,myThid )
-        endif
+        CALL PROFILES_NF_ERROR( 'active_write10: NF_INQ_VARID:',
+     &      err,bi,bj,myThid )
         err = NF_PUT_VARA_DOUBLE(fid, varId , vec_start, vec_count,
      &       active_var)
-        if (err /= NF_NOERR) then
-            WRITE(msgBuf,'(a,i,a)') 'ESCO: afc_profiles22:',err,
-     &      nf_strerror(err)
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                          SQUEEZE_RIGHT,myThid )
-        endif
+        CALL PROFILES_NF_ERROR( 'active_write 9: NF_PUT_VARA_DOUBLE',
+     &      err,bi,bj,myThid )
 
        ELSE
 

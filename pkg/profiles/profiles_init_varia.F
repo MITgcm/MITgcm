@@ -38,7 +38,6 @@ c     == global variables ==
 c     == routine arguments ==
 
       integer mythid
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 c     == local variables ==
 
@@ -84,12 +83,8 @@ c--   Initialize the tiled cost function contributions.
             if (ProfNo(num_file,bi,bj).GT.0) then
 C Close .equi file so data in buffer is not lost when run finishes
              err = NF_CLOSE(fidforward(num_file,bi,bj))
-        if (err /= NF_NOERR) then
-            WRITE(msgBuf,'(a,i,a)') 'ESCO: p_init_varia 1:',err,
-     &      nf_strerror(err)
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                          SQUEEZE_RIGHT,myThid )
-        endif
+             CALL PROFILES_NF_ERROR( 'INIT_VAIRA 1: NF_CLOSE',
+     &            err,bi,bj,myThid )
 
 C determine model equivalent file name
              iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
@@ -106,12 +101,8 @@ C determine model equivalent file name
 c re-open to reset write permissions
              err = NF_OPEN(fnameequinc,NF_WRITE,
      &       fidforward(num_file,bi,bj))
-        if (err /= NF_NOERR) then
-            WRITE(msgBuf,'(a,i,a)') 'ESCO: p_init_varia 2:',err,
-     &      nf_strerror(err)
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                          SQUEEZE_RIGHT,myThid )
-        endif
+             CALL PROFILES_NF_ERROR( 'INIT_VAIRA 2: NF_OPEN',
+     &            err,bi,bj,myThid )
             endif
            enddo
           endif
@@ -123,4 +114,3 @@ c re-open to reset write permissions
 
       return
       end
-
