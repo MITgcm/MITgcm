@@ -31,91 +31,101 @@ C ==================== Routine Variables ==========================
 c     == end of interface ==
 
 #ifdef ALLOW_PROFILES
+C     === Local variables ===
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-      if (profilesDoNcOutput) then
+      IF (profilesDoNcOutput) THEN
 c1) creation :
-      err = NF_CREATE(file2 , NF_CLOBBER, fid2)
-      CALL PROFILES_NF_ERROR( 'INIT_NCFILE 1: NF_CREATE',
+       err = NF_CREATE(file2 , NF_CLOBBER, fid2)
+       CALL PROFILES_NF_ERROR( 'INIT_NCFILE 1: NF_CREATE',
      &      err,bi,bj,myThid )
-      err = NF_DEF_DIM(fid2,'iDEPTH', Zlength ,dimid1)
-      CALL PROFILES_NF_ERROR( 'INIT_NCFILE 2: NF_DEF_DIM',
+       err = NF_DEF_DIM(fid2,'iDEPTH', Zlength ,dimid1)
+       CALL PROFILES_NF_ERROR( 'INIT_NCFILE 2: NF_DEF_DIM',
      &      err,bi,bj,myThid )
-      err = NF_DEF_DIM(fid2,'iPROF',length,dimid2)
-      CALL PROFILES_NF_ERROR( 'INIT_NCFILE 3: NF_DEF_DIM',
+       err = NF_DEF_DIM(fid2,'iPROF',length,dimid2)
+       CALL PROFILES_NF_ERROR( 'INIT_NCFILE 3: NF_DEF_DIM',
      &      err,bi,bj,myThid )
-      vecid(1)=dimid1
-      vecid(2)=dimid2
+       vecid(1)=dimid1
+       vecid(2)=dimid2
 
-      err = NF_DEF_VAR (fid2,'prof_ind_glob', NF_INT, 1,vecid(2),
-     & varid(1))
-      CALL PROFILES_NF_ERROR( 'INIT_NCFILE 4: NF_DEF_VAR',
+       err = NF_DEF_VAR (fid2,'prof_ind_glob', NF_INT, 1,vecid(2),
+     &      varid(1))
+       CALL PROFILES_NF_ERROR( 'INIT_NCFILE 4: NF_DEF_VAR',
      &      err,bi,bj,myThid )
-      err = NF_PUT_ATT_INT(fid2,varid(1),'_FillValue',NF_INT,1,0)
-      CALL PROFILES_NF_ERROR( 'INIT_NCFILE 5: NF_PUT_ATT_INT',
-     &      err,bi,bj,myThid )
-
-      do num_var=1,NVARMAX
-      err = NF_INQ_VARID(fid1,prof_names(num_file,num_var), varid0 )
-      CALL PROFILES_NF_ERROR( 'INIT_NCFILE 6: NF_INQ_VARID',
-     &      err,bi,bj,myThid )
-      if (err.EQ.NF_NOERR) then
-
-      err = NF_DEF_VAR (fid2,prof_names(num_file,num_var), NF_DOUBLE,
-     & 2,vecid,varid(2+(num_var-1)*2))
-      CALL PROFILES_NF_ERROR( 'INIT_NCFILE 7: NF_DEF_VAR',
-     &      err,bi,bj,myThid )
-      err = NF_PUT_ATT_DOUBLE(fid2, varid(2+(num_var-1)*2),'_FillValue',
-     & NF_DOUBLE,1, 0. _d 0 )
-      CALL PROFILES_NF_ERROR( 'INIT_NCFILE 8: NF_PUT_ATT_DOUBLE',
-     &      err,bi,bj,myThid )
-      err = NF_DEF_VAR (fid2,prof_namesmask(num_file,num_var),
-     & NF_DOUBLE, 2,vecid, varid(3+(num_var-1)*2))
-      CALL PROFILES_NF_ERROR( 'INIT_NCFILE 9: NF_DEF_VAR',
-     &      err,bi,bj,myThid )
-      err = NF_PUT_ATT_DOUBLE(fid2,varid(3+(num_var-1)*2),'_FillValue',
-     & NF_DOUBLE,1, 0. _d 0)
-      CALL PROFILES_NF_ERROR( 'INIT_NCFILE10: NF_PUT_ATT_DOUBLE',
+       err = NF_PUT_ATT_INT(fid2,varid(1),'_FillValue',NF_INT,1,0)
+       CALL PROFILES_NF_ERROR( 'INIT_NCFILE 5: NF_PUT_ATT_INT',
      &      err,bi,bj,myThid )
 
-      endif
-      enddo
+       DO num_var=1,NVARMAX
+        err = NF_INQ_VARID(fid1,prof_names(num_file,num_var), varid0 )
+        CALL PROFILES_NF_ERROR( 'INIT_NCFILE 6: NF_INQ_VARID',
+     &       err,bi,bj,myThid )
 
-      err=NF_ENDDEF(fid2)
-      CALL PROFILES_NF_ERROR( 'INIT_NCFILE11: NF_ENDDEF',
+        IF (err.EQ.NF_NOERR) THEN
+
+         WRITE(msgBuf,'(2A)')
+     &        'S/R PROFILES_INIT_NCFILE: defining new variable ',
+     &        prof_names(num_file,num_var)
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+
+         err = NF_DEF_VAR (fid2,prof_names(num_file,num_var), NF_DOUBLE,
+     &        2,vecid,varid(2+(num_var-1)*2))
+         CALL PROFILES_NF_ERROR( 'INIT_NCFILE 7: NF_DEF_VAR',
+     &        err,bi,bj,myThid )
+         err = NF_PUT_ATT_DOUBLE(fid2, varid(2+(num_var-1)*2),
+     &        '_FillValue', NF_DOUBLE,1, 0. _d 0 )
+         CALL PROFILES_NF_ERROR( 'INIT_NCFILE 8: NF_PUT_ATT_DOUBLE',
+     &        err,bi,bj,myThid )
+         err = NF_DEF_VAR (fid2,prof_namesmask(num_file,num_var),
+     &        NF_DOUBLE, 2,vecid, varid(3+(num_var-1)*2))
+         CALL PROFILES_NF_ERROR( 'INIT_NCFILE 9: NF_DEF_VAR',
+     &        err,bi,bj,myThid )
+         err = NF_PUT_ATT_DOUBLE(fid2,varid(3+(num_var-1)*2),
+     &        '_FillValue', NF_DOUBLE,1, 0. _d 0)
+         CALL PROFILES_NF_ERROR( 'INIT_NCFILE10: NF_PUT_ATT_DOUBLE',
+     &        err,bi,bj,myThid )
+
+        ENDIF
+       ENDDO
+
+       err=NF_ENDDEF(fid2)
+       CALL PROFILES_NF_ERROR( 'INIT_NCFILE11: NF_ENDDEF',
      &      err,bi,bj,myThid )
-      err=NF_CLOSE(fid2)
-      CALL PROFILES_NF_ERROR( 'INIT_NCFILE11: NF_CLOSE',
+       err=NF_CLOSE(fid2)
+       CALL PROFILES_NF_ERROR( 'INIT_NCFILE11: NF_CLOSE',
      &      err,bi,bj,myThid )
 
-      err = NF_OPEN(file2, NF_WRITE , fid2)
-      CALL PROFILES_NF_ERROR( 'INIT_NCFILE13: NF_OPEN',
+       err = NF_OPEN(file2, NF_WRITE , fid2)
+       CALL PROFILES_NF_ERROR( 'INIT_NCFILE13: NF_OPEN',
      &      err,bi,bj,myThid )
 
-      else
+      ELSE
 
-c      call MDSFINDUNIT( fid2 , mythid )
-       open( fid2, file=file2, form ='unformatted', status='unknown',
+c      CALL MDSFINDUNIT( fid2 , mythid )
+       OPEN( fid2, file=file2, form ='unformatted', status='unknown',
      &      access='direct', recl=  (Zlength + 1)*WORDLENGTH*2 )
 
-       do irec=1,Zlength+1
-       tmp_vec(irec)=0
-       enddo
+       DO irec=1,Zlength+1
+        tmp_vec(irec)=0
+       ENDDO
 #ifdef _BYTESWAPIO
-            call MDS_BYTESWAPR8(Zlength+1,tmp_vec)
+       call MDS_BYTESWAPR8(Zlength+1,tmp_vec)
 #endif
-       do irec=length,1,-1
-       do num_var=prof_num_var_tot(num_file,bi,bj),1,-1
-       write(fid2,rec=((irec-1)*prof_num_var_tot(num_file,bi,bj)
-     & +num_var-1)*2 +1) tmp_vec
-       write(fid2,rec=((irec-1)*prof_num_var_tot(num_file,bi,bj)
-     & +num_var-1)*2 +2) tmp_vec
-       enddo
-       enddo
+       DO irec=length,1,-1
+        DO num_var=prof_num_var_tot(num_file,bi,bj),1,-1
+         WRITE(fid2,rec=((irec-1)*prof_num_var_tot(num_file,bi,bj)
+     &        +num_var-1)*2 +1) tmp_vec
+         WRITE(fid2,rec=((irec-1)*prof_num_var_tot(num_file,bi,bj)
+     &        +num_var-1)*2 +2) tmp_vec
+        ENDDO
+       ENDDO
 
-       endif
+      ENDIF
 
 #endif
 
+      RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
