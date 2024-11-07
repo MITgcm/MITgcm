@@ -71,7 +71,6 @@ C     !LOCAL VARIABLES:
       _RL     active_data_t(nactive_var)
       REAL*8  vec_tmp(nactive_var+1)
 CEOP
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       IF (profilesDoNcOutput) THEN
        vec_start(1)=1
@@ -301,7 +300,6 @@ C     !LOCAL VARIABLES:
       _RL     active_data_t(nactive_var)
       real*8 vec_tmp(nactive_var+1)
 CEOP
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       IF (profilesDoNcOutput) THEN
        vec_start(1)=1
