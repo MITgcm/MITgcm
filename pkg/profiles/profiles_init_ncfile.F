@@ -29,7 +29,6 @@ C ==================== Routine Variables ==========================
       integer irec, num_var,num_file
       real*8 tmp_vec(Zlength+1)
 c     == end of interface ==
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 #ifdef ALLOW_PROFILES
 
