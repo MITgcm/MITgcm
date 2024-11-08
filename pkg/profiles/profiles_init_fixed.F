@@ -732,31 +732,31 @@ C===========================================================
      & profilesDir(1:JL),'tl',
      & profilesfile(1:IL),'.',iG,'.',jG,'.equi.nc'
 
-        inquire( file=fnameequinc, exist=exst )
+        JL  = ILNBLNK( fnameequinc )
+        inquire( file=fnameequinc(1:JL), exist=exst )
         IF (.NOT.exst) THEN
          CALL profiles_init_ncfile(num_file,
-     &   fiddata(num_file,bi,bj),fnameequinc,
+     &   fiddata(num_file,bi,bj),fnameequinc(1:JL),
      &   fidforward(num_file,bi,bj),ProfNo(num_file,bi,bj),
      &   ProfDepthNo(num_file,bi,bj),
      &   bi,bj,myThid)
         ELSE
 C obtain existing NetCDF file id
-         JL  = ILNBLNK( fnameequinc )
          err = NF_OPEN( fnameequinc(1:JL), NF_WRITE,
      &        fidforward(num_file,bi,bj))
          CALL PROFILES_NF_ERROR( 'INIT_FIXED21: NF_OPEN:',
      &        err,bi,bj,myThid )
         ENDIF
 #ifdef ALLOW_ADJOINT_RUN
-        inquire( file=adfnameequinc, exist=exst )
+         JL  = ILNBLNK( adfnameequinc )
+        inquire( file=adfnameequinc(1:JL), exist=exst )
         IF (.NOT.exst) THEN
          CALL profiles_init_ncfile(num_file,fiddata(num_file,bi,bj),
-     &   adfnameequinc, fidadjoint(num_file,bi,bj),
+     &   adfnameequinc(1:JL), fidadjoint(num_file,bi,bj),
      &   ProfNo(num_file,bi,bj),ProfDepthNo(num_file,bi,bj),
      &   bi,bj, myThid)
         ELSE
 C obtain existing NetCDF file id
-         JL  = ILNBLNK( adfnameequinc )
          err = NF_OPEN( adfnameequinc(1:JL), NF_WRITE,
      &        fidadjoint(num_file,bi,bj))
          CALL PROFILES_NF_ERROR( 'INIT_FIXED22: NF_OPEN:',
@@ -764,15 +764,15 @@ C obtain existing NetCDF file id
         ENDIF
 #endif
 #ifdef ALLOW_TANGENTLINEAR_RUN
-        inquire( file=tlfnameequinc, exist=exst )
+         JL  = ILNBLNK( tlfnameequinc )
+        inquire( file=tlfnameequinc(1:JL), exist=exst )
         IF (.NOT.exst) THEN
          CALL profiles_init_ncfile(num_file,fiddata(num_file,bi,bj),
-     &        tlfnameequinc, fidtangent(num_file,bi,bj),
+     &        tlfnameequinc(1:JL), fidtangent(num_file,bi,bj),
      &        ProfNo(num_file,bi,bj),ProfDepthNo(num_file,bi,bj),
      &        bi,bj, myThid)
         ELSE
 C obtain existing NetCDF file id
-         JL  = ILNBLNK( tlfnameequinc )
          err = NF_OPEN( tlfnameequinc(1:JL), NF_WRITE,
      &        fidtangent(num_file,bi,bj))
          CALL PROFILES_NF_ERROR( 'INIT_FIXED23: NF_OPEN:',
@@ -790,7 +790,8 @@ C obtain existing NetCDF file id
      & profilesDir(1:JL),'tl',
      & profilesfile(1:IL),'.',iG,'.',jG,'.equi.data'
 
-        inquire( file=fnameequinc, exist=exst )
+        JL  = ILNBLNK( fnameequinc )
+        inquire( file=fnameequinc(1:JL), exist=exst )
 #ifdef PROFILES_USE_MDSFINDUNITS
         CALL MDSFINDUNIT( fidforward(num_file,bi,bj) , myThid )
 #else
@@ -798,16 +799,17 @@ C obtain existing NetCDF file id
 #endif
         IF (.NOT.exst) THEN
          CALL profiles_init_ncfile(num_file,fiddata(num_file,bi,bj),
-     &        fnameequinc,fidforward(num_file,bi,bj),
+     &        fnameequinc(1:JL),fidforward(num_file,bi,bj),
      &        ProfNo(num_file,bi,bj),ProfDepthNo(num_file,bi,bj),
      &        bi,bj,myThid)
         ELSE
-         open( fidforward(num_file,bi,bj),file=fnameequinc,
+         open( fidforward(num_file,bi,bj),file=fnameequinc(1:JL),
      &   form ='unformatted',status='unknown', access='direct',
      &   recl=  (ProfDepthNo(num_file,bi,bj)+1)*WORDLENGTH*2 )
         ENDIF
 #ifdef ALLOW_ADJOINT_RUN
-        inquire( file=adfnameequinc, exist=exst )
+        JL  = ILNBLNK( adfnameequinc )
+        inquire( file=adfnameequinc(1:JL), exist=exst )
 #ifdef PROFILES_USE_MDSFINDUNITS
         CALL MDSFINDUNIT( fidadjoint(num_file,bi,bj) , myThid )
 #else
@@ -815,17 +817,18 @@ C obtain existing NetCDF file id
 #endif
         IF (.NOT.exst) THEN
          CALL profiles_init_ncfile(num_file,fiddata(num_file,bi,bj),
-     &   adfnameequinc, fidadjoint(num_file,bi,bj),
+     &   adfnameequinc(1:JL), fidadjoint(num_file,bi,bj),
      &   ProfNo(num_file,bi,bj),ProfDepthNo(num_file,bi,bj),
      &   bi,bj, myThid)
         ELSE
-         open( fidadjoint(num_file,bi,bj),file=adfnameequinc,
+         open( fidadjoint(num_file,bi,bj),file=adfnameequinc(1:JL),
      &   form ='unformatted',status='unknown', access='direct',
      &   recl=  (ProfDepthNo(num_file,bi,bj)+1)*WORDLENGTH*2 )
         ENDIF
 #endif
 #ifdef ALLOW_TANGENTLINEAR_RUN
-        inquire( file=tlfnameequinc, exist=exst )
+        JL  = ILNBLNK( tlfnameequinc )
+        inquire( file=tlfnameequinc(1:JL), exist=exst )
 #ifdef PROFILES_USE_MDSFINDUNITS
         CALL MDSFINDUNIT( fidtangent(num_file,bi,bj) , myThid )
 #else
@@ -833,11 +836,11 @@ C obtain existing NetCDF file id
 #endif
         IF (.NOT.exst) THEN
          CALL profiles_init_ncfile(num_file,fiddata(num_file,bi,bj),
-     &   tlfnameequinc, fidtangent(num_file,bi,bj),
+     &   tlfnameequinc(1:JL), fidtangent(num_file,bi,bj),
      &   ProfNo(num_file,bi,bj),ProfDepthNo(num_file,bi,bj),
      &   bi,bj, myThid)
         ELSE
-         open( fidtangent(num_file,bi,bj),file=tlfnameequinc,
+         open( fidtangent(num_file,bi,bj),file=tlfnameequinc(1:JL),
      &   form ='unformatted',status='unknown', access='direct',
      &   recl=  (ProfDepthNo(num_file,bi,bj)+1)*WORDLENGTH*2 )
         ENDIF
@@ -977,12 +980,13 @@ c1) you want to provide interpolation information
 cgf XC grid
        CALL MDSFINDUNIT( fid , myThid )
        WRITE(fnameequinc,'(a,2(i3.3,a),2(i4.4,a))')
-     & 'profilesXCincl1PointOverlap.',iG,'.',jG,'.',sNx,'.',sNy,'.data'
-         k=MDS_RECLEN(64,(sNx+2)*(sNy+2),myThid)
-            WRITE(standardMessageUnit,'(A,/,2A)')
-     & 'PROFILES_INIT_FIXED: creating grid from profiles; file:',
-     & fnameequinc
-       OPEN( fid, file= fnameequinc, form ='unformatted',
+     &  'profilesXCincl1PointOverlap.',iG,'.',jG,'.',sNx,'.',sNy,'.data'
+       k=MDS_RECLEN(64,(sNx+2)*(sNy+2),myThid)
+       WRITE(standardMessageUnit,'(A,/,2A)')
+     &      'PROFILES_INIT_FIXED: creating grid from profiles; file:',
+     &      fnameequinc
+       JL  = ILNBLNK( fnameequinc )
+       OPEN( fid, file= fnameequinc(1:JL), form ='unformatted',
      &      status='unknown',access='direct', recl= k)
        DO m=0,sNy+1
         DO l=0,sNx+1
@@ -1002,7 +1006,8 @@ cgf YC grid
        WRITE(standardMessageUnit,'(A,/,A)')
      &      'PROFILES_INIT_FIXED: creating grid from profiles; file:',
      &      fnameequinc
-       OPEN( fid, file= fnameequinc, form ='unformatted',
+       JL  = ILNBLNK( fnameequinc )
+       OPEN( fid, file= fnameequinc(1:JL), form ='unformatted',
      &      status='unknown', access='direct', recl= k)
        DO m=0,sNy+1
         DO l=0,sNx+1
