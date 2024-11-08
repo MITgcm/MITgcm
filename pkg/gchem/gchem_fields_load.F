@@ -204,65 +204,13 @@ C--   endif .not. useEXF
 c     ENDIF
 
 C-----------------------------------------------------------
-C Ice: if there's a file in data.gchem, ignore pkg/seaice/thsce
-
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-C If an ice file is given in data.gchem, read it
-         IF ( gchem_IceFile .NE. ' ' ) THEN
-# ifdef ALLOW_EXF
-C     forcing load fields with pkg/exf tools
-          IF ( useEXF ) THEN
-           CALL EXF_SET_FLD(
-     &      'gchemIce', gchem_icefile, icemask,
-     &      iceStartTime, iceperiod, iceRepCycle,
-     &      gchem_inscal_ice,
-     &      ice_exfremo_intercept, ice_exfremo_slope,
-     &      gchemIce, gchemIce0, gchemIce1,
-#  ifdef USE_EXF_INTERPOLATION
-     &      ice_lon0, ice_lon_inc,
-     &      ice_lat0, ice_lat_inc,
-     &      ice_nlon, ice_nlat, xC, yC,
-     &      ice_interpMethod,
-#  endif
-     &      mytime, myiter, mythid )
-          ENDIF
-# endif
-         ELSE
-C Otherwise get ice fraction from PKG/SEAICE or PKG/THSICE
-# ifdef ALLOW_SEAICE
-          IF ( useSEAICE ) THEN
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             gchemIce(i,j,bi,bj) = AREA(i,j,bi,bj)
-            ENDDO
-           ENDDO
-          ENDIF
-# endif
-# ifdef ALLOW_THSICE
-          IF ( useThSIce ) THEN
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             gchemIce(i,j,bi,bj) = iceMask(i,j,bi,bj)
-            ENDDO
-           ENDDO
-          ENDIF
-# endif
-         ENDIF
-        ENDDO
-       ENDDO
-
-C-----------------------------------------------------------
 # ifdef ALLOW_EXF
 C     forcing load fields with pkg/exf tools
       IF ( useEXF ) THEN
 
-      DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-
 C If a wind file is given in data.gchem, read it
-         IF ( gchem_WindFile .NE. ' ' ) THEN
-          CALL EXF_SET_FLD(
+       IF ( gchem_WindFile .NE. ' ' ) THEN
+        CALL EXF_SET_FLD(
      &     'gchemWind', gchem_windfile, windmask,
      &     windStartTime, windperiod, windRepCycle,
      &     gchem_inscal_wind,
@@ -276,17 +224,21 @@ C If a wind file is given in data.gchem, read it
 #  endif
      &     mytime, myiter, mythid )
 C Otherwise get winds from PKG/EXF
-         ELSEIF ( uwindfile .NE. ' ' .AND. vwindfile .NE. ' ' ) THEN
+       ELSEIF ( uwindfile .NE. ' ' .AND. vwindfile .NE. ' ' ) THEN
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
             gchemWind(i,j,bi,bj) = wspeed(i,j,bi,bj)
            ENDDO
           ENDDO
-         ENDIF
+         ENDDO
+        ENDDO
+       ENDIF
 
 C If a pressure files is given in data.gchem, read it
-         IF ( gchem_atmosPfile .EQ. ' ' ) THEN
-          CALL EXF_SET_FLD(
+       IF ( gchem_atmosPfile .NE. ' ' ) THEN
+        CALL EXF_SET_FLD(
      &     'gchemAtmosP', gchem_atmosPfile, apresmask,
      &     apresStartTime, apresperiod, apresRepCycle,
      &     gchem_inscal_apres,
@@ -300,16 +252,18 @@ C If a pressure files is given in data.gchem, read it
 #  endif
      &     mytime, myiter, mythid )
 C Otherwise get atmospheric pressure from PKG/EXF
-         ELSEIF ( apressurefile .NE. ' ' ) THEN
+       ELSEIF ( apressurefile .NE. ' ' ) THEN
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
 C Atm pressure in Pascals, convert to atm
             gchemAtmosP(i,j,bi,bj) = apressure(i,j,bi,bj)
            ENDDO
           ENDDO
-         ENDIF
+         ENDDO
         ENDDO
-       ENDDO
+       ENDIF
 
        IF ( gchem_silicafile .NE. ' ' ) THEN
         CALL EXF_SET_FLD(
@@ -375,8 +329,55 @@ C Atm pressure in Pascals, convert to atm
      &     mytime, myiter, mythid )
        ENDIF
 
+       IF ( gchem_IceFile .NE. ' ' ) THEN
+# ifdef ALLOW_EXF
+C     forcing load fields with pkg/exf tools
+        CALL EXF_SET_FLD(
+     &     'gchemIce', gchem_icefile, icemask,
+     &     iceStartTime, iceperiod, iceRepCycle,
+     &     gchem_inscal_ice,
+     &     ice_exfremo_intercept, ice_exfremo_slope,
+     &     gchemIce, gchemIce0, gchemIce1,
+#  ifdef USE_EXF_INTERPOLATION
+     &     ice_lon0, ice_lon_inc,
+     &     ice_lat0, ice_lat_inc,
+     &     ice_nlon, ice_nlat, xC, yC,
+     &     ice_interpMethod,
+#  endif
+     &     mytime, myiter, mythid )
+       ENDIF
+# endif
       ENDIF
 #  endif /* ALLOW_EXF */
+
+C------------------------------------------------------------
+C If there is no ice file given in data.gchem, try fields from
+C pkg/seaice/thsIce
+
+      IF ( gchem_IceFile .EQ. ' ' ) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+# ifdef ALLOW_SEAICE
+         IF ( useSEAICE ) THEN
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            gchemIce(i,j,bi,bj) = AREA(i,j,bi,bj)
+           ENDDO
+          ENDDO
+         ENDIF
+# endif
+# ifdef ALLOW_THSICE
+         IF ( useThSIce ) THEN
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            gchemIce(i,j,bi,bj) = iceMask(i,j,bi,bj)
+           ENDDO
+          ENDDO
+         ENDIF
+# endif
+        ENDDO
+       ENDDO
+      ENDIF
 
 C     now the various BGC packages can use the gchem fields
 # ifdef ALLOW_DIC
