@@ -25,7 +25,7 @@ C ==================== Global Variables ===========================
 C ==================== Routine Variables ==========================
       integer fid1,fid2,dimid1,dimid2,varid(2*NVARMAX),varid0
       integer myThid,bi,bj,err,vecid(2), length, Zlength
-      character*(MAX_LEN_FNAM) file2
+      character*(*) file2
       integer irec, num_var,num_file
       real*8 tmp_vec(Zlength+1)
 c     == end of interface ==
