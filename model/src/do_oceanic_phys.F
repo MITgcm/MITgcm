@@ -152,7 +152,6 @@ C     == Global variables ===
 #endif
 
 #ifdef ALLOW_AUTODIFF
-# include "AUTODIFF_MYFIELDS.h"
 # ifdef ALLOW_AUTODIFF_TAMC
 #  include "tamc.h"
 # endif

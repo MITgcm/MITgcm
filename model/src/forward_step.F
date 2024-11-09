@@ -256,7 +256,6 @@ C     == Global variables ==
 #endif
 
 #ifdef ALLOW_AUTODIFF
-# include "AUTODIFF_MYFIELDS.h"
 # include "FFIELDS.h"
 # include "SURFACE.h"
 
