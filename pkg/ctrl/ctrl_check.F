@@ -230,7 +230,8 @@ C-    to use KAPREDI_CONTROL, needs to define GM_READ_K3D_REDI in GMREDI_OPTIONS
      &        'ALLOW_PACKUNPACK_METHOD2 does not work with',
      &        'open boundary controls (see verif/obcs_ctrl).'
       CALL PRINT_ERROR( msgBuf, myThid )
-
+      errCount = errCount + 1
+#  endif
 # endif /* ndef EXCLUDE_CTRL_PACK */
 #endif /* ALLOW_PACKUNPACK_METHOD2 */
 
