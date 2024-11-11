@@ -210,9 +210,9 @@ C       Print some statistics about input forcing fields
      &             maskInC, maskInC, rA , drF, dummyRL, myThid )
         ENDIF
 #endif
-#ifdef USE_EXFCO2
+#ifdef ALLOW_BLING
         IF ( apco2file .NE. ' ' ) THEN
-          CALL MON_WRITESTATS_RL( 1, apco2, '_apco2',
+          CALL MON_WRITESTATS_RL( 1, apCO2, '_apco2',
      &             maskInC, maskInC, rA , drF, dummyRL, myThid )
         ENDIF
 #endif
