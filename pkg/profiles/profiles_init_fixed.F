@@ -288,21 +288,21 @@ c       if neither is found, then stop
 
       IF (profilesDoGenGrid) THEN
 c3) read interpolattion information (grid points, coeffs, etc.)
-        err = NF_INQ_VARID(fid,'prof_interp_XC11',varid_intp1)
-        err = NF_INQ_VARID(fid,'prof_interp_YC11',varid_intp2)
-        err = NF_INQ_VARID(fid,'prof_interp_XCNINJ',varid_intp11)
-        err = NF_INQ_VARID(fid,'prof_interp_YCNINJ',varid_intp22)
-        err = NF_INQ_VARID(fid,'prof_interp_weights',varid_intp3)
-        err = NF_INQ_VARID(fid,'prof_interp_i',varid_intp4)
-        err = NF_INQ_VARID(fid,'prof_interp_j',varid_intp5)
-        IF (err.NE.NF_NOERR) THEN
-          IL  = ILNBLNK( profilesfile )
-          WRITE(msgBuf,'(3A)')
-     & 'PROFILES_INIT_FIXED: file ', profilesfile(1:IL),
-     & '.nc is missing interpolation information (profilesDoGenGrid)'
-          CALL PRINT_ERROR( msgBuf, myThid)
-          stopGenericGrid=2
-        ENDIF
+       err = NF_INQ_VARID(fid,'prof_interp_XC11',varid_intp1)
+       err = NF_INQ_VARID(fid,'prof_interp_YC11',varid_intp2)
+       err = NF_INQ_VARID(fid,'prof_interp_XCNINJ',varid_intp11)
+       err = NF_INQ_VARID(fid,'prof_interp_YCNINJ',varid_intp22)
+       err = NF_INQ_VARID(fid,'prof_interp_weights',varid_intp3)
+       err = NF_INQ_VARID(fid,'prof_interp_i',varid_intp4)
+       err = NF_INQ_VARID(fid,'prof_interp_j',varid_intp5)
+       IF (err.NE.NF_NOERR) THEN
+        IL  = ILNBLNK( profilesfile )
+        WRITE(msgBuf,'(3A)')
+     &   'PROFILES_INIT_FIXED: file ', profilesfile(1:IL),
+     &   '.nc is missing interpolation information (profilesDoGenGrid)'
+        CALL PRINT_ERROR( msgBuf, myThid)
+        stopGenericGrid=2
+       ENDIF
       ENDIF
 
 c4) default values
@@ -725,12 +725,16 @@ C===========================================================
 
         WRITE(fnameequinc,'(3a,2(i3.3,a))')
      & profilesDir(1:JL),profilesfile(1:IL),'.',iG,'.',jG,'.equi.nc'
+C#ifdef ALLOW_ADJOINT_RUN
         WRITE(adfnameequinc,'(4a,2(i3.3,a))')
      & profilesDir(1:JL),'ad',
      & profilesfile(1:IL),'.',iG,'.',jG,'.equi.nc'
+C#endif
+#ifdef ALLOW_TANGENTLINEAR_RUN
         WRITE(tlfnameequinc,'(4a,2(i3.3,a))')
      & profilesDir(1:JL),'tl',
      & profilesfile(1:IL),'.',iG,'.',jG,'.equi.nc'
+#endif
 
         JL  = ILNBLNK( fnameequinc )
         inquire( file=fnameequinc(1:JL), exist=exst )
@@ -783,12 +787,16 @@ C obtain existing NetCDF file id
 
         WRITE(fnameequinc,'(3a,2(i3.3,a))')
      & profilesDir(1:JL),profilesfile(1:IL),'.',iG,'.',jG,'.equi.data'
+C#ifdef ALLOW_ADJOINT_RUN
         WRITE(adfnameequinc,'(4a,2(i3.3,a))')
      & profilesDir(1:JL),'ad',
      & profilesfile(1:IL),'.',iG,'.',jG,'.equi.data'
+C#endif
+#ifdef ALLOW_TANGENTLINEAR_RUN
         WRITE(tlfnameequinc,'(4a,2(i3.3,a))')
      & profilesDir(1:JL),'tl',
      & profilesfile(1:IL),'.',iG,'.',jG,'.equi.data'
+#endif
 
         JL  = ILNBLNK( fnameequinc )
         inquire( file=fnameequinc(1:JL), exist=exst )
@@ -810,11 +818,11 @@ C obtain existing NetCDF file id
 #ifdef ALLOW_ADJOINT_RUN
         JL  = ILNBLNK( adfnameequinc )
         inquire( file=adfnameequinc(1:JL), exist=exst )
-#ifdef PROFILES_USE_MDSFINDUNITS
+# ifdef PROFILES_USE_MDSFINDUNITS
         CALL MDSFINDUNIT( fidadjoint(num_file,bi,bj) , myThid )
-#else
+# else
         CALL PROFILES_FINDUNIT( fidadjoint(num_file,bi,bj) , myThid )
-#endif
+# endif
         IF (.NOT.exst) THEN
          CALL profiles_init_ncfile(num_file,fiddata(num_file,bi,bj),
      &   adfnameequinc(1:JL), fidadjoint(num_file,bi,bj),
@@ -829,11 +837,11 @@ C obtain existing NetCDF file id
 #ifdef ALLOW_TANGENTLINEAR_RUN
         JL  = ILNBLNK( tlfnameequinc )
         inquire( file=tlfnameequinc(1:JL), exist=exst )
-#ifdef PROFILES_USE_MDSFINDUNITS
+# ifdef PROFILES_USE_MDSFINDUNITS
         CALL MDSFINDUNIT( fidtangent(num_file,bi,bj) , myThid )
-#else
+# else
         CALL PROFILES_FINDUNIT( fidtangent(num_file,bi,bj) , myThid )
-#endif
+# endif
         IF (.NOT.exst) THEN
          CALL profiles_init_ncfile(num_file,fiddata(num_file,bi,bj),
      &   tlfnameequinc(1:JL), fidtangent(num_file,bi,bj),
@@ -1083,7 +1091,6 @@ c2) stop after other kind of errors
      &                    SQUEEZE_RIGHT, myThid )
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
 #endif /* ALLOW_PROFILES */
 
       RETURN
