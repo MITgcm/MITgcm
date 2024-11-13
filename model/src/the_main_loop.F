@@ -33,6 +33,9 @@
 #ifdef ALLOW_STREAMICE
 # include "STREAMICE_OPTIONS.h"
 #endif
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE_OPTIONS.h"
+#endif
 #ifdef ALLOW_COST
 # include "COST_OPTIONS.h"
 #endif
@@ -44,6 +47,9 @@
 #endif
 #ifdef ALLOW_PROFILES
 # include "PROFILES_OPTIONS.h"
+#endif
+#ifdef ALLOW_RBCS
+# include "RBCS_OPTIONS.h"
 #endif
 
 CBOP

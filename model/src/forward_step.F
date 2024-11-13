@@ -52,6 +52,9 @@
 #ifdef ALLOW_ECCO
 # include "ECCO_OPTIONS.h"
 #endif
+#ifdef ALLOW_RBCS
+# include "RBCS_OPTIONS.h"
+#endif
 
 #define ALLOW_MOM_STEPPING
 #if ( defined (ALLOW_AUTODIFF) && defined (ALLOW_OFFLINE) )
