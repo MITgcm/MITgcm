@@ -83,7 +83,7 @@ c--   Initialize the tiled cost function contributions.
             if (ProfNo(num_file,bi,bj).GT.0) then
 C Close .equi file so data in buffer is not lost when run finishes
              err = NF_CLOSE(fidforward(num_file,bi,bj))
-             CALL PROFILES_NF_ERROR( 'INIT_VAIRA 1: NF_CLOSE',
+             CALL PROFILES_NF_ERROR( 'INIT_VARIA: NF_CLOSE',
      &            err,bi,bj,myThid )
 
 C determine model equivalent file name
@@ -102,7 +102,8 @@ c re-open to reset write permissions
              JL  = ILNBLNK( fnameequinc )
              err = NF_OPEN( fnameequinc(1:JL),NF_WRITE,
      &       fidforward(num_file,bi,bj))
-             CALL PROFILES_NF_ERROR( 'INIT_VAIRA 2: NF_OPEN',
+             CALL PROFILES_NF_ERROR(
+     &            'INIT_VARIA: NF_OPEN('//fnameequinc(1:JL)//')',
      &            err,bi,bj,myThid )
             endif
            enddo

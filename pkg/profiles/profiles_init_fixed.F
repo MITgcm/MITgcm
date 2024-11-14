@@ -177,7 +177,7 @@ c open data files and read information
 C===========================================================
 
       WRITE(fnamedatanc,'(2a)') profilesfile(1:IL),'.nc'
-      err = NF_OPEN(fnamedatanc, 0, fiddata(num_file,bi,bj))
+      err = NF_OPEN(fnamedatanc, NF_NOWRITE, fiddata(num_file,bi,bj))
       CALL PROFILES_NF_ERROR( 'INIT_FIXED 1: NF_OPEN:',
      &     err,bi,bj,myThid )
 
