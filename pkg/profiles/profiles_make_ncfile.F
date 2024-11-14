@@ -85,19 +85,9 @@ C File maintenance
          IF ( (ProfNo(num_file,bi,bj).GT.0).AND.
      &        (profilesDoNcOutput) ) THEN
 C Need to close the file so that the data is not lost when run finishes
-          err = NF_CLOSE(fidforward(num_file,bi,bj))
-          iG  = bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
-          jG  = bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
-          IL  = ILNBLNK( profilesFiles(num_file) )
-          WRITE(profFile,'(1a)')
-     &    profilesFiles(num_file)(1:IL)
-          IL  = ILNBLNK( profFile )
-          JL  = ILNBLNK( profilesDir )
-          WRITE(fnameequinc,'(3a,i3.3,a,i3.3,a)')
-     &    profilesDir(1:JL),profFile(1:IL),'.',iG,'.',jG,'.equi.nc'
-          JL  = ILNBLNK( fnameequinc )
-          err = NF_OPEN( fnameequinc(1:JL) ,NF_NOWRITE,
-     &    fidforward(num_file,bi,bj))
+          err = NF_SYNC(fidforward(num_file,bi,bj))
+          CALL PROFILES_NF_ERROR( 'MAKE_NCFILE: NF_SYNC',
+     &         err,bi,bj,myThid )
          ENDIF
 
 C Loop over variables
@@ -164,19 +154,27 @@ C Get dimensions of input file
         profFile=' '
         IL = ILNBLNK( profilesfiles(num_file) )
         IF (IL.NE.0) THEN
-         WRITE(profFile,'(1a)')
-     &   profilesfiles(num_file)(1:IL)
+         WRITE(profFile,'(1a)') profilesfiles(num_file)(1:IL)
         ENDIF
 
         IL = ILNBLNK( profFile )
         IF (IL.NE.0) THEN
          WRITE(fnamedata,'(2a)') profFile(1:IL),'.nc'
-         err = NF_OPEN(fnamedata, 0, fid1)
+         err = NF_OPEN(fnamedata, NF_NOWRITE, fid1)
+         CALL PROFILES_NF_ERROR(
+     &        'MAKE_NCFILE: NF_OPEN('//fnamedata(1:IL+3)//')',
+     &        err,bi,bj,myThid )
          err = NF_INQ_DIMID(fid1,'iPROF', dimid )
+         CALL PROFILES_NF_ERROR( 'MAKE_NCFILE: NF_INQ_DIMID iPROF',
+     &        err,bi,bj,myThid )
          err = NF_INQ_DIMLEN(fid1, dimid, length )
          err = NF_INQ_DIMID(fid1,'iDEPTH', dimid )
+         CALL PROFILES_NF_ERROR( 'MAKE_NCFILE: NF_INQ_DIMID iDEPTH',
+     &        err,bi,bj,myThid )
          IF (err.NE.NF_NOERR) THEN
           err = NF_INQ_DIMID(fid1,'Z', dimid )
+          CALL PROFILES_NF_ERROR( 'MAKE_NCFILE: NF_INQ_DIMID Z',
+     &         err,bi,bj,myThid )
          ENDIF
          err = NF_INQ_DIMLEN(fid1, dimid, Zlength )
 
@@ -190,8 +188,15 @@ C Create new netcdf global file for model-equivalent
          IF (.NOT.exst) THEN
 
           err = NF_CREATE(fnameequinc(1:JL),NF_CLOBBER,fid2)
+          CALL PROFILES_NF_ERROR(
+     &         'MAKE_NCFILE: NF_CREATE('//fnameequinc(1:JL)//')',
+     &         err,bi,bj,myThid )
           err = NF_DEF_DIM(fid2,'iDEPTH',Zlength,dimid1)
+          CALL PROFILES_NF_ERROR( 'MAKE_NCFILE: NF_DEF_DIM iDepth',
+     &         err,bi,bj,myThid )
           err = NF_DEF_DIM(fid2,'iPROF',length,dimid2)
+          CALL PROFILES_NF_ERROR( 'MAKE_NCFILE: NF_DEF_DIM iPROF',
+     &         err,bi,bj,myThid )
           vecid(1)=dimid1
           vecid(2)=dimid2
 
@@ -199,17 +204,28 @@ C Define variables and attributes
           DO num_var=1,NVARMAX
 
            err = NF_INQ_VARID(fid1,prof_names(num_file,num_var),varid0)
+           CALL PROFILES_NF_ERROR(
+     &  'MAKE_NCFILE: NF_INQ_VARID('//prof_names(num_file,num_var)//')',
+     &  err,bi,bj,myThid )
 
            IF (err.EQ.NF_NOERR) THEN
 
             err = NF_DEF_VAR(fid2,prof_namesequi(num_file,num_var),
      &        NF_DOUBLE,2,vecid,varid1(2+(num_var-1)*2))
+            CALL PROFILES_NF_ERROR( 'MAKE_NCFILE: NF_DEF_VAR',
+     &           err,bi,bj,myThid )
             err = NF_PUT_ATT_DOUBLE(fid2,varid1(2+(num_var-1)*2),
      &        '_FillValue',NF_DOUBLE,1, 0. _d 0)
+            CALL PROFILES_NF_ERROR( 'MAKE_NCFILE: NF_PUT_ATT_DOUBLE',
+     &           err,bi,bj,myThid )
             err = NF_DEF_VAR(fid2,prof_namesmask(num_file,num_var),
      &        NF_DOUBLE, 2,vecid,varid1(3+(num_var-1)*2))
+            CALL PROFILES_NF_ERROR( 'MAKE_NCFILE: NF_DEF_VAR',
+     &           err,bi,bj,myThid )
             err = NF_PUT_ATT_DOUBLE(fid2,varid1(3+(num_var-1)*2),
      &        '_FillValue',NF_DOUBLE,1, 0. _d 0)
+            CALL PROFILES_NF_ERROR( 'MAKE_NCFILE: NF_PUT_ATT_DOUBLE',
+     &           err,bi,bj,myThid )
 
            ENDIF
           ENDDO
@@ -219,6 +235,9 @@ C Define variables and attributes
          ELSE
           JL  = ILNBLNK( fnameequinc )
           err = NF_OPEN( fnameequinc(1:JL), NF_WRITE, fid2)
+          CALL PROFILES_NF_ERROR(
+     &         'MAKE_NCFILE: NF_OPEN('//fnameequinc(1:JL)//')',
+     &         err,bi,bj,myThid )
          ENDIF
 
 C Write profiles
@@ -252,6 +271,8 @@ C Write profiles
          ENDDO !do num_var=..
 
          err = NF_CLOSE(fid2)
+         CALL PROFILES_NF_ERROR( 'MAKE_NCFILE: NF_CLOSE',
+     &        err,bi,bj,myThid )
         ENDIF
        ENDIF
       ENDDO

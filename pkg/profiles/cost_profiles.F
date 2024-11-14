@@ -40,15 +40,17 @@ c     == routine arguments ==
 
 C     ========= Local variables =======================
       integer K,num_file,num_var,prof_num
-      integer bi,bj,iG,jG,fid
+      integer bi,bj
       _RL prof_traj1D(NLEVELMAX), prof_traj1D_mean(NLEVELMAX)
       _RL prof_data1D(NLEVELMAX), prof_weights1D(NLEVELMAX)
 #ifndef ALLOW_CTRL
       integer optimcycle
 #endif
-      CHARACTER*(MAX_LEN_MBUF) msgbuf
-      CHARACTER*(MAX_LEN_FNAM) profilesfile, fnameequinc
-      integer IL, JL, err
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+#ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
+      INTEGER IL
+#endif
+      INTEGER err
 
       _RL  objf_prof_tile (nSx,nSy)
       _RL  objf_prof_glo
@@ -88,11 +90,11 @@ c     == end of interface ==
       optimcycle = 0
 #endif
 
-      write(msgbuf,'(a)') ' '
-      call print_message( msgbuf,
+      write(msgBuf,'(a)') ' '
+      call print_message( msgBuf,
      &  standardMessageUnit,SQUEEZE_RIGHT , myThid)
-      write(msgbuf,'(a)') '== cost_profiles: begin =='
-      call print_message( msgbuf,
+      write(msgBuf,'(a)') '== cost_profiles: begin =='
+      call print_message( msgBuf,
      &  standardMessageUnit,SQUEEZE_RIGHT , myThid)
 
         _BEGIN_MASTER( myThid )
@@ -127,28 +129,12 @@ C initialize
       DO bj=1,nSy
        DO bi=1,nSx
         do num_file=1,NFILESPROFMAX
-         fid=fiddata(num_file,bi,bj)
 
          if ( (ProfNo(num_file,bi,bj).GT.0).AND.
      &        (profilesDoNcOutput) ) then
-c need to close the file so that the data is not lost when run finishes
-           err = NF_CLOSE(fidforward(num_file,bi,bj))
-           CALL PROFILES_NF_ERROR('COST 1: NF_CLOSE', err,bi,bj,myThid)
-c then re-open it to compute cost function
-           iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
-           jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
-           IL  = ILNBLNK( profilesfiles(num_file) )
-           write(profilesfile,'(a)')
-     &     profilesfiles(num_file)(1:IL)
-           IL  = ILNBLNK( profilesfile )
-           JL  = ILNBLNK( profilesDir )
-           write(fnameequinc,'(3a,2(i3.3,a))')
-     &     profilesDir(1:JL),profilesfile(1:IL),'.',iG,'.',jG,'.equi.nc'
-c
-           JL  = ILNBLNK( fnameequinc )
-           err = NF_OPEN(fnameequinc(1:JL) ,NF_NOWRITE,
-     &     fidforward(num_file,bi,bj))
-           CALL PROFILES_NF_ERROR('COST 2: NF_OPEN', err,bi,bj,myThid)
+c need to sync the file so that the data is not lost when run finishes
+           err = NF_SYNC(fidforward(num_file,bi,bj))
+           CALL PROFILES_NF_ERROR('COST: NF_SYNC', err,bi,bj,myThid)
          endif
 
 C find the vertical indices
@@ -409,28 +395,12 @@ C      _END_MASTER( myThid )
         DO bi=1,nSx
 
          do num_file=1,NFILESPROFMAX
-          fid=fiddata(num_file,bi,bj)
 
           if ( (ProfNo(num_file,bi,bj).GT.0).AND.
      &         (profilesDoNcOutput) ) then
-c need to close the file so that the data is not lost when run finishes
-           err = NF_CLOSE(fidforward(num_file,bi,bj))
-           CALL PROFILES_NF_ERROR('COST 3: NF_CLOSE', err,bi,bj,myThid)
-c then re-open it to compute cost function
-           iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
-           jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
-           IL  = ILNBLNK( profilesfiles(num_file) )
-           write(profilesfile,'(a)')
-     &     profilesfiles(num_file)(1:IL)
-           IL  = ILNBLNK( profilesfile )
-           JL  = ILNBLNK( profilesDir )
-           write(fnameequinc,'(3a,2(i3.3,a))')
-     &     profilesDir(1:JL),profilesfile(1:IL),'.',iG,'.',jG,'.equi.nc'
-c
-           JL  = ILNBLNK( fnameequinc )
-           err = NF_OPEN(fnameequinc(1:JL) ,NF_NOWRITE,
-     &     fidforward(num_file,bi,bj))
-           CALL PROFILES_NF_ERROR('COST 4: NF_OPEN', err,bi,bj,myThid)
+c need to sync the file so that the data is not lost when run finishes
+           err = NF_SYNC(fidforward(num_file,bi,bj))
+           CALL PROFILES_NF_ERROR('COST: NF_SYNC', err,bi,bj,myThid)
           endif
 
           do prof_num=1,NOBSGLOB
@@ -524,16 +494,16 @@ C end of #ifndef ALLOW_PROFILES_SAMPLESPLIT_COST
       IF ( debugLevel .GE. debLevD ) THEN
          if (ProfNo(num_file,bi,bj).GT.0) then
           do num_var=1,NVARMAX
-           write(msgbuf,'(a,4I9)') 'bi,bj,prof_num,num_var ',bi,bj,
+           write(msgBuf,'(a,4I9)') 'bi,bj,prof_num,num_var ',bi,bj,
      &      ProfNo(num_file,bi,bj),num_var
            call print_message(
-     &      msgbuf, standardMessageUnit, SQUEEZE_RIGHT , myThid)
-           write(msgbuf,'(a,2D22.15)')
+     &      msgBuf, standardMessageUnit, SQUEEZE_RIGHT , myThid)
+           write(msgBuf,'(a,2D22.15)')
      &      prof_names(num_file,num_var),
      &      objf_profiles(num_file,num_var,bi,bj),
      &      num_profiles(num_file,num_var,bi,bj)
            call print_message(
-     &      msgbuf, standardMessageUnit, SQUEEZE_RIGHT , myThid)
+     &      msgBuf, standardMessageUnit, SQUEEZE_RIGHT , myThid)
           enddo !do num_var...
          endif
       ENDIF
@@ -595,17 +565,17 @@ C    &         .AND. myProcId .eq. 0
 C        if (ProfNo(num_file,bi,bj).GT.0) then
           do num_var=1,NVARMAX
 
-           write(msgbuf,'(a,4I9)') 'bi,bj,num_var ',bi,bj,
+           write(msgBuf,'(a,4I9)') 'bi,bj,num_var ',bi,bj,
      &      num_var
            call print_message(
-     &      msgbuf, standardMessageUnit, SQUEEZE_RIGHT , myThid)
+     &      msgBuf, standardMessageUnit, SQUEEZE_RIGHT , myThid)
 
-           write(msgbuf,'(a,a5,2D22.15)') prof_names(1,num_var),
+           write(msgBuf,'(a,a5,2D22.15)') prof_names(1,num_var),
      &      '_mean',
      &      objf_profiles_mean(num_var,bi,bj),
      &      num_profiles_mean(num_var,bi,bj)
            call print_message(
-     &      msgbuf, standardMessageUnit, SQUEEZE_RIGHT , myThid)
+     &      msgBuf, standardMessageUnit, SQUEEZE_RIGHT , myThid)
 
           enddo !do num_var...
 C        endif
@@ -637,11 +607,11 @@ c
       CALL GLOBAL_SUM_TILE_RL( objf_prof_tile, objf_prof_glo, myThid )
       CALL GLOBAL_SUM_TILE_RL( num_prof_tile, num_prof_glo, myThid )
 c
-      write(msgbuf,'(2(a,I2),a,2D22.15)')
+      write(msgBuf,'(2(a,I2),a,2D22.15)')
      &  ' cost_profiles(',num_file,',',num_var,')= ',
      &  objf_prof_glo,num_prof_glo
 
-      IF ( num_prof_glo .GT. 0. ) call print_message( msgbuf,
+      IF ( num_prof_glo .GT. 0. ) call print_message( msgBuf,
      &  standardMessageUnit,SQUEEZE_RIGHT , myThid)
 c
       enddo
@@ -664,11 +634,11 @@ c
       CALL GLOBAL_SUM_TILE_RL( num_prof_mean_tile,
      &     num_prof_mean_glo, myThid )
 c
-      write(msgbuf,'(a,I2,a,2D22.15)')
+      write(msgBuf,'(a,I2,a,2D22.15)')
      &  ' cost_profiles_mean(',num_var,')= ',
      &  objf_prof_mean_glo,num_prof_mean_glo
 
-      IF ( num_prof_mean_glo .GT. 0. ) call print_message( msgbuf,
+      IF ( num_prof_mean_glo .GT. 0. ) call print_message( msgBuf,
      &  standardMessageUnit,SQUEEZE_RIGHT , myThid)
 c
       enddo
@@ -676,11 +646,11 @@ c
 #endif
 C! ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
 
-      write(msgbuf,'(a)') '== cost_profiles: end   =='
-      call print_message( msgbuf,
+      write(msgBuf,'(a)') '== cost_profiles: end   =='
+      call print_message( msgBuf,
      &  standardMessageUnit,SQUEEZE_RIGHT , myThid)
-      write(msgbuf,'(a)') ' '
-      call print_message( msgbuf,
+      write(msgBuf,'(a)') ' '
+      call print_message( msgBuf,
      &  standardMessageUnit,SQUEEZE_RIGHT , myThid)
 
       IF ( prof_make_nc ) THEN
