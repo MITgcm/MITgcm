@@ -48,7 +48,7 @@ More `pkg/seaice` test experiments, configured for low and
 high-resolution global cube-sphere domains are described
 in `MITgcm_contrib/high_res_cube/README_ice`.
 
-## Lab Sea adjoint
+### Lab Sea adjoint
 The `code_ad` directory provides files required to compile the adjoint
 version of this verification experiment.  This verification
 experiment uses the 'divided adjoint'.
@@ -87,17 +87,16 @@ Navigate to experiment directory
 
 ### 1-CPU forward experiment
 Configure and compile the code:
-
 ```
   cd build
   ../../../tools/genmake2 -mods ../code [-of my_platform_optionFile]
+ [make Clean]
   make depend
   make
   cd ..
 ```
 
 To run:
-
 ```
   cd run
   ln -s ../input/* .
@@ -107,14 +106,12 @@ To run:
 ```
 
 There is comparison output in the directory:
-
 ```
   results/output.txt
 ```
 
 Use matlab script `lookat_ice.m` to compare the output
  with that from `checkpoint51f` sea-ice code:
-
 ```
   cd ../../../verification/lab_sea/matlab
   matlab
@@ -123,18 +120,17 @@ Use matlab script `lookat_ice.m` to compare the output
 
 ### 2-CPU forward experiment
 Configure and compile the code:
-
 ```
   cd build
   ../../../tools/genmake2 -mpi -mods ../code [-of my_platform_optionFile]
   ln -s ../code/SIZE.h_mpi SIZE.h
+ [make Clean]
   make depend
   make
   cd ..
 ```
 
 To run:
-
 ```
   cd run
   ln -s ../input/* .
@@ -144,7 +140,6 @@ To run:
 
 ### 1-CPU adjoint experiment
 Configure and compile the code:
-
 ```
   cd build
   ../../../tools/genmake2 -mods ../code_ad [-of my_platform_optionFile]
@@ -153,7 +148,6 @@ Configure and compile the code:
 ```
 
 To run:
-
 ```
   cd run
   ln -s ../input_ad/* .
@@ -176,15 +170,14 @@ output in intermediate files "output_adm.txt.diva_0,1,2,3", plus a final time:
   mitgcmuv_ad > output_adm.txt
 ```
 where output file `output_adm.txt` can be compared with reference output:
-
 ```
   results/output_adm.txt
 ```
 
-### Secondary tests
+## Secondary tests
 In addition to the primary tests described above, 5 secondary forward tests and
 and 2 secondary adjoint tests can be run using the same executable as the corresponding
-primary tests but with specific input parameter files (in `input.$st\` and `input_ad.\*).
+primary tests but with specific input parameter files (in `input.$st\` and `input_ad.$st\`).
 The secondary forward tests include alternative seaice model formulations:
 free-drift in `input.fd/`; using EVP and `useHB87stressCoupling` in `input.hb87/` ;
 with `pkg/salt_plume` in `input.salt_plume/`;
@@ -193,7 +186,7 @@ in `input.natl_box\` and with `pkg/longstep` in `input.longstep/`.
 The secondary adjoint tests are simpler version of the primary adjoint test,
 without seaice in `input_ad.noseaice/` and without seaice dynamics in `input_ad.noseaicedyn/`.
 
-## Instruction to run secondary tests
+### Instruction to run secondary tests
 Run the testscript _forward_ experiments:
 
 ```
