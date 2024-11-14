@@ -776,6 +776,15 @@ C       Close all open NetCDF files
       ENDIF
 #endif
 
+#ifdef ALLOW_PROFILES
+      IF ( useProfiles ) THEN
+C       Close all open NetCDF files
+        _BEGIN_MASTER( myThid )
+        CALL PROFILES_CLOSE_NCFILES( myThid )
+        _END_MASTER( myThid )
+      ENDIF
+#endif
+
 C--   This timer encompasses the whole code
       CALL TIMER_STOP ('ALL                    [THE_MODEL_MAIN]',myThid)
 

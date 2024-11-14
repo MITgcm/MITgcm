@@ -1,4 +1,5 @@
 #include "PROFILES_OPTIONS.h"
+#include "AD_CONFIG.h"
 
 C     o==========================================================o
 C     | subroutine profiles_init_ncfile                          |
@@ -101,8 +102,8 @@ c1) creation :
        CALL PROFILES_NF_ERROR( 'INIT_NCFILE11: NF_CLOSE',
      &      err,bi,bj,myThid )
 
-       err = NF_OPEN(file2, NF_WRITE , fid2)
-       CALL PROFILES_NF_ERROR( 'INIT_NCFILE13: NF_OPEN',
+       err = NF_OPEN(file2, NF_WRITE, fid2)
+       CALL PROFILES_NF_ERROR( 'INIT_NCFILE: NF_OPEN'//file2//')',
      &      err,bi,bj,myThid )
 
       ELSE
@@ -177,15 +178,104 @@ CEOP
       IF (debugLevel .GE. debLevA .AND. STATUS .NE. NF_NOERR) THEN
        IL = ILNBLNK(message)
        IF ( IL .GT. 0 ) THEN
-        WRITE(msgBuf,'(A,A,2I3,1X,A)') 'ESCO: PROFILES_', message(1:IL),
+        WRITE(msgBuf,'(A,A,2I3,1X,A)')
+     &       'NF_MESSAGE: PROFILES_', message(1:IL),
      &       bi, bj, NF_STRERROR(STATUS)
        ELSE
-        WRITE(msgBuf,'(A,2I3,1X,A)') 'ESCO: PROFILES_',
+        WRITE(msgBuf,'(A,2I3,1X,A)') 'NF_MESSAGE: PROFILES_',
      &       bi, bj, NF_STRERROR(STATUS)
        ENDIF
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &      SQUEEZE_RIGHT,myThid )
        CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+
+#endif /* ALLOW_PROFILES */
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+CBOP
+C !ROUTINE: PROFILES_CLOSE_NCFILES
+
+C !INTERFACE: ==========================================================
+      SUBROUTINE PROFILES_CLOSE_NCFILES( myThid )
+
+C !DESCRIPTION:
+C Close NetCDF files
+
+C !USES: ===============================================================
+      IMPLICIT NONE
+
+#ifdef ALLOW_PROFILES
+# include "SIZE.h"
+# include "EEPARAMS.h"
+# include "PROFILES_SIZE.h"
+# include "profiles.h"
+# include "netcdf.inc"
+#endif
+
+C !INPUT PARAMETERS: ===================================================
+C myThid    :: my Thread Id number
+      INTEGER myThid
+
+C !OUTPUT PARAMETERS: ==================================================
+
+#ifdef ALLOW_PROFILES
+C !FUNCTIONS: ==========================================================
+      INTEGER ILNBLNK
+      EXTERNAL ILNBLNK
+
+C !LOCAL VARIABLES: ====================================================
+C bi,bj     :: Tile indices
+      INTEGER bi, bj
+      INTEGER IL, numFile
+      INTEGER status
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+CEOP
+
+      IF (profilesDoNcOutput) THEN
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO numFile=1,NFILESPROFMAX
+          IL  = ILNBLNK( profilesfiles(numFile) )
+          IF (IL.NE.0) THEN
+           WRITE(msgBuf,'(A,A,5(1X,I8))') 'S/R PROFILES_CLOSE_NCFILES:',
+     &          ' Closing '//profilesfiles(numFile)(1:IL), numFile,
+     &          fiddata(numFile,bi,bj),fidforward(numFile,bi,bj),
+     &          fidadjoint(numFile,bi,bj),fidtangent(numFile,bi,bj)
+           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &          SQUEEZE_RIGHT,myThid )
+C     data file
+           status = NF_CLOSE(fiddata(numFile,bi,bj))
+           WRITE(msgBuf,'(A,I3,I8)')'CLOSE_NCFILES: NF_CLOSE data unit',
+     &          numFile, fiddata(numFile,bi,bj)
+           CALL PROFILES_NF_ERROR( msgBuf, status, bi, bj, myThid )
+C     forward equivalent (.equi) file
+           status = NF_CLOSE(fidforward(numFile,bi,bj))
+           WRITE(msgBuf,'(A,I3,I8)') 'CLOSE_NCFILES: NF_CLOSE fwd unit',
+     &          numFile, fidforward(numFile,bi,bj)
+           CALL PROFILES_NF_ERROR( msgBuf, status, bi, bj, myThid )
+#ifdef ALLOW_ADJOINT_RUN
+C     adjoint equivalent (.equi) file
+           status = NF_CLOSE(fidadjoint(numFile,bi,bj))
+           WRITE(msgBuf,'(A,I3,I8)') 'CLOSE_NCFILES: NF_CLOSE adj unit',
+     &          numFile, fidadjoint(numFile,bi,bj)
+           CALL PROFILES_NF_ERROR( msgBuf, status, bi, bj, myThid )
+#endif
+#ifdef ALLOW_TANGENTLINEAR_RUN
+C     tangent linear equivalent (.equi) file
+           status = NF_CLOSE(fidtangent(numFile,bi,bj))
+           WRITE(msgBuf,'(A,I3,I8)') 'CLOSE_NCFILES: NF_CLOSE tlm unit',
+     &          numFile, fidtangent(numFile,bi,bj)
+           CALL PROFILES_NF_ERROR( msgBuf, status, bi, bj, myThid )
+#endif
+          ENDIF
+         ENDDO
+        ENDDO
+       ENDDO
       ENDIF
 
 #endif /* ALLOW_PROFILES */
