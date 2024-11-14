@@ -312,8 +312,8 @@ For many experiments, additional information is provided in a ``README`` file lo
    :filelink:`input_atm.icedyn  <verification/cpl_aim+ocn/input_atm.icedyn>`,
    :filelink:`input_ocn.icedyn  <verification/cpl_aim+ocn/input_ocn.icedyn>`).
 
-#. :filelink:`deep_anelastic <verification/deep_anelastic>` - Convection simulation on a giant planet: relaxes
-   both the Boussinesq approximation (anelastic) and the thin atmosphere
+#. :filelink:`deep_anelastic <verification/deep_anelastic>` - Convection simulation on a giant
+   planet: relaxes both the Boussinesq approximation (anelastic) and the thin atmosphere
    approximation (deep atmosphere).
 
 #. :filelink:`dome <verification/dome>` - Idealized 3-D test of a density-driven bottom current
@@ -323,12 +323,17 @@ For many experiments, additional information is provided in a ``README`` file lo
    partial-cells). Also contains an additional setup with rigid lid
    (:filelink:`input.rigidLid <verification/exp2/input.rigidLid>`).
 
-#. :filelink:`exp4 <verification/exp4>` - Flow over a Gaussian bump in open-water or channel with
-   open boundaries. Also contains an additional setup using non-linear free-surface
-   (:filelink:`input.nlfs <verification/exp4/input.nlfs>`); a setup using Stevens (1990) :cite:`stevens:90`
-   boundary conditions (:filelink:`input.stevens <verification/exp4/input.stevens>`); and a simple
-   example using float package (:filelink:`input.with_flt <verification/exp4/input.with_flt>`,
-   formerly :filelink:`flt_example <verification/flt_example>`).
+#. :filelink:`exp4 <verification/exp4>` - Flow over a Gaussian bump in open-water or channel
+   with open boundaries. Also contains additional setups:
+
+   - using non-linear free-surface (:filelink:`input.nlfs <verification/exp4/input.nlfs>`).
+
+   - using Stevens (1990) :cite:`stevens:90` boundary conditions
+     (:filelink:`input.stevens <verification/exp4/input.stevens>`).
+
+   - a simple example using float (:filelink:`flt <pkg/flt>`) package
+     (:filelink:`input.with_flt <verification/exp4/input.with_flt>`,
+     formerly :filelink:`flt_example <verification/flt_example>`).
 
 #. :filelink:`fizhi-cs-32x32x40 <verification/fizhi-cs-32x32x40>` - Global atmospheric simulation with realistic
    topography, 40 vertical levels, a cubed sphere grid and the full atmospheric physics package.
@@ -398,7 +403,7 @@ For many experiments, additional information is provided in a ``README`` file lo
 
    - same as above with yearly :filelink:`exf <pkg/exf>` fields
      (:filelink:`input.yearly <verification/global_ocean_ebm/input.yearly>`,
-     formerly :filelink:`input.yearly <verification/global_with_exf/input.yearly>`).
+     formerly in :filelink:`global_with_exf <verification/global_with_exf>`).
 
 
 #. :filelink:`global_oce_biogeo_bling  <verification/global_oce_biogeo_bling >` - Global ocean biogeochemistry simulation,
@@ -453,7 +458,7 @@ For many experiments, additional information is provided in a ``README`` file lo
 
    - same as above with passive tracers (:filelink:`pkg/ptracers`) using package :filelink:`longstep <pkg/longstep>`
      to speed up integration time (:filelink:`input.longstep <verification/lab_sea/input.longstep>`,
-     formerly :filelink:`input.longstep <verification/natl_box/input.longstep>`).
+     formerly in :filelink:`natl_box <verification/natl_box>`).
 
 #. :filelink:`matrix_example <verification/matrix_example>` - Test of experimental method to accelerate
    convergence towards equilibrium.
