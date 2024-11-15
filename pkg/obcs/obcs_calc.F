@@ -419,10 +419,18 @@ C     read control parameter contributions here to be independent of flags
 C     ALLOW_OBCS_PRESCRIBE and useOBCSprescribe
 #ifdef ALLOW_CTRL
       IF ( useCTRL ) THEN
+# ifdef ALLOW_OBCSN_CONTROL
        CALL CTRL_GETOBCSN ( futureTime, futureIter, myThid )
+# endif
+# ifdef ALLOW_OBCSS_CONTROL
        CALL CTRL_GETOBCSS ( futureTime, futureIter, myThid )
+# endif
+# ifdef ALLOW_OBCSW_CONTROL
        CALL CTRL_GETOBCSW ( futureTime, futureIter, myThid )
+# endif
+# ifdef ALLOW_OBCSE_CONTROL
        CALL CTRL_GETOBCSE ( futureTime, futureIter, myThid )
+# endif
       ENDIF
 #endif /* ALLOW_CTRL */
 
