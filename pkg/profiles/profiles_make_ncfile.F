@@ -57,18 +57,18 @@ C     ========= Local variables =======================
       _BEGIN_MASTER( myThid )
 
 C Set new netcdf variables names
-      DO num_file=1,NFILESPROFMAX
-       DO num_var=1,NVARMAX
+      DO num_file = 1, NFILESPROFMAX
+       DO num_var = 1, NVARMAX
         IL = ILNBLNK( prof_names(num_file,num_var) )
         WRITE(prof_namesequi(num_file,num_var),'(2A)')
-     &       prof_names(num_file,num_var)(1:IL),'model'
+     &        prof_names(num_file,num_var)(1:IL),'model'
        ENDDO
       ENDDO
 
 C Initialize buffers
-      DO num_var=1,NVARMAX
-       DO prof_num=1,NOBSGLOB
-        DO k=1,NLEVELMAX
+      DO num_var = 1, NVARMAX
+       DO prof_num = 1, NOBSGLOB
+        DO k = 1, NLEVELMAX
          prof_buff(num_var,k,prof_num) = 0.
          prof_mask_buff(num_var,k,prof_num) = 0.
         ENDDO
@@ -76,11 +76,11 @@ C Initialize buffers
       ENDDO
 
 C Loop over files
-      DO num_file=1,NFILESPROFMAX
+      DO num_file = 1, NFILESPROFMAX
 
 C File maintenance
-       DO bj=1,nSy
-        DO bi=1,nSx
+       DO bj = 1, nSy
+        DO bi = 1, nSx
 
          IF ( (ProfNo(num_file,bi,bj).GT.0).AND.
      &        (profilesDoNcOutput) ) THEN
@@ -91,15 +91,15 @@ C Need to close the file so that the data is not lost when run finishes
          ENDIF
 
 C Loop over variables
-         DO num_var=1,NVARMAX
+         DO num_var = 1, NVARMAX
           IF (vec_quantities(num_file,num_var,bi,bj).EQV..TRUE.) THEN
 
 C Loop over profiles
-           DO prof_num=1,NOBSGLOB
+           DO prof_num = 1, NOBSGLOB
             IF (prof_num.LE.ProfNo(num_file,bi,bj)) THEN
 
 C Initialize
-             DO k=1,NLEVELMAX
+             DO k = 1, NLEVELMAX
               prof_traj1D(k)=0.
               prof_mask1D(k)=0.
               prof_buff(num_var,k,prof_num)=0.
@@ -107,16 +107,16 @@ C Initialize
              ENDDO
 
 C Read tiled files
-             CALL active_read_profile(num_file,
+             CALL ACTIVE_READ_PROFILE( num_file,
      &          ProfDepthNo(num_file,bi,bj),prof_traj1D,num_var,
      &          prof_num,.false.,optimcycle,bi,bj,myThid,
-     &          profiles_dummy(num_file,num_var,bi,bj))
+     &          profiles_dummy(num_file,num_var,bi,bj) )
 
 C Save model equi and masks in buffer
 C Combine all threads
              irec = prof_ind_glob(num_file,prof_num,bi,bj)
 
-             DO k=1,ProfDepthNo(num_file,bi,bj)
+             DO k = 1, ProfDepthNo(num_file,bi,bj)
               prof_buff(num_var,k,irec) = prof_buff(num_var,k,irec)
      &                               +prof_traj1D(k)
               prof_mask_buff(num_var,k,irec) =
@@ -133,9 +133,9 @@ C Combine all threads
        ENDDO !bi
 
 C Combine all processes
-       DO num_var=1,NVARMAX
-        DO prof_num=1,NOBSGLOB
-         DO k=1,NLEVELMAX
+       DO num_var = 1, NVARMAX
+        DO prof_num = 1, NOBSGLOB
+         DO k = 1, NLEVELMAX
 
           tmpgs = prof_buff(num_var,k,prof_num)
           _GLOBAL_SUM_RL(tmpgs, myThid)
@@ -148,18 +148,18 @@ C Combine all processes
         ENDDO !do prof_num=..
        ENDDO !do num_var=..
 
-       IF ( myProcId .EQ. 0 ) THEN
+       IF (myProcId.EQ.0) THEN
 
 C Get dimensions of input file
         profFile=' '
         IL = ILNBLNK( profilesfiles(num_file) )
         IF (IL.NE.0) THEN
-         WRITE(profFile,'(1a)') profilesfiles(num_file)(1:IL)
+         WRITE(profFile,'(A)') profilesfiles(num_file)(1:IL)
         ENDIF
 
         IL = ILNBLNK( profFile )
         IF (IL.NE.0) THEN
-         WRITE(fnamedata,'(2a)') profFile(1:IL),'.nc'
+         WRITE(fnamedata,'(2A)') profFile(1:IL),'.nc'
          err = NF_OPEN(fnamedata, NF_NOWRITE, fid1)
          CALL PROFILES_NF_ERROR(
      &        'MAKE_NCFILE: NF_OPEN('//fnamedata(1:IL+3)//')',
@@ -179,12 +179,12 @@ C Get dimensions of input file
          err = NF_INQ_DIMLEN(fid1, dimid, Zlength )
 
 C Create new netcdf global file for model-equivalent
-         JL  = ILNBLNK( profilesDir )
-         WRITE(fnameequinc,'(3a)')
+         JL = ILNBLNK( profilesDir )
+         WRITE(fnameequinc,'(3A)')
      &    profilesDir(1:JL),profFile(1:IL),'.equi.nc'
 
-         JL  = ILNBLNK( fnameequinc )
-         inquire( file= fnameequinc(1:JL), exist=exst )
+         JL = ILNBLNK( fnameequinc )
+         INQUIRE( FILE = fnameequinc(1:JL), EXIST = exst )
          IF (.NOT.exst) THEN
 
           err = NF_CREATE(fnameequinc(1:JL),NF_CLOBBER,fid2)
@@ -201,7 +201,7 @@ C Create new netcdf global file for model-equivalent
           vecid(2)=dimid2
 
 C Define variables and attributes
-          DO num_var=1,NVARMAX
+          DO num_var = 1, NVARMAX
 
            err = NF_INQ_VARID(fid1,prof_names(num_file,num_var),varid0)
            CALL PROFILES_NF_ERROR(
@@ -233,7 +233,7 @@ C Define variables and attributes
           err = NF_ENDDEF(fid2)
 
          ELSE
-          JL  = ILNBLNK( fnameequinc )
+          JL = ILNBLNK( fnameequinc )
           err = NF_OPEN( fnameequinc(1:JL), NF_WRITE, fid2)
           CALL PROFILES_NF_ERROR(
      &         'MAKE_NCFILE: NF_OPEN('//fnameequinc(1:JL)//')',
@@ -241,12 +241,12 @@ C Define variables and attributes
          ENDIF
 
 C Write profiles
-         DO num_var=1,NVARMAX
+         DO num_var = 1, NVARMAX
           IF (vec_quantities(num_file,num_var,1,1).EQV..TRUE.) THEN
-           DO prof_num=1,NOBSGLOB
+           DO prof_num = 1, NOBSGLOB
             IF (prof_num.LE.length) THEN
 
-             DO k=1,Zlength
+             DO k = 1, Zlength
               prof_traj1D(k)=prof_modval_glo(num_var,k,prof_num)
               prof_mask1D(k)=prof_mask_glo(num_var,k,prof_num)
              ENDDO
@@ -265,10 +265,10 @@ C Write profiles
              err = NF_PUT_VARA_DOUBLE(fid2, varid2(3+(num_var-1)*2),
      &         vec_start, vec_count, prof_mask1D)
 
-            ENDIF !if (vec_quantities(num_file,num_var,1,1).EQV..TRUE.)
-           ENDDO !do prof_num=..
-          ENDIF !if (prof_num.LE.length)
-         ENDDO !do num_var=..
+            ENDIF !IF (vec_quantities(num_file,num_var,1,1).EQV..TRUE.)
+           ENDDO !DO prof_num=..
+          ENDIF !IF (prof_num.LE.length)
+         ENDDO !DO num_var=..
 
          err = NF_CLOSE(fid2)
          CALL PROFILES_NF_ERROR( 'MAKE_NCFILE: NF_CLOSE',

@@ -115,7 +115,7 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
         READ(fid,rec=jrec+1) vec_tmp
 #ifdef _BYTESWAPIO
-        call MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
+        CALL MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
 #endif
         DO ivar=1,nactive_var
          active_var(ivar)=vec_tmp(ivar)
@@ -177,7 +177,7 @@ C     Set active_var to zero.
 
         READ(fid,rec=jrec+1) vec_tmp
 #ifdef _BYTESWAPIO
-        call MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
+        CALL MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
 #endif
         DO ivar=1,nactive_var
          active_data_t(ivar)=vec_tmp(ivar)

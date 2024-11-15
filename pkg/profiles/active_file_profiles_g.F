@@ -12,7 +12,7 @@ C                                 fwd-mode only: including a mask
 C     o  g_active_write_profile - Write nn active 1D record to file.
 C                                 fwd-mode only: including a mask
 C
-c     changed: gforget@ocean.mit.edu 23-Mar-2006
+C     changed: gforget@ocean.mit.edu 23-Mar-2006
 C     ==================================================================
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -110,7 +110,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION: \bv
 C
-C     write active 1D records to file for tangent linear simulation
+C     Write active 1D records to file for tangent linear simulation
 
 C     !USES:
       IMPLICIT NONE
@@ -158,3 +158,4 @@ CEOP
 
       RETURN
       END
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

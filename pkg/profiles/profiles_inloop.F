@@ -10,7 +10,7 @@ C     |   for netcdf profiles data                               |
 C     | started: Gael Forget 15-March-2006                       |
 C     o==========================================================o
 
-      SUBROUTINE profiles_inloop(myTime,myThid )
+      SUBROUTINE PROFILES_INLOOP( myTime, myThid )
 
       IMPLICIT NONE
 
@@ -34,97 +34,98 @@ C ==================== Global Variables ===========================
 C ==================== Routine Variables ==========================
 
       _RL myTime
-      integer myThid
+      INTEGER myThid
 
 #ifdef ALLOW_PROFILES
 
 C ==================== Local Variables ==========================
-      integer k,bi,bj,prof_num, num_file, num_var
+      INTEGER k,bi,bj,prof_num, num_file, num_var
       _RL prof_traj1D(NLEVELMAX),prof_mask1D(NLEVELMAX)
-      integer prof_i1D(NUM_INTERP_POINTS),prof_j1D(NUM_INTERP_POINTS)
+      INTEGER prof_i1D(NUM_INTERP_POINTS),prof_j1D(NUM_INTERP_POINTS)
       _RL prof_w1D(NUM_INTERP_POINTS)
 #ifndef ALLOW_CTRL
-      integer optimcycle
+      INTEGER optimcycle
 #endif
 #ifndef ALLOW_ECCO
-      integer i,j
+      INTEGER i,j
 #endif
 
-c     == end of interface ==
+C     == end of interface ==
 
 #ifndef ALLOW_CTRL
       optimcycle = 0
 #endif
 
-        _BEGIN_MASTER( myThid )
+      _BEGIN_MASTER( myThid )
 
 #ifndef ALLOW_ECCO
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-          do k = 1,Nr
-            do j = 1,sNy
-              do i =  1,sNx
+      DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO k = 1, Nr
+            DO j = 1, sNy
+              DO i =  1, sNx
                 m_UE(i,j,k,bi,bj)=0. _d 0
                 m_VN(i,j,k,bi,bj)=0. _d 0
-              enddo
-            enddo
-          enddo
-        enddo
-      enddo
+              ENDDO
+            ENDDO
+          ENDDO
+        ENDDO
+      ENDDO
 
       CALL ROTATE_UV2EN_RL(
      U          uVel, vVel, m_UE, m_VN,
      I          .TRUE., .TRUE., .FALSE., Nr, myThid )
 #endif /* ALLOW_ECCO */
 
-      DO bj=1,nSy
-       DO bi=1,nSx
+      DO bj = 1, nSy
+       DO bi = 1, nSx
 
-      do num_file=1,NFILESPROFMAX
-      do prof_num=1,NOBSGLOB
-      if (prof_num.LE.ProfNo(num_file,bi,bj)) then
-      if ((prof_time(num_file,prof_num,bi,bj).GE.myTime).AND.
-     & (prof_time(num_file,prof_num,bi,bj).LT.(myTime+deltaTClock)))
-     & then
+      DO num_file = 1, NFILESPROFMAX
+      DO prof_num = 1, NOBSGLOB
+      IF (prof_num.LE.ProfNo(num_file,bi,bj)) THEN
+      IF ( (prof_time(num_file,prof_num,bi,bj).GE.myTime) .AND.
+     & (prof_time(num_file,prof_num,bi,bj).LT.(myTime+deltaTClock)) )
+     & THEN
 
-      do k=1,NUM_INTERP_POINTS
+      DO k = 1, NUM_INTERP_POINTS
       prof_i1D(k)= prof_interp_i(num_file,prof_num,k,bi,bj)
       prof_j1D(k)= prof_interp_j(num_file,prof_num,k,bi,bj)
       prof_w1D(k)= prof_interp_weights(num_file,prof_num,k,bi,bj)
-      enddo
+      ENDDO
 
-      do num_var=1,NVARMAX
-      do k=1,NLEVELMAX
+      DO num_var = 1, NVARMAX
+      DO k = 1, NLEVELMAX
       prof_traj1D(k)=0
       prof_mask1D(k)=0
-      enddo
-      if (vec_quantities(num_file,num_var,bi,bj).EQV..TRUE.) then
-        call profiles_interp(prof_traj1D,
+      ENDDO
+      IF (vec_quantities(num_file,num_var,bi,bj).EQV..TRUE.) THEN
+        CALL PROFILES_INTERP(prof_traj1D,
      &        prof_i1D,prof_j1D,prof_w1D,
      &        prof_namesmod(num_file,num_var),
      &        prof_itracer(num_file,num_var),
      &        num_file,myTime,bi,bj,myThid)
-        do k=1,NLEVELMAX
+        DO k = 1, NLEVELMAX
           prof_traj1D(k)=prof_traj1D(k)*
      &                   prof_facmod(num_file,num_var)
-        enddo
-        call active_write_profile(num_file,
+        ENDDO
+        CALL ACTIVE_WRITE_PROFILE(num_file,
      &      ProfDepthNo(num_file,bi,bj),prof_traj1D,num_var,
      &      prof_num,optimcycle,bi,bj,myThid,
      &      profiles_dummy(num_file,num_var,bi,bj))
-      endif
-      enddo
-
-      endif !if ((prof_time...
-      endif !if (ProfNo(num_file,bi,bj).NE.0) then
-      enddo !do prof_num...
-      enddo !do num_file=1,NFILESPROFMAX
-       ENDDO
+      ENDIF
       ENDDO
 
-        _END_MASTER( myThid )
+      ENDIF !IF ((prof_time
+      ENDIF !IF (ProfNo(num_file,bi,bj).NE.0)
+      ENDDO !DO prof_num...
+      ENDDO !DO num_file = 1, NFILESPROFMAX
+      ENDDO
+      ENDDO
+
+      _END_MASTER( myThid )
 
 #endif
 
-       END
+      RETURN
+      END
 

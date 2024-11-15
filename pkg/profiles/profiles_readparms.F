@@ -1,45 +1,45 @@
 #include "PROFILES_OPTIONS.h"
 
-      subroutine profiles_readparms( myThid )
+      SUBROUTINE PROFILES_READPARMS( myThid )
 
-c     ==================================================================
-c     SUBROUTINE profiles_readparms
-c     ==================================================================
-c
-c     o This routine initialises the package cost.
-c     started: Ralf Giering 18-Jan-2001
-c
-c     ==================================================================
-c     SUBROUTINE profiles_readparms
-c     ==================================================================
+C     ==================================================================
+C     SUBROUTINE profiles_readparms
+C     ==================================================================
+C
+C     o This routine initialises the package cost.
+C     started: Ralf Giering 18-Jan-2001
+C
+C     ==================================================================
+C     SUBROUTINE profiles_readparms
+C     ==================================================================
 
       IMPLICIT NONE
 
-c     == global variables ==
+C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-c#include "GRID.h"
+C#include "GRID.h"
 #include "PROFILES_SIZE.h"
 #include "profiles.h"
 
-c     == routine arguments ==
-      integer myThid
+C     == routine arguments ==
+      INTEGER myThid
 
 C     !FUNCTIONS
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
 
-c     == local variables ==
+C     == local variables ==
 C     msgBuf      - Informational/error message buffer
 C     iUnit       - Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit, num_file, num_var, IL
       LOGICAL exst, specifiedNames
       CHARACTER*(128) fname
-c     == end of interface ==
+C     == end of interface ==
 
-c--   Read the namelist input.
+C--   Read the namelist input.
       NAMELIST /profiles_nml/
      &                   profilesDir,
      &                   profilesfiles,
@@ -72,15 +72,15 @@ C     print a (weak) warning if data.profiles is found
 
       _BEGIN_MASTER( myThid )
 
-c--     Set default values.
+C--     Set default values.
       profilesDir=' '
 
-      do num_file=1,NFILESPROFMAX
+      DO num_file = 1, NFILESPROFMAX
           profilesfiles(num_file)      =    ' '
-      enddo
+      ENDDO
 
-      do num_file=1,NFILESPROFMAX
-       do num_var=1,NVARMAX
+      DO num_file = 1, NFILESPROFMAX
+       DO num_var = 1, NVARMAX
         mult_profiles(num_file,num_var) = 1. _d 0
         prof_facmod(num_file,num_var)  = 1. _d 0
         prof_names(num_file,num_var)='empty'
@@ -89,14 +89,14 @@ c--     Set default values.
 #ifdef ALLOW_PROFILES_CLIMMASK
         prof_namesclim(num_file,num_var)='empty'
 #endif
-       enddo
-      enddo
-      do num_var=1,NVARMAX
+       ENDDO
+      ENDDO
+      DO num_var = 1, NVARMAX
          mult_profiles_mean(num_var) = 1. _d 0
 #ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
          profiles_mean_indsamples(num_var) = 1
 #endif
-      enddo
+      ENDDO
 
       profilesDoNcOutput=.false.
       prof_make_nc=.false.
@@ -107,7 +107,7 @@ c--     Set default values.
         profilesDoGenGrid=.false.
       ENDIF
 
-c--     Next, read the cost data file.
+C--     Next, read the cost data file.
         WRITE(msgBuf,'(A)') 'PROFILES_READPARMS: opening data.profiles'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
@@ -130,15 +130,15 @@ c--     Next, read the cost data file.
         CLOSE(iUnit,STATUS='DELETE')
 #endif /* SINGLE_DISK_IO */
 
-        do num_file=1,NFILESPROFMAX
+        DO num_file = 1, NFILESPROFMAX
 
           specifiedNames=.FALSE.
-          do num_var=1,NVARMAX
-            if (prof_names(num_file,num_var).NE.'empty')
+          DO num_var = 1, NVARMAX
+            IF (prof_names(num_file,num_var).NE.'empty')
      &         specifiedNames=.TRUE.
-          enddo
+          ENDDO
 
-          if (.NOT.specifiedNames) then
+          IF (.NOT.specifiedNames) THEN
             prof_names(num_file,1)='prof_T'
             prof_names(num_file,2)='prof_S'
 #ifdef ALLOW_BLING
@@ -173,7 +173,7 @@ c--     Next, read the cost data file.
             prof_itracer(num_file,14)=1
             prof_itracer(num_file,15)=1
             prof_itracer(num_file,16)=1
-#endif /* ALLOW_BLING */
+#ENDIF /* ALLOW_BLING */
             prof_namesmod(num_file,1)='theta'
             prof_namesmod(num_file,2)='salt'
 #ifdef ALLOW_BLING
@@ -196,13 +196,13 @@ c--     Next, read the cost data file.
             prof_namesclim(num_file,1)='prof_Tclim'
             prof_namesclim(num_file,2)='prof_Sclim'
 #endif
-          endif
+          ENDIF
 
-          do num_var=1,NVARMAX
-            if (((prof_names(num_file,num_var).NE.'empty').AND.
+          DO num_var = 1, NVARMAX
+            IF (((prof_names(num_file,num_var).NE.'empty').AND.
      &           (prof_namesmod(num_file,num_var).EQ.'empty')).OR.
      &          ((prof_names(num_file,num_var).EQ.'empty').AND.
-     &           (prof_namesmod(num_file,num_var).NE.'empty'))) then
+     &           (prof_namesmod(num_file,num_var).NE.'empty'))) THEN
              print*,'prof_names=',prof_names(num_file,num_var),' ',
      &         prof_namesmod(num_file,num_var),' ',num_file,num_var
              WRITE(errorMessageUnit,'(2A)')
@@ -210,10 +210,10 @@ c--     Next, read the cost data file.
      &         'prof_names and prof_namesmod'
              CALL ALL_PROC_DIE( myThid )
              STOP 'ABNORMAL END: S/R PROFILES_READPARMS'
-            endif
-          enddo
+            ENDIF
+          ENDDO
 
-          do num_var=1,NVARMAX
+          DO num_var = 1, NVARMAX
             IL  = ILNBLNK( prof_names(num_file,num_var) )
             WRITE(prof_namesmask(num_file,num_var),'(2A)')
      &        prof_names(num_file,num_var)(1:IL),'mask'
@@ -223,24 +223,24 @@ c--     Next, read the cost data file.
             WRITE(prof_namesclim(num_file,num_var),'(2A)')
      &        prof_names(num_file,num_var)(1:IL),'clim'
 #endif
-          enddo
+          ENDDO
 
-          if ( profilesfiles(num_file) .NE. ' ' ) then
+          IF ( profilesfiles(num_file) .NE. ' ' ) THEN
             IL  = ILNBLNK( profilesfiles(num_file) )
             fname = profilesfiles(num_file)(1:IL)//'.nc'
             inquire( file=fname, exist=exst )
-            if (.NOT.exst) then
-c warn user as we override profilesfiles
+            IF (.NOT.exst) THEN
+C warn user as we override profilesfiles
              WRITE(msgBuf,'(3A)')
      &       '** WARNING ** PROFILES_READPARMS: missing file: ',
      &       profilesfiles(num_file)(1:IL),' gets switched off'
              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                    SQUEEZE_RIGHT , myThid)
-c switch off this file (and potential cost function term)
+C switch off this file (and potential cost function term)
               profilesfiles(num_file) = ' '
-            endif
-          endif
-        enddo
+            ENDIF
+          ENDIF
+        ENDDO
 
       _END_MASTER( myThid )
 

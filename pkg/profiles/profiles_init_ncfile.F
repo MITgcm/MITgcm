@@ -8,10 +8,10 @@ C     |   for netcdf profiles data                               |
 C     | started: Gael Forget 15-March-2006                       |
 C     o==========================================================o
 
-      subroutine profiles_init_ncfile(num_file,fid1,file2,fid2,length,
-     & Zlength,bi,bj,myThid)
+      SUBROUTINE PROFILES_INIT_NCFILE(
+     & num_file,fid1,file2,fid2,length,Zlength,bi,bj,myThid)
 
-      implicit none
+      IMPLICIT NONE
 
 C ==================== Global Variables ===========================
 #include "EEPARAMS.h"
@@ -24,19 +24,19 @@ C ==================== Global Variables ===========================
 # include "netcdf.inc"
 #endif
 C ==================== Routine Variables ==========================
-      integer fid1,fid2,dimid1,dimid2,varid(2*NVARMAX),varid0
-      integer myThid,bi,bj,err,vecid(2), length, Zlength
-      character*(*) file2
-      integer irec, num_var,num_file
-      real*8 tmp_vec(Zlength+1)
-c     == end of interface ==
+      INTEGER fid1,fid2,dimid1,dimid2,varid(2*NVARMAX),varid0
+      INTEGER myThid,bi,bj,err,vecid(2), length, Zlength
+      CHARACTER*(*) file2
+      INTEGER irec, num_var,num_file
+      _RL tmp_vec(Zlength+1)
+C     == end of interface ==
 
 #ifdef ALLOW_PROFILES
 C     === Local variables ===
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       IF (profilesDoNcOutput) THEN
-c1) creation :
+C1) creation :
        err = NF_CREATE(file2 , NF_CLOBBER, fid2)
        CALL PROFILES_NF_ERROR( 'INIT_NCFILE 1: NF_CREATE',
      &      err,bi,bj,myThid )
@@ -57,7 +57,7 @@ c1) creation :
        CALL PROFILES_NF_ERROR( 'INIT_NCFILE 5: NF_PUT_ATT_INT',
      &      err,bi,bj,myThid )
 
-       DO num_var=1,NVARMAX
+       DO num_var = 1, NVARMAX
         err = NF_INQ_VARID(fid1,prof_names(num_file,num_var), varid0 )
 
         IF (err.EQ.NF_NOERR) THEN
@@ -108,22 +108,22 @@ c1) creation :
 
       ELSE
 
-c      CALL MDSFINDUNIT( fid2 , mythid )
-       OPEN( fid2, file=file2, form ='unformatted', status='unknown',
-     &      access='direct', recl=  (Zlength + 1)*WORDLENGTH*2 )
+       OPEN( fid2, FILE = file2, FORM = 'unformatted', 
+     &      STATUS = 'unknown', ACCESS = 'direct', 
+     &      RECL = (Zlength + 1)*WORDLENGTH*2 )
 
-       DO irec=1,Zlength+1
+       DO irec = 1, Zlength+1
         tmp_vec(irec)=0
        ENDDO
 #ifdef _BYTESWAPIO
-       call MDS_BYTESWAPR8(Zlength+1,tmp_vec)
+       CALL MDS_BYTESWAPR8(Zlength+1,tmp_vec)
 #endif
-       DO irec=length,1,-1
-        DO num_var=prof_num_var_tot(num_file,bi,bj),1,-1
+       DO irec = length, 1, -1
+        DO num_var = prof_num_var_tot(num_file,bi,bj), 1, -1
          WRITE(fid2,rec=((irec-1)*prof_num_var_tot(num_file,bi,bj)
-     &        +num_var-1)*2 +1) tmp_vec
+     &         +num_var-1)*2 +1) tmp_vec
          WRITE(fid2,rec=((irec-1)*prof_num_var_tot(num_file,bi,bj)
-     &        +num_var-1)*2 +2) tmp_vec
+     &         +num_var-1)*2 +2) tmp_vec
         ENDDO
        ENDDO
 
@@ -232,7 +232,7 @@ C !LOCAL VARIABLES: ====================================================
 C bi,bj     :: Tile indices
       INTEGER bi, bj
       INTEGER IL, numFile
-      INTEGER status
+      INTEGER STATUS
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
@@ -249,28 +249,28 @@ CEOP
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &          SQUEEZE_RIGHT,myThid )
 C     data file
-           status = NF_CLOSE(fiddata(numFile,bi,bj))
+           STATUS = NF_CLOSE(fiddata(numFile,bi,bj))
            WRITE(msgBuf,'(A,I3,I8)')'CLOSE_NCFILES: NF_CLOSE data unit',
      &          numFile, fiddata(numFile,bi,bj)
-           CALL PROFILES_NF_ERROR( msgBuf, status, bi, bj, myThid )
+           CALL PROFILES_NF_ERROR( msgBuf, STATUS, bi, bj, myThid )
 C     forward equivalent (.equi) file
-           status = NF_CLOSE(fidforward(numFile,bi,bj))
+           STATUS = NF_CLOSE(fidforward(numFile,bi,bj))
            WRITE(msgBuf,'(A,I3,I8)') 'CLOSE_NCFILES: NF_CLOSE fwd unit',
      &          numFile, fidforward(numFile,bi,bj)
-           CALL PROFILES_NF_ERROR( msgBuf, status, bi, bj, myThid )
+           CALL PROFILES_NF_ERROR( msgBuf, STATUS, bi, bj, myThid )
 #ifdef ALLOW_ADJOINT_RUN
 C     adjoint equivalent (.equi) file
-           status = NF_CLOSE(fidadjoint(numFile,bi,bj))
+           STATUS = NF_CLOSE(fidadjoint(numFile,bi,bj))
            WRITE(msgBuf,'(A,I3,I8)') 'CLOSE_NCFILES: NF_CLOSE adj unit',
      &          numFile, fidadjoint(numFile,bi,bj)
-           CALL PROFILES_NF_ERROR( msgBuf, status, bi, bj, myThid )
+           CALL PROFILES_NF_ERROR( msgBuf, STATUS, bi, bj, myThid )
 #endif
 #ifdef ALLOW_TANGENTLINEAR_RUN
 C     tangent linear equivalent (.equi) file
-           status = NF_CLOSE(fidtangent(numFile,bi,bj))
+           STATUS = NF_CLOSE(fidtangent(numFile,bi,bj))
            WRITE(msgBuf,'(A,I3,I8)') 'CLOSE_NCFILES: NF_CLOSE tlm unit',
      &          numFile, fidtangent(numFile,bi,bj)
-           CALL PROFILES_NF_ERROR( msgBuf, status, bi, bj, myThid )
+           CALL PROFILES_NF_ERROR( msgBuf, STATUS, bi, bj, myThid )
 #endif
           ENDIF
          ENDDO

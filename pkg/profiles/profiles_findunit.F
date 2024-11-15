@@ -26,7 +26,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C Sweep through a valid range of unit numbers
       ioUnit=-1
-      DO ii=2000,9999
+      DO ii = 2000, 9999
        IF ( ioUnit.EQ.-1 ) THEN
 C- skip reserved unit numbers
         IF (       ii.NE.errorMessageUnit

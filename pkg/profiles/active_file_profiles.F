@@ -1,24 +1,24 @@
 #include "PROFILES_OPTIONS.h"
 
-c     ==================================================================
-c
-c     active_file.F: Routines to handle the I/O of the active file for
-c                    the adjoint calculations. All files are direct
-c                    access files.
-c
-c     Routines
-c
-c    o  active_read_profile       - Read  an active 1D record.
-c    o  active_write_profile      - Write an active 1D record.
-c
-c
-c        changed: gforget@ocean.mit.edu 23-Mar-2006
-c
-c     ==================================================================
+C     ==================================================================
+C
+C     active_file.F: Routines to handle the I/O of the active file for
+C                    the adjoint calculations. All files are direct
+C                    access files.
+C
+C     Routines
+C
+C    o  active_read_profile       - Read  an active 1D record.
+C    o  active_write_profile      - Write an active 1D record.
+C
+C
+C        changed: gforget@ocean.mit.edu 23-Mar-2006
+C
+C     ==================================================================
 
 C     !ROUTINE: active_read_profile
 C     !INTERFACE:
-      subroutine active_read_profile(
+      SUBROUTINE ACTIVE_READ_PROFILE(
      I                           active_num_file,
      I                           nactive_var,
      O                           active_var,
@@ -28,18 +28,18 @@ C     !INTERFACE:
      I                           myOptimIter,
      I                           bi,
      I                           bj,
-     I                           mythid,
+     I                           myThid,
      I                           dummy
      &                         )
 
-c     ==================================================================
-c     SUBROUTINE active_read_profile
-c     ==================================================================
-c     o Read an active 1D record from an profile data file.
-c     ==================================================================
+C     ==================================================================
+C     SUBROUTINE active_read_profile
+C     ==================================================================
+C     o Read an active 1D record from an profile data file.
+C     ==================================================================
 
-      implicit none
-c     == global variables ==
+      IMPLICIT NONE
+C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #ifdef ALLOW_PROFILES
@@ -47,44 +47,44 @@ c     == global variables ==
 # include "profiles.h"
 #endif
 
-c     == routine arguments ==
-c     active_var_file: filename
-c     nactive_var:     integer size of active_var
-c     active_var:      array
-c     active_varname:      name fo the quantity to save
-c     irec:            record number
-c     myOptimIter:     number of optimization iteration (default: 0)
-c     mythid:          thread number for this instance
-c     lAdInit:         initialisation of corresponding adjoint
-c                      variable and write to active file
-      integer  nactive_var,active_num_file
-      _RL   active_var(nactive_var)
-      integer  irec,active_varnum
-      integer  myOptimIter
-      integer  bi,bj,mythid
-      logical  lAdInit
+C     == routine arguments ==
+C     active_var_file: filename
+C     nactive_var:     integer size of active_var
+C     active_var:      array
+C     active_varname:      name fo the quantity to save
+C     irec:            record number
+C     myOptimIter:     number of optimization iteration (default: 0)
+C     myThid:          thread number for this instance
+C     lAdInit:         initialisation of corresponding adjoint
+C                      variable and write to active file
+      INTEGER  nactive_var,active_num_file
+      _RL      active_var(nactive_var)
+      INTEGER  irec,active_varnum
+      INTEGER  myOptimIter
+      INTEGER  bi,bj,myThid
+      LOGICAL  lAdInit
       _RL      dummy
 
 #ifdef ALLOW_PROFILES
 
-      call active_read_profile_rl( fidforward(active_num_file,bi,bj),
+      CALL ACTIVE_READ_PROFILE_RL( fidforward(active_num_file,bi,bj),
      &     active_num_file,
      &     nactive_var, active_var, active_varnum, lAdInit,
      &     irec, prof_ind_glob(active_num_file,irec,bi,bj),
-     &     FORWARD_SIMULATION, myOptimIter,bi,bj, mythid)
+     &     FORWARD_SIMULATION, myOptimIter,bi,bj, myThid)
 
 #endif
 
-      return
-      end
+      RETURN
+      END
 
-c     ==================================================================
-c     ==================================================================
-c     ==================================================================
+C     ==================================================================
+C     ==================================================================
+C     ==================================================================
 
 C     !ROUTINE: active_write_profile
 C     !INTERFACE:
-      subroutine active_write_profile(
+      SUBROUTINE ACTIVE_WRITE_PROFILE(
      I                           active_num_file,
      I                           nactive_var,
      I                           active_var,
@@ -93,21 +93,21 @@ C     !INTERFACE:
      I                           myOptimIter,
      I                           bi,
      I                           bj,
-     I                           mythid,
+     I                           myThid,
      I                           dummy
      &                         )
 
 C     !DESCRIPTION: \bv
-c     ==================================================================
-c     SUBROUTINE active_write_profile
-c     ==================================================================
-c     o Write an active 1D record from file.
-c     ==================================================================
+C     ==================================================================
+C     SUBROUTINE active_write_profile
+C     ==================================================================
+C     o Write an active 1D record from file.
+C     ==================================================================
 
 C     !USES:
-      implicit none
+      IMPLICIT NONE
 
-c     == global variables ==
+C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #ifdef ALLOW_PROFILES
@@ -115,34 +115,33 @@ c     == global variables ==
 # include "profiles.h"
 #endif
 
-c     == routine arguments ==
-c     active_var_file: filename
-c     nactive_var:     integer size of active_var
-c     active_var:      array
-c     active_varname:      name fo the quantity to save
-c     irec:            record number
-c     myOptimIter:     number of optimization iteration (default: 0)
-c     mythid:          thread number for this instance
-      integer  nactive_var,active_num_file, active_varnum
-      _RL   active_var(nactive_var)
-      integer  irec
-      integer  myOptimIter
-      integer  bi,bj,mythid
+C     == routine arguments ==
+C     active_var_file: filename
+C     nactive_var:     integer size of active_var
+C     active_var:      array
+C     active_varname:      name fo the quantity to save
+C     irec:            record number
+C     myOptimIter:     number of optimization iteration (default: 0)
+C     myThid:          thread number for this instance
+      INTEGER  nactive_var,active_num_file, active_varnum
+      _RL      active_var(nactive_var)
+      INTEGER  irec
+      INTEGER  myOptimIter
+      INTEGER  bi,bj,myThid
       _RL      dummy
 
 #ifdef ALLOW_PROFILES
 
-      call active_write_profile_rl( fidforward(active_num_file,bi,bj),
+      CALL ACTIVE_WRITE_PROFILE_RL( fidforward(active_num_file,bi,bj),
      &     active_num_file,
      &     nactive_var, active_var, active_varnum,
      &     irec, prof_ind_glob(active_num_file,irec,bi,bj),
-     &     FORWARD_SIMULATION, myOptimIter,bi,bj, mythid)
+     &     FORWARD_SIMULATION, myOptimIter,bi,bj, myThid)
 
 #endif
 
-      return
-      end
+      RETURN
+      END
 
-c     ==================================================================
-
+C     ==================================================================
 

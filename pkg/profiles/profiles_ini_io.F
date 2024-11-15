@@ -40,7 +40,7 @@ CEOP
 
       _BEGIN_MASTER( myThid )
 
-      IF ( profilesDir .NE. ' ' ) THEN
+      IF (profilesDir .NE. ' ') THEN
        iL = ILNBLNK( profilesDir )
 C      append "/", if necessary
        IF ( iL.LT.MAX_LEN_FNAM .AND. profilesDir(iL:iL).NE.'/' ) THEN
