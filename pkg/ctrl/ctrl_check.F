@@ -240,7 +240,7 @@ C-    to use KAPREDI_CONTROL, needs to define GM_READ_K3D_REDI in GMREDI_OPTIONS
      &     'CPP-flag ALLOW_OBCSN_CONTROL is defined,'
       CALL PRINT_ERROR( msgBuf, myThid )
       WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
-     &     'while CPP-flag ALLOW_OBCS_NORTH is not defined.'
+     &     'but CPP-flag ALLOW_OBCS_NORTH is not defined.'
       CALL PRINT_ERROR( msgBuf, myThid )
       errCount = errCount + 1
 #endif
@@ -250,7 +250,7 @@ C-    to use KAPREDI_CONTROL, needs to define GM_READ_K3D_REDI in GMREDI_OPTIONS
      &     'CPP-flag ALLOW_OBCSS_CONTROL is defined,'
       CALL PRINT_ERROR( msgBuf, myThid )
       WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
-     &     'while CPP-flag ALLOW_OBCS_SOUTH is not defined.'
+     &     'but CPP-flag ALLOW_OBCS_SOUTH is not defined.'
       CALL PRINT_ERROR( msgBuf, myThid )
       errCount = errCount + 1
 #endif
@@ -260,7 +260,7 @@ C-    to use KAPREDI_CONTROL, needs to define GM_READ_K3D_REDI in GMREDI_OPTIONS
      &     'CPP-flag ALLOW_OBCSW_CONTROL is defined,'
       CALL PRINT_ERROR( msgBuf, myThid )
       WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
-     &     'while CPP-flag ALLOW_OBCS_WEST is not defined.'
+     &     'but CPP-flag ALLOW_OBCS_WEST is not defined.'
       CALL PRINT_ERROR( msgBuf, myThid )
       errCount = errCount + 1
 #endif
@@ -270,7 +270,7 @@ C-    to use KAPREDI_CONTROL, needs to define GM_READ_K3D_REDI in GMREDI_OPTIONS
      &     'CPP-flag ALLOW_OBCSE_CONTROL is defined,'
       CALL PRINT_ERROR( msgBuf, myThid )
       WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
-     &     'while CPP-flag ALLOW_OBCS_EAST is not defined.'
+     &     'but CPP-flag ALLOW_OBCS_EAST is not defined.'
       CALL PRINT_ERROR( msgBuf, myThid )
       errCount = errCount + 1
 #endif
