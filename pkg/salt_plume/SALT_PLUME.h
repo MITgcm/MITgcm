@@ -107,4 +107,7 @@ C     SPkBottom       :: bottom kLev associated with SaltPlumeDepth
      &     ,SPplumek
 #endif
       COMMON /FFIELDS_saltPlumeFlux/ saltPlumeFlux
+#ifndef SALT_PLUME_OPTIONS_H
+      STOP 'need "SALT_PLUME_OPTIONS.h" to include "SALT_PLUME.h"'
+#endif
 #endif /* ALLOW_SALT_PLUME */
