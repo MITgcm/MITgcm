@@ -22,6 +22,9 @@
 #ifdef ALLOW_SEAICE
 # include "SEAICE_OPTIONS.h"
 #endif
+#ifdef ALLOW_SALT_PLUME
+# include "SALT_PLUME_OPTIONS.h"
+#endif
 #ifdef ALLOW_PTRACERS
 # include "PTRACERS_OPTIONS.h"
 #endif
