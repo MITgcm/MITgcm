@@ -19,17 +19,15 @@ c     ==================================================================
 #ifdef ALLOW_COST_STATE_FINAL
       common /g_cost_state_final_r/
      &                g_objf_state_final
-cph      _RL  g_objf_state_final (snx,sny,nsx,nsy)
-      _RL  g_objf_state_final (snx,sny,nsx,nsy,4*Nr+1)
+      _RL  g_objf_state_final (sNx,sNy,nSx,nSy,4*Nr+1)
 #endif
 
 #ifdef ALLOW_COST_VECTOR
       common /g_cost_vector_r/
      &                  g_objf_vector
-      _RL  g_objf_vector(snx,nsx,nsy)
+      _RL  g_objf_vector(sNx,nSx,nSy)
 #endif
 
 c     ==================================================================
 c     END OF HEADER G_COST
 c     ==================================================================
-
