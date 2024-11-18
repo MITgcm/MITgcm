@@ -7,10 +7,10 @@
 #endif
 
 CBOP
-C     !ROUTINE: COST_OBSFIT
+C     !ROUTINE: OBSFIT_COST
 
 C     !INTERFACE:
-      SUBROUTINE COST_OBSFIT( myIter, myTime, myThid )
+      SUBROUTINE OBSFIT_COST( myIter, myTime, myThid )
 
 C     !DESCRIPTION:
 C     ==================================================================
@@ -87,7 +87,7 @@ C     !FUNCTIONS
       WRITE(msgBuf,'(a)') ' '
       CALL PRINT_MESSAGE( msgBuf,
      &  standardMessageUnit,SQUEEZE_RIGHT, myThid)
-      WRITE(msgBuf,'(a)') '== cost_obsfit: begin =='
+      WRITE(msgBuf,'(a)') '== obsfit_cost: begin =='
       CALL PRINT_MESSAGE( msgBuf,
      &  standardMessageUnit,SQUEEZE_RIGHT, myThid)
 
@@ -348,14 +348,14 @@ C Print cost function values
        num_obsfit_glo  = num_obsfit(num_file)
 
        WRITE(msgBuf,'(a,I2,a,2D12.5)')
-     &  ' cost_obsfit(',num_file,')= ', objf_obsfit_glo, num_obsfit_glo
+     &  ' obsfit_cost(',num_file,')= ', objf_obsfit_glo, num_obsfit_glo
 
        IF ( num_obsfit_glo .GT. 0. ) CALL PRINT_MESSAGE( msgBuf,
      &  standardMessageUnit,SQUEEZE_RIGHT, myThid)
 
       ENDDO
 
-      WRITE(msgBuf,'(a)') '== cost_obsfit: end   =='
+      WRITE(msgBuf,'(a)') '== obsfit_cost: end   =='
       CALL PRINT_MESSAGE( msgBuf,
      &  standardMessageUnit,SQUEEZE_RIGHT, myThid)
       WRITE(msgBuf,'(a)') ' '

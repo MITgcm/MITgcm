@@ -767,7 +767,7 @@ c--   Accumulate in-situ time averages of temperature, salinity, SSH.
         CALL OBSFIT_INLOOP( endtime, myThid )
         CALL TIMER_STOP ('OBSFIT_INLOOP      [THE_MAIN_LOOP]', myThid)
 c--   Compute all obsfit cost function contributions.
-        CALL COST_OBSFIT( myIter, myTime, myThid )
+        CALL OBSFIT_COST( myIter, myTime, myThid )
       ENDIF
 #endif
 
