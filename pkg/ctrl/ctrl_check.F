@@ -235,7 +235,7 @@ C-    to use KAPREDI_CONTROL, needs to define GM_READ_K3D_REDI in GMREDI_OPTIONS
 # endif /* ndef EXCLUDE_CTRL_PACK */
 #endif /* ALLOW_PACKUNPACK_METHOD2 */
 
-#if ( !defined ALLOW_OBCS_NORTH && defined ALLOW_OBCSN_CONTROL )
+#if ( defined ALLOW_OBCSN_CONTROL && !defined ALLOW_OBCS_NORTH )
       WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
      &     'CPP-flag ALLOW_OBCSN_CONTROL is defined,'
       CALL PRINT_ERROR( msgBuf, myThid )
@@ -245,7 +245,7 @@ C-    to use KAPREDI_CONTROL, needs to define GM_READ_K3D_REDI in GMREDI_OPTIONS
       errCount = errCount + 1
 #endif
 
-#if ( !defined ALLOW_OBCS_SOUTH && defined ALLOW_OBCSS_CONTROL )
+#if ( defined ALLOW_OBCSS_CONTROL && !defined ALLOW_OBCS_SOUTH )
       WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
      &     'CPP-flag ALLOW_OBCSS_CONTROL is defined,'
       CALL PRINT_ERROR( msgBuf, myThid )
@@ -255,22 +255,22 @@ C-    to use KAPREDI_CONTROL, needs to define GM_READ_K3D_REDI in GMREDI_OPTIONS
       errCount = errCount + 1
 #endif
 
-#if ( !defined ALLOW_OBCS_WEST && defined ALLOW_OBCSW_CONTROL )
-      WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
-     &     'CPP-flag ALLOW_OBCSW_CONTROL is defined,'
-      CALL PRINT_ERROR( msgBuf, myThid )
-      WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
-     &     'but CPP-flag ALLOW_OBCS_WEST is not defined.'
-      CALL PRINT_ERROR( msgBuf, myThid )
-      errCount = errCount + 1
-#endif
-
-#if ( !defined ALLOW_OBCS_EAST && defined ALLOW_OBCSE_CONTROL )
+#if ( defined ALLOW_OBCSE_CONTROL && !defined ALLOW_OBCS_EAST )
       WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
      &     'CPP-flag ALLOW_OBCSE_CONTROL is defined,'
       CALL PRINT_ERROR( msgBuf, myThid )
       WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
      &     'but CPP-flag ALLOW_OBCS_EAST is not defined.'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      errCount = errCount + 1
+#endif
+
+#if ( defined ALLOW_OBCSW_CONTROL && !defined ALLOW_OBCS_WEST )
+      WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
+     &     'CPP-flag ALLOW_OBCSW_CONTROL is defined,'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
+     &     'but CPP-flag ALLOW_OBCS_WEST is not defined.'
       CALL PRINT_ERROR( msgBuf, myThid )
       errCount = errCount + 1
 #endif
