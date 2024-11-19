@@ -105,6 +105,7 @@ C     bi,bj :: Tile indices
           DO bi = myBxLo(myThid), myBxHi(myThid)
             DO numFile = 1, NFILESPROFMAX
               IL = ILNBLNK( profilesfiles(numFile) )
+
               IF (IL.NE.0) THEN
                 WRITE(msgBuf,'(A,A,5(1X,I8))')
      &           'S/R PROFILES_NC_CLOSE:',
@@ -146,7 +147,7 @@ C Tangent linear equivalent (.equi) file
                 CALL PROFILES_NF_ERROR( msgBuf, STATUS,
      &               bi, bj, myThid )
 #endif
-              ENDIF
+              ENDIF !(IL.NE.0)
 
             ENDDO
           ENDDO
