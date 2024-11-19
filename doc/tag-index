@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o model,pkg:
+  - minor spell checking and formatting updates.
 o pkg/bling:
   - size-dependent phytoplankton growth code cleaned up and related parameters
     can now be specified in data.bling;
