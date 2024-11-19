@@ -29,14 +29,16 @@ C     == Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid: my thread ID number
-      INTEGER fid1,fid2,dimId1,dimId2,varId(2*NVARMAX),varId0
-      INTEGER myThid,bi,bj,err,vecid(2), length, Zlength
+      INTEGER num_file, fid1
       CHARACTER*(*) file2
-      INTEGER irec,num_var,num_file
-      _RL tmp_vec(Zlength+1)
+      INTEGER fid2, length, Zlength
+      INTEGER bi, bj, myThid
 CEOP
 
 C     !LOCAL VARIABLES:
+      INTEGER k,err,vecid(2)
+      INTEGER irec,num_var,dimId1,dimId2,varId(2*NVARMAX),varId0
+      _RL tmp_vec(Zlength+1)
 #ifdef ALLOW_PROFILES
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
@@ -125,8 +127,8 @@ C1) Creation :
      &   STATUS = 'unknown', ACCESS = 'direct', 
      &   RECL = (Zlength + 1)*WORDLENGTH*2 )
 
-        DO irec = 1, Zlength+1
-          tmp_vec(irec) = 0
+        DO k = 1, Zlength+1
+          tmp_vec(k) = 0
         ENDDO
 
 # ifdef _BYTESWAPIO
