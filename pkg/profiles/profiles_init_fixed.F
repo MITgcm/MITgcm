@@ -181,17 +181,17 @@ C===========================================================
               WRITE(fnamedatanc,'(2A)') profilesfile(1:IL),'.nc'
               err = NF_OPEN( fnamedatanc, NF_NOWRITE,
      &               fiddata(num_file,bi,bj) )
-              CALL PROFILES_NF_ERROR( 
+              CALL PROFILES_NF_ERROR(
      &             'INIT_FIXED: NF_OPEN fiddata',err,bi,bj,myThid )
 
 C1) Read the number of profiles and available dimensions:
               fid = fiddata(num_file,bi,bj)
 
               err = NF_INQ_DIMID( fid, 'iPROF', dimId )
-              CALL PROFILES_NF_ERROR( 
+              CALL PROFILES_NF_ERROR(
      &             'INIT_FIXED: NF_INQ_DIMID iPROF',err,bi,bj,myThid )
               err = NF_INQ_DIMLEN( fid, dimId, ProfNo(num_file,bi,bj) )
-              CALL PROFILES_NF_ERROR( 
+              CALL PROFILES_NF_ERROR(
      &             'INIT_FIXED: NF_INQ_DIMLEN ProfNo',err,bi,bj,myThid )
 
               err = NF_INQ_DIMID( fid, 'iDEPTH', dimId )
@@ -204,9 +204,9 @@ C1) Read the number of profiles and available dimensions:
 
               ENDIF
 
-              err = NF_INQ_DIMLEN( fid, dimId, 
+              err = NF_INQ_DIMLEN( fid, dimId,
      &              ProfDepthNo(num_file,bi,bj) )
-              CALL PROFILES_NF_ERROR( 
+              CALL PROFILES_NF_ERROR(
      &             'INIT_FIXED: NF_INQ_DIMLEN ProfDepthNo',
      &             err,bi,bj,myThid )
 
@@ -286,7 +286,7 @@ C If neither is found, then stop
 
               ENDDO
 
-C Get time, lon, lat varIds 
+C Get time, lon, lat varIds
               err = NF_INQ_VARID( fid,'prof_YYYYMMDD', varId1a )
               CALL PROFILES_NF_ERROR(
      &             'INIT_FIXED: NF_INQ_VARID prof_YYYYMMDD',
@@ -314,10 +314,10 @@ C Get time, lon, lat varIds
                 IL = ILNBLNK( profilesfile )
                 WRITE(msgBuf,'(4A)')
      &           'PROFILES_INIT_FIXED: file ', profilesfile(1:IL),
-     &           '.nc not in pkg/profiles format', 
+     &           '.nc not in pkg/profiles format',
      &           ' (no prof_YYYYMMDD etc.)'
                 CALL PRINT_ERROR( msgBuf, myThid )
-                
+
                 stopProfiles = 1
 
               ENDIF
@@ -335,12 +335,12 @@ C3) Read interpolation information (grid points, coeffs, etc.)
      &               'INIT_FIXED: NF_INQ_VARID prof_interp_YC11',
      &               err,bi,bj,myThid )
                 err = err + NF_INQ_VARID( fid,'prof_interp_XCNINJ',
-     &                varId_intp11 ) 
+     &                varId_intp11 )
                 CALL PROFILES_NF_ERROR(
      &               'INIT_FIXED: NF_INQ_VARID prof_interp_XCNINJ',
      &               err,bi,bj,myThid )
                 err = err + NF_INQ_VARID( fid,'prof_interp_YCNINJ',
-     &                varId_intp22 ) 
+     &                varId_intp22 )
                 CALL PROFILES_NF_ERROR(
      &               'INIT_FIXED: NF_INQ_VARID prof_interp_YCNINJ',
      &               err,bi,bj,myThid )
@@ -636,7 +636,7 @@ C If yes then store prof_time and longitude and latitude:
 
                           prof_lon(num_file,ProfNo_tile,bi,bj) = lon_cur
                           prof_lat(num_file,ProfNo_tile,bi,bj) = lat_cur
-                          prof_ind_glob(num_file,ProfNo_tile,bi,bj) = 
+                          prof_ind_glob(num_file,ProfNo_tile,bi,bj) =
      &                     c+chunk
 # ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
                           prof_ind_avgbin(num_file,ProfNo_tile,bi,bj) =
@@ -687,7 +687,7 @@ C 5.2a) Determine whether profiles is in current tile domain (generic grid case)
      &         ( profIsInRunTime.EQ.1 ) ) THEN
 C If yes then store prof_time and interpolation coeffs and indices:
                             ProfNo_tile = ProfNo_tile+1
-                            prof_time(num_file,ProfNo_tile,bi,bj) = 
+                            prof_time(num_file,ProfNo_tile,bi,bj) =
      &                       diffsecs
 # ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
                             prof_ind_avgbin(num_file,ProfNo_tile,bi,bj)=
@@ -738,7 +738,7 @@ C Interpolation information consistent (self and with grid)
      &              ((tmp_i(c,q).EQ.0).AND.(tmp_j(c,q).EQ.sNy+1)) .OR.
      &              ((tmp_i(c,q).EQ.sNx+1).AND.(tmp_j(c,q).EQ.0)) ) THEN
                                   WRITE(msgBuf,'(4A)')
-     &                             'PROFILES_INIT_FIXED: file ', 
+     &                             'PROFILES_INIT_FIXED: file ',
      &                             profilesfile(1:IL),
      &                             '.nc has inconsistent interpolation',
      &                             '(profilesDoGenGrid; overlap corner)'
@@ -781,7 +781,7 @@ C Interpolation information consistent (self and with grid)
                             prof_ind_glob(num_file,ProfNo_tile,bi,bj) =
      &                       c + chunk
 
-                        
+
                           ENDIF !IF ( ( ABS(tmp_xC11(c)...
                         ENDIF !IF (stopGenericGrid.EQ.0)
                       ENDIF !IF (.NOT.profilesDoGenGrid ... ELSEIF ...
@@ -789,7 +789,7 @@ C Interpolation information consistent (self and with grid)
 C Check that maximum size was not reached:
                       IF (ProfNo_tile.GE.NOBSGLOB) THEN
                         WRITE(msgBuf,'(3A)')
-     &                   'PROFILES_INIT_FIXED: file ', 
+     &                   'PROFILES_INIT_FIXED: file ',
      &                   profilesfile(1:IL),
      &                   '.nc not read properly (increase NOBSGLOB).'
                         CALL PRINT_ERROR( msgBuf, myThid)
@@ -923,7 +923,7 @@ C Obtain existing NetCDF file id
                   INQUIRE( FILE = adfnameequinc(1:JL), EXIST = exst )
                   IF (.NOT.exst) THEN
                     CALL PROFILES_INIT_NCFILE( num_file,
-     &                   fiddata(num_file,bi,bj),adfnameequinc(1:JL), 
+     &                   fiddata(num_file,bi,bj),adfnameequinc(1:JL),
      &                   fidadjoint(num_file,bi,bj),
      &                   ProfNo(num_file,bi,bj),
      &                   ProfDepthNo(num_file,bi,bj),
@@ -943,7 +943,7 @@ C Obtain existing NetCDF file id
                   INQUIRE( FILE = tlfnameequinc(1:JL), EXIST = exst )
                   IF (.NOT.exst) THEN
                     CALL PROFILES_INIT_NCFILE( num_file,
-     &                   fiddata(num_file,bi,bj),tlfnameequinc(1:JL), 
+     &                   fiddata(num_file,bi,bj),tlfnameequinc(1:JL),
      &                   fidtangent(num_file,bi,bj),
      &                   ProfNo(num_file,bi,bj),
      &                   ProfDepthNo(num_file,bi,bj),
@@ -981,9 +981,9 @@ C Obtain existing NetCDF file id
 # ifdef PROFILES_USE_MDSFINDUNITS
                   CALL MDSFINDUNIT( fidforward(num_file,bi,bj), myThid )
 # else
-                  CALL PROFILES_FINDUNIT( fidforward(num_file,bi,bj), 
+                  CALL PROFILES_FINDUNIT( fidforward(num_file,bi,bj),
      &                 myThid )
-# endif         
+# endif
                   IF (.NOT.exst) THEN
                     CALL PROFILES_INIT_NCFILE( num_file,
      &                   fiddata(num_file,bi,bj),fnameequinc(1:JL),
@@ -1003,7 +1003,7 @@ C Obtain existing NetCDF file id
                   INQUIRE( FILE = adfnameequinc(1:JL), EXIST = exst )
 #  ifdef PROFILES_USE_MDSFINDUNITS
                   CALL MDSFINDUNIT( fidadjoint(num_file,bi,bj), myThid )
-#  else         
+#  else
                   CALL PROFILES_FINDUNIT( fidadjoint(num_file,bi,bj),
      &                 myThid )
 #  endif
@@ -1015,8 +1015,8 @@ C Obtain existing NetCDF file id
      &                   ProfDepthNo(num_file,bi,bj),
      &                   bi,bj,myThid )
                   ELSE
-                    OPEN( fidadjoint(num_file,bi,bj), 
-     &               FILE = adfnameequinc(1:JL), FORM = 'unformatted', 
+                    OPEN( fidadjoint(num_file,bi,bj),
+     &               FILE = adfnameequinc(1:JL), FORM = 'unformatted',
      &               STATUS = 'unknown', ACCESS = 'direct',
      &               RECL=(ProfDepthNo(num_file,bi,bj)+1)*WORDLENGTH*2 )
                   ENDIF
@@ -1027,19 +1027,19 @@ C Obtain existing NetCDF file id
                   INQUIRE( FILE = tlfnameequinc(1:JL), EXIST = exst )
 #  ifdef PROFILES_USE_MDSFINDUNITS
                   CALL MDSFINDUNIT( fidtangent(num_file,bi,bj), myThid )
-#  else         
+#  else
                   CALL PROFILES_FINDUNIT( fidtangent(num_file,bi,bj),
      &                 myThid )
 #  endif
                   IF (.NOT.exst) THEN
                     CALL PROFILES_INIT_NCFILE( num_file,
-     &                   fiddata(num_file,bi,bj),tlfnameequinc(1:JL), 
+     &                   fiddata(num_file,bi,bj),tlfnameequinc(1:JL),
      &                   fidtangent(num_file,bi,bj),
      &                   ProfNo(num_file,bi,bj),
      &                   ProfDepthNo(num_file,bi,bj),
      &                   bi,bj,myThid )
                   ELSE
-                    OPEN( fidtangent(num_file,bi,bj), 
+                    OPEN( fidtangent(num_file,bi,bj),
      &               FILE = tlfnameequinc(1:JL), FORM = 'unformatted',
      &               STATUS = 'unknown', ACCESS = 'direct',
      &               RECL=(ProfDepthNo(num_file,bi,bj)+1)*WORDLENGTH*2 )
@@ -1184,7 +1184,7 @@ C Diagnostics output
      &           kCMax, NLEVELCOMBMAX
                 CALL PRINT_ERROR( msgBuf, myThid )
               ENDIF
-            
+
             ENDIF !IF ( prof_depth_comb(m,bi,bj) .GE. 0. _d 0
           ENDDO !DO kCMax
 
@@ -1224,7 +1224,7 @@ C XC grid
 
 # ifdef _BYTESWAPIO
             CALL MDS_BYTESWAPR8( (sNx+2)*(sNy+2),xy_buffer_r8 )
-# endif    
+# endif
             WRITE(fid,rec=1) xy_buffer_r8
             CLOSE(fid)
 C YC grid
@@ -1250,7 +1250,7 @@ C YC grid
 
 # ifdef _BYTESWAPIO
             CALL MDS_BYTESWAPR8( (sNx+2)*(sNy+2),xy_buffer_r8 )
-# endif    
+# endif
             WRITE(fid,rec=1) xy_buffer_r8
             CLOSE(fid)
 

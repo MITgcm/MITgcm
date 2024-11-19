@@ -114,8 +114,8 @@ C Combine all threads
                     irec = prof_ind_glob(num_file,prof_num,bi,bj)
 
                     DO kProf = 1, ProfDepthNo(num_file,bi,bj)
-                      prof_buff(num_var,kProf,irec) = 
-     &                 prof_buff(num_var,kProf,irec) 
+                      prof_buff(num_var,kProf,irec) =
+     &                 prof_buff(num_var,kProf,irec)
      &                 + prof_traj1D(kProf)
 
                       prof_mask_buff(num_var,kProf,irec) =
@@ -217,24 +217,24 @@ C Define variables and attributes
                   err = NF_DEF_VAR( fid2,
      &                  prof_namesequi(num_file,num_var),
      &                  NF_DOUBLE, 2, vecid, varId1(2+(num_var-1)*2) )
-                  CALL PROFILES_NF_ERROR( 
+                  CALL PROFILES_NF_ERROR(
                        'MAKE_NCFILE: NF_DEF_VAR prof_namesequi',
      &                 err,bi,bj,myThid )
                   err = NF_PUT_ATT_DOUBLE( fid2,varId1(2+(num_var-1)*2),
      &                  '_FillValue', NF_DOUBLE, 1, 0. _d 0 )
-                  CALL PROFILES_NF_ERROR( 
+                  CALL PROFILES_NF_ERROR(
      &                 'MAKE_NCFILE: NF_PUT_ATT_DOUBLE varId(2',
      &                 err,bi,bj,myThid )
 
                   err = NF_DEF_VAR( fid2,
      &                  prof_namesmask(num_file,num_var),
      &                  NF_DOUBLE, 2, vecid, varId1(3+(num_var-1)*2) )
-                  CALL PROFILES_NF_ERROR( 
+                  CALL PROFILES_NF_ERROR(
                        'MAKE_NCFILE: NF_DEF_VAR prof_namesmask',
      &                 err,bi,bj,myThid )
                   err = NF_PUT_ATT_DOUBLE( fid2,varId1(3+(num_var-1)*2),
      &                  '_FillValue', NF_DOUBLE, 1, 0. _d 0 )
-                  CALL PROFILES_NF_ERROR( 
+                  CALL PROFILES_NF_ERROR(
      &                 'MAKE_NCFILE: NF_PUT_ATT_DOUBLE varId(3',
      &                 err,bi,bj,myThid )
 
@@ -275,26 +275,26 @@ C Write profiles
                     err = NF_INQ_VARID( fid2,
      &                    prof_namesequi(num_file,num_var),
      &                    varId2(2+(num_var-1)*2) )
-                    CALL PROFILES_NF_ERROR( 
+                    CALL PROFILES_NF_ERROR(
      &                   'MAKE_NCFILE: NF_INQ_VARID prof_namesequi',
      &                   err,bi,bj,myThid )
-                    err = NF_PUT_VARA_DOUBLE( fid2, 
+                    err = NF_PUT_VARA_DOUBLE( fid2,
      &                    varId2(2+(num_var-1)*2),
      &                    vec_start, vec_count, prof_traj1D )
-                    CALL PROFILES_NF_ERROR( 
+                    CALL PROFILES_NF_ERROR(
      &                   'MAKE_NCFILE: NF_PUT_VARA_DOUBLE prof_traj1D',
      &                   err,bi,bj,myThid )
 
                     err = NF_INQ_VARID( fid2,
      &                    prof_namesmask(num_file,num_var),
      &                    varId2(3+(num_var-1)*2) )
-                    CALL PROFILES_NF_ERROR( 
+                    CALL PROFILES_NF_ERROR(
      &                   'MAKE_NCFILE: NF_INQ_VARID prof_namesmask',
      &                   err,bi,bj,myThid )
-                    err = NF_PUT_VARA_DOUBLE( fid2, 
+                    err = NF_PUT_VARA_DOUBLE( fid2,
      &                    varId2(3+(num_var-1)*2),
      &                    vec_start, vec_count, prof_mask1D )
-                    CALL PROFILES_NF_ERROR( 
+                    CALL PROFILES_NF_ERROR(
      &                   'MAKE_NCFILE: NF_PUT_VARA_DOUBLE prof_mask1D',
      &                   err,bi,bj,myThid )
 

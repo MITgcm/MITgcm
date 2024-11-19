@@ -35,7 +35,7 @@ C     == Global variables ===
 #endif
 
 C     !INPUT PARAMETERS:
-C     myIter: iteration counter for this thread 
+C     myIter: iteration counter for this thread
 C     myTime: time counter for this thread
 C     myThid: my thread ID number
       INTEGER myIter
@@ -176,7 +176,7 @@ C Find vertical indices
 
                     IF (ix9 .GE. 0. _d 0 .AND. iy9 .GE. 0. _d 0) THEN
                       itmp = prof_ind_avgbin(num_file,prof_num,bi,bj)
-                      IF (avgbinglbsum(itmp).EQ.0) 
+                      IF (avgbinglbsum(itmp).EQ.0)
      &                  avgbinglbsum(itmp) = 1
 
                       CALL ACTIVE_READ_PROFILE( num_file,
@@ -307,8 +307,8 @@ C Now do the averaging
      &           tmp_recip_count
 
             ENDIF
-          ENDDO !DO num_var 
-        ENDDO !DO kC 
+          ENDDO !DO num_var
+        ENDDO !DO kC
       ENDDO !DO iavgbin
 
       DO iavgbin = 1, NAVGBIN
@@ -321,8 +321,8 @@ C Assuming each averaging bin has a maximum of 9 independent measurements.
 
               tmp12 = prof_weights1D_all_mean(iavgbin,kC,num_var)
      &         * recip_profiles_mean_indsamples(num_var)
-              
-              prof_weights1D_all_mean(iavgbin,kC,num_var) = 
+
+              prof_weights1D_all_mean(iavgbin,kC,num_var) =
      &         MAX(tmp11, tmp12)
 
 C prof_weights1D_all_mean is still sigam^2. Convert to weight
@@ -332,8 +332,8 @@ C prof_weights1D_all_mean is still sigam^2. Convert to weight
      &           1. _d 0 / prof_weights1D_all_mean(iavgbin,kC,num_var)
             ENDIF
           ENDDO !DO num_var
-        ENDDO !DO kC 
-      ENDDO !DO iavgbin 
+        ENDDO !DO kC
+      ENDDO !DO iavgbin
 
       IF (myProcId.EQ.0) THEN
 
@@ -424,7 +424,7 @@ C Sync file so that data is not lost when run finishes
 
                   ENDDO
 
-                  IF (vec_quantities(num_file,num_var,bi,bj).EQV..TRUE.) 
+                  IF (vec_quantities(num_file,num_var,bi,bj).EQV..TRUE.)
      &              THEN
 #ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
                     itmp = prof_ind_avgbin(num_file,prof_num,bi,bj)
@@ -593,10 +593,10 @@ C Print cost function values
 
           DO bj = myByLo(myThid), myByHi(myThid)
             DO bi = myBxLo(myThid), myBxHi(myThid)
-              objf_prof_tile(bi,bj) = 
+              objf_prof_tile(bi,bj) =
      &          objf_profiles(num_file,num_var,bi,bj)
 
-              num_prof_tile(bi,bj) = 
+              num_prof_tile(bi,bj) =
      &          num_profiles(num_file,num_var,bi,bj)
 
            ENDDO
@@ -609,7 +609,7 @@ C Print cost function values
      &   ' cost_profiles(',num_file,',',num_var,') = ',
      &   objf_prof_glo,num_prof_glo
 
-        IF (num_prof_glo .GT. 0.) 
+        IF (num_prof_glo .GT. 0.)
      &    CALL PRINT_MESSAGE( msgBuf,
      &         standardMessageUnit,SQUEEZE_RIGHT , myThid )
 
@@ -618,7 +618,7 @@ C Print cost function values
 
 #ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
       DO num_var = 1, NVARMAX
- 
+
         DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
             objf_prof_mean_tile(bi,bj) =
@@ -639,7 +639,7 @@ C Print cost function values
      &   ' cost_profiles_mean(',num_var,') = ',
      &   objf_prof_mean_glo,num_prof_mean_glo
 
-        IF (num_prof_mean_glo .GT. 0.) 
+        IF (num_prof_mean_glo .GT. 0.)
      &    CALL PRINT_MESSAGE( msgBuf,
      &         standardMessageUnit,SQUEEZE_RIGHT , myThid )
 

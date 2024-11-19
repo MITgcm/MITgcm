@@ -106,7 +106,7 @@ C     bi,bj :: Tile indices
             DO numFile = 1, NFILESPROFMAX
               IL = ILNBLNK( profilesfiles(numFile) )
               IF (IL.NE.0) THEN
-                WRITE(msgBuf,'(A,A,5(1X,I8))') 
+                WRITE(msgBuf,'(A,A,5(1X,I8))')
      &           'S/R PROFILES_NC_CLOSE:',
      &           ' Closing '//profilesfiles(numFile)(1:IL), numFile,
      &           fiddata(numFile,bi,bj),fidforward(numFile,bi,bj),
@@ -129,7 +129,7 @@ C Forward equivalent (.equi) file
 #ifdef ALLOW_ADJOINT_RUN
 C Adjoint equivalent (.equi) file
                 STATUS = NF_CLOSE( fidadjoint(numFile,bi,bj) )
-                WRITE(msgBuf,'(A,I3,I8)') 
+                WRITE(msgBuf,'(A,I3,I8)')
      &           'NC_CLOSE: NF_CLOSE adj unit',
      &           numFile, fidadjoint(numFile,bi,bj)
                 CALL PROFILES_NF_ERROR( msgBuf, STATUS, bi, bj, myThid )
@@ -137,7 +137,7 @@ C Adjoint equivalent (.equi) file
 #ifdef ALLOW_TANGENTLINEAR_RUN
 C Tangent linear equivalent (.equi) file
                 STATUS = NF_CLOSE( fidtangent(numFile,bi,bj) )
-                WRITE(msgBuf,'(A,I3,I8)') 
+                WRITE(msgBuf,'(A,I3,I8)')
      &           'NC_CLOSE: NF_CLOSE tlm unit',
      &           numFile, fidtangent(numFile,bi,bj)
                 CALL PROFILES_NF_ERROR( msgBuf, STATUS, bi, bj, myThid )

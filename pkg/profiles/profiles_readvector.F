@@ -69,7 +69,7 @@ C Implies that a backward loop is calling
 C Implies that a forward loop is calling
           profiles_minind_buff(bi,bj) = irec
           profiles_maxind_buff(bi,bj) = MIN(tmpprofno,irec+999)
-        
+
         ENDIF !IF (profiles_curfile_buff(bi,bj).NE.fNb)
 
 # ifdef ALLOW_DEBUG
@@ -96,7 +96,7 @@ C Implies that a forward loop is calling
             CALL PROFILES_NF_ERROR(
      &           'READVECTOR: NF_INQ_VARID prof_names',
      &           err,bi,bj,myThid )
-            err = NF_GET_VARA_DOUBLE( fiddata(fNb,bi,bj), varId1, 
+            err = NF_GET_VARA_DOUBLE( fiddata(fNb,bi,bj), varId1,
      &            vec_start, vec_count, vec_tmp1 )
             CALL PROFILES_NF_ERROR(
      &           'READVECTOR: NF_GET_VARA_DOUBLE vec_tmp1',

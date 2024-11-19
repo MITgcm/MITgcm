@@ -13,7 +13,7 @@ C     Started: Christian Eckert eckert@mit.edu 30-Jun-1999
 C     Changed: Christian Eckert eckert@mit.edu 18-Apr-2000
 C              - Restructured the code in order to create a package
 C                for the MITgcmUV.
-C              heimbach@mit.edu 05-Nov-2003 
+C              heimbach@mit.edu 05-Nov-2003
 C              - Now ecco part of cost
 
 C     !USES:

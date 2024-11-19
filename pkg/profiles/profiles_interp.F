@@ -113,7 +113,7 @@ C Horizontal interpolation:
             tab_coeffs1(q) = pTracer(i_cur(q),j_cur(q),k,bi,bj,itr_cur)
 # else
             tab_coeffs1(q) = 0. _d 0
-# endif 
+# endif
 # ifdef ALLOW_BLING
           ELSEIF (var_cur.EQ.'PCO') THEN
             tab_coeffs1(q) = pCO2(i_cur(q),j_cur(q),bi,bj)
@@ -123,11 +123,11 @@ C Horizontal interpolation:
             tab_coeffs1(q) = CHL(i_cur(q),j_cur(q),k,bi,bj)
           ELSEIF (var_cur.EQ.'POC') THEN
             tab_coeffs1(q) = POC(i_cur(q),j_cur(q),k,bi,bj)
-# endif 
+# endif
 # ifdef ALLOW_ECCO
           ELSEIF (var_cur.EQ.'eta') THEN
             tab_coeffs1(q) = m_eta(i_cur(q),j_cur(q),bi,bj)
-# endif 
+# endif
           ELSEIF (var_cur.EQ.'UE') THEN
             tab_coeffs1(q) = m_UE(i_cur(q),j_cur(q),k,bi,bj)
           ELSEIF (var_cur.EQ.'VN') THEN
@@ -231,7 +231,7 @@ C Subcase 2: only 1 wet point just above => upper cell value
             traj_cur_out(kProf) = traj_cur(kcur)
             prof_mask1D_cur(kProf,bi,bj) = mask_cur(kcur)
 
-          
+
           ENDIF !IF (mask_cur(kcur+1).EQ.oneRL)
 
         ENDIF !IF (prof_depth(file_cur,kProf,bi,bj).LT.-rC(1))

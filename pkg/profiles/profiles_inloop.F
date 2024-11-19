@@ -91,11 +91,11 @@ C     !LOCAL VARIABLES:
      &               (prof_time(num_file,prof_num,bi,bj).LT.
      &                (myTime+deltaTClock)) ) THEN
                   DO q = 1, NUM_INTERP_POINTS
-                    prof_i1D(q) = 
+                    prof_i1D(q) =
      &               prof_interp_i(num_file,prof_num,q,bi,bj)
-                    prof_j1D(q) = 
+                    prof_j1D(q) =
      &               prof_interp_j(num_file,prof_num,q,bi,bj)
-                    prof_w1D(q) = 
+                    prof_w1D(q) =
      &               prof_interp_weights(num_file,prof_num,q,bi,bj)
 
                   ENDDO
@@ -122,7 +122,7 @@ C     !LOCAL VARIABLES:
      &                     ProfDepthNo(num_file,bi,bj),prof_traj1D,
                            num_var,prof_num,optimcycle,bi,bj,myThid,
      &                     profiles_dummy(num_file,num_var,bi,bj) )
-                    
+
                     ENDIF !IF (vec_quantities(num_file,num_var,bi,bj)
 
                   ENDDO !DO num_var

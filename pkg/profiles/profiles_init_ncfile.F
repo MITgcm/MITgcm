@@ -57,11 +57,11 @@ C1) Creation :
         vecid(1)=dimId1
         vecid(2)=dimId2
 
-        err = NF_DEF_VAR( fid2, 'prof_ind_glob', 
+        err = NF_DEF_VAR( fid2, 'prof_ind_glob',
      &        NF_INT, 1, vecid(2), varId(1) )
         CALL PROFILES_NF_ERROR( 'INIT_NCFILE: NF_DEF_VAR prof_ind_glob',
      &       err,bi,bj,myThid )
-        err = NF_PUT_ATT_INT( fid2, varId(1), 
+        err = NF_PUT_ATT_INT( fid2, varId(1),
      &        '_FillValue', NF_INT, 1, 0 )
         CALL PROFILES_NF_ERROR( 'INIT_NCFILE: NF_PUT_ATT_INT varId(1)',
      &       err,bi,bj,myThid )
@@ -123,8 +123,8 @@ C1) Creation :
      &       err,bi,bj,myThid )
 
       ELSE !IF (profilesDoNcOutput)
-        OPEN( fid2, FILE = file2, FORM = 'unformatted', 
-     &   STATUS = 'unknown', ACCESS = 'direct', 
+        OPEN( fid2, FILE = file2, FORM = 'unformatted',
+     &   STATUS = 'unknown', ACCESS = 'direct',
      &   RECL = (Zlength + 1)*WORDLENGTH*2 )
 
         DO k = 1, Zlength+1
