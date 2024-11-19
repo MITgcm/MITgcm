@@ -62,10 +62,10 @@ C     !LOCAL VARIABLES:
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C !ROUTINE: PROFILES_CLOSE_NCFILES
+C !ROUTINE: PROFILES_NC_CLOSE
 
 C !INTERFACE:
-      SUBROUTINE PROFILES_CLOSE_NCFILES( myThid )
+      SUBROUTINE PROFILES_NC_CLOSE( myThid )
 
 C     !DESCRIPTION:
 C     Close NetCDF files
@@ -107,7 +107,7 @@ C     bi,bj :: Tile indices
               IL = ILNBLNK( profilesfiles(numFile) )
               IF (IL.NE.0) THEN
                 WRITE(msgBuf,'(A,A,5(1X,I8))') 
-     &           'S/R PROFILES_CLOSE_NCFILES:',
+     &           'S/R PROFILES_NC_CLOSE:',
      &           ' Closing '//profilesfiles(numFile)(1:IL), numFile,
      &           fiddata(numFile,bi,bj),fidforward(numFile,bi,bj),
      &           fidadjoint(numFile,bi,bj),fidtangent(numFile,bi,bj)
@@ -116,21 +116,21 @@ C     bi,bj :: Tile indices
 C Data file
                 STATUS = NF_CLOSE( fiddata(numFile,bi,bj) )
                 WRITE(msgBuf,'(A,I3,I8)')
-     &           'CLOSE_NCFILES: NF_CLOSE data unit',
+     &           'NC_CLOSE: NF_CLOSE data unit',
      &           numFile, fiddata(numFile,bi,bj)
                 CALL PROFILES_NF_ERROR( msgBuf, STATUS, bi, bj, myThid )
 
 C Forward equivalent (.equi) file
                 STATUS = NF_CLOSE( fidforward(numFile,bi,bj) )
                 WRITE(msgBuf,'(A,I3,I8)')
-     &           'CLOSE_NCFILES: NF_CLOSE fwd unit',
+     &           'NC_CLOSE: NF_CLOSE fwd unit',
      &           numFile, fidforward(numFile,bi,bj)
                 CALL PROFILES_NF_ERROR( msgBuf, STATUS, bi, bj, myThid )
 #ifdef ALLOW_ADJOINT_RUN
 C Adjoint equivalent (.equi) file
                 STATUS = NF_CLOSE( fidadjoint(numFile,bi,bj) )
                 WRITE(msgBuf,'(A,I3,I8)') 
-     &           'CLOSE_NCFILES: NF_CLOSE adj unit',
+     &           'NC_CLOSE: NF_CLOSE adj unit',
      &           numFile, fidadjoint(numFile,bi,bj)
                 CALL PROFILES_NF_ERROR( msgBuf, STATUS, bi, bj, myThid )
 #endif
@@ -138,11 +138,12 @@ C Adjoint equivalent (.equi) file
 C Tangent linear equivalent (.equi) file
                 STATUS = NF_CLOSE( fidtangent(numFile,bi,bj) )
                 WRITE(msgBuf,'(A,I3,I8)') 
-     &           'CLOSE_NCFILES: NF_CLOSE tlm unit',
+     &           'NC_CLOSE: NF_CLOSE tlm unit',
      &           numFile, fidtangent(numFile,bi,bj)
                 CALL PROFILES_NF_ERROR( msgBuf, STATUS, bi, bj, myThid )
 #endif
               ENDIF
+
             ENDDO
           ENDDO
         ENDDO

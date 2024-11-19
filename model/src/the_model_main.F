@@ -780,7 +780,7 @@ C       Close all open NetCDF files
       IF ( useProfiles ) THEN
 C       Close all open NetCDF files
         _BEGIN_MASTER( myThid )
-        CALL PROFILES_CLOSE_NCFILES( myThid )
+        CALL PROFILES_NC_CLOSE( myThid )
         _END_MASTER( myThid )
       ENDIF
 #endif
