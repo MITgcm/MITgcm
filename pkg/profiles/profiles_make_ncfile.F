@@ -35,9 +35,9 @@ C     !LOCAL VARIABLES:
       INTEGER kLev, kProf, k
       INTEGER num_file,num_var,prof_num
       INTEGER bi,bj,iG,jG
-      INTEGER err,dimid,irec,fid1,fid2
-      INTEGER dimid1,dimid2,vecid(2)
-      INTEGER varid0,varid1(NVARMAX*2),varid2(NVARMAX*2)
+      INTEGER err,dimId,irec,fid1,fid2
+      INTEGER dimId1,dimId2,vecid(2)
+      INTEGER varId0,varId1(NVARMAX*2),varId2(NVARMAX*2)
       INTEGER length,Zlength,optimcycle
       INTEGER IL,JL
       INTEGER vec_start(2),vec_count(2)
@@ -164,21 +164,21 @@ C Get dimensions of input file
             CALL PROFILES_NF_ERROR(
      &           'MAKE_NCFILE: NF_OPEN('//fnamedata(1:IL+3)//')',
      &           err,bi,bj,myThid )
-            err = NF_INQ_DIMID( fid1,'iPROF', dimid )
+            err = NF_INQ_DIMID( fid1,'iPROF', dimId )
             CALL PROFILES_NF_ERROR( 'MAKE_NCFILE: NF_INQ_DIMID iPROF',
      &           err,bi,bj,myThid )
-            err = NF_INQ_DIMLEN( fid1, dimid, length )
+            err = NF_INQ_DIMLEN( fid1, dimId, length )
             CALL PROFILES_NF_ERROR( 'MAKE_NCFILE: NF_INQ_DIMLEN length',
      &           err,bi,bj,myThid )
-            err = NF_INQ_DIMID( fid1,'iDEPTH', dimid )
+            err = NF_INQ_DIMID( fid1,'iDEPTH', dimId )
             CALL PROFILES_NF_ERROR( 'MAKE_NCFILE: NF_INQ_DIMID iDEPTH',
      &           err,bi,bj,myThid )
             IF (err.NE.NF_NOERR) THEN
-              err = NF_INQ_DIMID( fid1,'Z', dimid )
+              err = NF_INQ_DIMID( fid1,'Z', dimId )
               CALL PROFILES_NF_ERROR( 'MAKE_NCFILE: NF_INQ_DIMID Z',
      &             err,bi,bj,myThid )
             ENDIF
-            err = NF_INQ_DIMLEN( fid1, dimid, Zlength )
+            err = NF_INQ_DIMLEN( fid1, dimId, Zlength )
             CALL PROFILES_NF_ERROR(
      &           'MAKE_NCFILE: NF_INQ_DIMLEN Zlength',
      &           err,bi,bj,myThid )
@@ -195,20 +195,20 @@ C Create new netcdf global file for model-equivalent
               CALL PROFILES_NF_ERROR(
      &             'MAKE_NCFILE: NF_CREATE('//fnameequinc(1:JL)//')',
      &             err,bi,bj,myThid )
-              err = NF_DEF_DIM(fid2,'iDEPTH',Zlength,dimid1)
+              err = NF_DEF_DIM(fid2,'iDEPTH',Zlength,dimId1)
               CALL PROFILES_NF_ERROR( 'MAKE_NCFILE: NF_DEF_DIM iDepth',
      &             err,bi,bj,myThid )
-              err = NF_DEF_DIM(fid2,'iPROF',length,dimid2)
+              err = NF_DEF_DIM(fid2,'iPROF',length,dimId2)
               CALL PROFILES_NF_ERROR( 'MAKE_NCFILE: NF_DEF_DIM iPROF',
      &             err,bi,bj,myThid )
 
-              vecid(1)=dimid1
-              vecid(2)=dimid2
+              vecid(1)=dimId1
+              vecid(2)=dimId2
 
 C Define variables and attributes
               DO num_var = 1, NVARMAX
                 err = NF_INQ_VARID( fid1, prof_names(num_file,num_var),
-     &                varid0 )
+     &                varId0 )
                 CALL PROFILES_NF_ERROR( 'MAKE_NCFILE: NF_INQ_VARID('
      &               //prof_names(num_file,num_var)//')',
      &               err,bi,bj,myThid )
@@ -216,26 +216,26 @@ C Define variables and attributes
                 IF (err.EQ.NF_NOERR) THEN
                   err = NF_DEF_VAR( fid2,
      &                  prof_namesequi(num_file,num_var),
-     &                  NF_DOUBLE, 2, vecid, varid1(2+(num_var-1)*2) )
+     &                  NF_DOUBLE, 2, vecid, varId1(2+(num_var-1)*2) )
                   CALL PROFILES_NF_ERROR( 
                        'MAKE_NCFILE: NF_DEF_VAR prof_namesequi',
      &                 err,bi,bj,myThid )
-                  err = NF_PUT_ATT_DOUBLE( fid2,varid1(2+(num_var-1)*2),
+                  err = NF_PUT_ATT_DOUBLE( fid2,varId1(2+(num_var-1)*2),
      &                  '_FillValue', NF_DOUBLE, 1, 0. _d 0 )
                   CALL PROFILES_NF_ERROR( 
-     &                 'MAKE_NCFILE: NF_PUT_ATT_DOUBLE varid(2',
+     &                 'MAKE_NCFILE: NF_PUT_ATT_DOUBLE varId(2',
      &                 err,bi,bj,myThid )
 
                   err = NF_DEF_VAR( fid2,
      &                  prof_namesmask(num_file,num_var),
-     &                  NF_DOUBLE, 2, vecid, varid1(3+(num_var-1)*2) )
+     &                  NF_DOUBLE, 2, vecid, varId1(3+(num_var-1)*2) )
                   CALL PROFILES_NF_ERROR( 
                        'MAKE_NCFILE: NF_DEF_VAR prof_namesmask',
      &                 err,bi,bj,myThid )
-                  err = NF_PUT_ATT_DOUBLE( fid2,varid1(3+(num_var-1)*2),
+                  err = NF_PUT_ATT_DOUBLE( fid2,varId1(3+(num_var-1)*2),
      &                  '_FillValue', NF_DOUBLE, 1, 0. _d 0 )
                   CALL PROFILES_NF_ERROR( 
-     &                 'MAKE_NCFILE: NF_PUT_ATT_DOUBLE varid(3',
+     &                 'MAKE_NCFILE: NF_PUT_ATT_DOUBLE varId(3',
      &                 err,bi,bj,myThid )
 
                 ENDIF
@@ -274,12 +274,12 @@ C Write profiles
 
                     err = NF_INQ_VARID( fid2,
      &                    prof_namesequi(num_file,num_var),
-     &                    varid2(2+(num_var-1)*2) )
+     &                    varId2(2+(num_var-1)*2) )
                     CALL PROFILES_NF_ERROR( 
      &                   'MAKE_NCFILE: NF_INQ_VARID prof_namesequi',
      &                   err,bi,bj,myThid )
                     err = NF_PUT_VARA_DOUBLE( fid2, 
-     &                    varid2(2+(num_var-1)*2),
+     &                    varId2(2+(num_var-1)*2),
      &                    vec_start, vec_count, prof_traj1D )
                     CALL PROFILES_NF_ERROR( 
      &                   'MAKE_NCFILE: NF_PUT_VARA_DOUBLE prof_traj1D',
@@ -287,12 +287,12 @@ C Write profiles
 
                     err = NF_INQ_VARID( fid2,
      &                    prof_namesmask(num_file,num_var),
-     &                    varid2(3+(num_var-1)*2) )
+     &                    varId2(3+(num_var-1)*2) )
                     CALL PROFILES_NF_ERROR( 
      &                   'MAKE_NCFILE: NF_INQ_VARID prof_namesmask',
      &                   err,bi,bj,myThid )
                     err = NF_PUT_VARA_DOUBLE( fid2, 
-     &                    varid2(3+(num_var-1)*2),
+     &                    varId2(3+(num_var-1)*2),
      &                    vec_start, vec_count, prof_mask1D )
                     CALL PROFILES_NF_ERROR( 
      &                   'MAKE_NCFILE: NF_PUT_VARA_DOUBLE prof_mask1D',

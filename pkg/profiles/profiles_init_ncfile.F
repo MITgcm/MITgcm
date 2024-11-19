@@ -29,7 +29,7 @@ C     == Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid: my thread ID number
-      INTEGER fid1,fid2,dimid1,dimid2,varid(2*NVARMAX),varid0
+      INTEGER fid1,fid2,dimId1,dimId2,varId(2*NVARMAX),varId0
       INTEGER myThid,bi,bj,err,vecid(2), length, Zlength
       CHARACTER*(*) file2
       INTEGER irec,num_var,num_file
@@ -45,28 +45,28 @@ C1) Creation :
         err = NF_CREATE( file2, NF_CLOBBER, fid2 )
         CALL PROFILES_NF_ERROR( 'INIT_NCFILE: NF_CREATE fid2',
      &       err,bi,bj,myThid )
-        err = NF_DEF_DIM( fid2,'iDEPTH', Zlength, dimid1 )
+        err = NF_DEF_DIM( fid2,'iDEPTH', Zlength, dimId1 )
         CALL PROFILES_NF_ERROR( 'INIT_NCFILE: NF_DEF_DIM Zlength',
      &       err,bi,bj,myThid )
-        err = NF_DEF_DIM( fid2,'iPROF', length, dimid2 )
+        err = NF_DEF_DIM( fid2,'iPROF', length, dimId2 )
         CALL PROFILES_NF_ERROR( 'INIT_NCFILE: NF_DEF_DIM length',
      &       err,bi,bj,myThid )
 
-        vecid(1)=dimid1
-        vecid(2)=dimid2
+        vecid(1)=dimId1
+        vecid(2)=dimId2
 
         err = NF_DEF_VAR( fid2, 'prof_ind_glob', 
-     &        NF_INT, 1, vecid(2), varid(1) )
+     &        NF_INT, 1, vecid(2), varId(1) )
         CALL PROFILES_NF_ERROR( 'INIT_NCFILE: NF_DEF_VAR prof_ind_glob',
      &       err,bi,bj,myThid )
-        err = NF_PUT_ATT_INT( fid2, varid(1), 
+        err = NF_PUT_ATT_INT( fid2, varId(1), 
      &        '_FillValue', NF_INT, 1, 0 )
         CALL PROFILES_NF_ERROR( 'INIT_NCFILE: NF_PUT_ATT_INT varId(1)',
      &       err,bi,bj,myThid )
 
         DO num_var = 1, NVARMAX
           err = NF_INQ_VARID( fid1,
-     &          prof_names(num_file,num_var), varid0 )
+     &          prof_names(num_file,num_var), varId0 )
           IF (err.EQ.NF_NOERR) THEN
             WRITE(msgBuf,'(2A)')
      &       'S/R PROFILES_INIT_NCFILE: defining new variable ',
@@ -75,25 +75,25 @@ C1) Creation :
      &           standardMessageUnit, SQUEEZE_RIGHT, myThid )
 
             err = NF_DEF_VAR( fid2, prof_names(num_file,num_var),
-     &            NF_DOUBLE, 2, vecid, varid(2+(num_var-1)*2) )
+     &            NF_DOUBLE, 2, vecid, varId(2+(num_var-1)*2) )
             CALL PROFILES_NF_ERROR(
      &           'INIT_NCFILE: NF_DEF_VAR prof_names',
      &           err,bi,bj,myThid )
-            err = NF_PUT_ATT_DOUBLE( fid2, varid(2+(num_var-1)*2),
+            err = NF_PUT_ATT_DOUBLE( fid2, varId(2+(num_var-1)*2),
      &           '_FillValue', NF_DOUBLE, 1, 0. _d 0 )
             CALL PROFILES_NF_ERROR(
-     &           'INIT_NCFILE: NF_PUT_ATT_DOUBLE varid(2+(num_var-1)*2',
+     &           'INIT_NCFILE: NF_PUT_ATT_DOUBLE varId(2+(num_var-1)*2',
      &           err,bi,bj,myThid )
 
             err = NF_DEF_VAR( fid2, prof_namesmask(num_file,num_var),
-     &            NF_DOUBLE, 2, vecid, varid(3+(num_var-1)*2) )
+     &            NF_DOUBLE, 2, vecid, varId(3+(num_var-1)*2) )
             CALL PROFILES_NF_ERROR(
      &           'INIT_NCFILE: NF_DEF_VAR prof_namesmask',
      &           err,bi,bj,myThid )
-            err = NF_PUT_ATT_DOUBLE( fid2, varid(3+(num_var-1)*2),
+            err = NF_PUT_ATT_DOUBLE( fid2, varId(3+(num_var-1)*2),
      &            '_FillValue', NF_DOUBLE, 1, 0. _d 0 )
             CALL PROFILES_NF_ERROR(
-     &           'INIT_NCFILE: NF_PUT_ATT_DOUBLE varid(3+(num_var-1)*2',
+     &           'INIT_NCFILE: NF_PUT_ATT_DOUBLE varId(3+(num_var-1)*2',
      &           err,bi,bj,myThid )
 
           ELSE
