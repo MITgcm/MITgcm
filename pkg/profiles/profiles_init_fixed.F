@@ -46,8 +46,8 @@ C     !LOCAL VARIABLES:
       INTEGER chunk, chunkProf, c
       INTEGER i,j,bi,bj,iG,jG,num_file,num_var,ProfNo_tile
       INTEGER stopProfiles
-      INTEGER fid, dimid, varid1, varid1a, varid1b
-      INTEGER varid2,varid3
+      INTEGER fid, dimId, varId1, varId1a, varId1b
+      INTEGER varId2,varId3
       _RL tmpyymmdd(1000),tmphhmmss(1000),diffsecs
       _RL yymmddMin,yymmddMax
       _RL hhmmssMin,hhmmssMax
@@ -65,8 +65,8 @@ C     !LOCAL VARIABLES:
       INTEGER IL, JL, KL, err
       LOGICAL  exst
 
-      INTEGER varid_intp1, varid_intp2, varid_intp11 , varid_intp22
-      INTEGER varid_intp3, varid_intp4, varid_intp5, q, iINTERP
+      INTEGER varId_intp1, varId_intp2, varId_intp11 , varId_intp22
+      INTEGER varId_intp3, varId_intp4, varId_intp5, q, iINTERP
       _RL tmp_i(1000,NUM_INTERP_POINTS)
       _RL tmp_j(1000,NUM_INTERP_POINTS)
       _RL tmp_weights(1000,NUM_INTERP_POINTS),tmp_sum_weights
@@ -77,7 +77,7 @@ C     !LOCAL VARIABLES:
       INTEGER vec_start2(2), vec_count2(2)
       INTEGER hh, ProfNo_hh
 # ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
-      INTEGER varid4
+      INTEGER varId4
       _RL tmp_avgbin(1000)
 # endif /* ALLOW_PROFILES_SAMPLESPLIT_COST */
 
@@ -181,35 +181,44 @@ C===========================================================
               WRITE(fnamedatanc,'(2A)') profilesfile(1:IL),'.nc'
               err = NF_OPEN( fnamedatanc, NF_NOWRITE,
      &               fiddata(num_file,bi,bj) )
-              CALL PROFILES_NF_ERROR( 'INIT_FIXED 1: NF_OPEN:',
-     &             err,bi,bj,myThid )
+              CALL PROFILES_NF_ERROR( 
+     &             'INIT_FIXED: NF_OPEN fiddata',err,bi,bj,myThid )
 
-C1) Read the number of profiles:
+C1) Read the number of profiles and available dimensions:
               fid = fiddata(num_file,bi,bj)
-              err = NF_INQ_DIMID( fid, 'iPROF', dimid )
-              CALL PROFILES_NF_ERROR( 'INIT_FIXED 2: NF_INQ_DIMID:',
-     &             err,bi,bj,myThid )
-              err = NF_INQ_DIMLEN( fid, dimid, ProfNo(num_file,bi,bj) )
-              CALL PROFILES_NF_ERROR( 'INIT_FIXED 3: NF_INQ_DIMLEN:',
-     &             err,bi,bj,myThid )
-              err = NF_INQ_DIMID( fid, 'iDEPTH', dimid )
-              CALL PROFILES_NF_ERROR( 'INIT_FIXED 4: NF_INQ_DIMID:',
-     &             err,bi,bj,myThid )
+
+              err = NF_INQ_DIMID( fid, 'iPROF', dimId )
+              CALL PROFILES_NF_ERROR( 
+     &             'INIT_FIXED: NF_INQ_DIMID iPROF',err,bi,bj,myThid )
+              err = NF_INQ_DIMLEN( fid, dimId, ProfNo(num_file,bi,bj) )
+              CALL PROFILES_NF_ERROR( 
+     &             'INIT_FIXED: NF_INQ_DIMLEN ProfNo',err,bi,bj,myThid )
+
+              err = NF_INQ_DIMID( fid, 'iDEPTH', dimId )
+              CALL PROFILES_NF_ERROR(
+     &             'INIT_FIXED: NF_INQ_DIMID iDEPTH',err,bi,bj,myThid )
               IF (err.NE.NF_NOERR) THEN
-                err = NF_INQ_DIMID( fid, 'Z', dimid )
-                CALL PROFILES_NF_ERROR( 'INIT_FIXED 5: NF_INQ_DIMID:',
-     &               err,bi,bj,myThid )
+                err = NF_INQ_DIMID( fid, 'Z', dimId )
+                CALL PROFILES_NF_ERROR(
+     &               'INIT_FIXED: NF_INQ_DIMID Z',err,bi,bj,myThid )
+
               ENDIF
 
-              err = NF_INQ_DIMLEN( fid, dimid, 
-     &               ProfDepthNo(num_file,bi,bj) )
-              CALL PROFILES_NF_ERROR( 'INIT_FIXED 6: NF_INQ_DIMLEN:',
+              err = NF_INQ_DIMLEN( fid, dimId, 
+     &              ProfDepthNo(num_file,bi,bj) )
+              CALL PROFILES_NF_ERROR( 
+     &             'INIT_FIXED: NF_INQ_DIMLEN ProfDepthNo',
      &             err,bi,bj,myThid )
-              err = NF_INQ_DIMID( fid, 'iINTERP', dimid )
+
+              err = NF_INQ_DIMID( fid, 'iINTERP', dimId )
+              CALL PROFILES_NF_ERROR(
+     &             'INIT_FIXED: NF_INQ_DIMID iINTERP',err,bi,bj,myThid )
               IF (err.EQ.NF_NOERR) THEN
-                err = NF_INQ_DIMLEN( fid, dimid, iINTERP )
-                CALL PROFILES_NF_ERROR( 'INIT_FIXED 8: NF_INQ_DIMLEN:',
-     &              err,bi,bj,myThid )
+                err = NF_INQ_DIMLEN( fid, dimId, iINTERP )
+                CALL PROFILES_NF_ERROR(
+     &               'INIT_FIXED: NF_INQ_DIMLEN iINTERP',
+     &               err,bi,bj,myThid )
+
               ELSE
                 IF (debugLevel .GE. debLevA) THEN
                   WRITE(msgBuf,'(3A,I3)')
@@ -218,8 +227,11 @@ C1) Read the number of profiles:
      &             '= NUM_INTERP_POINTS =', NUM_INTERP_POINTS
                   CALL PRINT_MESSAGE( msgBuf,
      &                 standardMessageUnit, SQUEEZE_RIGHT, myThid )
+
                 ENDIF
+
                 iINTERP = NUM_INTERP_POINTS
+
               ENDIF
 
               WRITE(msgBuf,'(2(A,I4))')
@@ -239,14 +251,17 @@ C1) Read the number of profiles:
      &             standardMessageUnit, SQUEEZE_RIGHT, myThid )
 
 C2) Read dates and positions:
-              err = NF_INQ_VARID( fid,'prof_depth', varid1a )
-              CALL PROFILES_NF_ERROR( 'INIT_FIXED 9: NF_INQ_VARID:',
+              err = NF_INQ_VARID( fid,'prof_depth', varId1a )
+              CALL PROFILES_NF_ERROR(
+     &             'INIT_FIXED: NF_INQ_VARID prof_depth',
      &             err,bi,bj,myThid )
               IF (err.NE.NF_NOERR) THEN
-C If no prof_depth is found, then try old variable name:
-                err = NF_INQ_VARID( fid,'depth', varid1a )
-                CALL PROFILES_NF_ERROR( 'INIT_FIXED10: NF_INQ_VARID:',
+C LEGACY: Try old variable name: depth
+                err = NF_INQ_VARID( fid,'depth', varId1a )
+                CALL PROFILES_NF_ERROR(
+     &               'INIT_FIXED: NF_INQ_VARID depth',
      &               err,bi,bj,myThid )
+
               ENDIF
 
               IF (err.NE.NF_NOERR) THEN
@@ -263,27 +278,35 @@ C If neither is found, then stop
               ENDIF
 
               DO kProf = 1, ProfDepthNo(num_file,bi,bj)
-                err = NF_GET_VAR1_DOUBLE( fid,varid1a,kProf,
+                err = NF_GET_VAR1_DOUBLE( fid, varId1a, kProf,
      &                prof_depth(num_file,kProf,bi,bj) )
-                CALL PROFILES_NF_ERROR( 'INIT_FIXED: NF_GT_VAR1_DBL11:',
+                CALL PROFILES_NF_ERROR(
+     &               'INIT_FIXED: NF_VAR1_DOUBLE prof_depth',
      &               err,bi,bj,myThid )
+
               ENDDO
 
-              err = NF_INQ_VARID( fid,'prof_YYYYMMDD', varid1a )
-              CALL PROFILES_NF_ERROR( 'INIT_FIXED: NF_INQ_VARID12:',
+C Get time, lon, lat varIds 
+              err = NF_INQ_VARID( fid,'prof_YYYYMMDD', varId1a )
+              CALL PROFILES_NF_ERROR(
+     &             'INIT_FIXED: NF_INQ_VARID prof_YYYYMMDD',
      &             err,bi,bj,myThid )
-              err = NF_INQ_VARID( fid,'prof_HHMMSS', varid1b )
-              CALL PROFILES_NF_ERROR( 'INIT_FIXED: NF_INQ_VARID13:',
+              err = err + NF_INQ_VARID( fid,'prof_HHMMSS', varId1b )
+              CALL PROFILES_NF_ERROR(
+     &             'INIT_FIXED: NF_INQ_VARID prof_HHMMSS',
      &             err,bi,bj,myThid )
-              err = NF_INQ_VARID( fid,'prof_lon', varid2 )
-              CALL PROFILES_NF_ERROR( 'INIT_FIXED: NF_INQ_VARID14:',
+              err = err + NF_INQ_VARID( fid,'prof_lon', varId2 )
+              CALL PROFILES_NF_ERROR(
+     &             'INIT_FIXED: NF_INQ_VARID prof_lon',
      &             err,bi,bj,myThid )
-              err = NF_INQ_VARID( fid,'prof_lat', varid3 )
-              CALL PROFILES_NF_ERROR( 'INIT_FIXED: NF_INQ_VARID15:',
+              err = err + NF_INQ_VARID( fid,'prof_lat', varId3 )
+              CALL PROFILES_NF_ERROR(
+     &             'INIT_FIXED: NF_INQ_VARID prof_lat',
      &             err,bi,bj,myThid )
 # ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
-              err = NF_INQ_VARID( fid,'prof_bin_id_a', varid4 )
-              CALL PROFILES_NF_ERROR( 'INIT_FIXED: NF_INQ_VARID15a:',
+              err = NF_INQ_VARID( fid,'prof_bin_id_a', varId4 )
+              CALL PROFILES_NF_ERROR(
+     &             'INIT_FIXED: NF_INQ_VARID prof_bin_id_a',
      &             err,bi,bj,myThid )
 # endif /* ALLOW_PROFILES_SAMPLESPLIT_COST */
 
@@ -291,7 +314,7 @@ C If neither is found, then stop
                 IL = ILNBLNK( profilesfile )
                 WRITE(msgBuf,'(4A)')
      &           'PROFILES_INIT_FIXED: file ', profilesfile(1:IL),
-     &           '.nc is not in the pkg/profiles format', 
+     &           '.nc not in pkg/profiles format', 
      &           ' (no prof_YYYYMMDD etc.)'
                 CALL PRINT_ERROR( msgBuf, myThid )
                 
@@ -301,21 +324,47 @@ C If neither is found, then stop
 
               IF (profilesDoGenGrid) THEN
 C3) Read interpolation information (grid points, coeffs, etc.)
-                err = NF_INQ_VARID( fid,'prof_interp_XC11',varid_intp1 )
-                err = NF_INQ_VARID( fid,'prof_interp_YC11',varid_intp2 )
-                err = NF_INQ_VARID( fid,'prof_interp_XCNINJ',
-     &                varid_intp11 ) 
-                err = NF_INQ_VARID( fid,'prof_interp_YCNINJ',
-     &                varid_intp22 ) 
-                err = NF_INQ_VARID( fid,'prof_interp_weights',
-     &                varid_intp3 )
-                err = NF_INQ_VARID( fid,'prof_interp_i',varid_intp4 )
-                err = NF_INQ_VARID( fid,'prof_interp_j',varid_intp5 )
+                err = NF_INQ_VARID( fid,'prof_interp_XC11',
+     &                varId_intp1 )
+                CALL PROFILES_NF_ERROR(
+     &               'INIT_FIXED: NF_INQ_VARID prof_interp_XC11',
+     &               err,bi,bj,myThid )
+                err = err + NF_INQ_VARID( fid,'prof_interp_YC11',
+     &                varId_intp2 )
+                CALL PROFILES_NF_ERROR(
+     &               'INIT_FIXED: NF_INQ_VARID prof_interp_YC11',
+     &               err,bi,bj,myThid )
+                err = err + NF_INQ_VARID( fid,'prof_interp_XCNINJ',
+     &                varId_intp11 ) 
+                CALL PROFILES_NF_ERROR(
+     &               'INIT_FIXED: NF_INQ_VARID prof_interp_XCNINJ',
+     &               err,bi,bj,myThid )
+                err = err + NF_INQ_VARID( fid,'prof_interp_YCNINJ',
+     &                varId_intp22 ) 
+                CALL PROFILES_NF_ERROR(
+     &               'INIT_FIXED: NF_INQ_VARID prof_interp_YCNINJ',
+     &               err,bi,bj,myThid )
+                err = err + NF_INQ_VARID( fid,'prof_interp_weights',
+     &                varId_intp3 )
+                CALL PROFILES_NF_ERROR(
+     &               'INIT_FIXED: NF_INQ_VARID prof_interp_weights',
+     &               err,bi,bj,myThid )
+                err = err + NF_INQ_VARID( fid,'prof_interp_i',
+     &                varId_intp4 )
+                CALL PROFILES_NF_ERROR(
+     &               'INIT_FIXED: NF_INQ_VARID prof_interp_i',
+     &               err,bi,bj,myThid )
+                err = err + NF_INQ_VARID( fid,'prof_interp_j',
+     &                varId_intp5 )
+                CALL PROFILES_NF_ERROR(
+     &               'INIT_FIXED: NF_INQ_VARID prof_interp_j',
+     &               err,bi,bj,myThid )
+
                 IF (err.NE.NF_NOERR) THEN
                   IL = ILNBLNK( profilesfile )
                   WRITE(msgBuf,'(4A)')
      &             'PROFILES_INIT_FIXED: file ', profilesfile(1:IL),
-     &             '.nc is missing interpolation information',
+     &             '.nc missing interpolation information',
      &             ' (profilesDoGenGrid)'
                   CALL PRINT_ERROR( msgBuf, myThid )
 
@@ -334,11 +383,13 @@ C4) Default values
 # ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
                 prof_ind_avgbin(num_file,prof_num,bi,bj) = -999
 # endif /* ALLOW_PROFILES_SAMPLESPLIT_COST */
+
                 DO q = 1, NUM_INTERP_POINTS
                   prof_interp_i(num_file,prof_num,q,bi,bj) = 1
                   prof_interp_j(num_file,prof_num,q,bi,bj) = 1
                   prof_interp_weights(num_file,prof_num,q,bi,bj) =
      &             0. _d 0
+
                 ENDDO
 
                 prof_interp_xC11(num_file,prof_num,bi,bj) = -999. _d 0
@@ -348,16 +399,16 @@ C4) Default values
 
               ENDDO !DO prof_num
 
-C5) Main loop: look for profiles in this tile
+C5) Main loop: look for profiles in this bi,bj tile
               ProfNo_tile = 0
               profNo_div1000 = MAX(0, INT(ProfNo(num_file,bi,bj)/1000))
 
               DO chunkProf = 1, profno_div1000+1
+C5.1) Read a chunk
                 chunk = 1000*(chunkProf-1)
 
                 IF (MIN(ProfNo(num_file,bi,bj), 1000*chunkProf).GE.
      &              1+chunk) THEN
-C5.1) Read a chunk
                   vec_start(1) = 1
                   vec_start(2) = 1+chunk
                   vec_count(1) = 1
@@ -379,62 +430,89 @@ C5.1) Read a chunk
 
                   ENDIF
 
-                  err = NF_GET_VARA_DOUBLE( fid,varid1a,vec_start(2),
-     &                  vec_count(2), tmpyymmdd )
-                  CALL PROFILES_NF_ERROR( 'INIT_FIXD16: NF_GT_VRA_DBL:',
+                  err = NF_GET_VARA_DOUBLE( fid, varId1a,
+     &                  vec_start(2),vec_count(2), tmpyymmdd )
+                  CALL PROFILES_NF_ERROR(
+     &                 'INIT_FIXED: NF_GET_VARA_DOUBLE tmpyymmdd',
      &                 err,bi,bj,myThid )
-                  err = NF_GET_VARA_DOUBLE( fid,varid1b,vec_start(2),
-     &                  vec_count(2), tmphhmmss )
-                  CALL PROFILES_NF_ERROR( 'INIT_FIXD17: NF_GT_VRA_DBL:',
+                  err = err + NF_GET_VARA_DOUBLE( fid, varId1b,
+     &                        vec_start(2), vec_count(2), tmphhmmss )
+                  CALL PROFILES_NF_ERROR(
+     &                 'INIT_FIXED: NF_GET_VARA_DOUBLE tmphhmmss',
      &                 err,bi,bj,myThid )
-                  err = NF_GET_VARA_DOUBLE( fid,varid2,vec_start(2),
-     &                  vec_count(2), tmp_lon2 )
-                  CALL PROFILES_NF_ERROR( 'INIT_FIXD18: NF_GT_VRA_DBL:',
+                  err = err + NF_GET_VARA_DOUBLE( fid, varId2,
+     &                        vec_start(2),vec_count(2), tmp_lon2 )
+                  CALL PROFILES_NF_ERROR(
+     &                 'INIT_FIXED: NF_GET_VARA_DOUBLE tmp_lon2',
      &                 err,bi,bj,myThid )
-                  err = NF_GET_VARA_DOUBLE( fid,varid3,vec_start(2),
-     &                  vec_count(2), tmp_lat2 )
-                  CALL PROFILES_NF_ERROR( 'INIT_FIXD19: NF_GT_VRA_DBL:',
+                  err = err + NF_GET_VARA_DOUBLE( fid, varId3,
+     &                        vec_start(2),vec_count(2), tmp_lat2 )
+                  CALL PROFILES_NF_ERROR(
+     &                 'INIT_FIXED: NF_GET_VARA_DOUBLE tmp_lat2',
      &                 err,bi,bj,myThid )
 # ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
-                  err = NF_GET_VARA_DOUBLE( fid,varid4,vec_start(2),
-     &                  vec_count(2), tmp_avgbin )
-                  CALL PROFILES_NF_ERROR( 'INIT_FIXD19: NF_GT_VRA_DBL:',
+                  err = err + NF_GET_VARA_DOUBLE( fid, varId4,
+     &                        vec_start(2),vec_count(2), tmp_avgbin )
+                  CALL PROFILES_NF_ERROR(
+     &                 'INIT_FIXED: NF_GET_VARA_DOUBLE tmp_avgbin',
      &                 err,bi,bj,myThid )
 # endif /* ALLOW_PROFILES_SAMPLESPLIT_COST */
 
                   IF (err.NE.NF_NOERR) THEN
                     WRITE(msgBuf,'(3A)')
      &               'PROFILES_INIT_FIXED: file ', profilesfile(1:IL),
-     &               '.nc was not read properly (case 2).'
+     &               '.nc get_vara_double (case 2).'
                     CALL PRINT_ERROR( msgBuf, myThid )
 
                     stopProfiles = 1
 
                   ENDIF
 
-C If profilesDoGenGrid then also read in interpolation coeffs and indices
+C If profilesDoGenGrid, then also read interpolation coeffs and indices
                   IF (profilesDoGenGrid) THEN
-                    err = NF_GET_VARA_DOUBLE( fid,varid_intp1,
+                    err = NF_GET_VARA_DOUBLE( fid, varId_intp1,
      &                    vec_start(2),vec_count(2), tmp_xC11 )
-                    err = NF_GET_VARA_DOUBLE( fid,varid_intp2,
+                    CALL PROFILES_NF_ERROR(
+     &                   'INIT_FIXED: NF_GET_VARA_DOUBLE tmp_xC11',
+     &                   err,bi,bj,myThid )
+                    err = NF_GET_VARA_DOUBLE( fid, varId_intp2,
      &                    vec_start(2),vec_count(2), tmp_yC11 )
-                    err = NF_GET_VARA_DOUBLE( fid,varid_intp11,
+                    CALL PROFILES_NF_ERROR(
+     &                   'INIT_FIXED: NF_GET_VARA_DOUBLE tmp_yC11',
+     &                   err,bi,bj,myThid )
+                    err = NF_GET_VARA_DOUBLE( fid, varId_intp11,
      &                    vec_start(2),vec_count(2), tmp_xCNINJ )
-                    err = NF_GET_VARA_DOUBLE( fid,varid_intp22,
+                    CALL PROFILES_NF_ERROR(
+     &                   'INIT_FIXED: NF_GET_VARA_DOUBLE tmp_xCNINJ',
+     &                   err,bi,bj,myThid )
+                    err = NF_GET_VARA_DOUBLE( fid, varId_intp22,
      &                    vec_start(2),vec_count(2), tmp_yCNINJ )
+                    CALL PROFILES_NF_ERROR(
+     &                   'INIT_FIXED: NF_GET_VARA_DOUBLE tmp_yCNINJ',
+     &                   err,bi,bj,myThid )
 
                     DO q = 1, iINTERP
-                     vec_start2(1) = q
-                     vec_start2(2) = 1+chunk
-                     vec_count2(1) = 1
-                     vec_count2(2) = MIN(1000,
-     &                               ProfNo(num_file,bi,bj)-chunk)
-                     err = NF_GET_VARA_DOUBLE( fid,varid_intp3,
-     &                     vec_start2,vec_count2, tmp_weights(1,q) )
-                     err = NF_GET_VARA_DOUBLE( fid,varid_intp4,
-     &                     vec_start2,vec_count2, tmp_i(1,q) )
-                     err = NF_GET_VARA_DOUBLE(fid,varid_intp5,
-     &                     vec_start2,vec_count2, tmp_j(1,q) )
+                      vec_start2(1) = q
+                      vec_start2(2) = 1+chunk
+                      vec_count2(1) = 1
+                      vec_count2(2) = MIN(1000,
+     &                                ProfNo(num_file,bi,bj)-chunk)
+
+                      err = NF_GET_VARA_DOUBLE( fid, varId_intp3,
+     &                      vec_start2,vec_count2, tmp_weights(1,q) )
+                      CALL PROFILES_NF_ERROR(
+     &                     'INIT_FIXED: NF_GET_VARA_DOUBLE tmp_weights',
+     &                     err,bi,bj,myThid )
+                      err = NF_GET_VARA_DOUBLE( fid, varId_intp4,
+     &                      vec_start2,vec_count2, tmp_i(1,q) )
+                      CALL PROFILES_NF_ERROR(
+     &                     'INIT_FIXED: NF_GET_VARA_DOUBLE tmp_i',
+     &                     err,bi,bj,myThid )
+                      err = NF_GET_VARA_DOUBLE(fid, varId_intp5,
+     &                      vec_start2,vec_count2, tmp_j(1,q) )
+                      CALL PROFILES_NF_ERROR(
+     &                     'INIT_FIXED: NF_GET_VARA_DOUBLE tmp_j',
+     &                     err,bi,bj,myThid )
 
                     ENDDO
 
@@ -749,7 +827,10 @@ C6) Available variables in the data set
               DO num_var = 1, NVARMAX
                 JL = ILNBLNK( prof_names(num_file,num_var) )
                 err = NF_INQ_VARID( fid,
-                      prof_names(num_file,num_var)(1:JL),varid1 )
+                      prof_names(num_file,num_var)(1:JL), varId1 )
+                CALL PROFILES_NF_ERROR(
+     &               'INIT_FIXED: NF_INQ_VARID prof_names',
+     &               err,bi,bj,myThid )
                 IF (err.EQ.NF_NOERR) THEN
                   vec_quantities(num_file,num_var,bi,bj) = .TRUE.
 
@@ -765,6 +846,7 @@ C6) Available variables in the data set
      &                  ', setting corresponding vec_quantities = F'
                    CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                                 SQUEEZE_RIGHT, myThid )
+
                   ENDIF
 
                   vec_quantities(num_file,num_var,bi,bj) = .FALSE.
@@ -830,8 +912,9 @@ C===========================================================
                   ELSE
 C Obtain existing NetCDF file id
                     err = NF_OPEN( fnameequinc(1:JL), NF_WRITE,
-     &                    fidforward(num_file,bi,bj))
-                    CALL PROFILES_NF_ERROR( 'INIT_FIXED21: NF_OPEN:',
+     &                    fidforward(num_file,bi,bj) )
+                    CALL PROFILES_NF_ERROR(
+     &                   'INIT_FIXED: NF_OPEN fidforward',
      &                   err,bi,bj,myThid )
                   ENDIF
 
@@ -849,8 +932,9 @@ C Obtain existing NetCDF file id
 C Obtain existing NetCDF file id
                     err = NF_OPEN( adfnameequinc(1:JL), NF_WRITE,
      &                     fidadjoint(num_file,bi,bj) )
-                    CALL PROFILES_NF_ERROR( 'INIT_FIXED22: NF_OPEN:',
-     &                    err,bi,bj,myThid )
+                    CALL PROFILES_NF_ERROR(
+     &                   'INIT_FIXED: NF_OPEN fidadjoint',
+     &                   err,bi,bj,myThid )
                   ENDIF
 
 # endif /* ALLOW_ADJOINT_RUN */
@@ -868,8 +952,9 @@ C Obtain existing NetCDF file id
 C Obtain existing NetCDF file id
                     err = NF_OPEN( tlfnameequinc(1:JL), NF_WRITE,
      &                     fidtangent(num_file,bi,bj) )
-                    CALL PROFILES_NF_ERROR( 'INIT_FIXED23: NF_OPEN:',
-     &                    err,bi,bj,myThid )
+                    CALL PROFILES_NF_ERROR(
+     &                   'INIT_FIXED: NF_OPEN fidtangent',
+     &                   err,bi,bj,myThid )
                   ENDIF
 
 # endif /* ALLOW_TANGENTLINEAR_RUN */

@@ -67,21 +67,22 @@ C Initialize tiled cost function contributions.
               objf_profiles(num_file,num_var,bi,bj) = 0. _d 0
               num_profiles(num_file,num_var,bi,bj)  = 0. _d 0
               profiles_dummy(num_file,num_var,bi,bj) = 0. _d 0
-            ENDDO
-          ENDDO
+            ENDDO !DO num_var
+          ENDDO !DO num_file
 
           DO num_var = 1,NVARMAX
             objf_profiles_mean(num_var,bi,bj) = 0. _d 0
             num_profiles_mean(num_var,bi,bj) = 0. _d 0
-          ENDDO
+          ENDDO !DO num_var
+
 #ifdef ALLOW_GRDCHK
           IF (profilesDoNcOutput) then
             DO num_file = 1, NFILESPROFMAX
               IF (ProfNo(num_file,bi,bj).GT.0) THEN
 C Write data from buffer to .nc file
               err = NF_SYNC( fidforward(num_file,bi,bj) )
-              CALL PROFILES_NF_ERROR('INIT_VARIA: NF_SYNC',
-     &             err,bi,bj,myThid)
+              CALL PROFILES_NF_ERROR( 'INIT_VARIA: NF_SYNC fidforward',
+     &             err,bi,bj,myThid )
 
               ENDIF !IF (ProfNo
             ENDDO !DO num_file

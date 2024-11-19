@@ -68,7 +68,7 @@ CEOP
 
 #ifdef ALLOW_PROFILES
 C     !LOCAL VARIABLES:
-      INTEGER err, varId , vec_start(2), vec_count(2)
+      INTEGER err, varId, maskId, vec_start(2), vec_count(2)
       INTEGER i, ivar, jrec
       _RL     active_data_t(nactive_var)
       REAL*8  vec_tmp(nactive_var+1)
@@ -78,10 +78,18 @@ C     !LOCAL VARIABLES:
         vec_start(2)=irec
         vec_count(1)=nactive_var
         vec_count(2)=1
+
+C ESCO: Put a single NF_INQ_VARID for prof_names
+        err = NF_INQ_VARID( fid,
+     &        prof_names(active_num_file,active_varnum), varId )
+        CALL PROFILES_NF_ERROR( 'ACTIVE_READ: NF_INQ_VARID prof_names',
+     &       err,bi,bj,myThid )
+
       ELSE
         jrec = 2 * ( (irec-1)*prof_num_var_tot(active_num_file,bi,bj)
      &       + prof_num_var_cur(active_num_file,active_varnum,bi,bj)
      &       -1 )
+
       ENDIF
 
 C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
@@ -93,23 +101,21 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
         _BEGIN_MASTER( myThid )
 
         IF (profilesDoNcOutput) THEN
-
-          err = NF_INQ_VARID(fid,
-     &          prof_names(active_num_file,active_varnum), varId )
-          CALL PROFILES_NF_ERROR( 'active_read 1: NF_INQ_VARID:',
-     &         err,bi,bj,myThid )
-          err = NF_GET_VARA_DOUBLE(fid, varId , vec_start, vec_count,
-     &          active_var)
-          CALL PROFILES_NF_ERROR( 'active_read 2: NF_GET_VARA_DOUBLE:',
+          err = NF_GET_VARA_DOUBLE( fid, varId, vec_start, vec_count,
+     &          active_var )
+          CALL PROFILES_NF_ERROR( 
+     &         'ACTIVE_READ: NF_GET_VARA_DOUBLE active_var',
      &         err,bi,bj,myThid )
 
-          err = NF_INQ_VARID(fid,prof_namesmask(active_num_file,
-     &          active_varnum), varId)
-          CALL PROFILES_NF_ERROR( 'active_read 3: NF_INQ_VARID:',
+          err = NF_INQ_VARID( fid,
+                prof_namesmask(active_num_file,active_varnum), maskId )
+          CALL PROFILES_NF_ERROR( 
+     &         'ACTIVE_READ: NF_INQ_VARID prof_namesmask',
      &         err,bi,bj,myThid )
-          err = NF_GET_VARA_DOUBLE(fid, varId , vec_start, vec_count,
-     &          prof_mask1D_cur(1,bi,bj))
-          CALL PROFILES_NF_ERROR( 'active_read 4: NF_GET_VARA_DOUBLE:',
+          err = NF_GET_VARA_DOUBLE( fid, maskId, vec_start, vec_count,
+     &          prof_mask1D_cur(1,bi,bj) )
+          CALL PROFILES_NF_ERROR( 
+     &         'ACTIVE_READ: NF_GET_VARA_DOUBLE prof_mask1D_cur',
      &         err,bi,bj,myThid )
 
         ELSE
@@ -145,14 +151,10 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
         _BEGIN_MASTER( myThid )
 
         IF (profilesDoNcOutput) THEN
-
-          err = NF_INQ_VARID(fid,
-     &          prof_names(active_num_file,active_varnum), varId )
-          CALL PROFILES_NF_ERROR( 'active_read 5: NF_INQ_VARID:',
-     &         err,bi,bj,myThid )
-          err = NF_GET_VARA_DOUBLE(fid, varId , vec_start, vec_count,
-     &          active_data_t)
-          CALL PROFILES_NF_ERROR( 'active_read 6: NF_GET_VARA_DOUBLE:',
+          err = NF_GET_VARA_DOUBLE( fid, varId, vec_start, vec_count,
+     &          active_data_t )
+          CALL PROFILES_NF_ERROR( 
+     &         'ACTIVE_READ: NF_GET_VARA_DOUBLE AD active_data_t',
      &         err,bi,bj,myThid )
 
 C     Add active_var from appropriate location to data.
@@ -161,13 +163,10 @@ C     Add active_var from appropriate location to data.
           ENDDO
 C     Store the result on disk.
 
-          err = NF_INQ_VARID(fid,
-     &          prof_names(active_num_file,active_varnum), varId )
-          CALL PROFILES_NF_ERROR( 'active_read 7: NF_INQ_VARID:',
-     &         err,bi,bj,myThid )
-          err = NF_PUT_VARA_DOUBLE(fid, varId , vec_start, vec_count,
-     &          active_data_t)
-          CALL PROFILES_NF_ERROR( 'active_read 8: NF_PUT_VARA_DOUBLE:',
+          err = NF_PUT_VARA_DOUBLE(fid, varId, vec_start, vec_count,
+     &          active_data_t )
+          CALL PROFILES_NF_ERROR( 
+     &         'ACTIVE_READ: NF_PUT_VARA_DOUBLE AD active_data_t',
      &         err,bi,bj,myThid )
 
 C     Set active_var to zero.
@@ -219,14 +218,10 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
         _BEGIN_MASTER( myThid )
 
         IF (profilesDoNcOutput) THEN
-
-          err = NF_INQ_VARID(fid,
-     &          prof_names(active_num_file,active_varnum), varId )
-          CALL PROFILES_NF_ERROR( 'active_read 9: NF_INQ_VARID:',
-     &         err,bi,bj,myThid )
-          err = NF_GET_VARA_DOUBLE(fid, varId , vec_start, vec_count,
-     &          active_var)
-          CALL PROFILES_NF_ERROR( 'active_read 10: NF_GET_VARA_DOUBLE:',
+          err = NF_GET_VARA_DOUBLE( fid, varId, vec_start, vec_count,
+     &          active_var )
+          CALL PROFILES_NF_ERROR( 
+     &         'ACTIVE_READ: NF_GET_VARA_DOUBLE TL active_var',
      &         err,bi,bj,myThid )
 
         ELSE
@@ -300,7 +295,7 @@ CEOP
 
 #ifdef ALLOW_PROFILES
 C     !LOCAL VARIABLES:
-      INTEGER err, varId , vec_start(2), vec_count(2)
+      INTEGER err, varId, maskId, vec_start(2), vec_count(2)
       INTEGER i, ivar, jrec
       _RL     active_data_t(nactive_var)
       real*8  vec_tmp(nactive_var+1)
@@ -310,10 +305,18 @@ C     !LOCAL VARIABLES:
         vec_start(2)=irec
         vec_count(1)=nactive_var
         vec_count(2)=1
+
+C ESCO: Put a single NF_INQ_VARID for prof_names
+        err = NF_INQ_VARID( fid,
+     &        prof_names(active_num_file,active_varnum), varId )
+        CALL PROFILES_NF_ERROR( 'ACTIVE_WRITE: NF_INQ_VARID prof_names',
+     &       err,bi,bj,myThid )
+
       ELSE
         jrec = 2 * ( (irec-1)*prof_num_var_tot(active_num_file,bi,bj)
      &       + prof_num_var_cur(active_num_file,active_varnum,bi,bj)
      &       -1 )
+
       ENDIF
 
 C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
@@ -325,31 +328,30 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
         _BEGIN_MASTER( myThid )
 
         IF (profilesDoNcOutput) THEN
-
-          err = NF_INQ_VARID(fid,
-     &          prof_names(active_num_file,active_varnum), varId )
-          CALL PROFILES_NF_ERROR( 'active_write 1: NF_INQ_VARID:',
-     &         err,bi,bj,myThid )
-          err = NF_PUT_VARA_DOUBLE(fid, varId , vec_start, vec_count,
-     &          active_var)
-          CALL PROFILES_NF_ERROR( 'active_write 2: NF_PUT_VARA_DOUBLE',
+          err = NF_PUT_VARA_DOUBLE( fid, varId, vec_start, vec_count,
+     &          active_var )
+          CALL PROFILES_NF_ERROR( 
+     &         'ACTIVE_WRITE: NF_PUT_VARA_DOUBLE active_var',
      &         err,bi,bj,myThid )
 
-          err = NF_INQ_VARID(fid,prof_namesmask(active_num_file,
-     &          active_varnum), varId )
-          CALL PROFILES_NF_ERROR( 'active_write 3: NF_INQ_VARID:',
+          err = NF_INQ_VARID( fid,
+     &          prof_namesmask(active_num_file,active_varnum), maskId )
+          CALL PROFILES_NF_ERROR(
+     &         'ACTIVE_WRITE: NF_INQ_VARID prof_namesmask',
      &         err,bi,bj,myThid )
-          err = NF_PUT_VARA_DOUBLE(fid, varId , vec_start, vec_count,
-     &          prof_mask1D_cur(1,bi,bj))
-          CALL PROFILES_NF_ERROR( 'active_write 4: NF_PUT_VARA_DOUBLE',
+          err = NF_PUT_VARA_DOUBLE(fid, maskId, vec_start, vec_count,
+     &          prof_mask1D_cur(1,bi,bj) )
+          CALL PROFILES_NF_ERROR( 
+     &         'ACTIVE_WRITE: NF_PUT_VARA_DOUBLE prof_mask1D_cur',
      &         err,bi,bj,myThid )
 
-          err = NF_INQ_VARID(fid,'prof_ind_glob', varId )
-          CALL PROFILES_NF_ERROR( 'active_write 5: NF_INQ_VARID:',
+          err = NF_INQ_VARID( fid, 'prof_ind_glob', maskId )
+          CALL PROFILES_NF_ERROR(
+     &         'ACTIVE_WRITE: NF_INQ_VARID prof_ind_glob',
      &         err,bi,bj,myThid )
-          err = NF_PUT_VAR1_INT(fid, varId , vec_start(2),
-     &          irecglob)
-          CALL PROFILES_NF_ERROR( 'active_write 6: NF_PUT_VAR1_INT',
+          err = NF_PUT_VAR1_INT( fid, maskId, vec_start(2), irecglob )
+          CALL PROFILES_NF_ERROR( 
+     &         'ACTIVE_WRITE: NF_PUT_VAR1_INT irecglob',
      &         err,bi,bj,myThid )
 
         ELSE
@@ -386,14 +388,10 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
         _BEGIN_MASTER( myThid )
 
         IF (profilesDoNcOutput) THEN
-
-          err = NF_INQ_VARID(fid,
-     &          prof_names(active_num_file,active_varnum), varId )
-          CALL PROFILES_NF_ERROR( 'active_write 6: NF_INQ_VARID:',
-     &         err,bi,bj,myThid )
-          err = NF_GET_VARA_DOUBLE(fid, varId , vec_start, vec_count,
-     &          active_data_t)
-          CALL PROFILES_NF_ERROR( 'active_write 6: NF_GET_VARA_DOUBLE',
+          err = NF_GET_VARA_DOUBLE( fid, varId, vec_start, vec_count,
+     &          active_data_t )
+          CALL PROFILES_NF_ERROR( 
+     &         'ACTIVE_WRITE: NF_GET_VARA_DOUBLE AD active_data_t',
      &         err,bi,bj,myThid )
 
 C     Add active_var to data.
@@ -402,13 +400,10 @@ C     Add active_var to data.
             active_data_t(i) = 0. _d 0
           ENDDO
 
-          err = NF_INQ_VARID(fid,
-     &          prof_names(active_num_file,active_varnum), varId )
-          CALL PROFILES_NF_ERROR( 'active_write 8: NF_INQ_VARID:',
-     &         err,bi,bj,myThid )
-          err = NF_PUT_VARA_DOUBLE(fid, varId , vec_start, vec_count,
-     &          active_data_t)
-          CALL PROFILES_NF_ERROR( 'active_write 9: NF_PUT_VARA_DOUBLE',
+          err = NF_PUT_VARA_DOUBLE( fid, varId, vec_start, vec_count,
+     &          active_data_t )
+          CALL PROFILES_NF_ERROR( 
+     &         'ACTIVE_WRITE: NF_PUT_VARA_DOUBLE AD active_data_t',
      &         err,bi,bj,myThid )
 
         ELSE
@@ -451,14 +446,10 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
         _BEGIN_MASTER( myThid )
 
         IF (profilesDoNcOutput) THEN
-
-          err = NF_INQ_VARID(fid,
-     &          prof_names(active_num_file,active_varnum), varId )
-          CALL PROFILES_NF_ERROR( 'active_write10: NF_INQ_VARID:',
-     &         err,bi,bj,myThid )
-          err = NF_PUT_VARA_DOUBLE(fid, varId , vec_start, vec_count,
-     &          active_var)
-          CALL PROFILES_NF_ERROR( 'active_write 9: NF_PUT_VARA_DOUBLE',
+          err = NF_PUT_VARA_DOUBLE( fid, varId, vec_start, vec_count,
+     &          active_var )
+          CALL PROFILES_NF_ERROR( 
+     &         'ACTIVE_WRITE: NF_PUT_VARA_DOUBLE TL active_var',
      &         err,bi,bj,myThid )
 
         ELSE

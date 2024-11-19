@@ -49,10 +49,10 @@ C     !LOCAL VARIABLES:
      &     (irec.GT.profiles_maxind_buff(bi,bj)) .OR.
      &     (profiles_curfile_buff(bi,bj).NE.fNb) ) THEN
         err = NF_INQ_DIMID(fiddata(fNb,bi,bj),'iPROF', varid1)
-        CALL PROFILES_NF_ERROR( 'readvector 1: NF_INQ_DIMID',
+        CALL PROFILES_NF_ERROR( 'READVECTOR: NF_INQ_DIMID fiddata',
      &       err,bi,bj,myThid )
         err = NF_INQ_DIMLEN( fiddata(fNb,bi,bj), varid1, tmpprofno )
-        CALL PROFILES_NF_ERROR( 'readvector 1: NF_INQ_DIMLEN',
+        CALL PROFILES_NF_ERROR( 'READVECTOR: NF_INQ_DIMLEN tmpprofno',
      &       err,bi,bj,myThid )
 
         IF (profiles_curfile_buff(bi,bj).NE.fNb) THEN
@@ -92,26 +92,38 @@ C Implies that a forward loop is calling
         DO num_var = 1, NVARMAX
           IF (vec_quantities(fNb,num_var,bi,bj).EQV..TRUE.) THEN
             err = NF_INQ_VARID( fiddata(fNb,bi,bj),
-     &            prof_names(fNb,num_var),varid1 )
-            CALL PROFILES_NF_ERROR( 'readvector 3: NF_INQ_VARID',
-     &            err,bi,bj,myThid )
-            err = NF_GET_VARA_DOUBLE( fiddata(fNb,bi,bj),varid1, 
-     &            vec_start,vec_count, vec_tmp1 )
-            CALL PROFILES_NF_ERROR( 'readvector 4: NF_GET_VARA_DOUBLE',
+     &            prof_names(fNb,num_var), varid1 )
+            CALL PROFILES_NF_ERROR(
+     &           'READVECTOR: NF_INQ_VARID prof_names',
      &           err,bi,bj,myThid )
+            err = NF_GET_VARA_DOUBLE( fiddata(fNb,bi,bj), varid1, 
+     &            vec_start, vec_count, vec_tmp1 )
+            CALL PROFILES_NF_ERROR(
+     &           'READVECTOR: NF_GET_VARA_DOUBLE vec_tmp1',
+     &           err,bi,bj,myThid )
+
             err = NF_INQ_VARID( fiddata(fNb,bi,bj),
-     &            prof_namesweight(fNb,num_var),varid1 )
-            CALL PROFILES_NF_ERROR( 'readvector 5: NF_INQ_VARID',
+     &            prof_namesweight(fNb,num_var), varid1 )
+            CALL PROFILES_NF_ERROR(
+     &           'READVECTOR: NF_INQ_VARID prof_namesweight',
      &           err,bi,bj,myThid )
             err = NF_GET_VARA_DOUBLE( fiddata(fNb,bi,bj),
-     &            varid1,vec_start,vec_count, vec_tmp2 )
-            CALL PROFILES_NF_ERROR( 'readvector 6: NF_GET_VARA_DOUBLE',
-     &            err,bi,bj,myThid )
+     &            varid1, vec_start, vec_count, vec_tmp2 )
+            CALL PROFILES_NF_ERROR(
+     &           'READVECTOR: NF_GET_VARA_DOUBLE vec_tmp2',
+     &           err,bi,bj,myThid )
+
 # ifdef ALLOW_PROFILES_CLIMMASK
             err = NF_INQ_VARID( fiddata(fNb,bi,bj),
      &            prof_namesclim(fNb,num_var),varid1 )
+            CALL PROFILES_NF_ERROR(
+     &           'READVECTOR: NF_INQ_VARID prof_namesclim',
+     &           err,bi,bj,myThid )
             err = NF_GET_VARA_DOUBLE( fiddata(fNb,bi,bj),
      &            varid1,vec_start,vec_count, vec_tmp3 )
+            CALL PROFILES_NF_ERROR(
+     &           'READVECTOR: NF_GET_VARA_DOUBLE vec_tmp3',
+     &           err,bi,bj,myThid )
 # endif
 
             IF (err.NE.NF_NOERR) THEN

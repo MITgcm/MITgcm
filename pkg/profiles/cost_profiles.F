@@ -131,12 +131,13 @@ C Initialize
       DO bj = 1, nSy
         DO bi = 1, nSx
           DO num_file = 1, NFILESPROFMAX
-
             IF ( (ProfNo(num_file,bi,bj).GT.0) .AND.
      &           (profilesDoNcOutput) ) THEN
 C Write data from buffer to .nc file
               err = NF_SYNC( fidforward(num_file,bi,bj) )
-              CALL PROFILES_NF_ERROR('COST: NF_SYNC', err,bi,bj,myThid)
+              CALL PROFILES_NF_ERROR( 'COST: NF_SYNC fidforward',
+     &             err,bi,bj,myThid )
+
             ENDIF
 
 C Find vertical indices
@@ -397,14 +398,14 @@ C prof_weights1D_all_mean is still sigam^2. Convert to weight
 
       DO bj = 1, nSy
         DO bi = 1, nSx
-
           DO num_file = 1, NFILESPROFMAX
-
             IF ( (ProfNo(num_file,bi,bj).GT.0) .AND.
      &           (profilesDoNcOutput) ) THEN
 C Sync file so that data is not lost when run finishes
-              err = NF_SYNC(fidforward(num_file,bi,bj))
-              CALL PROFILES_NF_ERROR('COST: NF_SYNC', err,bi,bj,myThid)
+              err = NF_SYNC( fidforward(num_file,bi,bj) )
+              CALL PROFILES_NF_ERROR( 'COST: NF_SYNC fidforward',
+     &             err,bi,bj,myThid )
+
             ENDIF
 
             DO prof_num = 1, NOBSGLOB
