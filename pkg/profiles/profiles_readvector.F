@@ -29,12 +29,14 @@ C     == Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid :: my Thread Id number
-      INTEGER vec_loc_length, vNb, k, kk, kkk,bi,bj
-      INTEGER irec, fNb, myThid,err,varid1,tmpprofno
+      INTEGER vec_loc_length,vNb,bi,bj
+      INTEGER irec,fNb,myThid
       _RL vec_loc(vec_loc_length)
 CEOP
 
 C     !LOCAL VARIABLES:
+      INTEGER num_var,v1,v2
+      INTEGER err,varid1,tmpprofno
 #ifdef ALLOW_PROFILES
       INTEGER vec_start(2),vec_count(2)
       _RL vec_tmp1(1000*NLEVELMAX),vec_tmp2(1000*NLEVELMAX)
@@ -87,10 +89,10 @@ C Implies that a forward loop is calling
         vec_count(2) =
      &   profiles_maxind_buff(bi,bj)-profiles_minind_buff(bi,bj)+1
 
-        DO kkk = 1, NVARMAX
-          IF (vec_quantities(fNb,kkk,bi,bj).EQV..TRUE.) THEN
-            err = NF_INQ_VARID( fiddata(fNb,bi,bj),prof_names(fNb,kkk),
-     &            varid1 )
+        DO num_var = 1, NVARMAX
+          IF (vec_quantities(fNb,num_var,bi,bj).EQV..TRUE.) THEN
+            err = NF_INQ_VARID( fiddata(fNb,bi,bj),
+     &            prof_names(fNb,num_var),varid1 )
             CALL PROFILES_NF_ERROR( 'readvector 3: NF_INQ_VARID',
      &            err,bi,bj,myThid )
             err = NF_GET_VARA_DOUBLE( fiddata(fNb,bi,bj),varid1, 
@@ -98,18 +100,18 @@ C Implies that a forward loop is calling
             CALL PROFILES_NF_ERROR( 'readvector 4: NF_GET_VARA_DOUBLE',
      &           err,bi,bj,myThid )
             err = NF_INQ_VARID( fiddata(fNb,bi,bj),
-     &            prof_namesweight(fNb,kkk),varid1 )
+     &            prof_namesweight(fNb,num_var),varid1 )
             CALL PROFILES_NF_ERROR( 'readvector 5: NF_INQ_VARID',
      &           err,bi,bj,myThid )
             err = NF_GET_VARA_DOUBLE( fiddata(fNb,bi,bj),
-     &            varid1,vec_start,vec_count,vec_tmp2 )
+     &            varid1,vec_start,vec_count, vec_tmp2 )
             CALL PROFILES_NF_ERROR( 'readvector 6: NF_GET_VARA_DOUBLE',
      &            err,bi,bj,myThid )
 # ifdef ALLOW_PROFILES_CLIMMASK
             err = NF_INQ_VARID( fiddata(fNb,bi,bj),
-     &            prof_namesclim(fNb,kkk), varid1 )
+     &            prof_namesclim(fNb,num_var),varid1 )
             err = NF_GET_VARA_DOUBLE( fiddata(fNb,bi,bj),
-     &            varid1,vec_start,vec_count,vec_tmp3 )
+     &            varid1,vec_start,vec_count, vec_tmp3 )
 # endif
 
             IF (err.NE.NF_NOERR) THEN
@@ -117,39 +119,39 @@ C Implies that a forward loop is calling
      &         'WARNING PROFILES_READVECTOR: record not found!!'
             ENDIF
 
-            DO k = 1, vec_count(1)
-              DO kk = 1, vec_count(2)
-                profiles_data_buff(k,kk,kkk,bi,bj) =
-     &           vec_tmp1((kk-1)*vec_count(1)+k)
+            DO v1 = 1, vec_count(1)
+              DO v2 = 1, vec_count(2)
+                profiles_data_buff(v1,v2,num_var,bi,bj) =
+     &           vec_tmp1((v2-1)*vec_count(1)+v1)
 
-                profiles_weight_buff(k,kk,kkk,bi,bj) =
-     &           vec_tmp2((kk-1)*vec_count(1)+k)
+                profiles_weight_buff(v1,v2,num_var,bi,bj) =
+     &           vec_tmp2((v2-1)*vec_count(1)+v1)
 
-# ifdef ALLOW_PROFILES_CLIMMASK
-                IF (vec_tmp3((kk-1)*vec_count(1)+k).LE.-990. _d 0)
-     &              profiles_weight_buff(k,kk,kkk,bi,bj) = 0. _d 0
+# ifdef ALLOW_PROFILES_CLIMMASv1
+                IF (vec_tmp3((v2-1)*vec_count(1)+v1).LE.-990. _d 0)
+     &              profiles_weight_buff(v1,v2,num_var,bi,bj) = 0. _d 0
 
 # endif
-              ENDDO !DO kk
-            ENDDO !DO k
+              ENDDO !DO v2
+            ENDDO !DO v1
 
-          ENDIF !IF (vecquantities
-        ENDDO !DO kkk
+          ENDIF !IF (vec_quantities
+        ENDDO !DO num_var
 
         profiles_curfile_buff(bi,bj) = fNb
       ENDIF !IF ( (irec.LT.profiles_minid
 
 C Get vec_loc from the buffer
       IF (vNb.LT.0) THEN
-        DO k=1,vec_loc_length
-          vec_loc(k) = profiles_weight_buff
-     &     (k,irec-profiles_minind_buff(bi,bj)+1,-vNb,bi,bj)
+        DO v1 = 1, vec_loc_length
+          vec_loc(v1) = profiles_weight_buff
+     &     (v1,irec-profiles_minind_buff(bi,bj)+1,-vNb,bi,bj)
         ENDDO
 
       ELSE
-        DO k=1,vec_loc_length
-          vec_loc(k) = profiles_data_buff
-     &     (k,irec-profiles_minind_buff(bi,bj)+1,vNb,bi,bj)
+        DO v1 = 1, vec_loc_length
+          vec_loc(v1) = profiles_data_buff
+     &     (v1,irec-profiles_minind_buff(bi,bj)+1,vNb,bi,bj)
         ENDDO
       ENDIF
 

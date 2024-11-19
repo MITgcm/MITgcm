@@ -50,7 +50,8 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
 #ifdef ALLOW_PROFILES
-      INTEGER K,num_file,num_var,prof_num
+      INTEGER kLev, kC, kCMax, kProf
+      INTEGER num_file,num_var,prof_num
       INTEGER bi,bj
       _RL prof_traj1D(NLEVELMAX), prof_traj1D_mean(NLEVELMAX)
       _RL prof_data1D(NLEVELMAX), prof_weights1D(NLEVELMAX)
@@ -109,12 +110,12 @@ C     !LOCAL VARIABLES:
 C Initialize
       DO iavgbin = 1, NAVGBINMAX
         avgbinglbsum(iavgbin) = 0
-        DO ikzz = 1, NLEVELCOMBMAX
+        DO kCMax = 1, NLEVELCOMBMAX
           DO num_var = 1, NVARMAX
-            prof_traj1D_all_mean(iavgbin,ikzz,num_var) = 0. _d 0
-            prof_data1D_all_mean(iavgbin,ikzz,num_var) = 0. _d 0
-            prof_weights1D_all_mean(iavgbin,ikzz,num_var) = 0. _d 0
-            prof_count1D_all_mean(iavgbin,ikzz,num_var) = 0. _d 0
+            prof_traj1D_all_mean(iavgbin,kCMax,num_var) = 0. _d 0
+            prof_data1D_all_mean(iavgbin,kCMax,num_var) = 0. _d 0
+            prof_weights1D_all_mean(iavgbin,kCMax,num_var) = 0. _d 0
+            prof_count1D_all_mean(iavgbin,kCMax,num_var) = 0. _d 0
           ENDDO
         ENDDO
       ENDDO
@@ -139,30 +140,32 @@ C Write data from buffer to .nc file
             ENDIF
 
 C Find vertical indices
-            DO K = 1, NLEVELMAX
-              prof_lev_comb(K,num_file,bi,bj) = -999
-              IF (K.LE.ProfDepthNo(num_file,bi,bj)) THEN
-                DO k2 = 1, NLEVELCOMB
-                  IF (prof_depth(num_file,K,bi,bj).EQ.
-     &                prof_depth_comb(k2,bi,bj) .AND.
-     &                prof_depth_comb(k2,bi,bj).GE.0. _d 0 .AND.
-     &                prof_lev_comb(K,num_file,bi,bj).EQ.-999) THEN
-                    prof_lev_comb(K,num_file,bi,bj) = k2
+            DO kLev = 1, NLEVELMAX
+              prof_lev_comb(kLev,num_file,bi,bj) = -999
+
+              IF (kLev.LE.ProfDepthNo(num_file,bi,bj)) THEN
+                DO kC = 1, NLEVELCOMB
+                  IF (prof_depth(num_file,kLev,bi,bj).EQ.
+     &                prof_depth_comb(kC,bi,bj) .AND.
+     &                prof_depth_comb(kC,bi,bj).GE.0. _d 0 .AND.
+     &                prof_lev_comb(kLev,num_file,bi,bj).EQ.-999) THEN
+                    prof_lev_comb(kLev,num_file,bi,bj) = kC
                   ENDIF
                 ENDDO
               ENDIF
+
             ENDDO
 
             DO num_var = 1, NVARMAX
               IF (vec_quantities(num_file,num_var,bi,bj).EQV..TRUE.) THEN
                 DO prof_num = 1, NOBSGLOB
                   IF (prof_num.LE.ProfNo(num_file,bi,bj)) THEN
-
-                    DO K = 1, NLEVELMAX
-                      prof_traj1D(K)=0.
-                      prof_data1D(K)=0.
-                      prof_weights1D(K)=0.
+                    DO kLev = 1, NLEVELMAX
+                      prof_traj1D(kLev) = 0.
+                      prof_data1D(kLev) = 0.
+                      prof_weights1D(kLev) = 0.
                     ENDDO
+
                     ix9 = prof_interp_i(num_file,prof_num,1,bi,bj)
                     iy9 = prof_interp_j(num_file,prof_num,1,bi,bj)
 
@@ -191,34 +194,40 @@ C Find vertical indices
      &                     ProfDepthNo(num_file,bi,bj),prof_weights1D,
      &                     bi,bj,myThid )
 
-                      DO K = 1, ProfDepthNo(num_file,bi,bj)
-                        IF (prof_weights1D(K).GT.0. _d 0 .AND.
-     &                      prof_mask1D_cur(K,bi,bj).NE. 0. _d 0 ) THEN
+                      DO kProf = 1, ProfDepthNo(num_file,bi,bj)
+                        IF (prof_weights1D(kProf).GT.0. _d 0 .AND.
+     &                      prof_mask1D_cur(kProf,bi,bj).NE. 0. _d 0 ) THEN
                           prof_traj1D_all_mean(itmp,
-     &                     prof_lev_comb(K,num_file,bi,bj),num_var)
+     &                     prof_lev_comb(kProf,num_file,bi,bj),num_var)
      &                     = prof_traj1D_all_mean(itmp,
-     &                        prof_lev_comb(K,num_file,bi,bj), num_var)
-     &                     + prof_traj1D(K)
+     &                        prof_lev_comb(kProf,num_file,bi,bj),
+     &                        num_var)
+     &                       + prof_traj1D(kProf)
 
                           prof_data1D_all_mean(itmp,
-     &                     prof_lev_comb(K,num_file,bi,bj), num_var)
+     &                     prof_lev_comb(kProf,num_file,bi,bj), num_var)
      &                     = prof_data1D_all_mean(itmp,
-     &                        prof_lev_comb(K,num_file,bi,bj), num_var)
-     &                     + prof_data1D(K)
+     &                        prof_lev_comb(kProf,num_file,bi,bj),
+     &                        num_var)
+     &                       + prof_data1D(kProf)
 
                           prof_weights1D_all_mean(itmp,
-     &                     prof_lev_comb(K,num_file,bi,bj), num_var)
+     &                     prof_lev_comb(kProf,num_file,bi,bj), num_var)
      &                     = prof_weights1D_all_mean(itmp,
-     &                        prof_lev_comb(K,num_file,bi,bj), num_var)
-     &                     + 1. _d 0 / prof_weights1D(K)
+     &                        prof_lev_comb(kProf,num_file,bi,bj),
+     &                        num_var)
+     &                       + 1. _d 0 / prof_weights1D(kProf)
 
                           prof_count1D_all_mean(itmp,
-     &                     prof_lev_comb(K,num_file,bi,bj), num_var)
+     &                     prof_lev_comb(kProf,num_file,bi,bj), num_var)
      &                     = prof_count1D_all_mean(itmp,
-     &                        prof_lev_comb(K,num_file,bi,bj), num_var)
-     &                     + 1. _d 0
+     &                        prof_lev_comb(kProf,num_file,bi,bj),
+     &                        num_var)
+     &                       + 1. _d 0
+
                         ENDIF
-                      ENDDO !DO K = 1, ProfDepthNo
+                      ENDDO !DO kProf = 1, ProfDepthNo
+
                     ENDIF !IF (ix9 .GE. 0. _d 0 .AND. iy9 .GE. 0. _d 0)
 
                   ENDIF !IF (prof_num.LE.ProfNo(num_file,bi,bj))
@@ -254,75 +263,75 @@ C Accumulate globally
 
         IF (doglbsum) THEN
           DO iavgbin = 1, NAVGBIN
-             DO ikzz = 1, NLEVELCOMB
-               tmpr6 = prof_count1D_all_mean(iavgbin,ikzz,num_var)
+             DO kC = 1, NLEVELCOMB
+               tmpr6 = prof_count1D_all_mean(iavgbin,kC,num_var)
                _GLOBAL_SUM_RL( tmpr6, myThid )
-               prof_count1D_all_mean(iavgbin,ikzz,num_var) = tmpr6
+               prof_count1D_all_mean(iavgbin,kC,num_var) = tmpr6
 
-               tmpr9 = prof_weights1D_all_mean(iavgbin,ikzz,num_var)
+               tmpr9 = prof_weights1D_all_mean(iavgbin,kC,num_var)
                _GLOBAL_SUM_RL( tmpr9, myThid )
-               prof_weights1D_all_mean(iavgbin,ikzz,num_var) = tmpr9
+               prof_weights1D_all_mean(iavgbin,kC,num_var) = tmpr9
 
-               tmpr7 = prof_traj1D_all_mean(iavgbin,ikzz,num_var)
+               tmpr7 = prof_traj1D_all_mean(iavgbin,kC,num_var)
                _GLOBAL_SUM_RL( tmpr7, myThid )
-               prof_traj1D_all_mean(iavgbin,ikzz,num_var) = tmpr7
+               prof_traj1D_all_mean(iavgbin,kC,num_var) = tmpr7
 
-               tmpr8 = prof_data1D_all_mean(iavgbin,ikzz,num_var)
+               tmpr8 = prof_data1D_all_mean(iavgbin,kC,num_var)
                _GLOBAL_SUM_RL( tmpr8, myThid )
-               prof_data1D_all_mean(iavgbin,ikzz,num_var) = tmpr8
-             ENDDO !DO ikzz
+               prof_data1D_all_mean(iavgbin,kC,num_var) = tmpr8
+             ENDDO !DO kC
           ENDDO !DO iavgbin
         ENDIF
       ENDDO !DO num_var
 
 C Now do the averaging
       DO iavgbin = 1, NAVGBIN
-        DO ikzz = 1, NLEVELCOMB
+        DO kC = 1, NLEVELCOMB
           DO num_var = 1, NVARMAX
             tmp_recip_count = 0. _d 0
-            IF (prof_count1D_all_mean(iavgbin,ikzz,num_var).GT.0) THEN
+            IF (prof_count1D_all_mean(iavgbin,kC,num_var).GT.0) THEN
               tmp_recip_count = 1. _d 0 /
-     &           prof_count1D_all_mean(iavgbin,ikzz,num_var)
+     &           prof_count1D_all_mean(iavgbin,kC,num_var)
 
-              prof_traj1D_all_mean(iavgbin,ikzz,num_var)
-     &         = prof_traj1D_all_mean(iavgbin,ikzz,num_var)*
+              prof_traj1D_all_mean(iavgbin,kC,num_var)
+     &         = prof_traj1D_all_mean(iavgbin,kC,num_var)*
      &           tmp_recip_count
 
-              prof_data1D_all_mean(iavgbin,ikzz,num_var)
-     &         = prof_data1D_all_mean(iavgbin,ikzz,num_var)*
+              prof_data1D_all_mean(iavgbin,kC,num_var)
+     &         = prof_data1D_all_mean(iavgbin,kC,num_var)*
      &           tmp_recip_count
 
-              prof_weights1D_all_mean(iavgbin,ikzz,num_var)
-     &         = prof_weights1D_all_mean(iavgbin,ikzz,num_var)*
+              prof_weights1D_all_mean(iavgbin,kC,num_var)
+     &         = prof_weights1D_all_mean(iavgbin,kC,num_var)*
      &           tmp_recip_count
 
             ENDIF
           ENDDO !DO num_var 
-        ENDDO !DO ikzz 
+        ENDDO !DO kC 
       ENDDO !DO iavgbin
 
       DO iavgbin = 1, NAVGBIN
-        DO ikzz = 1, NLEVELCOMB
+        DO kC = 1, NLEVELCOMB
           DO num_var = 1, NVARMAX
-            IF (prof_count1D_all_mean(iavgbin,ikzz,num_var).GT.0) THEN
+            IF (prof_count1D_all_mean(iavgbin,kC,num_var).GT.0) THEN
 C Assuming each averaging bin has a maximum of 9 independent measurements.
-              tmp11 = prof_weights1D_all_mean(iavgbin,ikzz,num_var)
-     &              / prof_count1D_all_mean(iavgbin,ikzz,num_var)
+              tmp11 = prof_weights1D_all_mean(iavgbin,kC,num_var)
+     &         / prof_count1D_all_mean(iavgbin,kC,num_var)
 
-              tmp12 = prof_weights1D_all_mean(iavgbin,ikzz,num_var)
-     &              * recip_profiles_mean_indsamples(num_var)
+              tmp12 = prof_weights1D_all_mean(iavgbin,kC,num_var)
+     &         * recip_profiles_mean_indsamples(num_var)
               
-              prof_weights1D_all_mean(iavgbin,ikzz,num_var)
-     &              = MAX(tmp11, tmp12)
+              prof_weights1D_all_mean(iavgbin,kC,num_var) = 
+     &         MAX(tmp11, tmp12)
 
 C prof_weights1D_all_mean is still sigam^2. Convert to weight
-              IF (prof_weights1D_all_mean(iavgbin,ikzz,num_var)
+              IF (prof_weights1D_all_mean(iavgbin,kC,num_var)
      &            .NE.0. _d 0)
-     &          prof_weights1D_all_mean(iavgbin,ikzz,num_var) =
-     &           1. _d 0 / prof_weights1D_all_mean(iavgbin,ikzz,num_var)
+     &          prof_weights1D_all_mean(iavgbin,kC,num_var) =
+     &           1. _d 0 / prof_weights1D_all_mean(iavgbin,kC,num_var)
             ENDIF
           ENDDO !DO num_var
-        ENDDO !DO ikzz 
+        ENDDO !DO kC 
       ENDDO !DO iavgbin 
 
       IF (myProcId.EQ.0) THEN
@@ -335,10 +344,10 @@ C prof_weights1D_all_mean is still sigam^2. Convert to weight
           OPEN( cunit, FILE = cfile, STATUS = 'unknown',
      &          ACCESS = 'direct', RECL = NAVGBINMAX*4 )
 
-          DO ikzz = 1, NLEVELCOMB
+          DO kC = 1, NLEVELCOMB
             tmp99(1:NAVGBINMAX) =
-     &        prof_data1D_all_mean(1:NAVGBINMAX,ikzz,num_var)
-            WRITE(cunit,rec=ikzz) tmp99
+     &        prof_data1D_all_mean(1:NAVGBINMAX,kC,num_var)
+            WRITE(cunit,REC = kC) tmp99
           ENDDO
           CLOSE( cunit )
 
@@ -348,10 +357,10 @@ C prof_weights1D_all_mean is still sigam^2. Convert to weight
           OPEN( cunit, FILE = cfile, STATUS = 'unknown',
      &          ACCESS = 'direct', RECL = NAVGBINMAX*4 )
 
-          DO ikzz = 1, NLEVELCOMB
+          DO kC = 1, NLEVELCOMB
             tmp99(1:NAVGBINMAX) =
-     &        prof_traj1D_all_mean(1:NAVGBINMAX,ikzz,num_var)
-            WRITE(cunit,rec=ikzz) tmp99
+     &        prof_traj1D_all_mean(1:NAVGBINMAX,kC,num_var)
+            WRITE(cunit,REC = kC) tmp99
           ENDDO
           CLOSE( cunit )
 
@@ -361,10 +370,10 @@ C prof_weights1D_all_mean is still sigam^2. Convert to weight
           OPEN( cunit, FILE = cfile, STATUS = 'unknown',
      &          ACCESS = 'direct', RECL = NAVGBINMAX*4 )
 
-          DO ikzz = 1, NLEVELCOMB
+          DO kC = 1, NLEVELCOMB
             tmp99(1:NAVGBINMAX)=
-     &        prof_weights1D_all_mean(1:NAVGBINMAX,ikzz,num_var)
-            WRITE(cunit,rec=ikzz) tmp99
+     &        prof_weights1D_all_mean(1:NAVGBINMAX,kC,num_var)
+            WRITE(cunit,REC = kC) tmp99
           ENDDO
           CLOSE( cunit )
 
@@ -374,10 +383,10 @@ C prof_weights1D_all_mean is still sigam^2. Convert to weight
           OPEN( cunit, FILE = cfile, STATUS = 'unknown',
      &          ACCESS = 'direct', RECL = NAVGBINMAX*4 )
 
-          DO ikzz = 1, NLEVELCOMB
+          DO kC = 1, NLEVELCOMB
             tmp99(1:NAVGBINMAX) =
-     &       prof_count1D_all_mean(1:NAVGBINMAX,ikzz,num_var)
-            WRITE(cunit,rec=ikzz) tmp99
+     &       prof_count1D_all_mean(1:NAVGBINMAX,kC,num_var)
+            WRITE(cunit,REC = kC) tmp99
           ENDDO
           CLOSE( cunit )
 
@@ -401,17 +410,17 @@ C Sync file so that data is not lost when run finishes
             DO prof_num = 1, NOBSGLOB
               IF (prof_num.LE.ProfNo(num_file,bi,bj)) THEN
                 DO num_var = 1, NVARMAX
-
-                  DO K = 1, NLEVELMAX
-                    prof_traj1D(K)=0.
-                    prof_traj1D_mean(K)=0.
-                    prof_mask1D_cur(K,bi,bj)=0.
-                    prof_data1D(K)=0.
-                    prof_weights1D(K)=0.
+                  DO kLev = 1, NLEVELMAX
+                    prof_traj1D(kLev) = 0.
+                    prof_traj1D_mean(kLev) = 0.
+                    prof_mask1D_cur(kLev,bi,bj) = 0.
+                    prof_data1D(kLev) = 0.
+                    prof_weights1D(kLev) = 0.
 #ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
-                    prof_data1D_mean(K)=0.
-                    prof_weights1D_mean(K)=0.
+                    prof_data1D_mean(kLev) = 0.
+                    prof_weights1D_mean(kLev) = 0.
 #endif
+
                   ENDDO
 
                   IF (vec_quantities(num_file,num_var,bi,bj).EQV..TRUE.) 
@@ -420,16 +429,16 @@ C Sync file so that data is not lost when run finishes
                     itmp = prof_ind_avgbin(num_file,prof_num,bi,bj)
 
                     IF (itmp.GE. 0) THEN
-                      DO K = 1, ProfDepthNo(num_file,bi,bj)
-                        ktmp = prof_lev_comb(K,num_file,bi,bj)
+                      DO kProf = 1, ProfDepthNo(num_file,bi,bj)
+                        ktmp = prof_lev_comb(kProf,num_file,bi,bj)
 
-                        prof_traj1D_mean(K) =
+                        prof_traj1D_mean(kProf) =
      &                    prof_traj1D_all_mean(itmp,ktmp,num_var)
 
-                        prof_data1D_mean(K) =
+                        prof_data1D_mean(kProf) =
      &                    prof_data1D_all_mean(itmp,ktmp,num_var)
 
-                        prof_weights1D_mean(K) =
+                        prof_weights1D_mean(kProf) =
      &                    prof_weights1D_all_mean(itmp,ktmp,num_var)
 
                       ENDDO
@@ -452,36 +461,37 @@ C Sync file so that data is not lost when run finishes
      &                   ProfDepthNo(num_file,bi,bj),prof_weights1D,
      &                   bi,bj,myThid )
 
-                    DO K = 1, ProfDepthNo(num_file,bi,bj)
-                      IF (prof_weights1D(K).GT.0.
+                    DO kProf = 1, ProfDepthNo(num_file,bi,bj)
+                      IF (prof_weights1D(kProf).GT.0.
 #ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
-     &                    .AND. prof_data1D_mean(K).NE. 0. _d 0
+     &                    .AND. prof_data1D_mean(kProf).NE. 0. _d 0
 #endif
      &                   ) THEN
-                        objf_profiles(num_file,num_var,bi,bj)=
+                        objf_profiles(num_file,num_var,bi,bj) =
      &                    objf_profiles(num_file,num_var,bi,bj)
-     &                    +prof_weights1D(K)*prof_mask1D_cur(K,bi,bj)
-     &                    *(prof_traj1D(K)-prof_data1D(K)
-     &                    -prof_traj1D_mean(K)
+     &                    +prof_weights1D(kProf)
+     &                    *prof_mask1D_cur(kProf,bi,bj)
+     &                    *(prof_traj1D(kProf)-prof_data1D(kProf)
+     &                    -prof_traj1D_mean(kProf)
 #ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
-     &                    + prof_data1D_mean(K)
+     &                    + prof_data1D_mean(kProf)
 #endif
      &                    )
-     &                    *(prof_traj1D(K)-prof_data1D(K)
-     &                    -prof_traj1D_mean(K)
+     &                    *(prof_traj1D(kProf)-prof_data1D(kProf)
+     &                    -prof_traj1D_mean(kProf)
 #ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
-     &                    + prof_data1D_mean(K)
+     &                    + prof_data1D_mean(kProf)
 #endif
      &                    )
 
-                        num_profiles(num_file,num_var,bi,bj)=
+                        num_profiles(num_file,num_var,bi,bj) =
      &                    num_profiles(num_file,num_var,bi,bj)
-     &                    +prof_mask1D_cur(K,bi,bj)
+     &                    +prof_mask1D_cur(kProf,bi,bj)
 
                       ENDIF
-                    ENDDO
+                    ENDDO !DO kProf
 
-                  ENDIF !IF (vec_quantitities...
+                  ENDIF !IF (vec_quantitities
 
                 ENDDO !DO num_var
               ENDIF !IF (prof_num.LE.ProfNo(num_file,bi,bj))
@@ -510,13 +520,13 @@ C Sync file so that data is not lost when run finishes
 #ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
           DO num_var = 1, NVARMAX
             DO iavgbin = 1, NAVGBINMAX
-              DO K = 1, NLEVELCOMB
+              DO kC = 1, NLEVELCOMB
                 prof_traj1D_mean(1) =
-     &           prof_traj1D_all_mean(iavgbin,K,num_var)
+     &           prof_traj1D_all_mean(iavgbin,kC,num_var)
                 prof_data1D_mean(1) =
-     &           prof_data1D_all_mean(iavgbin,K,num_var)
+     &           prof_data1D_all_mean(iavgbin,kC,num_var)
                 prof_weights1D_mean(1) =
-     &           prof_weights1D_all_mean(iavgbin,K,num_var)
+     &           prof_weights1D_all_mean(iavgbin,kC,num_var)
 
                 IF (prof_weights1D_mean(1).GT.0. .AND.
      &              prof_data1D_mean(1).NE. 0. _d 0 .AND.
@@ -547,7 +557,7 @@ C Sync file so that data is not lost when run finishes
                   ENDIF !IF (avgbinglbsum(iavgbin).EQ.1)
                  ENDIF !IF (prof_weights1D_mean(1).GT.0.)
 
-              ENDDO !DO K
+              ENDDO !DO kC
             ENDDO !DO iavgbin
           ENDDO !DO num_var
 

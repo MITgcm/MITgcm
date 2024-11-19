@@ -45,7 +45,8 @@ CEOP
 
 C     !LOCAL VARIABLES:
 #ifdef ALLOW_PROFILES
-      INTEGER k,bi,bj,prof_num, num_file, num_var
+      INTEGER kLev, q
+      INTEGER bi,bj,prof_num, num_file, num_var
       _RL prof_traj1D(NLEVELMAX),prof_mask1D(NLEVELMAX)
       INTEGER prof_i1D(NUM_INTERP_POINTS),prof_j1D(NUM_INTERP_POINTS)
       _RL prof_w1D(NUM_INTERP_POINTS)
@@ -53,7 +54,7 @@ C     !LOCAL VARIABLES:
       INTEGER optimcycle
 # endif
 # ifndef ALLOW_ECCO
-      INTEGER i,j
+      INTEGER i,j,k
 # endif
 
 # ifndef ALLOW_CTRL
@@ -89,19 +90,20 @@ C     !LOCAL VARIABLES:
                 IF ( (prof_time(num_file,prof_num,bi,bj).GE.myTime) .AND.
      &               (prof_time(num_file,prof_num,bi,bj).LT.
      &                (myTime+deltaTClock)) ) THEN
-                  DO k = 1, NUM_INTERP_POINTS
-                    prof_i1D(k) = 
-     &               prof_interp_i(num_file,prof_num,k,bi,bj)
-                    prof_j1D(k) = 
-     &               prof_interp_j(num_file,prof_num,k,bi,bj)
-                    prof_w1D(k) = 
-     &               prof_interp_weights(num_file,prof_num,k,bi,bj)
+                  DO q = 1, NUM_INTERP_POINTS
+                    prof_i1D(q) = 
+     &               prof_interp_i(num_file,prof_num,q,bi,bj)
+                    prof_j1D(q) = 
+     &               prof_interp_j(num_file,prof_num,q,bi,bj)
+                    prof_w1D(q) = 
+     &               prof_interp_weights(num_file,prof_num,q,bi,bj)
+
                   ENDDO
 
                   DO num_var = 1, NVARMAX
-                    DO k = 1, NLEVELMAX
-                      prof_traj1D(k) = 0
-                      prof_mask1D(k) = 0
+                    DO kLev = 1, NLEVELMAX
+                      prof_traj1D(kLev) = 0
+                      prof_mask1D(kLev) = 0
                     ENDDO
 
                     IF (vec_quantities(num_file,num_var,bi,bj).EQV..TRUE.) THEN
@@ -111,8 +113,8 @@ C     !LOCAL VARIABLES:
      &                     prof_itracer(num_file,num_var),
      &                     num_file,myTime,bi,bj,myThid )
 
-                      DO k = 1, NLEVELMAX
-                        prof_traj1D(k) = prof_traj1D(k)*
+                      DO kLev = 1, NLEVELMAX
+                        prof_traj1D(kLev) = prof_traj1D(kLev)*
      &                   prof_facmod(num_file,num_var)
                       ENDDO
 
@@ -123,12 +125,12 @@ C     !LOCAL VARIABLES:
                     
                     ENDIF !IF (vec_quantities(num_file,num_var,bi,bj)
 
-                  ENDDO !DO k
+                  ENDDO !DO num_var
+
                 ENDIF !IF ((prof_time
               ENDIF !IF (ProfNo(num_file,bi,bj).NE.0)
             ENDDO !DO prof_num
           ENDDO !DO num_file
-
         ENDDO !DO bi
       ENDDO !DO bj
 

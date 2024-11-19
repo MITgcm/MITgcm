@@ -91,10 +91,11 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
 #ifdef ALLOW_PROFILES
+      INTEGER kProf, kLev
+      INTEGER q, k, kcur, ierr
       _RL tab_coeffs1(NUM_INTERP_POINTS)
       _RL tab_coeffs3(NUM_INTERP_POINTS)
       _RL ponderations(NUM_INTERP_POINTS), pondsSUM
-      INTEGER q, k, kk, kcur, ierr
       _RL traj_cur(Nr), mask_cur(Nr)
       _RL tmp_coeff
 
@@ -169,23 +170,23 @@ C$TAF INCOMPLETE prof_mask1D_cur
 
 # endif
 C Vertical interpolation:
-      DO kk = 1, NLEVELMAX
-        traj_cur_out(kk) = 0. _d 0
-        prof_mask1D_cur(kk,bi,bj) = 0. _d 0
+      DO kLev = 1, NLEVELMAX
+        traj_cur_out(kLev) = 0. _d 0
+        prof_mask1D_cur(kLev,bi,bj) = 0. _d 0
       ENDDO
 
-      DO kk = 1, ProfDepthNo(file_cur,bi,bj)
+      DO kProf = 1, ProfDepthNo(file_cur,bi,bj)
 C Case 1: above first grid center => first grid center value
-        IF (prof_depth(file_cur,kk,bi,bj).LT.-rC(1)) THEN
-          traj_cur_out(kk) = traj_cur(1)
-          prof_mask1D_cur(kk,bi,bj) = mask_cur(1)
+        IF (prof_depth(file_cur,kProf,bi,bj).LT.-rC(1)) THEN
+          traj_cur_out(kProf) = traj_cur(1)
+          prof_mask1D_cur(kProf,bi,bj) = mask_cur(1)
 
 C Case 2: just below last grid center => last cell value
-        ELSEIF (prof_depth(file_cur,kk,bi,bj).GE.-rC(Nr)) THEN
-          IF ( prof_depth(file_cur,kk,bi,bj).LT.
+        ELSEIF (prof_depth(file_cur,kProf,bi,bj).GE.-rC(Nr)) THEN
+          IF ( prof_depth(file_cur,kProf,bi,bj).LT.
      &         (-rC(Nr)+drC(Nr)*halfRS) ) THEN
-            traj_cur_out(kk) = traj_cur(Nr)
-            prof_mask1D_cur(kk,bi,bj) = mask_cur(Nr)
+            traj_cur_out(kProf) = traj_cur(Nr)
+            prof_mask1D_cur(kProf,bi,bj) = mask_cur(Nr)
 
           ENDIF
 
@@ -193,8 +194,8 @@ C Case 3: between two grid centers
         ELSE
           kcur = 0
           DO k = 1, Nr-1
-            IF ( (prof_depth(file_cur,kk,bi,bj).GE.-rC(k)).AND.
-     &           (prof_depth(file_cur,kk,bi,bj).LT.-rC(k+1))) THEN
+            IF ( (prof_depth(file_cur,kProf,bi,bj).GE.-rC(k)).AND.
+     &           (prof_depth(file_cur,kProf,bi,bj).LT.-rC(k+1))) THEN
               kcur = k
             ENDIF
           ENDDO
@@ -209,13 +210,13 @@ C Case 3: between two grid centers
 
           IF (mask_cur(kcur+1).EQ.oneRL) THEN
 C Subcase 1: 2 wet points => linear interpolation
-            tmp_coeff = (prof_depth(file_cur,kk,bi,bj)+rC(kcur))/
+            tmp_coeff = (prof_depth(file_cur,kProf,bi,bj)+rC(kcur))/
      &       (-rC(kcur+1)+rC(kcur))
 
-            traj_cur_out(kk) = (1-tmp_coeff)*traj_cur(kcur)
+            traj_cur_out(kProf) = (1-tmp_coeff)*traj_cur(kcur)
      &       +tmp_coeff*traj_cur(kcur+1)
 
-            prof_mask1D_cur(kk,bi,bj) = 1. _d 0
+            prof_mask1D_cur(kProf,bi,bj) = 1. _d 0
 
             IF (mask_cur(kcur).EQ.zeroRL) THEN
               WRITE(errorMessageUnit,'(A)')
@@ -225,17 +226,17 @@ C Subcase 1: 2 wet points => linear interpolation
 
             ENDIF
 
-          ELSEIF (prof_depth(file_cur,kk,bi,bj).LT.-rF(kcur+1)) THEN
+          ELSEIF (prof_depth(file_cur,kProf,bi,bj).LT.-rF(kcur+1)) THEN
 C Subcase 2: only 1 wet point just above => upper cell value
-            traj_cur_out(kk) = traj_cur(kcur)
-            prof_mask1D_cur(kk,bi,bj) = mask_cur(kcur)
+            traj_cur_out(kProf) = traj_cur(kcur)
+            prof_mask1D_cur(kProf,bi,bj) = mask_cur(kcur)
 
           
           ENDIF !IF (mask_cur(kcur+1).EQ.oneRL)
 
-        ENDIF !IF (prof_depth(file_cur,kk,bi,bj).LT.-rC(1))
+        ENDIF !IF (prof_depth(file_cur,kProf,bi,bj).LT.-rC(1))
 
-      ENDDO !DO kk
+      ENDDO !DO kProf
 
       IF (ierr.GT.0) STOP 'ABNORMAL END: S/R PROFILES_INTERP'
 

@@ -32,13 +32,14 @@ C     !FUNCTIONS:
       EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
-      INTEGER num_file,num_var,prof_num,k
+      INTEGER kLev, kProf, k
+      INTEGER num_file,num_var,prof_num
       INTEGER bi,bj,iG,jG
       INTEGER err,dimid,irec,fid1,fid2
       INTEGER dimid1,dimid2,vecid(2)
       INTEGER varid0,varid1(NVARMAX*2),varid2(NVARMAX*2)
       INTEGER length,Zlength,optimcycle
-      INTEGER IL,JL,KL
+      INTEGER IL,JL
       INTEGER vec_start(2),vec_count(2)
       _RL tmpgs
       _RL prof_mask1D(NLEVELMAX)
@@ -67,9 +68,9 @@ C Set new netcdf variables names
 C Initialize buffers
       DO num_var = 1, NVARMAX
         DO prof_num = 1, NOBSGLOB
-          DO k = 1, NLEVELMAX
-            prof_buff(num_var,k,prof_num) = 0.
-            prof_mask_buff(num_var,k,prof_num) = 0.
+          DO kLev = 1, NLEVELMAX
+            prof_buff(num_var,kLev,prof_num) = 0.
+            prof_mask_buff(num_var,kLev,prof_num) = 0.
           ENDDO
         ENDDO
       ENDDO
@@ -94,11 +95,11 @@ C Loop over profiles
                 DO prof_num = 1, NOBSGLOB
                   IF (prof_num.LE.ProfNo(num_file,bi,bj)) THEN
 C Initialize
-                    DO k = 1, NLEVELMAX
-                      prof_traj1D(k) = 0.
-                      prof_mask1D(k) = 0.
-                      prof_buff(num_var,k,prof_num) = 0.
-                      prof_mask_buff(num_var,k,prof_num) = 0.
+                    DO kLen = 1, NLEVELMAX
+                      prof_traj1D(kLev) = 0.
+                      prof_mask1D(kLev) = 0.
+                      prof_buff(num_var,kLev,prof_num) = 0.
+                      prof_mask_buff(num_var,kLev,prof_num) = 0.
                     ENDDO
 
 C Read tiled files
@@ -112,12 +113,15 @@ C Save model equi and masks in buffer
 C Combine all threads
                     irec = prof_ind_glob(num_file,prof_num,bi,bj)
 
-                    DO k = 1, ProfDepthNo(num_file,bi,bj)
-                      prof_buff(num_var,k,irec) = 
-     &                 prof_buff(num_var,k,irec) + prof_traj1D(k)
-                      prof_mask_buff(num_var,k,irec) =
-     &                 prof_mask_buff(num_var,k,irec)
-     &                 + prof_mask1D_cur(k,bi,bj)
+                    DO kProf = 1, ProfDepthNo(num_file,bi,bj)
+                      prof_buff(num_var,kProf,irec) = 
+     &                 prof_buff(num_var,kProf,irec) 
+     &                 + prof_traj1D(kProf)
+
+                      prof_mask_buff(num_var,kProf,irec) =
+     &                 prof_mask_buff(num_var,kProf,irec)
+     &                 + prof_mask1D_cur(kProf,bi,bj)
+
                     ENDDO
 
                   ENDIF !IF (prof_num.LE.ProfNo(num_file,bi,bj))
@@ -131,17 +135,17 @@ C Combine all threads
 C Combine all processes
         DO num_var = 1, NVARMAX
           DO prof_num = 1, NOBSGLOB
-            DO k = 1, NLEVELMAX
-              tmpgs = prof_buff(num_var,k,prof_num)
+            DO kLev = 1, NLEVELMAX
+              tmpgs = prof_buff(num_var,kLev,prof_num)
               _GLOBAL_SUM_RL(tmpgs, myThid)
 
-              prof_modval_glo(num_var,k,prof_num) = tmpgs
-              tmpgs = prof_mask_buff(num_var,k,prof_num)
+              prof_modval_glo(num_var,kLev,prof_num) = tmpgs
+              tmpgs = prof_mask_buff(num_var,kLev,prof_num)
               _GLOBAL_SUM_RL(tmpgs, myThid)
 
-              prof_mask_glo(num_var,k,prof_num) = tmpgs
+              prof_mask_glo(num_var,kLev,prof_num) = tmpgs
 
-            ENDDO !DO k
+            ENDDO !DO kLev
           ENDDO !DO prof_num
         ENDDO !DO num_var
 
@@ -243,31 +247,31 @@ C Write profiles
               IF (vec_quantities(num_file,num_var,1,1).EQV..TRUE.) THEN
                 DO prof_num = 1, NOBSGLOB
                   IF (prof_num.LE.length) THEN
-                   DO k = 1, Zlength
-                     prof_traj1D(k) =
-     &                prof_modval_glo(num_var,k,prof_num)
+                    DO k = 1, Zlength
+                      prof_traj1D(k) =
+     &                 prof_modval_glo(num_var,k,prof_num)
 
-                     prof_mask1D(k) = prof_mask_glo(num_var,k,prof_num)
+                      prof_mask1D(k) = prof_mask_glo(num_var,k,prof_num)
 
-                   ENDDO
+                    ENDDO
 
-                   vec_start(1) = 1
-                   vec_start(2) = prof_num
-                   vec_count(1) = Zlength
-                   vec_count(2) = 1
+                    vec_start(1) = 1
+                    vec_start(2) = prof_num
+                    vec_count(1) = Zlength
+                    vec_count(2) = 1
 
-                   err = NF_INQ_VARID( fid2,
-     &                   prof_namesequi(num_file,num_var),
-     &                   varid2(2+(num_var-1)*2) )
-                   err = NF_PUT_VARA_DOUBLE( fid2, 
-     &                   varid2(2+(num_var-1)*2),
-     &                   vec_start,vec_count,prof_traj1D )
-                   err = NF_INQ_VARID( fid2,
-     &                   prof_namesmask(num_file,num_var),
-     &                   varid2(3+(num_var-1)*2) )
-                   err = NF_PUT_VARA_DOUBLE( fid2, 
-     &                   varid2(3+(num_var-1)*2),
-     &                   vec_start, vec_count, prof_mask1D )
+                    err = NF_INQ_VARID( fid2,
+     &                    prof_namesequi(num_file,num_var),
+     &                    varid2(2+(num_var-1)*2) )
+                    err = NF_PUT_VARA_DOUBLE( fid2, 
+     &                    varid2(2+(num_var-1)*2),
+     &                    vec_start,vec_count,prof_traj1D )
+                    err = NF_INQ_VARID( fid2,
+     &                    prof_namesmask(num_file,num_var),
+     &                    varid2(3+(num_var-1)*2) )
+                    err = NF_PUT_VARA_DOUBLE( fid2, 
+     &                    varid2(3+(num_var-1)*2),
+     &                    vec_start, vec_count, prof_mask1D )
 
                   ENDIF !IF (prof_num.LE.length)
                 ENDDO !DO prof_num
