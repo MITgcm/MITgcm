@@ -118,21 +118,24 @@ C Data file
                 WRITE(msgBuf,'(A,I3,I8)')
      &           'NC_CLOSE: NF_CLOSE data unit',
      &           numFile, fiddata(numFile,bi,bj)
-                CALL PROFILES_NF_ERROR( msgBuf, STATUS, bi, bj, myThid )
+                CALL PROFILES_NF_ERROR( msgBuf, STATUS,
+     &               bi, bj, myThid )
 
 C Forward equivalent (.equi) file
                 STATUS = NF_CLOSE( fidforward(numFile,bi,bj) )
                 WRITE(msgBuf,'(A,I3,I8)')
      &           'NC_CLOSE: NF_CLOSE fwd unit',
      &           numFile, fidforward(numFile,bi,bj)
-                CALL PROFILES_NF_ERROR( msgBuf, STATUS, bi, bj, myThid )
+                CALL PROFILES_NF_ERROR( msgBuf, STATUS,
+     &               bi, bj, myThid )
 #ifdef ALLOW_ADJOINT_RUN
 C Adjoint equivalent (.equi) file
                 STATUS = NF_CLOSE( fidadjoint(numFile,bi,bj) )
                 WRITE(msgBuf,'(A,I3,I8)')
      &           'NC_CLOSE: NF_CLOSE adj unit',
      &           numFile, fidadjoint(numFile,bi,bj)
-                CALL PROFILES_NF_ERROR( msgBuf, STATUS, bi, bj, myThid )
+                CALL PROFILES_NF_ERROR( msgBuf, STATUS,
+     &               bi, bj, myThid )
 #endif
 #ifdef ALLOW_TANGENTLINEAR_RUN
 C Tangent linear equivalent (.equi) file
@@ -140,7 +143,8 @@ C Tangent linear equivalent (.equi) file
                 WRITE(msgBuf,'(A,I3,I8)')
      &           'NC_CLOSE: NF_CLOSE tlm unit',
      &           numFile, fidtangent(numFile,bi,bj)
-                CALL PROFILES_NF_ERROR( msgBuf, STATUS, bi, bj, myThid )
+                CALL PROFILES_NF_ERROR( msgBuf, STATUS,
+     &               bi, bj, myThid )
 #endif
               ENDIF
 

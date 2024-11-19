@@ -67,7 +67,7 @@ CEOP
 
 #ifdef ALLOW_PROFILES
 
-      CALL ACTIVE_READ_PROFILE_RL( fidadjoint(active_num_file,bi,bj) ,
+      CALL ACTIVE_READ_PROFILE_RL( fidadjoint(active_num_file,bi,bj),
      &     active_num_file,
      &     nadactive_var, adactive_var, active_varnum, lAdInit,
      &     irec, prof_ind_glob(active_num_file,irec,bi,bj),
@@ -130,7 +130,7 @@ CEOP
 
 #ifdef ALLOW_PROFILES
 
-      CALL ACTIVE_WRITE_PROFILE_RL( fidadjoint(active_num_file,bi,bj) ,
+      CALL ACTIVE_WRITE_PROFILE_RL( fidadjoint(active_num_file,bi,bj),
      &     active_num_file,
      &     nadactive_var, adactive_var, active_varnum,
      &     irec, prof_ind_glob(active_num_file,irec,bi,bj),

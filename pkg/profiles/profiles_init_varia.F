@@ -81,7 +81,8 @@ C Initialize tiled cost function contributions.
               IF (ProfNo(num_file,bi,bj).GT.0) THEN
 C Write data from buffer to .nc file
               err = NF_SYNC( fidforward(num_file,bi,bj) )
-              CALL PROFILES_NF_ERROR( 'INIT_VARIA: NF_SYNC fidforward',
+              CALL PROFILES_NF_ERROR(
+     &             'INIT_VARIA: NF_SYNC fidforward',
      &             err,bi,bj,myThid )
 
               ENDIF !IF (ProfNo

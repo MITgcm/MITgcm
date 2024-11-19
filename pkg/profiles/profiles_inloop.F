@@ -87,9 +87,10 @@ C     !LOCAL VARIABLES:
           DO num_file = 1, NFILESPROFMAX
             DO prof_num = 1, NOBSGLOB
               IF (prof_num.LE.ProfNo(num_file,bi,bj)) THEN
-                IF ( (prof_time(num_file,prof_num,bi,bj).GE.myTime) .AND.
-     &               (prof_time(num_file,prof_num,bi,bj).LT.
-     &                (myTime+deltaTClock)) ) THEN
+                IF (
+     &           (prof_time(num_file,prof_num,bi,bj).GE.myTime) .AND.
+     &           (prof_time(num_file,prof_num,bi,bj).LT.
+     &            (myTime+deltaTClock)) ) THEN
                   DO q = 1, NUM_INTERP_POINTS
                     prof_i1D(q) =
      &               prof_interp_i(num_file,prof_num,q,bi,bj)
@@ -106,7 +107,8 @@ C     !LOCAL VARIABLES:
                       prof_mask1D(kLev) = 0
                     ENDDO
 
-                    IF (vec_quantities(num_file,num_var,bi,bj).EQV..TRUE.) THEN
+                    IF (
+     &        vec_quantities(num_file,num_var,bi,bj).EQV..TRUE.) THEN
                       CALL PROFILES_INTERP( prof_traj1D,
      &                     prof_i1D,prof_j1D,prof_w1D,
      &                     prof_namesmod(num_file,num_var),

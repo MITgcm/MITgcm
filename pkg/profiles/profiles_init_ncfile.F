@@ -59,11 +59,13 @@ C1) Creation :
 
         err = NF_DEF_VAR( fid2, 'prof_ind_glob',
      &        NF_INT, 1, vecid(2), varId(1) )
-        CALL PROFILES_NF_ERROR( 'INIT_NCFILE: NF_DEF_VAR prof_ind_glob',
+        CALL PROFILES_NF_ERROR(
+     &       'INIT_NCFILE: NF_DEF_VAR prof_ind_glob',
      &       err,bi,bj,myThid )
         err = NF_PUT_ATT_INT( fid2, varId(1),
      &        '_FillValue', NF_INT, 1, 0 )
-        CALL PROFILES_NF_ERROR( 'INIT_NCFILE: NF_PUT_ATT_INT varId(1)',
+        CALL PROFILES_NF_ERROR(
+     &       'INIT_NCFILE: NF_PUT_ATT_INT varId(1)',
      &       err,bi,bj,myThid )
 
         DO num_var = 1, NVARMAX
@@ -84,7 +86,7 @@ C1) Creation :
             err = NF_PUT_ATT_DOUBLE( fid2, varId(2+(num_var-1)*2),
      &           '_FillValue', NF_DOUBLE, 1, 0. _d 0 )
             CALL PROFILES_NF_ERROR(
-     &           'INIT_NCFILE: NF_PUT_ATT_DOUBLE varId(2+(num_var-1)*2',
+     &           'INIT_NCFILE: NF_PUT_ATT_DOUBLE varId(2',
      &           err,bi,bj,myThid )
 
             err = NF_DEF_VAR( fid2, prof_namesmask(num_file,num_var),
@@ -95,7 +97,7 @@ C1) Creation :
             err = NF_PUT_ATT_DOUBLE( fid2, varId(3+(num_var-1)*2),
      &            '_FillValue', NF_DOUBLE, 1, 0. _d 0 )
             CALL PROFILES_NF_ERROR(
-     &           'INIT_NCFILE: NF_PUT_ATT_DOUBLE varId(3+(num_var-1)*2',
+     &           'INIT_NCFILE: NF_PUT_ATT_DOUBLE varId(3',
      &           err,bi,bj,myThid )
 
           ELSE

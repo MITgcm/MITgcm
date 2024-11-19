@@ -158,7 +158,8 @@ C Find vertical indices
             ENDDO
 
             DO num_var = 1, NVARMAX
-              IF (vec_quantities(num_file,num_var,bi,bj).EQV..TRUE.) THEN
+              IF (vec_quantities(num_file,num_var,bi,bj).EQV..TRUE.)
+     &        THEN
                 DO prof_num = 1, NOBSGLOB
                   IF (prof_num.LE.ProfNo(num_file,bi,bj)) THEN
                     DO kLev = 1, NLEVELMAX
@@ -172,7 +173,8 @@ C Find vertical indices
 
                     IF (prof_ind_avgbin(num_file,prof_num,bi,bj).GT.
      &                  NAVGBIN)
-     &                NAVGBIN = prof_ind_avgbin(num_file,prof_num,bi,bj)
+     &                NAVGBIN =
+     &                 prof_ind_avgbin(num_file,prof_num,bi,bj)
 
                     IF (ix9 .GE. 0. _d 0 .AND. iy9 .GE. 0. _d 0) THEN
                       itmp = prof_ind_avgbin(num_file,prof_num,bi,bj)
@@ -196,31 +198,36 @@ C Find vertical indices
      &                     bi,bj,myThid )
 
                       DO kProf = 1, ProfDepthNo(num_file,bi,bj)
-                        IF (prof_weights1D(kProf).GT.0. _d 0 .AND.
-     &                      prof_mask1D_cur(kProf,bi,bj).NE. 0. _d 0 ) THEN
+                        IF ( prof_weights1D(kProf).GT.0. _d 0 .AND.
+     &                       prof_mask1D_cur(kProf,bi,bj).NE.0. _d 0 )
+     &                  THEN
                           prof_traj1D_all_mean(itmp,
-     &                     prof_lev_comb(kProf,num_file,bi,bj),num_var)
+     &                     prof_lev_comb(kProf,num_file,bi,bj),
+     &                     num_var)
      &                     = prof_traj1D_all_mean(itmp,
      &                        prof_lev_comb(kProf,num_file,bi,bj),
      &                        num_var)
      &                       + prof_traj1D(kProf)
 
                           prof_data1D_all_mean(itmp,
-     &                     prof_lev_comb(kProf,num_file,bi,bj), num_var)
+     &                     prof_lev_comb(kProf,num_file,bi,bj),
+     &                     num_var)
      &                     = prof_data1D_all_mean(itmp,
      &                        prof_lev_comb(kProf,num_file,bi,bj),
      &                        num_var)
      &                       + prof_data1D(kProf)
 
                           prof_weights1D_all_mean(itmp,
-     &                     prof_lev_comb(kProf,num_file,bi,bj), num_var)
+     &                     prof_lev_comb(kProf,num_file,bi,bj),
+     &                     num_var)
      &                     = prof_weights1D_all_mean(itmp,
      &                        prof_lev_comb(kProf,num_file,bi,bj),
      &                        num_var)
      &                       + 1. _d 0 / prof_weights1D(kProf)
 
                           prof_count1D_all_mean(itmp,
-     &                     prof_lev_comb(kProf,num_file,bi,bj), num_var)
+     &                     prof_lev_comb(kProf,num_file,bi,bj),
+     &                     num_var)
      &                     = prof_count1D_all_mean(itmp,
      &                        prof_lev_comb(kProf,num_file,bi,bj),
      &                        num_var)
@@ -229,11 +236,11 @@ C Find vertical indices
                         ENDIF
                       ENDDO !DO kProf = 1, ProfDepthNo
 
-                    ENDIF !IF (ix9 .GE. 0. _d 0 .AND. iy9 .GE. 0. _d 0)
+                    ENDIF !IF (ix9.GE.0. _d 0 .AND. iy9.GE.0. _d 0)
 
                   ENDIF !IF (prof_num.LE.ProfNo(num_file,bi,bj))
                 ENDDO !DO prof_num...
-              ENDIF !IF (vec_quantities(num_file,num_var,bi,bj).EQV..TRUE.)
+              ENDIF !IF (vec_quantities(num_file,num_var,bi,bj).EQV.
             ENDDO !DO num_var
 
           ENDDO !DO num_file = 1, NFILESPROFMAX
@@ -255,9 +262,9 @@ C Accumulate globally
         DO bj = 1, nSy
           DO bi = 1, nSx
             DO num_file = 1, NFILESPROFMAX
-              IF (vec_quantities(num_file,num_var,bi,bj).EQV..TRUE.) THEN
-                doglbsum = .TRUE.
-              ENDIF
+              IF (vec_quantities(num_file,num_var,bi,bj).EQV..TRUE.)
+     &          doglbsum = .TRUE.
+
             ENDDO !DO num_file
           ENDDO !DO bi
         ENDDO !DO bj
@@ -315,7 +322,7 @@ C Now do the averaging
         DO kC = 1, NLEVELCOMB
           DO num_var = 1, NVARMAX
             IF (prof_count1D_all_mean(iavgbin,kC,num_var).GT.0) THEN
-C Assuming each averaging bin has a maximum of 9 independent measurements.
+C Assuming each averaging bin has a max of 9 independent measurements
               tmp11 = prof_weights1D_all_mean(iavgbin,kC,num_var)
      &         / prof_count1D_all_mean(iavgbin,kC,num_var)
 
@@ -424,8 +431,9 @@ C Sync file so that data is not lost when run finishes
 
                   ENDDO
 
-                  IF (vec_quantities(num_file,num_var,bi,bj).EQV..TRUE.)
-     &              THEN
+                  IF
+     &          (vec_quantities(num_file,num_var,bi,bj).EQV..TRUE.)
+     &            THEN
 #ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
                     itmp = prof_ind_avgbin(num_file,prof_num,bi,bj)
 
@@ -602,8 +610,10 @@ C Print cost function values
            ENDDO
           ENDDO
 
-        CALL GLOBAL_SUM_TILE_RL( objf_prof_tile, objf_prof_glo, myThid )
-        CALL GLOBAL_SUM_TILE_RL( num_prof_tile, num_prof_glo, myThid )
+        CALL GLOBAL_SUM_TILE_RL( objf_prof_tile, objf_prof_glo,
+     &       myThid )
+        CALL GLOBAL_SUM_TILE_RL( num_prof_tile, num_prof_glo,
+     &       myThid )
 
         WRITE(msgBuf,'(2(A,I2),A,2D22.15)')
      &   ' cost_profiles(',num_file,',',num_var,') = ',

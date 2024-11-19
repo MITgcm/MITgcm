@@ -84,13 +84,15 @@ C File maintenance
      &           (profilesDoNcOutput) ) THEN
 C Need to close file so that data is not lost when run finishes
               err = NF_SYNC( fidforward(num_file,bi,bj) )
-              CALL PROFILES_NF_ERROR( 'MAKE_NCFILE: NF_SYNC fidforward',
+              CALL PROFILES_NF_ERROR(
+     &             'MAKE_NCFILE: NF_SYNC fidforward',
      &             err,bi,bj,myThid )
             ENDIF
 
 C Loop over variables
             DO num_var = 1, NVARMAX
-              IF (vec_quantities(num_file,num_var,bi,bj).EQV..TRUE.) THEN
+              IF (vec_quantities(num_file,num_var,bi,bj).EQV..TRUE.)
+     &        THEN
 C Loop over profiles
                 DO prof_num = 1, NOBSGLOB
                   IF (prof_num.LE.ProfNo(num_file,bi,bj)) THEN
@@ -165,17 +167,21 @@ C Get dimensions of input file
      &           'MAKE_NCFILE: NF_OPEN('//fnamedata(1:IL+3)//')',
      &           err,bi,bj,myThid )
             err = NF_INQ_DIMID( fid1,'iPROF', dimId )
-            CALL PROFILES_NF_ERROR( 'MAKE_NCFILE: NF_INQ_DIMID iPROF',
+            CALL PROFILES_NF_ERROR(
+     &           'MAKE_NCFILE: NF_INQ_DIMID iPROF',
      &           err,bi,bj,myThid )
             err = NF_INQ_DIMLEN( fid1, dimId, length )
-            CALL PROFILES_NF_ERROR( 'MAKE_NCFILE: NF_INQ_DIMLEN length',
+            CALL PROFILES_NF_ERROR(
+     &           'MAKE_NCFILE: NF_INQ_DIMLEN length',
      &           err,bi,bj,myThid )
             err = NF_INQ_DIMID( fid1,'iDEPTH', dimId )
-            CALL PROFILES_NF_ERROR( 'MAKE_NCFILE: NF_INQ_DIMID iDEPTH',
+            CALL PROFILES_NF_ERROR(
+     &           'MAKE_NCFILE: NF_INQ_DIMID iDEPTH',
      &           err,bi,bj,myThid )
             IF (err.NE.NF_NOERR) THEN
               err = NF_INQ_DIMID( fid1,'Z', dimId )
-              CALL PROFILES_NF_ERROR( 'MAKE_NCFILE: NF_INQ_DIMID Z',
+              CALL PROFILES_NF_ERROR(
+     &             'MAKE_NCFILE: NF_INQ_DIMID Z',
      &             err,bi,bj,myThid )
             ENDIF
             err = NF_INQ_DIMLEN( fid1, dimId, Zlength )
@@ -196,10 +202,12 @@ C Create new netcdf global file for model-equivalent
      &             'MAKE_NCFILE: NF_CREATE('//fnameequinc(1:JL)//')',
      &             err,bi,bj,myThid )
               err = NF_DEF_DIM(fid2,'iDEPTH',Zlength,dimId1)
-              CALL PROFILES_NF_ERROR( 'MAKE_NCFILE: NF_DEF_DIM iDepth',
+              CALL PROFILES_NF_ERROR(
+     &             'MAKE_NCFILE: NF_DEF_DIM iDepth',
      &             err,bi,bj,myThid )
               err = NF_DEF_DIM(fid2,'iPROF',length,dimId2)
-              CALL PROFILES_NF_ERROR( 'MAKE_NCFILE: NF_DEF_DIM iPROF',
+              CALL PROFILES_NF_ERROR(
+     &             'MAKE_NCFILE: NF_DEF_DIM iPROF',
      &             err,bi,bj,myThid )
 
               vecid(1)=dimId1
@@ -207,8 +215,8 @@ C Create new netcdf global file for model-equivalent
 
 C Define variables and attributes
               DO num_var = 1, NVARMAX
-                err = NF_INQ_VARID( fid1, prof_names(num_file,num_var),
-     &                varId0 )
+                err = NF_INQ_VARID( fid1,
+     &                prof_names(num_file,num_var), varId0 )
                 CALL PROFILES_NF_ERROR( 'MAKE_NCFILE: NF_INQ_VARID('
      &               //prof_names(num_file,num_var)//')',
      &               err,bi,bj,myThid )
@@ -220,7 +228,8 @@ C Define variables and attributes
                   CALL PROFILES_NF_ERROR(
      &                 'MAKE_NCFILE: NF_DEF_VAR prof_namesequi',
      &                 err,bi,bj,myThid )
-                  err = NF_PUT_ATT_DOUBLE( fid2,varId1(2+(num_var-1)*2),
+                  err = NF_PUT_ATT_DOUBLE( fid2,
+     &                  varId1(2+(num_var-1)*2),
      &                  '_FillValue', NF_DOUBLE, 1, 0. _d 0 )
                   CALL PROFILES_NF_ERROR(
      &                 'MAKE_NCFILE: NF_PUT_ATT_DOUBLE varId(2',
@@ -232,7 +241,8 @@ C Define variables and attributes
                   CALL PROFILES_NF_ERROR(
      &                 'MAKE_NCFILE: NF_DEF_VAR prof_namesmask',
      &                 err,bi,bj,myThid )
-                  err = NF_PUT_ATT_DOUBLE( fid2,varId1(3+(num_var-1)*2),
+                  err = NF_PUT_ATT_DOUBLE( fid2,
+     &                  varId1(3+(num_var-1)*2),
      &                  '_FillValue', NF_DOUBLE, 1, 0. _d 0 )
                   CALL PROFILES_NF_ERROR(
      &                 'MAKE_NCFILE: NF_PUT_ATT_DOUBLE varId(3',
@@ -256,14 +266,16 @@ C Define variables and attributes
 
 C Write profiles
             DO num_var = 1, NVARMAX
-              IF (vec_quantities(num_file,num_var,1,1).EQV..TRUE.) THEN
+              IF (vec_quantities(num_file,num_var,1,1).EQV..TRUE.)
+     &        THEN
                 DO prof_num = 1, NOBSGLOB
                   IF (prof_num.LE.length) THEN
                     DO k = 1, Zlength
                       prof_traj1D(k) =
      &                 prof_modval_glo(num_var,k,prof_num)
 
-                      prof_mask1D(k) = prof_mask_glo(num_var,k,prof_num)
+                      prof_mask1D(k) =
+     &                 prof_mask_glo(num_var,k,prof_num)
 
                     ENDDO
 
@@ -282,8 +294,8 @@ C Write profiles
      &                    varId2(2+(num_var-1)*2),
      &                    vec_start, vec_count, prof_traj1D )
                     CALL PROFILES_NF_ERROR(
-     &                   'MAKE_NCFILE: NF_PUT_VARA_DOUBLE prof_traj1D',
-     &                   err,bi,bj,myThid )
+     &                  'MAKE_NCFILE: NF_PUT_VARA_DOUBLE prof_traj1D',
+     &                  err,bi,bj,myThid )
 
                     err = NF_INQ_VARID( fid2,
      &                    prof_namesmask(num_file,num_var),
@@ -295,12 +307,12 @@ C Write profiles
      &                    varId2(3+(num_var-1)*2),
      &                    vec_start, vec_count, prof_mask1D )
                     CALL PROFILES_NF_ERROR(
-     &                   'MAKE_NCFILE: NF_PUT_VARA_DOUBLE prof_mask1D',
-     &                   err,bi,bj,myThid )
+     &                  'MAKE_NCFILE: NF_PUT_VARA_DOUBLE prof_mask1D',
+     &                  err,bi,bj,myThid )
 
                   ENDIF !IF (prof_num.LE.length)
                 ENDDO !DO prof_num
-              ENDIF !IF (vec_quantities(num_file,num_var,1,1).EQV..TRUE.)
+              ENDIF !IF (vec_quantities(num_file,num_var,1,1).EQV.
             ENDDO !DO num_var
 
             err = NF_CLOSE( fid2 )

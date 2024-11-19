@@ -82,7 +82,8 @@ C     !LOCAL VARIABLES:
 C ESCO: Put a single NF_INQ_VARID for prof_names
         err = NF_INQ_VARID( fid,
      &        prof_names(active_num_file,active_varnum), varId )
-        CALL PROFILES_NF_ERROR( 'ACTIVE_READ: NF_INQ_VARID prof_names',
+        CALL PROFILES_NF_ERROR(
+     &       'ACTIVE_READ: NF_INQ_VARID prof_names',
      &       err,bi,bj,myThid )
 
       ELSE
@@ -108,7 +109,8 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
      &         err,bi,bj,myThid )
 
           err = NF_INQ_VARID( fid,
-     &          prof_namesmask(active_num_file,active_varnum), maskId )
+     &          prof_namesmask(active_num_file,active_varnum),
+     &          maskId )
           CALL PROFILES_NF_ERROR(
      &         'ACTIVE_READ: NF_INQ_VARID prof_namesmask',
      &         err,bi,bj,myThid )
@@ -309,7 +311,8 @@ C     !LOCAL VARIABLES:
 C ESCO: Put a single NF_INQ_VARID for prof_names
         err = NF_INQ_VARID( fid,
      &        prof_names(active_num_file,active_varnum), varId )
-        CALL PROFILES_NF_ERROR( 'ACTIVE_WRITE: NF_INQ_VARID prof_names',
+        CALL PROFILES_NF_ERROR(
+     &       'ACTIVE_WRITE: NF_INQ_VARID prof_names',
      &       err,bi,bj,myThid )
 
       ELSE
@@ -335,7 +338,8 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
      &         err,bi,bj,myThid )
 
           err = NF_INQ_VARID( fid,
-     &          prof_namesmask(active_num_file,active_varnum), maskId )
+     &          prof_namesmask(active_num_file,active_varnum),
+     &          maskId )
           CALL PROFILES_NF_ERROR(
      &         'ACTIVE_WRITE: NF_INQ_VARID prof_namesmask',
      &         err,bi,bj,myThid )

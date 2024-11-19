@@ -141,7 +141,7 @@ C Implies that a forward loop is calling
 
 # ifdef ALLOW_PROFILES_CLIMMASv1
                 IF (vec_tmp3((v2-1)*vec_count(1)+v1).LE.-990. _d 0)
-     &              profiles_weight_buff(v1,v2,num_var,bi,bj) = 0. _d 0
+     &            profiles_weight_buff(v1,v2,num_var,bi,bj) = 0. _d 0
 
 # endif
               ENDDO !DO v2

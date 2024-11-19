@@ -110,7 +110,8 @@ C Horizontal interpolation:
             tab_coeffs1(q) = salt(i_cur(q),j_cur(q),k,bi,bj)
           ELSEIF (var_cur.EQ.'pTracer') THEN
 # ifdef ALLOW_PTRACERS
-            tab_coeffs1(q) = pTracer(i_cur(q),j_cur(q),k,bi,bj,itr_cur)
+            tab_coeffs1(q) =
+     &       pTracer(i_cur(q),j_cur(q),k,bi,bj,itr_cur)
 # else
             tab_coeffs1(q) = 0. _d 0
 # endif
@@ -226,7 +227,8 @@ C Subcase 1: 2 wet points => linear interpolation
 
             ENDIF
 
-          ELSEIF (prof_depth(file_cur,kProf,bi,bj).LT.-rF(kcur+1)) THEN
+          ELSEIF (prof_depth(file_cur,kProf,bi,bj).LT.-rF(kcur+1))
+     &    THEN
 C Subcase 2: only 1 wet point just above => upper cell value
             traj_cur_out(kProf) = traj_cur(kcur)
             prof_mask1D_cur(kProf,bi,bj) = mask_cur(kcur)

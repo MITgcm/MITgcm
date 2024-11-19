@@ -66,7 +66,7 @@ C Skip reserved unit numbers
 C Was there an available unit number
       IF ( ioUnit.EQ.-1 ) THEN
         WRITE(msgBuf,'(A)')
-     &   ' PROFILES_FINDUNIT: could not find an available unit number!'
+     &   ' PROFILES_FINDUNIT: no available unit number!'
         CALL PRINT_ERROR( msgBuf, myThid )
         CALL ALL_PROC_DIE( myThid )
         STOP 'ABNORMAL END: S/R PROFILES_FINDUNIT'
