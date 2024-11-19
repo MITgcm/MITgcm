@@ -17,13 +17,14 @@ C     ==================================================================
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: G_ACTIVE_READ_PROFILE
-C     !INTERFACE:
+C !ROUTINE: G_ACTIVE_READ_PROFILE
+
+C !INTERFACE:
       SUBROUTINE G_ACTIVE_READ_PROFILE(
      I                           active_num_file,
      I                           nactive_var,
      O                           active_var,
-     I                           g_active_var,
+     O                           g_active_var,
      I                           active_varnum,
      I                           irec,
      I                           lAdInit,
@@ -31,16 +32,15 @@ C     !INTERFACE:
      I                           bi,
      I                           bj,
      I                           myThid,
-     I                           dummy
+     O                           dummy
      &                         )
 
 C     !DESCRIPTION:
-C
 C     Read active 1D records from file for tangent linear simulation
 
 C     !USES:
       IMPLICIT NONE
-
+C     == Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #ifdef ALLOW_PROFILES
@@ -54,7 +54,7 @@ C     nactive_var:     integer size of active_var
 C     active_var:      array
 C     irec:            record number
 C     myOptimIter:     number of optimization iteration (default: 0)
-C     myThid:          thread number for this instance
+C     myThid:          my thread ID number
 C     lAdInit:         initialisation of corresponding adjoint
 C                      variable and write to active file
       INTEGER active_num_file
@@ -68,9 +68,9 @@ C     !OUTPUT PARAMETERS:
       _RL     active_var(nactive_var)
       _RL     g_active_var(nactive_var)
       _RL     dummy
+CEOP
 
 #ifdef ALLOW_PROFILES
-CEOP
 
       CALL ACTIVE_READ_PROFILE_RL( fidforward(active_num_file,bi,bj),
      &     active_num_file,
@@ -91,8 +91,9 @@ CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: G_ACTIVE_WRITE_PROFILE
-C     !INTERFACE:
+C !ROUTINE: G_ACTIVE_WRITE_PROFILE
+
+C !INTERFACE:
       SUBROUTINE G_ACTIVE_WRITE_PROFILE(
      I                           active_num_file,
      I                           nactive_var,
@@ -108,13 +109,12 @@ C     !INTERFACE:
      I                           g_dummy
      &                                )
 
-C     !DESCRIPTION: \bv
-C
+C     !DESCRIPTION:
 C     Write active 1D records to file for tangent linear simulation
 
 C     !USES:
       IMPLICIT NONE
-
+C     == Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #ifdef ALLOW_PROFILES
@@ -128,7 +128,7 @@ C     nactive_var:     integer size of active_var
 C     active_var:      array
 C     irec:            record number
 C     myOptimIter:     number of optimization iteration (default: 0)
-C     myThid:          thread number for this instance
+C     myThid:          my thread ID number
       INTEGER nactive_var,active_num_file
       _RL     active_var(nactive_var)
       _RL     g_active_var(nactive_var)
@@ -138,9 +138,9 @@ C     myThid:          thread number for this instance
       _RL     dummy
       _RL     g_dummy
 C     !OUTPUT PARAMETERS:
+CEOP
 
 #ifdef ALLOW_PROFILES
-CEOP
 
       CALL ACTIVE_WRITE_PROFILE_RL( fidforward(active_num_file,bi,bj),
      &     active_num_file,
@@ -158,4 +158,3 @@ CEOP
 
       RETURN
       END
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

@@ -14,6 +14,11 @@ C        changed: shreyasg911@gmail.com 26-Mar-2023
 C
 C     ==================================================================
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C !ROUTINE: ACTIVE_READ_PROFILE_B
+
+C !INTERFACE:
       SUBROUTINE ACTIVE_READ_PROFILE_B(
      I                              active_num_file,
      I                              nadactive_var,
@@ -30,15 +35,12 @@ C     ==================================================================
      I                              dummyb
      &                            )
 
-C     !DESCRIPTION: \bv
-C     ==================================================================
-C     SUBROUTINE active_read_profile_b
-C     ==================================================================
-C     o Adjoint of active_read_profile.
-C     ==================================================================
-      IMPLICIT NONE
+C     !DESCRIPTION:
+C     Adjoint of active_read_profile.
 
-C     == global variables ==
+C     !USES:
+      IMPLICIT NONE
+C     == Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #ifdef ALLOW_PROFILES
@@ -46,7 +48,7 @@ C     == global variables ==
 # include "profiles.h"
 #endif
 
-C     == routine arguments ==
+C     !INPUT PARAMETERS:
 C     active_var_file: filename
 C     nadactive_var:   integer size of adactive_var
 C     adactive_var:    array
@@ -54,7 +56,7 @@ C     irec:            record number
 C     lAdInit:         initialisation of corresponding adjoint
 C                      variable and write to active file
 C     myIter:          number of optimization iteration (default: 0)
-C     myThid:          thread number for this instance
+C     myThid:          my thread ID number
       INTEGER active_num_file, nadactive_var
       _RL     active_var(nadactive_var), adactive_var(nadactive_var)
       INTEGER active_varnum
@@ -64,7 +66,8 @@ C     myThid:          thread number for this instance
       INTEGER bi, bj, myThid
       _RL     dummy
       _RL     dummyb
-C     == end of interface ==
+C     !OUTPUT PARAMETERS:
+CEOP
 
 #ifdef ALLOW_PROFILES
 
@@ -80,7 +83,10 @@ C     == end of interface ==
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C !ROUTINE: ACTIVE_WRITE_PROFILE_B
 
+C !INTERFACE:
       SUBROUTINE ACTIVE_WRITE_PROFILE_B(
      I                              active_num_file,
      I                              nadactive_var,
@@ -96,16 +102,12 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I                              dummyb
      &                            )
 
-C     !DESCRIPTION: \bv
-C     ==================================================================
-C     SUBROUTINE active_write_profile_b
-C     ==================================================================
-C     o Adjoint of active_write_profile.
-C     ==================================================================
+C     !DESCRIPTION:
+C     Adjoint of active_write_profile.
 
+C     !USES:
       IMPLICIT NONE
-
-C     == global variables ==
+C     == Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #ifdef ALLOW_PROFILES
@@ -113,13 +115,13 @@ C     == global variables ==
 # include "profiles.h"
 #endif
 
-C     == routine arguments ==
+C     !INPUT PARAMETERS:
 C     active_var_file: filename
 C     nadactive_var:   integer size of adactive_var
 C     adactive_var:    array
 C     irec:            record number
 C     myIter:          number of optimization iteration (default: 0)
-C     myThid:          thread number for this instance
+C     myThid:          my thread ID number
       INTEGER active_num_file, nadactive_var
       _RL     active_var(nadactive_var), adactive_var(nadactive_var)
       INTEGER active_varnum
@@ -128,7 +130,8 @@ C     myThid:          thread number for this instance
       INTEGER bi, bj, myThid
       _RL     dummy
       _RL     dummyb
-C     == end of interface ==
+C     !OUTPUT PARAMETERS:
+CEOP
 
 #ifdef ALLOW_PROFILES
 
@@ -142,4 +145,3 @@ C     == end of interface ==
 
       RETURN
       END
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

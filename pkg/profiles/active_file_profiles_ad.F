@@ -15,6 +15,11 @@ C        changed: gforget@ocean.mit.edu 23-Mar-2006
 C
 C     ==================================================================
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C !ROUTINE: ADACTIVE_READ_PROFILE
+
+C !INTERFACE:
       SUBROUTINE ADACTIVE_READ_PROFILE(
      I                              active_num_file,
      I                              nadactive_var,
@@ -28,15 +33,12 @@ C     ==================================================================
      I                              myThid
      &                            )
 
-C     !DESCRIPTION: \bv
-C     ==================================================================
-C     SUBROUTINE adactive_read_profile
-C     ==================================================================
-C     o Adjoint of active_read_profile.
-C     ==================================================================
-      IMPLICIT NONE
+C     !DESCRIPTION:
+C     Adjoint of active_read_profile.
 
-C     == global variables ==
+C     !USES:
+      IMPLICIT NONE
+C     == Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #ifdef ALLOW_PROFILES
@@ -44,13 +46,13 @@ C     == global variables ==
 # include "profiles.h"
 #endif
 
-C     == routine arguments ==
+C     !INPUT/OUTPUT PARAMETERS:
 C     active_var_file: filename
 C     nadactive_var:   integer size of adactive_var
 C     adactive_var:    array
 C     irec:            record number
 C     myIter:          number of optimization iteration (default: 0)
-C     myThid:          thread number for this instance
+C     myThid:          my thread ID number
 C     doglobalread:    flag for global or local read/write
 C                      (default: .false.)
 C     lAdInit:         initialisation of corresponding adjoint
@@ -61,6 +63,7 @@ C                      variable and write to active file
       INTEGER myIter
       INTEGER bi,bj,myThid
       LOGICAL lAdInit
+CEOP
 
 #ifdef ALLOW_PROFILES
 
@@ -75,10 +78,11 @@ C                      variable and write to active file
       RETURN
       END
 
-C     ==================================================================
-C     ==================================================================
-C     ==================================================================
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C !ROUTINE: ADACTIVE_WRITE_PROFILE
 
+C !INTERFACE:
       SUBROUTINE ADACTIVE_WRITE_PROFILE(
      I                              active_num_file,
      I                              nadactive_var,
@@ -92,16 +96,12 @@ C     ==================================================================
      I                              dummy
      &                            )
 
-C     !DESCRIPTION: \bv
-C     ==================================================================
-C     SUBROUTINE adactive_write_profile
-C     ==================================================================
-C     o Adjoint of active_write_profile.
-C     ==================================================================
+C     !DESCRIPTION:
+C     Adjoint of active_write_profile.
 
+C     !USES:
       IMPLICIT NONE
-
-C     == global variables ==
+C     == Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #ifdef ALLOW_PROFILES
@@ -109,13 +109,13 @@ C     == global variables ==
 # include "profiles.h"
 #endif
 
-C     == routine arguments ==
+C     !INPUT/OUTPUT PARAMETERS:
 C     active_var_file: filename
 C     nadactive_var:   integer size of adactive_var
 C     adactive_var:    array
 C     irec:            record number
 C     myIter:          number of optimization iteration (default: 0)
-C     myThid:          thread number for this instance
+C     myThid:          my thread ID number
 C     doglobalread:    flag for global or local read/write
 C                      (default: .false.)
 C     lAdInit:         initialisation of corresponding adjoint
@@ -126,9 +126,7 @@ C                      variable and write to active file
       INTEGER myIter
       INTEGER bi,bj,myThid
       _RL     dummy
-
-
-C     == end of interface ==
+CEOP
 
 #ifdef ALLOW_PROFILES
 
@@ -142,5 +140,3 @@ C     == end of interface ==
 
       RETURN
       END
-
-C     ==================================================================

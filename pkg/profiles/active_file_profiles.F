@@ -16,8 +16,11 @@ C        changed: gforget@ocean.mit.edu 23-Mar-2006
 C
 C     ==================================================================
 
-C     !ROUTINE: active_read_profile
-C     !INTERFACE:
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C !ROUTINE: ACTIVE_READ_PROFILE
+
+C !INTERFACE:
       SUBROUTINE ACTIVE_READ_PROFILE(
      I                           active_num_file,
      I                           nactive_var,
@@ -32,14 +35,12 @@ C     !INTERFACE:
      I                           dummy
      &                         )
 
-C     ==================================================================
-C     SUBROUTINE active_read_profile
-C     ==================================================================
-C     o Read an active 1D record from an profile data file.
-C     ==================================================================
+C     !DESCRIPTION:
+C     Read an active 1D record from an profile data file.
 
+C     !USES:
       IMPLICIT NONE
-C     == global variables ==
+C     == Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #ifdef ALLOW_PROFILES
@@ -47,14 +48,14 @@ C     == global variables ==
 # include "profiles.h"
 #endif
 
-C     == routine arguments ==
+C     !INPUT/OUTPUT PARAMETERS:
 C     active_var_file: filename
 C     nactive_var:     integer size of active_var
 C     active_var:      array
-C     active_varname:      name fo the quantity to save
+C     active_varname:  name for the quantity to save
 C     irec:            record number
 C     myOptimIter:     number of optimization iteration (default: 0)
-C     myThid:          thread number for this instance
+C     myThid:          my thread ID number
 C     lAdInit:         initialisation of corresponding adjoint
 C                      variable and write to active file
       INTEGER  nactive_var,active_num_file
@@ -64,6 +65,7 @@ C                      variable and write to active file
       INTEGER  bi,bj,myThid
       LOGICAL  lAdInit
       _RL      dummy
+CEOP
 
 #ifdef ALLOW_PROFILES
 
@@ -78,12 +80,11 @@ C                      variable and write to active file
       RETURN
       END
 
-C     ==================================================================
-C     ==================================================================
-C     ==================================================================
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C !ROUTINE: ACTIVE_WRITE_PROFILE
 
-C     !ROUTINE: active_write_profile
-C     !INTERFACE:
+C !INTERFACE:
       SUBROUTINE ACTIVE_WRITE_PROFILE(
      I                           active_num_file,
      I                           nactive_var,
@@ -97,17 +98,12 @@ C     !INTERFACE:
      I                           dummy
      &                         )
 
-C     !DESCRIPTION: \bv
-C     ==================================================================
-C     SUBROUTINE active_write_profile
-C     ==================================================================
-C     o Write an active 1D record from file.
-C     ==================================================================
+C     !DESCRIPTION:
+C     Write an active 1D record from file.
 
 C     !USES:
       IMPLICIT NONE
-
-C     == global variables ==
+C     == Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #ifdef ALLOW_PROFILES
@@ -115,20 +111,21 @@ C     == global variables ==
 # include "profiles.h"
 #endif
 
-C     == routine arguments ==
+C     !INPUT/OUTPUT PARAMETERS:
 C     active_var_file: filename
 C     nactive_var:     integer size of active_var
 C     active_var:      array
-C     active_varname:      name fo the quantity to save
+C     active_varname:  name for the quantity to save
 C     irec:            record number
 C     myOptimIter:     number of optimization iteration (default: 0)
-C     myThid:          thread number for this instance
+C     myThid:          my thread ID number
       INTEGER  nactive_var,active_num_file, active_varnum
       _RL      active_var(nactive_var)
       INTEGER  irec
       INTEGER  myOptimIter
       INTEGER  bi,bj,myThid
       _RL      dummy
+CEOP
 
 #ifdef ALLOW_PROFILES
 
@@ -142,6 +139,3 @@ C     myThid:          thread number for this instance
 
       RETURN
       END
-
-C     ==================================================================
-
