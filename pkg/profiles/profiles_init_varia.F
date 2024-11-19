@@ -77,32 +77,11 @@ C Initialize tiled cost function contributions.
 #ifdef ALLOW_GRDCHK
           IF (profilesDoNcOutput) then
             DO num_file = 1, NFILESPROFMAX
-              IF (ProfNo(num_file,bi,bj).GT.0) then
-C Close .equi file so data in buffer is not lost when run finishes
-                err = NF_CLOSE( fidforward(num_file,bi,bj) )
-                CALL PROFILES_NF_ERROR( 'INIT_VARIA: NF_CLOSE',
-     &               err,bi,bj,myThid )
-
-C Determine model equivalent file name
-                iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
-                jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
-
-                IL = ILNBLNK( profilesfiles(num_file) )
-                WRITE(profilesfile,'(A)') profilesfiles(num_file)(1:IL)
-
-                IL = ILNBLNK( profilesfile )
-                JL = ILNBLNK( profilesDir )
-                WRITE(fnameequinc,'(3A,2(I3.3,A))')
-     &           profilesDir(1:JL),profilesfile(1:IL),'.',
-     &           iG,'.',jG,'.equi.nc'
-
-C re-open to reset write permissions
-                JL = ILNBLNK( fnameequinc )
-                err = NF_OPEN( fnameequinc(1:JL),NF_WRITE,
-     &          fidforward(num_file,bi,bj) )
-                CALL PROFILES_NF_ERROR(
-     &               'INIT_VARIA: NF_OPEN('//fnameequinc(1:JL)//')',
-     &               err,bi,bj,myThid )
+              IF (ProfNo(num_file,bi,bj).GT.0) THEN
+C Write data from buffer to .nc file
+              err = NF_SYNC( fidforward(num_file,bi,bj) )
+              CALL PROFILES_NF_ERROR('INIT_VARIA: NF_SYNC',
+     &             err,bi,bj,myThid)
 
               ENDIF !IF (ProfNo
             ENDDO !DO num_file
