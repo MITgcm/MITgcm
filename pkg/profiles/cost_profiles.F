@@ -343,9 +343,9 @@ C prof_weights1D_all_mean is still sigam^2. Convert to weight
       ENDDO !DO iavgbin
 
       IF (myProcId.EQ.0) THEN
-
         DO num_var = 1, NVARMAX
           iL = ILNBLNK( prof_names(1,num_var) )
+
           WRITE(cfile,'(2A)') prof_names(1,num_var)(1:iL),
      &     '_data_mean.data'
           CALL MDSFINDUNIT( cunit, myThid )

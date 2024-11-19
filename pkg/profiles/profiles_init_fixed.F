@@ -127,6 +127,7 @@ C     !LOCAL VARIABLES:
       ELSE
         WRITE(msgBuf,'(2A)') '  profilesDir ','./'
       ENDIF
+
       CALL PRINT_MESSAGE( msgBuf,
      &     standardMessageUnit, SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A,L5)') '  profilesDoGenGrid  ',
