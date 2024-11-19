@@ -120,7 +120,7 @@ C     !LOCAL VARIABLES:
 
                       CALL ACTIVE_WRITE_PROFILE( num_file,
      &                     ProfDepthNo(num_file,bi,bj),prof_traj1D,
-                           num_var,prof_num,optimcycle,bi,bj,myThid,
+     &                     num_var,prof_num,optimcycle,bi,bj,myThid,
      &                     profiles_dummy(num_file,num_var,bi,bj) )
 
                     ENDIF !IF (vec_quantities(num_file,num_var,bi,bj)

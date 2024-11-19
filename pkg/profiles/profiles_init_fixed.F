@@ -43,7 +43,7 @@ C     !LOCAL VARIABLES:
 #ifdef ALLOW_PROFILES
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER kLev, kC, kCMax, kProf, prof_num
-      INTEGER chunk, chunkProf, c
+      INTEGER chunk, chunkProf, c, recLen
       INTEGER i,j,bi,bj,iG,jG,num_file,num_var,ProfNo_tile
       INTEGER stopProfiles
       INTEGER fid, dimId, varId1, varId1a, varId1b
@@ -827,7 +827,7 @@ C6) Available variables in the data set
               DO num_var = 1, NVARMAX
                 JL = ILNBLNK( prof_names(num_file,num_var) )
                 err = NF_INQ_VARID( fid,
-                      prof_names(num_file,num_var)(1:JL), varId1 )
+     &                prof_names(num_file,num_var)(1:JL), varId1 )
                 CALL PROFILES_NF_ERROR(
      &               'INIT_FIXED: NF_INQ_VARID prof_names',
      &               err,bi,bj,myThid )
@@ -1207,14 +1207,14 @@ C XC grid
      &       'profilesXCincl1PointOverlap.',iG,'.',jG,'.',
      &       sNx,'.',sNy,'.data'
 
-            k = MDS_RECLEN( 64,(sNx+2)*(sNy+2),myThid )
+            recLen = MDS_RECLEN( 64,(sNx+2)*(sNy+2),myThid )
 
             WRITE(standardMessageUnit,'(A,/,2A)')
      &       'PROFILES_INIT_FIXED: creating grid from profiles; file:',
      &       fnameequinc
             JL  = ILNBLNK( fnameequinc )
             OPEN( fid, FILE = fnameequinc(1:JL), FORM = 'unformatted',
-     &       STATUS = 'unknown', ACCESS = 'direct', RECL = k )
+     &       STATUS = 'unknown', ACCESS = 'direct', RECL = recLen )
 
             DO j = 0, sNy+1
               DO i = 0, sNx+1
@@ -1233,18 +1233,18 @@ C YC grid
      &       'profilesYCincl1PointOverlap.',iG,'.',jG,'.',
      &       sNx,'.',sNy,'.data'
 
-            k = MDS_RECLEN( 64,(sNx+2)*(sNy+2),myThid )
+            recLen = MDS_RECLEN( 64,(sNx+2)*(sNy+2),myThid )
 
             WRITE(standardMessageUnit,'(A,/,A)')
      &       'PROFILES_INIT_FIXED: creating grid from profiles; file:',
      &       fnameequinc
             JL  = ILNBLNK( fnameequinc )
             OPEN( fid, FILE = fnameequinc(1:JL), FORM = 'unformatted',
-     &       STATUS = 'unknown', ACCESS = 'direct', RECL = k )
+     &       STATUS = 'unknown', ACCESS = 'direct', RECL = recLen )
 
             DO j = 0, sNy+1
               DO i = 0, sNx+1
-                xy_buffer_r8(i,j)=yC(i,j,bi,bj)
+                xy_buffer_r8(i,j) = yC(i,j,bi,bj)
               ENDDO
             ENDDO
 

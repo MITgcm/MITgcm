@@ -108,7 +108,7 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
      &         err,bi,bj,myThid )
 
           err = NF_INQ_VARID( fid,
-                prof_namesmask(active_num_file,active_varnum), maskId )
+     &          prof_namesmask(active_num_file,active_varnum), maskId )
           CALL PROFILES_NF_ERROR(
      &         'ACTIVE_READ: NF_INQ_VARID prof_namesmask',
      &         err,bi,bj,myThid )

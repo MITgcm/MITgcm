@@ -95,7 +95,7 @@ C Loop over profiles
                 DO prof_num = 1, NOBSGLOB
                   IF (prof_num.LE.ProfNo(num_file,bi,bj)) THEN
 C Initialize
-                    DO kLen = 1, NLEVELMAX
+                    DO kLev = 1, NLEVELMAX
                       prof_traj1D(kLev) = 0.
                       prof_mask1D(kLev) = 0.
                       prof_buff(num_var,kLev,prof_num) = 0.
@@ -218,7 +218,7 @@ C Define variables and attributes
      &                  prof_namesequi(num_file,num_var),
      &                  NF_DOUBLE, 2, vecid, varId1(2+(num_var-1)*2) )
                   CALL PROFILES_NF_ERROR(
-                       'MAKE_NCFILE: NF_DEF_VAR prof_namesequi',
+     &                 'MAKE_NCFILE: NF_DEF_VAR prof_namesequi',
      &                 err,bi,bj,myThid )
                   err = NF_PUT_ATT_DOUBLE( fid2,varId1(2+(num_var-1)*2),
      &                  '_FillValue', NF_DOUBLE, 1, 0. _d 0 )
@@ -230,7 +230,7 @@ C Define variables and attributes
      &                  prof_namesmask(num_file,num_var),
      &                  NF_DOUBLE, 2, vecid, varId1(3+(num_var-1)*2) )
                   CALL PROFILES_NF_ERROR(
-                       'MAKE_NCFILE: NF_DEF_VAR prof_namesmask',
+     &                 'MAKE_NCFILE: NF_DEF_VAR prof_namesmask',
      &                 err,bi,bj,myThid )
                   err = NF_PUT_ATT_DOUBLE( fid2,varId1(3+(num_var-1)*2),
      &                  '_FillValue', NF_DOUBLE, 1, 0. _d 0 )

@@ -42,7 +42,7 @@ C Skip reserved unit numbers
      &         ii.NE.standardMessageUnit .AND.
      &         ii.NE.scrUnit1 .AND. ii.NE.scrUnit2 .AND.
      &         ii.NE.eeDataUnit .AND. ii.NE.modelDataUnit ) THEN
-            INQUIRE( UNITi = ii, IOSTAT = ios, OPENED = op )
+            INQUIRE( UNIT = ii, IOSTAT = ios, OPENED = op )
             IF (ios.NE.0) THEN
               WRITE(msgBuf,'(A,I4)')
      &         ' PROFILES_FINDUNIT: inquiring unit number =', ii
