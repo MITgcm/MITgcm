@@ -43,7 +43,7 @@ c     == routine arguments ==
       integer myIter
       integer myThid
 
-#ifdef ALLOW_OBCSN_CONTROL
+#if ( defined ALLOW_OBCS_NORTH && defined ALLOW_OBCSN_CONTROL )
 c     == external functions ==
       integer  ilnblnk
       external ilnblnk
@@ -285,7 +285,7 @@ c--   Calculate mask for tracer cells (0 => land, 1 => water).
 C--   End over iobcs loop
       enddo
 
-#endif /* ALLOW_OBCSN_CONTROL */
+#endif /* defined ALLOW_OBCS_NORTH && defined ALLOW_OBCSN_CONTROL */
 
       return
       end
