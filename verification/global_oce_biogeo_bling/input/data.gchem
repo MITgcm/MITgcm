@@ -1,4 +1,15 @@
  &GCHEM_PARM01
   useBLING=.TRUE.,
-  nsubtime=1,
+  nsubtime         = 1,
+  gchem_pCO2       = 380.5E-6,
+  GCHEM_windFile   = 'tren_speed.bin',
+  GCHEM_iceFile    = 'fice.bin',
+  GCHEM_ironFile   = 'mah_flux_smooth.bin',
+  GCHEM_silicafile = 'sillev1.bin',
+ &
+ &GCHEM_FORCING_PARAMS
+  ironperiod   = -12.,
+  silicaperiod = -12.,
+ &
+ &GCHEM_INTERP_PARAMS
  &

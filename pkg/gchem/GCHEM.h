@@ -58,14 +58,34 @@ CEOP
 
       COMMON /GCHEM_PARM_R/
      &           gchem_rl1, gchem_rl2, gchem_rl3,
-     &           gchem_rl4, gchem_rl5,
+     &           gchem_rl4, gchem_rl5, gchem_pCO2,
      &           gchem_ForcingPeriod, gchem_ForcingCycle
       _RL     gchem_rl1
       _RL     gchem_rl2
       _RL     gchem_rl3
       _RL     gchem_rl4
       _RL     gchem_rl5
+      _RL     gchem_pCO2
       _RL     gchem_ForcingPeriod
       _RL     gchem_ForcingCycle
+
+
+C--   COMMON /GCHEM_FIELDS_C/
+      COMMON /GCHEM_FIELDS_C/
+     &    gchem_iceFile,
+     &    gchem_windFile,
+     &    gchem_atmospFile,
+     &    gchem_silicafile,
+     &    gchem_PARfile,
+     &    gchem_ironfile,
+     &    gchem_apCO2file
+
+      CHARACTER*128 gchem_iceFile
+      CHARACTER*128 gchem_windFile
+      CHARACTER*128 gchem_silicafile
+      CHARACTER*128 gchem_PARfile
+      CHARACTER*128 gchem_ironfile
+      CHARACTER*128 gchem_apCO2file
+      CHARACTER*128 gchem_atmospFile
 
 #endif /* ALLOW_GCHEM */

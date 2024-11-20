@@ -43,12 +43,15 @@ C  to test the flag before any corresponding pkg S/R call
      &                   useBLING,
      &                   useSPOIL,
      &                   useDARWIN,
+     &     gchem_iceFile, gchem_windFile, gchem_atmospFile,
+     &     gchem_silicafile, gchem_PARfile, gchem_ironfile,
+     &     gchem_apCO2file,
      &           fileName1, fileName2, fileName3,
      &           fileName4, fileName5,
      &           gchem_int1, gchem_int2, gchem_int3,
      &           gchem_int4, gchem_int5, nsubtime,
      &           gchem_rl1, gchem_rl2, gchem_rl3,
-     &           gchem_rl4, gchem_rl5,
+     &           gchem_rl4, gchem_rl5, gchem_pCO2,
      &           gchem_ForcingPeriod, gchem_ForcingCycle,
      &           tIter0
 
@@ -56,15 +59,15 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       IF ( .NOT.useGCHEM ) THEN
 C-    pkg GCHEM is not used
-        _BEGIN_MASTER(myThid)
+        _BEGIN_MASTER( myThid )
 C-    Track pkg activation status:
 C     print a (weak) warning if data.gchem is found
          CALL PACKAGES_UNUSED_MSG( 'useGCHEM', ' ', ' ' )
-        _END_MASTER(myThid)
+        _END_MASTER( myThid )
         RETURN
       ENDIF
 
-      _BEGIN_MASTER(myThid)
+      _BEGIN_MASTER( myThid )
 
 C- Set defaults values for parameters in GCHEM.h
        useCFC = .FALSE.
@@ -78,6 +81,13 @@ C- Set defaults values for parameters in GCHEM.h
        fileName3=' '
        fileName4=' '
        fileName5=' '
+       gchem_iceFile    = ' '
+       gchem_windFile   = ' '
+       gchem_atmospFile = ' '
+       gchem_silicafile = ' '
+       gchem_PARfile    = ' '
+       gchem_ironfile   = ' '
+       gchem_apCO2file  = ' '
        nsubtime = 1
        gchem_int1=0
        gchem_int2=0
@@ -89,6 +99,8 @@ C- Set defaults values for parameters in GCHEM.h
        gchem_rl3=0. _d 0
        gchem_rl4=0. _d 0
        gchem_rl5=0. _d 0
+C  default pCO2 value
+       gchem_pCO2=278.0 _d -6
 C  default periodic forcing to same as for physics
        gchem_ForcingPeriod=externForcingPeriod
        gchem_ForcingCycle=externForcingCycle
@@ -101,6 +113,7 @@ C- Open and read the data.gchem file
      O                   iUnit,
      I                   myThid )
       READ(UNIT=iUnit,NML=GCHEM_PARM01)
+      IF (useEXF) CALL GCHEM_EXF_READPARMS( iUnit, myThid )
       WRITE(msgBuf,'(A)')
      &  ' GCHEM_READPARMS: finished reading data.gchem'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -127,38 +140,38 @@ c      nRetired = nRetired+1
        STOP 'ABNORMAL END: S/R GCHEM_READPARMS'
       ENDIF
 
-      _END_MASTER(myThid)
+      _END_MASTER( myThid )
 
 C  Everyone else must wait for the parameters to be loaded
       _BARRIER
 
 #ifdef ALLOW_CFC
       IF ( useCFC ) THEN
-        CALL CFC_READPARMS(myThid)
+        CALL CFC_READPARMS( myThid )
       ENDIF
 #endif
 
 #ifdef ALLOW_DIC
       IF ( useDIC ) THEN
-        CALL DIC_READPARMS(myThid)
+        CALL DIC_READPARMS( myThid )
       ENDIF
 #endif
 
 #ifdef ALLOW_BLING
       IF ( useBLING ) THEN
-        CALL BLING_READPARMS(myThid)
+        CALL BLING_READPARMS( myThid )
       ENDIF
 #endif
 
 #ifdef ALLOW_SPOIL
       IF ( useSPOIL ) THEN
-        CALL SPOIL_READPARMS(myThid)
+        CALL SPOIL_READPARMS( myThid )
       ENDIF
 #endif
 
 #ifdef ALLOW_DARWIN
       IF ( useDARWIN ) THEN
-        CALL DARWIN_READPARMS(myThid)
+        CALL DARWIN_READPARMS( myThid )
       ENDIF
 #endif
 

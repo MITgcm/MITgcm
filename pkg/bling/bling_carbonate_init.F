@@ -23,7 +23,17 @@ C     === Global variables ===
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
 #include "PTRACERS_FIELDS.h"
-#include "BLING_LOAD.h"
+#ifdef ALLOW_EXF
+# include "EXF_INTERP_SIZE.h"
+# include "EXF_PARAM.h"
+# include "EXF_FIELDS.h"
+#endif
+#ifdef ALLOW_GCHEM
+# include "GCHEM_SIZE.h"
+# include "GCHEM_EXF.h"
+# include "GCHEM_FIELDS.h"
+# include "GCHEM.h"
+#endif
 
 C     === Routine arguments ===
 C     myThid               :: thread Id. number
@@ -51,8 +61,8 @@ CEOP
       IF ( periodicExternalForcing ) THEN
 
 c read in silica field
-         CALL LEF_ZERO( silica0,myThid )
-         CALL LEF_ZERO( silica1,myThid )
+         CALL LEF_ZERO( gchemSi0,myThid )
+         CALL LEF_ZERO( gchemSi1,myThid )
 
 C--   Now calculate whether it is time to update the forcing arrays
        CALL GET_PERIODIC_INTERVAL(
@@ -67,10 +77,10 @@ C--   Now calculate whether it is time to update the forcing arrays
      &   ' : Reading new data, i0,i1=', intime0, intime1
        _END_MASTER(myThid)
 
-       IF ( BLING_silicaFile .NE. ' '  ) THEN
-         CALL READ_REC_XY_RS( BLING_silicaFile,silica0,intime0,
+       IF ( GCHEM_silicaFile .NE. ' '  ) THEN
+         CALL READ_REC_XY_RS( GCHEM_silicaFile,gchemSi0,intime0,
      &        nIter0,myThid )
-         CALL READ_REC_XY_RS( BLING_silicaFile,silica1,intime1,
+         CALL READ_REC_XY_RS( GCHEM_silicaFile,gchemSi1,intime1,
      &        nIter0,myThid )
        ENDIF
 
@@ -80,16 +90,16 @@ C--   Now calculate whether it is time to update the forcing arrays
        ENDIF
 #endif
 
-       _EXCH_XY_RS(silica0, myThid )
-       _EXCH_XY_RS(silica1, myThid )
+       _EXCH_XY_RS(gchemSi0, myThid )
+       _EXCH_XY_RS(gchemSi1, myThid )
 
-       IF ( BLING_silicaFile .NE. ' '  ) THEN
+       IF ( GCHEM_silicaFile .NE. ' '  ) THEN
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-             silica(i,j,bi,bj)= bWght*silica0(i,j,bi,bj)
-     &                        + aWght*silica1(i,j,bi,bj)
+             silica(i,j,bi,bj)= bWght*gchemSi0(i,j,bi,bj)
+     &                        + aWght*gchemSi1(i,j,bi,bj)
            ENDDO
           ENDDO
          ENDDO
