@@ -85,6 +85,21 @@ C     set reasonable values fields that need at least something
        ENDDO
       ENDDO
 
+      IF ( .NOT. useEXF ) THEN
+       IF ( gchem_silicaFile .NE. ' '  ) THEN
+        CALL READ_FLD_XY_RS( gchem_silicaFile,' ',gchemSi,0,myThid )
+       ENDIF
+       IF ( gchem_PARfile .NE. ' '  ) THEN
+        CALL READ_FLD_XY_RS( gchem_PARfile,' ',gchemPAR,0,myThid )
+       ENDIF
+       IF ( gchem_ironFile .NE. ' '  ) THEN
+        CALL READ_FLD_XY_RS( gchem_ironFile,' ',gchemFe,0,myThid )
+       ENDIF
+       IF ( gchem_apCO2file .NE. ' '  ) THEN
+        CALL READ_FLD_XY_RS( gchem_apCO2file,' ',gchemapCO2,0,myThid )
+       ENDIF
+      ENDIF
+
 #ifdef ALLOW_EXF
       IF ( useEXF ) THEN
 
@@ -144,14 +159,14 @@ C     set reasonable values fields that need at least something
      &     mythid )
        ENDIF
 
-       _EXCH_XY_RL( gchemSi, myThid )
-       _EXCH_XY_RL( gchemPAR, myThid )
-       _EXCH_XY_RL( gchemFe, myThid )
-       _EXCH_XY_RL( gchemapCO2, myThid )
-
 C     useEXF
       ENDIF
 #endif /* ALLOW_EXF */
+
+      _EXCH_XY_RL( gchemSi, myThid )
+      _EXCH_XY_RL( gchemPAR, myThid )
+      _EXCH_XY_RL( gchemFe, myThid )
+      _EXCH_XY_RL( gchemapCO2, myThid )
 
 C--   Initialise other Geo-Chemistry pkg variables:
 

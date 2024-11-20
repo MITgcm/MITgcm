@@ -50,51 +50,11 @@ CEOP
 #ifndef USE_SIBLING
       IF ( periodicExternalForcing ) THEN
 
-c read in silica field
-         CALL LEF_ZERO( silica0,myThid )
-         CALL LEF_ZERO( silica1,myThid )
-
-C--   Now calculate whether it is time to update the forcing arrays
-       CALL GET_PERIODIC_INTERVAL(
-     O                   intimeP, intime0, intime1, bWght, aWght,
-     I                   externForcingCycle, externForcingPeriod,
-     I                   deltaTClock, startTime, myThid )
-
-       _BARRIER
-       _BEGIN_MASTER(myThid)
-        WRITE(standardMessageUnit,'(A,I10,A,2(2I5,A))')
-     &   ' BLING_SURFFORCING_INIT, it=', nIter0,
-     &   ' : Reading new data, i0,i1=', intime0, intime1
-       _END_MASTER(myThid)
-
-       IF ( BLING_silicaFile .NE. ' '  ) THEN
-         CALL READ_REC_XY_RS( BLING_silicaFile,silica0,intime0,
-     &        nIter0,myThid )
-         CALL READ_REC_XY_RS( BLING_silicaFile,silica1,intime1,
-     &        nIter0,myThid )
-       ENDIF
-
 #ifdef ALLOW_OFFLINE
        IF ( useOffLine ) THEN
          CALL OFFLINE_FIELDS_LOAD( startTime, nIter0, myThid )
        ENDIF
 #endif
-
-       _EXCH_XY_RS(silica0, myThid )
-       _EXCH_XY_RS(silica1, myThid )
-
-       IF ( BLING_silicaFile .NE. ' '  ) THEN
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-             silica(i,j,bi,bj)= bWght*silica0(i,j,bi,bj)
-     &                        + aWght*silica1(i,j,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDIF
 
 c end periodicExternalForcing
       ENDIF

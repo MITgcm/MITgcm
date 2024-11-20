@@ -3,12 +3,14 @@
   nsubtime=1,
   GCHEM_windFile='tren_speed.bin',
   GCHEM_iceFile='fice.bin',
+  GCHEM_silicaFile='sillev1.bin',
   GCHEM_ironFile='mah_flux_smooth.bin',
-  GCHEM_silicafile = 'sillev1.bin',
  &
- &gchem_forcing_params
-  ironperiod=-12.,
-  silicaperiod=-12.,
+
+ &GCHEM_FORCING_PARAMS
+  ironPeriod=-12.,
+  silicaPeriod=-12.,
  &
- &gchem_interp_params
+
+ &GCHEM_INTERP_PARAMS
  &

@@ -17,6 +17,7 @@ C     === Global variables ===
 #include "GRID.h"
 #include "BLING_VARS.h"
 #include "BLING_LOAD.h"
+#include "GCHEM_FIELDS.h"
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
@@ -67,13 +68,15 @@ c set reasonable values to those that need at least something
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-             apco2(i,j,bi,bj) = bling_pCO2*maskC(i,j,1,bi,bj)
-             wind(i,j,bi,bj)     = 5. _d 0*maskC(i,j,1,bi,bj)
-             atmosP(i,j,bi,bj)   = 1. _d 0*maskC(i,j,1,bi,bj)
-             fIce(i,j,bi,bj)     = 0. _d 0
-             fluxCO2(i,j,bi,bj)  = 0. _d 0
-             InputFe(i,j,bi,bj)  = 1. _d -11*maskC(i,j,1,bi,bj)
-             Silica(i,j,bi,bj)   = 7.6838 _d -3*maskC(i,j,1,bi,bj)
+           fIce(i,j,bi,bj)    = gchemIce(i,j,bi,bj)
+           wind(i,j,bi,bj)    = gchemWind(i,j,bi,bj)
+C     Atm pressure in Pascals, convert to atm
+           AtmosP(i,j,bi,bj)  = gchemAtmosp(i,j,bi,bj)/Pa2atm
+           silica(i,j,bi,bj)  = gchemSi(i,j,bi,bj)
+c          PAR(i,j,bi,bj)     = gchemPAR(i,j,bi,bj)
+           inputFe(i,j,bi,bj) = gchemFe(i,j,bi,bj)
+           apCO2(i,j,bi,bj)   = gchemapCO2(i,j,bi,bj)
+           fluxCO2(i,j,bi,bj) = 0. _d 0
           ENDDO
          ENDDO
         ENDDO
