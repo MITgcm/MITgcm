@@ -70,13 +70,13 @@ C     First call requires that we initialize everything to zero for safety
 C     set reasonable values fields that need at least something
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          gchemapCO2 (i,j,bi,bj) = GCHEM_pCO2 * maskC(i,j,1,bi,bj)
-          gchemWind  (i,j,bi,bj) = 5. _d 0    * maskC(i,j,1,bi,bj)
-          gchemAtmosP(i,j,bi,bj) = 1.013 _d 5 * maskC(i,j,1,bi,bj)
-          gchemIce   (i,j,bi,bj) = 0. _d 0    * maskC(i,j,1,bi,bj)
-          gchemPAR   (i,j,bi,bj) = 140. _d 0  * maskC(i,j,1,bi,bj)
-          gchemFe    (i,j,bi,bj) = 1. _d -11  * maskC(i,j,1,bi,bj)
-          gchemSi    (i,j,bi,bj) = 7.6 _d -3  * maskC(i,j,1,bi,bj)
+          gchemapCO2 (i,j,bi,bj) = GCHEM_pCO2    * maskC(i,j,1,bi,bj)
+          gchemWind  (i,j,bi,bj) = 5. _d 0       * maskC(i,j,1,bi,bj)
+          gchemAtmosP(i,j,bi,bj) = 1.01325 _d 5  * maskC(i,j,1,bi,bj)
+          gchemIce   (i,j,bi,bj) = 0. _d 0       * maskC(i,j,1,bi,bj)
+          gchemPAR   (i,j,bi,bj) = 140. _d 0     * maskC(i,j,1,bi,bj)
+          gchemFe    (i,j,bi,bj) = 1. _d -11     * maskC(i,j,1,bi,bj)
+          gchemSi    (i,j,bi,bj) = 7.6838 _d -3  * maskC(i,j,1,bi,bj)
          ENDDO
         ENDDO
        ENDDO
