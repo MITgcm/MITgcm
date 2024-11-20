@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ctrl:
+  - add a STOP when ALLOW_CTRL_OBCSN/S/W/E is defined but corresponding
+    ALLOW_OBCS_NORTH/SOUTH/EAST/WEST is undef ; and fix the code so that, in
+    that case, it will compile and reach the stop before running 1rst time-step
 o model,pkg:
   - minor spell checking and formatting updates.
 o pkg/bling:
