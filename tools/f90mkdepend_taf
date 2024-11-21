@@ -4,6 +4,35 @@
 # passed as arguments
 #
 
+# process option arguments
+CLEAN=
+adfiles=
+key_prev=
+for key in "$@"; do
+    if [[ -n "$key_prev" ]]; then
+        eval "$key_prev=\$key"
+        key_prev=
+        continue
+    fi
+
+    case $key in
+    -clean | --clean)
+        CLEAN=true
+        ;;
+    -taf | --taf)
+        key_prev="adfiles"
+        ;;
+    -*)
+        echo "f90mkdepend_taf wrong key: $key"
+        exit 1
+        ;;
+    *)
+        # Append non-option arguments to adfiles
+        adfiles="${adfiles:+$adfiles }$key"
+        ;;
+    esac
+done
+
 # don't complain if *.F90 doesn't match any files
 shopt -s nullglob
 
@@ -14,8 +43,17 @@ dep_file="Makefile_taf.dep"
 cat /dev/null > $log_file
 cat /dev/null > $dep_file
 
+# OPTION to clean Makefile of $dep_file
+MAKEFILE=Makefile
+if test -n "$CLEAN"; then
+    if [[ $(tail -n 1 $MAKEFILE) == "include $dep_file" ]]; then
+        head -n -1 $MAKEFILE > tmp && mv tmp $MAKEFILE
+    fi
+    rm -rf $dep_file $log_file
+    exit 0
+fi
+
 # append module dependencies to Makefile
-adfiles=$*
 for filename in ${adfiles}; do
   # quick check for "use" to speed up processing
   if grep -iq '^ *use ' $filename; then

@@ -3387,8 +3387,8 @@ Clean:
 	-rm -rf *.flowdir
 	-rm -f \$(SPECIAL_FILES) f90mkdepend.log $MAKEFILE.old
 	-rm -f taf_ad.f90
-	-rm -f f90mkdepend_taf.log
 	-rm -f taf_command taf_output taf_ad.log taf_ad_flow.log taf_ftl.log
+	-\$(TOOLSDIR)/f90mkdepend_taf -clean
 
 # remove also the executable, files that "genmake2" generates (except Makefile)
 #         and output from a run (plus log files from testreport)
@@ -3630,7 +3630,7 @@ else
 cat >>$MAKEFILE <<EOF
 # ... send multiple files to TAF ...
 adj_depend:
-	\$(TOOLSDIR)/f90mkdepend_taf \$(AD_F90FILES:.$FS90=_ad.$FS90) \$(AD_FILES:.$FS=_ad.$FS) >> \$(MAKEFILE)
+	\$(TOOLSDIR)/f90mkdepend_taf -taf \$(AD_F90FILES:.$FS90=_ad.$FS90) \$(AD_FILES:.$FS=_ad.$FS) >> \$(MAKEFILE)
 
 ad_taf_output.$FS: \$(AD_FLOW_FILES) \$(AD_F90FILES) \$(AD_FILES)
 	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "Adjoint version" -bAD_CONFIG_H -DALLOW_ADJOINT_RUN -UALLOW_TANGENTLINEAR_RUN > ad_config.template
@@ -3746,7 +3746,7 @@ else
 cat >>$MAKEFILE <<EOF
 # ... send multiple files to TAF ...
 ftl_depend:
-	\$(TOOLSDIR)/f90mkdepend_taf \$(AD_F90FILES:.$FS90=_tl.$FS90) \$(AD_FILES:.$FS=_tl.$FS) >> \$(MAKEFILE)
+	\$(TOOLSDIR)/f90mkdepend_taf -taf \$(AD_F90FILES:.$FS90=_tl.$FS90) \$(AD_FILES:.$FS=_tl.$FS) >> \$(MAKEFILE)
 
 ftl_taf_output.$FS: \$(AD_FLOW_FILES) \$(AD_F90FILES) \$(AD_FILES)
 	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "TangLin version" -bAD_CONFIG_H -UALLOW_ADJOINT_RUN -DALLOW_TANGENTLINEAR_RUN > ad_config.template
