@@ -16,7 +16,6 @@ C !USES: ===============================================================
       IMPLICIT NONE
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#include "GRID.h"
 #include "PARAMS.h"
 #include "GCHEM_SIZE.h"
 #include "GCHEM.h"
@@ -332,7 +331,6 @@ C Atm pressure in Pascals, convert to atm
        ENDIF
 
        IF ( gchem_IceFile .NE. ' ' ) THEN
-# ifdef ALLOW_EXF
 C     forcing load fields with pkg/exf tools
         CALL EXF_SET_FLD(
      &     'gchemIce', gchem_icefile, icemask,
@@ -348,7 +346,7 @@ C     forcing load fields with pkg/exf tools
 #  endif
      &     mytime, myiter, mythid )
        ENDIF
-# endif
+C     endif useEXF
       ENDIF
 #  endif /* ALLOW_EXF */
 

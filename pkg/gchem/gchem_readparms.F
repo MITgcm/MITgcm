@@ -197,122 +197,126 @@ C- Open and read the data.gchem file
 
 # ifdef ALLOW_EXF
 
-      silicaperiod             = 0.0 _d 0
-      silicaRepCycle           = repeatPeriod
-      silicaStartTime          = UNSET_RL
-      silicastartdate1         = 0
-      silicastartdate2         = 0
-      silica_exfremo_intercept = 0.0 _d 0
-      silica_exfremo_slope     = 0.0 _d 0
-      silicamask               = 'c'
-      gchem_inscal_silica      = 1. _d 0
+      IF ( useEXF ) THEN
 
-      PARperiod             = 0.0 _d 0
-      PARRepCycle           = repeatPeriod
-      PARStartTime          = UNSET_RL
-      PARstartdate1         = 0
-      PARstartdate2         = 0
-      PAR_exfremo_intercept = 0.0 _d 0
-      PAR_exfremo_slope     = 0.0 _d 0
-      PARmask               = 'c'
-      gchem_inscal_PAR      = 1. _d 0
+       silicaperiod             = 0.0 _d 0
+       silicaRepCycle           = repeatPeriod
+       silicaStartTime          = UNSET_RL
+       silicastartdate1         = 0
+       silicastartdate2         = 0
+       silica_exfremo_intercept = 0.0 _d 0
+       silica_exfremo_slope     = 0.0 _d 0
+       silicamask               = 'c'
+       gchem_inscal_silica      = 1. _d 0
 
-      ironperiod             = 0.0 _d 0
-      ironRepCycle           = repeatPeriod
-      ironStartTime          = UNSET_RL
-      ironstartdate1         = 0
-      ironstartdate2         = 0
-      iron_exfremo_intercept = 0.0 _d 0
-      iron_exfremo_slope     = 0.0 _d 0
-      ironmask               = 'c'
-      gchem_inscal_iron      = 1. _d 0
+       PARperiod             = 0.0 _d 0
+       PARRepCycle           = repeatPeriod
+       PARStartTime          = UNSET_RL
+       PARstartdate1         = 0
+       PARstartdate2         = 0
+       PAR_exfremo_intercept = 0.0 _d 0
+       PAR_exfremo_slope     = 0.0 _d 0
+       PARmask               = 'c'
+       gchem_inscal_PAR      = 1. _d 0
 
-      apCO2period             = 0.0 _d 0
-      apCO2RepCycle           = repeatPeriod
-      apCO2StartTime          = UNSET_RL
-      apCO2startdate1         = 0
-      apCO2startdate2         = 0
-      apCO2_exfremo_intercept = 0.0 _d 0
-      apCO2_exfremo_slope     = 0.0 _d 0
-      apCO2mask               = 'c'
-      gchem_inscal_apCO2      = 1. _d 0
+       ironperiod             = 0.0 _d 0
+       ironRepCycle           = repeatPeriod
+       ironStartTime          = UNSET_RL
+       ironstartdate1         = 0
+       ironstartdate2         = 0
+       iron_exfremo_intercept = 0.0 _d 0
+       iron_exfremo_slope     = 0.0 _d 0
+       ironmask               = 'c'
+       gchem_inscal_iron      = 1. _d 0
 
-      windperiod             = 0.0 _d 0
-      windRepCycle           = repeatPeriod
-      windStartTime          = UNSET_RL
-      windstartdate1         = 0
-      windstartdate2         = 0
-      wind_exfremo_intercept = 0.0 _d 0
-      wind_exfremo_slope     = 0.0 _d 0
-      windmask               = 'c'
-      gchem_inscal_wind      = 1. _d 0
+       apCO2period             = 0.0 _d 0
+       apCO2RepCycle           = repeatPeriod
+       apCO2StartTime          = UNSET_RL
+       apCO2startdate1         = 0
+       apCO2startdate2         = 0
+       apCO2_exfremo_intercept = 0.0 _d 0
+       apCO2_exfremo_slope     = 0.0 _d 0
+       apCO2mask               = 'c'
+       gchem_inscal_apCO2      = 1. _d 0
 
-      apresperiod             = 0.0 _d 0
-      apresRepCycle           = repeatPeriod
-      apresStartTime          = UNSET_RL
-      apresstartdate1         = 0
-      apresstartdate2         = 0
-      apres_exfremo_intercept = 0.0 _d 0
-      apres_exfremo_slope     = 0.0 _d 0
-      apresmask               = 'c'
-      gchem_inscal_apres      = 1. _d 0
+       windperiod             = 0.0 _d 0
+       windRepCycle           = repeatPeriod
+       windStartTime          = UNSET_RL
+       windstartdate1         = 0
+       windstartdate2         = 0
+       wind_exfremo_intercept = 0.0 _d 0
+       wind_exfremo_slope     = 0.0 _d 0
+       windmask               = 'c'
+       gchem_inscal_wind      = 1. _d 0
 
-      READ(UNIT=iUnit, NML=GCHEM_FORCING_PARAMS)
+       apresperiod             = 0.0 _d 0
+       apresRepCycle           = repeatPeriod
+       apresStartTime          = UNSET_RL
+       apresstartdate1         = 0
+       apresstartdate2         = 0
+       apres_exfremo_intercept = 0.0 _d 0
+       apres_exfremo_slope     = 0.0 _d 0
+       apresmask               = 'c'
+       gchem_inscal_apres      = 1. _d 0
+
+       READ(UNIT=iUnit, NML=GCHEM_FORCING_PARAMS)
 
 #  ifdef USE_EXF_INTERPOLATION
 
-      silica_lon0 = inp_lon0
-      silica_lat0 = inp_lat0
-      silica_nlon = inp_gNx
-      silica_nlat = inp_gNy
-      silica_lon_inc = inp_dLon
-      silica_interpMethod  = 1
+       silica_lon0 = inp_lon0
+       silica_lat0 = inp_lat0
+       silica_nlon = inp_gNx
+       silica_nlat = inp_gNy
+       silica_lon_inc = inp_dLon
+       silica_interpMethod  = 1
 
-      PAR_lon0 = inp_lon0
-      PAR_lat0 = inp_lat0
-      PAR_nlon = inp_gNx
-      PAR_nlat = inp_gNy
-      PAR_lon_inc = inp_dLon
-      PAR_interpMethod  = 1
+       PAR_lon0 = inp_lon0
+       PAR_lat0 = inp_lat0
+       PAR_nlon = inp_gNx
+       PAR_nlat = inp_gNy
+       PAR_lon_inc = inp_dLon
+       PAR_interpMethod  = 1
 
-      iron_lon0 = inp_lon0
-      iron_lat0 = inp_lat0
-      iron_nlon = inp_gNx
-      iron_nlat = inp_gNy
-      iron_lon_inc = inp_dLon
-      iron_interpMethod  = 1
+       iron_lon0 = inp_lon0
+       iron_lat0 = inp_lat0
+       iron_nlon = inp_gNx
+       iron_nlat = inp_gNy
+       iron_lon_inc = inp_dLon
+       iron_interpMethod  = 1
 
-      apCO2_lat0 = inp_lat0
-      apCO2_nlon = inp_gNx
-      apCO2_nlat = inp_gNy
-      apCO2_lon_inc = inp_dLon
-      apCO2_interpMethod  = 1
+       apCO2_lat0 = inp_lat0
+       apCO2_nlon = inp_gNx
+       apCO2_nlat = inp_gNy
+       apCO2_lon_inc = inp_dLon
+       apCO2_interpMethod  = 1
 
-      wind_lon0 = inp_lon0
-      wind_lat0 = inp_lat0
-      wind_nlon = inp_gNx
-      wind_nlat = inp_gNy
-      wind_lon_inc = inp_dLon
-      wind_interpMethod  = 1
+       wind_lon0 = inp_lon0
+       wind_lat0 = inp_lat0
+       wind_nlon = inp_gNx
+       wind_nlat = inp_gNy
+       wind_lon_inc = inp_dLon
+       wind_interpMethod  = 1
 
-      apres_lat0 = inp_lat0
-      apres_nlon = inp_gNx
-      apres_nlat = inp_gNy
-      apres_lon_inc = inp_dLon
-      apres_interpMethod  = 1
+       apres_lat0 = inp_lat0
+       apres_nlon = inp_gNx
+       apres_nlat = inp_gNy
+       apres_lon_inc = inp_dLon
+       apres_interpMethod  = 1
 
-      DO j=1,MAX_LAT_INC
+       DO j=1,MAX_LAT_INC
         silica_lat_inc(j) = inp_dLat(j)
         PAR_lat_inc(j)    = inp_dLat(j)
         iron_lat_inc(j)   = inp_dLat(j)
         apCO2_lat_inc(j)  = inp_dLat(j)
         wind_lat_inc(j)   = inp_dLat(j)
         apres_lat_inc(j)  = inp_dLat(j)
-      ENDDO
+       ENDDO
 
-      READ(UNIT=iUnit, NML=GCHEM_INTERP_PARAMS)
+       READ(UNIT=iUnit, NML=GCHEM_INTERP_PARAMS)
 
 #  endif /* USE_EXF_INTERPOLATION */
+C     useEXF
+      ENDIF
 # endif /* ALLOW_EXF */
 
 
@@ -338,49 +342,44 @@ C- Close the open data file
       errCount = 0
 
 #ifdef ALLOW_EXF
-      IF ( useExfYearlyFields ) THEN
+      IF ( useEXF .AND. useExfYearlyFields ) THEN
        IF ( PARRepCycle.NE.0. ) THEN
-        WRITE(msgBuf,'(3A)') 'GCHEM_READPARMS: The use of ',
-     &   'useExfYearlyFields AND ',
-     &   'PARRepCycle is not implemented'
+        WRITE(msgBuf,'(2A)') 'GCHEM_READPARMS: The use of ',
+     &    'useExfYearlyFields AND PARRepCycle is not implemented'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
        IF ( ironRepCycle.NE.0. ) THEN
-        WRITE(msgBuf,'(3A)') 'GCHEM_READPARMS: The use of ',
-     &   'useExfYearlyFields AND ',
-     &   'ironRepCycle is not implemented'
+        WRITE(msgBuf,'(2A)') 'GCHEM_READPARMS: The use of ',
+     &    'useExfYearlyFields AND ironRepCycle is not implemented'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
        IF ( silicaRepCycle.NE.0. ) THEN
-        WRITE(msgBuf,'(3A)') 'GCHEM_READPARMS: The use of ',
-     &   'useExfYearlyFields AND ',
-     &   'silicaRepCycle is not implemented'
+        WRITE(msgBuf,'(2A)') 'GCHEM_READPARMS: The use of ',
+     &    'useExfYearlyFields AND silicaRepCycle is not implemented'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
        IF ( apCO2RepCycle.NE.0. ) THEN
-        WRITE(msgBuf,'(3A)') 'GCHEM_READPARMS: The use of ',
-     &   'useExfYearlyFields AND ',
-     &   'apCO2RepCycle is not implemented'
+        WRITE(msgBuf,'(2A)') 'GCHEM_READPARMS: The use of ',
+     &    'useExfYearlyFields AND apCO2RepCycle is not implemented'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
        IF ( windRepCycle.NE.0. ) THEN
-        WRITE(msgBuf,'(3A)') 'GCHEM_READPARMS: The use of ',
-     &   'useExfYearlyFields AND ',
-     &   'windRepCycle is not implemented'
+        WRITE(msgBuf,'(2A)') 'GCHEM_READPARMS: The use of ',
+     &    'useExfYearlyFields AND windRepCycle is not implemented'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
        IF ( apresRepCycle.NE.0. ) THEN
-        WRITE(msgBuf,'(3A)') 'GCHEM_READPARMS: The use of ',
-     &   'useExfYearlyFields AND ',
-     &   'apresRepCycle is not implemented'
+        WRITE(msgBuf,'(2A)') 'GCHEM_READPARMS: The use of ',
+     &    'useExfYearlyFields AND apresRepCycle is not implemented'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
+C     useEXF and useExfYearlyFields
       ENDIF
 #endif /* ALLOW_EXF */
 

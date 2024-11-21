@@ -16,9 +16,6 @@ C !USES: ===============================================================
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_EXF
-#include "EXF_INTERP_SIZE.h"
-#endif /* ALLOW_EXF */
 #include "GRID.h"
 #ifdef ALLOW_AUTODIFF
 # include "DYNVARS.h"
@@ -27,6 +24,9 @@ C !USES: ===============================================================
 #include "GCHEM_SIZE.h"
 #include "GCHEM_FIELDS.h"
 #ifdef ALLOW_EXF
+# ifdef USE_EXF_INTERPOLATION
+#  include "EXF_INTERP_SIZE.h"
+# endif
 # include "GCHEM_EXF.h"
 #endif
 
