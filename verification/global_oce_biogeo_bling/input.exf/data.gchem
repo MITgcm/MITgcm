@@ -11,7 +11,7 @@
   gchem_apres_const  = 1.01325e5,
   gchem_par_const    = 140.0,
   gchem_iron_const   = 1.e-11,
-# gchem_silica_const = 7.6838e-3,
+  gchem_silica_const = 7.6838e-3,
 #
  &
 

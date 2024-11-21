@@ -178,12 +178,12 @@ C     some predefined forcing fields and constants
       gchem_ironfile   = ' '
       gchem_apCO2file  = ' '
 C     some sensible defaults
-      gchem_silica_const = UNSET_RL !  7.6838 _d -3
-      gchem_par_const    =   0.     _d 0
-      gchem_iron_const   =   0.     _d 0
-      gchem_apCO2_const  = 280.     _d -6
-      gchem_wind_const   =   0.     _d 0
-      gchem_apres_const  =    1.013 _d 5
+      gchem_silica_const =    7.6 _d -3
+      gchem_par_const    =    0.  _d 0
+      gchem_iron_const   =    0.  _d 0
+      gchem_apCO2_const  =  280.  _d -6
+      gchem_wind_const   =    0.  _d 0
+      gchem_apres_const  = 1013.  _d 2
 
 C- Open and read the data.gchem file
       WRITE(msgBuf,'(A)') ' GCHEM_READPARMS: opening data.gchem'
