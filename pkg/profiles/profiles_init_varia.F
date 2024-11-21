@@ -37,21 +37,13 @@ C     myThid: my thread ID number
       INTEGER mythid
 CEOP
 
-C     !FUNCTIONS:
-#ifdef ALLOW_GRDCHK
-      INTEGER ILNBLNK
-      EXTERNAL ILNBLNK
-#endif /* ALLOW_GRDCHK */
-
 C     !LOCAL VARIABLES:
       INTEGER bi,bj
       INTEGER itlo,ithi
       INTEGER jtlo,jthi
       INTEGER num_file,num_var
 #ifdef ALLOW_GRDCHK
-      INTEGER err, iG, jG, IL, JL
-      CHARACTER*(MAX_LEN_FNAM) profilesfile
-      CHARACTER*(MAX_LEN_FNAM) fnameequinc
+      INTEGER err
 #endif /* ALLOW_GRDCHK */
 
       jtlo = mybylo(mythid)
@@ -76,7 +68,7 @@ C Initialize tiled cost function contributions.
           ENDDO !DO num_var
 
 #ifdef ALLOW_GRDCHK
-          IF (profilesDoNcOutput) then
+          IF (profilesDoNcOutput) THEN
             DO num_file = 1, NFILESPROFMAX
               IF (ProfNo(num_file,bi,bj).GT.0) THEN
 C Write data from buffer to .nc file

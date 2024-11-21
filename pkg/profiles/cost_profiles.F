@@ -483,7 +483,7 @@ C Sync file so that data is not lost when run finishes
      &                    *(prof_traj1D(kProf)-prof_data1D(kProf)
      &                    -prof_traj1D_mean(kProf)
 #ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
-     &                    + prof_data1D_mean(kProf)
+     &                    +prof_data1D_mean(kProf)
 #endif
      &                    )
      &                    *(prof_traj1D(kProf)-prof_data1D(kProf)
@@ -621,7 +621,7 @@ C Print cost function values
 
         IF (num_prof_glo .GT. 0.)
      &    CALL PRINT_MESSAGE( msgBuf,
-     &         standardMessageUnit,SQUEEZE_RIGHT , myThid )
+     &         standardMessageUnit, SQUEEZE_RIGHT , myThid )
 
         ENDDO !DO num_var
       ENDDO !DO num_file
@@ -651,7 +651,7 @@ C Print cost function values
 
         IF (num_prof_mean_glo .GT. 0.)
      &    CALL PRINT_MESSAGE( msgBuf,
-     &         standardMessageUnit,SQUEEZE_RIGHT , myThid )
+     &         standardMessageUnit, SQUEEZE_RIGHT, myThid )
 
       ENDDO !DO num_var
 
@@ -659,10 +659,10 @@ C Print cost function values
 
       WRITE(msgBuf,'(A)') '== cost_profiles: end   =='
       CALL PRINT_MESSAGE( msgBuf,
-     &     standardMessageUnit,SQUEEZE_RIGHT , myThid )
+     &     standardMessageUnit, SQUEEZE_RIGHT , myThid )
       WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf,
-     &     standardMessageUnit,SQUEEZE_RIGHT , myThid )
+     &     standardMessageUnit, SQUEEZE_RIGHT , myThid )
 
       IF (prof_make_nc) THEN
         CALL PROFILES_MAKE_NCFILE( myThid )

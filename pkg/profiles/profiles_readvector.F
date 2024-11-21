@@ -6,8 +6,8 @@ CBOP
 C !ROUTINE: PROFILES_READPARMS
 
 C !INTERFACE:
-      SUBROUTINE PROFILES_READVECTOR(fNb, vNb, irec,
-     & vec_loc_length, vec_loc , bi,bj, myThid)
+      SUBROUTINE PROFILES_READVECTOR( fNb, vNb, irec,
+     & vec_loc_length, vec_loc, bi, bj, myThid )
 
 C     !DESCRIPTION:
 C     Reads a profile from a netcdf profiles data file
@@ -73,7 +73,7 @@ C Implies that a forward loop is calling
         ENDIF !IF (profiles_curfile_buff(bi,bj).NE.fNb)
 
 # ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevD ) THEN
+        IF (debugLevel.GE.debLevD) THEN
           WRITE(msgBuf,'(A,5I9)')
      &     'buffer readvector ',
      &     profiles_minind_buff(bi,bj), profiles_maxind_buff(bi,bj),
@@ -165,6 +165,7 @@ C Get vec_loc from the buffer
           vec_loc(v1) = profiles_data_buff
      &     (v1,irec-profiles_minind_buff(bi,bj)+1,vNb,bi,bj)
         ENDDO
+
       ENDIF
 
 #endif /* ALLOW_PROFILES */
