@@ -26,7 +26,9 @@ C !USES: ===============================================================
 #include "GCHEM.h"
 #include "GCHEM_SIZE.h"
 #include "GCHEM_FIELDS.h"
-#include "GCHEM_EXF.h"
+#ifdef ALLOW_EXF
+# include "GCHEM_EXF.h"
+#endif
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number

@@ -24,8 +24,8 @@ C !USES: ===============================================================
 #  include "EXF_INTERP_SIZE.h"
 #  include "EXF_INTERP_PARAM.h"
 # endif
+# include "GCHEM_EXF.h"
 #endif
-#include "GCHEM_EXF.h"
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid         :: thread number
@@ -340,42 +340,42 @@ C- Close the open data file
 #ifdef ALLOW_EXF
       IF ( useExfYearlyFields ) THEN
        IF ( PARRepCycle.NE.0. ) THEN
-        WRITE(msgBuf,'(3A)') 'GCHEM_EXF_READPARMS: The use of ',
+        WRITE(msgBuf,'(3A)') 'GCHEM_READPARMS: The use of ',
      &   'useExfYearlyFields AND ',
      &   'PARRepCycle is not implemented'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
        IF ( ironRepCycle.NE.0. ) THEN
-        WRITE(msgBuf,'(3A)') 'GCHEM_EXF_READPARMS: The use of ',
+        WRITE(msgBuf,'(3A)') 'GCHEM_READPARMS: The use of ',
      &   'useExfYearlyFields AND ',
      &   'ironRepCycle is not implemented'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
        IF ( silicaRepCycle.NE.0. ) THEN
-        WRITE(msgBuf,'(3A)') 'GCHEM_EXF_READPARMS: The use of ',
+        WRITE(msgBuf,'(3A)') 'GCHEM_READPARMS: The use of ',
      &   'useExfYearlyFields AND ',
      &   'silicaRepCycle is not implemented'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
        IF ( apCO2RepCycle.NE.0. ) THEN
-        WRITE(msgBuf,'(3A)') 'GCHEM_EXF_READPARMS: The use of ',
+        WRITE(msgBuf,'(3A)') 'GCHEM_READPARMS: The use of ',
      &   'useExfYearlyFields AND ',
      &   'apCO2RepCycle is not implemented'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
        IF ( windRepCycle.NE.0. ) THEN
-        WRITE(msgBuf,'(3A)') 'GCHEM_EXF_READPARMS: The use of ',
+        WRITE(msgBuf,'(3A)') 'GCHEM_READPARMS: The use of ',
      &   'useExfYearlyFields AND ',
      &   'windRepCycle is not implemented'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
        IF ( apresRepCycle.NE.0. ) THEN
-        WRITE(msgBuf,'(3A)') 'GCHEM_EXF_READPARMS: The use of ',
+        WRITE(msgBuf,'(3A)') 'GCHEM_READPARMS: The use of ',
      &   'useExfYearlyFields AND ',
      &   'apresRepCycle is not implemented'
         CALL PRINT_ERROR( msgBuf, myThid )

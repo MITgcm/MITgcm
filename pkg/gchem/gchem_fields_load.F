@@ -18,15 +18,17 @@ C !USES: ===============================================================
 #include "SIZE.h"
 #include "GRID.h"
 #include "PARAMS.h"
+#include "GCHEM_SIZE.h"
+#include "GCHEM.h"
+#include "GCHEM_FIELDS.h"
 #ifdef ALLOW_EXF
-# include "EXF_INTERP_SIZE.h"
 # include "EXF_PARAM.h"
 # include "EXF_FIELDS.h"
+# ifdef USE_EXF_INTERPOLATION
+#  include "EXF_INTERP_SIZE.h"
+# endif
+# include "GCHEM_EXF.h"
 #endif
-#include "GCHEM_SIZE.h"
-#include "GCHEM_EXF.h"
-#include "GCHEM_FIELDS.h"
-#include "GCHEM.h"
 
 C !INPUT PARAMETERS: ===================================================
 C  myTime               :: current time
