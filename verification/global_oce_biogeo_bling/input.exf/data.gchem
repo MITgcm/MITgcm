@@ -5,10 +5,18 @@
   GCHEM_iceFile='fice.bin',
   GCHEM_silicaFile='sillev1.bin',
   GCHEM_ironFile='mah_flux_smooth.bin',
+#
+  gchem_apCO2_const  = 380.5e-6,
+  gchem_wind_const   = 5.,
+  gchem_apres_const  = 1.01325e5,
+  gchem_par_const    = 140.0,
+  gchem_iron_const   = 1.e-11,
+# gchem_silica_const = 7.6838e-3,
+#
  &
 
  &GCHEM_FORCING_PARAMS
-  ironPeriod=-12.,
+  ironPeriod  =-12.,
   silicaPeriod=-12.,
  &
 

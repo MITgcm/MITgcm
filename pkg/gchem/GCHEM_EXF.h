@@ -13,9 +13,6 @@ C used with pkg/dic or pkg/bling (and maybe pkg/darwin).
 C Requires: EXF_OPTIONS.h
 C Requires: SIZE.h
 
-      _RL GCHEM_pCO2
-      PARAMETER( GCHEM_pCO2=380.5D-6 )
-
 C Surface silica forcing parameters for exf
 
       COMMON/gchem_forcing_silica_c/
@@ -24,7 +21,7 @@ C Surface silica forcing parameters for exf
      &    silicastartdate1, silicastartdate2
       COMMON/gchem_forcing_silica_r/
      &    silicaStartTime,
-     &    silicaperiod, silicaRepCycle, silicaconst,
+     &    silicaperiod, silicaRepCycle,
      &    silica_exfremo_intercept, silica_exfremo_slope,
      &    gchem_inscal_silica
       CHARACTER*1 silicamask
@@ -33,7 +30,6 @@ C Surface silica forcing parameters for exf
       _RL silicaStartTime
       _RL silicaperiod
       _RL silicaRepCycle
-      _RL silicaconst
       _RL silica_exfremo_intercept
       _RL silica_exfremo_slope
       _RL gchem_inscal_silica
@@ -58,7 +54,7 @@ C PAR forcing parameters for exf
      &    PARstartdate1, PARstartdate2
       COMMON/gchem_forcing_PAR_r/
      &    PARStartTime,
-     &    PARperiod, PARRepCycle, PARconst,
+     &    PARperiod, PARRepCycle,
      &    PAR_exfremo_intercept, PAR_exfremo_slope,
      &    gchem_inscal_PAR
       _RL PARStartTime
@@ -67,7 +63,6 @@ C PAR forcing parameters for exf
       INTEGER PARstartdate2
       _RL PARperiod
       _RL PARRepCycle
-      _RL PARconst
       _RL PAR_exfremo_intercept
       _RL PAR_exfremo_slope
       _RL gchem_inscal_PAR
@@ -92,7 +87,7 @@ C Iron dust forcing parameters for exf
      &    ironstartdate1, ironstartdate2
       COMMON/gchem_forcing_iron_r/
      &    ironStartTime,
-     &    ironperiod, ironRepCycle, ironconst,
+     &    ironperiod, ironRepCycle,
      &    iron_exfremo_intercept, iron_exfremo_slope,
      &    gchem_inscal_iron
       CHARACTER*1 ironmask
@@ -101,7 +96,6 @@ C Iron dust forcing parameters for exf
       _RL ironStartTime
       _RL ironperiod
       _RL ironRepCycle
-      _RL ironconst
       _RL iron_exfremo_intercept
       _RL iron_exfremo_slope
       _RL gchem_inscal_iron
@@ -126,7 +120,7 @@ C Ice forcing parameters for exf
      &    icestartdate1, icestartdate2
       COMMON/gchem_forcing_ice_r/
      &    iceStartTime,
-     &    iceperiod, iceRepCycle, iceconst,
+     &    iceperiod, iceRepCycle,
      &    ice_exfremo_intercept, ice_exfremo_slope,
      &    gchem_inscal_ice
       CHARACTER*1 icemask
@@ -135,7 +129,6 @@ C Ice forcing parameters for exf
       _RL iceStartTime
       _RL iceperiod
       _RL iceRepCycle
-      _RL iceconst
       _RL ice_exfremo_intercept
       _RL ice_exfremo_slope
       _RL gchem_inscal_ice
@@ -160,7 +153,7 @@ C Wind forcing parameters for exf
      &    windstartdate1, windstartdate2
       COMMON/gchem_forcing_wind_r/
      &    windStartTime,
-     &    windperiod, windRepCycle, windconst,
+     &    windperiod, windRepCycle,
      &    wind_exfremo_intercept, wind_exfremo_slope,
      &    gchem_inscal_wind
       CHARACTER*1 windmask
@@ -169,7 +162,6 @@ C Wind forcing parameters for exf
       _RL windStartTime
       _RL windperiod
       _RL windRepCycle
-      _RL windconst
       _RL wind_exfremo_intercept
       _RL wind_exfremo_slope
       _RL gchem_inscal_wind
@@ -194,7 +186,7 @@ C Atmos pCO2 forcing parameters for exf
      &    apCO2startdate1, apCO2startdate2
       COMMON/gchem_forcing_apCO2_r/
      &    apCO2StartTime,
-     &    apCO2period, apCO2RepCycle, apCO2const,
+     &    apCO2period, apCO2RepCycle,
      &    apCO2_exfremo_intercept, apCO2_exfremo_slope,
      &    gchem_inscal_apCO2
       CHARACTER*1 apCO2mask
@@ -203,7 +195,6 @@ C Atmos pCO2 forcing parameters for exf
       _RL apCO2StartTime
       _RL apCO2period
       _RL apCO2RepCycle
-      _RL apCO2const
       _RL apCO2_exfremo_intercept
       _RL apCO2_exfremo_slope
       _RL gchem_inscal_apCO2
@@ -228,7 +219,7 @@ C Atmos pressure forcing parameters for exf
      &    apresstartdate1, apresstartdate2
       COMMON/gchem_forcing_apres_r/
      &    apresStartTime,
-     &    apresperiod, apresRepCycle, apresconst,
+     &    apresperiod, apresRepCycle,
      &    apres_exfremo_intercept, apres_exfremo_slope,
      &    gchem_inscal_apres
       CHARACTER*1 apresmask
@@ -237,7 +228,6 @@ C Atmos pressure forcing parameters for exf
       _RL apresStartTime
       _RL apresperiod
       _RL apresRepCycle
-      _RL apresconst
       _RL apres_exfremo_intercept
       _RL apres_exfremo_slope
       _RL gchem_inscal_apres

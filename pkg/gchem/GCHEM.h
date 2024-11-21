@@ -86,4 +86,16 @@ C--   COMMON /GCHEM_FIELDS_C/
       CHARACTER*128 gchem_apCO2file
       CHARACTER*128 gchem_atmospFile
 
+C--   COMMON /GCHEM_FIELDS_R/
+      COMMON /GCHEM_FIELDS_R/
+     &     gchem_silica_const, gchem_par_const, gchem_iron_const,
+     &     gchem_apCO2_const, gchem_wind_const, gchem_apres_const
+
+      _RL gchem_silica_const
+      _RL gchem_par_const
+      _RL gchem_iron_const
+      _RL gchem_apCO2_const
+      _RL gchem_wind_const
+      _RL gchem_apres_const
+
 #endif /* ALLOW_GCHEM */
