@@ -10,4 +10,7 @@ CADJ STORE cMeanSHIforT     = tapelev2, key = ilev_2
 CADJ STORE cMeanSHIforS     = tapelev2, key = ilev_2
 CADJ STORE shelficeFreshWaterFlux = tapelev2, key = ilev_2
 CADJ STORE shelficeLoadAnomaly    = tapelev2, key = ilev_2
+#ifndef SHELFICE_OPTIONS_H
+      STOP 'need "SHELFICE_OPTIONS.h" to include this Header file'
+#endif
 #endif /* ALLOW_SHELFICE */
