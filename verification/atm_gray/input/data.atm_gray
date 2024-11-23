@@ -1,17 +1,18 @@
-
- &atmosphere_nml
-    turb = .TRUE.,
-    ldry_convection = .false.,
-    lwet_convection = .TRUE.,
-    do_virtual = .false.,
-    two_stream = .true.,
-    mixed_layer_bc = .false.,
-    roughness_heat = 0.05,
-    roughness_moist = 0.05,
-    roughness_mom = 0.05,
+# Gray-Atmosphere Physics Parameters
+#--------------------
+ &ATMOSPHERE_NMl
+  turb = .TRUE.,
+  ldry_convection = .false.,
+  lwet_convection = .TRUE.,
+  do_virtual = .false.,
+  two_stream = .true.,
+  mixed_layer_bc = .false.,
+  roughness_heat = 0.05,
+  roughness_moist = 0.05,
+  roughness_mom = 0.05,
  &
 
- &radiation_nml
+ &RADIATION_NML
   solar_constant= 1365.,
   del_sol=1.,
 # ir_tau_eq=
@@ -29,12 +30,12 @@
   wv_exponent=0.,
  &
 
- &lscale_cond_nml
-# hc =
-# do_evap=
+ &LSCALE_COND_NML
+#  hc =
+#  do_evap=
  &
 
- &dargan_bettsmiller_nml
+ &DARGAN_BETTSMILLER_NML
 #-- default:
 #   tau_bm = 7200.,
 #   rhbm   = 0.8,
@@ -47,22 +48,22 @@
 #     tau_min    = 2400.,
 #   do_bm_shift  = .FALSE.,
 #-- POG choice:
-#  rhbm = 0.7,
-   do_virtual= .TRUE.,
-   do_shallower= .TRUE.,
+#   rhbm = 0.7,
+  do_virtual= .TRUE.,
+  do_shallower= .TRUE.,
  &
 
- &surface_flux_nml
+ &SURFACE_FLUX_NML
  &
 
- &vert_turb_driver_nml
+ &VERT_TURB_DRIVER_NML
 #  do_shallow_conv, do_mellor_yamada,
 #  gust_scheme, constant_gust, use_tau,
 #  do_molecular_diffusion
   do_mellor_yamada=.FALSE.,
  &
 
- &diffusivity_nml
+ &DIFFUSIVITY_NML
 #  fixed_depth, depth_0, frac_inner,
 #  rich_crit_pbl, entr_ratio, parcel_buoy,
 #  znom, free_atm_diff, free_atm_skyhi_diff,
@@ -71,16 +72,16 @@
 #  do_virtual_non_mcm
  &
 
- &monin_obukhov_nml
+ &MONIN_OBUKHOV_NML
  &
 
- &my25_turb_nml
+ &MY25_TURB_NML
  &
 
- &shallow_conv_nml
+ &SHALLOW_CONV_NML
  &
 
- &mixed_layer_nml
-# evaporation, qflux_amp, depth, qflux_width
+ &MIXED_LAYER_NML
+#  evaporation, qflux_amp, depth, qflux_width
   depth=10.,
  &
