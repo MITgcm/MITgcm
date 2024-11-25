@@ -132,7 +132,7 @@ C     but instead, explicit MPI send & recv calls. Expected to be slower.
 
 C--   Alternative way of doing global sum on a single CPU
 C     to eliminate tiling-dependent roundoff errors. Note: This is slow.
-#undef  CG2D_SINGLECPU_SUM
+#undef CG2D_SINGLECPU_SUM
 
 C=== Other options (to add/remove pieces of code) ===
 C--   Flag to turn on checking for errors from all threads and procs
