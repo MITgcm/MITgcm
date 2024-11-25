@@ -1,4 +1,7 @@
 #ifdef ALLOW_SHELFICE
+# ifndef SHELFICE_OPTIONS_H
+      STOP 'need "SHELFICE_OPTIONS.h" to include this header file'
+# endif
 # ifdef ALLOW_SHELFICE_REMESHING
 CADJ STORE kTopC            = tapelvi4, key = ilev_4
 # endif
@@ -10,7 +13,4 @@ CADJ STORE cMeanSHIforT     = tapelev4, key = ilev_4
 CADJ STORE cMeanSHIforS     = tapelev4, key = ilev_4
 CADJ STORE shelficeFreshWaterFlux = tapelev4, key = ilev_4
 CADJ STORE shelficeLoadAnomaly    = tapelev4, key = ilev_4
-#ifndef SHELFICE_OPTIONS_H
-      STOP 'need "SHELFICE_OPTIONS.h" to include this Header file'
-#endif
 #endif /* ALLOW_SHELFICE */
