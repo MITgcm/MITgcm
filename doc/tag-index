@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o eesupp + model:
+  - remove FAST_BYTESWAP code and option
+  - remove empty file AUTODIFF_MYFIELDS.h
 o pkg/ctrl:
   - add a STOP when ALLOW_CTRL_OBCSN/S/W/E is defined but corresponding
     ALLOW_OBCS_NORTH/SOUTH/EAST/WEST is undef ; and fix the code so that, in
