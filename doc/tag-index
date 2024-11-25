@@ -1,6 +1,15 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o eesupp + model:
+  - remove FAST_BYTESWAP code and option
+  - remove empty file AUTODIFF_MYFIELDS.h
+o pkg/ctrl:
+  - add a STOP when ALLOW_CTRL_OBCSN/S/W/E is defined but corresponding
+    ALLOW_OBCS_NORTH/SOUTH/EAST/WEST is undef ; and fix the code so that, in
+    that case, it will compile and reach the stop before running 1rst time-step
+o model,pkg:
+  - minor spell checking and formatting updates.
 o pkg/bling:
   - size-dependent phytoplankton growth code cleaned up and related parameters
     can now be specified in data.bling;
