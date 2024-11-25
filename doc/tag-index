@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - add few missing option header files (RBCS, SALT_PLUME, SHELFICE) in few
+    src files ; also illustrate how to catch these (see SALT_PLUME.h and
+    shelfice_ad_check_lev{1,2,3,4}_dir.h).
 o eesupp + model:
   - remove FAST_BYTESWAP code and option
   - remove empty file AUTODIFF_MYFIELDS.h

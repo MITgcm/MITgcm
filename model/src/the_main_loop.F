@@ -18,6 +18,9 @@
 #ifdef ALLOW_SEAICE
 # include "SEAICE_OPTIONS.h"
 #endif
+#ifdef ALLOW_SALT_PLUME
+# include "SALT_PLUME_OPTIONS.h"
+#endif
 #ifdef ALLOW_GCHEM
 # include "GCHEM_OPTIONS.h"
 #endif
@@ -33,6 +36,9 @@
 #ifdef ALLOW_STREAMICE
 # include "STREAMICE_OPTIONS.h"
 #endif
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE_OPTIONS.h"
+#endif
 #ifdef ALLOW_COST
 # include "COST_OPTIONS.h"
 #endif
@@ -44,6 +50,9 @@
 #endif
 #ifdef ALLOW_PROFILES
 # include "PROFILES_OPTIONS.h"
+#endif
+#ifdef ALLOW_RBCS
+# include "RBCS_OPTIONS.h"
 #endif
 
 CBOP
