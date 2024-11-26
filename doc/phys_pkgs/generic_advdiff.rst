@@ -45,13 +45,9 @@ There are two high-level routines:
 +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
 | CPP Flag Name                                 | Default | Description                                                                                                          |
 +===============================================+=========+======================================================================================================================+
-| :varlink:`COSINEMETH_III`                     | #define | sets the implementation form of :math:`\cos{\varphi}` scaling of bi-harmonic terms for tracer diffusivity            |
-|                                               |         | (note, in :filelink:`pkg/generic_advdiff` routines the definition set here overrides whether this is defined in      |
-|                                               |         | :filelink:`model/inc/CPP_OPTIONS.h`, where the setting affects viscous term calculations)                            |
+| :varlink:`COSINEMETH_III`                     | #define | sets the form of :math:`\cos{\varphi}` scaling of horizontal bi-harmonic terms for tracer diffusivity                |
 +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
-| :varlink:`ISOTROPIC_COS_SCALING`              | #undef  | selects isotropic scaling of harmonic and bi-harmonic terms when using the :math:`\cos{\varphi}` scaling             |
-|                                               |         | (note, in :filelink:`pkg/generic_advdiff` routines the definition set here overrides whether this is defined in      |
-|                                               |         | :filelink:`model/inc/CPP_OPTIONS.h`, where the setting affects viscous term calculations)                            |
+| :varlink:`ISOTROPIC_COS_SCALING`              | #undef  | selects isotropic scaling of horizontal harmonic and bi-harmonic terms when using the :math:`\cos{\varphi}` scaling  |
 +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
 | :varlink:`DISABLE_MULTIDIM_ADVECTION`         | #undef  | disables compilation of multi-dim. advection code                                                                    |
 +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
