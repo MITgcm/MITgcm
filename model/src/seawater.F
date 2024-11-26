@@ -29,8 +29,8 @@ C     SUBROUTINE SW_PTMP
 C     ==================================================================
 C     S  :: salinity    [         (PSS-78) ]
 C     T  :: temperature [degree C (IPTS-68)]
-C     P  :: pressure    [db]
-C     PR :: Reference pressure  [db]
+C     P  :: pressure    [dbar]
+C     PR :: Reference pressure  [dbar]
 C     \ev
 
 C     !USES:
