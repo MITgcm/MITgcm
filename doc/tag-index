@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/atm_gray:
+  - gray atmosphere test exp moved from "verification_other".
 o model/src:
   - add few missing option header files (RBCS, SALT_PLUME, SHELFICE) in few
     src files ; also illustrate how to catch these (see SALT_PLUME.h and
