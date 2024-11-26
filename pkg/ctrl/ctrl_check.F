@@ -12,6 +12,9 @@
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE_OPTIONS.h"
 #endif
+#ifdef ALLOW_OBCS
+# include "OBCS_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: CTRL_CHECK
@@ -231,6 +234,46 @@ C-    to use KAPREDI_CONTROL, needs to define GM_READ_K3D_REDI in GMREDI_OPTIONS
 #  endif
 # endif /* ndef EXCLUDE_CTRL_PACK */
 #endif /* ALLOW_PACKUNPACK_METHOD2 */
+
+#if ( defined ALLOW_OBCSN_CONTROL && !defined ALLOW_OBCS_NORTH )
+      WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
+     &     'CPP-flag ALLOW_OBCSN_CONTROL is defined,'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
+     &     'but CPP-flag ALLOW_OBCS_NORTH is not defined.'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      errCount = errCount + 1
+#endif
+
+#if ( defined ALLOW_OBCSS_CONTROL && !defined ALLOW_OBCS_SOUTH )
+      WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
+     &     'CPP-flag ALLOW_OBCSS_CONTROL is defined,'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
+     &     'but CPP-flag ALLOW_OBCS_SOUTH is not defined.'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      errCount = errCount + 1
+#endif
+
+#if ( defined ALLOW_OBCSE_CONTROL && !defined ALLOW_OBCS_EAST )
+      WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
+     &     'CPP-flag ALLOW_OBCSE_CONTROL is defined,'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
+     &     'but CPP-flag ALLOW_OBCS_EAST is not defined.'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      errCount = errCount + 1
+#endif
+
+#if ( defined ALLOW_OBCSW_CONTROL && !defined ALLOW_OBCS_WEST )
+      WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
+     &     'CPP-flag ALLOW_OBCSW_CONTROL is defined,'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
+     &     'but CPP-flag ALLOW_OBCS_WEST is not defined.'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      errCount = errCount + 1
+#endif
 
 #ifdef ALLOW_HFLUXM_CONTROL
       WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
