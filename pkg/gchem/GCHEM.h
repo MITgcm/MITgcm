@@ -1,5 +1,3 @@
-#ifdef ALLOW_GCHEM
-
 CBOP
 C    !ROUTINE: GCHEM.h
 C    !INTERFACE:
@@ -98,4 +96,4 @@ C--   COMMON /GCHEM_FIELDS_R/
       _RL gchem_wind_const
       _RL gchem_apres_const
 
-#endif /* ALLOW_GCHEM */
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

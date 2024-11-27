@@ -23,6 +23,7 @@ C !USES: ===============================================================
 #include "GCHEM.h"
 #include "GCHEM_SIZE.h"
 #include "GCHEM_FIELDS.h"
+#include "GCHEM_AUX_FIELDS.h"
 #ifdef ALLOW_EXF
 # ifdef USE_EXF_INTERPOLATION
 #  include "EXF_INTERP_SIZE.h"

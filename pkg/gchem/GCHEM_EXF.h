@@ -1,5 +1,3 @@
-#ifdef ALLOW_GCHEM
-
 CBOP
 C     !ROUTINE: GCHEM_EXF.h
 C     !INTERFACE:
@@ -243,5 +241,3 @@ C Atmos pressure forcing parameters for exf
       _RL apres_lon_inc
       _RL apres_lat_inc(MAX_LAT_INC)
 #endif
-
-#endif /* ALLOW_GCHEM */

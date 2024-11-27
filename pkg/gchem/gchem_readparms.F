@@ -34,8 +34,6 @@ C  myThid         :: thread number
 C !OUTPUT PARAMETERS: ==================================================
 C  none
 
-#ifdef ALLOW_GCHEM
-
 C !LOCAL VARIABLES: ====================================================
 C  tIter0         :: retired parameter
 C  iUnit          :: unit number for I/O
@@ -442,8 +440,6 @@ C  Everyone else must wait for the parameters to be loaded
 
 C- Register GCHEM tracer indices
       CALL GCHEM_TR_REGISTER( myThid )
-
-#endif /* ALLOW_GCHEM */
 
       RETURN
       END

@@ -23,8 +23,6 @@ C  myThid               :: thread number
       INTEGER myThid
 CEOP
 
-#ifdef ALLOW_GCHEM
-
 C     !LOCAL VARIABLES:
 C     errCount  :: error counter
       INTEGER errCount
@@ -139,7 +137,6 @@ C     endif useEXF
 
       _BARRIER
 #endif /* ALLOW_EXF */
-#endif /* ALLOW_GCHEM */
 
       RETURN
       END

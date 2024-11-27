@@ -23,8 +23,6 @@ C  myThid         :: thread number
 C !OUTPUT PARAMETERS: ==================================================
 C  none
 
-#ifdef ALLOW_GCHEM
-
 C !LOCAL VARIABLES: ====================================================
 C  iUnit          :: unit number for I/O
 C  msgBuf         :: message buffer
@@ -98,8 +96,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       _END_MASTER(myThid)
       _BARRIER
-
-#endif /* ALLOW_GCHEM */
 
       RETURN
       END
