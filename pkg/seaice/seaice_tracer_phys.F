@@ -1,4 +1,7 @@
 #include "SEAICE_OPTIONS.h"
+#ifdef ALLOW_SALT_PLUME
+# include "SALT_PLUME_OPTIONS.h"
+#endif
 
 CStartOfInterface
       SUBROUTINE SEAICE_TRACER_PHYS( myTime, myIter, myThid )
@@ -36,7 +39,7 @@ CEndOfInterface
 C     === Local variables ===
 #ifdef ALLOW_SITRACER
 
-      INTEGER iTr, jTh, I, J, bi, bj, ks
+      INTEGER iTr, jTh, i, j, bi, bj, ks
       _RL SItrFromOcean  (1:sNx,1:sNy)
       _RL SItrFromFlood   (1:sNx,1:sNy)
       _RL HEFFprev, HEFFpost, growFact, meltPart, tmpscal1
@@ -60,8 +63,8 @@ cgf eventually I will need to handle them as function params
 
 c 0) set ice-ocean and ice-snow exchange values
 c =============================================
-      DO J=1,sNy
-       DO I=1,sNx
+      DO j=1,sNy
+       DO i=1,sNx
         SItrFromOcean(i,j)=SItrFromOcean0(iTr)
         SItrFromFlood(i,j)=SItrFromFlood0(iTr)
         SItrExpand(i,j)=SItrExpand0(iTr)
@@ -70,21 +73,21 @@ c =============================================
 c salinity tracer:
       if ( (SItrName(iTr).EQ.'salinity').AND.
      &      (SItrFromOceanFrac(iTr).GT.ZERO) ) then
-       DO J=1,sNy
-        DO I=1,sNx
-         SItrFromOcean(i,j)=SItrFromOceanFrac(iTr)*salt(I,j,ks,bi,bj)
-         SItrFromFlood(i,j)=SItrFromFloodFrac(iTr)*salt(I,j,ks,bi,bj)
+       DO j=1,sNy
+        DO i=1,sNx
+         SItrFromOcean(i,j)=SItrFromOceanFrac(iTr)*salt(i,j,ks,bi,bj)
+         SItrFromFlood(i,j)=SItrFromFloodFrac(iTr)*salt(i,j,ks,bi,bj)
         ENDDO
        ENDDO
       endif
 c 1) seaice thermodynamics processes
 c ==================================
       if (SItrMate(iTr).EQ.'HEFF') then
-      DO J=1,sNy
-       DO I=1,sNx
+      DO j=1,sNy
+       DO i=1,sNx
         HEFFprev=SItrHEFF(i,j,bi,bj,1)
 #ifdef ALLOW_SITRACER_DEBUG_DIAG
-        DIAGarray(I,J,5+(iTr-1)*5) =
+        DIAGarray(i,j,5+(iTr-1)*5) =
      &    HEFFprev*SItracer(i,j,bi,bj,iTr) + SItrBucket(i,j,bi,bj,iTr)
 #endif
 c apply the sequence of thermodynamics increments to actual tracer
@@ -121,8 +124,8 @@ c as we dont have snow tracers, so it goes through SItrBucket.
           SItrBucket(i,j,bi,bj,iTr)=SItrBucket(i,j,bi,bj,iTr)
      &             -HEFFpost*SItrFromFlood(i,j)*(1. _d 0 - growFact)
 #ifdef ALLOW_SITRACER_DEBUG_DIAG
-        DIAGarray(I,J,5+(iTr-1)*5) = HEFFpost*SItracer(i,j,bi,bj,iTr)
-     &  +SItrBucket(i,j,bi,bj,iTr)-DIAGarray(I,J,5+(iTr-1)*5)
+        DIAGarray(i,j,5+(iTr-1)*5) = HEFFpost*SItracer(i,j,bi,bj,iTr)
+     &  +SItrBucket(i,j,bi,bj,iTr)-DIAGarray(i,j,5+(iTr-1)*5)
 #endif
        ENDDO
       ENDDO
@@ -135,8 +138,8 @@ c properties of the ice surface are not be conserved across the
 c ocean-ice system, the contraction/expansion terms are all
 c simultaneous (which is sane), and the only generic effect
 c is due to expansion (new cover).
-      DO J=1,sNy
-       DO I=1,sNx
+      DO j=1,sNy
+       DO i=1,sNx
 c apply expansion
         AREAprev=SItrAREA(i,j,bi,bj,2)
         AREApost=SItrAREA(i,j,bi,bj,3)
@@ -153,8 +156,8 @@ c 2) very ice tracer processes
 c ============================
       if (SItrName(iTr).EQ.'age') then
 c age tracer: grow old as time passes by
-       DO J=1,sNy
-        DO I=1,sNx
+       DO j=1,sNy
+        DO i=1,sNx
           if (( (SItrHEFF(i,j,bi,bj,5).GT.0. _d 0).AND.(SItrMate(iTr)
      &     .EQ.'HEFF') ).OR.( (SItrAREA(i,j,bi,bj,3).GT.0. _d 0).AND.
      &     (SItrMate(iTr).EQ.'AREA') )) then
@@ -171,8 +174,8 @@ c salinity tracer: no specific process
 c "ice concentration" tracer: no specific process
       elseif (SItrName(iTr).EQ.'ridge') then
 c simple, made up, ice surface roughness index prototype
-       DO J=1,sNy
-        DO I=1,sNx
+       DO j=1,sNy
+        DO i=1,sNx
 c ridging increases roughness
           SItracer(i,j,bi,bj,iTr)=SItracer(i,j,bi,bj,iTr)+
      &    MAX(0. _d 0, SItrAREA(i,j,bi,bj,1)-SItrAREA(i,j,bi,bj,2))
@@ -199,25 +202,25 @@ c ==========================================================
       if ( (SItrName(iTr).EQ.'salinity').AND.
      &     (SEAICE_salinityTracer) ) then
 c salinity tracer: salt flux
-        DO J=1,sNy
-         DO I=1,sNx
-          saltFlux(I,J,bi,bj) = - SItrBucket(i,j,bi,bj,iTr)
-     &      *HEFFM(I,J,bi,bj)/SEAICE_deltaTtherm*SEAICE_rhoIce
+        DO j=1,sNy
+         DO i=1,sNx
+          saltFlux(i,j,bi,bj) = - SItrBucket(i,j,bi,bj,iTr)
+     &      *HEFFM(i,j,bi,bj)/SEAICE_deltaTtherm*SEAICE_rhoIce
 c note: at this point of the time step, that is the correct sign
 #ifdef ALLOW_SALT_PLUME
 c should work for both constant and variable ice salinity -- to be tested
-          saltPlumeFlux(I,J,bi,bj) = MAX(ZERO,saltFlux(I,J,bi,bj))
-     &      *SPsalFRAC*(salt(I,j,ks,bi,bj)-SItrFromOcean(i,j))
+          saltPlumeFlux(i,j,bi,bj) = MAX(zeroRS,saltFlux(i,j,bi,bj))
+     &      *SPsalFRAC*(salt(i,j,ks,bi,bj)-SItrFromOcean(i,j))
 #endif
          ENDDO
         ENDDO
       endif
 
-      DO J=1,sNy
-       DO I=1,sNx
+      DO j=1,sNy
+       DO i=1,sNx
 #ifdef ALLOW_SITRACER_DEBUG_DIAG
-        DIAGarray(I,J,4+(iTr-1)*5) = - SItrBucket(i,j,bi,bj,iTr)
-     &  *HEFFM(I,J,bi,bj)/SEAICE_deltaTtherm*SEAICE_rhoIce
+        DIAGarray(i,j,4+(iTr-1)*5) = - SItrBucket(i,j,bi,bj,iTr)
+     &  *HEFFM(i,j,bi,bj)/SEAICE_deltaTtherm*SEAICE_rhoIce
 #endif
 c empty bucket
 c  but not for 'grease' (see seaice_growth.F)
@@ -232,27 +235,27 @@ c 4) diagnostics
 c ==============
 #ifdef ALLOW_SITRACER_DEBUG_DIAG
       if (SItrMate(iTr).EQ.'HEFF') then
-      DO J=1,sNy
-       DO I=1,sNx
+      DO j=1,sNy
+       DO i=1,sNx
         HEFFpost=SItrHEFF(i,j,bi,bj,5)
-        DIAGarray(I,J,1+(iTr-1)*5) = SItracer(i,j,bi,bj,iTr)
-        DIAGarray(I,J,2+(iTr-1)*5) = SItracer(i,j,bi,bj,iTr)*HEFFpost
+        DIAGarray(i,j,1+(iTr-1)*5) = SItracer(i,j,bi,bj,iTr)
+        DIAGarray(i,j,2+(iTr-1)*5) = SItracer(i,j,bi,bj,iTr)*HEFFpost
 c DIAGarray(:,:,3) is the term of comparison for DIAGarray(:,:,2)
         if (SItrName(iTr).EQ.'salinity') then
-          DIAGarray(I,J,3+(iTr-1)*5) = HSALT(i,j,bi,bj)/SEAICE_rhoIce
+          DIAGarray(i,j,3+(iTr-1)*5) = HSALT(i,j,bi,bj)/SEAICE_rhoIce
         elseif (SItrName(iTr).EQ.'one') then
-          DIAGarray(I,J,3+(iTr-1)*5) = HEFFpost
+          DIAGarray(i,j,3+(iTr-1)*5) = HEFFpost
         endif
 c DIAGarray(:,:,4) allows check of conservation : del(SItrBucket)+del(SItr*HEFF)=0. over do_phys
 c DIAGarray(:,:,5) is the tracer flux from the ocean (<0 incr. ocean tracer)
        ENDDO
       ENDDO
       else
-      DO J=1,sNy
-       DO I=1,sNx
+      DO j=1,sNy
+       DO i=1,sNx
         AREApost=SItrAREA(i,j,bi,bj,3)
-        DIAGarray(I,J,1+(iTr-1)*5) = SItracer(i,j,bi,bj,iTr)
-        DIAGarray(I,J,2+(iTr-1)*5) = SItracer(i,j,bi,bj,iTr)*AREApost
+        DIAGarray(i,j,1+(iTr-1)*5) = SItracer(i,j,bi,bj,iTr)
+        DIAGarray(i,j,2+(iTr-1)*5) = SItracer(i,j,bi,bj,iTr)*AREApost
        ENDDO
       ENDDO
       endif

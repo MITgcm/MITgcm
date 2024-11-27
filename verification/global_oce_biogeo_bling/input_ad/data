@@ -82,7 +82,7 @@
  meridWindFile=  'tren_tauy.bin',
  thetaClimFile=  'lev_monthly_temp.bin',
  saltClimFile=   'lev_monthly_salt.bin',
- surfQFile=      'shi_qnet.bin',
+ surfQnetFile=   'shi_qnet.bin',
  EmPmRFile=      'shi_empmr_year.bin',
  the_run_name=   'Tutorial Biogeo',
  &
