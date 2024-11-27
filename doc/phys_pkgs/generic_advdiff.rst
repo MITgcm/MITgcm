@@ -3,7 +3,6 @@
 Generic Advection/Diffusion
 ---------------------------
 
-
 The generic_advdiff package contains high-level subroutines to solve
 the advection-diffusion equation of any tracer, either active (potential
 temperature, salinity or water vapor) or passive (see :ref:`pkg/ptracer <sub_phys_pkg_ptracers>`).
@@ -38,9 +37,7 @@ There are two high-level routines:
    non-linear schemes and can not be used in conjuction with
    Adams–Bashforth time stepping.
 
-
 .. tabularcolumns:: |\Y{.4}|L|L|
-
 
 +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
 | CPP Flag Name                                 | Default | Description                                                                                                          |
@@ -61,8 +58,6 @@ There are two high-level routines:
 |                                               |         | (for ptracers, except temp and salinity)                                                                             |
 +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
 
-
-
 .. _gad_diagnostics:
 
 GAD Diagnostics
@@ -70,9 +65,8 @@ GAD Diagnostics
 
 ::
 
-
     ------------------------------------------------------------------------
-    <-Name->|Levs|<-parsing code->|<--  Units   -->|<- Tile (max=80c) 
+    <-Name->|Levs|<-parsing code->|<--  Units   -->|<- Tile (max=80c)
     ------------------------------------------------------------------------
     ADVr_TH | 15 |WM      LR      |degC.m^3/s      |Vertical   Advective Flux of Pot.Temperature
     ADVx_TH | 15 |UU   087MR      |degC.m^3/s      |Zonal      Advective Flux of Pot.Temperature
@@ -97,5 +91,4 @@ Experiments and tutorials that use GAD
 
 -  Tracer Sensitivity tutorial, in :filelink:`tutorial\_tracer\_adjsens <verification/tutorial_tracer_adjsens>`
    verification directory.
-
 

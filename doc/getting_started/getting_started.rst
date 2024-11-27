@@ -1495,7 +1495,7 @@ somewhat obscure, so newer users of the MITgcm are encouraged to jump to
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
    | :varlink:`SOLVE_DIAGONAL_KINNER`              | #undef  | choice for implicit solver routines solve_*diagonal.F suitable for AD                                                |
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
-   
+
 .. _default_pkg_list:
 
 By default, MITgcm includes several core packages, i.e., these packages are

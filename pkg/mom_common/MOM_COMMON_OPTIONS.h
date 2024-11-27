@@ -16,7 +16,7 @@ C in the tracer equations it needs to be set in GAD_OPTIONS.h
 #define COSINEMETH_III
 
 C This selects isotropic scaling of horizontal harmonic and bi-harmonic
-C diffusivity when using the COSINE(lat) scaling -- only on lat-lon grid.
+C viscosity when using the COSINE(lat) scaling -- only on lat-lon grid.
 C Setting this flag here only affects momentum viscosity; to use it
 C in the tracer equations it needs to be set in GAD_OPTIONS.h
 #undef ISOTROPIC_COS_SCALING
