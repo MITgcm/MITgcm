@@ -17,8 +17,7 @@ C CPP flags controlling particular source code features
 
 C-- Forcing code options:
 
-C o Shortwave heating as extra term in external_forcing.F
-C Note: this should be a run-time option
+C o Shortwave heating as extra term in APPLY_FORCING_T (apply_forcing.F)
 #undef SHORTWAVE_HEATING
 
 C o Include/exclude Geothermal Heat Flux at the bottom of the ocean
@@ -155,6 +154,6 @@ C-- Other option files:
 C o Execution environment support options
 #include "CPP_EEOPTIONS.h"
 
-C-  Place where multi-pkg header file ECCO_CPPOPTIONS.h use to be included
+C-  Place where multi-pkg header file ECCO_CPPOPTIONS.h used to be included
 
 #endif /* CPP_OPTIONS_H */
