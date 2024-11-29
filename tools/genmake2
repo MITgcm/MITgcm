@@ -532,7 +532,7 @@ find_possible_optfile()  {
     tmp1=`uname`"_"`uname -m`
     tmp2=`echo $tmp1 | sed -e 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/'`
     tmp3=`echo $tmp2 | sed -e 's/power macintosh/ppc/'`
-    tmp1=`echo $tmp3 | sed -e 's|x86_64|amd64|'`
+    tmp1=`echo $tmp3 | sed -e 's|x86_64|amd64|' | sed -e 's|aarch64|arm64|'`
     tmp2=`echo $tmp1 | sed -e 's/i[3-6]86/ia32/' | sed -e 's/athlon/ia32/'`
     tmp3=`echo $tmp2 | sed -e 's/cray sv1/craysv1/'`
     PLATFORM=$tmp3
@@ -3241,10 +3241,9 @@ EOF
 echo 'TAP_SUPPORT_OBJFILES = $(TAPENADE_SUPPORT_C_SRC_FILES:.c=.o)' >> $MAKEFILE
 fi
 
-echo 'FLOWFILES =  $(AD_FLOW_FILES:.flow=.flowdir)' >> $MAKEFILE
 echo >> $MAKEFILE
 echo '.SUFFIXES:' >> $MAKEFILE
-echo '.SUFFIXES: .o .'$FS' .p .F .c .f'$FS90' .'$FS90' .FF90 .F90 .flowdir .flow' >> $MAKEFILE
+echo '.SUFFIXES: .o .'$FS' .p .F .c .f'$FS90' .'$FS90' .FF90 .F90 .flow' >> $MAKEFILE
 
 cat >>$MAKEFILE <<EOF
 
@@ -3283,13 +3282,14 @@ small_f: \$(F77_PP_SRC_FILES) \$(F90_PP_SRC_FILES)
 clean:
 	-rm -rf *.p *.$FS90 *.mod ${RMFILES} work.{pc,pcl} *.template
 	-rm -rf *.o
-	-rm -rf *.$FS *.flowdir
+	-rm -rf *.$FS
 	-rm -rf *.f$FS90 \$(AD_CLEAN) ad_input*
 
 # remove most of the files that "make" and "make depend" generate
 Clean:
 	@\$(MAKE) -f \$(MAKEFILE) clean
 	@\$(MAKE) -f \$(MAKEFILE) cleanlinks
+	-rm -rf *.flowdir
 	-rm -f \$(SPECIAL_FILES) f90mkdepend.log $MAKEFILE.old
 	-rm -f taf_command taf_output taf_ad.log taf_ad_flow.log taf_ftl.log
 
@@ -3380,8 +3380,6 @@ CPPCMD = cat \$< | ${CPP} \$(DEFINES) \$(INCLUDES) | ${S64}
 	\$(F90C) \$(F90FLAGS) \$(F90OPTIM) -c \$(F90FIXEDFORMAT) \$(basename  \$<).f90
 .c.o:
 	\$(CC) \$(CFLAGS) \$(DEFINES) \$(INCLUDES) -c \$<
-.flow.flowdir:
-	\$(CPPCMD) > \$@
 
 # Special exceptions that use the ( .F - .p - .$FS - .o ) rule-chain
 .F.p:
@@ -3476,8 +3474,7 @@ ad_input_code.$FS: \$(AD_FILES) \$(AD_FLOW_FILES)
 	cmp ad_config.template AD_CONFIG.h || cat ad_config.template > AD_CONFIG.h
 	@-rm -f ad_config.template
 	@\$(MAKE) -f \$(MAKEFILE) \$(F77_PP_SRC_FILES)
-	@\$(MAKE) -f \$(MAKEFILE) \$(FLOWFILES)
-	cat \$(FLOWFILES) \$(AD_FILES) | sed -f \$(TOOLSDIR)/remove_comments_sed > ad_input_code.$FS
+	cat \$(AD_FLOW_FILES) \$(AD_FILES) | sed -f \$(TOOLSDIR)/remove_comments_sed > ad_input_code.$FS
 
 EOF
 if test -n "$AD_F90FILES" ; then
@@ -3546,11 +3543,10 @@ ad_taf_output.$FS: \$(AD_FLOW_FILES) \$(AD_FILES) \$(AD_F90FILES)
 	cmp ad_config.template AD_CONFIG.h || cat ad_config.template > AD_CONFIG.h
 	@-rm -f ad_config.template
 	@\$(MAKE) -f \$(MAKEFILE) \$(F77_PP_SRC_FILES) \$(F90_PP_SRC_FILES)
-	@\$(MAKE) -f \$(MAKEFILE) \$(FLOWFILES)
 	@-rm -f \$(AD_FILES:.$FS=_ad.$FS) \$(AD_FILES:.$FS=_ad.o); echo ''
 	@-rm -f \$(AD_F90FILES:.$FS90=_ad.$FS90) \$(AD_F90FILES:.$FS90=_ad.o); echo ''
 	\$(MAKE) -f \$(MAKEFILE) remove_comments
-	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) -fixed \$(FLOWFILES) \$(AD_FILES) -free \$(AD_F90FILES)
+	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) -fixed \$(AD_FLOW_FILES) \$(AD_FILES) -free \$(AD_F90FILES)
 	\$(MAKE) -f \$(MAKEFILE) adj_sed
 	cat \$(AD_FILES:.$FS=_ad.$FS) > ad_taf_output.$FS
 
@@ -3594,7 +3590,6 @@ ftl_input_code.$FS: \$(AD_FILES) \$(AD_FLOW_FILES)
 	cmp ad_config.template AD_CONFIG.h || cat ad_config.template > AD_CONFIG.h
 	@-rm -f ad_config.template
 	@\$(MAKE) -f \$(MAKEFILE) \$(F77_PP_SRC_FILES)
-	@\$(MAKE) -f \$(MAKEFILE) \$(AD_FLOW_FILES)
 	cat \$(AD_FLOW_FILES) \$(AD_FILES) | sed -f \$(TOOLSDIR)/remove_comments_sed > ftl_input_code.$FS
 
 EOF
