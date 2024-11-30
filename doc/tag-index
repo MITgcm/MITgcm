@@ -1,6 +1,14 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/mom_common,fluxform,vecinv:
+  - remove ISOTROPIC_COS_SCALING code from pkg/mom_vecinv/mom_vi_hdissip.F (was
+    not right); add warning (or stop if side-drag) if used with pkg/mom_vecinv.
+  - move 2 Cos-Scaling CPP options from CPP_OPTIONS.h to MOM_COMMON_OPTIONS.h
+    to be used in horizontal viscosity formulation; more consistent use of
+    GAD_OPTIONS.h where these 2 CPP options are used for horizontal diffusion.
+  - update all verification exp. customized version of CPP_OPTIONS.h,
+    GAD_OPTIONS.h and MOM_COMMON_OPTIONS.h.
 o verification/atm_gray:
   - gray atmosphere test exp moved from "verification_other".
 o model/src:

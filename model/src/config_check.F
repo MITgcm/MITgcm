@@ -27,6 +27,9 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_MOM_COMMON
+# include "MOM_VISC.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -961,6 +964,37 @@ C--   Momentum related limitations:
         errCount = errCount + 1
        ENDIF
       ENDIF
+#ifdef ALLOW_MOM_COMMON
+      IF ( vectorInvariantMomentum .AND. momViscosity .AND.
+     &     usingSphericalPolarGrid .AND. cosPower.NE.zeroRL ) THEN
+#ifdef ISOTROPIC_COS_SCALING
+       IF ( no_slip_sides ) THEN
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: inconsistent ',
+     &    'no_slip_sides & ISOTROPIC_COS_SCALING in mom_vecinv'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ELSE
+        WRITE(msgBuf,'(2A)') '** WARNING ** CONFIG_CHECK: ',
+     &    'ISOTROPIC_COS_SCALING not implemented in mom_vecinv'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+       ENDIF
+#endif /* ISOTROPIC_COS_SCALING */
+#ifdef COSINEMETH_III
+       IF ( useBiharmonicVisc .AND. no_slip_sides ) THEN
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: inconsistent ',
+     &    'no_slip_sides & COSINEMETH_III in mom_vecinv'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ELSEIF ( useBiharmonicVisc ) THEN
+        WRITE(msgBuf,'(2A)') '** WARNING ** CONFIG_CHECK: ',
+     &    'COSINEMETH_III not implemented in mom_vecinv'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+       ENDIF
+#endif /* COSINEMETH_III */
+      ENDIF
+#endif /* ALLOW_MOM_COMMON */
       IF ( .NOT.vectorInvariantMomentum .AND. momAdvection ) THEN
        IF ( usingCurvilinearGrid ) THEN
         WRITE(msgBuf,'(2A)') '** WARNING ** CONFIG_CHECK: ',
