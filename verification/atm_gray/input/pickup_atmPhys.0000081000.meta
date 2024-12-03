@@ -1,0 +1,13 @@
+ nDims = [   2 ];
+ dimList = [
+   192,    1,  192,
+    32,    1,   32
+ ];
+ dataprec = [ 'float64' ];
+ nrecords = [     1 ];
+ timeStepNumber = [          1 ];
+ timeInterval = [  3.840000000000E+02 ];
+ nFlds = [    1 ];
+ fldList = {
+ 'AtPh_SST'
+ };
