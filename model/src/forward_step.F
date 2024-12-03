@@ -22,6 +22,9 @@
 #ifdef ALLOW_SEAICE
 # include "SEAICE_OPTIONS.h"
 #endif
+#ifdef ALLOW_SALT_PLUME
+# include "SALT_PLUME_OPTIONS.h"
+#endif
 #ifdef ALLOW_PTRACERS
 # include "PTRACERS_OPTIONS.h"
 #endif
@@ -51,6 +54,9 @@
 #endif
 #ifdef ALLOW_ECCO
 # include "ECCO_OPTIONS.h"
+#endif
+#ifdef ALLOW_RBCS
+# include "RBCS_OPTIONS.h"
 #endif
 
 #define ALLOW_MOM_STEPPING
@@ -256,7 +262,6 @@ C     == Global variables ==
 #endif
 
 #ifdef ALLOW_AUTODIFF
-# include "AUTODIFF_MYFIELDS.h"
 # include "FFIELDS.h"
 # include "SURFACE.h"
 
