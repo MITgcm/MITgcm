@@ -56,6 +56,9 @@ C     pf     :: Intermediate array for building RHS source term.
       _RS xA (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS yA (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL pf (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#ifdef ALLOW_ADDFLUID
+      _RL unitsFac
+#endif
 CEOP
 
 C     Calculate vertical face areas
@@ -177,11 +180,13 @@ C     Explicit+Implicit part of the Barotropic Flow Divergence
 #endif
 
 #ifdef ALLOW_ADDFLUID
+      unitsFac = mass2rUnit/deltaTMom
+      IF ( exactConserv ) unitsFac = unitsFac*implicDiv2Dflow
       IF ( selectAddFluid.GE.1 ) THEN
         DO j=1,sNy
          DO i=1,sNx
           cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
-     &         - addMass(i,j,k,bi,bj)*mass2rUnit/deltaTMom
+     &         - addMass(i,j,k,bi,bj)*unitsFac
          ENDDO
         ENDDO
 #ifdef ALLOW_NONHYDROSTATIC
@@ -189,7 +194,7 @@ C     Explicit+Implicit part of the Barotropic Flow Divergence
         DO j=1,sNy
          DO i=1,sNx
           cg3d_b(i,j,k,bi,bj) = cg3d_b(i,j,k,bi,bj)
-     &         - addMass(i,j,k,bi,bj)*mass2rUnit/deltaTMom
+     &         - addMass(i,j,k,bi,bj)*unitsFac
          ENDDO
         ENDDO
        ENDIF
