@@ -6,7 +6,7 @@
 CBOP
 C     !ROUTINE: EXF_BULKFORMULAE
 C     !INTERFACE:
-      SUBROUTINE EXF_BULKFORMULAE( myTime, myIter, myThid )
+      SUBROUTINE EXF_BULKFORMULAE( exf_Tsf, myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -159,9 +159,12 @@ C     input:
 C     myTime  :: Current time in simulation
 C     myIter  :: Current iteration number in simulation
 C     myThid  :: My Thread Id number
+C     exf_Tsf :: local copy of global field surfLevTemp or extrapolated
+C                surface temperature (in deg Celsius)
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
+      _RL exf_Tsf(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     output:
 CEOP
 

@@ -56,10 +56,6 @@ C--   Initialise to zero intermediate fields (in common block)
           hs(i,j,bi,bj) = 0.
           hl(i,j,bi,bj) = 0.
 #endif
-#if ( defined ALLOW_DOWNWARD_RADIATION ) || \
-      ( defined ALLOW_ATM_TEMP && defined ALLOW_BULKFORMULAE )
-          exf_Tsf(i,j,bi,bj) = 0.
-#endif
          ENDDO
         ENDDO
        ENDDO

@@ -153,6 +153,9 @@ C     == local variables ==
       ( defined ALLOW_ATM_TEMP && defined ALLOW_BULKFORMULAE )
       INTEGER kl
       _RL SSTtmp
+C     exf_Tsf :: local copy of global field surfLevTemp or extrapolated
+C                surface temperature (in deg Celsius)
+      _RL exf_Tsf        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 C     == end of interface ==
 CEOP
@@ -167,8 +170,8 @@ C     (W-point).
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
         IF ( Nr.GE.2 .AND. sstExtrapol.GT.0. _d 0 ) THEN
-         DO j = 1,sNy
-          DO i = 1,sNx
+         DO j = 1-Oly,sNy+Oly
+          DO i = 1-Olx,sNx+Olx
            SSTtmp = sstExtrapol
      &          *( surfLevTemp(i,j,bi,bj)-theta(i,j,kl,bi,bj) )
      &          *  maskC(i,j,kl,bi,bj)
@@ -177,8 +180,8 @@ C     (W-point).
           ENDDO
          ENDDO
         ELSE
-         DO j = 1,sNy
-          DO i = 1,sNx
+         DO j = 1-Oly,sNy+Oly
+          DO i = 1-Olx,sNx+Olx
            exf_Tsf(i,j,bi,bj) = surfLevTemp(i,j,bi,bj) + cen2kel
           ENDDO
          ENDDO
@@ -254,7 +257,7 @@ CADJ STORE areamask   = comlev1, key=ikey_dynamics, kind=isbyte
 
 #ifdef ALLOW_DOWNWARD_RADIATION
 C     Set radiative fluxes
-      CALL EXF_RADIATION( myTime, myIter, myThid )
+      CALL EXF_RADIATION( exf_Tsf, myTime, myIter, myThid )
 #endif
 
 C     Set wind fields
@@ -273,7 +276,7 @@ CADJ STORE vstress      = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE wstress      = comlev1, key=ikey_dynamics, kind=isbyte
 #  endif
 C     Compute turbulent fluxes (and surface stress) from bulk formulae
-      CALL EXF_BULKFORMULAE( myTime, myIter, myThid )
+      CALL EXF_BULKFORMULAE( exf_Tsf, myTime, myIter, myThid )
 #  ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE evap         = comlev1, key=ikey_dynamics, kind=isbyte
 #  endif

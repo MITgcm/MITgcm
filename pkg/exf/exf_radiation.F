@@ -1,54 +1,53 @@
 #include "EXF_OPTIONS.h"
 
-      SUBROUTINE EXF_RADIATION( myTime, myIter, myThid )
+CBOP
+C !ROUTINE: EXF_RADIATION
 
-C     ==================================================================
-C     SUBROUTINE exf_radiation
-C     ==================================================================
-C
-C     o Set radiative fluxes at the surface.
-C
-C     ==================================================================
-C     SUBROUTINE exf_radiation
-C     ==================================================================
+C !INTERFACE: ==========================================================
+      SUBROUTINE EXF_RADIATION( exf_Tsf, myTime, myIter, myThid )
 
+C !DESCRIPTION:
+C Set radiative fluxes at the surface
+C
+C - Use atmospheric state to compute surface fluxes.
+C - Compute net from downward and downward from net longwave and
+C   shortwave radiation, IF needed.
+C   lwflux = Stefan-Boltzmann constant * emissivity * SST - lwdown
+C   swflux = - ( 1 - albedo ) * swdown
+
+C !USES:
       IMPLICIT NONE
-
-C     == global variables ==
-
+C == Global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "GRID.h"
-
 #include "EXF_PARAM.h"
 #include "EXF_FIELDS.h"
 #include "EXF_CONSTANTS.h"
 
-C     == routine arguments ==
-
+C !INPUT PARAMETERS:
+C myTime  :: Current time in simulation
+C myIter  :: Current iteration number in simulation
+C myThid  :: My Thread Id number
+C exf_Tsf :: local copy of global field surfLevTemp or extrapolated
+C            surface temperature (in deg Celsius)
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
+      _RL exf_Tsf(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #ifdef ALLOW_DOWNWARD_RADIATION
-C     == local variables ==
-
+C !LOCAL VARIABLES: ====================================================
+C bi,bj     :: Tile indices
+C kl,ks    :: loop indices
       INTEGER bi,bj
       INTEGER i,j
 #ifdef ALLOW_ATM_TEMP
 c     INTEGER ks
       INTEGER kl
 #endif
-
-C     == end of interface ==
-
-C--   Use atmospheric state to compute surface fluxes.
-
-C--   Compute net from downward and downward from net longwave and
-C     shortwave radiation, IF needed.
-C     lwflux = Stefan-Boltzmann constant * emissivity * SST - lwdown
-C     swflux = - ( 1 - albedo ) * swdown
+CEOP
 
 #ifdef ALLOW_ATM_TEMP
 c     ks = 1
