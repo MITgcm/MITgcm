@@ -195,7 +195,6 @@ C     these need to be 2D-arrays for vectorizing code
 #ifdef ALLOW_BULK_LARGEYEAGER04
       _RL dzTmp
 #endif
-      _RL SSTtmp
       _RL ssq
       _RL re                    ! = Ce / sqrt(Cd)     [-]
       _RL rh                    ! = Ch / sqrt(Cd)     [-]

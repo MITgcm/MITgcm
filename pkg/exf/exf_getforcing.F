@@ -135,6 +135,7 @@ C     == global variables ==
 #endif /* ALLOW_TAPENADE */
 #if ( defined ALLOW_DOWNWARD_RADIATION ) || \
       ( defined ALLOW_ATM_TEMP && defined ALLOW_BULKFORMULAE )
+# include "FFIELDS.h"
 # include "DYNVARS.h"
 #endif
 

@@ -19,7 +19,6 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "DYNVARS.h"
 #include "GRID.h"
 
 #include "EXF_PARAM.h"
@@ -40,7 +39,6 @@ C     == local variables ==
 #ifdef ALLOW_ATM_TEMP
 c     INTEGER ks
       INTEGER kl
-      _RL Tsf, SSTtmp, TsfSq
 #endif
 
 C     == end of interface ==
