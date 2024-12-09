@@ -314,32 +314,6 @@ C
       _RL     zeroRL
       PARAMETER ( zeroRL = 0.0 _d 0 )
 
-C     The following are coefficients in the nominator (TPNxx) or
-C     denominator (TPDxx) of a simple rational expression that
-C     approximately converts conservative temperature to potential
-C     temperature.
-      _RL TPN00 ! Simple fit numerator constant (degC)
-      _RL TPN10 ! Simple fit numerator Sa coef. (degC ppt-1)
-      _RL TPN20 ! Simple fit numerator Sa**2 coef. (degC ppt-2)
-      _RL TPN01 ! Simple fit numerator Tc coef. (nondim)
-      _RL TPN11 ! Simple fit numerator Sa * Tc coef. (ppt-1)
-      _RL TPN02 ! Simple fit numerator Tc**2 coef. (degC-1)
-      _RL TPD10 ! Simple fit denominator Sa coef. (ppt-1)
-      _RL TPD01 ! Simple fit denominator Tc coef. (degC-1)
-      _RL TPD02 ! Simple fit denominator Tc**2 coef. (degC-2)
-
-      PARAMETER (
-     &     TPN00 = -1.446013646344788e-2,
-     &     TPN10 = -3.305308995852924e-3*Sprac_Sref,
-     &     TPN20 =  1.062415929128982e-4*Sprac_Sref**2,
-     &     TPN01 =  9.477566673794488e-1,
-     &     TPN11 =  2.166591947736613e-3*Sprac_Sref,
-     &     TPN02 =  3.828842955039902e-3,
-     &     TPD10 =  6.506097115635800e-4*Sprac_Sref,
-     &     TPD01 =  3.830289486850898e-3,
-     &     TPD02 =  1.247811760368034e-6
-     &     )
-
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
         Tp_num = TPN00 + (Sa(i,j)*(TPN10 + TPN20*Sa(i,j))

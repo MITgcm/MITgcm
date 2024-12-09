@@ -62,9 +62,9 @@ C     end nonlinear equation of state
       _RL eosMDJWFnum(0:11), eosMDJWFden(0:12)
       COMMON /PARM_EOS_MDJWF/
      &     eosMDJWFnum, eosMDJWFden
+
+C     TEOS10 coefficients
       _RL teos(48)
-      COMMON /PARM_TEOS10/
-     &     teos
 
 C     Parameters in the temperature conversion code for TEOS10
 C     The TEOS 10 conversion factor to go from reference salinity to
@@ -77,11 +77,6 @@ C     The inverse of a plausible range of oceanic temperatures (degC-1)
 C     The inverse of the "specific heat" for use
 C     with Conservative Temperature, as defined with TEOS10 (degC kg J-1)
       _RL I_cp0
-      PARAMETER (
-     &     Sprac_Sref = (35.0/35.16504),
-     &     I_S0 = 0.025*Sprac_Sref, I_Ts = 0.025,
-     &     I_cp0 = 1.0/3991.86795711963
-     &     )
 
 C     The following are coefficients of contributions to conservative
 C     temperature as a function of the square root of normalized
@@ -150,34 +145,36 @@ C     Tp to Tc fit zS**6 coef. (degC)
 C     Tp to Tc fit zS**7 coef. (degC)
       _RL H70
 
-      PARAMETER (
-     &     H00 = 61.01362420681071*I_cp0,
-     &     H01 = 168776.46138048015*(I_cp0*I_Ts),
-     &     H02 = -2735.2785605119625*(I_cp0*I_Ts**2),
-     &     H03 = 2574.2164453821433*(I_cp0*I_Ts**3),
-     &     H04 = -1536.6644434977543*(I_cp0*I_Ts**4),
-     &     H05 = 545.7340497931629*(I_cp0*I_Ts**5),
-     &     H06 = -50.91091728474331*(I_cp0*I_Ts**6),
-     &     H07 = -18.30489878927802*(I_cp0*I_Ts**7),
-     &     H20 = 268.5520265845071*I_cp0,
-     &     H21 = -12019.028203559312*(I_cp0*I_Ts),
-     &     H22 = 3734.858026725145*(I_cp0*I_Ts**2),
-     &     H23 = -2046.7671145057618*(I_cp0*I_Ts**3),
-     &     H24 = 465.28655623826234*(I_cp0*I_Ts**4),
-     &     H25 = -0.6370820302376359*(I_cp0*I_Ts**5),
-     &     H26 = -10.650848542359153*(I_cp0*I_Ts**6),
-     &     H30 = 937.2099110620707*I_cp0,
-     &     H31 = 588.1802812170108*(I_cp0*I_Ts),
-     &     H32 = 248.39476522971285*(I_cp0*I_Ts**2),
-     &     H33 = -3.871557904936333*(I_cp0*I_Ts**3),
-     &     H34 = -2.6268019854268356*(I_cp0*I_Ts**4),
-     &     H40 = -1687.914374187449*I_cp0,
-     &     H41 = 936.3206544460336*(I_cp0*I_Ts),
-     &     H42 = -942.7827304544439*(I_cp0*I_Ts**2),
-     &     H43 = 369.4389437509002*(I_cp0*I_Ts**3),
-     &     H44 = -33.83664947895248*(I_cp0*I_Ts**4),
-     &     H45 = -9.987880382780322*(I_cp0*I_Ts**5),
-     &     H50 = 246.9598888781377*I_cp0,
-     &     H60 = 123.59576582457964*I_cp0,
-     &     H70 = -48.5891069025409*I_cp0
-     &     )
+C     The following are coefficients in the nominator (TPNxx) or
+C     denominator (TPDxx) of a simple rational expression that
+C     approximately converts conservative temperature to potential
+C     temperature.
+C     Simple fit numerator constant (degC)
+      _RL TPN00
+C     Simple fit numerator Sa coef. (degC ppt-1)
+      _RL TPN10
+C     Simple fit numerator Sa**2 coef. (degC ppt-2)
+      _RL TPN20
+C     Simple fit numerator Tc coef. (nondim)
+      _RL TPN01
+C     Simple fit numerator Sa * Tc coef. (ppt-1)
+      _RL TPN11
+C     Simple fit numerator Tc**2 coef. (degC-1)
+      _RL TPN02
+C     Simple fit denominator Sa coef. (ppt-1)
+      _RL TPD10
+C     Simple fit denominator Tc coef. (degC-1)
+      _RL TPD01
+C     Simple fit denominator Tc**2 coef. (degC-2)
+      _RL TPD02
+
+      COMMON /PARM_TEOS10/
+     &     teos,
+     &     Sprac_Sref, I_S0, I_Ts, I_cp0,
+     &     H00, H01, H02, H03, H04, H05, H06, H07,
+     &     H20, H21, H22, H23, H24, H25, H26,
+     &     H30, H31, H32, H33, H34,
+     &     H40, H41, H42, H43, H44, H45,
+     &     H50, H60, H70,
+     &     TPN00, TPN10, TPN20,
+     &     TPN01, TPN11, TPN02, TPD10, TPD01, TPD02
