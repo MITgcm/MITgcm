@@ -12,7 +12,13 @@
   gchem_par_const    = 140.0,
   gchem_iron_const   = 1.e-11,
   gchem_silica_const = 7.6838e-3,
+#
  &
 
  &GCHEM_FORCING_PARAMS
+  ironPeriod  =-12.,
+  silicaPeriod=-12.,
+ &
+
+ &GCHEM_INTERP_PARAMS
  &
