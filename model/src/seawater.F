@@ -223,10 +223,13 @@ C     !LOCAL VARIABLES:
 C     Absolute salinity normalized by a plausible salinity range and its
 C     square root (nondim)
       _RL x2, x
+C
+      _RL     zeroRL
+      PARAMETER ( zeroRL = 0.0 _d 0 )
 
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
-        x2 = MAX(I_S0 * Sa(i,j), 0.0)
+        x2 = MAX(I_S0 * Sa(i,j), zeroRL)
 #ifdef ALLOW_AUTODIFF
         x = 0. _d 0
         IF ( x2 .GT. 0. _d 0 ) x = SQRT(x2)
@@ -261,8 +264,8 @@ C !INTERFACE:
      I         myTime, myIter, myThid )
 
 C     !DESCRIPTION:
-C     Convert input potential temperature (degC) and absolute salinity
-C     (g kg-1) to returned conservative temperature (degC) by inverting
+C     Convert input conservative (degC) and absolute salinity
+C     (g kg-1) to returned potential temperature (degC) by inverting
 C     the polynomial expressions from TEOS-10.
 
 C     !USES:
@@ -307,6 +310,9 @@ C     square root (nondim)
       _RL x2, x
 C     intermediate temperature (degC)
       _RL Tmp
+C
+      _RL     zeroRL
+      PARAMETER ( zeroRL = 0.0 _d 0 )
 
 C     The following are coefficients in the nominator (TPNxx) or
 C     denominator (TPDxx) of a simple rational expression that
@@ -338,7 +344,7 @@ C     temperature.
        DO i=1-OLx,sNx+OLx
         Tp_num = TPN00 + (Sa(i,j)*(TPN10 + TPN20*Sa(i,j))
      &       + Tc(i,j)*(TPN01 + (TPN11*Sa(i,j) + TPN02*Tc(i,j))))
-        I_Tp_den = 1.0 / (1.0
+        I_Tp_den = 1.0 _d 0 / (1.0 _d 0
      &       + (TPD10*Sa(i,j) + Tc(i,j)*(TPD01 + TPD02*Tc(i,j))))
         Tp(i,j) = Tp_num*I_Tp_den
         dTp_dTc(i,j) = ((TPN01 + (TPN11*Sa(i,j) + 2.*TPN02*Tc(i,j)))
@@ -373,14 +379,14 @@ CADJ STORE dTp_dTc = loctape_cp2ct
         Tp(i,j) = Tp_old(i,j) - Tc_diff(i,j)*dTp_dTc(i,j)
 C--   Estimate the potential temperature and its derivative from an C
 C     approximate rational function fit.
-        x2 = MAX(I_S0 * Sa(i,j), 0.0)
+        x2 = MAX(I_S0 * Sa(i,j), zeroRL)
 #ifdef ALLOW_AUTODIFF
         x = 0. _d 0
         IF ( x2 .GT. 0. _d 0 ) x = SQRT(x2)
 #else
         x = SQRT(x2)
 #endif
-        Tmp = 0.5*(Tp(i,j) + Tp_old(i,j))
+        Tmp = 0.5 _d 0 *(Tp(i,j) + Tp_old(i,j))
         dTc_dTp = (     H01 + Tmp*(2.*H02 + Tmp*(3.*H03 + Tmp*(4.*H04
      &       + Tmp*(5.*H05 + Tmp*(6.*H06 + Tmp*(7.*H07)))))) )
      &       + x2*(     (H21 + Tmp*(2.*H22 + Tmp*(3.*H23 + Tmp*(4.*H24
@@ -388,7 +394,7 @@ C     approximate rational function fit.
      &       +  x*(  (H31 + Tmp*(2.*H32 + Tmp*(3.*H33 + Tmp*(4.*H34))))
      &       + x*(H41 + Tmp*(2.*H42 + Tmp*(3.*H43
      &       + Tmp*(4.*H44 + Tmp*(5.*H45))))) ) )
-        dTp_dTc(i,j) = 1.0 / dTc_dTp
+        dTp_dTc(i,j) = 1. _d 0 / dTc_dTp
 #ifdef ALLOW_AUTODIFF
        ENDDO
       ENDDO

@@ -154,7 +154,8 @@ C     appy mask (because theta=0 will lead to surfLevTemp<0)
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
             surfLevTemp(i,j,bi,bj) =
-     &           surfLevTemp(i,j,bi,bj)*maskInC(i,j,bi,bj)
+     &           surfLevTemp(i,j,bi,bj) * maskC(i,j,ks,bi,bj)
+
            ENDDO
           ENDDO
          ENDDO
