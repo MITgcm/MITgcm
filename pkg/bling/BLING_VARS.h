@@ -203,6 +203,12 @@ C          satellite-equivalent chlorophyll diagnostic (and cost)
      &                     gamma_DON,
      &                     k_Fe_diaz,
      &                     k_NO3,
+     &                     k_NO3_sm,
+     &                     k_NO3_lg,
+     &                     k_PO4_sm,
+     &                     k_PO4_lg,
+     &                     k_Fe_sm,
+     &                     k_Fe_lg,
      &                     k_PtoN,
      &                     k_FetoN,
      &                     PtoN_min,
@@ -305,6 +311,12 @@ C          satellite-equivalent chlorophyll diagnostic (and cost)
       _RL gamma_DON
       _RL k_Fe_diaz
       _RL k_NO3
+      _RL k_NO3_sm
+      _RL k_NO3_lg
+      _RL k_PO4_sm
+      _RL k_PO4_lg
+      _RL k_Fe_sm
+      _RL k_Fe_lg
       _RL k_PtoN
       _RL k_FetoN
       _RL PtoN_min
