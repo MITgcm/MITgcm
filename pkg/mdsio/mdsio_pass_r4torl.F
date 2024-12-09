@@ -15,8 +15,8 @@ C !INTERFACE:
      I                            biArg, bjArg, copyTo, myThid )
 
 C !DESCRIPTION:
-C     Transfert 3-D real*4 buffer to 3-D RL model array, or the reverse,
-C      depending on "copyTo" value. Apply transfert to tile biArg,bjArg
+C     Transfer 3-D real*4 buffer to 3-D RL model array, or the reverse,
+C      depending on "copyTo" value. Apply transfer to tile biArg,bjArg
 C      only or to all myThid tiles if called with biArg=bjArg=0.
 
 C     !USES:

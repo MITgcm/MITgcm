@@ -53,7 +53,7 @@ c     == local variables ==
       integer nwetsouth
       integer nwetwest
 
-      character*(max_len_mbuf) msgbuf
+      character*(MAX_LEN_MBUF) msgbuf
 
 #if (defined (ALLOW_GENARR2D_CONTROL) \
       || defined (ALLOW_GENARR3D_CONTROL) \
@@ -128,7 +128,7 @@ c         write(msgbuf,'(a,i5.4,i5.4,i7.6,i7.6,i7.6)')
       enddo
 
       do ivar = 1, maxcvars
-C     only print active variables for which ncvarindex has be set
+C     only print active variables for which ncvarindex has been set
 C     (default = -1)
        if ( ncvarindex(ivar) .GE. 0 ) then
 

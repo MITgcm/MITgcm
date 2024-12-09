@@ -48,6 +48,14 @@ C     msgBuf :: Informational/error message buffer
 CEOP
 
 C-    Safety check:
+#ifdef FAST_BYTESWAP
+      _BEGIN_MASTER( myThid )
+       WRITE(msgBuf,'(2A)') 'INI_MODEL_IO: ',
+     &   'Option FAST_BYTESWAP (from CPP_EEOPTIONS.h) has been removed'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      STOP 'ABNORMAL END: S/R INI_MODEL_IO (FAST_BYTESWAP)'
+      _END_MASTER( myThid )
+#endif /* FAST_BYTESWAP */
       IF ( nPx*nPy.NE.1 .AND. globalFiles
      &                  .AND. .NOT.useSingleCpuIO ) THEN
         _BEGIN_MASTER( myThid )
