@@ -49,7 +49,9 @@ C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h"
 #include "FFIELDS.h"
+#include "DYNVARS.h"
 
 #ifdef ALLOW_AUTODIFF
 # ifdef ALLOW_AUTODIFF_TAMC
@@ -84,10 +86,15 @@ C     myThid :: thread number for this instance of the routine.
       INTEGER myIter
       INTEGER myThid
 
+      _RL consTemp_to_poTemp
+      EXTERNAL consTemp_to_poTemp
+
 C     !LOCAL VARIABLES:
 #if (defined ALLOW_ADDFLUID) || (defined ALLOW_FRICTION_HEATING)
-      INTEGER i,j,k,bi,bj
+      INTEGER k
 #endif
+      INTEGER ks
+      INTEGER i,j,bi,bj
 CEOP
 
 #ifdef ALLOW_DEBUG
@@ -126,6 +133,44 @@ C--   Initialise forcing arrays that may receive multiple contributions
         ENDDO
       ENDIF
 #endif /* ALLOW_FRICTION_HEATING */
+
+C--   Determine surface temperature, usually just a copy of the surface
+C--   level of theta, but for eosType='TEOS10', we need to convert from
+C--   conservative temperature to in-situ surface temperature
+      IF ( usingPCoords ) THEN
+       ks = Nr
+      ELSE
+       ks = 1
+      ENDIF
+      IF ( eosType .EQ. 'TEOS10' ) THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          CALL CONVERT_CT2PT(
+     I         theta(1-OLx,1-OLy,ks,bi,bj),
+     I         salt(1-OLx,1-OLy,ks,bi,bj),
+     O         surfLevTemp(1-OLx,1-OLy,bi,bj),
+     I         myTime, myIter, myThid )
+C     appy mask (because theta=0 will lead to surfLevTemp<0)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            surfLevTemp(i,j,bi,bj) =
+     &           surfLevTemp(i,j,bi,bj) * maskC(i,j,ks,bi,bj)
+
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+      ELSE
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            surfLevTemp(i,j,bi,bj) = theta(i,j,ks,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+      ENDIF
 
 C--   Map generic time varying controls to xx_gentim2d
 #ifdef ALLOW_CTRL

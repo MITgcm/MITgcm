@@ -133,6 +133,11 @@ C     == global variables ==
 # include "EXF_INTERP_SIZE.h"
 # include "EXF_INTERP_PARAM.h"
 #endif /* ALLOW_TAPENADE */
+#if ( defined ALLOW_DOWNWARD_RADIATION ) || \
+      ( defined ALLOW_ATM_TEMP && defined ALLOW_BULKFORMULAE )
+# include "FFIELDS.h"
+# include "DYNVARS.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == routine arguments ==
@@ -144,8 +149,46 @@ C     !LOCAL VARIABLES:
 C     == local variables ==
       INTEGER bi,bj
       INTEGER i,j,ks
+#if ( defined ALLOW_DOWNWARD_RADIATION ) || \
+      ( defined ALLOW_ATM_TEMP && defined ALLOW_BULKFORMULAE )
+      INTEGER kl
+      _RL SSTtmp
+C     exf_Tsf :: local copy of global field surfLevTemp or extrapolated
+C                surface temperature (in deg Celsius)
+      _RL exf_Tsf        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
 C     == end of interface ==
 CEOP
+
+#if ( defined ALLOW_DOWNWARD_RADIATION ) || \
+      ( defined ALLOW_ATM_TEMP && defined ALLOW_BULKFORMULAE )
+C     Compute the surface temperature either as copy of the global
+C     variable surfLevTemp or by extrapolation to the actual surface
+C     (W-point).
+      kl = 2
+      IF ( usingPCoords ) kl = Nr-1
+      DO bj = myByLo(myThid),myByHi(myThid)
+       DO bi = myBxLo(myThid),myBxHi(myThid)
+        IF ( Nr.GE.2 .AND. sstExtrapol.GT.0. _d 0 ) THEN
+         DO j = 1-Oly,sNy+Oly
+          DO i = 1-Olx,sNx+Olx
+           SSTtmp = sstExtrapol
+     &          *( surfLevTemp(i,j,bi,bj)-theta(i,j,kl,bi,bj) )
+     &          *  maskC(i,j,kl,bi,bj)
+           exf_Tsf(i,j,bi,bj) = surfLevTemp(i,j,bi,bj) + cen2kel
+     &          + MAX( SSTtmp, 0. _d 0 )
+          ENDDO
+         ENDDO
+        ELSE
+         DO j = 1-Oly,sNy+Oly
+          DO i = 1-Olx,sNx+Olx
+           exf_Tsf(i,j,bi,bj) = surfLevTemp(i,j,bi,bj) + cen2kel
+          ENDDO
+         ENDDO
+        ENDIF
+       ENDDO
+      ENDDO
+#endif
 
 C     Get values of climatological fields.
       CALL EXF_GETCLIM( myTime, myIter, myThid )
@@ -214,7 +257,7 @@ CADJ STORE areamask   = comlev1, key=ikey_dynamics, kind=isbyte
 
 #ifdef ALLOW_DOWNWARD_RADIATION
 C     Set radiative fluxes
-      CALL EXF_RADIATION( myTime, myIter, myThid )
+      CALL EXF_RADIATION( exf_Tsf, myTime, myIter, myThid )
 #endif
 
 C     Set wind fields
@@ -233,7 +276,7 @@ CADJ STORE vstress      = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE wstress      = comlev1, key=ikey_dynamics, kind=isbyte
 #  endif
 C     Compute turbulent fluxes (and surface stress) from bulk formulae
-      CALL EXF_BULKFORMULAE( myTime, myIter, myThid )
+      CALL EXF_BULKFORMULAE( exf_Tsf, myTime, myIter, myThid )
 #  ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE evap         = comlev1, key=ikey_dynamics, kind=isbyte
 #  endif
