@@ -29,6 +29,10 @@ C     == GLobal variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "GMREDI.h"
+#include "GAD.h"
+#ifdef ALLOW_LONGSTEP
+#include "LONGSTEP.h"
+#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -109,15 +113,31 @@ CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Area integrated zonal flux
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        df(i,j) = df(i,j)
-     &   -xA(i,j)
-     &    *Kux(i,j,k,bi,bj)
-     &    *_recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
-     &    *( Tracer(i,j,k) - Tracer(i-1,j,k) )
+#ifdef ALLOW_LONGSTEP
+      IF ( trIdentity .GE. GAD_TR1 ) THEN
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         df(i,j) = df(i,j)
+     &    -xA(i,j)
+     &     *LS_Kux(i,j,k,bi,bj)
+     &     *_recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
+     &     *( Tracer(i,j,k) - Tracer(i-1,j,k) )
+        ENDDO
        ENDDO
-      ENDDO
+      ELSE
+#endif /* ALLOW_LONGSTEP */
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         df(i,j) = df(i,j)
+     &    -xA(i,j)
+     &     *Kux(i,j,k,bi,bj)
+     &     *_recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
+     &     *( Tracer(i,j,k) - Tracer(i-1,j,k) )
+        ENDDO
+       ENDDO
+#ifdef ALLOW_LONGSTEP
+      ENDIF
+#endif /* ALLOW_LONGSTEP */
 
 #ifdef GM_EXTRA_DIAGONAL
       IF ( GM_ExtraDiag ) THEN
@@ -151,11 +171,23 @@ CADJ STORE dTdz(:,:) =
 CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
 #endif
 C-    Off-diagonal components of horizontal flux
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         df(i,j) = df(i,j) - xA(i,j)*Kuz(i,j,k,bi,bj)*dTdz(i,j)
+#ifdef ALLOW_LONGSTEP
+       IF ( trIdentity .GE. GAD_TR1 ) THEN
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          df(i,j) = df(i,j) - xA(i,j)*LS_Kuz(i,j,k,bi,bj)*dTdz(i,j)
+         ENDDO
         ENDDO
-       ENDDO
+       ELSE
+#endif /* ALLOW_LONGSTEP */
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          df(i,j) = df(i,j) - xA(i,j)*Kuz(i,j,k,bi,bj)*dTdz(i,j)
+         ENDDO
+        ENDDO
+#ifdef ALLOW_LONGSTEP
+       ENDIF
+#endif /* ALLOW_LONGSTEP */
       ENDIF
 #endif /* GM_EXTRA_DIAGONAL */
 
@@ -168,14 +200,29 @@ c      flipSign4LHCoord = -gravitySign
        kp1 = MIN(k+1,Nr)
        maskp1 = 1. _d 0
        IF (k.GE.Nr) maskp1 = 0. _d 0
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         uTrans(i,j) = -gravitySign*dyG(i,j,bi,bj)
-     &      *( GM_PsiX(i,j,kp1,bi,bj)*deepFacF(kp1)*maskp1
-     &       - GM_PsiX(i,j, k ,bi,bj)*deepFacF(k)
-     &       )*maskW(i,j,k,bi,bj)
+#ifdef ALLOW_LONGSTEP
+       IF ( trIdentity .GE. GAD_TR1 ) THEN
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          uTrans(i,j) = -gravitySign*dyG(i,j,bi,bj)
+     &       *( LS_PsiX(i,j,kp1,bi,bj)*deepFacF(kp1)*maskp1
+     &        - LS_PsiX(i,j, k ,bi,bj)*deepFacF(k)
+     &        )*maskW(i,j,k,bi,bj)
+         ENDDO
         ENDDO
-       ENDDO
+       ELSE
+#endif /* ALLOW_LONGSTEP */
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          uTrans(i,j) = -gravitySign*dyG(i,j,bi,bj)
+     &       *( GM_PsiX(i,j,kp1,bi,bj)*deepFacF(kp1)*maskp1
+     &        - GM_PsiX(i,j, k ,bi,bj)*deepFacF(k)
+     &        )*maskW(i,j,k,bi,bj)
+         ENDDO
+        ENDDO
+#ifdef ALLOW_LONGSTEP
+       ENDIF
+#endif /* ALLOW_LONGSTEP */
 #ifdef GM_AUTODIFF_EXCESSIVE_STORE
 CADJ STORE uTrans(:,:) =
 CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
