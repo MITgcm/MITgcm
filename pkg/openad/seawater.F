@@ -30,23 +30,20 @@ C
 C     ==================================================================
 C     SUBROUTINE SW_PTMP
 C     ==================================================================
-
-C     !USES:
-      IMPLICIT NONE
-C     === Global variables ===
-
-C     !INPUT/OUTPUT PARAMETERS:
-C     === Routine arguments ===
 C     S  :: salinity    [         (PSS-78) ]
 C     T  :: temperature [degree C (IPTS-68)]
 C     P  :: pressure    [db]
 C     PR :: Reference pressure  [db]
-C     rv :: return value (potential temeparture in degree C)
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     !INPUT/OUTPUT PARAMETERS:
       _RL S,T,P,PR
       _RL rv
 
 C     !LOCAL VARIABLES
-C     === local variables ===
       _RL del_P ,del_th, th, q
       _RL onehalf, two, three
       PARAMETER ( onehalf = 0.5 _d 0, two = 2. _d 0, three = 3. _d 0 )
@@ -116,9 +113,6 @@ C     PR     :: reference pressure
 C     rv :: return value (in-situ temeparture in degree C)
       _RL  S, T, P, PR
       _RL rv
-
-C     !LOCAL VARIABLES:
-C     === local variables ===
 CEOP
 
       CALL SW_PTMP  (S,T,PR,P,rv)
@@ -138,22 +132,19 @@ C     *=============================================================*
 C     | S/R  SW_ADTG
 C     | o compute adiabatic temperature gradient as per UNESCO 1983 routines.
 C     *=============================================================*
-C     \ev
 C
 C     started:
 C              Armin Koehl akoehl@ucsd.edu
+C     \ev
 
 C     !USES:
       IMPLICIT NONE
-C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     === Routine arguments ===
       _RL S,T,P
       _RL rv
 
 C     !LOCAL VARIABLES:
-C     === local variables ===
       _RL a0,a1,a2,a3,b0,b1,c0,c1,c2,c3,d0,d1,e0,e1,e2
       _RL sref
 CEOP
@@ -227,12 +218,15 @@ C     !LOCAL VARIABLES:
 C     Absolute salinity normalized by a plausible salinity range and its
 C     square root (nondim)
       _RL x2, x
+C
+      _RL     zeRL
+      PARAMETER ( zeRL = 0.0 _d 0 )
 
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
-        x2 = MAX(I_S0 * Sa(i,j), 0.0)
+        x2 = MAX(I_S0 * Sa(i,j), zeRL)
 #ifdef ALLOW_AUTODIFF
-        x = 0. _ d 0
+        x = 0. _d 0
         IF ( x2 .GT. 0. _d 0 ) x = SQRT(x2)
 #else
         x = SQRT(x2)
@@ -265,8 +259,8 @@ C !INTERFACE:
      I         myTime, myIter, myThid )
 
 C     !DESCRIPTION:
-C     Convert input potential temperature (degC) and absolute salinity
-C     (g kg-1) to returned conservative temperature (degC) by inverting
+C     Convert input conservative (degC) and absolute salinity
+C     (g kg-1) to returned potential temperature (degC) by inverting
 C     the polynomial expressions from TEOS-10.
 
 C     !USES:
@@ -311,38 +305,15 @@ C     square root (nondim)
       _RL x2, x
 C     intermediate temperature (degC)
       _RL Tmp
-
-C     The following are coefficients in the nominator (TPNxx) or
-C     denominator (TPDxx) of a simple rational expression that
-C     approximately converts conservative temperature to potential
-C     temperature.
-      _RL TPN00 ! Simple fit numerator constant (degC)
-      _RL TPN10 ! Simple fit numerator Sa coef. (degC ppt-1)
-      _RL TPN20 ! Simple fit numerator Sa**2 coef. (degC ppt-2)
-      _RL TPN01 ! Simple fit numerator Tc coef. (nondim)
-      _RL TPN11 ! Simple fit numerator Sa * Tc coef. (ppt-1)
-      _RL TPN02 ! Simple fit numerator Tc**2 coef. (degC-1)
-      _RL TPD10 ! Simple fit denominator Sa coef. (ppt-1)
-      _RL TPD01 ! Simple fit denominator Tc coef. (degC-1)
-      _RL TPD02 ! Simple fit denominator Tc**2 coef. (degC-2)
-
-      PARAMETER (
-     &     TPN00 = -1.446013646344788e-2,
-     &     TPN10 = -3.305308995852924e-3*Sprac_Sref,
-     &     TPN20 =  1.062415929128982e-4*Sprac_Sref**2,
-     &     TPN01 =  9.477566673794488e-1,
-     &     TPN11 =  2.166591947736613e-3*Sprac_Sref,
-     &     TPN02 =  3.828842955039902e-3,
-     &     TPD10 =  6.506097115635800e-4*Sprac_Sref,
-     &     TPD01 =  3.830289486850898e-3,
-     &     TPD02 =  1.247811760368034e-6
-     &     )
+C
+      _RL     zeRL
+      PARAMETER ( zeRL = 0.0 _d 0 )
 
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
         Tp_num = TPN00 + (Sa(i,j)*(TPN10 + TPN20*Sa(i,j))
      &       + Tc(i,j)*(TPN01 + (TPN11*Sa(i,j) + TPN02*Tc(i,j))))
-        I_Tp_den = 1.0 / (1.0
+        I_Tp_den = 1.0 _d 0 / (1.0 _d 0
      &       + (TPD10*Sa(i,j) + Tc(i,j)*(TPD01 + TPD02*Tc(i,j))))
         Tp(i,j) = Tp_num*I_Tp_den
         dTp_dTc(i,j) = ((TPN01 + (TPN11*Sa(i,j) + 2.*TPN02*Tc(i,j)))
@@ -367,14 +338,14 @@ C     salinities.
 
 C--   Estimate the potential temperature and its derivative from an C
 C     approximate rational function fit.
-        x2 = MAX(I_S0 * Sa(i,j), 0.0)
+        x2 = MAX(I_S0 * Sa(i,j), zeRL)
 #ifdef ALLOW_AUTODIFF
-        x = 0. _ d 0
+        x = 0. _d 0
         IF ( x2 .GT. 0. _d 0 ) x = SQRT(x2)
 #else
         x = SQRT(x2)
 #endif
-        Tmp = 0.5*(Tp(i,j) + Tp_old)
+        Tmp = 0.5 _d 0 *(Tp(i,j) + Tp_old)
         dTc_dTp = (     H01 + Tmp*(2.*H02 + Tmp*(3.*H03 + Tmp*(4.*H04
      &       + Tmp*(5.*H05 + Tmp*(6.*H06 + Tmp*(7.*H07)))))) )
      &       + x2*(     (H21 + Tmp*(2.*H22 + Tmp*(3.*H23 + Tmp*(4.*H24
@@ -382,7 +353,7 @@ C     approximate rational function fit.
      &       +  x*(  (H31 + Tmp*(2.*H32 + Tmp*(3.*H33 + Tmp*(4.*H34))))
      &       + x*(H41 + Tmp*(2.*H42 + Tmp*(3.*H43
      &       + Tmp*(4.*H44 + Tmp*(5.*H45))))) ) )
-        dTp_dTc(i,j) = 1.0 / dTc_dTp
+        dTp_dTc(i,j) = 1. _d 0 / dTc_dTp
 
         Tp(i,j) = Tp_old - Tc_diff(i,j)*dTp_dTc(i,j)
        ENDDO

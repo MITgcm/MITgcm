@@ -28,7 +28,7 @@ C     *=============================================================*
 C     | S/R  SW_PTMP
 C     | o compute potential temperature as per UNESCO 1983 report.
 C     *=============================================================*
-C
+C     \ev
 C     started:
 C              Armin Koehl akoehl@ucsd.edu
 C
@@ -224,12 +224,12 @@ C     Absolute salinity normalized by a plausible salinity range and its
 C     square root (nondim)
       _RL x2, x
 C
-      _RL     zeroRL
-      PARAMETER ( zeroRL = 0.0 _d 0 )
+      _RL     zeRL
+      PARAMETER ( zeRL = 0.0 _d 0 )
 
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
-        x2 = MAX(I_S0 * Sa(i,j), zeroRL)
+        x2 = MAX(I_S0 * Sa(i,j), zeRL)
 #ifdef ALLOW_AUTODIFF
         x = 0. _d 0
         IF ( x2 .GT. 0. _d 0 ) x = SQRT(x2)
@@ -311,8 +311,8 @@ C     square root (nondim)
 C     intermediate temperature (degC)
       _RL Tmp
 C
-      _RL     zeroRL
-      PARAMETER ( zeroRL = 0.0 _d 0 )
+      _RL     zeRL
+      PARAMETER ( zeRL = 0.0 _d 0 )
 
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
@@ -353,7 +353,7 @@ CADJ STORE dTp_dTc = loctape_cp2ct
         Tp(i,j) = Tp_old(i,j) - Tc_diff(i,j)*dTp_dTc(i,j)
 C--   Estimate the potential temperature and its derivative from an C
 C     approximate rational function fit.
-        x2 = MAX(I_S0 * Sa(i,j), zeroRL)
+        x2 = MAX(I_S0 * Sa(i,j), zeRL)
 #ifdef ALLOW_AUTODIFF
         x = 0. _d 0
         IF ( x2 .GT. 0. _d 0 ) x = SQRT(x2)
