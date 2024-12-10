@@ -1,6 +1,37 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint69c (2024/12/06)
+o pkg/mom_common,fluxform,vecinv:
+  - remove ISOTROPIC_COS_SCALING code from pkg/mom_vecinv/mom_vi_hdissip.F (was
+    not right); add warning (or stop if side-drag) if used with pkg/mom_vecinv.
+  - move 2 Cos-Scaling CPP options from CPP_OPTIONS.h to MOM_COMMON_OPTIONS.h
+    to be used in horizontal viscosity formulation; more consistent use of
+    GAD_OPTIONS.h where these 2 CPP options are used for horizontal diffusion.
+  - update all verification exp. customized version of CPP_OPTIONS.h,
+    GAD_OPTIONS.h and MOM_COMMON_OPTIONS.h.
+o verification/atm_gray:
+  - gray atmosphere test exp moved from "verification_other".
+o model/src:
+  - add few missing option header files (RBCS, SALT_PLUME, SHELFICE) in few
+    src files ; also illustrate how to catch these (see SALT_PLUME.h and
+    shelfice_ad_check_lev{1,2,3,4}_dir.h).
+o eesupp + model:
+  - remove FAST_BYTESWAP code and option
+  - remove empty file AUTODIFF_MYFIELDS.h
+o pkg/ctrl:
+  - add a STOP when ALLOW_CTRL_OBCSN/S/W/E is defined but corresponding
+    ALLOW_OBCS_NORTH/SOUTH/EAST/WEST is undef ; and fix the code so that, in
+    that case, it will compile and reach the stop before running 1rst time-step
+o model,pkg:
+  - minor spell checking and formatting updates.
+o pkg/bling:
+  - size-dependent phytoplankton growth code cleaned up and related parameters
+    can now be specified in data.bling;
+  - clean up OPTIONS in pkg/bling code ( SIZE_NUT_LIM merged with SIZE_DEP_LIM,
+    MULT_NUT_LIM merged with MIN_NUT_LIM ) and switch USE_QSW to #undef ; this
+    fixes FWD exp. global_oce_biogeo_bling which a) use default BLING_OPTIONS.h
+    and b) since no short-wave is provided, light was zero with USE_QSW defined.
 o pkg/profiles:
   - add option to write model-equivalent profiles in a netcdf file, thus
     removing the need for post-processing tiled output files.

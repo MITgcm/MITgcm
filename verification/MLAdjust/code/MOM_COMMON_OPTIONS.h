@@ -9,6 +9,18 @@ C Use this file for selecting CPP options within the mom_common package
 #ifdef ALLOW_MOM_COMMON
 C     Package-specific options go here
 
+C This flag selects the form of COSINE(lat) scaling of horizontal
+C bi-harmonic viscosity -- only on lat-lon grid.
+C Setting this flag here only affects momentum viscosity; to use it
+C in the tracer equations it needs to be set in GAD_OPTIONS.h
+#undef COSINEMETH_III
+
+C This selects isotropic scaling of horizontal harmonic and bi-harmonic
+C viscosity when using the COSINE(lat) scaling -- only on lat-lon grid.
+C Setting this flag here only affects momentum viscosity; to use it
+C in the tracer equations it needs to be set in GAD_OPTIONS.h
+#define ISOTROPIC_COS_SCALING
+
 C allow LeithQG coefficient to be calculated
 #define ALLOW_LEITH_QG
 
