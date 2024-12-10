@@ -173,6 +173,7 @@ C-  when using a normalisation of RHS, tolerance has no unit => no conversion
       ELSE
 C-  convert Target-Residual (in W unit) to cg3d-solver residual unit [m^2/s^2]
         cg3dTolerance = cg3dNorm * cg3dTargetResWunit
+     &                           * implicDiv2DFlow
      &                           * globalArea / deltaTMom
       ENDIF
       cg3dTolerance_sq = cg3dTolerance*cg3dTolerance
