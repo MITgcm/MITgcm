@@ -152,7 +152,7 @@ C     == local variables ==
 #if ( defined ALLOW_DOWNWARD_RADIATION ) || \
       ( defined ALLOW_ATM_TEMP && defined ALLOW_BULKFORMULAE )
       INTEGER kl
-      _RL SSTtmp
+      _RL deltaSST
 C     exf_Tsf :: local copy of global field surfLevTemp or extrapolated
 C                surface temperature (in deg Celsius)
       _RL exf_Tsf        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -160,6 +160,8 @@ C                surface temperature (in deg Celsius)
 C     == end of interface ==
 CEOP
 
+      ks = 1
+      IF ( usingPCoords ) ks = Nr
 #if ( defined ALLOW_DOWNWARD_RADIATION ) || \
       ( defined ALLOW_ATM_TEMP && defined ALLOW_BULKFORMULAE )
 C     Compute the surface temperature either as copy of the global
@@ -172,11 +174,11 @@ C     (W-point).
         IF ( Nr.GE.2 .AND. sstExtrapol.GT.0. _d 0 ) THEN
          DO j = 1-Oly,sNy+Oly
           DO i = 1-Olx,sNx+Olx
-           SSTtmp = sstExtrapol
-     &          *( surfLevTemp(i,j,bi,bj)-theta(i,j,kl,bi,bj) )
+           deltaSST = sstExtrapol
+     &          *( theta(i,j,ks,bi,bj)-theta(i,j,kl,bi,bj) )
      &          *  maskC(i,j,kl,bi,bj)
            exf_Tsf(i,j,bi,bj) = surfLevTemp(i,j,bi,bj) + cen2kel
-     &          + MAX( SSTtmp, 0. _d 0 )
+     &          + MAX( deltaSST, 0. _d 0 )
           ENDDO
          ENDDO
         ELSE
@@ -305,8 +307,6 @@ C             fresh-water flux from Precipitation and Evaporation.
 #endif /* ALLOW_ATM_TEMP */
 
 C     Apply runoff, masks and exchanges
-        ks = 1
-        IF ( usingPCoords ) ks = Nr
         DO j = 1,sNy
          DO i = 1,sNx
 #ifdef ALLOW_RUNOFF
