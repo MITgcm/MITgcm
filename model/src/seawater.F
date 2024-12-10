@@ -48,8 +48,8 @@ C     !INPUT/OUTPUT PARAMETERS:
       _RL S,T,P,PR
 
 C     !FUNCTIONS:
-      _RL sw_adtg
-      EXTERNAL sw_adtg
+      _RL SW_ADTG
+      EXTERNAL SW_ADTG
 
 C     !LOCAL VARIABLES
       _RL del_P ,del_th, th, q
@@ -59,22 +59,22 @@ CEOP
 
 C theta1
       del_P  = PR - P
-      del_th = del_P*sw_adtg(S,T,P)
+      del_th = del_P*SW_ADTG(S,T,P)
       th     = T + onehalf*del_th
       q      = del_th
 C theta2
-      del_th = del_P*sw_adtg(S,th,P+onehalf*del_P)
+      del_th = del_P*SW_ADTG(S,th,P+onehalf*del_P)
 
       th     = th + (1 - 1/sqrt(two))*(del_th - q)
       q      = (two-sqrt(two))*del_th + (-two+three/sqrt(two))*q
 
 C theta3
-      del_th = del_P*sw_adtg(S,th,P+onehalf*del_P)
+      del_th = del_P*SW_ADTG(S,th,P+onehalf*del_P)
       th     = th + (1 + 1/sqrt(two))*(del_th - q)
       q      = (two + sqrt(two))*del_th + (-two-three/sqrt(two))*q
 
 C theta4
-      del_th = del_P*sw_adtg(S,th,P+del_P)
+      del_th = del_P*SW_ADTG(S,th,P+del_P)
       SW_PTMP     = th + (del_th - two*q)/(two*three)
 
       RETURN
@@ -118,10 +118,10 @@ C     PR     :: reference pressure
 CEOP
 
 C     !FUNCTIONS:
-      _RL sw_ptmp
-      EXTERNAL sw_ptmp
+      _RL SW_PTMP
+      EXTERNAL SW_PTMP
 
-      SW_temp = SW_PTMP (S,T,PR,P)
+      SW_TEMP = SW_PTMP (S,T,PR,P)
 
       RETURN
       END

@@ -32,8 +32,8 @@ C     SUBROUTINE SW_PTMP
 C     ==================================================================
 C     S  :: salinity    [         (PSS-78) ]
 C     T  :: temperature [degree C (IPTS-68)]
-C     P  :: pressure    [db]
-C     PR :: Reference pressure  [db]
+C     P  :: pressure    [dbar]
+C     PR :: Reference pressure  [dbar]
 C     \ev
 
 C     !USES:
@@ -52,25 +52,25 @@ CEOP
 
 C theta1
       del_P  = PR - P
-      call sw_adtg(S,T,P, adtg_val)
+      CALL SW_ADTG(S,T,P, adtg_val)
       del_th = del_P*adtg_val
       th     = T + onehalf*del_th
       q      = del_th
 C theta2
-      call sw_adtg(S,th,P+onehalf*del_P, adtg_val)
+      CALL SW_ADTG(S,th,P+onehalf*del_P, adtg_val)
       del_th = del_P*adtg_val
 
       th     = th + (1 - 1/sqrt(two))*(del_th - q)
       q      = (two-sqrt(two))*del_th + (-two+three/sqrt(two))*q
 
 C theta3
-      call sw_adtg(S,th,P+onehalf*del_P, adtg_val)
+      CALL SW_ADTG(S,th,P+onehalf*del_P, adtg_val)
       del_th = del_P*adtg_val
       th     = th + (1 + 1/sqrt(two))*(del_th - q)
       q      = (two + sqrt(two))*del_th + (-two-three/sqrt(two))*q
 
 C theta4
-      call sw_adtg(S,th,P+del_P, adtg_val)
+      CALL SW_ADTG(S,th,P+del_P, adtg_val)
       del_th = del_P*adtg_val
       rv     = th + (del_th - two*q)/(two*three)
       RETURN
