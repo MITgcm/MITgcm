@@ -1,7 +1,7 @@
 Labrador Sea Region with Sea-Ice
 =========================================
 
-### Overview:
+### Primary test Overview:
 This example sets up a small (20x16x23) Labrador Sea experiment
 coupled to a dynamic thermodynamic sea-ice model (MITgcm Documentation 8.6.2).
 
@@ -28,7 +28,7 @@ Surface salinity relaxation is to the monthly mean Levitus climatology
 ```
 
 Forcing files are a 1979-1999 monthly climatology computed from the
-NCEP reanalysis (see [SEAICE_PARAMS.h](https://github.com/MITgcm/MITgcm/blob/master/pkg/seaice/SEAICE_PARAMS.h) for units and signs)
+NCEP reanalysis (see [`SEAICE_PARAMS.h`](https://github.com/MITgcm/MITgcm/blob/master/pkg/seaice/SEAICE_PARAMS.h) for units and signs)
 
 ```
   uwindFile      = 'u10m.labsea1979'  # 10-m zonal wind
@@ -41,14 +41,14 @@ NCEP reanalysis (see [SEAICE_PARAMS.h](https://github.com/MITgcm/MITgcm/blob/mas
 ```
 
 The experiment uses `pkg/gmredi`, `pkg/kpp`, `pkg/seaice`, and `pkg/exf`.
-The test is a 1-cpu, 10-hour integration.   Both the atmospheric
+The test is a 1-cpu, 10-hour integration. Both the atmospheric
 state and the open-water surface fluxes are provided by `pkg/exf`.
 
 More `pkg/seaice` test experiments, configured for low and
 high-resolution global cube-sphere domains are described
 in `MITgcm_contrib/high_res_cube/README_ice`.
 
-## Lab Sea adjoint
+### Lab Sea adjoint
 The `code_ad` directory provides files required to compile the adjoint
 version of this verification experiment.  This verification
 experiment uses the 'divided adjoint'.
@@ -87,17 +87,16 @@ Navigate to experiment directory
 
 ### 1-CPU forward experiment
 Configure and compile the code:
-
 ```
   cd build
   ../../../tools/genmake2 -mods ../code [-of my_platform_optionFile]
+ [make Clean]
   make depend
   make
   cd ..
 ```
 
 To run:
-
 ```
   cd run
   ln -s ../input/* .
@@ -107,14 +106,12 @@ To run:
 ```
 
 There is comparison output in the directory:
-
 ```
   results/output.txt
 ```
 
 Use matlab script `lookat_ice.m` to compare the output
  with that from `checkpoint51f` sea-ice code:
-
 ```
   cd ../../../verification/lab_sea/matlab
   matlab
@@ -123,18 +120,17 @@ Use matlab script `lookat_ice.m` to compare the output
 
 ### 2-CPU forward experiment
 Configure and compile the code:
-
 ```
   cd build
   ../../../tools/genmake2 -mpi -mods ../code [-of my_platform_optionFile]
   ln -s ../code/SIZE.h_mpi SIZE.h
+ [make Clean]
   make depend
   make
   cd ..
 ```
 
 To run:
-
 ```
   cd run
   ln -s ../input/* .
@@ -144,7 +140,6 @@ To run:
 
 ### 1-CPU adjoint experiment
 Configure and compile the code:
-
 ```
   cd build
   ../../../tools/genmake2 -mods ../code_ad [-of my_platform_optionFile]
@@ -153,30 +148,45 @@ Configure and compile the code:
 ```
 
 To run:
-
 ```
   cd run
   ln -s ../input_ad/* .
-  ln -s ../input/* .
-  ln -s ../../isomip/input_ad/ones_64b.bin .
+  ../input_ad/prepare_run
   ln -s ../build/mitgcmuv_ad .
   ./do_run.sh
   cd ..
 ```
 
-**Note:** the overly simple shell script "do_run.sh" just executes four times
+**Note:** `prepare_run` shell script is also used when running `testreport` (see below)
+and could be replaced by these 2 commands:
+```
+  ln -s ../input/* .
+  ln -s ../../isomip/input_ad/ones_64b.bin .
+```
+And the overly simple shell script "do_run.sh" just executes four times
 (as specified in file "run_ADM_DIVA", `add_DIVA_runs = 4`) `mitgcmuv_ad`, saving
 output in intermediate files "output_adm.txt.diva_0,1,2,3", plus a final time:
 ```
   mitgcmuv_ad > output_adm.txt
 ```
 where output file `output_adm.txt` can be compared with reference output:
-
 ```
   results/output_adm.txt
 ```
 
-## Test sea-ice code
+## Secondary tests
+In addition to the primary tests described above, 5 secondary forward tests and
+and 2 secondary adjoint tests can be run using the same executable as the corresponding
+primary tests but with specific input parameter files (in `input.$st\` and `input_ad.$st\`).
+The secondary forward tests include alternative seaice model formulations:
+free-drift in `input.fd/`; using EVP and `useHB87stressCoupling` in `input.hb87/` ;
+with `pkg/salt_plume` in `input.salt_plume/`;
+and two other ice-free "North-Altlantic box" set-up (formerly in `verification/natl_box/`)
+in `input.natl_box\` and with `pkg/longstep` in `input.longstep/`.
+The secondary adjoint tests are simpler version of the primary adjoint test,
+without seaice in `input_ad.noseaice/` and without seaice dynamics in `input_ad.noseaicedyn/`.
+
+### Instruction to run secondary tests
 Run the testscript _forward_ experiments:
 
 ```
@@ -192,10 +202,12 @@ e p a R  g  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e 
 n n k u  2  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d
 2 d e n  d  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  .
 
-Y Y Y Y>11<16 16 16 16 13 16 16 16 13 16 13 13 16 13 12 13 22 16 16 16 22 16 16 16 pass  lab_sea
-Y Y Y Y>11<16 16 16 16 13 16 16 16 13 12 13 13 12 13 12 14 22 16 16 16 22 16 16 16 pass  lab_sea.fd
-Y Y Y Y> 4< 9 10  9  8 16 13 11  8  6  8  4  5  8  8  4  5 22  6  7  7 22  5  7  6 FAIL  lab_sea.hb87
-Y Y Y Y>11<16 16 16 16 16 16 16 16 16 13 12 14 16 16 13 14 22 16 16 16 22 16 16 16 pass  lab_sea.salt_plume
+Y Y Y Y>11<13 16 16 16 16 16 16 14 13 13 13 16 16 16 12 14 22 16 16 16 22 16 16 16 pass  lab_sea
+Y Y Y Y>12<16 16 16 16 16 16 16 16 16 13 13 16 14 16 13 16 22 16 16 16 22 16 16 16 pass  lab_sea.fd
+Y Y Y Y> 4< 9 10  9  9 16 13 11  8  6  8  4  5  7  8  4  6 22  7  7  7 22  6  7  7 FAIL  lab_sea.hb87
+Y Y Y Y 11 16 16 16 14 16 16 16 16 16 13 12 14 16 13 12 14 16 16 16>16<pass  lab_sea.longstep
+Y Y Y Y>11<16 16 16 16 16 16 16 16 13 12 12 14 14 13 12 14 pass  lab_sea.natl_box
+Y Y Y Y>13<16 16 16 16 16 16 16 14 16 14 13 14 16 14 13 16 22 16 16 16 22 16 16 16  pass  lab_sea.salt_plume
 ```
 
 **Note:** Some differences in accuracy occur across different platforms as seen
@@ -210,7 +222,7 @@ Run the testscript _adjoint_ experiments:
 
 Standard adjoint testreport output, with all secondary tests:
 ```
-Adjoint generated by TAF
+Adjoint generated by TAF Version 6.5.1
 
 default    10     ----T-----  ----S-----  ----U-----  ----V-----
 G D M    C  A  F        m  s        m  s        m  s        m  s
