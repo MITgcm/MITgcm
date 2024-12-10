@@ -111,6 +111,12 @@ C     EfluxP - p-component of Eliassen-Palm flux vector
       _RS  pLoad    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  sIceLoad (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
+C     surfLevTemp :: in-situ temperature of the top most wet level
+C                    generally this is the surface, but it can be the
+C                    temperature in the first level under an ice shelf.
+      COMMON /FFIELDS_SURFLEVTEMP/ surfLevTemp
+      _RL  surfLevTemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
 #ifdef ALLOW_ADDFLUID
       COMMON /FFIELDS_ADD_FLUID/ addMass
       _RL addMass(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
