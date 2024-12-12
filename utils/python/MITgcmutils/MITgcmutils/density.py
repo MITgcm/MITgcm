@@ -600,7 +600,7 @@ def mdjwf(salt,theta,p,epsln=0):
     """
 
     # make sure arguments are floating point
-    s = np.asarray(s, dtype=np.float64)
+    s = np.asarray(salt, dtype=np.float64)
     t = np.asarray(theta, dtype=np.float64)
     p = np.asarray(p, dtype=np.float64)
 
@@ -667,7 +667,7 @@ def mdjwf(salt,theta,p,epsln=0):
     )
 
     denom = 1.0/(epsln+den)
-    rho = rhoNum*denom
+    rho = num*denom
 
     return rho
 
