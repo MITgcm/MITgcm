@@ -38,7 +38,8 @@ def _check_salinity(s):
 
     sneg = s<0
     if not np.any(sneg):
-        warnings.warn('found negative salinity values, reset them to nan')
+        warnings.warn('found negative salinity values')
+        # warnings.warn('found negative salinity values, reset them to nan')
         # s[sneg] = np.nan
 
     return s
