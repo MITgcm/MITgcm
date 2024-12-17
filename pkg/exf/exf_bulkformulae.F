@@ -159,7 +159,7 @@ C     input:
 C     myTime  :: Current time in simulation
 C     myIter  :: Current iteration number in simulation
 C     myThid  :: My Thread Id number
-C     exf_Tsf :: local copy of global field surfLevTemp or extrapolated
+C     exf_Tsf :: local copy of global field gcmSST or extrapolated
 C                surface temperature (in deg Celsius)
       _RL     myTime
       INTEGER myIter

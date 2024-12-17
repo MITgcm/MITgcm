@@ -153,7 +153,7 @@ C     == local variables ==
       ( defined ALLOW_ATM_TEMP && defined ALLOW_BULKFORMULAE )
       INTEGER kl
       _RL deltaSST
-C     exf_Tsf :: local copy of global field surfLevTemp or extrapolated
+C     exf_Tsf :: local copy of global field gcmSST or extrapolated
 C                surface temperature (in deg Celsius)
       _RL exf_Tsf        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
@@ -165,26 +165,26 @@ CEOP
 #if ( defined ALLOW_DOWNWARD_RADIATION ) || \
       ( defined ALLOW_ATM_TEMP && defined ALLOW_BULKFORMULAE )
 C     Compute the surface temperature either as copy of the global
-C     variable surfLevTemp or by extrapolation to the actual surface
+C     variable gcmSST or by extrapolation to the actual surface
 C     (W-point).
       kl = 2
       IF ( usingPCoords ) kl = Nr-1
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
         IF ( Nr.GE.2 .AND. sstExtrapol.GT.0. _d 0 ) THEN
-         DO j = 1-Oly,sNy+Oly
-          DO i = 1-Olx,sNx+Olx
+         DO j = 1-OLy,sNy+OLy
+          DO i = 1-OLx,sNx+OLx
            deltaSST = sstExtrapol
      &          *( theta(i,j,ks,bi,bj)-theta(i,j,kl,bi,bj) )
      &          *  maskC(i,j,kl,bi,bj)
-           exf_Tsf(i,j,bi,bj) = surfLevTemp(i,j,bi,bj) + cen2kel
+           exf_Tsf(i,j,bi,bj) = gcmSST(i,j,bi,bj) + cen2kel
      &          + MAX( deltaSST, 0. _d 0 )
           ENDDO
          ENDDO
         ELSE
-         DO j = 1-Oly,sNy+Oly
-          DO i = 1-Olx,sNx+Olx
-           exf_Tsf(i,j,bi,bj) = surfLevTemp(i,j,bi,bj) + cen2kel
+         DO j = 1-OLy,sNy+OLy
+          DO i = 1-OLx,sNx+OLx
+           exf_Tsf(i,j,bi,bj) = gcmSST(i,j,bi,bj) + cen2kel
           ENDDO
          ENDDO
         ENDIF

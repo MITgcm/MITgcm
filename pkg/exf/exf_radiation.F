@@ -30,7 +30,7 @@ C !INPUT PARAMETERS:
 C myTime  :: Current time in simulation
 C myIter  :: Current iteration number in simulation
 C myThid  :: My Thread Id number
-C exf_Tsf :: local copy of global field surfLevTemp or extrapolated
+C exf_Tsf :: local copy of global field gcmSST or extrapolated
 C            surface temperature (in deg Celsius)
       _RL     myTime
       INTEGER myIter
@@ -94,7 +94,7 @@ c        DO j = 1,sNy
 c         DO i = 1,sNx
 c          lwdown(i,j,bi,bj) =
 c    &          ocean_emissivity*stefanBoltzmann*
-c    &          ((surfLevTemp(i,j,bi,bj)+cen2kel)**4)
+c    &          ((gcmSST(i,j,bi,bj)+cen2kel)**4)
 c    &          - lwflux(i,j,bi,bj)
 c         ENDDO
 c        ENDDO
