@@ -37,7 +37,7 @@ eosJMDCSw = [   8.244930e-01,
 def _check_salinity(s):
 
     sneg = s<0
-    if not np.any(sneg):
+    if np.any(sneg):
         warnings.warn('found negative salinity values')
         # warnings.warn('found negative salinity values, reset them to nan')
         # s[sneg] = np.nan
