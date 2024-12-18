@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o testreport:
+ - improve way of sending results tar file with "scp", now allowing to combine
+   "ssh" then "scp".
+
 checkpoint69c (2024/12/06)
 o pkg/mom_common,fluxform,vecinv:
   - remove ISOTROPIC_COS_SCALING code from pkg/mom_vecinv/mom_vi_hdissip.F (was
