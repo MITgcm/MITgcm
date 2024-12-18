@@ -415,7 +415,7 @@ typical output might be as follows:
 
   ===  Processing options files and arguments  ===
     getting local config information:  none found
-  Warning: MITgcm Root-Dir was not specified ; try using a local copy of MITgcm found at "../../.."
+  Warning: MITgcm root directory was not specified ; try using a local copy of MITgcm found at "../../.."
     getting OPTFILE information:
       using OPTFILE="../../../tools/build_options/linux_amd64_gfortran"
     getting AD_OPTFILE information:
@@ -480,12 +480,12 @@ typical output might be as follows:
 
 In the above, notice:
 
-- we did not specify MITgcm Root-Dir,
+- we did not specify MITgcm root directory,
   i.e., a path to your MITgcm repository,
   but here we are building code from within the repository (specifically,
   in one of the verification subdirectory experiments). As such,
   :filelink:`genmake2 <tools/genmake2>` was smart enough to
-  locate all necessary files on its own. To specify a remote MITgcm Root-Dir,
+  locate all necessary files on its own. To specify a remote MITgcm root directory,
   see :ref:`here <build_elsewhere>`.
 - we specified the :ref:`optfile <genmake2_optfiles>`
   :filelink:`linux_amd64_gfortran <tools/build_options/linux_amd64_gfortran>`
@@ -578,7 +578,7 @@ The most important command-line options are:
 .. _build_elsewhere:
 
 ``-rootdir «/PATH/TO/MITGCMDIR»``
-    specify the location of the MITgcm repository top directory (Root-Dir).
+    specify the location of the MITgcm repository top directory (MITgcm root directory).
     By default, :filelink:`genmake2 <tools/genmake2>` will try to find this
     location by looking in parent directories from where
     :filelink:`genmake2 <tools/genmake2>` is executed

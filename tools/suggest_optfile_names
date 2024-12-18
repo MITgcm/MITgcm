@@ -9,8 +9,8 @@ usage()
   echo "where possible OPTIONS are:"
   echo "  (-help|-h)		just print this and return"
   echo "  (-keep|-k)		keep log-file and temp-script file"
-  echo "  (-rootdir NAME | -rd NAME ) Specify the location of"
-  echo "                        the MITgcm Root-Dir as 'NAME'."
+  echo "  (-rootdir NAME | -rd NAME ) Specify the location of the"
+  echo "                        MITgcm root directory as 'NAME'."
   echo "                 By default, will try to find the location by"
   echo "                 looking in parent directories (up to the 5th parent)."
   exit 1
@@ -23,7 +23,7 @@ AWK=awk
 rm -f $LOC_SH_FIND $LOGFILE
 keep=0;
 
-#-- Set MITgcm Root-Dir (ROOTDIR) from Env.Var. "MITGCM_ROOTDIR":
+#-- Set MITgcm root directory (ROOTDIR) from environment variable "MITGCM_ROOTDIR":
 if test "x$MITGCM_ROOTDIR" = x ; then
   if test "x$ROOTDIR" != x ; then
     echo "WARNING: Environment Variable 'ROOTDIR' no longer recognized"
@@ -53,7 +53,7 @@ for xx in "$@" ; do
    esac
 done
 
-#-- Find the MITgcm Root-Dir (${ROOTDIR})
+#-- Find the MITgcm root directory (${ROOTDIR})
 if test "x${ROOTDIR}" = x ; then
     tmp=`echo $PWD | sed -e 's/\// /g' | $AWK '{print $NR}'`
     if test "x$tmp" = "xbin" -a -d ../model -a -d ../eesupp -a -d ../pkg ; then
@@ -62,7 +62,7 @@ if test "x${ROOTDIR}" = x ; then
         for d in . .. ../.. ../../.. ../../../.. ../../../../.. ; do
             if [ -d "$d/model" -a -d "$d/eesupp" -a -d "$d/pkg" ]; then
                 ROOTDIR=$d
-                printf "Warning: MITgcm Root-Dir was not specified ;"
+                printf "Warning: MITgcm root directory was not specified ;"
                 echo " try using a local copy of MITgcm found at \"$ROOTDIR\""
                 break
             fi
@@ -70,13 +70,13 @@ if test "x${ROOTDIR}" = x ; then
     fi
 fi
 if test "x${ROOTDIR}" = x ; then
-    echo "Error: Cannot determine MITgcm Root-Dir for MITgcm code."
-    echo "  Please specify a Root-Dir using either the command line"
-    echo "   option '-rootdir' or the Env.Var. 'MITGCM_ROOTDIR'."
+    echo "Error: Cannot determine MITgcm root directory for MITgcm code."
+    echo "  Please specify a root directory using either the command line"
+    echo "   option '-rootdir' or the environment variable 'MITGCM_ROOTDIR'."
     exit 1
 fi
 if test ! -d ${ROOTDIR} ; then
-    echo "Error: the specified MITgcm Root-Dir (\"$ROOTDIR\") does not exist!"
+    echo "Error: the specified MITgcm root directory (\"$ROOTDIR\") does not exist!"
     exit 1
 fi
 
