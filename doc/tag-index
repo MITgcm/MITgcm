@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o utils/python:
+  - make MITgcmutils compatible with numpy 2.0.0 again.
 o testreport:
  - improve way of sending results tar file with "scp", now allowing to combine
    "ssh" then "scp".
