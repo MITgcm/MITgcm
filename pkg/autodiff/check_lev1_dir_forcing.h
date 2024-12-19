@@ -10,6 +10,7 @@ C     cases where these stores may become necessary, we just add them
 C     here for all forcing fields under the sun. TAF will pick the
 C     correct directives as they become necessary.
 C
+CADJ STORE gcmSST     = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE sst        = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE sss        = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE qnet       = comlev1, key = ikey_dynamics, kind = isbyte
