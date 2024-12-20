@@ -1,6 +1,13 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o utils/python:
+  - make MITgcmutils compatible with numpy 2.0.0 again.
+o testreport:
+ - improve way of sending results tar file with "scp", now allowing to combine
+   "ssh" then "scp".
+
+checkpoint69c (2024/12/06)
 o pkg/mom_common,fluxform,vecinv:
   - remove ISOTROPIC_COS_SCALING code from pkg/mom_vecinv/mom_vi_hdissip.F (was
     not right); add warning (or stop if side-drag) if used with pkg/mom_vecinv.
