@@ -142,7 +142,7 @@ C--   conservative temperature to in-situ surface temperature
       ELSE
        ks = 1
       ENDIF
-      IF ( eosType .EQ. 'TEOS10' ) THEN
+      IF ( fluidIsWater .AND. eosType .EQ. 'TEOS10' ) THEN
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           CALL CONVERT_CT2PT(
@@ -158,7 +158,11 @@ C     apply mask (because theta=0 will lead to gcmSST<0)
           ENDDO
          ENDDO
         ENDDO
+#ifdef ALLOW_AUTODIFF
       ELSE
+#else
+      ELSEIF ( fluidIsWater ) THEN
+#endif
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
@@ -239,6 +243,13 @@ C-     Update AIM bottom boundary data
         CALL AIM_FIELDS_LOAD( myTime, myIter, myThid )
       ENDIF
 #endif
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( fluidIsWater .AND. useDiagnostics ) THEN
+        CALL DIAGNOSTICS_FILL( gcmSST, 'GCM_SST ',
+     &                               0, 1, 0, 1, 1, myThid )
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_LEAVE( 'LOAD_FIELDS_DRIVER', myThid )
