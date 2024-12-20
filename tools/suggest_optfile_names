@@ -84,12 +84,11 @@ fi
 #-- start to build script LOC_SH_FIND
 #   by taking function "find_possible_optfile" from script "genmake2":
 
-#head -n 1 $ROOTDIR/tools/genmake2 > $LOC_SH_FIND
-sed -n '1 p' $ROOTDIR/tools/genmake2 >> $LOC_SH_FIND
+sed -n '1 p' $ROOTDIR/tools/genmake2 > $LOC_SH_FIND
 echo '' >> $LOC_SH_FIND
-#-- will improve this by using 1 or 2 special lines (to be added to genmake2)
-sed -n '/^find_possible_optfile()/,/#  Just try to use FC, report/ p' \
-          $ROOTDIR/tools/genmake2 >> $LOC_SH_FIND
+sed -n \
+'/^find_possible_optfile()/,/^#---- keep this line unchanged after the end of find_possible_optfile/ p' \
+       $ROOTDIR/tools/genmake2 >> $LOC_SH_FIND
 echo '' >> $LOC_SH_FIND
 
 cat >> $LOC_SH_FIND <<EOF
