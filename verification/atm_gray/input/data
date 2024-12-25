@@ -63,7 +63,10 @@
 #endTime=311040000.,
  deltaT=384.,
  abEps=0.1,
- forcing_In_AB=.FALSE.,
+#forcing_In_AB=.FALSE.,
+#- uncommenting the line above would replace the 2 setting below
+ momForcingOutAB =1,
+ tracForcingOutAB=1,
  cAdjFreq=0.,
 #- long run (> 1.yr):
  chkptFreq =15552000.,
