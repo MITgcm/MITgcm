@@ -13,21 +13,22 @@ c     ==================================================================
 c     SUBROUTINE profiles_readparms
 c     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
 c     == global variables ==
-
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#include "GRID.h"
 #include "PARAMS.h"
-
+c#include "GRID.h"
 #include "PROFILES_SIZE.h"
 #include "profiles.h"
 
 c     == routine arguments ==
-
       integer myThid
+
+C     !FUNCTIONS
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 
 c     == local variables ==
 C     msgBuf      - Informational/error message buffer
@@ -35,16 +36,11 @@ C     iUnit       - Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit, num_file, num_var, IL
       LOGICAL exst, specifiedNames
-      character*(128) fname
-
-C     !FUNCTIONS
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
+      CHARACTER*(128) fname
 c     == end of interface ==
 
 c--   Read the namelist input.
-      namelist /profiles_nml/
+      NAMELIST /profiles_nml/
      &                   profilesDir,
      &                   profilesfiles,
      &                   mult_profiles,
@@ -61,7 +57,8 @@ C number of independent samples
 #endif
      &                   prof_itracer,
      &                   profilesDoNcOutput,
-     &                   profilesDoGenGrid
+     &                   profilesDoGenGrid,
+     &                   prof_make_nc
 
       IF ( .NOT.usePROFILES ) THEN
 C-    pkg PROFILES is not used
@@ -77,8 +74,6 @@ C     print a (weak) warning if data.profiles is found
 
 c--     Set default values.
       profilesDir=' '
-
-
 
       do num_file=1,NFILESPROFMAX
           profilesfiles(num_file)      =    ' '
@@ -104,6 +99,7 @@ c--     Set default values.
       enddo
 
       profilesDoNcOutput=.false.
+      prof_make_nc=.false.
 
       IF ( (.NOT.usingSphericalPolarGrid .OR. rotateGrid) ) THEN
         profilesDoGenGrid=.true.
@@ -145,8 +141,57 @@ c--     Next, read the cost data file.
           if (.NOT.specifiedNames) then
             prof_names(num_file,1)='prof_T'
             prof_names(num_file,2)='prof_S'
+#ifdef ALLOW_BLING
+            prof_names(num_file,3)='prof_U'
+            prof_names(num_file,4)='prof_V'
+            prof_names(num_file,5)='prof_ptr'
+            prof_names(num_file,6)='prof_ssh'
+            prof_names(num_file,7)='prof_DIC'
+            prof_names(num_file,8)='prof_ALK'
+            prof_names(num_file,9)='prof_O2'
+            prof_names(num_file,10)='prof_NO3'
+            prof_names(num_file,11)='prof_PO4'
+            prof_names(num_file,12)='prof_FE'
+            prof_names(num_file,13)='prof_PCO'
+            prof_names(num_file,14)='prof_PH'
+            prof_names(num_file,15)='prof_CHL'
+            prof_names(num_file,16)='prof_POC'
+
+            prof_itracer(num_file,1)=1
+            prof_itracer(num_file,2)=1
+            prof_itracer(num_file,3)=1
+            prof_itracer(num_file,4)=1
+            prof_itracer(num_file,5)=1
+            prof_itracer(num_file,6)=1
+            prof_itracer(num_file,7)=1
+            prof_itracer(num_file,8)=2
+            prof_itracer(num_file,9)=3
+            prof_itracer(num_file,10)=4
+            prof_itracer(num_file,11)=5
+            prof_itracer(num_file,12)=6
+            prof_itracer(num_file,13)=1
+            prof_itracer(num_file,14)=1
+            prof_itracer(num_file,15)=1
+            prof_itracer(num_file,16)=1
+#endif /* ALLOW_BLING */
             prof_namesmod(num_file,1)='theta'
             prof_namesmod(num_file,2)='salt'
+#ifdef ALLOW_BLING
+            prof_namesmod(num_file,3)='uVel'
+            prof_namesmod(num_file,4)='vVel'
+            prof_namesmod(num_file,5)='pTracer'
+            prof_namesmod(num_file,6)='etaN'
+            prof_namesmod(num_file,7)='pTracer'
+            prof_namesmod(num_file,8)='pTracer'
+            prof_namesmod(num_file,9)='pTracer'
+            prof_namesmod(num_file,10)='pTracer'
+            prof_namesmod(num_file,11)='pTracer'
+            prof_namesmod(num_file,12)='pTracer'
+            prof_namesmod(num_file,13)='PCO'
+            prof_namesmod(num_file,14)='PH'
+            prof_namesmod(num_file,15)='CHL'
+            prof_namesmod(num_file,16)='POC'
+#endif /* ALLOW_BLING */
 #ifdef ALLOW_PROFILES_CLIMMASK
             prof_namesclim(num_file,1)='prof_Tclim'
             prof_namesclim(num_file,2)='prof_Sclim'
