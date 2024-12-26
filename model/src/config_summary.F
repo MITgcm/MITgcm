@@ -360,6 +360,12 @@ C-----
       CALL WRITE_0D_RL( implicDiv2DFlow, INDEX_NONE,
      & 'implicDiv2DFlow =',
      & '  /* Barot. Flow Div. implicit factor (0-1) */')
+c     CALL WRITE_0D_L( exactConserv, INDEX_NONE,
+c    & 'exactConserv =',
+c    & '  /* Exact Volume Conservation on/off flag */')
+      CALL WRITE_0D_L( solveForDeltaP, INDEX_NONE,
+     & 'solveForDeltaP =',
+     & ' /* solve for Pressure Increment on/off flag */')
       CALL WRITE_0D_L( uniformLin_PhiSurf, INDEX_NONE,
      & 'uniformLin_PhiSurf =',
      & ' /* use uniform Bo_surf on/off flag */')
