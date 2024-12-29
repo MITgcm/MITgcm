@@ -359,7 +359,8 @@ C                       s/r mpi_allreduce), default is false
 C- Time-stepping & free-surface params:
 C     rigidLid         :: Set to true to use rigid lid
 C     implicitFreeSurface :: Set to true to use implicit free surface
-C     exactConserv     :: Set to true to conserve exactly the total Volume
+C     exactConserv     :: Set to true to update etaN from continuity Eq
+C                         after correction-step (like wVel in Non-Hyd)
 C     solveForDeltaP   :: solve for pressure increment (deltaP= P^{n+1} - P^n )
 C                         instead of for future time-step pressure P^{n+1}
 C     uniformLin_PhiSurf :: Set to true to use a uniform Bo_surf in the
