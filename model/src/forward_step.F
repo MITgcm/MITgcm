@@ -417,9 +417,17 @@ C     myThid :: thread number for this instance of the routine.
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
+C     cg2d_x  :: Solution vector of the 2-D solver equation A.x=b
+C     cg3d_x  :: Solution vector of the 3-D solver equation A.X=B
 C     modelEnd  :: true if reaching the end of the run
 C     myTimeBeg :: time at beginning of time step (needed by longstep)
 C     myIterBeg :: iteration number at beginning of time step
+      _RL cg2d_x(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#ifdef ALLOW_NONHYDROSTATIC
+      _RL cg3d_x(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#else /* ALLOW_NONHYDROSTATIC */
+      _RL cg3d_x(1)
+#endif /* ALLOW_NONHYDROSTATIC */
       LOGICAL modelEnd
 #ifdef ALLOW_LONGSTEP
       INTEGER myIterBeg
@@ -905,7 +913,9 @@ CADJ STORE hFacS, hFacW = comlev1, key = ikey_dynamics, kind = isbyte
 # endif
 #endif
         CALL TIMER_START('SOLVE_FOR_PRESSURE  [FORWARD_STEP]',myThid)
-        CALL SOLVE_FOR_PRESSURE( myTime, myIter, myThid )
+        CALL SOLVE_FOR_PRESSURE(
+     O             cg2d_x, cg3d_x,
+     I             myTime, myIter, myThid )
         CALL TIMER_STOP ('SOLVE_FOR_PRESSURE  [FORWARD_STEP]',myThid)
       ENDIF
 
@@ -915,7 +925,9 @@ C--   Correct divergence in flow field and cycle time-stepping momentum
       IF ( momStepping ) THEN
 #endif
         CALL TIMER_START('MOM_CORRECTION_STEP [FORWARD_STEP]',myThid)
-        CALL MOMENTUM_CORRECTION_STEP( myTime, myIter, myThid )
+        CALL MOMENTUM_CORRECTION_STEP(
+     I                cg2d_x, cg3d_x,
+     I                myTime, myIter, myThid )
         CALL TIMER_STOP ('MOM_CORRECTION_STEP [FORWARD_STEP]',myThid)
 #ifndef ALLOW_AUTODIFF
       ENDIF
