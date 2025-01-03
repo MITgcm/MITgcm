@@ -350,7 +350,7 @@ CADJ STORE wVel (:,:,:,bi,bj) = comlev1_bibj, key=tkey, byte=isbyte
 
 C--     Explicit part of the Surface Potential Gradient (add in TIMESTEP)
 C       (note: this loop will be replaced by CALL CALC_GRAD_ETA)
-        IF (implicSurfPress.NE.1.) THEN
+        IF ( solveForDeltaP .OR. implicSurfPress.NE.oneRL ) THEN
           CALL CALC_GRAD_PHI_SURF(
      I         bi,bj,iMin,iMax,jMin,jMax,
      I         etaN,
