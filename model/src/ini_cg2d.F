@@ -1,5 +1,6 @@
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#undef PRESERVE_C69C_OUTPUT
 
 CBOP
 C     !ROUTINE: INI_CG2D
@@ -11,7 +12,8 @@ C     *==========================================================*
 C     | SUBROUTINE INI_CG2D
 C     | o Initialise 2d conjugate gradient solver operators.
 C     *==========================================================*
-C     | These arrays are purely a function of the basin geom.
+C     | These arrays are function of the basin geom. and time-step
+C     | (except for main-diagonal free-surface term).
 C     | We set then here once and them use then repeatedly.
 C     *==========================================================*
 C     \ev
@@ -40,7 +42,7 @@ C     myNorm   :: Work variable used in calculating normalisation factor
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER bi, bj
       INTEGER i, j, k, ks
-      _RL     faceArea
+      _RL     faceArea, tmpFac
       _RL     cg2dTolerance
       _RS     myNorm
       _RS     aC, aCw, aCs
@@ -71,8 +73,15 @@ C--   Init. scalars
       _END_MASTER(myThid)
 
 C--   Initialise laplace operator
+#ifdef PRESERVE_C69C_OUTPUT
 C     aW2d: integral in Z Ax/dX
 C     aS2d: integral in Z Ay/dY
+      tmpFac = implicDiv2DFlow
+#else
+C     aW2d: integral in Z Ax/dX *deltaT
+C     aS2d: integral in Z Ay/dY *deltaT
+      tmpFac = deltaTMom
+#endif
       myNorm = 0. _d 0
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -89,12 +98,14 @@ C  deep-model: *deepFacC (faceArea), /deepFacC (recip_dx,y): => no net effect
            faceArea = _dyG(i,j,bi,bj)*drF(k)
      &               *_hFacW(i,j,k,bi,bj)
            aW2d(i,j,bi,bj) = aW2d(i,j,bi,bj)
-     &              + implicSurfPress*implicDiv2DFlow
+     &              + implicSurfPress*tmpFac
+c    &              + implicSurfPress*deltaTMom
      &               *faceArea*recip_dxC(i,j,bi,bj)
            faceArea = _dxG(i,j,bi,bj)*drF(k)
      &               *_hFacS(i,j,k,bi,bj)
            aS2d(i,j,bi,bj) = aS2d(i,j,bi,bj)
-     &              + implicSurfPress*implicDiv2DFlow
+     &              + implicSurfPress*tmpFac
+c    &              + implicSurfPress*deltaTMom
      &               *faceArea*recip_dyC(i,j,bi,bj)
           ENDDO
          ENDDO
@@ -142,23 +153,28 @@ C     CALL PLOT_FIELD_XYRS( aS2d, 'AS2D INI_CG2D.2' , 1, myThid )
 CcnhDebugEnds
 
       _BEGIN_MASTER(myThid)
-C-- set global parameter in common block:
+C-- set global parameter in common block, units of 1/rVel:
       cg2dNorm = myNorm
 C-- Define the solver tolerance in the appropriate Unit :
       cg2dNormaliseRHS = cg2dTargetResWunit.LE.zeroRL
       IF ( cg2dNormaliseRHS ) THEN
 C-  when using a normalisation of RHS, tolerance has no unit => no conversion
         cg2dTolerance = cg2dTargetResidual
+#ifdef PRESERVE_C69C_OUTPUT
       ELSEIF ( implicDiv2DFlow.GT.zeroRL ) THEN
 C-  convert Target-Residual (in W unit) to cg2d-solver residual unit [m^2/s^2]
-        cg2dTolerance = cg2dNorm * cg2dTargetResWunit
-     &                           * implicDiv2DFlow
-     &                           * globalArea / deltaTMom
+        cg2dTolerance = cg2dNorm * cg2dTargetResWunit * globalArea
+     &                           * implicDiv2DFlow / deltaTMom
       ELSE
 C-  special case implicDiv2DFlow=0 :
 C   not much to solve anyway, cg2dTolerance does not matter as long as it is > 0
-        cg2dTolerance = cg2dNorm * cg2dTargetResWunit
-     &                           * globalArea / deltaTMom
+        cg2dTolerance = cg2dNorm * cg2dTargetResWunit * globalArea
+     &                           / deltaTMom
+#else
+      ELSE
+C-  convert Target-Residual (in W unit) to cg2d-solver residual unit [m^2]
+        cg2dTolerance = cg2dNorm * cg2dTargetResWunit * globalArea
+#endif
       ENDIF
       cg2dTolerance_sq = cg2dTolerance*cg2dTolerance
       _END_MASTER(myThid)
@@ -192,6 +208,11 @@ C           number of iterations for convergence in a test case to
 C           drop form 192 -> 134! Need to investigate this further!
 C           For now I have introduced a parameter cg2dpcOffDFac which
 C           defaults to 0.51 but can be set at runtime.
+      IF ( implicDiv2DFlow.GT.zeroRL ) THEN
+        tmpFac = freeSurfFac*myNorm/(implicDiv2DFlow*deltaTFreeSurf)
+      ELSE
+        tmpFac = 0. _d 0
+      ENDIF
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 C-    calculate and store solver main diagonal :
@@ -201,8 +222,12 @@ C-    calculate and store solver main diagonal :
            aC2d(i,j,bi,bj) = -(
      &       aW2d(i,j,bi,bj) + aW2d(i+1,j, bi,bj)
      &      +aS2d(i,j,bi,bj) + aS2d( i,j+1,bi,bj)
+#ifdef PRESERVE_C69C_OUTPUT
      &      +freeSurfFac*myNorm*recip_Bo(i,j,bi,bj)*deepFac2F(ks)
      &                  *rA(i,j,bi,bj)/deltaTMom/deltaTFreeSurf
+#else
+     &      +tmpFac*recip_Bo(i,j,bi,bj)*rA(i,j,bi,bj)*deepFac2F(ks)
+#endif
      &                        )
          ENDDO
         ENDDO

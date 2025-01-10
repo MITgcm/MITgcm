@@ -1,5 +1,6 @@
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#undef PRESERVE_C69C_OUTPUT
 
 CBOP
 C     !ROUTINE: INI_CG3D
@@ -10,7 +11,8 @@ C     *==========================================================*
 C     | SUBROUTINE INI_CG3D
 C     | o Initialise 3d conjugate gradient solver operators.
 C     *==========================================================*
-C     | These arrays are purely a function of the basin geom.
+C     | These arrays are function of the basin geom. and time-step
+C     | (except for main-diagonal free-surface term).
 C     | We set then here once and them use then repeatedly.
 C     *==========================================================*
 C     \ev
@@ -37,15 +39,16 @@ C     bi,bj    :: tile indices
 C     i,j,k    :: Loop counters
 C     faceArea :: Temporary used to hold cell face areas.
 C     myNorm   :: Work variable used in clculating normalisation factor
+C     locFac   :: temp/local factor from this level
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER bi, bj
       INTEGER i, j, k, ks
-      _RL     faceArea
+      _RL     faceArea, tmpFac
       _RS     myNorm
       _RL     theRecip_Dr
       _RL     cg3dTolerance
       _RL     aU, aL, aW, aE, aN, aS
-      _RL     tmpFac, nh_Fac, igwFac
+      _RL     nh_Fac, igwFac, locFac
       _RL     locGamma
 CEOP
 
@@ -89,9 +92,15 @@ C-       From common bloc CG3D_WK_R:
 
       IF ( use3Dsolver ) THEN
 C--   Initialise laplace operator
+#ifdef PRESERVE_C69C_OUTPUT
 C     aW3d: Ax/dX
 C     aS3d: Ay/dY
 C     aV3d: Ar/dR
+#else
+C     aW3d: Ax/dX *deltaT
+C     aS3d: Ay/dY *deltaT
+C     aV3d: Ar/dR *deltaT
+#endif
       myNorm = 0. _d 0
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -104,7 +113,11 @@ C     aV3d: Ar/dR
      &               *maskInC(i,j,bi,bj)*maskInC(i-1,j,bi,bj)
 #endif
            aW3d(i,j,k,bi,bj) = faceArea*recip_dxC(i,j,bi,bj)
+#ifdef PRESERVE_C69C_OUTPUT
      &                        *implicitNHPress*implicDiv2DFlow
+#else
+     &                        *implicitNHPress*deltaTMom
+#endif
            myNorm = MAX(ABS(aW3d(i,j,k,bi,bj)),myNorm)
           ENDDO
          ENDDO
@@ -117,7 +130,11 @@ C  deep-model: *deepFacC (faceArea), /deepFacC (recip_dx,y): => no net effect
      &               *maskInC(i,j,bi,bj)*maskInC(i,j-1,bi,bj)
 #endif
            aS3d(i,j,k,bi,bj) = faceArea*recip_dyC(i,j,bi,bj)
+#ifdef PRESERVE_C69C_OUTPUT
      &                        *implicitNHPress*implicDiv2DFlow
+#else
+     &                        *implicitNHPress*deltaTMom
+#endif
            myNorm = MAX(ABS(aS3d(i,j,k,bi,bj)),myNorm)
           ENDDO
          ENDDO
@@ -130,9 +147,9 @@ C  deep-model: *deepFacC (faceArea), /deepFacC (recip_dx,y): => no net effect
          ENDDO
         ENDDO
         DO k=2,Nr
-         tmpFac = nh_Fac*rVel2wUnit(k)*rVel2wUnit(k)
+         locFac = nh_Fac*rVel2wUnit(k)*rVel2wUnit(k)
      &          + igwFac*dBdrRef(k)*deltaTMom*dTtracerLev(k)
-         IF (tmpFac.GT.0. ) tmpFac = 1. _d 0 / tmpFac
+         IF ( locFac.GT.zeroRL ) locFac = 1. _d 0 / locFac
          DO j=1,sNy
           DO i=1,sNx
            faceArea = _rA(i,j,bi,bj)*maskC(i,j, k ,bi,bj)
@@ -147,8 +164,12 @@ caja &      drF(k  )*_hFacC(i,j,k  ,bi,bj)*0.5
 caja &     +drF(k-1)*_hFacC(i,j,k-1,bi,bj)*0.5
 c          IF ( theRecip_Dr .NE. 0. )
 c    &      theRecip_Dr = 1. _d 0/theRecip_Dr
-           aV3d(i,j,k,bi,bj) = faceArea*theRecip_Dr*tmpFac
+           aV3d(i,j,k,bi,bj) = faceArea*theRecip_Dr*locFac
+#ifdef PRESERVE_C69C_OUTPUT
      &                        *implicitNHPress*implicDiv2DFlow
+#else
+     &                        *implicitNHPress*deltaTMom
+#endif
            myNorm = MAX(ABS(aV3d(i,j,k,bi,bj)),myNorm)
           ENDDO
          ENDDO
@@ -163,7 +184,7 @@ c    &      theRecip_Dr = 1. _d 0/theRecip_Dr
       ENDIF
 
       _BEGIN_MASTER( myThid )
-C-- set global parameter in common block:
+C-- set global parameter in common block, units of 1/rVel:
        cg3dNorm = myNorm
 C-- Define the solver tolerance in the appropriate Unit :
       cg3dNormaliseRHS = cg3dTargetResWunit.LE.zeroRL
@@ -171,10 +192,14 @@ C-- Define the solver tolerance in the appropriate Unit :
 C-  when using a normalisation of RHS, tolerance has no unit => no conversion
         cg3dTolerance = cg3dTargetResidual
       ELSE
+#ifdef PRESERVE_C69C_OUTPUT
 C-  convert Target-Residual (in W unit) to cg3d-solver residual unit [m^2/s^2]
-        cg3dTolerance = cg3dNorm * cg3dTargetResWunit
-     &                           * implicDiv2DFlow
-     &                           * globalArea / deltaTMom
+        cg3dTolerance = cg3dNorm * cg3dTargetResWunit * globalArea
+     &                           * implicDiv2DFlow / deltaTMom
+#else
+C-  convert Target-Residual (in W unit) to cg3d-solver residual unit [m^2]
+        cg3dTolerance = cg3dNorm * cg3dTargetResWunit * globalArea
+#endif
       ENDIF
       cg3dTolerance_sq = cg3dTolerance*cg3dTolerance
 C-- print param values:
@@ -214,6 +239,7 @@ C-    Set solver main diagonal term
          ENDDO
         ENDDO
 C-    Add free-surface source term
+        tmpFac = freeSurfFac /(implicDiv2DFlow*deltaTFreeSurf)
         IF ( selectNHfreeSurf.GE.1 ) THEN
          DO j=1,sNy
           DO i=1,sNx
@@ -224,8 +250,12 @@ C-    Add free-surface source term
 c          ks = kSurfC(i,j,bi,bj)
 c          IF ( ks.LE.Nr ) THEN
              aC3d(i,j,ks,bi,bj) = aC3d(i,j,ks,bi,bj)
+#ifdef PRESERVE_C69C_OUTPUT
      &         - freeSurfFac*recip_Bo(i,j,bi,bj)
      &          *rA(i,j,bi,bj)*deepFac2F(ks)/deltaTMom/deltaTFreeSurf
+#else
+     &         - tmpFac*recip_Bo(i,j,bi,bj)*rA(i,j,bi,bj)*deepFac2F(ks)
+#endif
      &          / (1. _d 0 + locGamma )
 c          ENDIF
           ENDDO
@@ -236,8 +266,12 @@ c          ENDIF
            ks = kSurfC(i,j,bi,bj)
            IF ( ks.LE.Nr ) THEN
              aC3d(i,j,ks,bi,bj) = aC3d(i,j,ks,bi,bj)
+#ifdef PRESERVE_C69C_OUTPUT
      &         - freeSurfFac*recip_Bo(i,j,bi,bj)
      &          *rA(i,j,bi,bj)*deepFac2F(ks)/deltaTMom/deltaTFreeSurf
+#else
+     &         - tmpFac*recip_Bo(i,j,bi,bj)*rA(i,j,bi,bj)*deepFac2F(ks)
+#endif
            ENDIF
           ENDDO
          ENDDO

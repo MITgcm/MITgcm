@@ -14,7 +14,7 @@ C     | S/R CALC_DIV_GHAT
 C     | o Form the right hand-side of the surface pressure eqn.
 C     *==========================================================*
 C     | Right hand side of pressure equation is divergence
-C     | of velocity tendency (GHAT) term along with a relaxation
+C     | of provisional velocity (GHAT) term along with a relaxation
 C     | term equal to the barotropic flow field divergence.
 C     *==========================================================*
 C     \ev
@@ -60,14 +60,18 @@ C     locFac  :: temp/local factor from this level
       _RL xTrans(1:sNx+1,1:sNy+1)
       _RL yTrans(1:sNx+1,1:sNy+1)
       _RL locFac
+      _RL tmpFac
 #ifdef ALLOW_ADDFLUID
       _RL unitsFac
 #endif
 CEOP
 
 #ifdef ALLOW_ADDFLUID
-        unitsFac = mass2rUnit/deltaTMom
-        IF ( exactConserv ) unitsFac = unitsFac*implicDiv2Dflow
+      unitsFac = mass2rUnit
+# ifdef PRESERVE_C69C_OUTPUT
+      unitsFac = mass2rUnit/deltaTMom
+      IF ( exactConserv ) unitsFac = unitsFac*implicDiv2Dflow
+# endif
 #endif
 
 #ifdef PRESERVE_C69C_OUTPUT
@@ -137,12 +141,12 @@ c#endif
 #else /* PRESERVE_C69C_OUTPUT */
 
 C--   Starts loop on level index k
+      tmpFac = oneRL/implicDiv2Dflow - oneRL
       DO k=1,Nr
 
 C     Calculate horizontal transport (divided by deltaT ):
         IF ( exactConserv .OR. implicDiv2Dflow.EQ.oneRL ) THEN
          locFac = deepFacC(k)*drF(k)*rhoFacC(k)
-     &          * implicDiv2Dflow / deltaTMom
          DO j=1,sNy+1
           DO i=1,sNx+1
            xTrans(i,j) = _dyG(i,j,bi,bj)*_hFacW(i,j,k,bi,bj)*locFac
@@ -152,17 +156,13 @@ C     Calculate horizontal transport (divided by deltaT ):
           ENDDO
          ENDDO
         ELSE
-         locFac = deepFacC(k)*drF(k)*rhoFacC(k) / deltaTMom
+         locFac = deepFacC(k)*drF(k)*rhoFacC(k)
          DO j=1,sNy+1
           DO i=1,sNx+1
            xTrans(i,j) = _dyG(i,j,bi,bj)*_hFacW(i,j,k,bi,bj)*locFac
-     &                 *( implicDiv2Dflow*gU(i,j,k,bi,bj)
-     &                  + (oneRL-implicDiv2Dflow)*uVel(i,j,k,bi,bj)
-     &                  )
+     &                 *( gU(i,j,k,bi,bj) + tmpFac*uVel(i,j,k,bi,bj) )
            yTrans(i,j) = _dxG(i,j,bi,bj)*_hFacS(i,j,k,bi,bj)*locFac
-     &                 *( implicDiv2Dflow*gV(i,j,k,bi,bj)
-     &                  + (oneRL-implicDiv2Dflow)*vVel(i,j,k,bi,bj)
-     &                  )
+     &                 *( gV(i,j,k,bi,bj) + tmpFac*vVel(i,j,k,bi,bj) )
           ENDDO
          ENDDO
         ENDIF
@@ -210,9 +210,9 @@ C     Add same contribution at each level (more terms added after CG2D call)
 
         DO j=1,sNy
          DO i=1,sNx
-          cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
-     &                      + ( ( xTrans(i+1,j) - xTrans(i,j) )
-     &                        + ( yTrans(i,j+1) - yTrans(i,j) ) )
+           cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
+     &                       + ( ( xTrans(i+1,j) - xTrans(i,j) )
+     &                         + ( yTrans(i,j+1) - yTrans(i,j) ) )
          ENDDO
         ENDDO
 #ifdef ALLOW_NONHYDROSTATIC
@@ -257,21 +257,30 @@ C--   end of loop on level index k
 #ifdef ALLOW_NONHYDROSTATIC
       IF ( oldFreeSurfTerm ) THEN
 C--   Add source term arising from w=d/dt (p_s + p_nh)
+        tmpFac = freeSurfFac/deltaTFreeSurf
         DO j=1,sNy
          DO i=1,sNx
-           ks = kSurfC(i,j,bi,bj)
-           IF ( ks.LE.Nr ) THEN
-            cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
+          ks = kSurfC(i,j,bi,bj)
+          IF ( ks.LE.Nr ) THEN
+           cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
+#ifdef PRESERVE_C69C_OUTPUT
      &       -freeSurfFac*_rA(i,j,bi,bj)*deepFac2F(ks)
      &         /deltaTMom/deltaTFreeSurf
+#else
+     &       -tmpFac*_rA(i,j,bi,bj)*deepFac2F(ks)
+#endif
      &         *( etaN(i,j,bi,bj)
      &           +phi_nh(i,j,ks,bi,bj)*recip_Bo(i,j,bi,bj) )
-            cg3d_b(i,j,ks,bi,bj) = cg3d_b(i,j,ks,bi,bj)
+           cg3d_b(i,j,ks,bi,bj) = cg3d_b(i,j,ks,bi,bj)
+#ifdef PRESERVE_C69C_OUTPUT
      &       -freeSurfFac*_rA(i,j,bi,bj)*deepFac2F(ks)
      &         /deltaTMom/deltaTFreeSurf
+#else
+     &       -tmpFac*_rA(i,j,bi,bj)*deepFac2F(ks)
+#endif
      &         *( etaN(i,j,bi,bj)
      &           +phi_nh(i,j,ks,bi,bj)*recip_Bo(i,j,bi,bj) )
-           ENDIF
+          ENDIF
          ENDDO
         ENDDO
       ELSEIF ( solveForDeltaP ) THEN
@@ -280,38 +289,45 @@ C--   Add source term arising from w=d/dt (p_s)
       IF ( solveForDeltaP ) THEN
 #endif /* ALLOW_NONHYDROSTATIC */
         IF ( implicDiv2Dflow.NE.oneRL ) THEN
-c         locFac = freeSurfFac/deltaTMom/deltaTFreeSurf
-          locFac = freeSurfFac*( oneRL - implicDiv2Dflow )/deltaTMom
-          DO j=1,sNy
-           DO i=1,sNx
-            ks = kSurfC(i,j,bi,bj)
-            cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
-     &        -locFac*_rA(i,j,bi,bj)*deepFac2F(ks)
-c    &         *( etaH(i,j,bi,bj) - etaN(i,j,bi,bj) )
+         tmpFac = freeSurfFac*( oneRL/implicDiv2Dflow - oneRL )
+         DO j=1,sNy
+          DO i=1,sNx
+           ks = kSurfC(i,j,bi,bj)
+           cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
 #ifdef EXACT_CONSERV
-     &         *dEtaHdt(i,j,bi,bj)
+     &       -tmpFac*_rA(i,j,bi,bj)*deepFac2F(ks)*dEtaHdt(i,j,bi,bj)
 #endif
-           ENDDO
           ENDDO
+         ENDDO
         ENDIF
       ELSEIF ( exactConserv ) THEN
+        tmpFac = freeSurfFac/(implicDiv2Dflow*deltaTFreeSurf)
         DO j=1,sNy
          DO i=1,sNx
            ks = kSurfC(i,j,bi,bj)
            cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
+#ifdef PRESERVE_C69C_OUTPUT
      &       -freeSurfFac*_rA(i,j,bi,bj)*deepFac2F(ks)
      &         /deltaTMom/deltaTFreeSurf
      &         * etaH(i,j,bi,bj)
+#else
+     &       -tmpFac*_rA(i,j,bi,bj)*deepFac2F(ks)*etaH(i,j,bi,bj)
+#endif
          ENDDO
         ENDDO
       ELSE
+        tmpFac = freeSurfFac/(implicDiv2Dflow*deltaTFreeSurf)
         DO j=1,sNy
          DO i=1,sNx
            ks = kSurfC(i,j,bi,bj)
            cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
+#ifdef PRESERVE_C69C_OUTPUT
      &       -freeSurfFac*_rA(i,j,bi,bj)*deepFac2F(ks)
      &         /deltaTMom/deltaTFreeSurf
      &         * etaN(i,j,bi,bj)
+#else
+     &       -tmpFac*_rA(i,j,bi,bj)*deepFac2F(ks)*etaN(i,j,bi,bj)
+#endif
          ENDDO
         ENDDO
       ENDIF

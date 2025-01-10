@@ -1,5 +1,6 @@
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#undef PRESERVE_C69C_OUTPUT
 
 CBOP
 C     !ROUTINE: SOLVE_FOR_PRESSURE
@@ -75,12 +76,13 @@ C     cg3d_b   :: Right Hand side vector of the 3-D solver equation A.X=B
 C     wSurfP2d :: surface vertical velocity after 2-D solver
       _RL  cg3d_b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  wSurfP2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER k
 #else /* ALLOW_NONHYDROSTATIC */
       _RL     cg3d_b(1)
 #endif /* ALLOW_NONHYDROSTATIC */
       LOGICAL oldFreeSurfTerm
       LOGICAL putPmEinXvector
-      INTEGER i, j, k, bi, bj
+      INTEGER i, j, bi, bj
       INTEGER numIters, nIterMin
       _RL firstResidual, minResidualSq, lastResidual
       _RL tmpFac, sumEmP, tileEmP(nSx,nSy)
@@ -169,17 +171,23 @@ C-    first bi,bj loops:
          ENDDO
         ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
-        IF (useRealFreshWaterFlux.AND.fluidIsWater) THEN
+        IF ( useRealFreshWaterFlux.AND.fluidIsWater ) THEN
+#ifdef PRESERVE_C69C_OUTPUT
          tmpFac = freeSurfFac*mass2rUnit*implicDiv2DFlow
+#else
+         tmpFac = freeSurfFac*mass2rUnit
+#endif
          DO j=1,sNy
           DO i=1,sNx
-           cg2d_b(i,j,bi,bj) =
-     &       tmpFac*_rA(i,j,bi,bj)*EmPmR(i,j,bi,bj)/deltaTMom
+           cg2d_b(i,j,bi,bj) = tmpFac*_rA(i,j,bi,bj)*EmPmR(i,j,bi,bj)
+#ifdef PRESERVE_C69C_OUTPUT
+     &                       / deltaTMom
+#endif
           ENDDO
          ENDDO
         ENDIF
         IF ( putPmEinXvector ) THEN
-         tileEmP(bi,bj) = 0.
+         tileEmP(bi,bj) = 0. _d 0
          DO j=1,sNy
           DO i=1,sNx
             tileEmP(bi,bj) = tileEmP(bi,bj)
@@ -199,8 +207,8 @@ C-    second bi,bj loops:
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         IF ( putPmEinXvector ) THEN
-          tmpFac = 0.
-          IF (globalArea.GT.0.) tmpFac =
+          tmpFac = 0. _d 0
+          IF ( globalArea.GT.zeroRL ) tmpFac =
      &      freeSurfFac*deltaTFreeSurf*mass2rUnit*sumEmP/globalArea
           DO j=1,sNy
            DO i=1,sNx
@@ -226,7 +234,7 @@ C       => need to reset RHS to ensure that interior solution does not depend
 C       on ouside OB region.
 C    b) provide directly the trivial solution cg2d_x == 0 for outside OB region
 C      (=> no residual => no effect on solver convergence and interior solution)
-        IF (useOBCS) THEN
+        IF ( useOBCS ) THEN
          DO j=1,sNy
           DO i=1,sNx
            cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)*maskInC(i,j,bi,bj)
@@ -295,7 +303,7 @@ C--   Call the default CG solver
       _EXCH_XY_RL( cg2d_x, myThid )
 #ifdef ALLOW_AUTODIFF
 #ifndef ALLOW_TAPENADE
-      IF (  .NOT. useNSACGSolver .AND. cg2dFullAdjoint )
+      IF ( .NOT. useNSACGSolver .AND. cg2dFullAdjoint )
      &     CALL CG2D_STORE( cg2d_x, .TRUE., myThid )
 #endif /* ALLOW_TAPENADE */
 #endif
@@ -450,7 +458,7 @@ c      ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
 
 #ifdef ALLOW_SHOWFLOPS
-      CALL SHOWFLOPS_INSOLVE( myThid)
+      CALL SHOWFLOPS_INSOLVE( myThid )
 #endif
 
       RETURN
