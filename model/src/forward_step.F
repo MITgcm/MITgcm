@@ -60,7 +60,7 @@
 #endif
 
 #define ALLOW_MOM_STEPPING
-#if ( defined (ALLOW_AUTODIFF) && defined (ALLOW_OFFLINE) )
+#if ( defined ALLOW_AUTODIFF && defined ALLOW_OFFLINE )
 # undef ALLOW_MOM_STEPPING
 #endif
 
@@ -443,11 +443,11 @@ CEOP
 C--   Reset the model iteration counter and the model time.
       myIter = nIter0 + (iloop-1)
       myTime = startTime + deltaTClock*(iLoop-1)
-#endif
 
-#ifdef ALLOW_AUTODIFF
+C--   Special Autodiff S/R: adjoint version will switch back to inAdMode=F
+C      (plus switch few selected usePKG back to inFwdMode)
       CALL AUTODIFF_INADMODE_UNSET( myTime, myIter, myThid )
-#endif
+#endif /* ALLOW_AUTODIFF */
 
 #ifdef ALLOW_LONGSTEP
 C     store this for longstep_average with staggerTimeStep
@@ -1228,6 +1228,7 @@ C--   Save state for restarts
 #endif /* HAVE_SIGREG */
 
 #ifdef ALLOW_AUTODIFF
+C--   Special Autodiff S/R: adjoint version will switch to inAdMode=T
       CALL AUTODIFF_INADMODE_SET( myTime, myIter, myThid )
 #endif
 
