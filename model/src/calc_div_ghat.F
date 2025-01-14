@@ -70,7 +70,7 @@ CEOP
       unitsFac = mass2rUnit
 # ifdef PRESERVE_C69C_OUTPUT
       unitsFac = mass2rUnit/deltaTMom
-      IF ( exactConserv ) unitsFac = unitsFac*implicDiv2Dflow
+      IF ( exactConserv ) unitsFac = unitsFac*implicDiv2DFlow
 # endif
 #endif
 
@@ -89,7 +89,7 @@ C     Calculate vertical face areas
          ENDDO
         ENDDO
 
-        IF ( implicDiv2Dflow.EQ.oneRL ) THEN
+        IF ( implicDiv2DFlow.EQ.oneRL ) THEN
 C     Fully Implicit treatment of the Barotropic Flow Divergence
          DO j=1,sNy+1
           DO i=1,sNx+1
@@ -102,9 +102,9 @@ c       ELSEIF (nonlinFreeSurf.GT.0) THEN
 C     Implicit treatment of the Barotropic Flow Divergence
          DO j=1,sNy+1
           DO i=1,sNx+1
-           xTrans(i,j) = implicDiv2Dflow
+           xTrans(i,j) = implicDiv2DFlow
      &                  *xTrans(i,j)*gU(i,j,k,bi,bj) / deltaTMom
-           yTrans(i,j) = implicDiv2Dflow
+           yTrans(i,j) = implicDiv2DFlow
      &                  *yTrans(i,j)*gV(i,j,k,bi,bj) / deltaTMom
           ENDDO
          ENDDO
@@ -128,11 +128,11 @@ c        ENDIF
 c#endif
          DO j=1,sNy+1
           DO i=1,sNx+1
-           xTrans(i,j) = ( implicDiv2Dflow * gU(i,j,k,bi,bj)
-     &        + (1. _d 0-implicDiv2Dflow)* uVel(i,j,k,bi,bj)
+           xTrans(i,j) = ( implicDiv2DFlow * gU(i,j,k,bi,bj)
+     &        + (1. _d 0-implicDiv2DFlow)* uVel(i,j,k,bi,bj)
      &                   ) * xTrans(i,j) / deltaTMom
-           yTrans(i,j) = ( implicDiv2Dflow * gV(i,j,k,bi,bj)
-     &        + (1. _d 0-implicDiv2Dflow)* vVel(i,j,k,bi,bj)
+           yTrans(i,j) = ( implicDiv2DFlow * gV(i,j,k,bi,bj)
+     &        + (1. _d 0-implicDiv2DFlow)* vVel(i,j,k,bi,bj)
      &                   ) * yTrans(i,j) / deltaTMom
           ENDDO
          ENDDO
@@ -141,11 +141,11 @@ c#endif
 #else /* PRESERVE_C69C_OUTPUT */
 
 C--   Starts loop on level index k
-      tmpFac = oneRL/implicDiv2Dflow - oneRL
+      tmpFac = oneRL/implicDiv2DFlow - oneRL
       DO k=1,Nr
 
 C     Calculate horizontal transport (divided by deltaT ):
-        IF ( exactConserv .OR. implicDiv2Dflow.EQ.oneRL ) THEN
+        IF ( exactConserv .OR. implicDiv2DFlow.EQ.oneRL ) THEN
          locFac = deepFacC(k)*drF(k)*rhoFacC(k)
          DO j=1,sNy+1
           DO i=1,sNx+1
@@ -288,8 +288,8 @@ C--   Add source term arising from w=d/dt (p_s + p_nh)
 C--   Add source term arising from w=d/dt (p_s)
       IF ( solveForDeltaP ) THEN
 #endif /* ALLOW_NONHYDROSTATIC */
-        IF ( implicDiv2Dflow.NE.oneRL ) THEN
-         tmpFac = freeSurfFac*( oneRL/implicDiv2Dflow - oneRL )
+        IF ( implicDiv2DFlow.NE.oneRL ) THEN
+         tmpFac = freeSurfFac*( oneRL/implicDiv2DFlow - oneRL )
          DO j=1,sNy
           DO i=1,sNx
            ks = kSurfC(i,j,bi,bj)
@@ -301,7 +301,7 @@ C--   Add source term arising from w=d/dt (p_s)
          ENDDO
         ENDIF
       ELSEIF ( exactConserv ) THEN
-        tmpFac = freeSurfFac/(implicDiv2Dflow*deltaTFreeSurf)
+        tmpFac = freeSurfFac/(implicDiv2DFlow*deltaTFreeSurf)
         DO j=1,sNy
          DO i=1,sNx
            ks = kSurfC(i,j,bi,bj)
@@ -316,7 +316,7 @@ C--   Add source term arising from w=d/dt (p_s)
          ENDDO
         ENDDO
       ELSE
-        tmpFac = freeSurfFac/(implicDiv2Dflow*deltaTFreeSurf)
+        tmpFac = freeSurfFac/(implicDiv2DFlow*deltaTFreeSurf)
         DO j=1,sNy
          DO i=1,sNx
            ks = kSurfC(i,j,bi,bj)
