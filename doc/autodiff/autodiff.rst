@@ -841,7 +841,7 @@ may create artificial flow dependencies such as I/O of active variables.
 that contains all routines that are shown to the AD tool.
 This list is put together from all files with suffix ``_ad_diff.list``
 that :filelink:`genmake2 <tools/genmake2>` finds in its search directories.
-The list file for the core MITgcm routines is :filelink:`model/src/model_ad_diff.list`
+The list file for the core MITgcm routines is :filelink:`model/src/model_ad_diff.list`.
 Note that no wrapper routine is shown to TAF. These are either not visible at
 all to the AD code, or hand-written AD code is available (see next section).
 
