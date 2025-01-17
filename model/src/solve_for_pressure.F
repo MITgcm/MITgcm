@@ -118,6 +118,13 @@ c     putPmEinXvector = useRealFreshWaterFlux.AND.fluidIsWater
       IF ( myIter.EQ.1+nIter0 .AND. debugLevel .GE. debLevA ) THEN
         _BEGIN_MASTER( myThid )
         ioUnit = standardMessageUnit
+#ifndef PRESERVE_C69C_OUTPUT
+        IF ( implicDiv2DFlow.EQ.zeroRL ) THEN
+         WRITE(msgBuf,'(2A,L5)') 'SOLVE_FOR_PRESSURE:',
+     &                ' skip CG2D since implicDiv2DFlow=0'
+         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+        ENDIF
+#endif
         WRITE(msgBuf,'(2A,L5)') 'SOLVE_FOR_PRESSURE:',
      &       ' putPmEinXvector =', putPmEinXvector
         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
@@ -137,13 +144,17 @@ C-    first bi,bj loops:
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
 #ifdef ALLOW_CD_CODE
-          etaNm1(i,j,bi,bj) = etaN(i,j,bi,bj)
+           etaNm1(i,j,bi,bj) = etaN(i,j,bi,bj)
 #endif
-          cg2d_x(i,j,bi,bj) = 0. _d 0
-          cg2d_b(i,j,bi,bj) = 0. _d 0
+           cg2d_x(i,j,bi,bj) = 0. _d 0
+           cg2d_b(i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
+#ifdef PRESERVE_C69C_OUTPUT
         IF ( .NOT.solveForDeltaP ) THEN
+#else
+        IF ( implicDiv2DFlow.NE.zeroRL .AND. .NOT.solveForDeltaP ) THEN
+#endif
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
            cg2d_x(i,j,bi,bj) = Bo_surf(i,j,bi,bj)*etaN(i,j,bi,bj)
@@ -171,10 +182,12 @@ C-    first bi,bj loops:
          ENDDO
         ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
-        IF ( useRealFreshWaterFlux.AND.fluidIsWater ) THEN
 #ifdef PRESERVE_C69C_OUTPUT
+        IF ( useRealFreshWaterFlux.AND.fluidIsWater ) THEN
          tmpFac = freeSurfFac*mass2rUnit*implicDiv2DFlow
 #else
+        IF ( useRealFreshWaterFlux.AND.fluidIsWater
+     &              .AND. implicDiv2DFlow.NE.zeroRL ) THEN
          tmpFac = freeSurfFac*mass2rUnit
 #endif
          DO j=1,sNy
@@ -203,10 +216,15 @@ C-    end first bi,bj loops
         CALL GLOBAL_SUM_TILE_RL( tileEmP, sumEmP, myThid )
       ENDIF
 
+#ifndef PRESERVE_C69C_OUTPUT
+      IF ( implicDiv2DFlow.NE.zeroRL ) THEN
+C---  Solver Matrix is well defined, including Free-Surf term, do the solving:
+#endif
+
 C-    second bi,bj loops:
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        IF ( putPmEinXvector ) THEN
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         IF ( putPmEinXvector ) THEN
           tmpFac = 0. _d 0
           IF ( globalArea.GT.zeroRL ) tmpFac =
      &      freeSurfFac*deltaTFreeSurf*mass2rUnit*sumEmP/globalArea
@@ -216,13 +234,13 @@ C-    second bi,bj loops:
      &                        - tmpFac*Bo_surf(i,j,bi,bj)
            ENDDO
           ENDDO
-        ENDIF
+         ENDIF
 C- RHS: similar to the divergence of the vertically integrated mass transport:
-C       del_i { Sum_k [ rhoFac.(dr.hFac).(dy.deepFac).(u*) ] }  / deltaT
-        CALL CALC_DIV_GHAT(
-     I                      bi, bj, oldFreeSurfTerm,
-     U                      cg2d_b, cg3d_b,
-     I                      myThid )
+C       del_i { Sum_k [ rhoFac.(dr.hFac).(dy.deepFac).(u*) ] }
+         CALL CALC_DIV_GHAT(
+     I                       bi, bj, oldFreeSurfTerm,
+     U                       cg2d_b, cg3d_b,
+     I                       myThid )
 
 #ifdef ALLOW_OBCS
 C- Note: solver matrix is trivial outside OB region (main diagonal only)
@@ -234,92 +252,91 @@ C       => need to reset RHS to ensure that interior solution does not depend
 C       on ouside OB region.
 C    b) provide directly the trivial solution cg2d_x == 0 for outside OB region
 C      (=> no residual => no effect on solver convergence and interior solution)
-        IF ( useOBCS ) THEN
-         DO j=1,sNy
-          DO i=1,sNx
-           cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)*maskInC(i,j,bi,bj)
-           cg2d_x(i,j,bi,bj) = cg2d_x(i,j,bi,bj)*maskInC(i,j,bi,bj)
-         ENDDO
-         ENDDO
-        ENDIF
+         IF ( useOBCS ) THEN
+          DO j=1,sNy
+           DO i=1,sNx
+            cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)*maskInC(i,j,bi,bj)
+            cg2d_x(i,j,bi,bj) = cg2d_x(i,j,bi,bj)*maskInC(i,j,bi,bj)
+           ENDDO
+          ENDDO
+         ENDIF
 #endif /* ALLOW_OBCS */
 C-    end second bi,bj loops
+        ENDDO
        ENDDO
-      ENDDO
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevD ) THEN
-       CALL DEBUG_STATS_RL(1,cg2d_b,'cg2d_b (SOLVE_FOR_PRESSURE)',
-     &                        myThid)
-      ENDIF
+       IF ( debugLevel .GE. debLevD ) THEN
+        CALL DEBUG_STATS_RL( 1, cg2d_b, 'cg2d_b (SOLVE_FOR_PRESSURE)',
+     &                       myThid )
+       ENDIF
 #endif
-      IF ( DIFFERENT_MULTIPLE(diagFreq, myTime, deltaTClock) ) THEN
-       CALL WRITE_FLD_XY_RL( 'cg2d_b', 'I10', cg2d_b, myIter, myThid )
-      ENDIF
+       IF ( DIFFERENT_MULTIPLE(diagFreq, myTime, deltaTClock) ) THEN
+        CALL WRITE_FLD_XY_RL( 'cg2d_b', 'I10', cg2d_b, myIter, myThid )
+       ENDIF
 
 C--   Find the surface pressure using a two-dimensional conjugate
 C     gradient solver. See CG2D.h for the interface to this routine.
 C     In rare cases of a poor solver convergence, better to select the
 C     solver minimum-residual solution (instead of the last-iter solution)
 C     by setting cg2dUseMinResSol=1 (<-> nIterMin=0 in input)
-      numIters      = cg2dMaxIters
-      nIterMin      = cg2dUseMinResSol - 1
-c     CALL TIMER_START('CG2D   [SOLVE_FOR_PRESSURE]',myThid)
+       numIters = cg2dMaxIters
+       nIterMin = cg2dUseMinResSol - 1
+c      CALL TIMER_START('CG2D   [SOLVE_FOR_PRESSURE]',myThid)
 #ifdef DISCONNECTED_TILES
 C--   Call the disconnected-tile (no EXCH) version of cg2d
-      CALL CG2D_EX0(
-     U           cg2d_b, cg2d_x,
-     O           firstResidual, minResidualSq, lastResidual,
-     U           numIters, nIterMin,
-     I           myThid )
+       CALL CG2D_EX0(
+     U            cg2d_b, cg2d_x,
+     O            firstResidual, minResidualSq, lastResidual,
+     U            numIters, nIterMin,
+     I            myThid )
 #else /* not DISCONNECTED_TILES = default */
-      IF ( useSRCGSolver ) THEN
+       IF ( useSRCGSolver ) THEN
 C--   Call the single reduce CG solver
 #ifdef ALLOW_SRCG
-       CALL CG2D_SR(
-     U           cg2d_b, cg2d_x,
-     O           firstResidual, minResidualSq, lastResidual,
-     U           numIters, nIterMin,
-     I           myThid )
+        CALL CG2D_SR(
+     U            cg2d_b, cg2d_x,
+     O            firstResidual, minResidualSq, lastResidual,
+     U            numIters, nIterMin,
+     I            myThid )
 #endif /* ALLOW_SRCG */
 #ifdef ALLOW_CG2D_NSA
-      ELSEIF ( useNSACGSolver ) THEN
+       ELSEIF ( useNSACGSolver ) THEN
 C--   Call the not-self-adjoint version of cg2d
-       CALL CG2D_NSA(
-     U           cg2d_b, cg2d_x,
-     O           firstResidual, minResidualSq, lastResidual,
-     U           numIters, nIterMin,
-     I           myThid )
+        CALL CG2D_NSA(
+     U            cg2d_b, cg2d_x,
+     O            firstResidual, minResidualSq, lastResidual,
+     U            numIters, nIterMin,
+     I            myThid )
 #endif
-      ELSE
+       ELSE
 C--   Call the default CG solver
-       CALL CG2D(
-     U           cg2d_b, cg2d_x,
-     O           firstResidual, minResidualSq, lastResidual,
-     U           numIters, nIterMin,
-     I           myThid )
-      ENDIF
+        CALL CG2D(
+     U            cg2d_b, cg2d_x,
+     O            firstResidual, minResidualSq, lastResidual,
+     U            numIters, nIterMin,
+     I            myThid )
+       ENDIF
 #endif /* DISCONNECTED_TILES */
-      _EXCH_XY_RL( cg2d_x, myThid )
+       _EXCH_XY_RL( cg2d_x, myThid )
 #ifdef ALLOW_AUTODIFF
 #ifndef ALLOW_TAPENADE
-      IF ( .NOT. useNSACGSolver .AND. cg2dFullAdjoint )
+       IF ( .NOT. useNSACGSolver .AND. cg2dFullAdjoint )
      &     CALL CG2D_STORE( cg2d_x, .TRUE., myThid )
 #endif /* ALLOW_TAPENADE */
 #endif
-c     CALL TIMER_STOP ('CG2D   [SOLVE_FOR_PRESSURE]',myThid)
+c      CALL TIMER_STOP ('CG2D   [SOLVE_FOR_PRESSURE]',myThid)
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevD ) THEN
-       CALL DEBUG_STATS_RL(1,cg2d_x,'cg2d_x (SOLVE_FOR_PRESSURE)',
-     &                        myThid)
-      ENDIF
+       IF ( debugLevel .GE. debLevD ) THEN
+        CALL DEBUG_STATS_RL( 1, cg2d_x, 'cg2d_x (SOLVE_FOR_PRESSURE)',
+     &                       myThid )
+       ENDIF
 #endif
 
 C- dump CG2D output at monitorFreq (to reduce size of STD-OUTPUT files) :
-      IF ( DIFFERENT_MULTIPLE(monitorFreq,myTime,deltaTClock)
-     &   ) THEN
-       IF ( debugLevel .GE. debLevA ) THEN
+       IF ( DIFFERENT_MULTIPLE( monitorFreq, myTime, deltaTClock )
+     &      .AND. debugLevel .GE. debLevA ) THEN
         _BEGIN_MASTER( myThid )
         WRITE(msgBuf,'(A20,1PE23.14)') 'cg2d_init_res =',firstResidual
         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
@@ -335,11 +352,10 @@ C- dump CG2D output at monitorFreq (to reduce size of STD-OUTPUT files) :
         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
         _END_MASTER( myThid )
        ENDIF
-      ENDIF
 
 #ifdef ALLOW_DIAGNOSTICS
 C--   Fill diagnostics
-      IF ( useDiagnostics .AND. implicSurfPress.NE.oneRL ) THEN
+       IF ( useDiagnostics .AND. implicSurfPress.NE.oneRL ) THEN
         diagName = 'PHI_SURF'
         IF ( DIAGNOSTICS_IS_ON(diagName,myThid) ) THEN
          DO bj=myByLo(myThid),myByHi(myThid)
@@ -355,30 +371,74 @@ C--   Fill diagnostics
           ENDDO
          ENDDO
         ENDIF
-      ELSEIF ( useDiagnostics ) THEN
+       ELSEIF ( useDiagnostics ) THEN
         CALL DIAGNOSTICS_FILL( cg2d_x,'PHI_SURF', 0,1, 0,1,1, myThid )
-      ENDIF
+       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
 C--   Transfert the 2D-solution to "etaN" :
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        IF ( solveForDeltaP ) THEN
+C     not needed with exactConserv=T except in pre_cg3d.F (if solveForDeltaP=F)
+c#ifdef ALLOW_AUTODIFF
+c      IF ( solveForDeltaP ) THEN
+c       DO bj=myByLo(myThid),myByHi(myThid)
+c        DO bi=myBxLo(myThid),myBxHi(myThid)
+c          DO j=1-OLy,sNy+OLy
+c           DO i=1-OLx,sNx+OLx
+c            etaN(i,j,bi,bj) = etaN(i,j,bi,bj)
+c    &                       + recip_Bo(i,j,bi,bj)*cg2d_x(i,j,bi,bj)
+c           ENDDO
+c          ENDDO
+c        ENDDO
+c       ENDDO
+c      ELSE
+c#else /* ALLOW_AUTODIFF */
+#ifdef PRESERVE_C69C_OUTPUT
+       IF ( .NOT.solveForDeltaP ) THEN
+#else
+       IF ( ( .NOT.exactConserv .OR. use3Dsolver )
+     &      .AND. .NOT.solveForDeltaP ) THEN
+#endif
+c#endif /* ALLOW_AUTODIFF */
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             etaN(i,j,bi,bj) = recip_Bo(i,j,bi,bj)*cg2d_x(i,j,bi,bj)
+            ENDDO
+           ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
+
+#ifndef PRESERVE_C69C_OUTPUT
+      ELSE
+C---  Special case where implicDiv2DFlow=0 :
+C     skip the solving and put the (known) solution directly in cg2d_x
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         IF ( solveForDeltaP ) THEN
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-            etaN(i,j,bi,bj) = etaN(i,j,bi,bj)
-     &                      + recip_Bo(i,j,bi,bj)*cg2d_x(i,j,bi,bj)
+#ifdef EXACT_CONSERV
+            cg2d_x(i,j,bi,bj) = Bo_surf(i,j,bi,bj)*dEtaHdt(i,j,bi,bj)
+     &                                            *deltaTFreeSurf
+#endif /* EXACT_CONSERV */
            ENDDO
           ENDDO
-        ELSE
+         ELSE
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-            etaN(i,j,bi,bj) = recip_Bo(i,j,bi,bj)*cg2d_x(i,j,bi,bj)
+            cg2d_x(i,j,bi,bj) = Bo_surf(i,j,bi,bj)*etaH(i,j,bi,bj)
            ENDDO
           ENDDO
-        ENDIF
+         ENDIF
+        ENDDO
        ENDDO
-      ENDDO
+C--   temporary until we re-visit EXCH calls to SSH vars
+       _EXCH_XY_RL( cg2d_x, myThid )
+C---  end if implicDiv2DFlow=0 special case
+      ENDIF
+#endif
 
 #ifdef ALLOW_NONHYDROSTATIC
       IF ( use3Dsolver ) THEN
@@ -402,8 +462,8 @@ C                             4) add vertical velocity contribution.
 
 #ifdef ALLOW_DEBUG
        IF ( debugLevel .GE. debLevD ) THEN
-        CALL DEBUG_STATS_RL(Nr,cg3d_b,'cg3d_b (SOLVE_FOR_PRESSURE)',
-     &                         myThid)
+        CALL DEBUG_STATS_RL( Nr,cg3d_b, 'cg3d_b (SOLVE_FOR_PRESSURE)',
+     &                       myThid )
        ENDIF
 #endif
        IF ( DIFFERENT_MULTIPLE( diagFreq, myTime, deltaTClock) ) THEN
@@ -430,9 +490,8 @@ C                             4) add vertical velocity contribution.
        _EXCH_XYZ_RL( cg3d_x, myThid )
        CALL TIMER_STOP ('CG3D   [SOLVE_FOR_PRESSURE]',myThid)
 
-       IF ( DIFFERENT_MULTIPLE(monitorFreq,myTime,deltaTClock)
-     &    ) THEN
-        IF ( debugLevel .GE. debLevA ) THEN
+       IF ( DIFFERENT_MULTIPLE( monitorFreq, myTime, deltaTClock )
+     &      .AND. debugLevel .GE. debLevA ) THEN
          _BEGIN_MASTER( myThid )
          WRITE(msgBuf,'(A20,1PE23.14)') 'cg3d_init_res =',firstResidual
          CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
@@ -441,7 +500,6 @@ C                             4) add vertical velocity contribution.
          WRITE(msgBuf,'(A20,1PE23.14)') 'cg3d_last_res =',lastResidual
          CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
          _END_MASTER( myThid )
-        ENDIF
        ENDIF
 
 C--   Separate the Hydrostatic Surface Pressure adjusment (=> put it in dPhiNH)
