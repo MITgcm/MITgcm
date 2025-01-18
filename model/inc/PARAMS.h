@@ -577,11 +577,13 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
 
 C--   COMMON /PARM_R/ "Real" valued parameters used by the model.
 C     cg2dTargetResidual
-C          :: Target residual for cg2d solver; no unit (RHS normalisation)
+C          :: Target residual for cg2d solver ; no unit (RHS normalisation)
 C     cg2dTargetResWunit
-C          :: Target residual for cg2d solver; W unit (No RHS normalisation)
+C          :: Target residual for cg2d solver ; W unit (No RHS normalisation)
 C     cg3dTargetResidual
-C               :: Target residual for cg3d solver.
+C          :: Target residual for cg3d solver ; no unit (RHS normalisation)
+C     cg3dTargetResWunit
+C          :: Target residual for cg3d solver ; W unit (No RHS normalisation)
 C     cg2dpcOffDFac :: Averaging weight for preconditioner off-diagonal.
 C     PcsiTargetResidual
 C          :: Target residual for PCSI solver; no unit (RHS normalisation)
@@ -833,7 +835,7 @@ C     thetaEuler    :: Euler angle, rotation about new x-axis
 C     psiEuler      :: Euler angle, rotation about new z-axis
       COMMON /PARM_R/ cg2dTargetResidual, cg2dTargetResWunit,
      & PcsiTargetResidual,
-     & cg2dpcOffDFac, cg3dTargetResidual,
+     & cg2dpcOffDFac, cg3dTargetResidual, cg3dTargetResWunit,
      & delR, delRc, xgOrigin, ygOrigin, rSphere, recip_rSphere,
      & radius_fromHorizGrid, seaLev_Z, top_Pres, rSigmaBnd,
      & deltaT, deltaTMom, dTtracerLev, deltaTFreeSurf, deltaTClock,
@@ -882,6 +884,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL cg2dTargetResidual
       _RL cg2dTargetResWunit
       _RL cg3dTargetResidual
+      _RL cg3dTargetResWunit
       _RL cg2dpcOffDFac
       _RL PcsiTargetResidual
       _RL delR(Nr)

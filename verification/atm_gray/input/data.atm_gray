@@ -1,0 +1,87 @@
+# Gray-Atmosphere Physics Parameters
+#--------------------
+ &ATMOSPHERE_NMl
+  turb = .TRUE.,
+  ldry_convection = .false.,
+  lwet_convection = .TRUE.,
+  do_virtual = .false.,
+  two_stream = .true.,
+  mixed_layer_bc = .false.,
+  roughness_heat = 0.05,
+  roughness_moist = 0.05,
+  roughness_mom = 0.05,
+ &
+
+ &RADIATION_NML
+  solar_constant= 1365.,
+  del_sol=1.,
+# ir_tau_eq=
+# ir_tau_pole=
+  atm_abs= 0.22,
+# value that Ruth is using as default:
+# atm_abs= 0.2486,
+# sw_diff=
+# linear_tau=
+# del_sw=
+  albedo_value=0.38,
+# window=
+# wv_exponent=
+# solar_exponent=
+  wv_exponent=0.,
+ &
+
+ &LSCALE_COND_NML
+#  hc =
+#  do_evap=
+ &
+
+ &DARGAN_BETTSMILLER_NML
+#-- default:
+#   tau_bm = 7200.,
+#   rhbm   = 0.8,
+#   do_virtual   = .FALSE.,
+#   do_shallower = .FALSE.,
+#   do_changeqref= .FALSE.,
+#   do_envsat    = .FALSE.,
+#   do_taucape   = .FALSE.,
+#     capetaubm  = 900.,
+#     tau_min    = 2400.,
+#   do_bm_shift  = .FALSE.,
+#-- POG choice:
+#   rhbm = 0.7,
+  do_virtual= .TRUE.,
+  do_shallower= .TRUE.,
+ &
+
+ &SURFACE_FLUX_NML
+ &
+
+ &VERT_TURB_DRIVER_NML
+#  do_shallow_conv, do_mellor_yamada,
+#  gust_scheme, constant_gust, use_tau,
+#  do_molecular_diffusion
+  do_mellor_yamada=.FALSE.,
+ &
+
+ &DIFFUSIVITY_NML
+#  fixed_depth, depth_0, frac_inner,
+#  rich_crit_pbl, entr_ratio, parcel_buoy,
+#  znom, free_atm_diff, free_atm_skyhi_diff,
+#  pbl_mcm, rich_crit_diff, mix_len, rich_prandtl,
+#  background_m, background_t, ampns, ampns_max,
+#  do_virtual_non_mcm
+ &
+
+ &MONIN_OBUKHOV_NML
+ &
+
+ &MY25_TURB_NML
+ &
+
+ &SHALLOW_CONV_NML
+ &
+
+ &MIXED_LAYER_NML
+#  evaporation, qflux_amp, depth, qflux_width
+  depth=10.,
+ &

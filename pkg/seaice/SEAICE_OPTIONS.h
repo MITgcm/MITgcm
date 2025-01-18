@@ -188,6 +188,10 @@ C     iteration depends on the residual. Good for when a non-linear
 C     convergence criterion must be satified
 # undef SEAICE_ALLOW_LSR_FLEX
 
+C     Use parameterisation of explicit lateral drag for a better
+C     representation of fastice along coast lines and islands
+# undef SEAICE_ALLOW_SIDEDRAG
+
 #endif /* SEAICE_CGRID */
 
 #ifdef SEAICE_BGRID_DYNAMICS

@@ -724,6 +724,16 @@ C---
      & 'useNSACGSolver =', '  /* use not-self-adjoint CG solver */')
       CALL WRITE_0D_I( printResidualFreq, INDEX_NONE,
      & 'printResidualFreq =', ' /* Freq. for printing CG residual */')
+      IF ( use3Dsolver ) THEN
+       CALL WRITE_0D_I( cg3dMaxIters, INDEX_NONE, 'cg3dMaxIters =',
+     & '   /* Upper limit on CG3d iterations  */')
+       CALL WRITE_0D_RL( cg3dTargetResidual, INDEX_NONE,
+     & 'cg3dTargetResidual =',
+     & '   /* CG3d target residual [normalise RHS] */')
+       CALL WRITE_0D_RL( cg3dTargetResWunit, INDEX_NONE,
+     & 'cg3dTargetResWunit =',
+     & '   /* CG3d target residual [W units] */')
+      ENDIF
 
       WRITE(msgBuf,'(A)') '//  '
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )

@@ -1495,14 +1495,6 @@ somewhat obscure, so newer users of the MITgcm are encouraged to jump to
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
    | :varlink:`SOLVE_DIAGONAL_KINNER`              | #undef  | choice for implicit solver routines solve_*diagonal.F suitable for AD                                                |
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`COSINEMETH_III`                     | #define | selects implementation form of :math:`\cos{\varphi}` scaling of bi-harmonic term for viscosity                       |
-   |                                               |         | (note, CPP option for tracer diffusivity set independently in                                                        |
-   |                                               |         | :filelink:`GAD_OPTIONS.h <pkg/generic_advdiff/GAD_OPTIONS.h>`)                                                       |
-   +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`ISOTROPIC_COS_SCALING`              | #undef  | selects isotropic scaling of harmonic and bi-harmonic viscous terms when using the :math:`\cos{\varphi}` scaling     |
-   |                                               |         | (note, CPP option for tracer diffusivity set independently in                                                        |
-   |                                               |         | :filelink:`GAD_OPTIONS.h <pkg/generic_advdiff/GAD_OPTIONS.h>`)                                                       |
-   +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
 
 .. _default_pkg_list:
 
@@ -2080,6 +2072,9 @@ elliptic solvers are the variables :varlink:`cg2dMaxIters` and
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`cg3dTargetResidual`          | PARM02    | 1.0E-07                                          | 3D conjugate gradient target residual (non-dim. due to RHS normalization );                             |
    |                                        |           |                                                  | requires #define :varlink:`ALLOW_NONHYDROSTATIC`                                                        |
+   +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+   | :varlink:`cg3dTargetResWunit`          | PARM02    | -1.0E+00                                         | 3D conjugate gradient target residual (:math:`\dot{r}` units);                                          |
+   |                                        |           |                                                  | <0: use RHS normalization, i.e., :varlink:`cg3dTargetResidual` instead                                  |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`useSRCGSolver`               | PARM02    | FALSE                                            | use conjugate gradient solver with single reduction (single call of mpi_allreduce)                      |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+

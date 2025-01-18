@@ -295,6 +295,7 @@ C--   Elliptic solver parameters
       cg2dPreCondFreq    = 1
       cg3dMaxIters       = 150
       cg3dTargetResidual = 1. _d -7
+      cg3dTargetResWunit = -1.
       useCG2DPrecond     = .TRUE.
       useNSACGSolver     = .FALSE.
       useSRCGSolver      = .FALSE.
