@@ -1,6 +1,105 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o utils/python:
+  - make MITgcmutils compatible with numpy 2.0.0 again.
+o testreport:
+ - improve way of sending results tar file with "scp", now allowing to combine
+   "ssh" then "scp".
+
+checkpoint69c (2024/12/06)
+o pkg/mom_common,fluxform,vecinv:
+  - remove ISOTROPIC_COS_SCALING code from pkg/mom_vecinv/mom_vi_hdissip.F (was
+    not right); add warning (or stop if side-drag) if used with pkg/mom_vecinv.
+  - move 2 Cos-Scaling CPP options from CPP_OPTIONS.h to MOM_COMMON_OPTIONS.h
+    to be used in horizontal viscosity formulation; more consistent use of
+    GAD_OPTIONS.h where these 2 CPP options are used for horizontal diffusion.
+  - update all verification exp. customized version of CPP_OPTIONS.h,
+    GAD_OPTIONS.h and MOM_COMMON_OPTIONS.h.
+o verification/atm_gray:
+  - gray atmosphere test exp moved from "verification_other".
+o model/src:
+  - add few missing option header files (RBCS, SALT_PLUME, SHELFICE) in few
+    src files ; also illustrate how to catch these (see SALT_PLUME.h and
+    shelfice_ad_check_lev{1,2,3,4}_dir.h).
+o eesupp + model:
+  - remove FAST_BYTESWAP code and option
+  - remove empty file AUTODIFF_MYFIELDS.h
+o pkg/ctrl:
+  - add a STOP when ALLOW_CTRL_OBCSN/S/W/E is defined but corresponding
+    ALLOW_OBCS_NORTH/SOUTH/EAST/WEST is undef ; and fix the code so that, in
+    that case, it will compile and reach the stop before running 1rst time-step
+o model,pkg:
+  - minor spell checking and formatting updates.
+o pkg/bling:
+  - size-dependent phytoplankton growth code cleaned up and related parameters
+    can now be specified in data.bling;
+  - clean up OPTIONS in pkg/bling code ( SIZE_NUT_LIM merged with SIZE_DEP_LIM,
+    MULT_NUT_LIM merged with MIN_NUT_LIM ) and switch USE_QSW to #undef ; this
+    fixes FWD exp. global_oce_biogeo_bling which a) use default BLING_OPTIONS.h
+    and b) since no short-wave is provided, light was zero with USE_QSW defined.
+o pkg/profiles:
+  - add option to write model-equivalent profiles in a netcdf file, thus
+    removing the need for post-processing tiled output files.
+o pkg/grdchk:
+  - write either "grd_ratio_ad" or "grd_ratio_ftl" depending on type of run
+    and remove limitation to "useSingleCpuIO=F" when writing 2D files ;
+  - write "costfunction0000" only once, from pkg/ecco.
+
+checkpoint69b (2024/10/31)
+o pkg/autodiff:
+  - TAF-store directives for saltFlux (needed for #define EXCLUDE_FFIELDS_LOAD)
+  - little cleaning of ctrl_map_forcing.F (remove duplicated EXCH calls, ...).
+o tools/genmake2:
+  - remove step that generates *.flowdir
+o pkg/profiles:
+  - fix missing pieces in this pkg for Tang-Lin model and get this tested in
+    verification exp. global_oce_biogeo_bling.
+o pkg/seaice:
+  - if SEAICEaddSnowMass=T, include HSNOW in diagnostics "SIenph  ".
+o utils/python/MITgcmutils/:
+  - augment (llc, examples, ...) and update python utils
+o tools/build_options:
+  - update darwin_arm64_gfortran to be able to compile free-format F90 files.
+o pkg/seaice:
+  - add new lateral drag parameterisation for landfast ice (Liu etal 2022, JGR)
+o verification/*/results:
+  - update 5 adm + 3 tlm ref. output affected by TAF new version 6.4.5 & 6.5.0
+o pkg/ecco:
+  - implement sea-ice freeboard cost "m_freeboard".
+o tools/xmakedepend:
+  - fix xmakedepend to accept suffix longer than 1.c and add dependencies to
+    Makefile from included headers in F90 src files.
+o model/src:
+  - Add new param "cg3dTargetResWunit" to skip the normalization of cg3d RHS
+    by specifying the CG3D target residual in term of vertical-velocity units ;
+  - Remove header files SOLVE_FOR_PRESSURE{3D}.h ; clean-up "post_cg3d.F" ;
+  - switch test exp. global_ocean.cs32x15.viscA4 & short_surf_wave to use new
+    param "cg3dTargetResWunit".
+o tools/f90mkdepend:
+  - add arguments to f90mkdepend to specify alternative file suffix (e.g.,
+    for MacOS) + minor improvement in error message.
+
+checkpoint69a (2024/09/08)
+o tools/genmake2:
+  - list of src files to Differentiate: change from simply "*.list" to commonly
+    adopted "*_ad_diff.list" (to avoid accidents).
+  - change Makefile to enable TAF to generate Tangent-Linear code from a mix
+    of fixed-form (.F) and free-form (.F90) src code.
+  - test free format *.F90 code in hs94.1x64x5/code_ad/ exp. for AD and TLM.
+o pkg/dic:
+  - save 3D pH (for calcite saturation calculation, useCalciteSaturation=T)
+    for next time-step and store it in pickup files (for restart).
+o eesupp/src:
+  - new set of Global-Sum vector routines working with shared buffer
+    (=> no needs for input/output to be in common block) and with
+    GLOBAL_SUM_ORDER_TILES implemented ; and remove older versions.
+o tools/genmake2:
+  - change Makefile to enable TAF to generate adjoint from a mix of fixed-form
+    (.F) and free-form (.F90) src code. Also fix for alternative suffix (e.g.,
+    used on MacOS) to work without -ncad.
+o tools/adjoint_options:
+  - allow to pass -f08 flag to TAF by setting TAF_FORTRAN_VERS to "F08".
 o pkg/mom_vecinv:
   - add more 3-D momentum tendency diagnostics (originally from Helen Pillar)
     for harmonic/bi-harmonic dissipation and for bottom + top friction
