@@ -71,7 +71,6 @@ c**************************************
 
 C-- The folowing header files are included in the_main_loop.F for TAF
 C    and might be needed here (where the iloop is done) for OpenAD
-c#  include "AUTODIFF_MYFIELDS.h"
 c#  include "GRID.h"
 c#  include "DYNVARS.h"
 c#  include "SURFACE.h"

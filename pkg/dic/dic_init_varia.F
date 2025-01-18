@@ -52,7 +52,9 @@ C--   Initialise variable in common block DIC_ATMOS
 #ifdef ALLOW_COST
       totcost =  0. _d 0
 #endif
+C 2d surface pH
       pH_isLoaded(1) = .FALSE.
+C 3d full ocean pH
       pH_isLoaded(2) = .FALSE.
 #ifndef ALLOW_AUTODIFF
       _END_MASTER(myThid)
@@ -81,7 +83,8 @@ C-    Initialise alpha & rain_ratio fields with fixed (& Uniform) values
         DO k = 1, Nr
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           omegaC(i,j,k,bi,bj) =  0. _d 0
+           omegaC(i,j,k,bi,bj) = 0. _d 0
+           pH3D(i,j,k,bi,bj)   = 7.9 _d 0
           ENDDO
          ENDDO
         ENDDO

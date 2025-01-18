@@ -161,6 +161,14 @@ C--  Seaice-Dynamics parameters
       CALL WRITE_0D_RL( SEAICEbasalDragK2 ,INDEX_NONE,
      &     'SEAICEbasalDragK2 =', ' /* Basal drag parameter */')
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */
+#ifdef SEAICE_ALLOW_SIDEDRAG
+      CALL WRITE_0D_RL( SEAICEsideDrag ,INDEX_NONE,
+     &     'SEAICEsideDrag =', ' /* lateral drag parameter */')
+      CALL WRITE_0D_C( uCoastLineFile, -1, INDEX_NONE,
+     &  'uCoastLineFile =', ' /* u-coastline length file */')
+      CALL WRITE_0D_C( vCoastLineFile, -1, INDEX_NONE,
+     &  'vCoastLineFile =', ' /* v-coastline length file */')
+#endif /* SEAICE_ALLOW_SIDEDRAG */
       CALL WRITE_0D_L ( SEAICEuseTilt, INDEX_NONE,
      & 'SEAICEuseTilt     =', ' /* include surface tilt in dyna. */')
       CALL WRITE_0D_L ( SEAICEuseTEM, INDEX_NONE,

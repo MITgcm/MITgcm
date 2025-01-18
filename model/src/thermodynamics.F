@@ -14,6 +14,9 @@
 # ifdef ALLOW_KPP
 #  include "KPP_OPTIONS.h"
 # endif
+# ifdef ALLOW_SALT_PLUME
+#  include "SALT_PLUME_OPTIONS.h"
+# endif
 #endif /* ALLOW_AUTODIFF */
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
