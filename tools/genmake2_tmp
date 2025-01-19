@@ -69,8 +69,8 @@ Usage: "$0" [OPTIONS]
 
     -rootdir NAME | --rootdir NAME | -rd NAME | --rd NAME
       -rootdir=NAME | --rootdir=NAME | -rd=NAME | --rd=NAME
-	  Specify the location of the MITgcm ROOTDIR as "NAME".
-	  By default, genamke will try to find the location by
+	  Specify the location of the MITgcm root directory as 'NAME'.
+	  By default, genmake will try to find the location by
 	  looking in parent directories (up to the 5th parent).
 
     -mods NAME | --mods NAME | -mo NAME | --mo NAME
@@ -84,13 +84,13 @@ Usage: "$0" [OPTIONS]
       -disable=NAME | --disable=NAME
 	  Here "NAME" specifies a list of packages that we don't
 	  want to use.  If this violates package dependencies,
-	  genamke will exit with an error message.
+	  genmake will exit with an error message.
 
     -enable NAME | --enable NAME
       -enable=NAME | --enable=NAME
 	  Here "NAME" specifies a list of packages that we wish
 	  to specifically enable.  If this violates package
-	  dependencies, genamke will exit with an error message.
+	  dependencies, genmake will exit with an error message.
 
     -standarddirs NAME | --standarddirs NAME
       -standarddirs=NAME | --standarddirs=NAME
@@ -614,6 +614,7 @@ EOF
 	exit 1
     fi
 }
+#---- keep this line unchanged after the end of find_possible_optfile -----
 
 #  Just try to use FC, report failed attempt as a Warning
 check_fortran_compiler() {
@@ -1473,10 +1474,8 @@ EOF
 
 if test "x$MITGCM_ROOTDIR" = x ; then
   if test "x$ROOTDIR" != x ; then
-    echo "WARNING: Environment Variable 'ROOTDIR' getting retired soon ;"
-    echo "WARNING:  ==> has been replaced by Env. Var. 'MITGCM_ROOTDIR'"
-  # echo "WARNING: Environment Variable 'ROOTDIR' no longer recognized"
-  # echo "WARNING:  use instead 'MITGCM_ROOTDIR'" ; ROOTDIR=
+    echo "WARNING: Environment Variable 'ROOTDIR' no longer recognized"
+    echo "WARNING:  use instead 'MITGCM_ROOTDIR'" ; ROOTDIR=
     echo ''
   fi
 else
@@ -1725,7 +1724,7 @@ if test -f ./.genmakerc ; then
     echo
 fi
 
-#  Find the MITgcm ${ROOTDIR}
+#  Find the MITgcm root directory (${ROOTDIR})
 if test "x${ROOTDIR}" = x ; then
     tmp=`echo $PWD | sed -e 's/\// /g' | $AWK '{print $NR}'`
     if test "x$tmp" = "xbin" -a -d ../model -a -d ../eesupp -a -d ../pkg ; then
@@ -1734,7 +1733,7 @@ if test "x${ROOTDIR}" = x ; then
 	for d in . .. ../.. ../../.. ../../../.. ../../../../.. ; do
 	    if [ -d "$d/model" -a -d "$d/eesupp" -a -d "$d/pkg" ]; then
 		ROOTDIR=$d
-		printf "Warning: ROOTDIR was not specified ;"
+		printf "Warning: MITgcm root directory was not specified ;"
 		echo " try using a local copy of MITgcm found at \"$ROOTDIR\""
 		break
 	    fi
@@ -1742,13 +1741,13 @@ if test "x${ROOTDIR}" = x ; then
     fi
 fi
 if test "x${ROOTDIR}" = x ; then
-    echo "Error: Cannot determine ROOTDIR for MITgcm code."
-    echo "  Please specify a ROOTDIR using either the command line"
-    echo "   option '-rootdir' or the Env.Var. 'MITGCM_ROOTDIR'."
+    echo "Error: Cannot determine MITgcm root directory for MITgcm code."
+    echo "  Please specify a root directory using either the command line"
+    echo "   option '-rootdir' or the environment variable 'MITGCM_ROOTDIR'."
     exit 1
 fi
 if test ! -d ${ROOTDIR} ; then
-    echo "Error: the specified ROOTDIR (\"$ROOTDIR\") does not exist!"
+    echo "Error: the specified MITgcm root directory (\"$ROOTDIR\") does not exist!"
     exit 1
 fi
 
