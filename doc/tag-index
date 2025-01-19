@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools:
+  - remove old backward compatibility feature, so that env.var ROOTDIR is no
+    longer recognized by genamke2 ;
+  - re-write "suggest_optfile_names" to use parts from "genmake2".
 o utils/python:
   - make MITgcmutils compatible with numpy 2.0.0 again.
 o testreport:

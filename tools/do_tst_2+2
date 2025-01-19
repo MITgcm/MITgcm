@@ -6,7 +6,7 @@ usage()
         echo "    -> perform test 2+2=4 for several experiments"
         echo ""
         echo "where possible OPTIONS are:"
-        echo "  -help         : print usage"
+        echo " (-help|-h)     : print usage"
         echo "  -t   LIST_EXP : only check experiments in LIST_EXP"
         echo "  -skd LIST_EXP : skip experiments in LIST_EXP"
         echo "  -exe  COMMAND : use COMMAND to run the tests"
@@ -48,7 +48,7 @@ do
         yy=
     else
       case $xx in
-      -help ) usage ;;
+      -help|-h ) usage ;;
       -clean) CLEAN=1 ;;
       -t    ) yy=TESTDIRS ;;
       -skd  ) yy=SKIPDIRS ;;
