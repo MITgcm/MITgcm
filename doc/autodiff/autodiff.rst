@@ -1750,7 +1750,7 @@ either absolute or relative to the build directory.
 Adjoint code generation using Tapenade
 ======================================
 
-Please refer to Gaikwad et. al 2024 :cite:`gaikwad:24` for more details and a comparative analysis with TAF. Recently, introduction of the profiling capabilities in Tapenade have resulted in substantial insights and speedups for the Tapenade-generated adjoint, see Hascoet et. al 2024 :cite:`hascoet:24`.
+Please refer to Gaikwad et al. (2024) :cite:`gaikwad:24` for more details and a comparative analysis with TAF. Recently, introduction of the profiling capabilities in Tapenade have resulted in substantial insights and speedups for the Tapenade-generated adjoint, see Hascoet et al. (2024) :cite:`hascoet:24`.
 
 Feel free to reach out if you wish to use Tapenade and need help!
 
