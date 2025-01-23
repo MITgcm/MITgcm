@@ -83,38 +83,12 @@ C     Fully Implicit treatment of the Barotropic Flow Divergence
           pf(i,j) = xA(i,j)*gU(i,j,k,bi,bj) / deltaTMom
          ENDDO
         ENDDO
-      ELSEIF (exactConserv) THEN
-c     ELSEIF (nonlinFreeSurf.GT.0) THEN
+      ELSE
 C     Implicit treatment of the Barotropic Flow Divergence
         DO j=1,sNy
          DO i=1,sNx+1
           pf(i,j) = implicDiv2Dflow
      &             *xA(i,j)*gU(i,j,k,bi,bj) / deltaTMom
-         ENDDO
-        ENDDO
-      ELSE
-C     Explicit+Implicit part of the Barotropic Flow Divergence
-C      => Filtering of uVel,vVel is necessary
-C-- Now the filter are applied in the_correction_step().
-C   We have left this code here to indicate where the filters used to be
-C   in the algorithm before JMC moved them to after the pressure solver.
-c#ifdef ALLOW_ZONAL_FILT
-c        IF (zonal_filt_lat.LT.90.) THEN
-c          CALL ZONAL_FILTER(
-c    U                     uVel( 1-OLx,1-OLy,k,bi,bj),
-c    I                     hFacW(1-OLx,1-OLy,k,bi,bj),
-c    I                     0, sNy+1, 1, bi, bj, 1, myThid )
-c          CALL ZONAL_FILTER(
-c    U                     vVel( 1-OLx,1-OLy,k,bi,bj),
-c    I                     hFacS(1-OLx,1-OLy,k,bi,bj),
-c    I                     0, sNy+1, 1, bi, bj, 2, myThid )
-c        ENDIF
-c#endif
-        DO j=1,sNy
-         DO i=1,sNx+1
-          pf(i,j) = ( implicDiv2Dflow * gU(i,j,k,bi,bj)
-     &     + (1. _d 0-implicDiv2Dflow)* uVel(i,j,k,bi,bj)
-     &               ) * xA(i,j) / deltaTMom
          ENDDO
         ENDDO
       ENDIF
@@ -139,25 +113,15 @@ c#endif
 C     Fully Implicit treatment of the Barotropic Flow Divergence
         DO j=1,sNy+1
          DO i=1,sNx
-          pf(i,j) = yA(i,j)*gV(i,j,k,bi,bj) / deltatmom
+          pf(i,j) = yA(i,j)*gV(i,j,k,bi,bj) / deltaTMom
          ENDDO
         ENDDO
-      ELSEIF (exactConserv) THEN
-c     ELSEIF (nonlinFreeSurf.GT.0) THEN
+      ELSE
 C     Implicit treatment of the Barotropic Flow Divergence
         DO j=1,sNy+1
          DO i=1,sNx
           pf(i,j) = implicDiv2Dflow
-     &             *yA(i,j)*gV(i,j,k,bi,bj) / deltatmom
-         ENDDO
-        ENDDO
-      ELSE
-C     Explicit+Implicit part of the Barotropic Flow Divergence
-        DO j=1,sNy+1
-         DO i=1,sNx
-          pf(i,j) = ( implicDiv2Dflow * gV(i,j,k,bi,bj)
-     &     + (1. _d 0-implicDiv2Dflow)* vVel(i,j,k,bi,bj)
-     &               ) * yA(i,j) / deltaTMom
+     &             *yA(i,j)*gV(i,j,k,bi,bj) / deltaTMom
          ENDDO
         ENDDO
       ENDIF
