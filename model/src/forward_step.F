@@ -809,10 +809,7 @@ C--   Step forward fields and calculate time tendency terms.
 #endif /* ALLOW_MOM_STEPPING */
 
 #ifdef ALLOW_AUTODIFF_TAMC
-# if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
-CADJ STORE gU, gV  = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
-# endif
+CADJ STORE gU, gV  = comlev1, key = ikey_dynamics, kind = isbyte
 #endif
 
 C--   Update time-counter
@@ -889,14 +886,14 @@ CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
 
 C--   Apply Filters to u*,v* before SOLVE_FOR_PRESSURE
 #ifdef ALLOW_SHAP_FILT
-      IF (useSHAP_FILT .AND. shap_filt_uvStar) THEN
+      IF ( useSHAP_FILT .AND. shap_filt_uvStar ) THEN
         CALL TIMER_START('SHAP_FILT_UV        [FORWARD_STEP]',myThid)
         CALL SHAP_FILT_APPLY_UV( gU, gV, myTime, myIter, myThid )
         CALL TIMER_STOP ('SHAP_FILT_UV        [FORWARD_STEP]',myThid)
       ENDIF
 #endif
 #ifdef ALLOW_ZONAL_FILT
-      IF (useZONAL_FILT .AND. zonal_filt_uvStar) THEN
+      IF ( useZONAL_FILT .AND. zonal_filt_uvStar ) THEN
         CALL TIMER_START('ZONAL_FILT_UV       [FORWARD_STEP]',myThid)
         CALL ZONAL_FILT_APPLY_UV( gU, gV, myThid )
         CALL TIMER_STOP ('ZONAL_FILT_UV       [FORWARD_STEP]',myThid)
