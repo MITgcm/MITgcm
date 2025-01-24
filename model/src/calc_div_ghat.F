@@ -141,7 +141,6 @@ c#endif
 #else /* PRESERVE_C69C_OUTPUT */
 
 C--   Starts loop on level index k
-      tmpFac = oneRL/implicDiv2DFlow - oneRL
       DO k=1,Nr
 
 C     Calculate horizontal transport (divided by deltaT ):
@@ -283,20 +282,26 @@ C--   Add source term arising from w=d/dt (p_s + p_nh)
           ENDIF
          ENDDO
         ENDDO
+# ifdef EXACT_CONSERV
       ELSEIF ( solveForDeltaP ) THEN
-#else /* ALLOW_NONHYDROSTATIC */
-C--   Add source term arising from w=d/dt (p_s)
-      IF ( solveForDeltaP ) THEN
+# else
+      ELSE
+# endif
 #endif /* ALLOW_NONHYDROSTATIC */
+C--   Add source term arising from w=d/dt (p_s)
+#ifdef EXACT_CONSERV
+# ifndef ALLOW_NONHYDROSTATIC
+      IF ( solveForDeltaP ) THEN
+# endif
         IF ( implicDiv2DFlow.NE.oneRL ) THEN
          tmpFac = freeSurfFac*( oneRL/implicDiv2DFlow - oneRL )
          DO j=1,sNy
           DO i=1,sNx
            ks = kSurfC(i,j,bi,bj)
            cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
-#ifdef EXACT_CONSERV
+c#ifdef EXACT_CONSERV
      &       -tmpFac*_rA(i,j,bi,bj)*deepFac2F(ks)*dEtaHdt(i,j,bi,bj)
-#endif
+c#endif
           ENDDO
          ENDDO
         ENDIF
@@ -316,7 +321,8 @@ C--   Add source term arising from w=d/dt (p_s)
          ENDDO
         ENDDO
       ELSE
-        tmpFac = freeSurfFac/(implicDiv2DFlow*deltaTFreeSurf)
+#endif /* EXACT_CONSERV */
+        tmpFac = freeSurfFac/deltaTFreeSurf
         DO j=1,sNy
          DO i=1,sNx
            ks = kSurfC(i,j,bi,bj)
@@ -330,7 +336,9 @@ C--   Add source term arising from w=d/dt (p_s)
 #endif
          ENDDO
         ENDDO
+#if ( defined EXACT_CONSERV || defined ALLOW_NONHYDROSTATIC )
       ENDIF
+#endif
 
       RETURN
       END

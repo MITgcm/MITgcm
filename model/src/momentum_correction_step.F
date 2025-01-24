@@ -38,10 +38,10 @@ C     == Global variables ===
 #include "DYNVARS.h"
 
 #ifdef ALLOW_SHAP_FILT
-#include "SHAP_FILT.h"
+# include "SHAP_FILT.h"
 #endif
 #ifdef ALLOW_ZONAL_FILT
-#include "ZONAL_FILT.h"
+# include "ZONAL_FILT.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -89,6 +89,13 @@ C       range is all but first row and column in overlaps.
           jMax = sNy+OLy
 
 C-      Calculate gradient of surface Potential
+#ifdef PRESERVE_C69C_OUTPUT
+          CALL CALC_GRAD_PHI_SURF(
+     I         bi, bj, iMin, iMax, jMin, jMax,
+     I         etaN,
+     O         phiSurfX, phiSurfY,
+     I         myThid )
+#else
           DO j=jMin,jMax
            DO i=iMin,iMax
             phiSurfX(i,j) = _recip_dxC(i,j,bi,bj)
@@ -101,12 +108,6 @@ C-      Calculate gradient of surface Potential
      &                    *( cg2d_x(i,j,bi,bj) - cg2d_x(i,j-1,bi,bj) )
            ENDDO
           ENDDO
-#ifdef PRESERVE_C69C_OUTPUT
-          CALL CALC_GRAD_PHI_SURF(
-     I         bi, bj, iMin, iMax, jMin, jMax,
-     I         etaN,
-     O         phiSurfX, phiSurfY,
-     I         myThid )
 #endif
 
 C-      Update velocity fields:  V(n) = V** - dt * grad Eta
