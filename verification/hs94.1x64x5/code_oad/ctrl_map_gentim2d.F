@@ -25,9 +25,6 @@ C     === Global variables ===
 #include "CTRL_GENARR.h"
 #include "CTRL_DUMMY.h"
 #include "OPTIMCYCLE.h"
-#ifdef ALLOW_AUTODIFF
-#include "AUTODIFF_MYFIELDS.h"
-#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
