@@ -119,11 +119,19 @@ C--   update average inside tile (no overlaps) for all bi,bj
        CALL LONGSTEP_FILL_3D(LS_KuxCount, LS_Kux, Kux, Nr, myThid)
        CALL LONGSTEP_FILL_3D(LS_KvyCount, LS_Kvy, Kvy, Nr, myThid)
 #ifdef GM_EXTRA_DIAGONAL
-       CALL LONGSTEP_FILL_3D(LS_KuzCount, LS_Kuz, Kuz, Nr, myThid)
-       CALL LONGSTEP_FILL_3D(LS_KvzCount, LS_Kvz, Kvz, Nr, myThid)
+       IF ( GM_ExtraDiag ) THEN
+        CALL LONGSTEP_FILL_3D(LS_KuzCount, LS_Kuz, Kuz, Nr, myThid)
+        CALL LONGSTEP_FILL_3D(LS_KvzCount, LS_Kvz, Kvz, Nr, myThid)
+       ENDIF
 #endif
-       CALL LONGSTEP_FILL_3D(LS_PsiXCount, LS_PsiX, GM_PsiX, Nr, myThid)
-       CALL LONGSTEP_FILL_3D(LS_PsiYCount, LS_PsiY, GM_PsiY, Nr, myThid)
+#ifdef GM_BOLUS_ADVEC
+       IF ( GM_AdvForm ) THEN
+        CALL LONGSTEP_FILL_3D(LS_PsiXCount, LS_PsiX, GM_PsiX, 
+     &                        Nr, myThid)
+        CALL LONGSTEP_FILL_3D(LS_PsiYCount, LS_PsiY, GM_PsiY, 
+     &                        Nr, myThid)
+       ENDIF
+#endif
       ENDIF
 #endif
 #ifdef ALLOW_KPP
