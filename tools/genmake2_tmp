@@ -3227,7 +3227,7 @@ echo >> $MAKEFILE
 # for fixed format f90 files we use ff90 or FF90 resp
 # but these are not expected to be the original source files
 
-echo 'F77_PP_SRC_FILES = $(F77_SRC_FILES:.F=.'$FS')'      >> $MAKEFILE
+echo 'F77_PP_SRC_FILES = $(F77_SRC_FILES:.F=.'$FS')'     >> $MAKEFILE
 echo 'F90_PP_SRC_FILES = $(F90_SRC_FILES:.F90=.'$FS90')' >> $MAKEFILE
 echo 'OBJFILES= $(F90_SRC_FILES:.F90=.o) $(F77_SRC_FILES:.F=.o) $(C_SRC_FILES:.c=.o)' >> $MAKEFILE
 
@@ -3508,7 +3508,7 @@ else
 cat >>$MAKEFILE <<EOF
 # ... send 1 fixed format file and 1 free format file to TAF ...
 ad_taf_output.$FS: ad_inpF90_code.$FS90 ad_input_code.$FS
-	@-rm -f ad_input_code_ad.$FS ad_inpF90_code_ad.$FS90 ; echo ''
+	@-rm -f ad_inpF90_code_ad.$FS90 ad_input_code_ad.$FS ; echo ''
 	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) -free ad_inpF90_code.$FS90 -fixed ad_input_code.$FS
 	ls -l ad_inpF90_code_ad.$FS90 ad_input_code_ad.$FS
 	cat ad_input_code_ad.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ad_taf_output.$FS
@@ -3610,10 +3610,10 @@ EOF
 else
 cat >>$MAKEFILE <<EOF
 # ... send 1 fixed format file and 1 free format file to TAF ...
-ftl_taf_output.$FS: ftl_input_code.$FS ftl_inpF90_code.$FS90
-	@-rm -f ftl_input_code_tl.$FS ftl_inpF90_code_tl.$FS90 ; echo ''
+ftl_taf_output.$FS: ftl_inpF90_code.$FS90 ftl_input_code.$FS
+	@-rm -f ftl_inpF90_code_tl.$FS90 ftl_input_code_tl.$FS ; echo ''
 	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) -free ftl_inpF90_code.$FS90 -fixed ftl_input_code.$FS
-	ls -l ftl_input_code_tl.$FS ftl_inpF90_code_tl.$FS90
+	ls -l ftl_inpF90_code_tl.$FS90 ftl_input_code_tl.$FS
 	cat ftl_input_code_tl.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ftl_taf_output.$FS
 
 # We need the extra target for ftl_taf_outpF90.$FS90, because the file is
@@ -3638,8 +3638,8 @@ ftl_taf_output.$FS: \$(AD_FLOW_FILES) \$(AD_F90FILES) \$(AD_FILES)
 	@-rm -f ad_config.template
 	@\$(MAKE) -f \$(MAKEFILE) \$(F90_PP_SRC_FILES) \$(F77_PP_SRC_FILES)
 	@\$(MAKE) -f \$(MAKEFILE) \$(AD_FLOW_FILES)
-	@-rm -f \$(AD_FILES:.$FS=_tl.$FS) \$(AD_FILES:.$FS=_tl.o); echo ''
 	@-rm -f \$(AD_F90FILES:.$FS90=_tl.$FS90) \$(AD_F90FILES:.$FS90=_tl.o); echo ''
+	@-rm -f \$(AD_FILES:.$FS=_tl.$FS) \$(AD_FILES:.$FS=_tl.o); echo ''
 	\$(MAKE) -f \$(MAKEFILE) remove_comments
 	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) -free \$(AD_F90FILES) -fixed \$(AD_FLOW_FILES) \$(AD_FILES)
 	\$(MAKE) -f \$(MAKEFILE) ftl_sed
