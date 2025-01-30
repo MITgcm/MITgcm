@@ -2970,6 +2970,7 @@ printf 'AD_FLOW_FILES = ' > $TMP.ad_flow_files
 alldirs="$SOURCEDIRS $INCLUDEDIRS ."
 alldirsmk=(${SOURCEDIRSMK} ${INCLUDEDIRSMK} ".")
 nd=0
+touch $TMP.F90Files
 for d in $alldirs ; do
     dmk=${alldirsmk[${nd}]}
     nd=$((${nd}+1))
@@ -3131,6 +3132,7 @@ for d in $alldirs ; do
 done
 
 # Sort the F90 files in topological order
+touch $TMP.F90Graph $TMP.F90noGraph
 while IFS= read -r f90file; do
     # Find modules used, ignoring those commented out
     mod_used=$(grep -i "^[^!]*\buse\b" $f90file | $AWK '{print $2}' | tr -d ',')
@@ -3168,7 +3170,7 @@ cat $TMP.F90srclist.tmp > $TMP.F90srclist
 #
 # Clean up topological sorting files
 rm -rf $TMP.F90Files.tmp $TMP.F90Files $TMP.F90srclist.tmp
-rm -rf $TMP.F90Graph $TMP.noF90Graph
+rm -rf $TMP.F90Graph $TMP.F90noGraph
 
 rm -rf $TMP.links
 echo "" >> $TMP.F77srclist
@@ -3642,13 +3644,6 @@ ad_taf_output.$FS: \$(AD_FLOW_FILES) \$(AD_F90FILES) \$(AD_FILES)
 	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) -free \$(TAF_F90_FLAGS) \$(AD_F90FILES) -fixed \$(TAF_F77_FLAGS) \$(AD_FLOW_FILES) \$(AD_FILES)
 	\$(MAKE) -f \$(MAKEFILE) adj_sed
 	\$(MAKE) -f \$(MAKEFILE) adj_depend
-EOF
-if test -n "$AD_F90FILES" ; then
-cat >>$MAKEFILE <<EOF
-	cat \$(AD_F90FILES:.$FS90=_ad.$FS90) > ad_taf_outpF90.$FS90
-EOF
-fi
-cat >>$MAKEFILE <<EOF
 	cat \$(AD_FILES:.$FS=_ad.$FS) > ad_taf_output.$FS
 
 \$(EXE_ADJ): \$(SPECIAL_FILES) \$(H_SRC_FILES) ad_taf_output.$FS \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
@@ -3757,13 +3752,6 @@ ftl_taf_output.$FS: \$(AD_FLOW_FILES) \$(AD_F90FILES) \$(AD_FILES)
 	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) -free \$(TAF_F90_FLAGS) \$(AD_F90FILES) -fixed \$(TAF_F77_FLAGS) \$(AD_FLOW_FILES) \$(AD_FILES)
 	\$(MAKE) -f \$(MAKEFILE) ftl_sed
 	\$(MAKE) -f \$(MAKEFILE) ftl_depend
-EOF
-if test -n "$AD_F90FILES" ; then
-cat >>$MAKEFILE <<EOF
-	cat \$(AD_F90FILES:.$FS90=_tl.$FS90) > ftl_taf_outpF90.$FS90
-EOF
-fi
-cat >>$MAKEFILE <<EOF
 	cat \$(AD_FILES:.$FS=_tl.$FS) > ftl_taf_output.$FS
 
 \$(EXE_TLM): \$(SPECIAL_FILES) \$(H_SRC_FILES) ftl_taf_output.$FS \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
