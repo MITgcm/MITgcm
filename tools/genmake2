@@ -1425,6 +1425,7 @@ TAPENADECMD=tapenade
 OPENAD=
 AD_OPTFILE=
 CAT_SRC_FOR_TAF=1
+DEP_TAF_FILE='Makefile_taf.dep'
 TAF=
 AD_TAF_FLAGS=
 FTL_TAF_FLAGS=
@@ -3361,6 +3362,12 @@ depend:
 	\$(MAKEDEPEND) -f \$(MAKEFILE) -a -o .$FS90 \$(DEFINES) \$(INCLUDES) \$(CPPINCLUDES) \$(F90_SRC_FILES)
 	\$(TOOLSDIR)/f90mkdepend -fs $FS -fs90 $FS90 >> \$(MAKEFILE)
 	-rm -f makedepend.out
+EOF
+if test $CAT_SRC_FOR_TAF = 0 ; then
+  echo "	-touch $DEP_TAF_FILE" >> $MAKEFILE
+  echo "	-echo 'include $DEP_TAF_FILE' >> \$(MAKEFILE)" >> $MAKEFILE
+fi
+cat >>$MAKEFILE <<EOF
 
 lib: libmitgcmuv.a
 
@@ -3387,9 +3394,15 @@ Clean:
 	@\$(MAKE) -f \$(MAKEFILE) cleanlinks
 	-rm -rf *.flowdir
 	-rm -f \$(SPECIAL_FILES) f90mkdepend.log $MAKEFILE.old
-	-rm -f taf_ad.f90
 	-rm -f taf_command taf_output taf_ad.log taf_ad_flow.log taf_ftl.log
-	-\$(TOOLSDIR)/f90mkdepend_taf -clean
+EOF
+if test $CAT_SRC_FOR_TAF = 0 ; then
+cat >>$MAKEFILE <<EOF
+	-sed "/^include $DEP_TAF_FILE/d" \$(MAKEFILE) > tmp_Mkfile && mv -f tmp_Mkfile \$(MAKEFILE) && rm -f $DEP_TAF_FILE
+	-rm -f taf_ad.f90 taf_tl.f90 f90mkdepend_taf.log
+EOF
+fi
+cat >>$MAKEFILE <<EOF
 
 # remove also the executable, files that "genmake2" generates (except Makefile)
 #         and output from a run (plus log files from testreport)
@@ -3631,7 +3644,7 @@ else
 cat >>$MAKEFILE <<EOF
 # ... send multiple files to TAF ...
 adj_depend:
-	\$(TOOLSDIR)/f90mkdepend_taf -taf \$(AD_F90FILES:.$FS90=_ad.$FS90) \$(AD_FILES:.$FS=_ad.$FS) >> \$(MAKEFILE)
+	\$(TOOLSDIR)/f90mkdepend_taf $DEP_TAF_FILE \$(AD_F90FILES:.$FS90=_ad.$FS90) \$(AD_FILES:.$FS=_ad.$FS)
 
 ad_taf_output.$FS: \$(AD_FLOW_FILES) \$(AD_F90FILES) \$(AD_FILES)
 	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "Adjoint version" -bAD_CONFIG_H -DALLOW_ADJOINT_RUN -UALLOW_TANGENTLINEAR_RUN > ad_config.template
@@ -3739,7 +3752,7 @@ else
 cat >>$MAKEFILE <<EOF
 # ... send multiple files to TAF ...
 ftl_depend:
-	\$(TOOLSDIR)/f90mkdepend_taf -taf \$(AD_F90FILES:.$FS90=_tl.$FS90) \$(AD_FILES:.$FS=_tl.$FS) >> \$(MAKEFILE)
+	\$(TOOLSDIR)/f90mkdepend_taf $DEP_TAF_FILE \$(AD_F90FILES:.$FS90=_tl.$FS90) \$(AD_FILES:.$FS=_tl.$FS)
 
 ftl_taf_output.$FS: \$(AD_FLOW_FILES) \$(AD_F90FILES) \$(AD_FILES)
 	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "TangLin version" -bAD_CONFIG_H -UALLOW_ADJOINT_RUN -DALLOW_TANGENTLINEAR_RUN > ad_config.template
