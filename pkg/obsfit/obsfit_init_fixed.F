@@ -979,7 +979,7 @@ C Store interpolation fractions and indices
       
 C Ignore points that are not "wet"
 
-                IF (tmp_type.EQ.3) THEN
+                IF (type_cur.EQ.3) THEN
 c Zonal velocity
                  mask(1)=maskW(sample_i,sample_j,sample_k1,bi,bj)
                  mask(2)=maskW(sample_i+1,sample_j,sample_k1,bi,bj)
@@ -989,7 +989,7 @@ c Zonal velocity
                  mask(6)=maskW(sample_i+1,sample_j,sample_k2,bi,bj)
                  mask(7)=maskW(sample_i,sample_j+1,sample_k2,bi,bj)
                  mask(8)=maskW(sample_i+1,sample_j+1,sample_k2,bi,bj)
-                ELSEIF (tmp_type.EQ.4) THEN
+                ELSEIF (type_cur.EQ.4) THEN
 c Meridional velocity
                  mask(1)=maskS(sample_i,sample_j,sample_k1,bi,bj)
                  mask(2)=maskS(sample_i+1,sample_j,sample_k1,bi,bj)
