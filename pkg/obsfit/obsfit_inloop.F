@@ -36,9 +36,6 @@ C     == Global variables ===
 # include "OBSFIT.h"
 # include "netcdf.inc"
 #endif
-#ifdef ALLOW_AUTODIFF
-# include "tamc.h"
-#endif
 
 C     !INPUT PARAMETERS: 
 C     myTime    :: Current time in simulation
@@ -61,18 +58,9 @@ C     !LOCAL VARIABLES:
 #ifndef ALLOW_ECCO
       INTEGER i,j
 #endif
-#ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER act1, act2, act3, act4
-      INTEGER max1, max2, max3
-      INTEGER ikey, itdkey
-#endif
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 #ifndef ALLOW_CTRL
       optimcycle = 0
-#endif
-#ifdef ALLOW_AUTODIFF_TAMC
-      itdkey = bi + (bj - 1)*nSx + (ikey_dynamics - 1)*nSx*nSy
 #endif
 
       _BEGIN_MASTER( myThid )
