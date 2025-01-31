@@ -1,5 +1,5 @@
 #include "OBSFIT_OPTIONS.h"
-C--  File active_file_obsfit_ad.F:
+C--  File obsfit_active_file_ad.F:
 C--   Contents
 C--   o adactive_read_obs_tile
 C--   o adactive_write_obs_tile

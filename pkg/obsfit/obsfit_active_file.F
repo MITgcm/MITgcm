@@ -1,10 +1,10 @@
 #include "OBSFIT_OPTIONS.h"
-C--  File active_file_control_obs_tile_rl.F:
+C--  File obsfit_active_file.F:
 C--   Contents
-C--   o active_read_obs_tile_rl
-C--   o active_write_obs_tile_rl
-C--   o active_read_obs_glob_rl
-C--   o active_write_obs_glob_rl
+C--   o active_read_obs_tile
+C--   o active_write_obs_tile
+C--   o active_read_obs_glob
+C--   o active_write_obs_glob
 
 CBOP
 C     !ROUTINE: ACTIVE_READ_OBS_TILE
