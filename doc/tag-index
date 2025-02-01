@@ -1,6 +1,14 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src and forcing:
+  - for TEOS10, add new S/R to convert model surface Conservative Temperature
+    to in-situ Temperature (SST) and compute and store model SST in new model
+    field (in FFIELDS.h) "gcmSST", just a copy of model Pot.Temp with other EOS.
+  - use model SST to compute surface forcing over open ocean in pkg/exf and
+    pkg/bulk_force ; for now, leave ice/seaice freezing/melting unchanged.
+  - switch test exp. global_ocean.cs32x15.in_p to use TEOS10 + update lab_sea
+    Tapenade ref. output (affected @ machine truncation level).
 o tools:
   - remove old backward compatibility feature, so that env.var ROOTDIR is no
     longer recognized by genamke2 ;
