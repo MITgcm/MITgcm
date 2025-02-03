@@ -268,14 +268,14 @@ C    U-tendency, if desired:
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-C--   HPF directive to help TAMC
+C--   HPF directive to help TAF
 CHPF$ INDEPENDENT
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       DO bj=myByLo(myThid),myByHi(myThid)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-C--    HPF directive to help TAMC
+C--    HPF directive to help TAF
 CHPF$  INDEPENDENT, NEW (fVerU,fVerV
 CHPF$&                  ,phiHydF
 CHPF$&                  ,kappaRU,kappaRV

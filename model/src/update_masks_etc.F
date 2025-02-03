@@ -201,7 +201,7 @@ CML   This will be the crucial part of the code, because here the minimum
 CML   function MIN is involved which does not have a continuous derivative
 CML   for MIN(x,y) at y=x.
 CML   The thin walls representation has been moved into this loop, that is
-CML   before the call to EXCH_UV_XVY_RS, because TAMC will prefer it this
+CML   before the call to EXCH_UV_XVY_RS, because TAF will prefer it this
 CML   way. On the other hand, this might cause difficulties in some
 CML   configurations.
       DO bj=myByLo(myThid), myByHi(myThid)
