@@ -2795,14 +2795,14 @@ touch $TMP.adF90noGraph
 for i in $SOURCEDIRS ; do
     list_files=`( cd $i && ls -1 *_ad_diff.list 2>/dev/null )`
     for j in $list_files ; do
-	grep '\.f\>' $i/$j >> $TMP.adSrcFiles
+	grep '\.f\>'   $i/$j >> $TMP.adSrcFiles
         # Retain file paths for topo sorting later
 	grep '\.f90\>' $i/$j | sed 's/f90$/F90/'g | while IFS= read -r line; do
             echo "$i/$line" >> $TMP.adF90Files
         done
     done
 done
-#
+
 # Sort the f90 files in topological order
 while IFS= read -r f90file; do
     # List modules used in f90file, ignoring those commented out
@@ -2833,7 +2833,6 @@ while IFS= read -r f90file; do
 done < $TMP.adF90noGraph
 # Clean up topological sorting files
 rm -rf $TMP.adF90Graph $TMP.adF90noGraph
-
 
 echo
 echo "===  Creating the Makefile  ==="
@@ -3160,7 +3159,6 @@ while IFS= read -r f90file; do
 	echo $f90file >> $TMP.F90Files
     fi
 done < $TMP.F90noGraph
-#
 
 # Format to F90srclist specs
 sed -e 's|.*/||' -e 's/^/ /' -e 's/$/ \\/' "$TMP.F90Files" > "$TMP.F90Files.tmp"
@@ -3168,7 +3166,7 @@ sed '2,$d' $TMP.F90srclist > $TMP.F90srclist.tmp
 
 cat $TMP.F90Files.tmp >> $TMP.F90srclist.tmp
 cat $TMP.F90srclist.tmp > $TMP.F90srclist
-#
+
 # Clean up topological sorting files
 rm -rf $TMP.F90Files.tmp $TMP.F90Files $TMP.F90srclist.tmp
 rm -rf $TMP.F90Graph $TMP.F90noGraph
