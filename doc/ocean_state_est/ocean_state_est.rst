@@ -1,7 +1,7 @@
 .. _chap_state_estimation:
 
-Ocean State Estimation Packages
-===============================
+Packages III - Ocean State Estimation
+=====================================
 
 This chapter describes packages that have been introduced for ocean
 state estimation purposes and in relation with automatic differentiation
@@ -767,7 +767,7 @@ Introduction
 Given an observational dataset, OBSFIT samples the model during the run at the time and location of observations,
 calculates the cost (sum of weighted misfits), and produces a model-equivalent output file that is directly
 comparable to the input file.
-It is designed to accommodate datasets that are sparse, irregular, or non-local (i.e., time-averaged or spatially integrated).
+It is designed to accommodate datasets that are sparse, irregular, or non-local.
 OBSFIT performs grid-independent model-data comparisons, meaning that observations do not have to be on the same
 grid as the model or constrained to a fixed set of depth levels. This increases the efficiency of data
 assimilation for many datasets and allow compatibility with multi-grid state estimation. OBSFIT offers the
@@ -781,24 +781,28 @@ In addition to relaxing pkg/profile's constraint on vertical levels, OBSFIT can 
 
 -  instantaneous observations at a single location;
 
--  time averages or spatial integrals of multiple sampled points;
+-  time averages (or a cumulative integral) of multiple sampled locations;
 
 -  observations that are combinations of multiple variables.
 
 .. _obsfit_space: 
 
-Spatial integration or time averaging
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-One feature of this package is that it allows observations to be time averages or spatial integrals.
+Observations vs. Samples
+^^^^^^^^^^^^^^^^^^^^^^^^
+One feature of this package is that it allows measured observations to be averages in both space and/or time,
+(or alternatively, integrated values in space and/or time).  **Samples**, defined as instantaneous model data values
+at specific locations on the model grid, are aggregated for comparison with observations.
 For example, consider observations of integrated sound speed along the acoustic ray path.
 In that case, one specifies multiple locations at which to sample the model, as we require model
 data at multiple locations to calculate the model-equivalent of a single observation. Thus,
 the model is sampled during the model run, and sampled values are combined at the end of the
-run to calculate the model-equivalent value, which is then compared to the observed value for cost calculation. 
-In OBSFIT, sampled points are referred to as "samples" and the averaged/integrated values as "observations". 
-Each observation is comprised of a number of samples (NP). Each of those NP samples is assigned a relative weight in the average/integral; by default all samples are weighed equally. (Note that the weights here are different from the uncertainty-related weights in pkg/profiles.) 
+run to calculate the model-equivalent value, which is then compared to the observed value for cost calculation.
+Ergo, In OBSFIT, sampled points are referred to as "samples" and the averaged/integrated values as "observations". 
+Each observation is comprised of a number of samples (NP). Each of those NP samples is assigned a relative
+weight in the average/integral; by default all samples are weighed equally. (Note that the our definition of weights is
+different from the uncertainty-related weights in :filelink:`pkg/profiles`.) 
 
-In many applications, NP=1 and "samples" and "observations" are the same.
+In many applications, NP=1 and "samples" and "observations" are effectively the same.
 
 .. _obsfit_type: 
 
@@ -840,7 +844,6 @@ Altimetry
 ^^^^^^^^^
 
 Given sea surface height (SSH) observations, OBSFIT samples the model variable etan. Inputs should thus be the total SSH, not SSH anomalies. Because of arbitrary reference values for the dynamic topography, the mean offset between modeled and observed SSH is removed when the cost is calculated. 
-
 
 
 OBSFIT configuration and compiling
