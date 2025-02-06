@@ -763,10 +763,12 @@ Author: Ariane Verdy
 Introduction
 ~~~~~~~~~~~~
 
-:filelink:`pkg/obsfit <pkg/obsfit>` introduces a versatile cost function implementation for the MITgcm. 
+:filelink:`pkg/obsfit <pkg/obsfit>` is a versatile package used for grid-independent model-data comparisons
+including cost function calculations.
+
 Given an observational dataset, OBSFIT samples the model during the run at the time and location of observations,
 calculates the cost (sum of weighted misfits), and produces a model-equivalent output file that is directly
-comparable to the input file.
+comparable to an input file containing observational data.
 It is designed to accommodate datasets that are sparse, irregular, or non-local.
 OBSFIT performs grid-independent model-data comparisons, meaning that observations do not have to be on the same
 grid as the model or constrained to a fixed set of depth levels. This increases the efficiency of data
@@ -789,9 +791,9 @@ In addition to relaxing pkg/profile's constraint on vertical levels, OBSFIT can 
 
 Observations vs. Samples
 ^^^^^^^^^^^^^^^^^^^^^^^^
-One feature of this package is that it allows measured observations to be averages in both space and/or time,
+One feature of this package is that it allows measured observations to be averages in both space and/or time
 (or alternatively, integrated values in space and/or time).  **Samples**, defined as instantaneous model data values
-at specific locations on the model grid, are aggregated for comparison with observations.
+at specific locations (which may or may not coincide with model gridpoints), are aggregated and interpolated for comparison with observations.
 For example, consider observations of integrated sound speed along the acoustic ray path.
 In that case, one specifies multiple locations at which to sample the model, as we require model
 data at multiple locations to calculate the model-equivalent of a single observation. Thus,
@@ -810,7 +812,7 @@ Sample types
 ^^^^^^^^^^^^
 
 Each OBSFIT sample is assigned a type corresponding to the model variable that will be sampled.
-There are currently 5 types of variables implemented in the code: potential temperature, salinity,
+There are currently five types of variables implemented in the code: potential temperature, salinity,
 zonal velocity, meridional velocity, and sea surface height. Observations can be made of samples
 of different types; for example, one could compute the along-shore current speed (a combination of
 zonal and meridional velocities) or the water spiciness (a comnbination of temperature and salinity). 
@@ -834,10 +836,10 @@ average is calculated at the end of the model run.
 Interpolation
 ^^^^^^^^^^^^^
 
-Sampling is done by interpolating model values from the 8 grid points surrounding the
-sample location. In the regular lat-lon grid case, interpolation factors (let's not call
-them weights, as it gets confusing!) are calculated from the input longitude, latitude, and depth.
-In the generic grid case (LLC, etc), interpolation factors are specified in the input file.
+Sampling is done by interpolating model values from grid points surrounding the
+sample location (up to 8 surrounding grid points are used). For a cartesian or spherical polar grid,
+interpolation factors (not to be confused with weights!) are calculated from the input longitude, latitude, and depth.
+For a curvilinear grid (LLC, etc), interpolation factors are specified in the input file.
 
 
 Altimetry
@@ -857,7 +859,7 @@ OBSFIT can be turned on or off at compile time
 - or using :filelink:`genmake2 <tools/genmake2>` adding ``-enable=obsfit`` or
   ``-disable=obsfit`` switches
 
-- **required packages and CPP options**: :filelink:`pkg/cost`
+- *required packages and CPP options*: :filelink:`pkg/cal` must be enabled to use OBSFIT. No other packages or CPP options are required.
 
 If needed, edit :filelink:`OBSFIT_SIZE.h <pkg/obsfit/OBSFIT_SIZE.h>` to change the maximum number of input files,
 total number of observations, number of samples per tile, or number of samples per observation. For maximum efficiency,
