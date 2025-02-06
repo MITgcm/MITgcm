@@ -261,7 +261,7 @@ C Read the info for observations:
         ENDIF
 
         readDelT=1
-        err = NF_INQ_VARID(fid,'obs_delT', varid1c )
+        err = NF_INQ_VARID(fid,'obs_dt', varid1c )
 C Time interval (if missing, assume instanteneous):
         IF (err.NE.NF_NOERR) THEN
          readDelT=0
@@ -641,22 +641,22 @@ C If isample is not a dimension, use iobs for size of sampleno
           ENDIF
          
           DO k=1,NSAMPLESMAX
-           sample_timeS(num_file,k,bi,bj)=-999. _d 0
-           sample_timeE(num_file,k,bi,bj)=-999. _d 0
-           sample_lon(num_file,k,bi,bj)=-999. _d 0
-           sample_lat(num_file,k,bi,bj)=-999. _d 0
-           sample_depth(num_file,k,bi,bj)=-999. _d 0
-           sample_weight(num_file,k,bi,bj)=1. _d 0
+           sample_timeS(num_file,k,bi,bj) = -999. _d 0
+           sample_timeE(num_file,k,bi,bj) = -999. _d 0
+           sample_lon(num_file,k,bi,bj) = -999. _d 0
+           sample_lat(num_file,k,bi,bj) = -999. _d 0
+           sample_depth(num_file,k,bi,bj) = -999. _d 0
+           sample_weight(num_file,k,bi,bj) = 1. _d 0
            DO q = 1,NUM_INTERP_PTS_OBS
             sample_interp_i(num_file,k,q,bi,bj) = 1
             sample_interp_j(num_file,k,q,bi,bj) = 1
             sample_interp_k(num_file,k,q,bi,bj) = 1
             sample_interp_frac(num_file,k,q,bi,bj) = 0. _d 0
            ENDDO
-           sample_interp_xC11(num_file,k,bi,bj)=-999. _d 0
-           sample_interp_yC11(num_file,k,bi,bj)=-999. _d 0
-           sample_interp_xCNINJ(num_file,k,bi,bj)=-999. _d 0
-           sample_interp_yCNINJ(num_file,k,bi,bj)=-999. _d 0
+           sample_interp_xC11(num_file,k,bi,bj) = -999. _d 0
+           sample_interp_yC11(num_file,k,bi,bj) = -999. _d 0
+           sample_interp_xCNINJ(num_file,k,bi,bj) = -999. _d 0
+           sample_interp_yCNINJ(num_file,k,bi,bj) = -999. _d 0
           ENDDO
 
           sampleNo_tile=0
@@ -1203,7 +1203,6 @@ C===========================================================
 
            INQUIRE( file=fnameequinc, exist=exst )
            IF (.NOT.exst) THEN
-      
             CALL obsfit_init_equifiles(num_file,
      &       fiddata_obs(num_file),fnameequinc,
      &       fidfwd_obs(num_file,bi,bj),sampleNo(num_file,bi,bj),
