@@ -261,7 +261,7 @@ C--   Elliptic solver parameters
      & cg2dMaxIters, cg2dMinItersNSA, cg2dChkResFreq, cg2dUseMinResSol,
      & cg2dTargetResidual, cg2dTargetResWunit,
      & cg2dpcOffDFac, cg2dPreCondFreq,
-     & cg3dMaxIters, cg3dChkResFreq, 
+     & cg3dMaxIters, cg3dChkResFreq,
      & cg3dTargetResidual, cg3dTargetResWunit,
      & useNSACGSolver, useSRCGSolver, printResidualFreq
 
@@ -772,7 +772,7 @@ C--   for backward compatibility :
       ENDIF
 
 C-    set default printResidualFreq according to debugLevel
-      printResidualFreq = 0
+      printResidualFreq = -1
       IF ( debugLevel.GE.debLevE ) printResidualFreq = 1
       IF ( plotLevel.EQ.UNSET_I ) plotLevel = debugLevel
 
