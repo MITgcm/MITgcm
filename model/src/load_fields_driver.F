@@ -49,7 +49,9 @@ C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h"
 #include "FFIELDS.h"
+#include "DYNVARS.h"
 
 #ifdef ALLOW_AUTODIFF
 # ifdef ALLOW_AUTODIFF_TAMC
@@ -84,10 +86,15 @@ C     myThid :: thread number for this instance of the routine.
       INTEGER myIter
       INTEGER myThid
 
+      _RL consTemp_to_poTemp
+      EXTERNAL consTemp_to_poTemp
+
 C     !LOCAL VARIABLES:
 #if (defined ALLOW_ADDFLUID) || (defined ALLOW_FRICTION_HEATING)
-      INTEGER i,j,k,bi,bj
+      INTEGER k
 #endif
+      INTEGER ks
+      INTEGER i,j,bi,bj
 CEOP
 
 #ifdef ALLOW_DEBUG
@@ -130,6 +137,46 @@ C-  Note: Condition below might need an update once (b) is made available
         ENDDO
       ENDIF
 #endif /* ALLOW_FRICTION_HEATING */
+
+C--   Determine surface temperature, usually just a copy of the surface
+C--   level of theta, but for eosType='TEOS10', we need to convert from
+C--   conservative temperature to in-situ surface temperature
+      IF ( usingPCoords ) THEN
+       ks = Nr
+      ELSE
+       ks = 1
+      ENDIF
+      IF ( fluidIsWater .AND. eosType .EQ. 'TEOS10' ) THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          CALL CONVERT_CT2PT(
+     I         theta(1-OLx,1-OLy,ks,bi,bj),
+     I         salt(1-OLx,1-OLy,ks,bi,bj),
+     O         gcmSST(1-OLx,1-OLy,bi,bj),
+     I         myTime, myIter, myThid )
+C     apply mask (because theta=0 will lead to gcmSST<0)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            gcmSST(i,j,bi,bj) = gcmSST(i,j,bi,bj)*maskC(i,j,ks,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+#ifdef ALLOW_AUTODIFF
+      ELSE
+#else
+      ELSEIF ( fluidIsWater ) THEN
+#endif
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            gcmSST(i,j,bi,bj) = theta(i,j,ks,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+      ENDIF
 
 C--   Map generic time varying controls to xx_gentim2d
 #ifdef ALLOW_CTRL
@@ -200,6 +247,13 @@ C-     Update AIM bottom boundary data
         CALL AIM_FIELDS_LOAD( myTime, myIter, myThid )
       ENDIF
 #endif
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( fluidIsWater .AND. useDiagnostics ) THEN
+        CALL DIAGNOSTICS_FILL( gcmSST, 'GCM_SST ',
+     &                               0, 1, 0, 1, 1, myThid )
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_LEAVE( 'LOAD_FIELDS_DRIVER', myThid )
