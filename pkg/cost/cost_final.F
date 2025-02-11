@@ -39,6 +39,11 @@ c     == global variables ==
 # include "profiles.h"
 #endif
 
+#ifdef ALLOW_OBSFIT
+# include "OBSFIT_SIZE.h"
+# include "OBSFIT.h"
+#endif
+
 c     == routine arguments ==
       INTEGER myThid
 
@@ -48,6 +53,9 @@ c     == local variables ==
       _RL glob_fc, loc_fc
 #ifdef ALLOW_PROFILES
       INTEGER num_file,num_var
+#endif
+#ifdef ALLOW_OBSFIT
+      INTEGER num_file_obs
 #endif
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
@@ -188,6 +196,16 @@ c--   Do global summation.
       _BEGIN_MASTER( myThid )
       fc = fc + glob_fc
       _END_MASTER( myThid )
+
+#ifdef ALLOW_OBSFIT
+      IF (.NOT.useECCO) THEN
+       DO num_file_obs=1,NFILESMAX_OBS
+        glofc = glofc
+     &          +  mult_obsfit(num_file_obs)
+     &            *objf_obsfit(num_file_obs)
+       ENDDO
+      ENDIF
+#endif
 
 c--   Add contributions from global mean constraints
       _BEGIN_MASTER( myThid )
