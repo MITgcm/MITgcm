@@ -772,7 +772,7 @@ comparable to an input file containing observational data.
 It is designed to accommodate datasets that are sparse, irregular, or non-local.
 OBSFIT performs grid-independent model-data comparisons, meaning that observations do not have to be on the same
 grid as the model or constrained to a fixed set of depth levels. This increases the efficiency of data
-assimilation for many datasets and allow compatibility with multi-grid state estimation. OBSFIT offers the
+assimilation for many datasets and allows compatibility with multi-grid state estimation. OBSFIT offers the
 capability of assimilating tomography data and high-resolution altimetry data (e.g., `SWOT <https://swot.jpl.nasa.gov>`_).
 
 Description
@@ -822,15 +822,17 @@ zonal and meridional velocities) or the water spiciness (a comnbination of tempe
 Observation duration
 ^^^^^^^^^^^^^^^^^^^^
 
-Each OBSFIT observation is assigned a start time (ts) and a duration (dt).
-Currently, all samples inherit the time and duration from the corresponding observation.
-Observations with a positive duration are averaged in time, whereas a negative duration
-is used to indicate time integration, and instantaneous observations have duration=0;
-if no duration is provided duration=0 is assumed. The end time is te=ts+dt. At each
-time step during the model run, the model is sampled for each sample with ts after the
-beginning of the time step of te before the end of the time step. Sampled values are
-saved in tiled files. If dt>0, accumulated values are saved in the tiled files and the
-average is calculated at the end of the model run.
+Each OBSFIT observation is assigned a start time and a duration.
+Observations with a specified positive duration are averaged in time, whereas a negative duration
+is used to indicate time integration, and instantaneous observations have duration=0
+(if no duration is provided, duration=0 is assumed). During each
+model time step which falls within the observation specified window, the model is sampled 
+at each specified sample location.
+In other words, all samples inherit the time and duration from the corresponding observation.
+If observation time does not align exactly with model time steps, samples are taken from model data
+at the beginning of the time step in which the observation time falls.
+Sampled values are saved in tiled files. For positive specified duration, accumulated values
+are saved in the tiled files and the average is calculated at the end of the model run.
 
 
 Interpolation
@@ -841,11 +843,8 @@ sample location (up to 8 surrounding grid points are used). For a cartesian or s
 interpolation factors (not to be confused with weights!) are calculated from the input longitude, latitude, and depth.
 For a curvilinear grid (LLC, etc), interpolation factors are specified in the input file.
 
-
-Altimetry
-^^^^^^^^^
-
-Given sea surface height (SSH) observations, OBSFIT samples the model variable etan. Inputs should thus be the total SSH, not SSH anomalies. Because of arbitrary reference values for the dynamic topography, the mean offset between modeled and observed SSH is removed when the cost is calculated. 
+Cost Functions
+^^^^^^^^^^^^^^
 
 
 OBSFIT configuration and compiling
@@ -922,6 +921,10 @@ Variable                Type
 :math:`v`               4
 SSH                     5
 ==============          ======
+
+
+For sea surface height (SSH) observations, OBSFIT samples the model variable etan. Inputs should thus be the total SSH, not SSH anomalies. Because of arbitrary reference values for the dynamic topography, the mean offset between modeled and observed SSH is removed when the cost is calculated. 
+
 
 Enabling the package
 ^^^^^^^^^^^^^^^^^^^^
