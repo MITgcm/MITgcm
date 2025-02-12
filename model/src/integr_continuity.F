@@ -6,6 +6,7 @@
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
+#undef PRESERVE_C69C_OUTPUT
 
 CBOP
 C     !ROUTINE: INTEGR_CONTINUITY
@@ -39,39 +40,34 @@ C     == Global variables
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
 C     uFld     :: Zonal velocity ( m/s )
 C     vFld     :: Meridional velocity ( m/s )
 C     myTime   :: Current time in simulation
 C     myIter   :: Current iteration number in simulation
 C     myThid   :: my Thread Id. number
+      _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL myTime
       INTEGER myIter
       INTEGER myThid
-      _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 C     !LOCAL VARIABLES:
-C     Local variables in common block
-
-C     Local variables
 C     bi,bj    :: tile index
 C     i,j,k    :: Loop counters
 C     uTrans   :: Volume transports ( uVel.xA )
 C     vTrans   :: Volume transports ( vVel.yA )
-C     hDivFlow :: Div. Barotropic Flow [transport unit m3/s]
-      INTEGER k,bi,bj
+C     hConv3d  :: horizontal transport convergence [wVel units, m/s]
+C     hDivFlow :: Div. Barotropic Flow [wVel units, m/s]
+      INTEGER bi, bj
+      INTEGER i, j, k
+      _RL uTrans(1:sNx+1,1:sNy+1)
+      _RL vTrans(1:sNx+1,1:sNy+1)
+      _RL hConv3d(1:sNx,1:sNy,Nr)
+      _RL locFac
 #ifdef EXACT_CONSERV
-      INTEGER i, j
       INTEGER ks
-      _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL hDivFlow(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL facEmP, facMass
-#else /* EXACT_CONSERV */
-# ifdef ALLOW_OBCS
-      INTEGER i, j
-# endif
+      _RL hDivFlow(1:sNx,1:sNy)
+      _RL facEmP
 #endif /* EXACT_CONSERV */
 #ifndef ALLOW_ADDFLUID
       _RL addMass(1)
@@ -87,6 +83,11 @@ C     tkey :: tape key (tile dependent)
 #endif
 CEOP
 
+#ifdef EXACT_CONSERV
+       facEmP = 0.
+       IF ( fluidIsWater.AND.useRealFreshWaterFlux ) facEmP=mass2rUnit
+#endif /* EXACT_CONSERV */
+
 C--   Start bi,bj loops
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -94,224 +95,207 @@ C--   Start bi,bj loops
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef EXACT_CONSERV
-      IF ( exactConserv ) THEN
-
-       facEmP = 0.
-       IF ( fluidIsWater.AND.useRealFreshWaterFlux ) facEmP=mass2rUnit
-       facMass = 0.
-       IF ( selectAddFluid.GE.1 .AND. myIter.NE.0 ) facMass = mass2rUnit
-
-C--   Compute the Divergence of The Barotropic Flow :
-
 C-    Initialise
-       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-         hDivFlow(i,j)      = 0. _d 0
-         utrans(i,j)        = 0. _d 0
-         vtrans(i,j)        = 0. _d 0
+        DO j=1,sNy
+         DO i=1,sNx
+           hDivFlow(i,j) = 0. _d 0
+         ENDDO
         ENDDO
-       ENDDO
+#endif /* EXACT_CONSERV */
 
-       DO k=1,Nr
+C--   Compute the Convergence of horizontal Flow :
+        DO k=1,Nr
 
 C-    Calculate velocity field "volume transports" through tracer cell faces
 C     anelastic: uTrans,vTrans are scaled by rhoFacC (~ mass transport).
-        DO j=1,sNy+1
-         DO i=1,sNx+1
-          uTrans(i,j) = uFld(i,j,k,bi,bj)*_dyG(i,j,bi,bj)
-     &                 *deepFacC(k)*rhoFacC(k)
-     &                 *drF(k)*_hFacW(i,j,k,bi,bj)
-          vTrans(i,j) = vFld(i,j,k,bi,bj)*_dxG(i,j,bi,bj)
-     &                 *deepFacC(k)*rhoFacC(k)
-     &                 *drF(k)*_hFacS(i,j,k,bi,bj)
+         locFac = drF(k)*deepFacC(k)*rhoFacC(k)
+         DO j=1,sNy+1
+          DO i=1,sNx+1
+           uTrans(i,j) = uFld(i,j,k,bi,bj)*_dyG(i,j,bi,bj)
+     &                  *locFac*_hFacW(i,j,k,bi,bj)
+           vTrans(i,j) = vFld(i,j,k,bi,bj)*_dxG(i,j,bi,bj)
+     &                  *locFac*_hFacS(i,j,k,bi,bj)
+          ENDDO
          ENDDO
-        ENDDO
 
-C-    Integrate vertically the Horizontal Divergence
-        DO j=1,sNy
-         DO i=1,sNx
-           hDivFlow(i,j) = hDivFlow(i,j)
-     &       +maskC(i,j,k,bi,bj)*( uTrans(i+1,j)-uTrans(i,j)
-     &                            +vTrans(i,j+1)-vTrans(i,j) )
-#ifdef ALLOW_ADDFLUID
-     &       -facMass*addMass(i,j,k,bi,bj)
-#endif /* ALLOW_ADDFLUID */
+C-    horizontal transport convergence [in wVel units]
+         DO j=1,sNy
+          DO i=1,sNx
+           hConv3d(i,j,k) = -( uTrans(i+1,j) - uTrans(i,j)
+     &                       + vTrans(i,j+1) - vTrans(i,j) )
+          ENDDO
          ENDDO
-        ENDDO
+         IF ( selectAddFluid.GE.1 .AND. myIter.NE.0 ) THEN
+#ifdef ALLOW_ADDFLUID
+          DO j=1,sNy
+           DO i=1,sNx
+            hConv3d(i,j,k) = ( hConv3d(i,j,k)
+     &                       + addMass(i,j,k,bi,bj)*mass2rUnit
+     &                       )
+#ifndef PRESERVE_C69C_OUTPUT
+     &                        *recip_rA(i,j,bi,bj)
+#endif
+           ENDDO
+          ENDDO
+#endif /* ALLOW_ADDFLUID */
+#ifndef PRESERVE_C69C_OUTPUT
+         ELSE
+          DO j=1,sNy
+           DO i=1,sNx
+            hConv3d(i,j,k) = hConv3d(i,j,k)*recip_rA(i,j,bi,bj)
+           ENDDO
+          ENDDO
+#endif
+         ENDIF
+
+#ifdef EXACT_CONSERV
+         IF ( exactConserv ) THEN
+C--   Compute the Divergence of The Barotropic Flow :
+          DO j=1,sNy
+           DO i=1,sNx
+            hDivFlow(i,j) = hDivFlow(i,j)
+     &                    - hConv3d(i,j,k)*maskC(i,j,k,bi,bj)
+           ENDDO
+          ENDDO
+         ENDIF
+#endif /* EXACT_CONSERV */
+
+#ifdef PRESERVE_C69C_OUTPUT
+         DO j=1,sNy
+          DO i=1,sNx
+            hConv3d(i,j,k) = hConv3d(i,j,k)*recip_rA(i,j,bi,bj)
+          ENDDO
+         ENDDO
+#endif
 
 C-    End DO k=1,Nr
-       ENDDO
+        ENDDO
+
+#ifdef EXACT_CONSERV
+        IF ( exactConserv ) THEN
+
+#ifdef PRESERVE_C69C_OUTPUT
+         DO j=1,sNy
+          DO i=1,sNx
+            hDivFlow(i,j) = hDivFlow(i,j)*recip_rA(i,j,bi,bj)
+          ENDDO
+         ENDDO
+#endif
 
 C------------------------------------
 C note: deep-model not implemented for P-coordinate + realFreshWaterFlux ;
 C       anelastic: always assumes that rhoFacF(1) = 1
-       IF ( myIter.EQ.nIter0 .AND. myIter.NE.0
-     &    .AND. fluidIsWater .AND. useRealFreshWaterFlux ) THEN
+         IF ( myIter.EQ.nIter0 .AND. myIter.NE.0
+     &      .AND. fluidIsWater .AND. useRealFreshWaterFlux ) THEN
 
 C     needs previous time-step value of E-P-R, that has not been loaded
 C     and was not in old pickup-file ; try to use etaN & etaH instead.
-         IF ( usePickupBeforeC54 ) THEN
+          IF ( usePickupBeforeC54 ) THEN
+           DO j=1,sNy
+            DO i=1,sNx
+             dEtaHdt(i,j,bi,bj) = (etaN(i,j,bi,bj)-etaH(i,j,bi,bj))
+     &                          / (implicDiv2DFlow*deltaTFreeSurf)
+            ENDDO
+           ENDDO
+          ENDIF
+
           DO j=1,sNy
            DO i=1,sNx
-            dEtaHdt(i,j,bi,bj) = (etaN(i,j,bi,bj)-etaH(i,j,bi,bj))
-     &                         / (implicDiv2Dflow*deltaTFreeSurf)
+            PmEpR(i,j,bi,bj) = dEtaHdt(i,j,bi,bj)
+     &                       + hDivFlow(i,j)*recip_deepFac2F(1)
+            PmEpR(i,j,bi,bj) = PmEpR(i,j,bi,bj)*rUnit2mass
+           ENDDO
+          ENDDO
+         ELSEIF ( myIter.EQ.nIter0 ) THEN
+          DO j=1,sNy
+           DO i=1,sNx
+            ks = kSurfC(i,j,bi,bj)
+            PmEpR(i,j,bi,bj) = 0. _d 0
+            dEtaHdt(i,j,bi,bj) = -hDivFlow(i,j)*recip_deepFac2F(ks)
+           ENDDO
+          ENDDO
+         ELSE
+C--    Needs to get valid PmEpR (for T,S forcing) also in overlap regions
+C       (e.g., if using KPP) => set over full index range
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            PmEpR(i,j,bi,bj) = -EmPmR(i,j,bi,bj)
+           ENDDO
+          ENDDO
+          DO j=1,sNy
+           DO i=1,sNx
+            ks = kSurfC(i,j,bi,bj)
+            dEtaHdt(i,j,bi,bj) = -hDivFlow(i,j)*recip_deepFac2F(ks)
+     &                           -facEmP*EmPmR(i,j,bi,bj)
            ENDDO
           ENDDO
          ENDIF
-
-         DO j=1,sNy
-          DO i=1,sNx
-            PmEpR(i,j,bi,bj) = dEtaHdt(i,j,bi,bj)
-     &                       + hDivFlow(i,j)*recip_rA(i,j,bi,bj)
-     &                                      *recip_deepFac2F(1)
-            PmEpR(i,j,bi,bj) = PmEpR(i,j,bi,bj)*rUnit2mass
-          ENDDO
-         ENDDO
-       ELSEIF ( myIter.EQ.nIter0 ) THEN
-         DO j=1,sNy
-          DO i=1,sNx
-            ks = kSurfC(i,j,bi,bj)
-            PmEpR(i,j,bi,bj) = 0. _d 0
-            dEtaHdt(i,j,bi,bj) = -hDivFlow(i,j)*recip_rA(i,j,bi,bj)
-     &                                         *recip_deepFac2F(ks)
-          ENDDO
-         ENDDO
-       ELSE
-C--    Needs to get valid PmEpR (for T,S forcing) also in overlap regions
-C       (e.g., if using KPP) => set over full index range
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-            PmEpR(i,j,bi,bj) = -EmPmR(i,j,bi,bj)
-          ENDDO
-         ENDDO
-         DO j=1,sNy
-          DO i=1,sNx
-            ks = kSurfC(i,j,bi,bj)
-            dEtaHdt(i,j,bi,bj) = -hDivFlow(i,j)*recip_rA(i,j,bi,bj)
-     &                                         *recip_deepFac2F(ks)
-     &                           -facEmP*EmPmR(i,j,bi,bj)
-          ENDDO
-         ENDDO
-       ENDIF
 C------------------------------------
 
 #ifdef ALLOW_OBCS
 C--    reset dEtaHdt to zero outside the OB interior region
-       IF ( useOBCS ) THEN
-         DO j=1,sNy
-          DO i=1,sNx
+         IF ( useOBCS ) THEN
+          DO j=1,sNy
+           DO i=1,sNx
             dEtaHdt(i,j,bi,bj) = dEtaHdt(i,j,bi,bj)*maskInC(i,j,bi,bj)
+           ENDDO
           ENDDO
-         ENDDO
-       ENDIF
+         ENDIF
 #endif /* ALLOW_OBCS */
 
 C-- end if exactConserv block
-      ENDIF
+        ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      IF ( exactConserv .AND. myIter.NE.nIter0 ) THEN
-C--   Update etaN at the end of the time step :
-C     Incorporate the Implicit part of -Divergence(Barotropic_Flow)
-
-       IF ( implicDiv2Dflow.EQ.zeroRL ) THEN
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-           etaN(i,j,bi,bj) = etaH(i,j,bi,bj)
-         ENDDO
-        ENDDO
-       ELSE
-        DO j=1,sNy
-         DO i=1,sNx
-           etaN(i,j,bi,bj) = etaH(i,j,bi,bj)
-     &      + implicDiv2Dflow*dEtaHdt(i,j,bi,bj)*deltaTFreeSurf
-         ENDDO
-        ENDDO
-       ENDIF
-
-#ifdef ALLOW_OBCS
-C--    Was added on Dec 30, 2004 (to fix unrealistic etaN ?), but no longer
-C      needed with proper masking in solver (matrix+cg2d_b,x) and masking
-C      of dEtaHdt above. etaN next to OB does not enter present algorithm but
-C      leave it commented out in case we would implement an aternative scheme.
-c      IF ( useOBCS ) CALL OBCS_APPLY_ETA( bi, bj, etaN, myThid )
-#endif /* ALLOW_OBCS */
-
-C-- end if exactConserv and not myIter=nIter0 block
-      ENDIF
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-# ifdef NONLIN_FRSURF
-#  if (defined ALLOW_AUTODIFF_TAMC) && \
-      (defined ALLOW_DEPTH_CONTROL) && (!defined DISABLE_RSTAR_CODE)
-      tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+# if (defined NONLIN_FRSURF) && (!defined DISABLE_RSTAR_CODE)
+#  if (defined ALLOW_AUTODIFF_TAMC) && (defined ALLOW_DEPTH_CONTROL)
+        tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
 CADJ STORE dEtaHdt(:,:,bi,bj) = comlev1_bibj, key = tkey, kind = isbyte
 #  endif
-      IF ( select_rStar.NE.0 ) THEN
-#  ifndef DISABLE_RSTAR_CODE
+        IF ( select_rStar.NE.0 ) THEN
 C-- note: rStarDhDt is similar to rStarDhCDt from S/R CALC_R_STAR
 C         except for deep-factor and rho factor.
-        DO j=1,sNy
-         DO i=1,sNx
+         DO j=1,sNy
+          DO i=1,sNx
            ks = kSurfC(i,j,bi,bj)
            rStarDhDt(i,j) = dEtaHdt(i,j,bi,bj)
      &                     *deepFac2F(ks)*rhoFacF(ks)
      &                     *recip_Rcol(i,j,bi,bj)
+          ENDDO
          ENDDO
-        ENDDO
-#  endif /* DISABLE_RSTAR_CODE */
-      ENDIF
-#  if (defined ALLOW_AUTODIFF_TAMC) && \
-      (defined ALLOW_DEPTH_CONTROL) && (!defined DISABLE_RSTAR_CODE)
+        ENDIF
+#  if (defined ALLOW_AUTODIFF_TAMC) && (defined ALLOW_DEPTH_CONTROL)
 CADJ STORE rStarDhDt = comlev1_bibj, key = tkey, kind = isbyte
 #  endif
-# endif /* NONLIN_FRSURF */
+# endif /* NONLIN_FRSURF and ndef DISABLE_RSTAR_CODE */
 
 #endif /* EXACT_CONSERV */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      DO k=Nr,1,-1
-C--    Integrate continuity vertically for vertical velocity
-
-       CALL INTEGRATE_FOR_W(
-     I                       bi, bj, k, uFld, vFld,
-     I                       addMass, rStarDhDt,
-     O                       wVel,
-     I                       myIter, myThid )
-
-#ifdef EXACT_CONSERV
-       IF ( k.EQ.Nr .AND. myIter.NE.0 .AND. usingPCoords
-     &      .AND. fluidIsWater .AND. useRealFreshWaterFlux ) THEN
-
-         DO j=1,sNy
-          DO i=1,sNx
-            wVel(i,j,k,bi,bj) = wVel(i,j,k,bi,bj)
-     &               +mass2rUnit*PmEpR(i,j,bi,bj)*maskC(i,j,k,bi,bj)
-          ENDDO
-         ENDDO
-
-       ENDIF
-#endif /* EXACT_CONSERV */
+C--   Integrate continuity vertically for vertical velocity
+        CALL INTEGRATE_FOR_W(
+     I                        bi, bj,
+     I                        hConv3d, rStarDhDt,
+     O                        wVel,
+     I                        myIter, myThid )
 
 #ifdef ALLOW_OBCS
+        IF ( useOBCS ) THEN
 C--    reset W to zero outside the OB interior region
-       IF ( useOBCS ) THEN
-         DO j=1,sNy
-          DO i=1,sNx
-             wVel(i,j,k,bi,bj) = wVel(i,j,k,bi,bj)*maskInC(i,j,bi,bj)
+         DO k=1,Nr
+          DO j=1,sNy
+           DO i=1,sNx
+            wVel(i,j,k,bi,bj) = wVel(i,j,k,bi,bj)*maskInC(i,j,bi,bj)
+           ENDDO
           ENDDO
          ENDDO
-       ENDIF
 C--    Apply OBC to W (non-hydrostatic):
-       IF ( useOBCS.AND.nonHydrostatic )
-     &                CALL OBCS_APPLY_W( bi, bj, k, wVel, myThid )
+         IF ( nonHydrostatic )
+     &        CALL OBCS_APPLY_W( bi, bj, 0, wVel, myThid )
+        ENDIF
 #endif /* ALLOW_OBCS */
-
-C-    End DO k=Nr,1,-1
-      ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -319,40 +303,35 @@ C--   End bi,bj loops
        ENDDO
       ENDDO
 
-#ifdef ALLOW_AUTODIFF_MONITOR
-C     In reverse, print adjoint variable for etaN
-      CALL DUMMY_FOR_ETAN( myTime, myIter, myThid )
-      _EXCH_XY_RL( etaN , myThid )
-#else /* ALLOW_AUTODIFF_MONITOR */
-      IF ( exactConserv .AND. myIter.NE.nIter0
-     &                  .AND. implicDiv2Dflow .NE. 0. _d 0 )
-     &    _EXCH_XY_RL( etaN , myThid )
-#endif /* ALLOW_AUTODIFF_MONITOR */
-
-      IF ( implicitIntGravWave .OR. myIter.EQ.nIter0 )
-     &    _EXCH_XYZ_RL( wVel , myThid )
-
 #ifdef EXACT_CONSERV
 C--   Update etaH (from etaN and dEtaHdt):
       IF ( exactConserv ) THEN
 c       IF ( useRealFreshWaterFlux .AND. myIter.EQ.nIter0 )
 c    &    _EXCH_XY_RL( PmEpR, myThid )
+        CALL EXCH_XY_RL( dEtaHdt, myThid )
 #ifdef ALLOW_DEBUG
         IF ( debugMode ) CALL DEBUG_CALL('UPDATE_ETAH',myThid)
 #endif
         CALL UPDATE_ETAH( myTime, myIter, myThid )
       ENDIF
+#endif /* EXACT_CONSERV */
+
+#ifdef ALLOW_AUTODIFF_MONITOR
+C     In reverse, print adjoint variable for etaN
+      CALL DUMMY_FOR_ETAN( myTime, myIter, myThid )
+      _EXCH_XY_RL( etaN , myThid )
+#endif /* ALLOW_AUTODIFF_MONITOR */
+
+      IF ( implicitIntGravWave .OR. myIter.EQ.nIter0 )
+     &    _EXCH_XYZ_RL( wVel , myThid )
 
 #ifdef NONLIN_FRSURF
 # ifndef DISABLE_SIGMA_CODE
       IF ( nonlinFreeSurf.GT.0 .AND. selectSigmaCoord.NE.0 ) THEN
-        CALL EXCH_XY_RL( dEtaHdt, myThid )
         CALL UPDATE_ETAWS( myTime, myIter, myThid )
       ENDIF
 # endif /* DISABLE_SIGMA_CODE */
 #endif /* NONLIN_FRSURF */
-
-#endif /* EXACT_CONSERV */
 
       RETURN
       END
