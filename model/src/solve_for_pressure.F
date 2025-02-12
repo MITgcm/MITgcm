@@ -434,8 +434,6 @@ C     skip the solving and put the (known) solution directly in cg2d_x
          ENDIF
         ENDDO
        ENDDO
-C--   temporary until we re-visit EXCH calls to SSH vars
-       _EXCH_XY_RL( cg2d_x, myThid )
 C---  end if implicDiv2DFlow=0 special case
       ENDIF
 #endif
