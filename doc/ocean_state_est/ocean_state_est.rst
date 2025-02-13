@@ -817,6 +817,10 @@ zonal velocity, meridional velocity, and sea surface height. Observations can be
 of different types; for example, one could compute the along-shore current speed (a combination of
 zonal and meridional velocities) or the water spiciness (a comnbination of temperature and salinity). 
 
+For sea surface height (SSH) observations, OBSFIT samples the model variable :varlink:`etaN`. Inputs should thus
+be the total SSH, not SSH anomalies. Because of arbitrary reference values for the dynamic topography,
+the mean offset between modeled and observed SSH is removed when the cost is calculated. 
+
 .. _obsfit_time: 
 
 Observation duration
@@ -923,9 +927,6 @@ SSH                     5
 ==============          ======
 
 
-For sea surface height (SSH) observations, OBSFIT samples the model variable etan. Inputs should thus be the total SSH, not SSH anomalies. Because of arbitrary reference values for the dynamic topography, the mean offset between modeled and observed SSH is removed when the cost is calculated. 
-
-
 Enabling the package
 ^^^^^^^^^^^^^^^^^^^^
 
@@ -946,17 +947,17 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   |   Name                             |      Default value           |   Description                                                           |
   +====================================+==============================+=========================================================================+
-  | :varlink:`obsfitDir`               |     ' '                      |                                                                         |
+  | :varlink:`obsfitDir`               |     ' '                      | subdirectory name containing OBSFIT data files                          |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`obsfitFiles`             |     ' '                      |                                                                         |
+  | :varlink:`obsfitFiles`             |     ' '                      | OBSFIT data filenames (``.nc`` automatically appended)                  |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`mult_obsfit`             |     1.0                      |                                                                         |
+  | :varlink:`mult_obsfit`             |     1.0                      | multiplier factor for observation in total cost function calculation    |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`obsfit_facmod`           |     1.0                      |                                                                         |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`obsfitDoNcOutput`        |     FALSE                    |                                                                         |
+  | :varlink:`obsfitDoNcOutput`        |     FALSE                    | boolean to generate output file in netCDF format                        |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`obsfitDoGenGrid`         | TRUE (spherical grid, FALSE) |                                                                         |
+  | :varlink:`obsfitDoGenGrid`         | TRUE (spherical grid, FALSE) | not sure we need this namelist parm                                     |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
 
 
@@ -976,15 +977,22 @@ File ``data.obsfit`` must be present in the run folder. Here is an example:
     &
 
 
-In this example there are two input files: swot_L3_may2023.nc and moorings_calval_may2023.nc (note that the suffix .nc should not be included). They have multiplier factors that will multiply their respective cost in the total cost calculation. For example, the first dataset will be counted with a factor=1, and the second dataset will not influence the total cost since its multiplier is 0. Output files will be written in a folder called "OBSFIT" that will be created if it doesn't already exist. 
+In this example there are two input files: swot_L3_may2023.nc and moorings_calval_may2023.nc
+(note that the suffix .nc should not be included). They have multiplier factors that will
+multiply their respective cost in the total cost calculation. For example, the first dataset
+will be counted with a factor=1, and the second dataset will not influence the total cost 
+ince its multiplier is 0. Output files will be written in a folder called "OBSFIT" that
+will be created if it doesn't already exist. 
 
 
 Post-processing
 ^^^^^^^^^^^^^^^
 
-For each input file, two new files are created. One, named <original_filename>.equi.nc, contains model-equivalent values. The other, named <filename>.misfits.nc, contains model-observations misfits.
+For each input file, two new files are created. One, named <original_filename>.equi.nc, contains model-equivalent values
+for direct comparison with observation data. The other, named <filename>.misfits.nc, contains model-observations misfits.
 
-"equi.nc" output files include two variables, mod_val and mod_mask. They are in the same format as the input files, thus obs_val and mod_val are directly comparable. The mask indicates missing model-equivalent values.
+"equi.nc" output files include two variables, mod_val and mod_mask. They are in the same format as the input files,
+thus obs_val and mod_val are directly comparable. The mask indicates missing model-equivalent values.
 
 A simple way to plot the observed values and model-equivalent values in matlab could be:
 
