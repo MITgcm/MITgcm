@@ -763,14 +763,16 @@ Author: Ariane Verdy
 Introduction
 ~~~~~~~~~~~~
 
-:filelink:`pkg/obsfit <pkg/obsfit>` introduces a versatile cost function implementation for the MITgcm. 
+:filelink:`pkg/obsfit <pkg/obsfit>` is a versatile package used for grid-independent model-data comparisons
+including cost function calculations.
+
 Given an observational dataset, OBSFIT samples the model during the run at the time and location of observations,
 calculates the cost (sum of weighted misfits), and produces a model-equivalent output file that is directly
-comparable to the input file.
+comparable to an input file containing observational data.
 It is designed to accommodate datasets that are sparse, irregular, or non-local.
 OBSFIT performs grid-independent model-data comparisons, meaning that observations do not have to be on the same
 grid as the model or constrained to a fixed set of depth levels. This increases the efficiency of data
-assimilation for many datasets and allow compatibility with multi-grid state estimation. OBSFIT offers the
+assimilation for many datasets and allows compatibility with multi-grid state estimation. OBSFIT offers the
 capability of assimilating tomography data and high-resolution altimetry data (e.g., `SWOT <https://swot.jpl.nasa.gov>`_).
 
 Description
@@ -789,9 +791,9 @@ In addition to relaxing pkg/profile's constraint on vertical levels, OBSFIT can 
 
 Observations vs. Samples
 ^^^^^^^^^^^^^^^^^^^^^^^^
-One feature of this package is that it allows measured observations to be averages in both space and/or time,
+One feature of this package is that it allows measured observations to be averages in both space and/or time
 (or alternatively, integrated values in space and/or time).  **Samples**, defined as instantaneous model data values
-at specific locations on the model grid, are aggregated for comparison with observations.
+at specific locations (which may or may not coincide with model gridpoints), are aggregated and interpolated for comparison with observations.
 For example, consider observations of integrated sound speed along the acoustic ray path.
 In that case, one specifies multiple locations at which to sample the model, as we require model
 data at multiple locations to calculate the model-equivalent of a single observation. Thus,
@@ -810,40 +812,43 @@ Sample types
 ^^^^^^^^^^^^
 
 Each OBSFIT sample is assigned a type corresponding to the model variable that will be sampled.
-There are currently 5 types of variables implemented in the code: potential temperature, salinity,
+There are currently five types of variables implemented in the code: potential temperature, salinity,
 zonal velocity, meridional velocity, and sea surface height. Observations can be made of samples
 of different types; for example, one could compute the along-shore current speed (a combination of
 zonal and meridional velocities) or the water spiciness (a comnbination of temperature and salinity). 
+
+For sea surface height (SSH) observations, OBSFIT samples the model variable :varlink:`etaN`. Inputs should thus
+be the total SSH, not SSH anomalies. Because of arbitrary reference values for the dynamic topography,
+the mean offset between modeled and observed SSH is removed when the cost is calculated. 
 
 .. _obsfit_time: 
 
 Observation duration
 ^^^^^^^^^^^^^^^^^^^^
 
-Each OBSFIT observation is assigned a start time (ts) and a duration (dt).
-Currently, all samples inherit the time and duration from the corresponding observation.
-Observations with a positive duration are averaged in time, whereas a negative duration
-is used to indicate time integration, and instantaneous observations have duration=0;
-if no duration is provided duration=0 is assumed. The end time is te=ts+dt. At each
-time step during the model run, the model is sampled for each sample with ts after the
-beginning of the time step of te before the end of the time step. Sampled values are
-saved in tiled files. If dt>0, accumulated values are saved in the tiled files and the
-average is calculated at the end of the model run.
+Each OBSFIT observation is assigned a start time and a duration.
+Observations with a specified positive duration are averaged in time, whereas a negative duration
+is used to indicate time integration, and instantaneous observations have duration=0
+(if no duration is provided, duration=0 is assumed). During each
+model time step which falls within the observation specified window, the model is sampled 
+at each specified sample location.
+In other words, all samples inherit the time and duration from the corresponding observation.
+If observation time does not align exactly with model time steps, samples are taken from model data
+at the beginning of the time step in which the observation time falls.
+Sampled values are saved in tiled files. For positive specified duration, accumulated values
+are saved in the tiled files and the average is calculated at the end of the model run.
 
 
 Interpolation
 ^^^^^^^^^^^^^
 
-Sampling is done by interpolating model values from the 8 grid points surrounding the
-sample location. In the regular lat-lon grid case, interpolation factors (let's not call
-them weights, as it gets confusing!) are calculated from the input longitude, latitude, and depth.
-In the generic grid case (LLC, etc), interpolation factors are specified in the input file.
+Sampling is done by interpolating model values from grid points surrounding the
+sample location (up to 8 surrounding grid points are used). For a cartesian or spherical polar grid,
+interpolation factors (not to be confused with weights!) are calculated from the input longitude, latitude, and depth.
+For a curvilinear grid (LLC, etc), interpolation factors are specified in the input file.
 
-
-Altimetry
-^^^^^^^^^
-
-Given sea surface height (SSH) observations, OBSFIT samples the model variable etan. Inputs should thus be the total SSH, not SSH anomalies. Because of arbitrary reference values for the dynamic topography, the mean offset between modeled and observed SSH is removed when the cost is calculated. 
+Cost Functions
+^^^^^^^^^^^^^^
 
 
 OBSFIT configuration and compiling
@@ -857,7 +862,7 @@ OBSFIT can be turned on or off at compile time
 - or using :filelink:`genmake2 <tools/genmake2>` adding ``-enable=obsfit`` or
   ``-disable=obsfit`` switches
 
-- **required packages and CPP options**: :filelink:`pkg/cost`
+- *required packages and CPP options*: :filelink:`pkg/cal` must be enabled to use OBSFIT. No other packages or CPP options are required.
 
 If needed, edit :filelink:`OBSFIT_SIZE.h <pkg/obsfit/OBSFIT_SIZE.h>` to change the maximum number of input files,
 total number of observations, number of samples per tile, or number of samples per observation. For maximum efficiency,
@@ -921,6 +926,7 @@ Variable                Type
 SSH                     5
 ==============          ======
 
+
 Enabling the package
 ^^^^^^^^^^^^^^^^^^^^
 
@@ -941,17 +947,17 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   |   Name                             |      Default value           |   Description                                                           |
   +====================================+==============================+=========================================================================+
-  | :varlink:`obsfitDir`               |     ' '                      |                                                                         |
+  | :varlink:`obsfitDir`               |     ' '                      | subdirectory name containing OBSFIT data files                          |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`obsfitFiles`             |     ' '                      |                                                                         |
+  | :varlink:`obsfitFiles`             |     ' '                      | OBSFIT data filenames (``.nc`` automatically appended)                  |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`mult_obsfit`             |     1.0                      |                                                                         |
+  | :varlink:`mult_obsfit`             |     1.0                      | multiplier factor for observation in total cost function calculation    |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`obsfit_facmod`           |     1.0                      |                                                                         |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`obsfitDoNcOutput`        |     FALSE                    |                                                                         |
+  | :varlink:`obsfitDoNcOutput`        |     FALSE                    | boolean to generate output file in netCDF format                        |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`obsfitDoGenGrid`         | TRUE (spherical grid, FALSE) |                                                                         |
+  | :varlink:`obsfitDoGenGrid`         | TRUE (spherical grid, FALSE) | not sure we need this namelist parm                                     |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
 
 
@@ -971,15 +977,22 @@ File ``data.obsfit`` must be present in the run folder. Here is an example:
     &
 
 
-In this example there are two input files: swot_L3_may2023.nc and moorings_calval_may2023.nc (note that the suffix .nc should not be included). They have multiplier factors that will multiply their respective cost in the total cost calculation. For example, the first dataset will be counted with a factor=1, and the second dataset will not influence the total cost since its multiplier is 0. Output files will be written in a folder called "OBSFIT" that will be created if it doesn't already exist. 
+In this example there are two input files: swot_L3_may2023.nc and moorings_calval_may2023.nc
+(note that the suffix .nc should not be included). They have multiplier factors that will
+multiply their respective cost in the total cost calculation. For example, the first dataset
+will be counted with a factor=1, and the second dataset will not influence the total cost 
+ince its multiplier is 0. Output files will be written in a folder called "OBSFIT" that
+will be created if it doesn't already exist. 
 
 
 Post-processing
 ^^^^^^^^^^^^^^^
 
-For each input file, two new files are created. One, named <original_filename>.equi.nc, contains model-equivalent values. The other, named <filename>.misfits.nc, contains model-observations misfits.
+For each input file, two new files are created. One, named <original_filename>.equi.nc, contains model-equivalent values
+for direct comparison with observation data. The other, named <filename>.misfits.nc, contains model-observations misfits.
 
-"equi.nc" output files include two variables, mod_val and mod_mask. They are in the same format as the input files, thus obs_val and mod_val are directly comparable. The mask indicates missing model-equivalent values.
+"equi.nc" output files include two variables, mod_val and mod_mask. They are in the same format as the input files,
+thus obs_val and mod_val are directly comparable. The mask indicates missing model-equivalent values.
 
 A simple way to plot the observed values and model-equivalent values in matlab could be:
 
