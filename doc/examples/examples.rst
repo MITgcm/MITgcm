@@ -292,10 +292,11 @@ For many experiments, additional information is provided in a ``README`` file lo
 
 #. :filelink:`atm_gray <verification/atm_gray>` - gray atmospheric physics configuration using
    :filelink:`atm_phys <pkg/atm_phys>` package, on cube sphere grid (32x32 grid points per face)
-   with 26 pressure levels. This aqua-planet like experiment has interactive SST with a prescribed,
+   with 26 pressure levels. This aquaplanet-like experiment has interactive SST with a prescribed,
    time-invariant Q-flux.
-   Also contains an additional setup with prescribed idealized SST from Aqua-Planet Experiment
-   (APE) project (:filelink:`input.ape <verification/atm_gray/input.ape>`).
+   Also contains an additional setup with prescribed idealized SST from
+   `Aqua-Planet Experiment (APE) <http://www.met.reading.ac.uk/~mike/ape/>`_ project
+   (:filelink:`input.ape <verification/atm_gray/input.ape>`).
 
 #. :filelink:`cfc_example <verification/cfc_example>` - Global ocean with online computation and advection
    of CFC11 and CFC12.
@@ -453,7 +454,7 @@ For many experiments, additional information is provided in a ``README`` file lo
 
    - using package :filelink:`salt_plume <pkg/salt_plume>` (:filelink:`input.salt_plume <verification/lab_sea/input.salt_plume>`).
 
-   - ice-free Eastern subtropical North Atlantic box (:filelink:`input.natl_box <verification/lab_sea/input.natl_box>`,
+   - ice-free eastern subtropical North Atlantic box (:filelink:`input.natl_box <verification/lab_sea/input.natl_box>`,
      formerly :filelink:`natl_box <verification/natl_box>`).
 
    - same as above with passive tracers (:filelink:`pkg/ptracers`) using package :filelink:`longstep <pkg/longstep>`
