@@ -255,7 +255,10 @@ C Read observation and uncertainty
      &           obs_ind_glob(num_file,obs_num),
      &           obs_uncert,myThid)
 
-            IF ((obs_data.GT.-9999).AND.(obs_modmask.GT.0)) THEN
+CAV - This causes major recomputations (obs_modmask)
+CAV            IF ((obs_data.GT.-9999).AND.(obs_modmask.GT.0)) THEN
+CAV - Does this work?
+            IF ((obs_data.GT.-9999).AND.(obs_modval.GT.-9999)) THEN
              obs_mean=obs_mean+obs_data
              mod_mean=mod_mean+obs_modval
              nobsmean=nobsmean+1
