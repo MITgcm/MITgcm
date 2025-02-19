@@ -261,7 +261,7 @@ C Read the info for observations:
         ENDIF
 
         readDelT=1
-        err = NF_INQ_VARID(fid,'obs_dt', varid1c )
+        err = NF_INQ_VARID(fid,'obs_delT', varid1c )
 C Time interval (if missing, assume instanteneous):
         IF (err.NE.NF_NOERR) THEN
          readDelT=0
@@ -639,7 +639,7 @@ C If isample is not a dimension, use iobs for size of sampleno
           ELSE
            err = NF_INQ_DIMLEN(fid, dimid, sampleNo(num_file,bi,bj) )
           ENDIF
-         
+
           DO k=1,NSAMPLESMAX
            sample_timeS(num_file,k,bi,bj) = -999. _d 0
            sample_timeE(num_file,k,bi,bj) = -999. _d 0
@@ -1016,7 +1016,7 @@ c Meridional velocity
                 ENDDO
                 DO q = 1,NUM_INTERP_PTS_OBS
                  sample_interp_frac(num_file,sampleNo_tile,q,bi,bj)
-     &               =w(q)/wtot
+     &               =w(q)/(wtot+1. _d -10)
                 ENDDO
 
                ENDIF
@@ -1144,7 +1144,7 @@ C interpolation information consistent (self and with grid)
 C ==============================================================================
  
 C Check that maximum size was not reached:
-           IF (sampleNo_tile.GE.NSAMPLESMAX) then
+           IF (sampleNo_tile.GT.NSAMPLESMAX) then
             WRITE(msgBuf,'(3A)')
      &       'OBSFIT_INIT_FIXED: file ', obsfitFile(1:IL),
      &       '.nc was not read properly (increase NSAMPLESMAX).'
