@@ -524,7 +524,7 @@ EOF
     echo " --> set CC='$CC'" >> $LOGFILE
 }
 
-# Guess possible config options for this host
+#  Guess possible config options for this host
 find_possible_optfile()  {
 
     echo >> $LOGFILE
@@ -2464,7 +2464,7 @@ PACKAGES="$pack"
 echo "  applying ENABLE settings"
 echo "" > $TMP.pack
 PACKAGES="$PACKAGES $ENABLE"
-# Test if each explicitly referenced package exists
+#  Test if each explicitly referenced package exists
 for i in $PACKAGES ; do
     j=`echo $i | sed 's/[-+]//'`
     if test ! -d "$ROOTDIR/pkg/$j" ; then
@@ -2796,10 +2796,10 @@ for i in $SOURCEDIRS ; do
     list_files=`( cd $i && ls -1 *_ad_diff.list 2>/dev/null )`
     for j in $list_files ; do
 	grep '\.f\>'   $i/$j >> $TMP.adSrcFiles
-        # Retain file paths for topo sorting later
+	# Retain file paths for topo sorting later
 	grep '\.f90\>' $i/$j | sed 's/f90$/F90/'g | while IFS= read -r line; do
-            echo "$i/$line" >> $TMP.adF90Files
-        done
+	    echo "$i/$line" >> $TMP.adF90Files
+	done
     done
 done
 
@@ -2810,12 +2810,12 @@ while IFS= read -r f90file; do
 
     if [ -n "$mod_used" ]; then
 	for mod in $mod_used; do
-            # Find the file that defines this module
-            mod_file=$(grep -li "^module $mod\b" \
+	    # Find the file that defines this module
+	    mod_file=$(grep -li "^module $mod\b" \
 			    $(grep -v $f90file "$TMP.adF90Files"))
-            if [ -n "$mod_file" ]; then
+	    if [ -n "$mod_file" ]; then
 		echo $mod_file $f90file >> $TMP.adF90Graph
-            fi
+	    fi
 	done
     else
 	echo $f90file >> $TMP.adF90noGraph
@@ -2848,7 +2848,7 @@ if test ! "x$DIVA" = x -a ! "x$MPI" = x ; then
 	#  Do a local copy of MPI headers files (in local dir ./mpi_headers/) after
 	#   checking for additional included headers (in case of chain of included
 	#   header); also set LOCAL_MPI_HEADERS (if not already set)
-        mpi_headers_do_local_copy
+	mpi_headers_do_local_copy
     fi
 fi
 
@@ -2970,7 +2970,6 @@ printf 'AD_FLOW_FILES = ' > $TMP.ad_flow_files
 alldirs="$SOURCEDIRS $INCLUDEDIRS ."
 alldirsmk=(${SOURCEDIRSMK} ${INCLUDEDIRSMK} ".")
 nd=0
-touch $TMP.F90Files
 for d in $alldirs ; do
     dmk=${alldirsmk[${nd}]}
     nd=$((${nd}+1))
@@ -3089,9 +3088,6 @@ for d in $alldirs ; do
 		    F90)
 			echo    " \\" >> $TMP.F90srclist
 			printf " $sf" >> $TMP.F90srclist
-			# Store file path and name for topo ordering later
-			echo "$d/$sf" >> $TMP.F90Files
-
 			if ( test "x$OPENAD" = x && test "x$TAPENADE" = x ) ; then
 			    basename=${sf%%.F90}
 			    isAD=`egrep ^$basename.f90'[ 	]*' $TMP.adF90Files`
@@ -3130,47 +3126,6 @@ for d in $alldirs ; do
       fi
     fi
 done
-
-# Sort the F90 files in topological order
-touch $TMP.F90Graph $TMP.F90noGraph
-while IFS= read -r f90file; do
-    # Find modules used, ignoring those commented out
-    mod_used=$(grep -i "^[^!]*\buse\b" $f90file | $AWK '{print $2}' | tr -d ',')
-
-    if [ -n "$mod_used" ]; then
-	for mod in $mod_used; do
-            # Find the file that defines this module
-            mod_file=$(grep -li "^module $mod\b" \
-			    $(grep -v $f90file "$TMP.F90Files"))
-            if [ -n "$mod_file" ]; then
-		echo $mod_file $f90file >> $TMP.F90Graph
-            fi
-	done
-    else
-	echo $f90file >> $TMP.F90noGraph
-    fi
-done < "$TMP.F90Files"
-# Replace alphabetical with topological file order
-tsort $TMP.F90Graph > $TMP.F90Files
-# append files without use-statements if they are not already included
-while IFS= read -r f90file; do
-    inList=$(grep -i $f90file $TMP.F90Files)
-    if test -z "$inList" ; then
-	echo $f90file >> $TMP.F90Files
-    fi
-done < $TMP.F90noGraph
-
-# Format to F90srclist specs
-sed -e 's|.*/||' -e 's/^/ /' -e 's/$/ \\/' "$TMP.F90Files" > "$TMP.F90Files.tmp"
-sed '2,$d' $TMP.F90srclist > $TMP.F90srclist.tmp
-
-cat $TMP.F90Files.tmp >> $TMP.F90srclist.tmp
-cat $TMP.F90srclist.tmp > $TMP.F90srclist
-
-# Clean up topological sorting files
-rm -rf $TMP.F90Files.tmp $TMP.F90Files $TMP.F90srclist.tmp
-rm -rf $TMP.F90Graph $TMP.F90noGraph
-
 rm -rf $TMP.links
 echo "" >> $TMP.F77srclist
 echo "" >> $TMP.nonADF77srclist

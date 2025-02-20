@@ -524,7 +524,7 @@ EOF
     echo " --> set CC='$CC'" >> $LOGFILE
 }
 
-# Guess possible config options for this host
+#  Guess possible config options for this host
 find_possible_optfile()  {
 
     echo >> $LOGFILE
@@ -667,7 +667,7 @@ EOF
 	    else
 	      FC_CHECK=4
 	      echo "" >> $LOGFILE
-	      echo " warning: MPI run command not found ==> skip run-test check" >> $LOGFILE
+	      echo " Warning: MPI run command not found ==> skip run-test check" >> $LOGFILE
 	     #echo -n " fail to generate executable"
 	    fi
 	  fi
@@ -2450,7 +2450,7 @@ PACKAGES="$pack"
 echo "  applying ENABLE settings"
 echo "" > $TMP.pack
 PACKAGES="$PACKAGES $ENABLE"
-# Test if each explicitly referenced package exists
+#  Test if each explicitly referenced package exists
 for i in $PACKAGES ; do
     j=`echo $i | sed 's/[-+]//'`
     if test ! -d "$ROOTDIR/pkg/$j" ; then
@@ -2773,8 +2773,7 @@ fi
 echo "  Creating the list of files for the adjoint compiler."
 test -f $TMP.adSrcFiles && rm -f $TMP.adSrcFiles
 test -f $TMP.adF90Files && rm -f $TMP.adF90Files
-touch $TMP.adSrcFiles
-touch $TMP.adF90Files
+touch $TMP.adSrcFiles $TMP.adF90Files
 for i in $SOURCEDIRS ; do
     list_files=`( cd $i && ls -1 *_ad_diff.list 2>/dev/null )`
     for j in $list_files ; do
@@ -2797,7 +2796,7 @@ if test ! "x$DIVA" = x -a ! "x$MPI" = x ; then
 	#  Do a local copy of MPI headers files (in local dir ./mpi_headers/) after
 	#   checking for additional included headers (in case of chain of included
 	#   header); also set LOCAL_MPI_HEADERS (if not already set)
-        mpi_headers_do_local_copy
+	mpi_headers_do_local_copy
     fi
 fi
 
