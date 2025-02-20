@@ -771,6 +771,52 @@ mpi_headers_do_local_copy() {
     fi
 }
 
+#  Re-order file list according to dependencies from used modules
+#  usage: sort_file_list_from_used_modules file_list
+sort_file_list_from_used_modules()  {
+    file_list=$1
+    dBug=0
+    if test $dBug = 1 ; then
+	echo "-- sort_file_list_from_used_modules : file_list=$file_list , TMP=$TMP"
+	echo "-> initial list :" ; cat $file_list
+    fi
+    test -f $TMP.Graph && rm -f $TMP.Graph
+    test -f $TMP.noGraph && rm -f $TMP.noGraph
+    touch $TMP.Graph $TMP.noGraph
+    # Sort the f90 files in topological order
+    while IFS= read -r f90file; do
+    # List modules used in f90file, ignoring those commented out
+	mod_used=$(grep -i "^[^!]*\buse\b" $f90file | $AWK '{print $2}' | tr -d ',')
+	if [ -n "$mod_used" ]; then
+	    for mod in $mod_used; do
+		# Find the file that defines this module
+		mod_file=$(grep -li "^module $mod\b" \
+				$(grep -v $f90file "$file_list"))
+		if [ -n "$mod_file" ]; then
+		    echo $mod_file $f90file >> $TMP.Graph
+		fi
+	    done
+	else
+	    echo $f90file >> $TMP.noGraph
+	fi
+    done < $file_list
+    # Replace alphabetical with topological file order
+    tsort $TMP.Graph | sed -e 's|.*/||' -e 's/\.F90/\.f90/g' > $file_list
+    # append files without use-statements if they are not already included
+    while IFS= read -r f90file; do
+	f=$(echo $f90file | sed -e 's|.*/||' -e 's/\.F90/\.f90/g' )
+	inList=$(grep -i $f $file_list)
+	if test -z "$inList" ; then
+	    echo $f >> $file_list
+	fi
+    done < $TMP.noGraph
+    # Clean up topological sorting files
+    rm -rf $TMP.Graph $TMP.noGraph
+    if test $dBug = 1 ; then
+	echo "<- re-ordered list :" ; cat $file_list
+    fi
+}
+
 #  Parse the package dependency information
 get_pdepend_list()  {
 
@@ -2787,11 +2833,7 @@ fi
 echo "  Creating the list of files for the adjoint compiler."
 test -f $TMP.adSrcFiles && rm -f $TMP.adSrcFiles
 test -f $TMP.adF90Files && rm -f $TMP.adF90Files
-test -f $TMP.adF90Graph && rm -f $TMP.adF90Graph
-touch $TMP.adSrcFiles
-touch $TMP.adF90Files
-touch $TMP.adF90Graph
-touch $TMP.adF90noGraph
+touch $TMP.adSrcFiles $TMP.adF90Files
 for i in $SOURCEDIRS ; do
     list_files=`( cd $i && ls -1 *_ad_diff.list 2>/dev/null )`
     for j in $list_files ; do
@@ -2802,37 +2844,8 @@ for i in $SOURCEDIRS ; do
 	done
     done
 done
-
-# Sort the f90 files in topological order
-while IFS= read -r f90file; do
-    # List modules used in f90file, ignoring those commented out
-    mod_used=$(grep -i "^[^!]*\buse\b" $f90file | $AWK '{print $2}' | tr -d ',')
-
-    if [ -n "$mod_used" ]; then
-	for mod in $mod_used; do
-	    # Find the file that defines this module
-	    mod_file=$(grep -li "^module $mod\b" \
-			    $(grep -v $f90file "$TMP.adF90Files"))
-	    if [ -n "$mod_file" ]; then
-		echo $mod_file $f90file >> $TMP.adF90Graph
-	    fi
-	done
-    else
-	echo $f90file >> $TMP.adF90noGraph
-    fi
-done < $TMP.adF90Files
-# Replace alphabetical with topological file order
-tsort $TMP.adF90Graph | sed -e 's|.*/||' -e 's/\.F90/\.f90/g' > $TMP.adF90Files
-# append files without use-statements if they are not already included
-while IFS= read -r f90file; do
-    f=$(echo $f90file | sed -e 's|.*/||' -e 's/\.F90/\.f90/g' )
-    inList=$(grep -i $f $TMP.adF90Files)
-    if test -z "$inList" ; then
-	echo $f >>  $TMP.adF90Files
-    fi
-done < $TMP.adF90noGraph
-# Clean up topological sorting files
-rm -rf $TMP.adF90Graph $TMP.adF90noGraph
+#  Sort in topological order the list of f90 files to send to adjoint compiler
+sort_file_list_from_used_modules $TMP.adF90Files
 
 echo
 echo "===  Creating the Makefile  ==="
