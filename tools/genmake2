@@ -1724,15 +1724,15 @@ for ac_option in "$@" ; do
 	-tamc_extra=* | --tamc_extra=*)
 	    TAMC_EXTRA=$ac_optarg ;;
 
-	-taf_f77_flags | --taf_f77_flags)
-	    ac_prev=TAF_F77_FLAGS ;;
-	-taf_f77_flags=* | --taf_f77_flags=*)
-	    TAF_F77_FLAGS=$ac_optarg ;;
+#	-taf_f77_flags | --taf_f77_flags)
+#	    ac_prev=TAF_F77_FLAGS ;;
+#	-taf_f77_flags=* | --taf_f77_flags=*)
+#	    TAF_F77_FLAGS=$ac_optarg ;;
 
-	-taf_f90_flags | --taf_f90_flags)
-	    ac_prev=TAF_F90_FLAGS ;;
-	-taf_f90_flags=* | --taf_f90_flags=*)
-	    TAF_F90_FLAGS=$ac_optarg ;;
+#	-taf_f90_flags | --taf_f90_flags)
+#	    ac_prev=TAF_F90_FLAGS ;;
+#	-taf_f90_flags=* | --taf_f90_flags=*)
+#	    TAF_F90_FLAGS=$ac_optarg ;;
 
 	-ignoretime | -ignore_time | --ignoretime | --ignore_time)
 	    IGNORE_TIME="-DIGNORE_TIME" ;;
