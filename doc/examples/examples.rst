@@ -294,8 +294,8 @@ For many experiments, additional information is provided in a ``README`` file lo
    :filelink:`atm_phys <pkg/atm_phys>` package, on cube sphere grid (32x32 grid points per face)
    with 26 pressure levels. This aquaplanet-like experiment has interactive SST with a prescribed,
    time-invariant Q-flux.
-   Also contains an additional setup with prescribed idealized SST from
-   Aqua-Planet Experiment (APE), see Neale and Hoskins (2001) :cite:`neale:01`.
+   Also contains an secondary setup with prescribed idealized SST from
+   Neale and Hoskins (2001) :cite:`neale:01`.
 
 #. :filelink:`cfc_example <verification/cfc_example>` - Global ocean with online computation and advection
    of CFC11 and CFC12.
@@ -340,9 +340,9 @@ For many experiments, additional information is provided in a ``README`` file lo
 
 #. :filelink:`fizhi-cs-aqualev20 <verification/fizhi-cs-aqualev20>` - Global atmospheric simulation on an aqua
    planet with full atmospheric physics. Run is perpetual March with an
-   analytical SST distribution. This is the configuration used for the APE
-   (Aqua Planet Experiment) participation experiment, see also secondary
-   experiment in :filelink:`atm_gray <verification/atm_gray>`.
+   analytical SST distribution. This is the configuration used for the
+   `Aqua-Planet Experiment Project (APE) <http://www.met.reading.ac.uk/~mike/ape/>`_ ,
+   see also Neale and Hoskins (2001) :cite:`neale:01`.
 
 #. :filelink:`fizhi-gridalt-hs <verification/fizhi-gridalt-hs>` - Global atmospheric simulation Held-Suarez
    (1994) :cite:`held-suar:94` forcing, with the physical forcing and the dynamical forcing
