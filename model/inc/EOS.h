@@ -62,6 +62,119 @@ C     end nonlinear equation of state
       _RL eosMDJWFnum(0:11), eosMDJWFden(0:12)
       COMMON /PARM_EOS_MDJWF/
      &     eosMDJWFnum, eosMDJWFden
+
+C     TEOS10 coefficients
       _RL teos(48)
+
+C     Parameters in the temperature conversion code for TEOS10
+C     The TEOS 10 conversion factor to go from reference salinity to
+C     practical salinity (nondim)
+      _RL Sprac_Sref
+C     The inverse of a plausible range of oceanic salinities (kg g-1)
+      _RL I_S0
+C     The inverse of a plausible range of oceanic temperatures (degC-1)
+      _RL I_Ts
+C     The inverse of the "specific heat" for use
+C     with Conservative Temperature, as defined with TEOS10 (degC kg J-1)
+      _RL I_cp0
+
+C     The following are coefficients of contributions to conservative
+C     temperature as a function of the square root of normalized
+C     absolute salinity with an offset (zS) and potential temperature
+C     (T) with a contribution Hab * zS**a * T**b.  The numbers here are
+C     copied directly from the corresponding gsw module, but the
+C     expressions here do not use the same nondimensionalization for
+C     pressure or temperature as they do.
+
+C     Tp to Tc fit constant (degC)
+      _RL H00
+C     Tp to Tc fit T coef. (nondim)
+      _RL H01
+C     Tp to Tc fit T**2 coef. (degC-1)
+      _RL H02
+C     Tp to Tc fit T**3 coef. (degC-2)
+      _RL H03
+C     Tp to Tc fit T**4 coef. (degC-3)
+      _RL H04
+C     Tp to Tc fit T**5 coef. (degC-4)
+      _RL H05
+C     Tp to Tc fit T**6 coef. (degC-5)
+      _RL H06
+C     Tp to Tc fit T**7 coef. (degC-6)
+      _RL H07
+C     Tp to Tc fit zS**2 coef. (degC)
+      _RL H20
+C     Tp to Tc fit zS**2 * T coef. (nondim)
+      _RL H21
+C     Tp to Tc fit zS**2 * T**2 coef. (degC-1)
+      _RL H22
+C     Tp to Tc fit zS**2 * T**3 coef. (degC-2)
+      _RL H23
+C     Tp to Tc fit zS**2 * T**4 coef. (degC-3)
+      _RL H24
+C     Tp to Tc fit zS**2 * T**5 coef. (degC-4)
+      _RL H25
+C     Tp to Tc fit zS**2 * T**6 coef. (degC-5)
+      _RL H26
+C     Tp to Tc fit zS**3 coef. (degC)
+      _RL H30
+C     Tp to Tc fit zS** 3* T coef. (nondim)
+      _RL H31
+C     Tp to Tc fit zS**3 * T**2 coef. (degC-1)
+      _RL H32
+C     Tp to Tc fit zS**3 * T**3 coef. (degC-2)
+      _RL H33
+C     Tp to Tc fit zS**3 * T**4 coef. (degC-3)
+      _RL H34
+C     Tp to Tc fit zS**4 coef. (degC)
+      _RL H40
+C     Tp to Tc fit zS**4 * T coef. (nondim)
+      _RL H41
+C     Tp to Tc fit zS**4 * T**2 coef. (degC-1)
+      _RL H42
+C     Tp to Tc fit zS**4 * T**3 coef. (degC-2)
+      _RL H43
+C     Tp to Tc fit zS**4 * T**4 coef. (degC-3)
+      _RL H44
+C     Tp to Tc fit zS**4 * T**5 coef. (degC-4)
+      _RL H45
+C     Tp to Tc fit zS**5 coef. (degC)
+      _RL H50
+C     Tp to Tc fit zS**6 coef. (degC)
+      _RL H60
+C     Tp to Tc fit zS**7 coef. (degC)
+      _RL H70
+
+C     The following are coefficients in the nominator (TPNxx) or
+C     denominator (TPDxx) of a simple rational expression that
+C     approximately converts conservative temperature to potential
+C     temperature.
+C     Simple fit numerator constant (degC)
+      _RL TPN00
+C     Simple fit numerator Sa coef. (degC ppt-1)
+      _RL TPN10
+C     Simple fit numerator Sa**2 coef. (degC ppt-2)
+      _RL TPN20
+C     Simple fit numerator Tc coef. (nondim)
+      _RL TPN01
+C     Simple fit numerator Sa * Tc coef. (ppt-1)
+      _RL TPN11
+C     Simple fit numerator Tc**2 coef. (degC-1)
+      _RL TPN02
+C     Simple fit denominator Sa coef. (ppt-1)
+      _RL TPD10
+C     Simple fit denominator Tc coef. (degC-1)
+      _RL TPD01
+C     Simple fit denominator Tc**2 coef. (degC-2)
+      _RL TPD02
+
       COMMON /PARM_TEOS10/
-     &     teos
+     &     teos,
+     &     Sprac_Sref, I_S0, I_Ts, I_cp0,
+     &     H00, H01, H02, H03, H04, H05, H06, H07,
+     &     H20, H21, H22, H23, H24, H25, H26,
+     &     H30, H31, H32, H33, H34,
+     &     H40, H41, H42, H43, H44, H45,
+     &     H50, H60, H70,
+     &     TPN00, TPN10, TPN20,
+     &     TPN01, TPN11, TPN02, TPD10, TPD01, TPD02
