@@ -294,8 +294,9 @@ For many experiments, additional information is provided in a ``README`` file lo
    :filelink:`atm_phys <pkg/atm_phys>` package, on cube sphere grid (32x32 grid points per face)
    with 26 pressure levels. This aquaplanet-like experiment has interactive SST with a prescribed,
    time-invariant Q-flux.
-   Also contains an secondary setup with prescribed idealized SST from
-   Neale and Hoskins (2001) :cite:`neale:01`.
+   Also contains a secondary setup (:filelink:`input.ape <verification/atm_gray/input.ape>`)
+   with prescribed idealized SST from Aqua-Planet Experiment
+   (APE) project (Neale and Hoskins, 2001 :cite:`neale:01`).
 
 #. :filelink:`cfc_example <verification/cfc_example>` - Global ocean with online computation and advection
    of CFC11 and CFC12.
