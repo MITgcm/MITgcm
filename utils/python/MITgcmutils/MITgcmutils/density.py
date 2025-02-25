@@ -37,9 +37,10 @@ eosJMDCSw = [   8.244930e-01,
 def _check_salinity(s):
 
     sneg = s<0
-    if not np.any(sneg):
-        warnings.warn('found negative salinity values, reset them to NaN')
-        # s[sneg] = np.NaN
+    if np.any(sneg):
+        warnings.warn('found negative salinity values')
+        # warnings.warn('found negative salinity values, reset them to nan')
+        # s[sneg] = np.nan
 
     return s
 
@@ -105,8 +106,8 @@ def linear(salt,theta,
     """
 
     # make sure arguments are floating point
-    s = np.asfarray(salt)
-    t = np.asfarray(theta)
+    s = np.asarray(salt, dtype=np.float64)
+    t = np.asarray(theta, dtype=np.float64)
 
     _check_dimensions(s,t)
 
@@ -152,8 +153,8 @@ def poly3(poly3,salt,theta):
     - Converted to python by Gavilan on 2024-07-18
     """
     # make sure arguments are floating point
-    s = np.asfarray(salt)
-    t = np.asfarray(theta)
+    s = np.asarray(salt, dtype=np.float64)
+    t = np.asarray(theta, dtype=np.float64)
     coeffs=poly3[:,3:]
 
 
@@ -249,9 +250,9 @@ def jmd95(salt,theta,p):
     """
 
     # make sure arguments are floating point
-    s = np.asfarray(salt)
-    t = np.asfarray(theta)
-    p = np.asfarray(p)
+    s = np.asarray(salt, dtype=np.float64)
+    t = np.asarray(theta, dtype=np.float64)
+    p = np.asarray(p, dtype=np.float64)
 
     _check_dimensions(s,t,p)
 
@@ -299,9 +300,9 @@ def bulkmodjmd95(salt,theta,p):
     """ Compute bulk modulus
     """
     # make sure arguments are floating point
-    s = np.asfarray(salt)
-    t = np.asfarray(theta)
-    p = np.asfarray(p)
+    s = np.asarray(salt, dtype=np.float64)
+    t = np.asarray(theta, dtype=np.float64)
+    p = np.asarray(p, dtype=np.float64)
 
     # coefficients in pressure coordinates for
     # 3. secant bulk modulus K of fresh water at p = 0
@@ -424,9 +425,9 @@ def unesco(salt,theta,p):
     """
 
     # make sure arguments are floating point
-    s = np.asfarray(salt)
-    t = np.asfarray(theta)
-    p = np.asfarray(p)
+    s = np.asarray(salt, dtype=np.float64)
+    t = np.asarray(theta, dtype=np.float64)
+    p = np.asarray(p, dtype=np.float64)
 
     _check_dimensions(s,t,p)
 
@@ -473,9 +474,9 @@ def bulkmodunesco(salt,theta,p):
     """ Compute bulk modulus
     """
     # make sure arguments are floating point
-    s = np.asfarray(salt)
-    t = np.asfarray(theta)
-    p = np.asfarray(p)
+    s = np.asarray(salt, dtype=np.float64)
+    t = np.asarray(theta, dtype=np.float64)
+    p = np.asarray(p, dtype=np.float64)
 
     # 3. secant bulk modulus K of fresh water at p = 0
     eosJMDCKFw = [   1.965221e+04,
@@ -600,7 +601,7 @@ def mdjwf(salt,theta,p,epsln=0):
     """
 
     # make sure arguments are floating point
-    s = np.asarray(s, dtype=np.float64)
+    s = np.asarray(salt, dtype=np.float64)
     t = np.asarray(theta, dtype=np.float64)
     p = np.asarray(p, dtype=np.float64)
 
@@ -667,7 +668,7 @@ def mdjwf(salt,theta,p,epsln=0):
     )
 
     denom = 1.0/(epsln+den)
-    rho = rhoNum*denom
+    rho = num*denom
 
     return rho
 
@@ -704,9 +705,9 @@ def teos10(salt,theta,p,epsln=0):
     """
 
     # make sure arguments are floating point
-    sa = np.asfarray(salt)
-    ct = np.asfarray(theta)
-    p = np.asfarray(p)
+    sa = np.asarray(salt, dtype=np.float64)
+    ct = np.asarray(theta, dtype=np.float64)
+    p = np.asarray(p, dtype=np.float64)
 
     _check_dimensions(sa,ct,p)
 
