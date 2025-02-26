@@ -43,17 +43,16 @@ C     msgBuf :: Informational/error message buffer
       IF ( deltaTMom.NE.0. ) recip_dt = 1. _d 0/deltaTMom
 
       _BEGIN_MASTER(myThid)
-      IF ( useNHMTerms ) THEN
-        DO k=1,Nr
-         deepFacAdv(k) = deepFacC(k)
-        ENDDO
+      DO k=1,Nr
+        deepFacAdv(k) = 1. _d 0
+      ENDDO
 #ifndef MOM_USE_OLD_DEEP_VERT_ADV
-      ELSE
-#endif
-        DO k=1,Nr
-         deepFacAdv(k) = 1. _d 0
-        ENDDO
+      IF ( useNHMTerms ) THEN
+       DO k=1,Nr
+        deepFacAdv(k) = deepFacC(k)
+       ENDDO
       ENDIF
+#endif
       _END_MASTER(myThid)
 
       DO bj=myByLo(myThid), myByHi(myThid)
