@@ -28,7 +28,6 @@ C  bi, bj               :: tile indices
 C  k                    :: vertical level
 C  uFld                 :: horizontal flow, u component
 C  vFld                 :: horizontal flow, v component
-C  rThickC              :: thickness of W-cell (r units)
 C  recip_rThickC        :: reciprocal of W-cell thickness
 C  myThid               :: my Thread Id number
       INTEGER bi, bj, k

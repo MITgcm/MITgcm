@@ -187,7 +187,7 @@ C     uDudxFac, AhDudxFac, etc ... individual term parameters for switching term
       _RL  mtNHFacV
       _RL  sideMaskFac
       _RL  rAdvDeepFac
-      LOGICAL bottomDragTerms, metricTerms, diagFlag
+      LOGICAL bottomDragTerms, diagFlag
 CEOP
 #ifdef MOM_BOUNDARY_CONSERVE
       COMMON / MOM_FLUXFORM_LOCAL / uBnd, vBnd
@@ -254,7 +254,6 @@ C     o V momentum equation
       mtNHFacV     = 1.
       fvFac        = cfFacMom*1.
 
-      metricTerms  = selectMetricTerms.GE.1
       IF (implicitViscosity) THEN
         ArDudrFac  = 0.
         ArDvdrFac  = 0.
