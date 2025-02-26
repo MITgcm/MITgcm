@@ -28,7 +28,7 @@ if test "x$TAMC_COMPATIBILITY_MODE" = "x1" ; then
 fi
 
 if test "x$USE_EXTENDED_SRC" = "xt"; then
-    TAF_COMMON_FLAGS="-e $TAF_COMMON_FLAGS"
+    TAF_F77_FLAGS="$TAF_F77_FLAGS -e"
 fi
 
 #- select which Fortran version to specify to TAF
