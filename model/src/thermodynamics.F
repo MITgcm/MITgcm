@@ -138,7 +138,7 @@ CEOP
 C--   dummy statement to end declaration part
       tkey = 1
 
-C--   HPF directive to help TAMC
+C--   HPF directive to help TAF
 CHPF$ INDEPENDENT
 #endif /* ALLOW_AUTODIFF_TAMC */
 

@@ -76,7 +76,7 @@ C     eta_qrNM1     denote current and previous iterations respectively.
 C     recip_eta_qrNM1 :: reciprocal of eta_qrNM1
 C     cgBeta     :: coeff used to update conjugate direction vector "s".
 C     alpha      :: coeff used to update solution & residual
-C     alphaSum   :: to avoid the statement: alpha = 1./alpha (for TAMC/TAF)
+C     alphaSum   :: to avoid the statement: alpha = 1./alpha (for TAF)
 C     sumRHS     :: Sum of right-hand-side. Sometimes this is a useful
 C                   debugging/trouble shooting diagnostic. For neumann problems
 C                   sumRHS needs to be ~0 or it converge at a non-zero residual.
@@ -399,7 +399,7 @@ C--   Return parameters to caller
 
 #if ((defined ALLOW_AUTODIFF_TAMC) && (defined ALLOW_LOOP_DIRECTIVE))
 
-C     These routines are routinely part of the TAMC/TAF library that is
+C     These routines are routinely part of the TAF library that is
 C     not included in the MITcgm, therefore they are mimicked here.
 
       SUBROUTINE ADSTORE(chardum,int1,idow,int2,int3,icount)

@@ -1466,10 +1466,10 @@ FS=
 FS90=
 
 AUTODIFF_PKG_USED=f
+AD_OPTFILE=
 TAPENADE=
 TAPENADECMD=tapenade
 OPENAD=
-AD_OPTFILE=
 CAT_SRC_FOR_TAF=1
 DEP_TAF_FILE='Makefile_taf.dep'
 TAF=
@@ -1477,12 +1477,6 @@ AD_TAF_FLAGS=
 FTL_TAF_FLAGS=
 SVD_TAF_FLAGS=
 TAF_EXTRA=
-TAMC=
-AD_TAMC_FLAGS=
-FTL_TAF_FLAGS=
-SVD_TAMC_FLAGS=
-TAMC_EXTRA=
-
 TAF_F77_FLAGS=
 TAF_F90_FLAGS=
 
@@ -1504,9 +1498,9 @@ gm_s7="TMP THISHOST THISUSER THISDATE THISVER MACHINE FC_CHECK FC_NAMEMANGLE"
 gm_s8="HAVE_NETCDF HAVE_SYSTEM HAVE_FDATE HAVE_ETIME HAVE_LAPACK HAVE_FLUSH"
 
 #  The following are all related to adjoint/tangent-linear stuff
-gm_s10="AUTODIFF_PKG_USED AD_OPTFILE TAPENADE TAPENADECMD OPENAD TAMC TAF AD_TAMC_FLAGS AD_TAF_FLAGS"
-gm_s11="FTL_TAMC_FLAGS FTL_TAF_FLAGS SVD_TAMC_FLAGS SVD_TAF_FLAGS"
-gm_s12="TAF_F77_FLAGS TAF_F90_FLAGS TAF_EXTRA TAMC_EXTRA DIVA MPIINCLUDEDIR MPI_HEADER_FILES"
+gm_s10="AUTODIFF_PKG_USED AD_OPTFILE TAPENADE TAPENADECMD OPENAD"
+gm_s11="TAF AD_TAF_FLAGS FTL_TAF_FLAGS SVD_TAF_FLAGS TAF_F77_FLAGS TAF_F90_FLAGS"
+gm_s12="TAF_EXTRA DIVA MPIINCLUDEDIR MPI_HEADER_FILES"
 
 gm_state="COMMANDL $gm_s1 $gm_s2 $gm_s3 $gm_s4 $gm_s5 $gm_s6 $gm_s7 $gm_s8"
 gm_state="$gm_state $gm_s10 $gm_s11 $gm_s12"
@@ -1718,11 +1712,6 @@ for ac_option in "$@" ; do
 	    ac_prev=TAF_EXTRA ;;
 	-taf_extra=* | --taf_extra=*)
 	    TAF_EXTRA=$ac_optarg ;;
-
-	-tamc_extra | --tamc_extra)
-	    ac_prev=TAMC_EXTRA ;;
-	-tamc_extra=* | --tamc_extra=*)
-	    TAMC_EXTRA=$ac_optarg ;;
 
 #	-taf_f77_flags | --taf_f77_flags)
 #	    ac_prev=TAF_F77_FLAGS ;;
@@ -3468,27 +3457,22 @@ EOF
 
 #=========================================
 #===  Automatic Differentiation Rules  ===
-#===  for TAMC/TAF  ======================
+#===  for TAF  ===========================
 
 if test "x$TAPENADE" = x ; then
 if test "x$OPENAD" = x ; then
 
 cat >>$MAKEFILE <<EOF
 
-TAMC           = ${TAMC}
-TAF            = ${TAF}
-
-TAF_EXTRA      = ${TAF_EXTRA}
-TAMC_EXTRA     = ${TAMC_EXTRA}
-TAF_F77_FLAGS  = ${TAF_F77_FLAGS}
-TAF_F90_FLAGS  = ${TAF_F90_FLAGS}
-LOCAL_MPI_HEADERS    = ${LOCAL_MPI_HEADERS}
+TAF               = ${TAF}
+TAF_EXTRA         = ${TAF_EXTRA}
+TAF_F77_FLAGS     = ${TAF_F77_FLAGS}
+TAF_F90_FLAGS     = ${TAF_F90_FLAGS}
+LOCAL_MPI_HEADERS = ${LOCAL_MPI_HEADERS}
 
 EOF
 
-ad_vars="AD_TAMC_FLAGS AD_TAF_FLAGS"
-ad_vars="$ad_vars FTL_TAMC_FLAGS FTL_TAF_FLAGS"
-ad_vars="$ad_vars SVD_TAMC_FLAGS SVD_TAF_FLAGS"
+ad_vars="AD_TAF_FLAGS FTL_TAF_FLAGS SVD_TAF_FLAGS"
 for i in $ad_vars ; do
     name=$i
     t1="t2=\$"`echo "$i"`
@@ -3539,7 +3523,6 @@ cat >>$MAKEFILE <<EOF
 # ... AD ...
 adall: ad_exe_target
 adtaf: ad_taf_output.$FS
-adtamc: ad_tamc_output.$FS
 
 ad_exe_target:
 	@echo Update AD_CONFIG.h and make \$(EXE_ADJ)
@@ -3636,17 +3619,9 @@ EOF
 fi
 
 cat >>$MAKEFILE <<EOF
-ad_tamc_output.$FS: ad_input_code.$FS
-	\$(TAMC) \$(AD_TAMC_FLAGS) \$(TAMC_EXTRA) ad_input_code.$FS
-	cat ad_input_code_ad.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ad_tamc_output.$FS
-
-ad_tamc: ad_tamc_output.o \$(OBJFILES)
-	\$(LINK) -o ${EXE_ADJ} \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) ad_tamc_output.o \$(LIBS)
-
 # ... FTL ...
 ftlall: ftl_exe_target
 ftltaf: ftl_taf_output.$FS
-ftltamc: ftl_tamc_output.$FS
 
 ftl_exe_target:
 	@echo Update AD_CONFIG.h and make \$(EXE_TLM)
@@ -3744,13 +3719,6 @@ EOF
 fi
 
 cat >>$MAKEFILE <<EOF
-ftl_tamc_output.$FS: ftl_input_code.$FS
-	\$(TAMC) \$(FTL_TAMC_FLAGS) \$(TAMC_EXTRA) ftl_input_code.$FS
-	cat ftl_input_code_ftl.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ftl_tamc_output.$FS
-
-ftl_tamc: ftl_tamc_output.o \$(OBJFILES)
-	\$(LINK) -o ${EXE_TLM} \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) ftl_tamc_output.o \$(LIBS)
-
 # ... SVD ...
 svdtaf: ad_taf_output.$FS ftl_taf_output.$FS
 	@echo "--->>> Only ran TAF to generate SVD code!    <<<---"
