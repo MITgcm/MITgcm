@@ -14,6 +14,7 @@ C--   o FIND_RHOP0
 C--   o FIND_BULKMOD
 C--   o FIND_RHONUM
 C--   o FIND_RHODEN
+C--   o FIND_RHOTEOS
 C--   o FIND_RHO_SCALAR: in-situ density for individual points
 C--   o LOOK_FOR_NEG_SALINITY
 

@@ -1,6 +1,28 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools:
+  - changes to genmake2 to allow TAF to process F90 files with modules, for now
+    only with "-ncad" option;
+  - re-order list of src files sent to TAF (needed with current version of TAF);
+  - add new scrip "f90mkdepend_taf" to add dependencies form TAF generated src
+    code (Adjoint and Tang.Lin) in a file included into Makefile.
+  - more logical and consistent ordering in Makefile target, *.F90 first then
+    *.F77, *.c and *.h
+  - add 2 new variables TAF_F77_FLAGS and TAF_F90_FLAGS (set from genmake_local
+    or adjoint-optfile) to go into the TAF command.
+o model/src and forcing:
+  - for TEOS10, add new S/R to convert model surface Conservative Temperature
+    to in-situ Temperature (SST) and compute and store model SST in new model
+    field (in FFIELDS.h) "gcmSST", just a copy of model Pot.Temp with other EOS.
+  - use model SST to compute surface forcing over open ocean in pkg/exf and
+    pkg/bulk_force ; for now, leave ice/seaice freezing/melting unchanged.
+  - switch test exp. global_ocean.cs32x15.in_p to use TEOS10 + update lab_sea
+    Tapenade ref. output (affected @ machine truncation level).
+o tools:
+  - remove old backward compatibility feature, so that env.var ROOTDIR is no
+    longer recognized by genamke2 ;
+  - re-write "suggest_optfile_names" to use parts from "genmake2".
 o utils/python:
   - make MITgcmutils compatible with numpy 2.0.0 again.
 o testreport:

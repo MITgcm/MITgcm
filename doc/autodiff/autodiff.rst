@@ -830,24 +830,24 @@ The ``make «MODE»all`` target consists of the following procedures:
 
 #. All routines are compiled and an executable is generated.
 
-The list ``AD_FILES`` and ``.list`` files
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The list ``AD_FILES`` and ``*_ad_diff.list`` files
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Not all routines are presented to the AD tool. Routines typically hidden
 are diagnostics routines which do not influence the cost function, but
 may create artificial flow dependencies such as I/O of active variables.
 
-:filelink:`genmake2 <tools/genmake2>` generates a list (or variable) ``AD_FILES`` which contains all
-routines that are shown to the AD tool. This list is put together from
-all files with suffix ``.list`` that :filelink:`genmake2 <tools/genmake2>` finds in its search
-directories. The list file for the core MITgcm routines is :filelink:`model/src/model_ad_diff.list`
-Note that no wrapper routine is shown to
-TAF. These are either not visible at all to the AD code, or hand-written
-AD code is available (see next section).
+:filelink:`genmake2 <tools/genmake2>` generates a list (or variable) ``AD_FILES``
+that contains all routines that are shown to the AD tool.
+This list is put together from all files with suffix ``_ad_diff.list``
+that :filelink:`genmake2 <tools/genmake2>` finds in its search directories.
+The list file for the core MITgcm routines is :filelink:`model/src/model_ad_diff.list`.
+Note that no wrapper routine is shown to TAF. These are either not visible at
+all to the AD code, or hand-written AD code is available (see next section).
 
 Each package directory contains its package-specific list file
 ``«PKG»_ad_diff.list``. For example, :filelink:`pkg/ptracers` contains the file
-:filelink:`ptracers_ad_diff.list <pkg/ptracers_ad_diff.list>`.
+:filelink:`ptracers_ad_diff.list <pkg/ptracers/ptracers_ad_diff.list>`.
 Thus, enabling a package will automatically
 extend the ``AD_FILES`` list of :filelink:`genmake2 <tools/genmake2>` to incorporate the
 package-specific routines. Note that you will need to regenerate the
@@ -878,14 +878,14 @@ directive tell the AD tool:
 
 The syntax for the flow directives can be found in the AD tool manuals.
 
-:filelink:`genmake2 <tools/genmake2>` generates a list (or variable) ``AD_FLOW_FILES`` which
-contains all files with ``suffix.flow`` that it finds in its search
+:filelink:`genmake2 <tools/genmake2>` generates a list (or variable) ``AD_FLOW_FILES``
+that contains all files with suffix ``.flow`` that it finds in its search
 directories. The flow directives for the core MITgcm routines of
 :filelink:`eesupp/src/` and :filelink:`model/src/` reside in :filelink:`pkg/autodiff/`. This directory also
 contains hand-written adjoint code for the MITgcm WRAPPER (:numref:`wrapper`).
 
 Flow directives for package-specific routines are contained in the
-corresponding package directories in the file ``«PKG»_ad.flow``, e.g.,
+corresponding package directories, generally in a file ``«PKG»_ad.flow``, e.g.,
 ptracers-specific directives are in :filelink:`ptracers_ad.flow <pkg/ptracers/ptracers_ad.flow>`.
 
 Store directives for 3-level checkpointing
@@ -1615,7 +1615,7 @@ divided adjoint and serves as an example of how to configure the code.
 
    ::
 
-      ${ROOTDIR}/tools/genmake2  -mods=../code_ad -nocat4ad [ other options ]
+      ../../../tools/genmake2  -mods=../code_ad -nocat4ad [ other options ]
       make depend
       make adtaf
 
@@ -1750,7 +1750,11 @@ either absolute or relative to the build directory.
 Adjoint code generation using Tapenade
 ======================================
 
-Authors: Shreyas Gaikwad, Sri Hari Krishna Naryanan, Laurent Hascoet, Patrick
+Please refer to Gaikwad et al. (2024) :cite:`gaikwad:24` for more details and a comparative analysis with TAF. Recently, introduction of the profiling capabilities in Tapenade have resulted in substantial insights and speedups for the Tapenade-generated adjoint, see Hascoet et al. (2024) :cite:`hascoet:24`.
+
+Feel free to reach out if you wish to use Tapenade and need help!
+
+Authors: Shreyas Sunil Gaikwad, Sri Hari Krishna Naryanan, Laurent Hascoet, Patrick
 Heimbach
 
 Introduction
