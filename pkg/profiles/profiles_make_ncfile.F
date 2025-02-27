@@ -39,7 +39,7 @@ C     ========= Local variables =======================
       INTEGER dimid1,dimid2,vecid(2)
       INTEGER varid0,varid1(NVARMAX*2),varid2(NVARMAX*2)
       INTEGER length,Zlength,optimcycle
-      INTEGER IL,JL,KL
+      INTEGER IL,JL
       INTEGER vec_start(2),vec_count(2)
       _RL tmpgs
       _RL prof_mask1D(NLEVELMAX)
