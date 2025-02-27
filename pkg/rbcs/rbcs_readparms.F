@@ -203,12 +203,14 @@ C---  Check RBCS config and params:
       IF (startTime.LT.rbcsForcingOffset+0.5*rbcsForcingPeriod .AND.
      &    .NOT. rbcsSingleTimeFiles) THEN
        IF (rbcsForcingCycle.GT.0) THEN
-        WRITE(msgBuf,'(2A)')' RBCS_READPARAMS: ',
+        WRITE(msgBuf,'(2A)')' ** WARNING ** RBCS_READPARAMS: ',
      &  'startTime before rbcsForcingOffset+0.5*rbcsForcingPeriod '
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(2A)')' RBCS_READPARAMS: ',
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)')' ** WARNING ** RBCS_READPARAMS: ',
      &  'will use last record'
-        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
        ELSE
         WRITE(msgBuf,'(2A)')' RBCS_READPARAMS: ',
      &  'startTime before rbcsForcingOffset+0.5*rbcsForcingPeriod '
