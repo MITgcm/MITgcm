@@ -82,7 +82,6 @@ C--     Read IO error counter
         CALL WRITE_FLD_XY_RL(
      &       'G_Jetan.',suff, g_etan, myIter, myThid )
 
-
 C--     Reread IO error counter
         endIOErrCount = IO_ERRCOUNT(myThid)
 
