@@ -65,18 +65,14 @@ C     *================================================================*
 C     | SUBROUTINE the_main_loop
 C     | o Run the ocean model and evaluate the specified cost function.
 C     *================================================================*
-C     |
 C     | THE_MAIN_LOOP is the toplevel routine for the Transformation of
-C     | Algorith in Fortran (TAF).
+C     | Algorithm in Fortran (TAF).
 C     | For this purpose the initialization of the model was split into
-C     | two parts. Parameters that will not be control parameters
-C     | (e.g. grid parameters dxC, etc.) are set in INITIALISE_FIXED,
-C     | whereas (potential) control parameters that can be updated
-C     | in an optimization process (e.g. initial conditions for
-C     | temperature and salinity) are initialized in INITIALISE_VARIA.
-C     |
-C     | This routine is to be used in conjuction with the MITgcmuv
-C     | checkpoint 37 and later.
+C     | two parts. Variables that are kept independent of control
+C     | parameters (e.g. horizontal grid dxC, etc.) are set in
+C     | INITIALISE_FIXED, whereas variables that can (potentially) be
+C     | modified by control parameters (e.g. initial temperature and
+C     | salinity) are initialized in INITIALISE_VARIA.
 C     *================================================================*
 C     \ev
 
