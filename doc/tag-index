@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools, autodiff and others:
+  - remove TAMC features, untested, unused and probably broken.
+
 checkpoint69d (2025/03/01)
 o tools:
   - changes to genmake2 to allow TAF to process F90 files with modules, for now
