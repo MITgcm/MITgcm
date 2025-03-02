@@ -2963,12 +2963,12 @@ fi
 echo "# This section creates symbolic links" > $TMP.srclinks
 echo "" >> $TMP.srclinks
 printf 'F77_SRC_FILES = ' > $TMP.F77srclist
-printf 'NON_AD_F77_SRC_FILES = ' > $TMP.nonADF77srclist
-printf 'C_SRC_FILES = '   > $TMP.csrclist
 printf 'F90_SRC_FILES = ' > $TMP.F90srclist
-printf 'NON_AD_F90_SRC_FILES = ' > $TMP.nonADF90srclist
+printf 'C_SRC_FILES = '   > $TMP.csrclist
 printf 'H_SRC_FILES = '   > $TMP.hsrclist
 printf 'AD_FLOW_FILES = ' > $TMP.ad_flow_files
+printf 'NON_AD_F77_SRC_FILES = ' > $TMP.nonADF77srclist
+printf 'NON_AD_F90_SRC_FILES = ' > $TMP.nonADF90srclist
 alldirs="$SOURCEDIRS $INCLUDEDIRS ."
 alldirsmk=(${SOURCEDIRSMK} ${INCLUDEDIRSMK} ".")
 nd=0
@@ -3024,7 +3024,17 @@ for d in $alldirs ; do
 			echo    " \\"  >> $TMP.F77srclist
 			printf " $sf" >> $TMP.F77srclist
 
+			if test "x$TAPENADE" = x -a "x$OPENAD" = x ; then
+			    #- default: not OpenAD neither Tapenade
+			    basename=${sf%%.F}
+			    isAD=`egrep ^$basename.f'[ 	]*' $TMP.adSrcFiles`
+			    if test -z "$isAD" ; then
+				echo    " \\"  >> $TMP.nonADF77srclist
+				printf " $sf" >> $TMP.nonADF77srclist
+			    fi
+			fi
 			if test "x$TAPENADE" != x ; then
+			    #- Tapenade case:
 			    basename=${sf%%.F}
 			    isAD=`egrep ^$basename.f'[ 	]*' $TMP.adSrcFiles`
 			    if test -z "$isAD" ; then
@@ -3051,15 +3061,8 @@ for d in $alldirs ; do
 				fi
 			    fi
 			fi
-
-			if test "x$OPENAD" = x ; then
-			    basename=${sf%%.F}
-			    isAD=`egrep ^$basename.f'[ 	]*' $TMP.adSrcFiles`
-			    if test -z "$isAD" ; then
-				echo    " \\"  >> $TMP.nonADF77srclist
-				printf " $sf" >> $TMP.nonADF77srclist
-			    fi
-			else #- OpenAD case:
+			if test "x$OPENAD" != x ; then
+			    #- OpenAD case:
 			    basename=${sf%%.F}
 			    isAD=`egrep ^$basename.f'[ 	]*' $TMP.adSrcFiles`
 			    if test -z "$isAD" ; then
@@ -3121,21 +3124,21 @@ for d in $alldirs ; do
 	echo "" >> $TMP.srclinks
 	echo "#  These files are linked from $dmk ( aka $d )" >> $TMP.srclinks
 	echo "$deplist :" >> $TMP.srclinks
-# We need to make sure that the link isn't already there.
-# This may happen when make thinks that a header file has to be "remade"
-# because a module it depends on has changed.  In this case we do nothing.
+	# We need to make sure that the link isn't already there.
+	# This may happen when make thinks that a header file has to be "remade"
+	# because a module it depends on has changed.  In this case we do nothing.
 	printf "\tif [ ! -L \$@ ]; then \$(LN) %s/\$@ \$@; fi\n" $dmk >> $TMP.srclinks
       fi
     fi
 done
 rm -rf $TMP.links
 echo "" >> $TMP.F77srclist
-echo "" >> $TMP.nonADF77srclist
-echo "" >> $TMP.nonADF90srclist
-echo "" >> $TMP.csrclist
 echo "" >> $TMP.F90srclist
+echo "" >> $TMP.csrclist
 echo "" >> $TMP.hsrclist
 echo "" >> $TMP.ad_flow_files
+echo "" >> $TMP.nonADF77srclist
+echo "" >> $TMP.nonADF90srclist
 
 CMDLINE=$0
 for xx in "$@" ; do nw=`echo $xx | wc -w`
@@ -3263,14 +3266,13 @@ MAKE = ${MAKE}
 EOF
 
 cat $TMP.F77srclist      >> $MAKEFILE
-cat $TMP.nonADF77srclist >> $MAKEFILE
-cat $TMP.nonADF90srclist >> $MAKEFILE
-cat $TMP.csrclist        >> $MAKEFILE
 cat $TMP.F90srclist      >> $MAKEFILE
+cat $TMP.csrclist        >> $MAKEFILE
 cat $TMP.hsrclist        >> $MAKEFILE
 cat $TMP.ad_flow_files   >> $MAKEFILE
 
-rm -f $TMP.F77srclist $TMP.nonADF77srclist $TMP.nonADF90srclist $TMP.csrclist $TMP.F90srclist $TMP.hsrclist $TMP.ad_flow_files
+#rm -f $TMP.F77srclist $TMP.nonADF77srclist $TMP.nonADF90srclist $TMP.csrclist $TMP.F90srclist $TMP.hsrclist $TMP.ad_flow_files
+rm -f $TMP.F77srclist $TMP.F90srclist $TMP.csrclist $TMP.hsrclist $TMP.ad_flow_files
 
 echo >> $MAKEFILE
 
@@ -3459,15 +3461,14 @@ EOF
 #===  Automatic Differentiation Rules  ===
 #===  for TAF  ===========================
 
-if test "x$TAPENADE" = x ; then
-if test "x$OPENAD" = x ; then
+if test "x$TAPENADE" = x -a "x$OPENAD" = x ; then
 
 cat >>$MAKEFILE <<EOF
 
-TAF               = ${TAF}
-TAF_EXTRA         = ${TAF_EXTRA}
-TAF_F77_FLAGS     = ${TAF_F77_FLAGS}
-TAF_F90_FLAGS     = ${TAF_F90_FLAGS}
+TAF           = ${TAF}
+TAF_EXTRA     = ${TAF_EXTRA}
+TAF_F77_FLAGS = ${TAF_F77_FLAGS}
+TAF_F90_FLAGS = ${TAF_F90_FLAGS}
 LOCAL_MPI_HEADERS = ${LOCAL_MPI_HEADERS}
 
 EOF
@@ -3477,7 +3478,7 @@ for i in $ad_vars ; do
     name=$i
     t1="t2=\$"`echo "$i"`
     eval $t1
-    printf "%-20s = " $name >> $MAKEFILE
+    printf "%-13s = " $name >> $MAKEFILE
     echo "$t2" | sed -e 's| \+| |g' >> $MAKEFILE
 done
 
@@ -3490,7 +3491,6 @@ for i in $AD_FILES ; do
     printf " $i" >> $MAKEFILE
 done
 echo >> $MAKEFILE
-rm -f $TMP.adSrcFiles
 printf "AD_F90FILES = " >> $MAKEFILE
 AD_F90FILES=`cat $TMP.adF90Files | sed -e "s/\.f90/.$FS90/g"`
 for i in $AD_F90FILES ; do
@@ -3498,7 +3498,10 @@ for i in $AD_F90FILES ; do
     printf " $i" >> $MAKEFILE
 done
 echo >> $MAKEFILE
-rm -f $TMP.adF90Files
+rm -f $TMP.adSrcFiles $TMP.adF90Files
+cat $TMP.nonADF77srclist >> $MAKEFILE
+cat $TMP.nonADF90srclist >> $MAKEFILE
+rm -f $TMP.nonADF77srclist $TMP.nonADF90srclist
 
 if test $CAT_SRC_FOR_TAF = 0 ; then
 cat >>$MAKEFILE <<EOF
@@ -3604,6 +3607,7 @@ ad_taf_output.$FS: \$(AD_FLOW_FILES) \$(AD_F90FILES) \$(AD_FILES)
 	@-rm -f \$(AD_FILES:.$FS=_ad.$FS) \$(AD_FILES:.$FS=_ad.o); echo ''
 	\$(MAKE) -f \$(MAKEFILE) remove_comments
 	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) -free \$(TAF_F90_FLAGS) \$(AD_F90FILES) -fixed \$(TAF_F77_FLAGS) \$(AD_FLOW_FILES) \$(AD_FILES)
+	ls -l the_main_loop_ad.$FS
 	\$(MAKE) -f \$(MAKEFILE) adj_sed
 	\$(MAKE) -f \$(MAKEFILE) adj_depend
 	cat \$(AD_FILES:.$FS=_ad.$FS) > ad_taf_output.$FS
@@ -3704,6 +3708,7 @@ ftl_taf_output.$FS: \$(AD_FLOW_FILES) \$(AD_F90FILES) \$(AD_FILES)
 	@-rm -f \$(AD_FILES:.$FS=_tl.$FS) \$(AD_FILES:.$FS=_tl.o); echo ''
 	\$(MAKE) -f \$(MAKEFILE) remove_comments
 	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) -free \$(TAF_F90_FLAGS) \$(AD_F90FILES) -fixed \$(TAF_F77_FLAGS) \$(AD_FLOW_FILES) \$(AD_FILES)
+	ls -l the_main_loop_tl.$FS
 	\$(MAKE) -f \$(MAKEFILE) ftl_sed
 	\$(MAKE) -f \$(MAKEFILE) ftl_depend
 	cat \$(AD_FILES:.$FS=_tl.$FS) > ftl_taf_output.$FS
@@ -3746,7 +3751,6 @@ svd_touch:
 EOF
 
 fi
-fi
 
 #===  for TAPENADE  ========================
 
@@ -3771,8 +3775,10 @@ for i in $AD_FILES ; do
   fi
 done
 echo >> $MAKEFILE
-rm -f $TMP.adSrcFiles
-rm -f $TMP.adF90Files
+rm -f $TMP.adSrcFiles $TMP.adF90Files
+#cat $TMP.nonADF77srclist >> $MAKEFILE
+#cat $TMP.nonADF90srclist >> $MAKEFILE
+rm -f $TMP.nonADF77srclist $TMP.nonADF90srclist
 
 cat >>$MAKEFILE <<EOF
 
@@ -3908,8 +3914,10 @@ for i in $AD_FILES ; do
   fi
 done
 echo >> $MAKEFILE
-rm -f $TMP.adSrcFiles
-rm -f $TMP.adF90Files
+rm -f $TMP.adSrcFiles $TMP.adF90Files
+cat $TMP.nonADF77srclist >> $MAKEFILE
+#cat $TMP.nonADF90srclist >> $MAKEFILE
+rm -f $TMP.nonADF77srclist $TMP.nonADF90srclist
 
 cat >>$MAKEFILE <<EOF
 
