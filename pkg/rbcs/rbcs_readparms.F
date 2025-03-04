@@ -121,7 +121,7 @@ C--   Default values
       rbcsForcingOffset = 0. _d 0
       rbcsVanishingTime = 0. _d 0
       rbcsSingleTimeFiles = .FALSE.
-      deltaTrbcs = deltaTclock
+      deltaTrbcs = deltaTClock
       rbcsIter0 = 0
 #ifdef ALLOW_PTRACERS
       DO iTracer=1,PTRACERS_num
@@ -170,10 +170,10 @@ C-    save local mask-file name into relaxMaskTrFile (stored in common block)
         ENDIF
       ENDDO
       IF ( errCount.GT.0 ) THEN
-        WRITE(msgBuf,'(2A,I6)')' RBCS_READPARAMS: ',
+        WRITE(msgBuf,'(2A,I6)') 'RBCS_READPARMS: ',
      &   'Too many "relaxMaskFile" are set ! exceeds maskLEN=', maskLEN
         CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(2A)')' RBCS_READPARAMS: ',
+        WRITE(msgBuf,'(2A)') 'RBCS_READPARMS: ',
      &   '==> Increase maskLEN (in RBCS_SIZE.h) and recompile'
         CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
@@ -192,29 +192,29 @@ C---  Check RBCS config and params:
       ENDIF
 #endif /* DISABLE_RBCS_MOM */
       IF (rbcsIniter.NE.0) THEN
-        WRITE(msgBuf,'(2A)')' RBCS_READPARAMS: ',
+        WRITE(msgBuf,'(2A)') 'RBCS_READPARMS: ',
      &  'rbcsIniter has been replaced by rbcsForcingOffset '
         CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(2A)')' RBCS_READPARAMS: ',
+        WRITE(msgBuf,'(2A)') 'RBCS_READPARMS: ',
      &  'which is in seconds. Please change your data.rbcs'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ELSEIF (startTime.LT.rbcsForcingOffset+0.5*rbcsForcingPeriod .AND.
      &    .NOT. rbcsSingleTimeFiles) THEN
        IF (rbcsForcingCycle.GT.0.) THEN
-        WRITE(msgBuf,'(2A)')'** WARNING ** RBCS_READPARAMS: ',
+        WRITE(msgBuf,'(2A)') '** WARNING ** RBCS_READPARMS: ',
      &  'startTime before rbcsForcingOffset+0.5*rbcsForcingPeriod '
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
-        WRITE(msgBuf,'(2A)')'** WARNING ** RBCS_READPARAMS: ',
+        WRITE(msgBuf,'(2A)') '** WARNING ** RBCS_READPARMS: ',
      &  'will use last record'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
        ELSE
-        WRITE(msgBuf,'(2A)')' RBCS_READPARAMS: ',
+        WRITE(msgBuf,'(2A)') 'RBCS_READPARMS: ',
      &  'startTime before rbcsForcingOffset+0.5*rbcsForcingPeriod '
         CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(2A)')' RBCS_READPARAMS: ',
+        WRITE(msgBuf,'(2A)') 'RBCS_READPARMS: ',
      &  'not allowed with rbcsForcingCycle=0 unless rbcsSingleTimeFiles'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
@@ -269,6 +269,10 @@ c       ENDIF
       ENDDO
 #endif
       IF ( errCount.GT.0 ) THEN
+       WRITE(msgBuf,'(A,I3,A)')
+     &       'RBCS_READPARMS: detected', errCount,' fatal error(s)'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       CALL ALL_PROC_DIE( 0 )
        STOP 'ABNORMAL END: S/R RBCS_READPARMS'
       ENDIF
       _END_MASTER(myThid)
