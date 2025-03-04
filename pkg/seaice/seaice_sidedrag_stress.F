@@ -68,9 +68,9 @@ C     myThid    :: my Thread Id. number
 C     === local variables ===
 C     i,j,bi,bj,ksrf :: loop indices
       INTEGER i,j,bi,bj
-      _RL    tmp, tmpx, tmpy
+      _RL    tmpx, tmpy
       _RL    uSpd(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL     u_0
+      _RL    u_0
 
       u_0 = 0.0005 _d 0
       DO bj=myByLo(myThid),myByHi(myThid)
