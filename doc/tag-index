@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/autodiff:
+  - alternative way (printResidualFreq >=0) to get CG2D output from cg2d_mad.F
+  - remove 2 unused CPP options.
 o tools, autodiff and others:
   - remove TAMC features, untested, unused and probably broken.
 
