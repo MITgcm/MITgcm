@@ -5,8 +5,8 @@ C !ROUTINE: MOM_W_CORIOLIS_NH
 
 C !INTERFACE: ==========================================================
       SUBROUTINE MOM_W_CORIOLIS_NH(
-     I               bi,bj,k,
-     I               uFld, vFld,
+     I               bi, bj, k,
+     I               uFld, vFld, recip_rThickC,
      U               wCoriolisTerm,
      I               myThid )
 
@@ -24,14 +24,16 @@ C !USES: ===============================================================
 #include "GRID.h"
 
 C !INPUT PARAMETERS: ===================================================
-C  bi,bj                :: tile indices
+C  bi, bj               :: tile indices
 C  k                    :: vertical level
 C  uFld                 :: horizontal flow, u component
 C  vFld                 :: horizontal flow, v component
+C  recip_rThickC        :: reciprocal of W-cell thickness
 C  myThid               :: my Thread Id number
-      INTEGER bi,bj,k
+      INTEGER bi, bj, k
       _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL recip_rThickC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
@@ -40,15 +42,17 @@ C  uCoriolisTerm        :: Coriolis term
 
 #ifdef ALLOW_NONHYDROSTATIC
 C !LOCAL VARIABLES: ====================================================
-C  i,j                  :: loop indices
+C  i, j                 :: loop indices
       INTEGER i,j
 CEOP
 
-
-C Energy conserving discretization of 2*Omega*cos(phi)*u_eastward
       IF ( k.GT.1 .AND. k.LE.Nr ) THEN
-        DO j=1-Oly,sNy+Oly-1
-         DO i=1-Olx,sNx+Olx-1
+
+       IF ( select3dCoriScheme.EQ.1 ) THEN
+C-    Original discretization of 2*Omega*cos(phi)*u_eastward
+C     documented as Energy conserving
+        DO j=1-OLy,sNy+OLy-1
+         DO i=1-OLx,sNx+OLx-1
            wCoriolisTerm(i,j) =
      &      -gravitySign*fCoriCos(i,j,bi,bj)*
      &       ( angleCosC(i,j,bi,bj)*(
@@ -62,9 +66,63 @@ C Energy conserving discretization of 2*Omega*cos(phi)*u_eastward
      &       )*wUnit2rVel(k)
          ENDDO
         ENDDO
+       ELSEIF ( select3dCoriScheme.EQ.2 ) THEN
+C-    Using thickness-averaged transport (but without hFac):
+        DO j=1-OLy,sNy+OLy-1
+         DO i=1-OLx,sNx+OLx-1
+           wCoriolisTerm(i,j) = -gravitySign
+     &      *fCoriCos(i,j,bi,bj)
+     &      *( angleCosC(i,j,bi,bj)
+     &         *( ( uFld(i,j,k-1,bi,bj) + uFld(i+1,j,k-1,bi,bj) )
+     &            *drF(k-1)
+     &          + ( uFld(i,j, k ,bi,bj) + uFld(i+1,j, k ,bi,bj) )
+     &            *drF( k )
+     &          )*0.25 _d 0
+     &        -angleSinC(i,j,bi,bj)
+     &         *( ( vFld(i,j,k-1,bi,bj) + vFld(i,j+1,k-1,bi,bj) )
+     &            *drF(k-1)
+     &          + ( vFld(i,j, k ,bi,bj) + vFld(i,j+1, k ,bi,bj) )
+     &            *drF( k )
+     &          )*0.25 _d 0
+     &       )*recip_drC(k)*wUnit2rVel(k)
+         ENDDO
+        ENDDO
+       ELSE
+C-    Using thickness-averaged transport:
+C     for now, without dyG*deepFacC weight and without recip_hFacI factor:
+        DO j=1-OLy,sNy+OLy-1
+         DO i=1-OLx,sNx+OLx-1
+           wCoriolisTerm(i,j) = -gravitySign
+     &      *fCoriCos(i,j,bi,bj)
+     &      *( angleCosC(i,j,bi,bj)
+     &        *( ( uFld( i ,j,k-1,bi,bj)*hFacW( i ,j,k-1,bi,bj)
+     &           + uFld(i+1,j,k-1,bi,bj)*hFacW(i+1,j,k-1,bi,bj)
+     &           )*drF(k-1)
+c    &            *deepFacC(k-1)
+     &         + ( uFld( i ,j, k ,bi,bj)*hFacW( i ,j, k ,bi,bj)
+     &           + uFld(i+1,j, k ,bi,bj)*hFacW(i+1,j, k ,bi,bj)
+     &           )*drF( k )
+c    &            *deepFacC( k )
+     &         )*0.25 _d 0
+     &        -angleSinC(i,j,bi,bj)
+     &        *( ( vFld(i, j ,k-1,bi,bj)*hFacS(i, j ,k-1,bi,bj)
+     &           + vFld(i,j+1,k-1,bi,bj)*hFacS(i,j+1,k-1,bi,bj)
+     &           )*drF(k-1)
+c    &            *deepFacC(k-1)
+     &         + ( vFld(i, j , k ,bi,bj)*hFacS(i, j , k ,bi,bj)
+     &           + vFld(i,j+1, k ,bi,bj)*hFacS(i,j+1, k ,bi,bj)
+     &           )*drF( k )
+c    &            *deepFacC( k )
+     &         )*0.25 _d 0
+     &       )*recip_rThickC(i,j)*wUnit2rVel(k)
+c    &       )*recip_rThickC(i,j)*recip_deepFacF(k)*wUnit2rVel(k)
+         ENDDO
+        ENDDO
+       ENDIF
+
       ELSE
-        DO j=1-Oly,sNy+Oly-1
-         DO i=1-Olx,sNx+Olx-1
+        DO j=1-OLy,sNy+OLy-1
+         DO i=1-OLx,sNx+OLx-1
            wCoriolisTerm(i,j) = 0. _d 0
          ENDDO
         ENDDO

@@ -122,7 +122,7 @@ C     i,j,k         :: Loop counters
       PARAMETER( jMin = 1 , jMax = sNy )
 CEOP
 #ifdef ALLOW_DIAGNOSTICS
-      LOGICAL diagDiss, diagAdvec, diag_AB
+      LOGICAL diagDiss, diagAdvec, diagMetric, diag_AB
       LOGICAL  DIAGNOSTICS_IS_ON
       EXTERNAL DIAGNOSTICS_IS_ON
 #endif /* ALLOW_DIAGNOSTICS */
@@ -133,10 +133,12 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IF ( useDiagnostics ) THEN
         diagDiss  = DIAGNOSTICS_IS_ON( 'Wm_Diss ', myThid )
         diagAdvec = DIAGNOSTICS_IS_ON( 'Wm_Advec', myThid )
+        diagMetric= DIAGNOSTICS_IS_ON( 'Wm_Metr ', myThid )
         diag_AB   = DIAGNOSTICS_IS_ON( 'AB_gW   ', myThid )
       ELSE
         diagDiss  = .FALSE.
         diagAdvec = .FALSE.
+        diagMetric= .FALSE.
         diag_AB   = .FALSE.
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
@@ -604,7 +606,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
         IF ( useNHMTerms .AND. k.GT.1 ) THEN
           CALL MOM_W_METRIC_NH(
-     I               bi,bj,k,
+     I               bi, bj, k,
      I               uVel, vVel,
      O               gwAdd,
      I               myThid )
@@ -613,11 +615,20 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
              gW(i,j,k,bi,bj) = gW(i,j,k,bi,bj)+gwAdd(i,j)
            ENDDO
           ENDDO
+#ifdef ALLOW_DIAGNOSTICS
+          IF ( diagMetric ) THEN
+           CALL DIAGNOSTICS_FILL( gwAdd, 'Wm_Metr ',
+     I                            k,1,2, bi,bj, myThid )
+C- note: need to explicitly increment the counter since DIAGNOSTICS_FILL
+C        does it only if k=1 (never the case here)
+           IF ( k.EQ.2 ) CALL DIAGNOSTICS_COUNT('Wm_Metr ',bi,bj,myThid)
+          ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
         ENDIF
         IF ( select3dCoriScheme.GE.1 .AND. k.GT.1 ) THEN
           CALL MOM_W_CORIOLIS_NH(
-     I               bi,bj,k,
-     I               uVel, vVel,
+     I               bi, bj, k,
+     I               uVel, vVel, recip_rThickC,
      O               gwAdd,
      I               myThid )
           DO j=jMin,jMax
@@ -633,8 +644,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         IF ( diagDiss )  THEN
           CALL DIAGNOSTICS_FILL( gwDiss, 'Wm_Diss ',
      &                           k, 1, 2, bi,bj, myThid )
-C- note: needs to explicitly increment the counter since DIAGNOSTICS_FILL
-C        does it only if k=1 (never the case here)
 c         IF ( k.EQ.2 ) CALL DIAGNOSTICS_COUNT('Wm_Diss ',bi,bj,myThid)
         ENDIF
         IF ( diagAdvec ) THEN
