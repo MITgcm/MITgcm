@@ -19,18 +19,16 @@ C Use this file for selecting options within the GAD package
 #ifdef ALLOW_GENERIC_ADVDIFF
 C     Package-specific Options & Macros go here
 
-C This flag selects the form of COSINE(lat) scaling of bi-harmonic term.
-C *only for use on a lat-lon grid*
-C Setting this flag here only affects the bi-harmonic tracer terms; to
-C use COSINEMETH_III in the momentum equations set it CPP_OPTIONS.h
+C This flag selects the form of COSINE(lat) scaling of horizontal
+C bi-harmonic diffusivity -- only on lat-lon grid.
+C Setting this flag here only affects tracer diffusivity; to use it
+C in the momentum equations it needs to be set in MOM_COMMON_OPTIONS.h
 #undef COSINEMETH_III
 
-C This selects isotropic scaling of harmonic and bi-harmonic term when
-C using the COSINE(lat) scaling.
-C Setting this flag here only affects the tracer diffusion terms; to
-C use ISOTROPIC_COS_SCALING of the horizontal viscosity terms in the
-C momentum equations set it CPP_OPTIONS.h; the following line
-C even overrides setting the flag in CPP_OPTIONS.h
+C This selects isotropic scaling of horizontal harmonic and bi-harmonic
+C diffusivity when using the COSINE(lat) scaling -- only on lat-lon grid.
+C Setting this flag here only affects tracer diffusivity; to use it
+C in the momentum equations it needs to be set in MOM_COMMON_OPTIONS.h
 #undef ISOTROPIC_COS_SCALING
 
 C As of checkpoint41, the inclusion of multi-dimensional advection

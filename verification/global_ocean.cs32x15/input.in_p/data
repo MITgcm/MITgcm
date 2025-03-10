@@ -25,7 +25,7 @@
  rhoConstFresh=1000.,
  buoyancyRelation='OCEANICP',
  integr_GeoPot=1,
- eosType='JMD95P',
+ eosType='TEOS10',
  staggerTimeStep=.TRUE.,
  vectorInvariantMomentum=.TRUE.,
  implicitFreeSurface=.TRUE.,

@@ -152,7 +152,6 @@ C     == Global variables ===
 #endif
 
 #ifdef ALLOW_AUTODIFF
-# include "AUTODIFF_MYFIELDS.h"
 # ifdef ALLOW_AUTODIFF_TAMC
 #  include "tamc.h"
 # endif
@@ -593,12 +592,12 @@ C--   apply tidal forcing to open boundaries
 #endif  /* ALLOW_OBCS */
 
 #ifdef ALLOW_AUTODIFF_TAMC
-C--   HPF directive to help TAMC
+C--   HPF directive to help TAF
 CHPF$ INDEPENDENT
 #endif /* ALLOW_AUTODIFF_TAMC */
       DO bj=myByLo(myThid),myByHi(myThid)
 #ifdef ALLOW_AUTODIFF_TAMC
-C--   HPF directive to help TAMC
+C--   HPF directive to help TAF
 CHPF$ INDEPENDENT
 #endif /* ALLOW_AUTODIFF_TAMC */
        DO bi=myBxLo(myThid),myBxHi(myThid)
