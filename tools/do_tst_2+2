@@ -90,7 +90,7 @@ if test -x $SCRIPT ; then
  fi
  echo " $LIST"
  echo ""
- yy=`echo $SCRIPT | grep -c '^\/'`
+ yy=`echo $SCRIPT | grep -c '^/'`
  if test $yy = 0 ; then SCRIPT="../../$SCRIPT" ; fi
 else
  echo "ERROR: script '$SCRIPT' not found or not executable"
