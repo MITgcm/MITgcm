@@ -185,7 +185,7 @@ C     Initialize averages to zero
 
 C--   Initialize (variable) grid info. As long as we allow masking of
 C--   velocities outside of ice covered areas (in seaice_dynsolver)
-C--   we need to re-initialize seaiceMaskU/V here for TAF/TAMC
+C--   we need to re-initialize seaiceMaskU/V here for TAF
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 #ifdef SEAICE_CGRID

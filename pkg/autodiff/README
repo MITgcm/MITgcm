@@ -17,7 +17,7 @@ c      a some MITgcmUV setup.
 c
 c      Such pieces are hand-coded adjoint routines,
 c      initialization and finalization of a future
-c      autodiff package, flow directives for TAMC
+c      autodiff package, flow directives for TAF
 c      and header files necessary to include for
 c      doing automatic differentiation.
 c
