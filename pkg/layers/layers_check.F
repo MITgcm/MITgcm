@@ -12,6 +12,7 @@ C     Check dependances with other packages
 #include "PARAMS.h"
 #include "EOS.h"
 #include "LAYERS_SIZE.h"
+#include "LAYERS_SWITCH.h"
 #include "LAYERS.h"
 
 C     myThid   :: my Thread Id number
@@ -104,6 +105,13 @@ C-     Check for valid density reference level:
        ENDIF
 
       ENDDO
+
+      IF ( layers_useThermo .AND. .NOT. useDiagnostics ) THEN
+        WRITE(msgBuf,'(2A)') 'LAYERS_CHECK: ',
+     &    'layers-thermodynamics part requires useDiagnostics=T'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
 
       IF ( errCount.GE.1 ) THEN
         WRITE(msgBuf,'(A,I3,A)')
