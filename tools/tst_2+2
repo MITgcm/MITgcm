@@ -299,7 +299,7 @@ fi
 if test ! -s std_outp.2it
 then echo "empty or no output file: 'std_outp.2it' => exit" ; exit 1 ; fi
 mv STDERR.0000 std__err.2it
-out=`egrep -c 'STOP ABNORMAL END' std_outp.2it`
+out=`grep -c 'STOP ABNORMAL END' std_outp.2it`
 if test $out != 0
 then echo "==> RUN 2 x $Nit it : ABNORMAL END => exit" ; exit 1 ; fi
 listF=`ls -1 $pref.ckptA*.data 2> /dev/null`
@@ -328,7 +328,7 @@ fi
 if test ! -s std_outp.1iA
 then echo "empty or no output file: 'std_outp.1iA' => exit" ; exit 2 ; fi
 mv STDERR.0000 std__err.1iA
-out=`egrep -c 'STOP ABNORMAL END' std_outp.1iA`
+out=`grep -c 'STOP ABNORMAL END' std_outp.1iA`
 if test $out != 0
 then echo "==> RUN 1iA : ABNORMAL END => exit" ; exit 2 ; fi
 listF=`ls -1 $pref.ckptA*.data 2> /dev/null`
@@ -356,7 +356,7 @@ fi
 if test ! -s std_outp.1iB
 then echo "empty or no output file: 'std_outp.1iB' => exit" ; exit 3 ; fi
 mv STDERR.0000 std__err.1iB
-out=`egrep -c 'STOP ABNORMAL END' std_outp.1iB`
+out=`grep -c 'STOP ABNORMAL END' std_outp.1iB`
 if test $out != 0
 then echo "==> RUN 1iB : ABNORMAL END => exit" ; exit 3 ; fi
 listF=`ls -1 $pref.ckptA*.data 2> /dev/null`
