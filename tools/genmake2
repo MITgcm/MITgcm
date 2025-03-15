@@ -3073,7 +3073,7 @@ for d in $alldirs ; do
 			    else # file is initially listed as an AD file we want to exclude it
 				 # or we want to retain the untransformed version
 				notToBeTransformed=`grep ^$basename'\>' ${OAD_DONT_TRANSFORM}`
-				untransformedVersionToBeKept=`grep ^$basename'\>' ${OAD_KEEP_ORIGINAL}`
+				untransformedVersionToBeKept=`grep ^$basename ${OAD_KEEP_ORIGINAL}`
 				if test -n "$notToBeTransformed"; then
 				    echo "    not to be transformed:  $sf"
 				fi
