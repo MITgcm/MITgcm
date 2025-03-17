@@ -2000,7 +2000,7 @@ Tile Assembly:
 
     A bash script :filelink:`gluemnc <utils/scripts/gluemnc>` is available for 
     spatially “assembling” :filelink:`pkg/mnc` NetCDF output. Please see 
-    :ref:`gluemnc <gluemnc>` for details. 
+    :numref:`gluemnc` for details. 
 
 gmt:
     As MITgcm evolves to handle more complicated domains and topologies,
