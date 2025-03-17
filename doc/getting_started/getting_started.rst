@@ -1369,8 +1369,9 @@ Bash scripts
 ~~~~~~~~~~~~
 
 The repository includes utilities for handling model input and output. You can 
-add these command line scripts to the system's search path by modifying the 
-`PATH` variable. To permanently access MITgcm bash utilities, put this line in 
+add these command line scripts to the system's search path by modifying the
+unix `PATH <https://www.digitalocean.com/community/tutorials/how-to-view-and-update-the-linux-path-environment-variable>`_
+variable. To permanently access MITgcm bash utilities, put this line in 
 your shell configuration file e.g. ``.bashrc`` or ``.zshrc``:
 
 ::
@@ -1380,7 +1381,7 @@ your shell configuration file e.g. ``.bashrc`` or ``.zshrc``:
 NetCDF output
 ^^^^^^^^^^^^^
 
-The `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ output is produced 
+`netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ output is produced 
 with one file per processor. This means unique tiles need to be stitched 
 together to create a single 
 `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ file that spans the
