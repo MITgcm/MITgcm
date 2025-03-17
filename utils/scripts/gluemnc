@@ -1,5 +1,13 @@
 #! /usr/bin/env bash
 #
+# Prerequisites: 
+#  - Add utilities directory to your search path
+#  ```
+#  export PATH=$PATH:MITgcm/utils/scripts
+#  ```
+#  - Download NCO libraries to use `ncks`; see documentation for details.
+#
+# Description: 
 # This is a shell script to combine multiple MITgcm mnc output files from
 # different tiles into one global file.
 # All of the variables should be in one directory, where this script is run.

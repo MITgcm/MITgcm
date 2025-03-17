@@ -1365,6 +1365,28 @@ into `Python <https://www.python.org/>`_:
 
   Eta = xr.open_dataset('Eta.nc')
 
+Bash scripts
+~~~~~~~~~~~~
+
+The repository includes utilities for handling model input and output. You can 
+add these command line scripts to the system's search path by modifying the 
+`PATH` variable. To permanently access MITgcm bash utilities, put this line in 
+your shell configuration file e.g. `.bashrc` or `.zshrc`:
+
+::
+
+    export PATH=$PATH:/path/to/your/MITgcm/utils/scripts
+
+NetCDF output
+^^^^^^^^^^^^^
+
+The `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ output is produced 
+with one file per processor. This means unique tiles need to be stitched 
+together to create a single 
+`netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ file that spans the
+model domain. The script :filelink:`utils/scripts/gluemnc`can do this from the 
+command line. For usage information and dependencies, see :numref:`gluemnc`.
+
 .. _customize_compilation:
 
 Customizing the Model Configuration - Code Parameters and Compilation Options
