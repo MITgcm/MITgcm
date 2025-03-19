@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools:
+  - replace (obsolete) "egrep" with "grep -E" (or without "-E" if not needed).
 o verification:
   - After merging (5 fwd tests + 2 AD) few exp. into new host-exp. (PR #830),
     move input dir and ref. output from merged exp. to replace sym-link in new
