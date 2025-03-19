@@ -3026,9 +3026,9 @@ for d in $alldirs ; do
 
 			if test "x$TAPENADE" != x ; then
 			    basename=${sf%%.F}
-			    isAD=`egrep ^$basename.f'[ 	]*' $TMP.adSrcFiles`
+			    isAD=`grep ^$basename'.f\>' $TMP.adSrcFiles`
 			    if test -z "$isAD" ; then
-				toBeIgnored=`egrep ^$basename'[      ]*' ${TAP_DONT_COMPILE}`
+				toBeIgnored=`grep ^$basename'\>' ${TAP_DONT_COMPILE}`
 				if test -z "$toBeIgnored" ; then
 				    echo    " \\"  >> $TMP.nonADF77srclist
 				    printf " $sf" >> $TMP.nonADF77srclist
@@ -3037,8 +3037,8 @@ for d in $alldirs ; do
 				fi
 			    else # file is initially listed as an AD file we want to exclude it
 				 # or we want to retain the untransformed version
-				notToBeTransformed=`egrep ^$basename'[      ]*' ${TAP_DONT_TRANSFORM}`
-				untransformedVersionToBeKept=`egrep ^$basename'[      ]*' ${TAP_KEEP_ORIGINAL}`
+				notToBeTransformed=`grep ^$basename'\>' ${TAP_DONT_TRANSFORM}`
+				untransformedVersionToBeKept=`grep ^$basename'\>' ${TAP_KEEP_ORIGINAL}`
 				if test -n "$notToBeTransformed"; then
 				    echo "    not to be transformed:  $sf"
 				fi
@@ -3054,16 +3054,16 @@ for d in $alldirs ; do
 
 			if test "x$OPENAD" = x ; then
 			    basename=${sf%%.F}
-			    isAD=`egrep ^$basename.f'[ 	]*' $TMP.adSrcFiles`
+			    isAD=`grep ^$basename'.f\>' $TMP.adSrcFiles`
 			    if test -z "$isAD" ; then
 				echo    " \\"  >> $TMP.nonADF77srclist
 				printf " $sf" >> $TMP.nonADF77srclist
 			    fi
 			else #- OpenAD case:
 			    basename=${sf%%.F}
-			    isAD=`egrep ^$basename.f'[ 	]*' $TMP.adSrcFiles`
+			    isAD=`grep ^$basename'.f\>' $TMP.adSrcFiles`
 			    if test -z "$isAD" ; then
-				toBeIgnored=`egrep ^$basename'[      ]*' ${OAD_DONT_COMPILE}`
+				toBeIgnored=`grep ^$basename'\>' ${OAD_DONT_COMPILE}`
 				if test -z "$toBeIgnored" ; then
 				    echo    " \\"  >> $TMP.nonADF77srclist
 				    printf " $sf" >> $TMP.nonADF77srclist
@@ -3072,8 +3072,8 @@ for d in $alldirs ; do
 				fi
 			    else # file is initially listed as an AD file we want to exclude it
 				 # or we want to retain the untransformed version
-				notToBeTransformed=`egrep ^$basename'[      ]*' ${OAD_DONT_TRANSFORM}`
-				untransformedVersionToBeKept=`egrep ^$basename'[      ]*' ${OAD_KEEP_ORIGINAL}`
+				notToBeTransformed=`grep ^$basename'\>' ${OAD_DONT_TRANSFORM}`
+				untransformedVersionToBeKept=`grep ^$basename ${OAD_KEEP_ORIGINAL}`
 				if test -n "$notToBeTransformed"; then
 				    echo "    not to be transformed:  $sf"
 				fi
@@ -3092,7 +3092,7 @@ for d in $alldirs ; do
 			printf " $sf" >> $TMP.F90srclist
 			if ( test "x$OPENAD" = x && test "x$TAPENADE" = x ) ; then
 			    basename=${sf%%.F90}
-			    isAD=`egrep ^$basename.f90'[ 	]*' $TMP.adF90Files`
+			    isAD=`grep ^$basename.f90'\>' $TMP.adF90Files`
 			    if test -z "$isAD" ; then
 				echo    " \\" >> $TMP.nonADF90srclist
 				printf " $sf" >> $TMP.nonADF90srclist
@@ -3764,7 +3764,7 @@ printf "AD_FILES = " >> $MAKEFILE
 AD_FILES=`cat $TMP.adSrcFiles`
 for i in $AD_FILES ; do
   basename=${i%%.f}
-  toBeIgnored=`egrep ^$basename'[      ]*' ${TAP_DONT_COMPILE} ${TAP_DONT_TRANSFORM}`
+  toBeIgnored=`grep ^$basename'\>' ${TAP_DONT_COMPILE} ${TAP_DONT_TRANSFORM}`
   if test -z "$toBeIgnored" ; then
     echo    " \\" >> $MAKEFILE
     printf " $i" >> $MAKEFILE
@@ -3901,7 +3901,7 @@ done
 AD_FILES=`cat $TMP.adSrcFiles`
 for i in $AD_FILES ; do
   basename=${i%%.f}
-  toBeIgnored=`egrep ^$basename'[      ]*' ${OAD_DONT_COMPILE} ${OAD_DONT_TRANSFORM}`
+  toBeIgnored=`grep ^$basename'\>' ${OAD_DONT_COMPILE} ${OAD_DONT_TRANSFORM}`
   if test -z "$toBeIgnored" ; then
     echo    " \\" >> $MAKEFILE
     printf " $i" >> $MAKEFILE
