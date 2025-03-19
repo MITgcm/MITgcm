@@ -885,24 +885,13 @@ C--   Apply Filters to u*,v* before SOLVE_FOR_PRESSURE
 #ifdef ALLOW_SHAP_FILT
       IF (useSHAP_FILT .AND. shap_filt_uvStar) THEN
         CALL TIMER_START('SHAP_FILT_UV        [FORWARD_STEP]',myThid)
-        IF (implicDiv2DFlow.LT.1.) THEN
-C--   Explicit+Implicit part of the Barotropic Flow Divergence
-C      => Filtering of uVel,vVel is necessary
-          CALL SHAP_FILT_APPLY_UV( uVel,vVel,
-     &                             myTime, myIter, myThid )
-        ENDIF
-        CALL SHAP_FILT_APPLY_UV( gU,gV,myTime,myIter,myThid)
+        CALL SHAP_FILT_APPLY_UV( gU, gV, myTime, myIter, myThid )
         CALL TIMER_STOP ('SHAP_FILT_UV        [FORWARD_STEP]',myThid)
       ENDIF
 #endif
 #ifdef ALLOW_ZONAL_FILT
       IF (useZONAL_FILT .AND. zonal_filt_uvStar) THEN
         CALL TIMER_START('ZONAL_FILT_UV       [FORWARD_STEP]',myThid)
-        IF (implicDiv2DFlow.LT.1.) THEN
-C--   Explicit+Implicit part of the Barotropic Flow Divergence
-C      => Filtering of uVel,vVel is necessary
-          CALL ZONAL_FILT_APPLY_UV( uVel, vVel, myThid )
-        ENDIF
         CALL ZONAL_FILT_APPLY_UV( gU, gV, myThid )
         CALL TIMER_STOP ('ZONAL_FILT_UV       [FORWARD_STEP]',myThid)
       ENDIF
@@ -914,8 +903,8 @@ C     three-dimensional for non-hydrostatic and/or IGW scheme.
       IF ( momStepping ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 # if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
-CADJ STORE uVel, vVel
-CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
+c CADJ STORE uVel, vVel
+c CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE EmPmR,hFacS,hFacW
 CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
 # endif
