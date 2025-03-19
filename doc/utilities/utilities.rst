@@ -132,13 +132,14 @@ Usage
 
 .. code-block:: sh
 
-   gluemnc <mnc_filename>.nc
+   gluemnc <mnc_filename>
 
 Options
 """""""
 
 - ``<mnc_filename>``: A pattern matching the tiled NetCDF files to merge. 
-  Typically, this is a prefix shared by all relevant files.
+  Typically, this is a prefix shared by all relevant files, e.g.
+  ``state.0000000000.*``
 
 Example
 """""""
@@ -155,7 +156,7 @@ You can merge these into a single file using:
 
 .. code-block:: sh
 
-   gluemnc state.0000000000.t[0-9][0-9][0-9].nc
+   gluemnc state.0000000000.*
 
 This will generate a single file containing the full computational domain, 
 ``state.0000000000.glob.nc``.
