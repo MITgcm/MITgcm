@@ -218,7 +218,7 @@ done   | sed -e 's|/[^/.][^/]*/\.\.||g' -e 's|/\.[^.][^/]*/\.\.||g'     -e 's|"|
 
 	    if (rec != "")
 		print rec
-	    }'   | egrep -v '^[^:]*:[ 	]*$' >> $DEPENDLINES
+	    }'   | grep -v '^[^:]*:[ 	]*$' >> $DEPENDLINES
 
 trap "" 1 2 13 15	# Now we are committed
 case "$makefile" in
