@@ -1,5 +1,3 @@
-#ifdef ALLOW_GCHEM
-
 CBOP
 C    !ROUTINE: GCHEM_SIZE.h
 C    !INTERFACE:
@@ -17,21 +15,18 @@ C        2) if several tendency-tracer pkgs are compiled with no intention to
 C           be used all together, a smaller number could be specified like here:
 c     PARAMETER( GCHEM_tendTr_num = 3 )
 #ifdef ALLOW_CFC
-# include "CFC_SIZE.h"	
+# include "CFC_SIZE.h"
 #else /* ALLOW_CFC */
       INTEGER CFC_Tr_num
       PARAMETER( CFC_Tr_num = 0 )
 #endif /* ALLOW_CFC */
 #ifdef ALLOW_SPOIL
-# include "SPOIL_SIZE.h"	
+# include "SPOIL_SIZE.h"
 #else /* ALLOW_SPOIL */
       INTEGER SPOIL_Tr_num
       PARAMETER( SPOIL_Tr_num = 0 )
 #endif /* ALLOW_SPOIL */
       PARAMETER( GCHEM_tendTr_num = CFC_Tr_num + SPOIL_Tr_num )
 CEOP
-#endif /* ALLOW_GCHEM */
 
-CEH3 ;;; Local Variables: ***
-CEH3 ;;; mode:fortran ***
-CEH3 ;;; End: ***
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

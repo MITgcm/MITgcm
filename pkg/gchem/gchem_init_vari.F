@@ -1,7 +1,4 @@
 #include "GCHEM_OPTIONS.h"
-#ifdef ALLOW_BLING
-# include "BLING_OPTIONS.h"
-#endif
 #ifdef ALLOW_DARWIN
 # include "DARWIN_OPTIONS.h"
 #endif
@@ -12,19 +9,27 @@ C !INTERFACE: ==========================================================
 C !DESCRIPTION:
 C calls subroutines that initialize any time dependent variables
 C for any tracer experiment
+C!! remove exf_init_fld from bling ini forcing
 
 C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h"
 #ifdef ALLOW_AUTODIFF
-# include "GRID.h"
 # include "DYNVARS.h"
 #endif /* ALLOW_AUTODIFF */
 #include "GCHEM.h"
 #include "GCHEM_SIZE.h"
 #include "GCHEM_FIELDS.h"
+#include "GCHEM_AUX_FIELDS.h"
+#ifdef ALLOW_EXF
+# ifdef USE_EXF_INTERPOLATION
+#  include "EXF_INTERP_SIZE.h"
+# endif
+# include "GCHEM_EXF.h"
+#endif
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
@@ -34,9 +39,10 @@ CEOP
 C !LOCAL VARIABLES: ====================================================
 C  i,j,k,bi,bj          :: loop indices
 C  jTr                  :: ptracer number
-#ifdef GCHEM_ADD2TR_TENDENCY
-      INTEGER i,j,k
       INTEGER bi,bj
+      INTEGER i,j
+#ifdef GCHEM_ADD2TR_TENDENCY
+      INTEGER k
       INTEGER jTr
 #endif /* GCHEM_ADD2TR_TENDENCY */
 
@@ -57,6 +63,110 @@ C--   Initialise GCHEM variables:
        ENDDO
       ENDDO
 #endif /* GCHEM_ADD2TR_TENDENCY */
+
+C-- Initialize Geo-Chemistry forcing fields
+
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+C     First call requires that we initialize everything to zero for safety
+        GCHEM_ldRec(bi,bj) = 0
+C     set reasonable values fields that need at least something
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          gchemapCO2 (i,j,bi,bj) = gchem_apCO2_const *maskC(i,j,1,bi,bj)
+          gchemWind  (i,j,bi,bj) = gchem_wind_const  *maskC(i,j,1,bi,bj)
+          gchemAtmosP(i,j,bi,bj) = gchem_apres_const *maskC(i,j,1,bi,bj)
+          gchemPAR   (i,j,bi,bj) = gchem_par_const   *maskC(i,j,1,bi,bj)
+          gchemFe    (i,j,bi,bj) = gchem_iron_const  *maskC(i,j,1,bi,bj)
+          gchemSi    (i,j,bi,bj) = gchem_silica_const*maskC(i,j,1,bi,bj)
+          gchemIce   (i,j,bi,bj) = 0. _d 0          * maskC(i,j,1,bi,bj)
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+
+      IF ( .NOT. useEXF ) THEN
+       IF ( gchem_silicaFile .NE. ' '  ) THEN
+        CALL READ_FLD_XY_RS( gchem_silicaFile,' ',gchemSi,0,myThid )
+       ENDIF
+       IF ( gchem_PARfile .NE. ' '  ) THEN
+        CALL READ_FLD_XY_RS( gchem_PARfile,' ',gchemPAR,0,myThid )
+       ENDIF
+       IF ( gchem_ironFile .NE. ' '  ) THEN
+        CALL READ_FLD_XY_RS( gchem_ironFile,' ',gchemFe,0,myThid )
+       ENDIF
+       IF ( gchem_apCO2file .NE. ' '  ) THEN
+        CALL READ_FLD_XY_RS( gchem_apCO2file,' ',gchemapCO2,0,myThid )
+       ENDIF
+      ENDIF
+
+#ifdef ALLOW_EXF
+      IF ( useEXF ) THEN
+
+       IF ( gchem_silicafile .NE. ' ' ) THEN
+        CALL EXF_INIT_FLD (
+     &     'silica', gchem_silicafile, silicamask,
+     &     silicaperiod, gchem_inscal_silica, gchem_silica_const,
+     &     gchemSi, gchemSi0, gchemSi1,
+#ifdef USE_EXF_INTERPOLATION
+     &     silica_lon0, silica_lon_inc,
+     &     silica_lat0, silica_lat_inc,
+     &     silica_nlon, silica_nlat, xC, yC,
+     &     silica_interpMethod,
+#endif
+     &     mythid )
+       ENDIF
+
+       IF ( gchem_PARfile .NE. ' ' ) THEN
+        CALL EXF_INIT_FLD (
+     &     'PAR', gchem_PARfile, PARmask,
+     &     PARperiod, gchem_inscal_PAR, gchem_par_const,
+     &     gchemPAR, gchemPAR0, gchemPAR1,
+#ifdef USE_EXF_INTERPOLATION
+     &     PAR_lon0, PAR_lon_inc,
+     &     PAR_lat0, PAR_lat_inc,
+     &     PAR_nlon, PAR_nlat, xC, yC,
+     &     PAR_interpMethod,
+#endif
+     &     mythid )
+       ENDIF
+
+       IF ( gchem_ironfile .NE. ' ' ) THEN
+        CALL EXF_INIT_FLD (
+     &     'iron', gchem_ironfile, ironmask,
+     &     ironperiod, gchem_inscal_iron, gchem_iron_const,
+     &     gchemFe, gchemIron0, gchemIron1,
+#ifdef USE_EXF_INTERPOLATION
+     &     iron_lon0, iron_lon_inc,
+     &     iron_lat0, iron_lat_inc,
+     &     iron_nlon, iron_nlat, xC, yC,
+     &     iron_interpMethod,
+#endif
+     &     mythid )
+       ENDIF
+
+       IF ( gchem_apCO2file .NE. ' ' ) THEN
+        CALL EXF_INIT_FLD (
+     &     'apCO2', gchem_apCO2file, apCO2mask,
+     &     apCO2period, gchem_inscal_apCO2, gchem_apCO2_const,
+     &     gchemapCO2, gchemApCO20, gchemApCO21,
+#ifdef USE_EXF_INTERPOLATION
+     &     apCO2_lon0, apCO2_lon_inc,
+     &     apCO2_lat0, apCO2_lat_inc,
+     &     apCO2_nlon, apCO2_nlat, xC, yC,
+     &     apCO2_interpMethod,
+#endif
+     &     mythid )
+       ENDIF
+
+C     useEXF
+      ENDIF
+#endif /* ALLOW_EXF */
+
+      _EXCH_XY_RL( gchemSi, myThid )
+      _EXCH_XY_RL( gchemPAR, myThid )
+      _EXCH_XY_RL( gchemFe, myThid )
+      _EXCH_XY_RL( gchemapCO2, myThid )
 
 C--   Initialise other Geo-Chemistry pkg variables:
 
