@@ -161,16 +161,33 @@ C-    Off-diagonal components of vertical flux
 C      Since bolus transport is computed as curl of stream-function, needs to
 C      flip sign when using Left-Handed Coordinate system such as P-coordinate
 c      flipSign4LHCoord = -gravitySign
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         rTrans(i,j) = -gravitySign*(
-     &      dyG(i+1,j,bi,bj)*GM_PsiX(i+1,j,k,bi,bj)
-     &     -dyG( i ,j,bi,bj)*GM_PsiX( i ,j,k,bi,bj)
-     &     +dxG(i,j+1,bi,bj)*GM_PsiY(i,j+1,k,bi,bj)
-     &     -dxG(i, j ,bi,bj)*GM_PsiY(i, j ,k,bi,bj)
-     &                              )*deepFacF(k)
+#ifdef ALLOW_LONGSTEP
+       IF ( trIdentity .GE. GAD_TR1 ) THEN
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          rTrans(i,j) = -gravitySign*(
+     &       dyG(i+1,j,bi,bj)*LS_PsiX(i+1,j,k,bi,bj)
+     &      -dyG( i ,j,bi,bj)*LS_PsiX( i ,j,k,bi,bj)
+     &      +dxG(i,j+1,bi,bj)*LS_PsiY(i,j+1,k,bi,bj)
+     &      -dxG(i, j ,bi,bj)*LS_PsiY(i, j ,k,bi,bj)
+     &                               )*deepFacF(k)
+         ENDDO
         ENDDO
-       ENDDO
+       ELSE
+#endif /* ALLOW_LONGSTEP */
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          rTrans(i,j) = -gravitySign*(
+     &       dyG(i+1,j,bi,bj)*GM_PsiX(i+1,j,k,bi,bj)
+     &      -dyG( i ,j,bi,bj)*GM_PsiX( i ,j,k,bi,bj)
+     &      +dxG(i,j+1,bi,bj)*GM_PsiY(i,j+1,k,bi,bj)
+     &      -dxG(i, j ,bi,bj)*GM_PsiY(i, j ,k,bi,bj)
+     &                               )*deepFacF(k)
+         ENDDO
+        ENDDO
+#ifdef ALLOW_LONGSTEP
+       ENDIF
+#endif /* ALLOW_LONGSTEP */
 #ifdef GM_AUTODIFF_EXCESSIVE_STORE
 CADJ STORE rtrans(:,:) =
 CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
