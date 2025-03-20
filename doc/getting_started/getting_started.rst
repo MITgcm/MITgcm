@@ -415,7 +415,7 @@ typical output might be as follows:
 
   ===  Processing options files and arguments  ===
     getting local config information:  none found
-  Warning: ROOTDIR was not specified ; try using a local copy of MITgcm found at "../../.."
+  Warning: MITgcm root directory was not specified ; try using a local copy of MITgcm found at "../../.."
     getting OPTFILE information:
       using OPTFILE="../../../tools/build_options/linux_amd64_gfortran"
     getting AD_OPTFILE information:
@@ -480,12 +480,12 @@ typical output might be as follows:
 
 In the above, notice:
 
-- we did not specify ``ROOTDIR``,
+- we did not specify MITgcm root directory,
   i.e., a path to your MITgcm repository,
   but here we are building code from within the repository (specifically,
   in one of the verification subdirectory experiments). As such,
   :filelink:`genmake2 <tools/genmake2>` was smart enough to
-  locate all necessary files on its own. To specify a remote ``ROOTDIR``,
+  locate all necessary files on its own. To specify a remote MITgcm root directory,
   see :ref:`here <build_elsewhere>`.
 - we specified the :ref:`optfile <genmake2_optfiles>`
   :filelink:`linux_amd64_gfortran <tools/build_options/linux_amd64_gfortran>`
@@ -578,7 +578,7 @@ The most important command-line options are:
 .. _build_elsewhere:
 
 ``-rootdir «/PATH/TO/MITGCMDIR»``
-    specify the location of the MITgcm repository top directory (``ROOTDIR``).
+    specify the location of the MITgcm repository top directory (MITgcm root directory).
     By default, :filelink:`genmake2 <tools/genmake2>` will try to find this
     location by looking in parent directories from where
     :filelink:`genmake2 <tools/genmake2>` is executed
@@ -1364,6 +1364,29 @@ into `Python <https://www.python.org/>`_:
   import xarray as xr
 
   Eta = xr.open_dataset('Eta.nc')
+
+Bash scripts
+~~~~~~~~~~~~
+
+The repository includes utilities for handling model input and output. You can 
+add these command line scripts to the system's search path by modifying the
+unix `PATH <https://www.digitalocean.com/community/tutorials/how-to-view-and-update-the-linux-path-environment-variable>`_
+variable. To permanently access MITgcm bash utilities, put this line in 
+your shell configuration file e.g. ``.bashrc`` or ``.zshrc``:
+
+::
+
+    export PATH=$PATH:/path/to/your/MITgcm/utils/scripts
+
+NetCDF output
+^^^^^^^^^^^^^
+
+`netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ output is produced 
+with one file per processor. This means unique tiles need to be stitched 
+together to create a single 
+`netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ file that spans the
+model domain. The script :filelink:`utils/scripts/gluemnc` can do this from the 
+command line. For usage information and dependencies, see :numref:`gluemnc`.
 
 .. _customize_compilation:
 

@@ -43,14 +43,14 @@ def pfromz(rC, rF0=0.0, lat=None, rhoConst=1.0275e+3, eosRefP0=1.01325e+5,
     >>> pfromz(-1000,lat=[70,90])
     1009.6304, 1010.2562
     """
-    z = np.asfarray(rC)
+    z = np.asarray(rC, dtype=np.float64)
 
     assert np.all(z<=0), 'input_error: values cannot be positive'
 
     if lat is None:
         gravity = 9.81
     else:
-        lat = np.asfarray(lat)
+        lat = np.asarray(lat, dtype=np.float64)
         if lat.ndim == 1 and z.ndim == 1:
             lat,z = np.meshgrid(lat,z)
 

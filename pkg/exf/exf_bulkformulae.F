@@ -6,7 +6,7 @@
 CBOP
 C     !ROUTINE: EXF_BULKFORMULAE
 C     !INTERFACE:
-      SUBROUTINE EXF_BULKFORMULAE( myTime, myIter, myThid )
+      SUBROUTINE EXF_BULKFORMULAE( exf_Tsf, myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -159,9 +159,12 @@ C     input:
 C     myTime  :: Current time in simulation
 C     myIter  :: Current iteration number in simulation
 C     myThid  :: My Thread Id number
+C     exf_Tsf :: local copy of global field gcmSST or extrapolated
+C                surface temperature (in deg Celsius)
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
+      _RL exf_Tsf(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     output:
 CEOP
 
@@ -195,7 +198,6 @@ C     these need to be 2D-arrays for vectorizing code
 #ifdef ALLOW_BULK_LARGEYEAGER04
       _RL dzTmp
 #endif
-      _RL SSTtmp
       _RL ssq
       _RL re                    ! = Ce / sqrt(Cd)     [-]
       _RL rh                    ! = Ch / sqrt(Cd)     [-]
@@ -252,12 +254,12 @@ C--   abbreviation
 
 C     Loop over tiles.
 #ifdef ALLOW_AUTODIFF_TAMC
-C--   HPF directive to help TAMC
+C--   HPF directive to help TAF
 CHPF$ INDEPENDENT
 #endif
       DO bj = myByLo(myThid),myByHi(myThid)
 #ifdef ALLOW_AUTODIFF_TAMC
-C--    HPF directive to help TAMC
+C--    HPF directive to help TAF
 CHPF$  INDEPENDENT
 #endif
        DO bi = myBxLo(myThid),myBxHi(myThid)
@@ -280,14 +282,7 @@ C--- Compute turbulent surface fluxes
 C-   Pot. Temp and saturated specific humidity
           IF ( atemp(i,j,bi,bj) .NE. 0. _d 0 ) THEN
 C-   Surface Temp.
-           Tsf = theta(i,j,ks,bi,bj) + cen2kel
-           IF ( Nr.GE.2 .AND. sstExtrapol.GT.0. _d 0 ) THEN
-            SSTtmp = sstExtrapol
-     &              *( theta(i,j,ks,bi,bj)-theta(i,j,kl,bi,bj) )
-     &              *  maskC(i,j,kl,bi,bj)
-            Tsf = Tsf + MAX( SSTtmp, 0. _d 0 )
-           ENDIF
-
+           Tsf = exf_Tsf(i,j,bi,bj)
            tmpbulk = cvapor_fac*exp(-cvapor_exp/Tsf)
 #ifdef EXF_CALC_ATMRHO
            atmrho_loc(i,j) = apressure(i,j,bi,bj) /

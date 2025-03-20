@@ -43,19 +43,8 @@ C     !INTERFACE:
 
 C     !DESCRIPTION: \bv
 C     *================================================================*
-C     | SUBROUTINE the_loop_body
-C     | o Run the ocean model and evaluate the specified cost function.
-C     *================================================================*
-C     |
-C     | INNER_DO_LOOP is the toplevel routine for the Tangent Linear and
-C     | Adjoint Model Compiler (TAMC).
-C     | For this purpose the initialization
-C     | of the model was split into two parts. Those parameters that do
-C     | not depend on a specific model run are set in INITIALISE_FIXED,
-C     | whereas those that do depend on the specific realization are
-C     | initialized in INITIALISE_VARIA.
-C     | This routine is to be used in conjuction with the MITgcmuv
-C     | checkpoint 37.
+C     | SUBROUTINE INNER_DO_LOOP
+C     | o Inner time-stepping "do-loop" for OPENAD_DIVA
 C     *================================================================*
 C     \ev
 
@@ -66,72 +55,9 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 
-c**************************************
-#ifdef ALLOW_OPENAD
-
-C-- The folowing header files are included in the_main_loop.F for TAF
-C    and might be needed here (where the iloop is done) for OpenAD
-c#  include "GRID.h"
-c#  include "DYNVARS.h"
-c#  include "SURFACE.h"
-c#  include "FFIELDS.h"
-c#  include "EOS.h"
-c#  include "AUTODIFF.h"
-c#  ifdef ALLOW_GENERIC_ADVDIFF
-c#   include "GAD.h"
-c#   include "GAD_SOM_VARS.h"
-c#  endif
-c#  ifdef ALLOW_MOM_FLUXFORM
-c#   include "MOM_FLUXFORM.h"
-c#  endif
-c#  ifdef ALLOW_CD_CODE
-c#   include "CD_CODE_VARS.h"
-c#  endif
-c#  ifdef ALLOW_EXF
-c#   include "EXF_FIELDS.h"
-c#   ifdef ALLOW_BULKFORMULAE
-c#    include "EXF_CONSTANTS.h"
-c#   endif
-c#  endif /* ALLOW_EXF */
-c#  ifdef ALLOW_SEAICE
-c#   include "SEAICE_SIZE.h"
-c#   include "SEAICE.h"
-c#   include "SEAICE_PARAMS.h"
-c#   include "SEAICE_COST.h"
-c#   include "SEAICE_TRACER.h"
-c#  endif
-c#  ifdef ALLOW_SALT_PLUME
-c#   include "SALT_PLUME.h"
-c#  endif
-c#  ifdef ALLOW_THSICE
-c#   include "THSICE_SIZE.h"
-c#   include "THSICE_VARS.h"
-c#   include "THSICE_COST.h"
-c#  endif
-c#  ifdef ALLOW_EBM
-c#   include "EBM.h"
-c#  endif
-c#  ifdef ALLOW_RBCS
-c#   include "RBCS_SIZE.h"
-c#   include "RBCS_FIELDS.h"
-c#  endif
-c#  ifdef ALLOW_OFFLINE
-c#   include "OFFLINE.h"
-c#  endif
-c#  ifdef ALLOW_CG2D_NSA
-c#   include "CG2D.h"
-c#  endif
-c# ifdef ALLOW_GGL90
-c#  include "GGL90.h"
-c# endif
-c# ifdef ALLOW_PROFILES
-c#  include "profiles.h"
-c# endif
-c# ifdef ALLOW_ECCO_EVOLUTION
-c#  ifdef ALLOW_ECCO
-c#   include "ecco_cost.h"
-c#  endif
-c# endif
+#ifdef ALLOW_OPENAD_DIVA
+C-- Header files that are included in the_main_loop.F for TAF (e.g., DYNVARS.h)
+C    might be needed here (where the iloop is done) for OpenAD
 
 # ifdef ALLOW_CTRL
 #  include "CTRL_SIZE.h"
@@ -181,16 +107,9 @@ c# endif
 #  include "STREAMICE_CG.h"
 # endif
 
-#endif /* ALLOW_OPENAD */
-c**************************************
+#endif /* ALLOW_OPENAD_DIVA */
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
-C     note: under the multi-threaded model myIter and
-C           myTime are local variables passed around as routine
-C           arguments. Although this is fiddly it saves the need to
-C           impose additional synchronisation points when they are
-C           updated.
 C     myTime :: time counter for this thread
 C     myIter :: iteration counter for this thread
 C     myThid :: thread number for this instance of the routine.
@@ -198,12 +117,11 @@ C     myThid :: thread number for this instance of the routine.
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
-#if (defined ALLOW_OPENAD) && (defined ALLOW_OPENAD_DIVA)
+
+#ifdef ALLOW_OPENAD_DIVA
 C     !FUNCTIONS:
-C     == Functions ==
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
       INTEGER iloop1
       INTEGER prod
 CEOP
@@ -212,45 +130,24 @@ CEOP
       IF (debugMode) CALL DEBUG_ENTER('INNER_DO_LOOP',myThid)
 #endif
 
-#ifdef ALLOW_OPENAD
-C     >>>>>>>>>>>>>>>>>>>>>>>>>>>   LOOP   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
-C     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STARTS  <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+C--   Start Inner time-stepping Loop:
       DO iloop1 = 1, nTimeSteps
         prod = (iloop-1)*nTimeSteps_l2+iloop1
-#endif
 
 #ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('FORWARD_STEP',myThid)
+        IF (debugMode) CALL DEBUG_CALL('FORWARD_STEP',myThid)
 #endif
-
-#ifdef ALLOW_ATM2D
-        CALL TIMER_START('FORWARD_STEP_ATM2D  [INNER_DO_LOOP]',myThid)
-#ifdef ALLOW_OPENAD
-        CALL FORWARD_STEP_ATM2D( prod, myTime, myIter, myThid )
-#else
-        CALL FORWARD_STEP_ATM2D( iloop, myTime, myIter, myThid )
-#endif
-        CALL TIMER_STOP ('FORWARD_STEP_ATM2D  [INNER_DO_LOOP]',myThid)
-#else
         CALL TIMER_START('FORWARD_STEP        [INNER_DO_LOOP]',myThid)
-#ifdef ALLOW_OPENAD
         CALL FORWARD_STEP( prod, myTime, myIter, myThid )
-#else
-        CALL FORWARD_STEP( iloop, myTime, myIter, myThid )
-#endif
         CALL TIMER_STOP ('FORWARD_STEP        [INNER_DO_LOOP]',myThid)
-#endif
 
-#ifdef ALLOW_OPENAD
       ENDDO
-C     >>>>>>>>>>>>>>>>>>>>>>>>>>>   LOOP   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
-C     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STOPS   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
-#endif
+C--   end of Inner time-stepping Loop
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_LEAVE('INNER_DO_LOOP',myThid)
 #endif
 
+#endif /* ALLOW_OPENAD_DIVA */
       RETURN
-#endif
       END
