@@ -3027,7 +3027,7 @@ for d in $alldirs ; do
 			if test "x$TAPENADE" = x -a "x$OPENAD" = x ; then
 			    #- default: not OpenAD neither Tapenade
 			    basename=${sf%%.F}
-			    isAD=`egrep ^$basename.f'[ 	]*' $TMP.adSrcFiles`
+			    isAD=`grep ^$basename'.f\>' $TMP.adSrcFiles`
 			    if test -z "$isAD" ; then
 				echo    " \\"  >> $TMP.nonADF77srclist
 				printf " $sf" >> $TMP.nonADF77srclist
