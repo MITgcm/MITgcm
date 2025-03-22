@@ -801,10 +801,10 @@ sort_file_list_from_used_modules()  {
 	fi
     done < $file_list
     # Replace alphabetical with topological file order
-    tsort $TMP.Graph | sed -e 's|.*/||' -e 's/\.F90/\.f90/g' > $file_list
+    tsort $TMP.Graph | sed 's|.*/||' > $file_list
     # append files without use-statements if they are not already included
     while IFS= read -r f90file; do
-	f=$(echo $f90file | sed -e 's|.*/||' -e 's/\.F90/\.f90/g' )
+	f=$(echo $f90file | sed 's|.*/||' )
 	inList=$(grep -i $f $file_list)
 	if test -z "$inList" ; then
 	    echo $f >> $file_list
@@ -2826,9 +2826,9 @@ touch $TMP.adSrcFiles $TMP.adF90Files
 for i in $SOURCEDIRS ; do
     list_files=`( cd $i && ls -1 *_ad_diff.list 2>/dev/null )`
     for j in $list_files ; do
-	grep '\.f\>'   $i/$j >> $TMP.adSrcFiles
+	grep '\.f\>'   $i/$j | sed 's/\.f\>/.F/' >> $TMP.adSrcFiles
 	# Retain file paths for topo sorting later
-	grep '\.f90\>' $i/$j | sed 's/f90$/F90/'g | while IFS= read -r line; do
+	grep '\.f90\>' $i/$j | sed 's/f90$/F90/g' | while IFS= read -r line; do
 	    echo "$i/$line" >> $TMP.adF90Files
 	done
     done
@@ -2877,41 +2877,14 @@ fi
 rm -f $TMP.links/foo
 
 if test "x$TAPENADE" != x ; then
-    TAP_DONT_COMPILE="/dev/null"
     TAP_DONT_TRANSFORM="/dev/null"
-    TAP_KEEP_ORIGINAL="/dev/null"
-    TAP_CB2M_FILES="/dev/null"
     TAPTOOLS="$TOOLSDIR/TAP_support"
     TAPTOOLSMK='$(TOOLSDIR)/TAP_support'
-    echo "  looking for dontCompile file:  "
-    for i in "." $MODS $TAPTOOLS ; do
-	if test -r $i"/dontCompile" ; then
-	    TAP_DONT_COMPILE=$i"/dontCompile"
-	    echo "     found $TAP_DONT_COMPILE"
-	    break
-	fi
-    done
     echo "  looking for dontTransform file:  "
     for i in "." $MODS $TAPTOOLS ; do
 	if test -r $i"/dontTransform" ; then
 	    TAP_DONT_TRANSFORM=$i"/dontTransform"
 	    echo "     found $TAP_DONT_TRANSFORM"
-	    break
-	fi
-    done
-    echo "  looking for keepOriginal file:  "
-    for i in "." $MODS $TAPTOOLS ; do
-	if test -r $i"/keepOriginal" ; then
-	    TAP_KEEP_ORIGINAL=$i"/keepOriginal"
-	    echo "     found $TAP_KEEP_ORIGINAL"
-	    break
-	fi
-    done
-    echo "  looking for cb2mFiles:  "
-    for i in "." $MODS $TAPTOOLS ; do
-	if test -r $i"/cb2mFiles" ; then
-	    TAP_CB2M_FILES=$i"/cb2mFiles"
-	    echo "     found $TAP_CB2M_FILES"
 	    break
 	fi
     done
@@ -3026,8 +2999,7 @@ for d in $alldirs ; do
 
 			if test "x$TAPENADE" = x -a "x$OPENAD" = x ; then
 			    #- default: not OpenAD neither Tapenade
-			    basename=${sf%%.F}
-			    isAD=`grep ^$basename'.f\>' $TMP.adSrcFiles`
+			    isAD=`grep "^$sf\>" $TMP.adSrcFiles`
 			    if test -z "$isAD" ; then
 				echo    " \\"  >> $TMP.nonADF77srclist
 				printf " $sf" >> $TMP.nonADF77srclist
@@ -3035,27 +3007,14 @@ for d in $alldirs ; do
 			fi
 			if test "x$TAPENADE" != x ; then
 			    #- Tapenade case:
-			    basename=${sf%%.F}
-			    isAD=`grep ^$basename'.f\>' $TMP.adSrcFiles`
+			    isAD=`grep "^$sf\>" $TMP.adSrcFiles`
 			    if test -z "$isAD" ; then
-				toBeIgnored=`grep ^$basename'\>' ${TAP_DONT_COMPILE}`
-				if test -z "$toBeIgnored" ; then
-				    echo    " \\"  >> $TMP.nonADF77srclist
-				    printf " $sf" >> $TMP.nonADF77srclist
-				else
-				    echo "    not to be compiled   :  $sf"
-				fi
-			    else # file is initially listed as an AD file we want to exclude it
-				 # or we want to retain the untransformed version
-				notToBeTransformed=`grep ^$basename'\>' ${TAP_DONT_TRANSFORM}`
-				untransformedVersionToBeKept=`grep ^$basename'\>' ${TAP_KEEP_ORIGINAL}`
-				if test -n "$notToBeTransformed"; then
+				echo    " \\"  >> $TMP.nonADF77srclist
+				printf " $sf" >> $TMP.nonADF77srclist
+			    else # file is initially listed as an AD file we want to exclude
+				notToBeTransformed=`grep "^$sf\>" ${TAP_DONT_TRANSFORM}`
+				if test -n "$notToBeTransformed" ; then
 				    echo "    not to be transformed:  $sf"
-				fi
-				if test -n "$untransformedVersionToBeKept" ; then
-				    echo "    original to be kept  :  $sf"
-				fi
-				if test -n "$notToBeTransformed" -o -n "$untransformedVersionToBeKept" ; then
 				    echo    " \\"  >> $TMP.nonADF77srclist
 				    printf " $sf" >> $TMP.nonADF77srclist
 				fi
@@ -3064,7 +3023,7 @@ for d in $alldirs ; do
 			if test "x$OPENAD" != x ; then
 			    #- OpenAD case:
 			    basename=${sf%%.F}
-			    isAD=`grep ^$basename'.f\>' $TMP.adSrcFiles`
+			    isAD=`grep "^$sf\>" $TMP.adSrcFiles`
 			    if test -z "$isAD" ; then
 				toBeIgnored=`grep ^$basename'\>' ${OAD_DONT_COMPILE}`
 				if test -z "$toBeIgnored" ; then
@@ -3094,8 +3053,7 @@ for d in $alldirs ; do
 			echo    " \\" >> $TMP.F90srclist
 			printf " $sf" >> $TMP.F90srclist
 			if ( test "x$OPENAD" = x && test "x$TAPENADE" = x ) ; then
-			    basename=${sf%%.F90}
-			    isAD=`grep ^$basename.f90'\>' $TMP.adF90Files`
+			    isAD=`grep "^$sf\>" $TMP.adF90Files`
 			    if test -z "$isAD" ; then
 				echo    " \\" >> $TMP.nonADF90srclist
 				printf " $sf" >> $TMP.nonADF90srclist
@@ -3271,7 +3229,6 @@ cat $TMP.csrclist        >> $MAKEFILE
 cat $TMP.hsrclist        >> $MAKEFILE
 cat $TMP.ad_flow_files   >> $MAKEFILE
 
-#rm -f $TMP.F77srclist $TMP.nonADF77srclist $TMP.nonADF90srclist $TMP.csrclist $TMP.F90srclist $TMP.hsrclist $TMP.ad_flow_files
 rm -f $TMP.F77srclist $TMP.F90srclist $TMP.csrclist $TMP.hsrclist $TMP.ad_flow_files
 
 echo >> $MAKEFILE
@@ -3485,14 +3442,14 @@ done
 echo "  Add the source list for AD code generation"
 echo >> $MAKEFILE
 printf "AD_FILES = " >> $MAKEFILE
-AD_FILES=`cat $TMP.adSrcFiles | sed -e "s/\.f/.$FS/g"`
+AD_FILES=`cat $TMP.adSrcFiles | sed "s/\.F/.$FS/g"`
 for i in $AD_FILES ; do
     echo   " \\" >> $MAKEFILE
     printf " $i" >> $MAKEFILE
 done
 echo >> $MAKEFILE
 printf "AD_F90FILES = " >> $MAKEFILE
-AD_F90FILES=`cat $TMP.adF90Files | sed -e "s/\.f90/.$FS90/g"`
+AD_F90FILES=`cat $TMP.adF90Files | sed "s/\.F90/.$FS90/g"`
 for i in $AD_F90FILES ; do
     echo   " \\" >> $MAKEFILE
     printf " $i" >> $MAKEFILE
@@ -3767,11 +3724,11 @@ echo >> $MAKEFILE
 printf "AD_FILES = " >> $MAKEFILE
 AD_FILES=`cat $TMP.adSrcFiles`
 for i in $AD_FILES ; do
-  basename=${i%%.f}
-  toBeIgnored=`grep ^$basename'\>' ${TAP_DONT_COMPILE} ${TAP_DONT_TRANSFORM}`
+  toBeIgnored=`grep "^$i\>" ${TAP_DONT_TRANSFORM}`
   if test -z "$toBeIgnored" ; then
-    echo    " \\" >> $MAKEFILE
-    printf " $i" >> $MAKEFILE
+    echo   " \\" >> $MAKEFILE
+   #printf " $i" | sed "s/\.F/.$FS/" >> $MAKEFILE
+    printf " $i" | sed "s/\.F/.f/" >> $MAKEFILE
   fi
 done
 echo >> $MAKEFILE
@@ -3823,6 +3780,7 @@ tlm_exe_target:
 \$(EXE_ADJ): \$(SPECIAL_FILES) \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES) \$(OBJFILES) \$(TAP_SUPPORT_OBJFILES) \$(EMBEDDED_FILES) TAP_ADJ_FILES
 	@echo Creating \$@ ...
 	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) \$(AD_FILES_ADJ) \$(TAP_SUPPORT_OBJFILES:${TAPTOOLS}/ADFirstAidKit/%=%) \$(LIBS)
+
 \$(EXE_TLM): \$(SPECIAL_FILES) \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES) \$(OBJFILES) \$(TAP_SUPPORT_OBJFILES) \$(EMBEDDED_FILES) TAP_TLM_FILES
 	@echo Creating \$@ ...
 	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) \$(AD_FILES_TLM) \$(TAP_SUPPORT_OBJFILES:${TAPTOOLS}/ADFirstAidKit/%=%) \$(LIBS)
@@ -3904,7 +3862,7 @@ for i in `cat ${OAD_CB2M_FILES}` ; do
   echo    " \\" >> $MAKEFILE
   printf " ${i}_mod.f$FS90" >> $MAKEFILE
 done
-AD_FILES=`cat $TMP.adSrcFiles`
+AD_FILES=`cat $TMP.adSrcFiles | sed "s/\.F/.f/g"`
 for i in $AD_FILES ; do
   basename=${i%%.f}
   toBeIgnored=`grep ^$basename'\>' ${OAD_DONT_COMPILE} ${OAD_DONT_TRANSFORM}`
