@@ -792,21 +792,22 @@ In addition to relaxing pkg/profile's constraint on vertical levels, OBSFIT can 
 Observations vs. Samples
 ^^^^^^^^^^^^^^^^^^^^^^^^
 One feature of this package is that it allows measured observations to be averages in both space and/or time
-(or alternatively, integrated values in space and/or time).  Samples, defined as instantaneous model data values
+(or alternatively, integrated values in space and/or time via optional parameter choices, see :ref:`below <obsfit_time>`).
+Samples, defined as instantaneous model data values
 at specific locations (which may or may not coincide with model gridpoints), are aggregated and
-interpolated for comparison with observations.
-For example, consider observations of integrated sound speed along the acoustic ray path.
-In that case, one specifies multiple locations at which to sample the model, as we require model
+interpolated for comparison with observations. Hence, in OBSFIT, sampled points are referred to as *samples*
+and the averaged/integrated values as *observations*. 
+For example, consider observations of integrated sound speed along the acoustic ray path:
+in such case, one specifies multiple locations at which to sample the model, as we require model
 data at multiple locations to calculate the model-equivalent of a single observation. 
 Samples locations are used during the model run to extract model data (and save it to file). Then, sampled
 values are combined at the end of the run to calculate the model-equivalent value. Observational values
 are only used at the end of the model run to calculate the cost, i.e., weighted misfits with model-equivalents. 
-Ergo, In OBSFIT, sampled points are referred to as "samples" and the averaged/integrated values as "observations". 
-Each observation is comprised of a number of samples (NP). Each of those NP samples is assigned a relative
-weight in the average/integral; by default all samples are weighed equally. (Note that the our definition of weights is
-different from the uncertainty-related weights in :filelink:`pkg/profiles`.) 
 
-In many applications, NP=1 and "samples" and "observations" are effectively the same.
+As noted, each observation can be comprised of a number of samples (NP). Each of those NP samples is assigned a relative
+weight in the average/integral; by default all samples are weighed equally. (Note that the our definition of weights is
+different from the uncertainty-related weights in :filelink:`pkg/profiles`.)  In many applications however, NP=1
+and "samples" and "observations" are effectively the same.
 
 .. _obsfit_type: 
 
