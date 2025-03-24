@@ -779,11 +779,11 @@ Description
 ~~~~~~~~~~~
 
 The code is evolved from :filelink:`pkg/profiles <pkg/profiles>` and shares much of its general structure.
-In addition to relaxing pkg/profile's constraint on vertical levels, OBSFIT can handle observations that are:
+In addition to relaxing pkg/profile's constraint on vertical levels, OBSFIT can handle:
 
--  instantaneous observations at a single location;
+-  spatial averages of multiple sample locations;
 
--  time averages (or a cumulative integral) of multiple sampled locations;
+-  time averages (or a cumulative integral) of multiple sampled points;
 
 -  observations that are combinations of multiple variables.
 
@@ -792,13 +792,15 @@ In addition to relaxing pkg/profile's constraint on vertical levels, OBSFIT can 
 Observations vs. Samples
 ^^^^^^^^^^^^^^^^^^^^^^^^
 One feature of this package is that it allows measured observations to be averages in both space and/or time
-(or alternatively, integrated values in space and/or time).  **Samples**, defined as instantaneous model data values
-at specific locations (which may or may not coincide with model gridpoints), are aggregated and interpolated for comparison with observations.
+(or alternatively, integrated values in space and/or time).  Samples, defined as instantaneous model data values
+at specific locations (which may or may not coincide with model gridpoints), are aggregated and
+interpolated for comparison with observations.
 For example, consider observations of integrated sound speed along the acoustic ray path.
 In that case, one specifies multiple locations at which to sample the model, as we require model
-data at multiple locations to calculate the model-equivalent of a single observation. Thus,
-the model is sampled during the model run, and sampled values are combined at the end of the
-run to calculate the model-equivalent value, which is then compared to the observed value for cost calculation.
+data at multiple locations to calculate the model-equivalent of a single observation. 
+Samples locations are used during the model run to extract model data (and save it to file). Then, sampled
+values are combined at the end of the run to calculate the model-equivalent value. Observational values
+are only used at the end of the model run to calculate the cost, i.e., weighted misfits with model-equivalents. 
 Ergo, In OBSFIT, sampled points are referred to as "samples" and the averaged/integrated values as "observations". 
 Each observation is comprised of a number of samples (NP). Each of those NP samples is assigned a relative
 weight in the average/integral; by default all samples are weighed equally. (Note that the our definition of weights is
@@ -835,7 +837,7 @@ at each specified sample location.
 In other words, all samples inherit the time and duration from the corresponding observation.
 If observation time does not align exactly with model time steps, samples are taken from model data
 at the beginning of the time step in which the observation time falls.
-Sampled values are saved in tiled files. For positive specified duration, accumulated values
+Sampled values are saved in tiled files. For non-zero specified duration, accumulated values
 are saved in the tiled files and the average is calculated at the end of the model run.
 
 
@@ -955,7 +957,7 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`obsfit_facmod`           |     1.0                      |                                                                         |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`obsfitDoNcOutput`        |     FALSE                    | boolean to generate output file in netCDF format                        |
+  | :varlink:`obsfitDoNcOutput`        |     FALSE                    | boolean to generate tiled output file in netCDF format                  |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`obsfitDoGenGrid`         | TRUE (spherical grid, FALSE) | not sure we need this namelist parm                                     |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
@@ -988,9 +990,9 @@ will be created if it doesn't already exist.
 Post-processing
 ^^^^^^^^^^^^^^^
 
-For each input file, two new files are created. One, named <original_filename>.equi.nc, contains model-equivalent values
-for direct comparison with observation data. The other, named <filename>.misfits.nc, contains model-observations misfits.
-
+For each input file, two new files are created. One, named <original_filename>.equi.nc,
+contains model-equivalent values for direct comparison with observation data.
+The other, named <original_filename>.misfits.nc, contains model-observations misfits.
 "equi.nc" output files include two variables, mod_val and mod_mask. They are in the same format as the input files,
 thus obs_val and mod_val are directly comparable. The mask indicates missing model-equivalent values.
 
