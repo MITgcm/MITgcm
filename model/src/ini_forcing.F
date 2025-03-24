@@ -35,8 +35,8 @@ C     i, j   :: Loop counters
       INTEGER bi, bj
       INTEGER  i, j
 #ifdef SHORTWAVE_HEATING
-      INTEGER  k
-      _RL SWFracK(Nr)
+      INTEGER  k, kp
+      _RL SWFracK(Nr+1), swfac
 #endif
 CEOP
 
@@ -127,31 +127,60 @@ C-     Qnet is now (after c54) the net Heat Flux (including SW)
         ENDDO
        ENDIF
       ENDIF
-C     For now SWFrac3D is held fixed throught the simulation, so it is
-C     initialised here instead of somewhere in S/R INITIALISE_VARIA
-      DO k=1,Nr
-       IF ( usingZCoords ) THEN
-        SWFracK(k) = rF(k)
-       ELSE
-C     this is the oceanic pressure coordinate case
-        SWFracK(k) = -rF(k+1)*recip_rhoConst*recip_gravity
-       ENDIF
-      ENDDO
-      CALL SWFRAC(
-     I            Nr, oneRL,
-     U            SWFracK,
-     I            zeroRL, 0, myThid )
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO k = 1,Nr
+        DO k = 1,Nr+1
+         swfac = 0. _d 0
+         IF ( usingZCoords ) THEN
+          IF ( k .EQ. 1 ) swfac = 1. _d 0
+         ELSE
+          IF ( k .EQ. Nr+1 ) swfac = 1. _d 0
+         ENDIF
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           SWFrac3D(i,j,k,bi,bj) = SWFracK(k)*maskC(i,j,k,bi,bj)
+           SWFrac3D(i,j,k,bi,bj) = swfac
           ENDDO
          ENDDO
         ENDDO
        ENDDO
       ENDDO
+c     IF ( usePenetratingSW ) THEN
+C     For now SWFrac3D is held fixed throughout the simulation, so it is
+C     initialised here instead of somewhere in S/R INITIALISE_VARIA
+      DO k=1,Nr+1
+       IF ( usingZCoords ) THEN
+        SWFracK(k) = rF(k)
+       ELSE
+C     this is the oceanic pressure coordinate case
+        SWFracK(k) = -rF(k)*recip_rhoConst*recip_gravity
+       ENDIF
+      ENDDO
+      CALL SWFRAC(
+     I            Nr+1, oneRL,
+     U            SWFracK,
+     I            zeroRL, 0, myThid )
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO k = 1,Nr+1
+         swfac = 1. _d 0
+C     Here, kp is the index for the mask physically below the current level k.
+         IF ( usingZCoords ) THEN
+          kp = MIN(k,Nr)
+          IF ( k .EQ. Nr+1 ) swfac = 0. _d 0
+         ELSE
+          kp = MAX(k-1,1)
+          IF ( k .EQ. 1 ) swfac = 0. _d 0
+         ENDIF
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           SWFrac3D(i,j,k,bi,bj) = SWFracK(k)*swfac
+     &          *maskC(i,j,kp,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+c     ENDIF ! ( usePenetratingSW ) THEN
 #endif
 #ifdef ATMOSPHERIC_LOADING
       IF ( pLoadFile .NE. ' '  ) THEN

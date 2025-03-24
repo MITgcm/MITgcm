@@ -442,9 +442,6 @@ C     kSurface  :: index of surface level
       _RL     tmpVar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tmpFac, delPI
       _RL recip_Cp
-#ifdef SHORTWAVE_HEATING
-      _RL swfracb(2), swfac
-#endif
 #endif /* USE_OLD_EXTERNAL_FORCING */
 CEOP
 
@@ -683,22 +680,11 @@ C-    Neither Z-Coords nor kSurface=Nr : not implemented
 #ifdef SHORTWAVE_HEATING
 C Penetrating SW radiation
 c     IF ( usePenetratingSW ) THEN
-C     note: here km is for the mask below current level k
-       IF ( usingZCoords ) THEN
-        km = MIN(k+1,Nr)
-       ELSE
-C     this is the oceanic pressure coordinate case
-        km = MAX(k-1,1)
-       ENDIF
-       swfac = 1. _d 0
-       IF ( k.EQ.km ) swfac = 0. _d 0
        DO j=0,sNy+1
         DO i=0,sNx+1
-         swfracb(1)=SWFrac3D(i,j,k,bi,bj)
-         swfracb(2)=SWFrac3D(i,j,km,bi,bj)*swfac
          gT_arr(i,j) = gT_arr(i,j)
-     &        - Qsw(i,j,bi,bj)*( swfracb(1)*maskC(i,j,k,bi,bj)
-     &                         - swfracb(2)*maskC(i,j,km,bi,bj) )
+     &        + Qsw(i,j,bi,bj)*gravitySign
+     &        *( SWFrac3D(i,j,k,bi,bj) - SWFrac3D(i,j,k+1,bi,bj) )
      &        *recip_Cp*mass2rUnit
      &        *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
         ENDDO

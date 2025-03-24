@@ -293,7 +293,7 @@ C ===================================================================
 
       IF ( usingPCoords ) THEN
        kSurface = Nr
-       kSrfS    = MAX(Nr-1,1)
+       kSrfS    = Nr
       ELSE
        kSurface = 1
        kSrfS    = MIN(2,Nr)

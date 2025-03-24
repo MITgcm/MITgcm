@@ -51,9 +51,6 @@ C     downfac  :: mask for lower point
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL minusone
       PARAMETER (minusOne=-1.)
-#ifdef SHORTWAVE_HEATING
-      _RL swfracb(2), swfac
-#endif
 
 C --  These factors convert the units of TFLUX and SFLUX diagnostics
 C --  back to surfaceForcingT and surfaceForcingS units
@@ -100,10 +97,6 @@ C     this is the oceanic pressure coordinate case
              kdown = MAX(k-1,1)
              IF ( k.EQ.1  ) downFac = 0. _d 0
             ENDIF
-#ifdef SHORTWAVE_HEATING
-            swfac = 1. _d 0
-            IF ( k.EQ.kdown ) swfac = 0. _d 0
-#endif
             DO j=1-OLy,sNy+OLy-1
              DO i=1-OLx,sNx+OLx-1
 C -- Diffusion
@@ -131,12 +124,10 @@ C -- Advection
 
 #ifdef SHORTWAVE_HEATING
               IF (iTracer.EQ.1) THEN
-                swfracb(1)=SWFrac3D(i,j,k,bi,bj)
-                swfracb(2)=SWFrac3D(i,j,kdown,bi,bj)*swfac
                 layers_sw(i,j,k,iTracer,bi,bj) =
      &            layers_sw(i,j,k,iTracer,bi,bj)
-     &            -Qsw(i,j,bi,bj)*(swfracb(1)*maskC(i,j,k,bi,bj)
-     &                            -swfracb(2)*maskC(i,j,kdown,bi,bj))
+     &            + Qsw(i,j,bi,bj)*gravitySign
+     &            *( SWFrac3D(i,j,k,bi,bj) - SWFrac3D(i,j,k+1,bi,bj) )
      &            *fluxfac(1)
      &            *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
               ENDIF

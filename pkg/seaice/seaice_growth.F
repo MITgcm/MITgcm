@@ -330,7 +330,7 @@ C ===================================================================
 
       IF ( usingPCoords ) THEN
        kSurface = Nr
-       kSrfS    = MAX(Nr-1,1)
+       kSrfS    = Nr
        dzSurf   = drF(kSurface)*recip_rhoConst*recip_gravity
       ELSE
        kSurface = 1
@@ -342,7 +342,7 @@ C     avoid unnecessary divisions in loops
       recip_multDim     = SEAICE_multDim
       recip_multDim     = ONE / recip_multDim
 C     above/below: double/single precision calculation of recip_multDim
-c     recip_multDim     = ONE / float(SEAICE_multDim)
+c     recip_multDim     = 1.  / float(SEAICE_multDim)
       recip_deltaTtherm = ONE / SEAICE_deltaTtherm
       recip_rhoIce      = ONE / SEAICE_rhoIce
 

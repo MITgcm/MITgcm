@@ -172,7 +172,7 @@ c     vddiff (nx,ny,Nrp2,2)- vert. diff. on next row for salt&tracers (m^2/s)
 c     vddiff (nx,ny,Nrp2,3)- vert. diff. on next row for temperature  (m^2/s)
 c     ghat   (nx,ny,Nr)    - nonlocal transport coefficient           (s/m^2)
 c     hbl    (nx,ny)       - mixing layer depth                           (m)
-c     khb    (nx,ny)       - k-cell index of mixing layer depth
+c     kbl    (nx,ny)       - k-cell index of mixing layer depth
       INTEGER work1 ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy            )
       _RL worka ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
       _RL work2 ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
@@ -195,7 +195,7 @@ c     khb    (nx,ny)       - k-cell index of mixing layer depth
       _RL vddiff( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, 0:Nrp1, mdiff )
       _RL ghat  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr            )
       _RL hbl   ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
-      integer kbl(1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
+      INTEGER kbl(1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
 cph(
       _RL TTALPHA( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
       _RL SSBETA ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
@@ -634,7 +634,7 @@ C     Determine the fraction of solar shortwave flux penetrating to the
 C     bottom of the mixed layer.
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
-        KPPfrac(i,j,bi,bj) = swfrac3d(i,j,kbl(i,j),bi,bj)
+        KPPfrac(i,j,bi,bj) = SWFrac3D(i,j,kbl(i,j),bi,bj)
        ENDDO
       ENDDO
 #else

@@ -139,8 +139,10 @@ C     SWFrac3D :: fraction of solar short-wave flux penetrating upper
 C                 cell surface (no units), function of depth of cell
 C                 surface, potentially turbidity, cholorphyll
 C                 concentration, or other biogeochemical material
+C                 The vertical dimension is Nr+1, which makes it easier
+C                 to maintain the symmetry w.r.t. z vs. p-coordinates
       COMMON /FFIELDS_SWFRAC/ SWFrac3D
-      _RS  SWFrac3D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RS  SWFrac3D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
 #endif
 
 C- jmc: commented out until corresponding (ghost-like) code apparition

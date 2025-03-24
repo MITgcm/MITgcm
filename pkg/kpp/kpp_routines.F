@@ -92,7 +92,7 @@ c                          stored in ghat to save space
 c     Ritop  (imt,Nr)  - numerator of bulk Richardson Number
 c                          (zref-z) * delta buoyancy w.r.t. surface   ((m/s)^2)
 c     coriol (imt)     - Coriolis parameter                               (1/s)
-c     swatt  (imt,Nr)  - fraction of SW radiation entering kth-cell from above
+c     swatt  (imt,Nr+1)- fraction of SW radiation entering kth-cell from above
 c     diffusKzS(imt,Nr)- background vertical diffusivity for scalars    (m^2/s)
 c     diffusKzT(imt,Nr)- background vertical diffusivity for theta      (m^2/s)
 c     hbl    (imt)     - mixing layer depth                                 (m)
@@ -123,7 +123,7 @@ c           where hbl(i,j) -> hbl((j-1)*sNx+i)
       _RL Ritop    (imt,Nr)
       _RL coriol   (imt   )
 #ifdef KPP_USE_SWFRAC3D
-      _RL swatt    (imt,Nr)
+      _RL swatt    (imt,Nr+1)
 #endif
       _RS msk      (imt   )
       _RL diffusKzS(imt,Nr)
@@ -382,7 +382,7 @@ c coriol    : Coriolis parameter                        (1/s)
       _RL bosol   (imt)
       _RL coriol  (imt)
 #ifdef KPP_USE_SWFRAC3D
-      _RL swatt   (imt,Nr)
+      _RL swatt   (imt,Nr+1)
 #endif
       INTEGER ikey
 #ifdef ALLOW_SALT_PLUME
