@@ -603,22 +603,35 @@ C     grid cell layer. Only that fraction which converges in the
 C     uppermost ocean grid cell is used to melt ice.
 C     SWFrac3D - the fraction of incoming sw radiation absorbed in the
 C     uppermost ocean grid cell (calculated in initialise_fixed.F)
-        DO J=1,sNy
-         DO I=1,sNx
 
 C The contribution of shortwave heating is
 C not included without #define SHORTWAVE_HEATING
 #ifdef SHORTWAVE_HEATING
+        IF ( selectPenetratingSW .GE. 1 ) THEN
+         DO J=1,sNy
+          DO I=1,sNx
            tmpscal0 = SWFrac3D(I,J,kSrfS,bi,bj)
            QSWO_BELOW_FIRST_LAYER(I,J)= QSWO(I,J)*tmpscal0
            QSWO_IN_FIRST_LAYER(I,J)   = QSWO(I,J)*(ONE - tmpscal0)
-#else
-           QSWO_BELOW_FIRST_LAYER(I,J)= ZERO
-           QSWO_IN_FIRST_LAYER(I,J)   = ZERO
+          ENDDO
+         ENDDO
+C     This is not  necessary, as both variables  are already initialised
+C     to zero in the beginning of the routine.
+c        ELSE
+c#endif
+c         DO J=1,sNy
+c          DO I=1,sNx
+c           QSWO_BELOW_FIRST_LAYER(I,J)= ZERO
+c           QSWO_IN_FIRST_LAYER(I,J)   = ZERO
+c          ENDDO
+c         ENDDO
+c#ifdef SHORTWAVE_HEATING
+        ENDIF
 #endif
-           IceGrowthRateOpenWater(I,J) = QI *
-     &        (F_ao(I,J) - QSWO(I,J) + QSWO_IN_FIRST_LAYER(I,J))
-
+        DO J=1,sNy
+         DO I=1,sNx
+          IceGrowthRateOpenWater(I,J) = QI *
+     &         (F_ao(I,J) - QSWO(I,J) + QSWO_IN_FIRST_LAYER(I,J))
          ENDDO
         ENDDO
 
@@ -1076,19 +1089,27 @@ c     Sanity checks
          ENDDO
         ENDDO
 
-        DO J=1,sNy
-         DO I=1,sNx
+#ifdef SHORTWAVE_HEATING
+        IF ( selectPenetratingSW .GE. 0 ) THEN
+         DO J=1,sNy
+          DO I=1,sNx
 
 c         THE EFFECTIVE SHORTWAVE HEATING RATE
-#ifdef SHORTWAVE_HEATING
-          QSW(I,J,bi,bj)  =
-     &         QSWI(I,J)  * (      AREApreTH(I,J)) +
-     &         QSWO(I,J)  * (ONE - AREApreTH(I,J))
-#else
-          QSW(I,J,bi,bj) = 0. _d 0
-#endif
+           QSW(I,J,bi,bj)  =
+     &          QSWI(I,J)  * (      AREApreTH(I,J)) +
+     &          QSWO(I,J)  * (ONE - AREApreTH(I,J))
+          ENDDO
          ENDDO
-        ENDDO
+        ELSE
+#endif
+         DO J=1,sNy
+          DO I=1,sNx
+           QSW(I,J,bi,bj) = 0. _d 0
+          ENDDO
+         ENDDO
+#ifdef SHORTWAVE_HEATING
+        ENDIF
+#endif
 
         DO J=1,sNy
          DO I=1,sNx
