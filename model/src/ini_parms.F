@@ -249,7 +249,7 @@ C--   Continuous equation parameters
      & selectAddFluid, useRealFreshWaterFlux, convertFW2Salt,
      & temp_EvPrRn, salt_EvPrRn, trac_EvPrRn,
      & temp_addMass, salt_addMass, zonal_filt_lat,
-     & smoothAbsFuncRange, sIceLoadFac,
+     & smoothAbsFuncRange, sIceLoadFac, selectPenetratingSW,
      & selectBalanceEmPmR, balanceEmPmR, balanceQnet, balancePrintMean,
      & balanceThetaClimRelax, balanceSaltClimRelax,
      & readBinaryPrec, writeBinaryPrec, writeStatePrec, globalFiles,
@@ -261,7 +261,7 @@ C--   Elliptic solver parameters
      & cg2dMaxIters, cg2dMinItersNSA, cg2dChkResFreq, cg2dUseMinResSol,
      & cg2dTargetResidual, cg2dTargetResWunit,
      & cg2dpcOffDFac, cg2dPreCondFreq,
-     & cg3dMaxIters, cg3dChkResFreq, 
+     & cg3dMaxIters, cg3dChkResFreq,
      & cg3dTargetResidual, cg3dTargetResWunit,
      & useNSACGSolver, useSRCGSolver, printResidualFreq
 

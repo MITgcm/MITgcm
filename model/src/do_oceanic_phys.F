@@ -289,7 +289,7 @@ C     avaiable in each layer. The routine to do this depends very much
 C     on the bio-geo-chemical model used to compute turbidity or
 C     concentration of organic matter in the water column, and has not
 C     yet been written.
-C     IF ( useGCHEM .AND. usePenetratingSW )
+C     IF ( useGCHEM .AND. selectPenetratingSW .GT. 1 )
 C    &     CALL GCHEM_SWFRAC( myTime, myIter, myThid )
 #endif
 

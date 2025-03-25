@@ -679,7 +679,7 @@ C-    Neither Z-Coords nor kSurface=Nr : not implemented
 
 #ifdef SHORTWAVE_HEATING
 C Penetrating SW radiation
-c     IF ( usePenetratingSW ) THEN
+      IF ( selectPenetratingSW .GT. 0 ) THEN
        DO j=0,sNy+1
         DO i=0,sNx+1
          gT_arr(i,j) = gT_arr(i,j)
@@ -689,7 +689,7 @@ c     IF ( usePenetratingSW ) THEN
      &        *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
         ENDDO
        ENDDO
-c     ENDIF
+      ENDIF
 #endif /* SHORTWAVE_HEATING */
 
 #ifdef ALLOW_FRAZIL

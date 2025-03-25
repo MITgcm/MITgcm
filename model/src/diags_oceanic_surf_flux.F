@@ -116,13 +116,19 @@ C-    TFLUX (=total heat flux, match heat-content variations, [W/m2])
          DO j = 1,sNy
           DO i = 1,sNx
            tmp1k(i,j,bi,bj) =
-#ifdef SHORTWAVE_HEATING
-     &      -Qsw(i,j,bi,bj)+
-#endif
      &      (surfaceForcingT(i,j,bi,bj)+adjustColdSST_diag(i,j,bi,bj))
      &      *HeatCapacity_Cp*rUnit2mass
           ENDDO
          ENDDO
+#ifdef SHORTWAVE_HEATING
+         IF ( selectPenetratingSW .GE. 0 ) THEN
+          DO j = 1,sNy
+           DO i = 1,sNx
+            tmp1k(i,j,bi,bj) = tmp1k(i,j,bi,bj) - Qsw(i,j,bi,bj)
+           ENDDO
+          ENDDO
+         ENDIF
+#endif
 #ifdef NONLIN_FRSURF
          IF ( (nonlinFreeSurf.GT.0 .OR. usingPCoords)
      &        .AND. useRealFreshWaterFlux ) THEN

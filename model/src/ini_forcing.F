@@ -112,7 +112,7 @@ c      ENDIF
      &  lambdaSaltClimRelax, 0, myThid )
       ENDIF
 #ifdef SHORTWAVE_HEATING
-      IF ( surfQswFile .NE. ' '  ) THEN
+      IF ( surfQswFile .NE. ' ' .AND. selectPenetratingSW .GE. 0 ) THEN
        CALL READ_FLD_XY_RS( surfQswFile, ' ', Qsw, 0, myThid )
        IF ( surfQFile .NE. ' '  ) THEN
 C-     Qnet is now (after c54) the net Heat Flux (including SW)
@@ -127,6 +127,8 @@ C-     Qnet is now (after c54) the net Heat Flux (including SW)
         ENDDO
        ENDIF
       ENDIF
+C--   initialisation for the case of no shortwave penetration
+C--   (shortwave radiation only heats the top layer)
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO k = 1,Nr+1
@@ -144,43 +146,44 @@ C-     Qnet is now (after c54) the net Heat Flux (including SW)
         ENDDO
        ENDDO
       ENDDO
-c     IF ( usePenetratingSW ) THEN
+      IF ( selectPenetratingSW .GT. 0 ) THEN
 C     For now SWFrac3D is held fixed throughout the simulation, so it is
 C     initialised here instead of somewhere in S/R INITIALISE_VARIA
-      DO k=1,Nr+1
-       IF ( usingZCoords ) THEN
-        SWFracK(k) = rF(k)
-       ELSE
+       DO k=1,Nr+1
+        IF ( usingZCoords ) THEN
+         SWFracK(k) = rF(k)
+        ELSE
 C     this is the oceanic pressure coordinate case
-        SWFracK(k) = -rF(k)*recip_rhoConst*recip_gravity
-       ENDIF
-      ENDDO
-      CALL SWFRAC(
-     I            Nr+1, oneRL,
-     U            SWFracK,
-     I            zeroRL, 0, myThid )
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO k = 1,Nr+1
-         swfac = 1. _d 0
+         SWFracK(k) = -rF(k)*recip_rhoConst*recip_gravity
+        ENDIF
+       ENDDO
+       CALL SWFRAC(
+     I             Nr+1, oneRL,
+     U             SWFracK,
+     I             zeroRL, 0, myThid )
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO k = 1,Nr+1
+          swfac = 1. _d 0
 C     Here, kp is the index for the mask physically below the current level k.
-         IF ( usingZCoords ) THEN
-          kp = MIN(k,Nr)
-          IF ( k .EQ. Nr+1 ) swfac = 0. _d 0
-         ELSE
-          kp = MAX(k-1,1)
-          IF ( k .EQ. 1 ) swfac = 0. _d 0
-         ENDIF
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           SWFrac3D(i,j,k,bi,bj) = SWFracK(k)*swfac
-     &          *maskC(i,j,kp,bi,bj)
+          IF ( usingZCoords ) THEN
+           kp = MIN(k,Nr)
+           IF ( k .EQ. Nr+1 ) swfac = 0. _d 0
+          ELSE
+           kp = MAX(k-1,1)
+           IF ( k .EQ. 1 ) swfac = 0. _d 0
+          ENDIF
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            SWFrac3D(i,j,k,bi,bj) = SWFracK(k)*swfac
+     &           *maskC(i,j,kp,bi,bj)
+           ENDDO
           ENDDO
          ENDDO
         ENDDO
        ENDDO
-      ENDDO
-c     ENDIF ! ( usePenetratingSW ) THEN
+C     endif selectPenetratingSW
+      ENDIF
 #endif
 #ifdef ATMOSPHERIC_LOADING
       IF ( pLoadFile .NE. ' '  ) THEN
@@ -233,7 +236,8 @@ C-    set default weight to 1 (i.e., same correction as selectBalanceEmPmR=1 )
       CALL EXCH_XY_RS( lambdaThetaClimRelax, myThid )
       CALL EXCH_XY_RS( lambdaSaltClimRelax , myThid )
 #ifdef SHORTWAVE_HEATING
-      CALL EXCH_XY_RS( Qsw  , myThid )
+      IF ( surfQswFile .NE. ' ' .AND. selectPenetratingSW .GE. 0 )
+     &     CALL EXCH_XY_RS( Qsw  , myThid )
 #endif
 #ifdef ATMOSPHERIC_LOADING
       CALL EXCH_XY_RS( pLoad  , myThid )
