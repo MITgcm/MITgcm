@@ -2998,7 +2998,7 @@ for d in $alldirs ; do
 			printf " $sf" >> $TMP.F77srclist
 
 			if test "x$TAPENADE" = x -a "x$OPENAD" = x ; then
-			    #- default: not OpenAD neither Tapenade
+			    #- default: neither Tapenade nor OpenAD
 			    isAD=`grep "^$sf\>" $TMP.adSrcFiles`
 			    if test -z "$isAD" ; then
 				echo    " \\"  >> $TMP.nonADF77srclist
@@ -3874,7 +3874,6 @@ done
 echo >> $MAKEFILE
 rm -f $TMP.adSrcFiles $TMP.adF90Files
 cat $TMP.nonADF77srclist >> $MAKEFILE
-#cat $TMP.nonADF90srclist >> $MAKEFILE
 rm -f $TMP.nonADF77srclist $TMP.nonADF90srclist
 
 cat >>$MAKEFILE <<EOF
