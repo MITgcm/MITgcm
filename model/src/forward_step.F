@@ -874,9 +874,7 @@ C-    update CG2D matrix (and preconditioner)
         CALL TIMER_STOP ('UPDATE_CG2D         [FORWARD_STEP]',myThid)
       ENDIF
 # ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE aW2d, aS2d, aC2d =
-CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE pC, pS, pW =
+CADJ STORE aW2d, aS2d, aC2d, pC, pS, pW =
 CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
 # endif
 #endif /* NONLIN_FRSURF or ALLOW_SOLVE4_PS_AND_DRAG */
@@ -903,20 +901,11 @@ C     three-dimensional for non-hydrostatic and/or IGW scheme.
       IF ( momStepping ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 # if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
-c CADJ STORE uVel, vVel
-c CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE EmPmR,hFacS,hFacW
-CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
-# endif
-#if ( defined NONLIN_FRSURF || defined ALLOW_SOLVE4_PS_AND_DRAG )
-CADJ STORE aW2d, aS2d, aC2d =
-CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE pC, pS, pW =
-CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE hFacS, hFacW = comlev1, key = ikey_dynamics, kind = isbyte
 # endif
 #endif
         CALL TIMER_START('SOLVE_FOR_PRESSURE  [FORWARD_STEP]',myThid)
-        CALL SOLVE_FOR_PRESSURE(myTime, myIter, myThid)
+        CALL SOLVE_FOR_PRESSURE( myTime, myIter, myThid )
         CALL TIMER_STOP ('SOLVE_FOR_PRESSURE  [FORWARD_STEP]',myThid)
       ENDIF
 
@@ -925,14 +914,8 @@ C--   Correct divergence in flow field and cycle time-stepping momentum
 #ifndef ALLOW_AUTODIFF
       IF ( momStepping ) THEN
 #endif
-#ifdef ALLOW_AUTODIFF_TAMC
-# ifdef ALLOW_DEPTH_CONTROL
-CADJ STORE etaN, uVel,vVel
-CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
-# endif /* ALLOW_DEPTH_CONTROL */
-#endif /* ALLOW_AUTODIFF_TAMC */
         CALL TIMER_START('MOM_CORRECTION_STEP [FORWARD_STEP]',myThid)
-        CALL MOMENTUM_CORRECTION_STEP(myTime, myIter, myThid)
+        CALL MOMENTUM_CORRECTION_STEP( myTime, myIter, myThid )
         CALL TIMER_STOP ('MOM_CORRECTION_STEP [FORWARD_STEP]',myThid)
 #ifndef ALLOW_AUTODIFF
       ENDIF
