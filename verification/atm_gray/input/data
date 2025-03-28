@@ -1,0 +1,100 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+#- mean theta* from H&S, isothermal (T=200.K) above p=150.mb:
+ tRef= 295.1, 295.2, 295.4, 295.6, 296.0, 296.6, 297.3, 298.2, 299.3, 300.6,
+       302.4, 305.9, 311.8, 321.8, 338.3, 359.5, 382.8, 408.6, 437.5, 470.6,
+       509.2, 555.8, 614.9, 696.3, 827.2, 1153.6,
+ sRef=26*0.,
+ viscAr=0.E1,
+ viscAh=0.E6,
+ viscA4=0.E17,
+ no_slip_sides=.FALSE.,
+ no_slip_bottom=.FALSE.,
+ diffKhT=0.E3,
+ diffKrT=0.,
+ diffK4T=0.E17,
+ diffKrS=0.E2,
+ diffKhS=0.E3,
+ diffK4S=0.E17,
+ buoyancyRelation='ATMOSPHERIC',
+ eosType='IDEALG',
+ atm_Cp=1004.64,
+ atm_Rq=0.6078,
+ integr_GeoPot=2,
+ selectFindRoSurf=1,
+ gravity=9.80,
+ implicitFreeSurface=.TRUE.,
+ exactConserv=.TRUE.,
+ select_rStar=2,
+ nonlinFreeSurf=4,
+ hFacInf=0.2,
+ hFacSup=2.0,
+ hFacMin=1.0,
+ uniformLin_PhiSurf=.FALSE.,
+ vectorInvariantMomentum=.TRUE.,
+ useAbsVorticity=.TRUE.,
+ selectVortScheme=3,
+ selectKEscheme=3,
+ addFrictionHeating=.TRUE.,
+#tempAdvScheme=77,
+ saltAdvScheme=77,
+ staggerTimeStep=.TRUE.,
+ readBinaryPrec=64,
+ writeBinaryPrec=64,
+#globalFiles=.TRUE.,
+ useSingleCpuIO=.TRUE.,
+ plotLevel=0,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=200,
+ cg2dTargetResWunit=1.E-17,
+ &
+
+# Time stepping parameters
+ &PARM03
+ nIter0=81000,
+ nTimeSteps=10,
+#endTime=311040000.,
+ deltaT=384.,
+ abEps=0.1,
+#forcing_In_AB=.FALSE.,
+#- uncommenting the line above would replace the 2 setting below
+ momForcingOutAB =1,
+ tracForcingOutAB=1,
+ cAdjFreq=0.,
+#- long run (> 1.yr):
+ chkptFreq =15552000.,
+ pChkptFreq=31104000.,
+ dumpFreq  =15552000.,
+ monitorFreq= 864000.,
+#- short run (~ months):
+#chkptFreq = 864000.,
+#pChkptFreq=2592000.,
+#dumpFreq  = 432000.,
+#monitorFreq= 43200.,
+#- short test:
+#dumpFreq   =1.,
+ monitorFreq=1.,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingCurvilinearGrid=.TRUE.,
+ horizGridFile='dxC1_dXYa',
+ radius_fromHorizGrid=6370.E3,
+ delR= 1500., 2122., 3000., 4242., 6000., 7800., 9100., 9400., 9280., 8400.,
+       6980., 5800., 4820., 4004., 3328., 2766., 2298., 1910., 1586., 1318.,
+       1096.,  910.,  756.,  628.,  522.,  434.,
+ &
+
+# Input datasets
+ &PARM05
+ hydrogThetaFile='ini_theta_26l.bin',
+ hydrogSaltFile ='ini_specQ_26l.bin',
+ &

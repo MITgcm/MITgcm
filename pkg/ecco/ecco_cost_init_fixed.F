@@ -4,7 +4,7 @@
 # include "CTRL_OPTIONS.h"
 #endif
 
-      subroutine ecco_cost_init_fixed( myThid )
+      SUBROUTINE ECCO_COST_INIT_FIXED( myThid )
 
 c     ==================================================================
 c     SUBROUTINE ecco_cost_init_fixed
@@ -32,7 +32,6 @@ c     ==================================================================
       IMPLICIT NONE
 
 c     == global variables ==
-
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "GRID.h"
@@ -48,11 +47,23 @@ c     == global variables ==
 #endif
 
 c     == routine arguments ==
-
       integer myThid
 
-c     == local variables ==
+c     == external functions ==
+      integer  ifnblnk
+      external ifnblnk
+      integer  ilnblnk
+      external ilnblnk
+#ifdef ALLOW_CAL
+      integer  cal_IntYears
+      external cal_IntYears
+      integer  cal_IntMonths
+      external cal_IntMonths
+      integer  cal_IntDays
+      external cal_IntDays
+#endif
 
+c     == local variables ==
       integer k
       logical exst
       _RL     missingObsFlag
@@ -67,27 +78,16 @@ c     == local variables ==
 #ifndef ECCO_VARIABLE_AREAVOLGLOB
       INTEGER i, j, bi, bj
 #endif
-
-c     == external functions ==
-
-      integer  cal_IntYears
-      external cal_IntYears
-      integer  cal_IntMonths
-      external cal_IntMonths
-      integer  cal_IntDays
-      external cal_IntDays
-      integer  ifnblnk
-      external ifnblnk
-      integer  ilnblnk
-      external ilnblnk
-
 c     == end of interface ==
 
+      _BEGIN_MASTER(myThid)
 #ifdef ALLOW_CTRL
       eccoiter=optimcycle
 #else
       eccoiter=0
 #endif
+      eccoWriteCostFunction = .TRUE.
+      _END_MASTER(myThid)
 
 #ifndef ECCO_VARIABLE_AREAVOLGLOB
       DO bj=myByLo(myThid),myByHi(myThid)

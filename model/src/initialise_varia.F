@@ -187,7 +187,7 @@ CEOP
 #endif /* ALLOW_AUTODIFF */
 
 #ifdef ALLOW_DEPTH_CONTROL
-C--   Intialize the depth for TAF/TAMC
+C--   Intialize the depth for TAF
       CALL INI_DEPTHS( myThid )
 C--   Get control parameter depth
       CALL CTRL_DEPTH_INI( myThid )
@@ -244,7 +244,7 @@ C--   Initialise model forcing fields.
       CALL INI_FORCING( myThid )
 
 #ifdef ALLOW_AUTODIFF
-C--   Initialise active fields to help TAMC
+C--   Initialise active fields to help TAF
       if (useAUTODIFF) CALL AUTODIFF_INIT_VARIA( myThid )
 #endif
 

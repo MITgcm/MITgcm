@@ -772,7 +772,7 @@ C--   for backward compatibility :
       ENDIF
 
 C-    set default printResidualFreq according to debugLevel
-      printResidualFreq = 0
+      printResidualFreq = -1
       IF ( debugLevel.GE.debLevE ) printResidualFreq = 1
       IF ( plotLevel.EQ.UNSET_I ) plotLevel = debugLevel
 

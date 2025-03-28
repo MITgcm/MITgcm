@@ -1051,7 +1051,6 @@ scandirs()
     fi
 }
 
-
 check_eedata()
 {
     # check_eedata eedata size.h
@@ -1093,7 +1092,6 @@ check_eedata()
 }
 
 ###############################################################################
-
 
 #  Default properties
 debug=0
@@ -1868,8 +1866,8 @@ for dir in $TESTDIRS ; do
 	      if test -f $gmkLog ; then
 		ADtool=`grep '^Tapenade ' $gmkLog | tail -n 1`
 		echo "from '$gmkLog', get: $ADtool" >> $DRESULTS/genmake_state
-		ADvers=`echo $ADtool | awk '{print $1,$2,$3}'`
-		sed "s/ by Tapenade/ by $ADvers/" $SUMMARY > tmp.tr_log
+		ADvers=`echo $ADtool | awk '{print $2,$3}'`
+		sed "s/ by Tapenade/ by Tapenade $ADvers/" $SUMMARY > tmp.tr_log
 		mv -f tmp.tr_log $SUMMARY
 	      fi
 	    fi
@@ -1907,14 +1905,14 @@ if test "x$ADDRESSES" = xNONE -o "x$ADDRESSES" = x ; then
     echo "No results email was sent."
 else
     if test "x$SENDCMD" != x ; then
-	SendOpt='' ; headCMD=`echo $SENDCMD | awk '{print $1}'`
-	if test $headCMD != 'scp' ; then SendOpt='-s MITgcm-test -m 3555000' ; fi
+	sendOpt='' ; nb=`echo $SENDCMD | grep -c '\<scp\>'`
+	if [ $nb -eq 0 ] ; then sendOpt='-s MITgcm-test -m 3555000' ; fi
 	if [ $verbose -gt 1 ]; then
-	   echo " run: $SENDCMD $SendOpt ${SAVDIR}/${DRESULTS}".tar.gz" $ADDRESSES"
+	   echo " run: $SENDCMD $sendOpt ${SAVDIR}/${DRESULTS}".tar.gz" $ADDRESSES"
 	fi
 	tar -cf ${SAVDIR}/${DRESULTS}".tar" $DRESULTS > /dev/null 2>&1 \
 	    && gzip ${SAVDIR}/${DRESULTS}".tar" \
-	    && $SENDCMD $SendOpt ${SAVDIR}/${DRESULTS}".tar.gz" $ADDRESSES
+	    && $SENDCMD $sendOpt ${SAVDIR}/${DRESULTS}".tar.gz" $ADDRESSES
 	RETVAL=$?
 	if test "x$RETVAL" != x0 ; then
 	    echo

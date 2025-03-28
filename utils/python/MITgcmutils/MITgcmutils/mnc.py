@@ -62,7 +62,7 @@ class MNC:
     -------
     >>> nc = mnc_files('mnc_*/state.0000000000.t*.nc')
     >>> temp = nc.variables['Temp'][:]
-    >>> salt = nv.variables['S'][:]
+    >>> salt = nc.variables['S'][:]
     >>> nc.close()
     temp and salt are now assembled (global) arrays of shape (Nt, Nr, Ny, Nx)
     where Nt is the number iterations found in the file (in this case probably 1).
