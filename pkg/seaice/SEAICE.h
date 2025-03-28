@@ -284,18 +284,6 @@ C     TICES :: Seaice/snow surface temperature for each category
       COMMON/MULTICATEGORY/TICES
       _RL TICES      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nITD,nSx,nSy)
 
-C     SEAICE_SWFrac :: Fraction of surface Short-Wave radiation reaching
-C                      the bottom of ocean surface level. Currently,
-C                      this is just a function of surface cell
-C                      thickness, and hence a constant parameter
-C                      computed in seaice_init_fixed.F in a given
-C                      simulation, but in the future this variable may
-C                      depend on variable turbidity or chlorphyll
-C                      concentration and can change with space and time.
-      _RL SEAICE_SWFrac
-      COMMON /SEAICE_SW_R/
-     &       SEAICE_SWFrac
-
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***
 CEH3 ;;; End: ***

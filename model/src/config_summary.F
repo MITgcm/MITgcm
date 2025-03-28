@@ -607,6 +607,9 @@ C---  report of some vector-invariant parameters ends here
      &                ' /* Sali. implicit vert. advection on/off */')
       CALL WRITE_0D_L( saltForcing,  INDEX_NONE,
      & 'saltForcing  =', '  /* Salinity forcing on/off flag */')
+      CALL WRITE_0D_I( selectPenetratingSW, INDEX_NONE,
+     &                'selectPenetratingSW =',
+     &                ' /* short wave penetration selector */' )
 #ifdef ALLOW_BALANCE_FLUXES
       CALL WRITE_0D_I( selectBalanceEmPmR, INDEX_NONE,
      &                'selectBalanceEmPmR =',
