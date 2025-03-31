@@ -20,11 +20,12 @@ C !USES: ===============================================================
 #include "GCHEM.h"
 #ifdef ALLOW_EXF
 # include "EXF_PARAM.h"
+# include "GCHEM_EXF.h"
 # ifdef USE_EXF_INTERPOLATION
 #  include "EXF_INTERP_SIZE.h"
 #  include "EXF_INTERP_PARAM.h"
+#  include "GCHEM_INTERP_PARAM.h"
 # endif
-# include "GCHEM_EXF.h"
 #endif
 
 C !INPUT PARAMETERS: ===================================================
@@ -104,7 +105,6 @@ C
 
 #  ifdef USE_EXF_INTERPOLATION
       NAMELIST /GCHEM_INTERP_PARAMS/
-C
      &     silica_lon0, silica_lat0, silica_nlon,silica_nlat,
      &     silica_lon_inc, silica_lat_inc, silica_interpMethod,
 C
@@ -331,7 +331,7 @@ C- Close the open data file
 
       IF (gchem_apCO2file.EQ.' ') THEN
         WRITE(msgBuf,'(2A,E13.6,A)')
-     &    '** WARNING ** GCHEM_EXF_READPARMS: ',
+     &    '** WARNING ** GCHEM_READPARMS: ',
      &    'default atmos pCO2 of ', gchem_apCO2_const,' atm is used'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )

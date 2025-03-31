@@ -24,10 +24,12 @@ C !USES: ===============================================================
 #ifdef ALLOW_EXF
 # include "EXF_PARAM.h"
 # include "EXF_FIELDS.h"
-# ifdef USE_EXF_INTERPOLATION
-#  include "EXF_INTERP_SIZE.h"
-# endif
 # include "GCHEM_EXF.h"
+# ifdef USE_EXF_INTERPOLATION
+#  include "GRID.h"
+#  include "EXF_INTERP_SIZE.h"
+#  include "GCHEM_INTERP_PARAM.h"
+# endif
 #endif
 
 C !INPUT PARAMETERS: ===================================================

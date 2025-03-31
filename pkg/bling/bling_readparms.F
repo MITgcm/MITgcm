@@ -17,12 +17,6 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_EXF
-# include "EXF_PARAM.h"
-# include "EXF_INTERP_SIZE.h"
-# include "EXF_INTERP_PARAM.h"
-# include "GCHEM_EXF.h"
-#endif /* ALLOW_EXF */
 #include "BLING_VARS.h"
 
 C     === Routine arguments ===

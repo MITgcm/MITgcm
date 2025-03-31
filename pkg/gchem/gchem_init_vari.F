@@ -25,10 +25,11 @@ C !USES: ===============================================================
 #include "GCHEM_FIELDS.h"
 #include "GCHEM_AUX_FIELDS.h"
 #ifdef ALLOW_EXF
+# include "GCHEM_EXF.h"
 # ifdef USE_EXF_INTERPOLATION
 #  include "EXF_INTERP_SIZE.h"
+#  include "GCHEM_INTERP_PARAM.h"
 # endif
-# include "GCHEM_EXF.h"
 #endif
 
 C !INPUT PARAMETERS: ===================================================

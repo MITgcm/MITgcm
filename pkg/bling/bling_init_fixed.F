@@ -16,9 +16,6 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "BLING_VARS.h"
-#ifdef ALLOW_EXF
-# include "GCHEM_EXF.h" 
-#endif
 
 C     !INPUT PARAMETERS:
 C     myThid       :: my Thread Id number
