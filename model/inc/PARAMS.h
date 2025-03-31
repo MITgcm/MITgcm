@@ -199,10 +199,13 @@ C                           = 2: fully implicit (combined with Impl Surf.Press)
 C     selectPenetratingSW :: select treatment of penetrating shortwave
 C                            radiation, requires to define SHORTWAVE_HEATING
 C                           = 0: no shortwave penetration
-C                           = 1: constant in time fraction of shortwave
-C                                penetration (default)
-C                           = 2: time varying fraction of shortwave penetration
-C                                according to external function (e.g. BGC model)
+C                           = 1: constant in time and space fraction of
+C                                shortwave penetration (default)
+C                           = 2: constant in time, but non-uniform fraction of
+C                                shortwave penetration (not yet coded)
+C                           > 2: time varying fraction of shortwave penetration
+C                                according to external function (e.g. BGC model,
+C                                not yet coded)
 C     momForcingOutAB     :: = 1: take momentum forcing contribution
 C                            out of (=0: in) Adams-Bashforth time stepping.
 C     tracForcingOutAB    :: = 1: take tracer (Temp,Salt,pTracers) forcing
