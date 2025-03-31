@@ -228,7 +228,7 @@ C     Qnet contains the shortwave heat flux Qsw, so if we want to treat
 C     it separately, we need to remove it from the temperature
 C     forcing. Because of the sign conventions, this means adding it
 C     here after it was substracted together with Qnet.
-        IF ( selectPenetratingSW .GE. 0 ) THEN
+        IF ( selectPenetratingSW .GT. 0 ) THEN
          DO j = jMin, jMax
           DO i = iMin, iMax
            surfaceForcingT(i,j,bi,bj) = surfaceForcingT(i,j,bi,bj)
