@@ -2826,9 +2826,9 @@ touch $TMP.adSrcFiles $TMP.adF90Files
 for i in $SOURCEDIRS ; do
     list_files=`( cd $i && ls -1 *_ad_diff.list 2>/dev/null )`
     for j in $list_files ; do
-	grep '\.f\>'   $i/$j | sed 's/\.f\>/.F/' >> $TMP.adSrcFiles
+	grep '\.f\>'   $i/$j | sed 's/\.f/.F/' >> $TMP.adSrcFiles
 	# Retain file paths for topo sorting later
-	grep '\.f90\>' $i/$j | sed 's/f90$/F90/g' | while IFS= read -r line; do
+	grep '\.f90\>' $i/$j | sed 's/\.f90/.F90/' | while IFS= read -r line; do
 	    echo "$i/$line" >> $TMP.adF90Files
 	done
     done
