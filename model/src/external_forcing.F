@@ -339,6 +339,12 @@ C     kSurface  :: index of surface level
       _RL tmpFac, delPI
       _RL recip_Cp
 CEOP
+#ifdef SHORTWAVE_HEATING
+      _RL minusone
+      PARAMETER (minusOne=-1.)
+      _RL swfracb(2)
+      INTEGER kp1
+#endif
 
       IF ( fluidIsAir ) THEN
        kSurface = 0
@@ -521,11 +527,22 @@ C     Ocean: Add temperature surface forcing (e.g., heat-flux) in surface level
 #ifdef SHORTWAVE_HEATING
 C Penetrating SW radiation
 c     IF ( usePenetratingSW ) THEN
+       swfracb(1)=abs(rF(kLev))
+       swfracb(2)=abs(rF(kLev+1))
+       CALL SWFRAC(
+     I             2, minusOne,
+     U             swfracb,
+     I             myTime, 1, myThid )
+       kp1 = kLev+1
+       IF (kLev.EQ.Nr) THEN
+        kp1 = kLev
+        swfracb(2)=0. _d 0
+       ENDIF
        DO j=1,sNy
         DO i=1,sNx
          gT(i,j,kLev,bi,bj) = gT(i,j,kLev,bi,bj)
-     &    + Qsw(i,j,bi,bj)*gravitySign
-     &   *( SWFrac3D(i,j,k,bi,bj) - SWFrac3D(i,j,k+1,bi,bj) )
+     &   -Qsw(i,j,bi,bj)*(swfracb(1)*maskC(i,j,kLev,bi,bj)
+     &                   -swfracb(2)*maskC(i,j,kp1, bi,bj))
      &    *recip_Cp*mass2rUnit
      &    *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
         ENDDO
