@@ -172,8 +172,7 @@ c        ENDIF
      &                        intime1, myIter, myThid )
         ENDIF
 #ifdef SHORTWAVE_HEATING
-        IF ( surfQswFile .NE. ' '
-     &       .AND. selectPenetratingSW .GE. 0 ) THEN
+        IF ( surfQswFile .NE. ' ' ) THEN
          CALL READ_REC_XY_RS( surfQswFile, Qsw0,
      &                        intime0, myIter, myThid )
          CALL READ_REC_XY_RS( surfQswFile, Qsw1,
@@ -226,11 +225,8 @@ C-    thread synchronisation (barrier) is part of the EXCH S/R calls
         _EXCH_XY_RS(saltFlux0, myThid )
         _EXCH_XY_RS(saltFlux1, myThid )
 #ifdef SHORTWAVE_HEATING
-        IF ( surfQswFile .NE. ' '
-     &       .AND. selectPenetratingSW .GE. 0 ) THEN
-         _EXCH_XY_RS(Qsw0, myThid )
-         _EXCH_XY_RS(Qsw1, myThid )
-        ENDIF
+        _EXCH_XY_RS(Qsw0, myThid )
+        _EXCH_XY_RS(Qsw1, myThid )
 #endif
 #ifdef ATMOSPHERIC_LOADING
         _EXCH_XY_RS(pLoad0, myThid )

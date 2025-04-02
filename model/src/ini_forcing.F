@@ -112,7 +112,7 @@ c      ENDIF
      &  lambdaSaltClimRelax, 0, myThid )
       ENDIF
 #ifdef SHORTWAVE_HEATING
-      IF ( surfQswFile .NE. ' ' .AND. selectPenetratingSW .GE. 0 ) THEN
+      IF ( surfQswFile .NE. ' ' ) THEN
        CALL READ_FLD_XY_RS( surfQswFile, ' ', Qsw, 0, myThid )
        IF ( surfQFile .NE. ' '  ) THEN
 C-     Qnet is now (after c54) the net Heat Flux (including SW)
@@ -236,7 +236,7 @@ C-    set default weight to 1 (i.e., same correction as selectBalanceEmPmR=1 )
       CALL EXCH_XY_RS( lambdaThetaClimRelax, myThid )
       CALL EXCH_XY_RS( lambdaSaltClimRelax , myThid )
 #ifdef SHORTWAVE_HEATING
-      IF ( surfQswFile .NE. ' ' .AND. selectPenetratingSW .GE. 0 )
+      IF ( surfQswFile .NE. ' ' )
      &     CALL EXCH_XY_RS( Qsw  , myThid )
 #endif
 #ifdef ATMOSPHERIC_LOADING
