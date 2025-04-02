@@ -216,27 +216,17 @@ C     Meridional wind stress fv:
           surfaceForcingV(i,j,bi,bj) = fv(i,j,bi,bj)*mass2rUnit
 C     Net heat flux Qnet:
           surfaceForcingT(i,j,bi,bj) = surfaceForcingT(i,j,bi,bj)
-     &       - Qnet(i,j,bi,bj) * recip_Cp*mass2rUnit
+     &       - ( Qnet(i,j,bi,bj)
+#ifdef SHORTWAVE_HEATING
+     &          -Qsw(i,j,bi,bj)
+#endif
+     &         ) *recip_Cp*mass2rUnit
 C     Net Salt Flux :
           surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
      &      -saltFlux(i,j,bi,bj)*mass2rUnit
 
          ENDDO
         ENDDO
-#ifdef SHORTWAVE_HEATING
-C     Qnet contains the shortwave heat flux Qsw, so if we want to treat
-C     it separately, we need to remove it from the temperature
-C     forcing. Because of the sign conventions, this means adding it
-C     here after it was substracted together with Qnet.
-        IF ( selectPenetratingSW .GT. 0 ) THEN
-         DO j = jMin, jMax
-          DO i = iMin, iMax
-           surfaceForcingT(i,j,bi,bj) = surfaceForcingT(i,j,bi,bj)
-     &          + Qsw(i,j,bi,bj) * recip_Cp*mass2rUnit
-          ENDDO
-         ENDDO
-        ENDIF
-#endif
 
 #ifdef ALLOW_SALT_PLUME
 C saltPlume is the amount of salt rejected by ice while freezing;
