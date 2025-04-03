@@ -172,7 +172,7 @@ c        ENDIF
      &                        intime1, myIter, myThid )
         ENDIF
 #ifdef SHORTWAVE_HEATING
-        IF ( surfQswFile .NE. ' ' ) THEN
+        IF ( surfQswFile .NE. ' '  ) THEN
          CALL READ_REC_XY_RS( surfQswFile, Qsw0,
      &                        intime0, myIter, myThid )
          CALL READ_REC_XY_RS( surfQswFile, Qsw1,
@@ -304,8 +304,7 @@ C--   Interpolate fu,fv,Qnet,EmPmR,SST,SSS,Qsw
           ENDDO
         ENDIF
 #ifdef SHORTWAVE_HEATING
-        IF ( surfQswFile .NE. ' '
-     &       .AND. selectPenetratingSW .GE. 0 ) THEN
+        IF ( surfQswFile .NE. ' '  ) THEN
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
             Qsw(i,j,bi,bj)   = bWght*Qsw0(i,j,bi,bj)
