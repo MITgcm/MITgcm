@@ -3461,27 +3461,12 @@ cat $TMP.nonADF90srclist >> $MAKEFILE
 rm -f $TMP.nonADF77srclist $TMP.nonADF90srclist
 echo >> $MAKEFILE
 
-if test $CAT_SRC_FOR_TAF = 0 ; then
-cat >>$MAKEFILE <<EOF
-# ... Utilities ...
-remove_comments:
-	sed -i.bak -f \$(TOOLSDIR)/remove_comments_sed \$(AD_FILES)
-	@-rm -f \$(AD_FILES:.$FS=.$FS.bak)
-adj_sed:
-	sed -i.bak -f \$(TOOLSDIR)/adjoint_sed \$(AD_FILES:.$FS=_ad.$FS)
-	@-rm -f \$(AD_FILES:.$FS=_ad.$FS.bak)
-ftl_sed:
-	sed -i.bak -f \$(TOOLSDIR)/adjoint_sed \$(AD_FILES:.$FS=_tl.$FS)
-	@-rm -f \$(AD_FILES:.$FS=_tl.$FS.bak)
-adobjfiles:  \$(AD_F90FILES:.$FS90=_ad.o) \$(AD_FILES:.$FS=_ad.o)
-ftlobjfiles: \$(AD_F90FILES:.$FS90=_tl.o) \$(AD_FILES:.$FS=_tl.o)
-
-EOF
-    AD_TAF_OUT='the_main_loop_ad'
-    TL_TAF_OUT='the_main_loop_tl'
-else
+if test $CAT_SRC_FOR_TAF = 1 ; then
     AD_TAF_OUT='ad_taf_output'
     TL_TAF_OUT='ftl_taf_output'
+else
+    AD_TAF_OUT='the_main_loop_ad'
+    TL_TAF_OUT='the_main_loop_tl'
 fi
 
 cat >>$MAKEFILE <<EOF
@@ -3556,8 +3541,7 @@ fi
 else
 cat >>$MAKEFILE <<EOF
 # ... send multiple files to TAF ...
-adj_depend:
-	\$(TOOLSDIR)/f90mkdepend_taf $DEP_TAF_FILE \$(AD_F90FILES:.$FS90=_ad.$FS90) \$(AD_FILES:.$FS=_ad.$FS)
+adobjfiles: \$(AD_F90FILES:.$FS90=_ad.o) \$(AD_FILES:.$FS=_ad.o)
 
 $AD_TAF_OUT.$FS: \$(AD_FLOW_FILES) \$(AD_F90FILES) \$(AD_FILES)
 	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "Adjoint version" -bAD_CONFIG_H -DALLOW_ADJOINT_RUN -UALLOW_TANGENTLINEAR_RUN > ad_config.template
@@ -3566,11 +3550,13 @@ $AD_TAF_OUT.$FS: \$(AD_FLOW_FILES) \$(AD_F90FILES) \$(AD_FILES)
 	@\$(MAKE) -f \$(MAKEFILE) \$(F90_PP_SRC_FILES) \$(F77_PP_SRC_FILES)
 	@-rm -f \$(AD_F90FILES:.$FS90=_ad.$FS90) \$(AD_F90FILES:.$FS90=_ad.o); echo ''
 	@-rm -f \$(AD_FILES:.$FS=_ad.$FS) \$(AD_FILES:.$FS=_ad.o); echo ''
-	\$(MAKE) -f \$(MAKEFILE) remove_comments
+	sed -i.bak -f \$(TOOLSDIR)/remove_comments_sed \$(AD_FILES)
+	@-rm -f \$(AD_FILES:.$FS=.$FS.bak); echo ''
 	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) -free \$(TAF_F90_FLAGS) \$(AD_F90FILES) -fixed \$(TAF_F77_FLAGS) \$(AD_FLOW_FILES) \$(AD_FILES)
 	ls -l $AD_TAF_OUT.$FS
-	\$(MAKE) -f \$(MAKEFILE) adj_sed
-	\$(MAKE) -f \$(MAKEFILE) adj_depend
+	sed -i.bak -f \$(TOOLSDIR)/adjoint_sed \$(AD_FILES:.$FS=_ad.$FS)
+	@-rm -f \$(AD_FILES:.$FS=_ad.$FS.bak)
+	\$(TOOLSDIR)/f90mkdepend_taf $DEP_TAF_FILE \$(AD_F90FILES:.$FS90=_ad.$FS90) \$(AD_FILES:.$FS=_ad.$FS)
 
 \$(EXE_ADJ): \$(SPECIAL_FILES) \$(H_SRC_FILES) $AD_TAF_OUT.$FS \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
 	\$(MAKE) -f \$(MAKEFILE) adobjfiles
@@ -3654,8 +3640,7 @@ fi
 else
 cat >>$MAKEFILE <<EOF
 # ... send multiple files to TAF ...
-ftl_depend:
-	\$(TOOLSDIR)/f90mkdepend_taf $DEP_TAF_FILE \$(AD_F90FILES:.$FS90=_tl.$FS90) \$(AD_FILES:.$FS=_tl.$FS)
+ftlobjfiles: \$(AD_F90FILES:.$FS90=_tl.o) \$(AD_FILES:.$FS=_tl.o)
 
 $TL_TAF_OUT.$FS: \$(AD_FLOW_FILES) \$(AD_F90FILES) \$(AD_FILES)
 	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "TangLin version" -bAD_CONFIG_H -UALLOW_ADJOINT_RUN -DALLOW_TANGENTLINEAR_RUN > ad_config.template
@@ -3664,11 +3649,13 @@ $TL_TAF_OUT.$FS: \$(AD_FLOW_FILES) \$(AD_F90FILES) \$(AD_FILES)
 	@\$(MAKE) -f \$(MAKEFILE) \$(F90_PP_SRC_FILES) \$(F77_PP_SRC_FILES)
 	@-rm -f \$(AD_F90FILES:.$FS90=_tl.$FS90) \$(AD_F90FILES:.$FS90=_tl.o); echo ''
 	@-rm -f \$(AD_FILES:.$FS=_tl.$FS) \$(AD_FILES:.$FS=_tl.o); echo ''
-	\$(MAKE) -f \$(MAKEFILE) remove_comments
+	sed -i.bak -f \$(TOOLSDIR)/remove_comments_sed \$(AD_FILES)
+	@-rm -f \$(AD_FILES:.$FS=.$FS.bak); echo ''
 	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) -free \$(TAF_F90_FLAGS) \$(AD_F90FILES) -fixed \$(TAF_F77_FLAGS) \$(AD_FLOW_FILES) \$(AD_FILES)
 	ls -l $TL_TAF_OUT.$FS
-	\$(MAKE) -f \$(MAKEFILE) ftl_sed
-	\$(MAKE) -f \$(MAKEFILE) ftl_depend
+	sed -i.bak -f \$(TOOLSDIR)/adjoint_sed \$(AD_FILES:.$FS=_tl.$FS)
+	@-rm -f \$(AD_FILES:.$FS=_tl.$FS.bak)
+	\$(TOOLSDIR)/f90mkdepend_taf $DEP_TAF_FILE \$(AD_F90FILES:.$FS90=_tl.$FS90) \$(AD_FILES:.$FS=_tl.$FS)
 
 \$(EXE_TLM): \$(SPECIAL_FILES) \$(H_SRC_FILES) $TL_TAF_OUT.$FS \$(NON_AD_F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
 	\$(MAKE) -f \$(MAKEFILE) ftlobjfiles
