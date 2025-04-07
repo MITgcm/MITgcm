@@ -151,10 +151,13 @@ C     For now SWFrac3D is held fixed throughout the simulation, so it is
 C     initialised here instead of somewhere in S/R INITIALISE_VARIA
        DO k=1,Nr+1
         IF ( usingZCoords ) THEN
-         SWFracK(k) = rF(k)
+         SWFracK(k) = rF(k) - rF(1)
         ELSE
 C     this is the oceanic pressure coordinate case
-         SWFracK(k) = -rF(k)*recip_rhoConst*recip_gravity
+         SWFracK(k) = ( rF(Nr+1) - rF(k) )
+     &              * recip_rhoConst*recip_gravity
+C     valid also with Mass-Coordinate (but not with variable gravity):
+c        SWFracK(k) = ( phiRef(2*k-1) - phiRef(2*Nr+1) )*recip_gravity
         ENDIF
        ENDDO
        CALL SWFRAC(
