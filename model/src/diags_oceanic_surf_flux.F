@@ -111,10 +111,6 @@ C-    surForcS (=model surface forcing for Salinity, [g/m2/s], >0 increases S
 C-    TFLUX (=total heat flux, match heat-content variations, [W/m2])
       IF ( fluidIsWater .AND.
      &     DIAGNOSTICS_IS_ON('TFLUX   ',myThid) ) THEN
-#ifdef SHORTWAVE_HEATING
-       tmpFac = oneRS
-       IF ( selectPenetratingSW .LE. 0 ) tmpFac = zeroRS
-#endif
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j = 1,sNy
@@ -124,14 +120,15 @@ C-    TFLUX (=total heat flux, match heat-content variations, [W/m2])
      &      *HeatCapacity_Cp*rUnit2mass
           ENDDO
          ENDDO
-         DO j = 1,sNy
-          DO i = 1,sNx
-           tmp1k(i,j,bi,bj) = tmp1k(i,j,bi,bj)
 #ifdef SHORTWAVE_HEATING
-     &          -Qsw(i,j,bi,bj)*tmpFac
-#endif
+         IF ( selectPenetratingSW .GE. 1 ) THEN
+          DO j = 1,sNy
+           DO i = 1,sNx
+            tmp1k(i,j,bi,bj) = tmp1k(i,j,bi,bj) - Qsw(i,j,bi,bj)
+           ENDDO
           ENDDO
-         ENDDO
+         ENDIF
+#endif
 #ifdef NONLIN_FRSURF
          IF ( (nonlinFreeSurf.GT.0 .OR. usingPCoords)
      &        .AND. useRealFreshWaterFlux ) THEN
