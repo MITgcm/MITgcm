@@ -614,16 +614,20 @@ makemodel()
 	    adfile=missing ; nlfd=0 ; ndop=0 ; nsm=0
 	fi
 	if test $adfile != missing ; then
-	    # count number of times load_fields_driver and do_oceanic_phys are called
-	    nlfd=`grep "call load_fields_driver(" ${adfile} | wc -l`
-	    nlfdmd=`grep "call load_fields_drivermd(" ${adfile} | wc -l`
-	    if (( $nlfdmd == 0 )) ; then
-		# if there is no load_fields_driver, we can substract one assuming
-		# that load_fields_driver is called once from forward_stepmd
-		nlfd=$((nlfd-1))
+	    if test -s $adfile ; then
+		adfiles=$adfile
+	    else
+		# use the extension of $adfile
+		adfiles="*_ad.${adfile##*.}"
 	    fi
-	    ndop=`grep "call do_oceanic_phys("    ${adfile} | wc -l`
-	    nsm=`grep "call seaice_model(" ${adfile} | wc -l`
+	    # count number of times load_fields_driver,
+	    # do_oceanic_phys, and seaice_model are called
+	    nlfd=`grep "call load_fields_driver(" ${adfiles} | wc -l`
+	    nlfdmd=`grep "call load_fields_drivermd(" ${adfiles} | wc -l`
+	    # this should not be larger than one
+	    nlfd=$((nlfd+nlfdmd-1))
+	    ndop=`grep "call do_oceanic_phys(" ${adfiles} | wc -l`
+	    nsm=`grep "call seaice_model(" ${adfiles} | wc -l`
 	fi
 	echo " load_fields_driver, do_oceanic_phys, seaice_model are called " \
 	     "( $nlfd , $ndop , $nsm ) time(s)" >> $CDIR"/summary.txt"
