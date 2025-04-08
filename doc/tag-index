@@ -1,6 +1,24 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o utils:
+  - improve gluemnc description (usage, dependencies, and example).
+o tools:
+  - replace (obsolete) "egrep" with "grep -E" (or without "-E" if not needed).
+o verification:
+  - After merging (5 fwd tests + 2 AD) few exp. into new host-exp. (PR #830),
+    move input dir and ref. output from merged exp. to replace sym-link in new
+    host exp. and remove remaining files/dir (code, build, run) in merged-exp;
+  - Add or update README.md in new host-exp and update list of exp. in the docs.
+o pkg/rbcs:
+  - fix error/warning cases and messages.
+o pkg/autodiff:
+  - alternative way (printResidualFreq >=0) to get CG2D output from cg2d_mad.F
+  - remove 2 unused CPP options.
+o tools, autodiff and others:
+  - remove TAMC features, untested, unused and probably broken.
+
+checkpoint69d (2025/03/01)
 o tools:
   - changes to genmake2 to allow TAF to process F90 files with modules, for now
     only with "-ncad" option;
