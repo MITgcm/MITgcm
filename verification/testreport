@@ -604,24 +604,20 @@ makemodel()
 	fi
 	echo " TAF reports $nerr Errors and $nwar Recomputation Warnings" \
 				>> $CDIR"/summary.txt"
-	if test -f ad_taf_output.f ; then
-	    adfile=ad_taf_output.f
-	elif test -f ad_taf_output.for ; then
-	    adfile=ad_taf_output.for
+	#- report number of calls for some key S/R, i.e.,
+	#   load_fields_driver, do_oceanic_phys, and seaice_model
+	FS='f'
+	if test -f genmake_state ; then eval `grep '^FS=' genmake_state` ; fi
+	if test "x$NOCATAD" = xt ; then
+	    adfiles="*_ad.$FS"
 	else
-	    echo "WARNING: neither ad_output_ad.f nor ad_output_ad.for found" \
-				>> $CDIR"/summary.txt"
-	    adfile=missing ; nlfd=0 ; ndop=0 ; nsm=0
+	    adfiles=ad_taf_output.$FS
 	fi
-	if test $adfile != missing ; then
-	    if test -s $adfile ; then
-		adfiles=$adfile
-	    else
-		# use the extension of $adfile
-		adfiles="*_ad.${adfile##*.}"
-	    fi
-	    # count number of times load_fields_driver,
-	    # do_oceanic_phys, and seaice_model are called
+	nbf=`ls $adfiles 2> /dev/null | wc -l`
+	if [ $nbf -eq 0 ] ; then
+	    echo "WARNING: no adfiles '$adfiles' found" >> $CDIR"/summary.txt"
+	    nlfd=0 ; ndop=0 ; nsm=0
+	else
 	    nlfd=`grep "call load_fields_driver(" ${adfiles} | wc -l`
 	    nlfdmd=`grep "call load_fields_drivermd(" ${adfiles} | wc -l`
 	    # this should not be larger than one
