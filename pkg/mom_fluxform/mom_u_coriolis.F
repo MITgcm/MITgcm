@@ -45,29 +45,29 @@ CEOP
 C-    Original discretization
        DO j=1-OLy,sNy+OLy-1
         DO i=1-OLx+1,sNx+OLx
-         uCoriolisTerm(i,j) = 0.5 _d 0
+         uCoriolisTerm(i,j) = halfRL
      &   *( _fCori( i ,j,bi,bj) + _fCori(i-1,j,bi,bj) )
-     &   *0.25*( vFld( i ,j)+vFld( i ,j+1)
-     &          +vFld(i-1,j)+vFld(i-1,j+1)
-     &         )
+     &   *0.25 _d 0*( vFld( i ,j) + vFld( i ,j+1)
+     &              + vFld(i-1,j) + vFld(i-1,j+1)
+     &              )
         ENDDO
        ENDDO
       ELSEIF ( selectCoriScheme.LE.3 ) THEN
 C-    Energy conserving discretization
        DO j=1-OLy,sNy+OLy-1
         DO i=1-OLx+1,sNx+OLx
-         uCoriolisTerm(i,j) = 0.5 _d 0
+         uCoriolisTerm(i,j) = halfRL
      &        *( _fCori( i ,j,bi,bj)
-     &          *0.5*( vFld( i ,j)+vFld( i ,j+1) )
+     &          *halfRL*( vFld( i ,j) + vFld( i ,j+1) )
      &         + _fCori(i-1,j,bi,bj)
-     &          *0.5*( vFld(i-1,j)+vFld(i-1,j+1) ) )
+     &          *halfRL*( vFld(i-1,j) + vFld(i-1,j+1) ) )
         ENDDO
        ENDDO
       ELSE
 C-    Using averaged transport:
        DO j=1-OLy,sNy+OLy-1
         DO i=1-OLx+1,sNx+OLx
-         uCoriolisTerm(i,j) = 0.5 _d 0
+         uCoriolisTerm(i,j) = halfRL
      &   *( _fCori( i ,j,bi,bj) + _fCori(i-1,j,bi,bj) )
      &   *( vFld( i , j )*dxG( i , j ,bi,bj)*hFacS( i , j ,k,bi,bj)
      &    + vFld( i ,j+1)*dxG( i ,j+1,bi,bj)*hFacS( i ,j+1,k,bi,bj)

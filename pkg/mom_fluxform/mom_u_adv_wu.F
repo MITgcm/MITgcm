@@ -80,7 +80,7 @@ C     (linear) Free-surface correction at k=1
 C     Vertical advection - interior ; assume uFld & wFld are masked
        DO j=1-OLy+1,sNy+OLy
         DO i=1-OLx+1,sNx+OLx
-         advectiveFluxWU(i,j) = rTrans(i,j)*0.5 _d 0
+         advectiveFluxWU(i,j) = rTrans(i,j)*halfRL
 #ifdef MOM_BOUNDARY_CONSERVE
      &    *( uFld(i,j, k ,bi,bj)*deepFacA( k )*_maskW(i,j,k-1,bi,bj)
      &     + uFld(i,j,k-1,bi,bj)*deepFacA(k-1)*_maskW(i,j, k ,bi,bj) )

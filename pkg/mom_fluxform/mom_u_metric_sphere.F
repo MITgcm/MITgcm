@@ -48,17 +48,17 @@ C-    Using analytical expression for tan(Phi) (stored in: tanPhiAtU)
         DO j=1-OLx,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx
            uMetricTerms(i,j) =
-     &      uFld(i,j)*recip_rSphere*recip_deepFacC(k)
-     &      *0.25*( vFld(i,j  )+vFld(i-1,j  )
-     &             +vFld(i,j+1)+vFld(i-1,j+1)
-     &            )*_tanPhiAtU(i,j,bi,bj)
+     &      uFld(i,j)*recip_rSphere*recip_deepFacC(k)*0.25 _d 0
+     &          *( vFld(i,j  ) + vFld(i-1,j  )
+     &           + vFld(i,j+1) + vFld(i-1,j+1)
+     &           )*_tanPhiAtU(i,j,bi,bj)
          ENDDO
         ENDDO
       ELSE
 C-    Using grid-spacing gradient: estimates tan(Phi)/rSphere as -del^j(dxC)/rAz
         DO j=2-OLx,sNy+OLy-1
          DO i=2-OLx,sNx+OLx
-           uMetricTerms(i,j) = -0.5 _d 0*
+           uMetricTerms(i,j) = -halfRL*
      &     ( ( uFld(i,j-1) + uFld(i,j) )*halfRL
      &      *( dxC(i,j,bi,bj)-dxC(i,j-1,bi,bj) )*recip_rAz(i, j, bi,bj)
      &      *( vFld(i-1, j )*dxG(i-1, j, bi,bj)*hFacS(i-1, j, k,bi,bj)

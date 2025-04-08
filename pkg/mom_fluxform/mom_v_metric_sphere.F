@@ -46,12 +46,12 @@ C-    Use analytical expression for tan(Phi) (stored in: tanPhiAtV)
         DO j=1-OLx+1,sNy+OLy
          DO i=1-OLx,sNx+OLx-1
            vMetricTerms(i,j) = -recip_rSphere*recip_deepFacC(k)
-     &      *0.25*( uFld(i,j  )+uFld(i+1,j  )
-     &             +uFld(i,j-1)+uFld(i+1,j-1)
-     &            )
-     &      *0.25*( uFld(i,j  )+uFld(i+1,j  )
-     &             +uFld(i,j-1)+uFld(i+1,j-1)
-     &            )
+     &      *0.25 _d 0*( uFld(i,j  ) + uFld(i+1,j  )
+     &                 + uFld(i,j-1) + uFld(i+1,j-1)
+     &                 )
+     &      *0.25 _d 0*( uFld(i,j  ) + uFld(i+1,j  )
+     &                 + uFld(i,j-1) + uFld(i+1,j-1)
+     &                 )
      &      *_tanPhiAtV(i,j,bi,bj)
          ENDDO
         ENDDO
@@ -59,7 +59,7 @@ C-    Use analytical expression for tan(Phi) (stored in: tanPhiAtV)
 C-    Using grid-spacing gradient: estimates tan(Phi)/rSphere as -del^j(dxC)/rAz
         DO j=2-OLx,sNy+OLy
          DO i=1-OLx,sNx+OLx-1
-           vMetricTerms(i,j) = +0.5 _d 0*
+           vMetricTerms(i,j) = +halfRL*
      &     ( ( uFld(i,j-1) + uFld(i,j) )*halfRL
      &      *( dxC( i,  j, bi,bj)
      &       - dxC( i, j-1,bi,bj) )*recip_rAz( i, j,bi,bj)

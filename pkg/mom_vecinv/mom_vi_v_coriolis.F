@@ -65,8 +65,8 @@ C--   using enstrophy conserving scheme (Shallow-Water Eq.) by Sadourny, JAS 75
      &     +( uFld(i+1, j )*dyG(i+1, j ,bi,bj)*_hFacW(i+1, j ,k,bi,bj)
      &      + uFld(i+1,j-1)*dyG(i+1,j-1,bi,bj)*_hFacW(i+1,j-1,k,bi,bj) )
      &                       )
-         vort3v = 0.5 _d 0*( omega3(i,j)*r_hFacZ(i,j)
-     &                     + omega3(i+1,j)*r_hFacZ(i+1,j) )
+         vort3v = halfRL*( omega3(i,j)*r_hFacZ(i,j)
+     &                   + omega3(i+1,j)*r_hFacZ(i+1,j) )
          vCoriolisTerm(i,j) = -vort3v*uBarXY*recip_dyC(i,j,bi,bj)
      &                               * _maskS(i,j,k,bi,bj)
         ENDDO
@@ -77,13 +77,13 @@ C--   same as above, with different formulation (relatively to hFac)
 
        DO j=2-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx-1
-         uBarXY = 0.5 _d 0*(
+         uBarXY = halfRL*(
      &      ( uFld( i , j )*dyG( i , j ,bi,bj)*hFacZ( i ,j)
      &      + uFld( i ,j-1)*dyG( i ,j-1,bi,bj)*hFacZ( i ,j) )
      &     +( uFld(i+1, j )*dyG(i+1, j ,bi,bj)*hFacZ(i+1,j)
      &      + uFld(i+1,j-1)*dyG(i+1,j-1,bi,bj)*hFacZ(i+1,j) )
      &                     )/MAX( epsil, hFacZ(i,j)+hFacZ(i+1,j) )
-         vort3v = 0.5 _d 0*( omega3(i,j) + omega3(i+1,j) )
+         vort3v = halfRL*( omega3(i,j) + omega3(i+1,j) )
          vCoriolisTerm(i,j) = -vort3v*uBarXY*recip_dyC(i,j,bi,bj)
      &                               * _maskS(i,j,k,bi,bj)
         ENDDO
@@ -94,15 +94,15 @@ C--   using energy conserving scheme (used by Sadourny in JAS 75 paper)
 
        DO j=2-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx-1
-         uBarYm = 0.5 _d 0*(
+         uBarYm = halfRL*(
      &       uFld( i , j )*dyG( i , j ,bi,bj)*_hFacW( i , j ,k,bi,bj)
      &     + uFld( i ,j-1)*dyG( i ,j-1,bi,bj)*_hFacW( i ,j-1,k,bi,bj) )
-         uBarYp = 0.5 _d 0*(
+         uBarYp = halfRL*(
      &       uFld(i+1, j )*dyG(i+1, j ,bi,bj)*_hFacW(i+1, j ,k,bi,bj)
      &     + uFld(i+1,j-1)*dyG(i+1,j-1,bi,bj)*_hFacW(i+1,j-1,k,bi,bj) )
          vort3v = ( uBarYm*r_hFacZ( i ,j)*omega3( i ,j)
      &            + uBarYp*r_hFacZ(i+1,j)*omega3(i+1,j)
-     &            )*0.5 _d 0
+     &            )*halfRL
          vCoriolisTerm(i,j) = -vort3v*recip_dyC(i,j,bi,bj)
      &                               * _maskS(i,j,k,bi,bj)
         ENDDO
@@ -153,15 +153,15 @@ C--   using energy conserving scheme without r_hFacZ factor
 
        DO j=2-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx-1
-         uBarYm = 0.5 _d 0*(
+         uBarYm = halfRL*(
      &       uFld( i , j )*dyG( i , j ,bi,bj)*_hFacW( i , j ,k,bi,bj)
      &     + uFld( i ,j-1)*dyG( i ,j-1,bi,bj)*_hFacW( i ,j-1,k,bi,bj) )
-         uBarYp = 0.5 _d 0*(
+         uBarYp = halfRL*(
      &       uFld(i+1, j )*dyG(i+1, j ,bi,bj)*_hFacW(i+1, j ,k,bi,bj)
      &     + uFld(i+1,j-1)*dyG(i+1,j-1,bi,bj)*_hFacW(i+1,j-1,k,bi,bj) )
          vort3v = ( uBarYm*omega3( i ,j)
      &            + uBarYp*omega3(i+1,j)
-     &            )*0.5 _d 0
+     &            )*halfRL
          vCoriolisTerm(i,j) = -vort3v*recip_dyC(i,j,bi,bj)
      &                               *recip_hFacS(i,j,k,bi,bj)
         ENDDO
