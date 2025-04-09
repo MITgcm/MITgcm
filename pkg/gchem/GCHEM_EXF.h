@@ -11,146 +11,146 @@ C pkg/dic or pkg/bling (and maybe pkg/darwin).
 C Surface silica forcing parameters for exf
 
       COMMON/gchem_forcing_silica_c/
-     &    silicamask
+     &    gchem_SiMask
       COMMON/gchem_forcing_silica_i/
-     &    silicastartdate1, silicastartdate2
+     &    gchem_SiStartDate1, gchem_SiStartDate2
       COMMON/gchem_forcing_silica_r/
-     &    silicaStartTime,
-     &    silicaperiod, silicaRepCycle,
-     &    silica_exfremo_intercept, silica_exfremo_slope,
-     &    gchem_inscal_silica
-      CHARACTER*1 silicamask
-      INTEGER silicastartdate1
-      INTEGER silicastartdate2
-      _RL silicaStartTime
-      _RL silicaperiod
-      _RL silicaRepCycle
-      _RL silica_exfremo_intercept
-      _RL silica_exfremo_slope
-      _RL gchem_inscal_silica
+     &    gchem_SiStartTime,
+     &    gchem_SiPeriod, gchem_SiRepCycle,
+     &    gchem_Si_exfremo_intercept, gchem_Si_exfremo_slope,
+     &    gchem_inscal_Si
+      CHARACTER*1 gchem_SiMask
+      INTEGER gchem_SiStartDate1
+      INTEGER gchem_SiStartDate2
+      _RL gchem_SiStartTime
+      _RL gchem_SiPeriod
+      _RL gchem_SiRepCycle
+      _RL gchem_Si_exfremo_intercept
+      _RL gchem_Si_exfremo_slope
+      _RL gchem_inscal_Si
 
 C PAR forcing parameters for exf
 
       COMMON/gchem_forcing_PAR_c/
-     &    PARmask
+     &    gchem_parMask
       COMMON/gchem_forcing_PAR_i/
-     &    PARstartdate1, PARstartdate2
+     &    gchem_parStartDate1, gchem_parStartDate2
       COMMON/gchem_forcing_PAR_r/
-     &    PARStartTime,
-     &    PARperiod, PARRepCycle,
-     &    PAR_exfremo_intercept, PAR_exfremo_slope,
-     &    gchem_inscal_PAR
-      _RL PARStartTime
-      CHARACTER*1 PARmask
-      INTEGER PARstartdate1
-      INTEGER PARstartdate2
-      _RL PARperiod
-      _RL PARRepCycle
-      _RL PAR_exfremo_intercept
-      _RL PAR_exfremo_slope
-      _RL gchem_inscal_PAR
-
+     &    gchem_parStartTime,
+     &    gchem_parPeriod, gchem_parRepCycle,
+     &    gchem_par_exfremo_intercept, gchem_par_exfremo_slope,
+     &    gchem_inscal_par
+      _RL gchem_parStartTime
+      CHARACTER*1 gchem_parMask
+      INTEGER gchem_parStartDate1
+      INTEGER gchem_parStartDate2
+      _RL gchem_parPeriod
+      _RL gchem_parRepCycle
+      _RL gchem_par_exfremo_intercept
+      _RL gchem_par_exfremo_slope
+      _RL gchem_inscal_par
+     
 C Iron dust forcing parameters for exf
 
       COMMON/gchem_forcing_iron_c/
-     &    ironmask
+     &    gchem_FeMask
       COMMON/gchem_forcing_iron_i/
-     &    ironstartdate1, ironstartdate2
+     &    gchem_FeStartDate1, gchem_FeStartDate2
       COMMON/gchem_forcing_iron_r/
-     &    ironStartTime,
-     &    ironperiod, ironRepCycle,
-     &    iron_exfremo_intercept, iron_exfremo_slope,
-     &    gchem_inscal_iron
-      CHARACTER*1 ironmask
-      INTEGER ironstartdate1
-      INTEGER ironstartdate2
-      _RL ironStartTime
-      _RL ironperiod
-      _RL ironRepCycle
-      _RL iron_exfremo_intercept
-      _RL iron_exfremo_slope
-      _RL gchem_inscal_iron
+     &    gchem_FeStartTime,
+     &    gchem_FePeriod, gchem_FeRepCycle,
+     &    gchem_Fe_exfremo_intercept, gchem_Fe_exfremo_slope,
+     &    gchem_inscal_Fe
+      CHARACTER*1 gchem_FeMask
+      INTEGER gchem_FeStartDate1
+      INTEGER gchem_FeStartDate2
+      _RL gchem_FeStartTime
+      _RL gchem_FePeriod
+      _RL gchem_FeRepCycle
+      _RL gchem_Fe_exfremo_intercept
+      _RL gchem_Fe_exfremo_slope
+      _RL gchem_inscal_Fe
 
 C Ice forcing parameters for exf
 
       COMMON/gchem_forcing_ice_c/
-     &    icemask
+     &    gchem_iceMask
       COMMON/gchem_forcing_ice_i/
-     &    icestartdate1, icestartdate2
+     &    gchem_iceStartDate1, gchem_iceStartDate2
       COMMON/gchem_forcing_ice_r/
-     &    iceStartTime,
-     &    iceperiod, iceRepCycle,
-     &    ice_exfremo_intercept, ice_exfremo_slope,
+     &    gchem_iceStartTime,
+     &    gchem_icePeriod, gchem_iceRepCycle,
+     &    gchem_ice_exfremo_intercept, gchem_ice_exfremo_slope,
      &    gchem_inscal_ice
-      CHARACTER*1 icemask
-      INTEGER icestartdate1
-      INTEGER icestartdate2
-      _RL iceStartTime
-      _RL iceperiod
-      _RL iceRepCycle
-      _RL ice_exfremo_intercept
-      _RL ice_exfremo_slope
+      CHARACTER*1 gchem_iceMask
+      INTEGER gchem_iceStartDate1
+      INTEGER gchem_iceStartDate2
+      _RL gchem_iceStartTime
+      _RL gchem_icePeriod
+      _RL gchem_iceRepCycle
+      _RL gchem_ice_exfremo_intercept
+      _RL gchem_ice_exfremo_slope
       _RL gchem_inscal_ice
 
 C Wind forcing parameters for exf
 
       COMMON/gchem_forcing_wind_c/
-     &    windmask
+     &    gchem_windMask
       COMMON/gchem_forcing_wind_i/
-     &    windstartdate1, windstartdate2
+     &    gchem_windStartDate1, gchem_windStartDate2
       COMMON/gchem_forcing_wind_r/
-     &    windStartTime,
-     &    windperiod, windRepCycle,
-     &    wind_exfremo_intercept, wind_exfremo_slope,
+     &    gchem_windStartTime,
+     &    gchem_wind2Period, gchem_windRepCycle,
+     &    gchem_wind_exfremo_intercept, gchem_wind_exfremo_slope,
      &    gchem_inscal_wind
-      CHARACTER*1 windmask
-      INTEGER windstartdate1
-      INTEGER windstartdate2
-      _RL windStartTime
-      _RL windperiod
-      _RL windRepCycle
-      _RL wind_exfremo_intercept
-      _RL wind_exfremo_slope
+      CHARACTER*1 gchem_windMask
+      INTEGER gchem_windStartDate1
+      INTEGER gchem_windStartDate2
+      _RL gchem_windStartTime
+      _RL gchem_wind2Period
+      _RL gchem_windRepCycle
+      _RL gchem_wind_exfremo_intercept
+      _RL gchem_wind_exfremo_slope
       _RL gchem_inscal_wind
 
 C Atmos pCO2 forcing parameters for exf
 
       COMMON/gchem_forcing_apCO2_c/
-     &    apCO2mask
+     &    gchem_apco2Mask
       COMMON/gchem_forcing_apCO2_i/
-     &    apCO2startdate1, apCO2startdate2
+     &    gchem_apco2StartDate1, gchem_apco2StartDate2
       COMMON/gchem_forcing_apCO2_r/
-     &    apCO2StartTime,
-     &    apCO2period, apCO2RepCycle,
-     &    apCO2_exfremo_intercept, apCO2_exfremo_slope,
-     &    gchem_inscal_apCO2
-      CHARACTER*1 apCO2mask
-      INTEGER apCO2startdate1
-      INTEGER apCO2startdate2
-      _RL apCO2StartTime
-      _RL apCO2period
-      _RL apCO2RepCycle
-      _RL apCO2_exfremo_intercept
-      _RL apCO2_exfremo_slope
-      _RL gchem_inscal_apCO2
+     &    gchem_apco2StartTime,
+     &    gchem_apco2Period, gchem_apco2RepCycle,
+     &    gchem_apco2_exfremo_intercept, gchem_apco2_exfremo_slope,
+     &    gchem_inscal_apco2
+      CHARACTER*1 gchem_apco2Mask
+      INTEGER gchem_apco2StartDate1
+      INTEGER gchem_apco2StartDate2
+      _RL gchem_apco2StartTime
+      _RL gchem_apco2Period
+      _RL gchem_apco2RepCycle
+      _RL gchem_apco2_exfremo_intercept
+      _RL gchem_apco2_exfremo_slope
+      _RL gchem_inscal_apco2
 
 C Atmos pressure forcing parameters for exf
 
       COMMON/gchem_forcing_apres_c/
-     &    apresmask
+     &    gchem_apresMask
       COMMON/gchem_forcing_apres_i/
-     &    apresstartdate1, apresstartdate2
+     &    gchem_apresStartDate1, gchem_apresStartDate2
       COMMON/gchem_forcing_apres_r/
-     &    apresStartTime,
-     &    apresperiod, apresRepCycle,
-     &    apres_exfremo_intercept, apres_exfremo_slope,
+     &    gchem_apresStartTime,
+     &    gchem_apresPeriod, gchem_apresRepCycle,
+     &    gchem_apres_exfremo_intercept, gchem_apres_exfremo_slope,
      &    gchem_inscal_apres
-      CHARACTER*1 apresmask
-      INTEGER apresstartdate1
-      INTEGER apresstartdate2
-      _RL apresStartTime
-      _RL apresperiod
-      _RL apresRepCycle
-      _RL apres_exfremo_intercept
-      _RL apres_exfremo_slope
+      CHARACTER*1 gchem_apresMask
+      INTEGER gchem_apresStartDate1
+      INTEGER gchem_apresStartDate2
+      _RL gchem_apresStartTime
+      _RL gchem_apresPeriod
+      _RL gchem_apresRepCycle
+      _RL gchem_apres_exfremo_intercept
+      _RL gchem_apres_exfremo_slope
       _RL gchem_inscal_apres

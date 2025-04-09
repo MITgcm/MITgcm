@@ -91,9 +91,9 @@ c      ENDIF
         IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START silica',myThid)
 # endif
         CALL EXF_GETFFIELD_START( useExfYearlyFields,
-     I                          'gchem', 'SurfSi', silicaperiod,
-     I                          silicastartdate1, silicastartdate2,
-     U                          silicaStartTime, errCount,
+     I                          'gchem', 'SurfSi', gchem_SiPeriod,
+     I                          gchem_SiStartDate1, gchem_SiStartDate2,
+     U                          gchem_SiStartTime, errCount,
      I                          myThid )
        ENDIF
 
@@ -102,9 +102,9 @@ c      ENDIF
         IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START PAR',myThid)
 # endif
         CALL EXF_GETFFIELD_START( useExfYearlyFields,
-     I                         'gchem', 'PAR', PARperiod,
-     I                         PARstartdate1, PARstartdate2,
-     U                         PARStartTime, errCount,
+     I                         'gchem', 'PAR', gchem_parPeriod,
+     I                         gchem_parStartDate1, gchem_parStartDate2,
+     U                         gchem_parStartTime, errCount,
      I                         myThid )
        ENDIF
 
@@ -113,9 +113,9 @@ c      ENDIF
         IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START iron',myThid)
 # endif
         CALL EXF_GETFFIELD_START( useExfYearlyFields,
-     I                         'gchem', 'iron', ironperiod,
-     I                         ironstartdate1, ironstartdate2,
-     U                         ironStartTime, errCount,
+     I                         'gchem', 'iron', gchem_FePeriod,
+     I                         gchem_FeStartDate1, gchem_FeStartDate2,
+     U                         gchem_FeStartTime, errCount,
      I                         myThid )
        ENDIF
 
@@ -124,9 +124,10 @@ c      ENDIF
         IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START pCO2',myThid)
 # endif
         CALL EXF_GETFFIELD_START( useExfYearlyFields,
-     I                         'gchem', 'apCO2', apCO2period,
-     I                         apCO2startdate1, apCO2startdate2,
-     U                         apCO2StartTime, errCount,
+     I                         'gchem', 'apCO2', gchem_apco2Period,
+     I                         gchem_apco2StartDate1, 
+     I                         gchem_apco2StartDate2,
+     U                         gchem_apco2StartTime, errCount,
      I                         myThid )
        ENDIF
 

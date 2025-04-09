@@ -213,10 +213,10 @@ C     forcing load fields with pkg/exf tools
 C If a wind file is given in data.gchem, read it
        IF ( gchem_WindFile .NE. ' ' ) THEN
         CALL EXF_SET_FLD(
-     &     'gchemWind', gchem_windfile, windmask,
-     &     windStartTime, windperiod, windRepCycle,
+     &     'gchemWind', gchem_windfile, gchem_windMask,
+     &     gchem_windStartTime, gchem_wind2Period, gchem_windRepCycle,
      &     gchem_inscal_wind,
-     &     wind_exfremo_intercept, wind_exfremo_slope,
+     &     gchem_wind_exfremo_intercept, gchem_wind_exfremo_slope,
      &     gchemWind, gchemWind0, gchemWind1,
 # ifdef USE_EXF_INTERPOLATION
      &     wind_lon0, wind_lon_inc,
@@ -241,10 +241,10 @@ C Otherwise get winds from PKG/EXF
 C If a pressure files is given in data.gchem, read it
        IF ( gchem_atmosPfile .NE. ' ' ) THEN
         CALL EXF_SET_FLD(
-     &     'gchemAtmosP', gchem_atmosPfile, apresmask,
-     &     apresStartTime, apresperiod, apresRepCycle,
+     &     'gchemAtmosP', gchem_atmosPfile, gchem_apresMask,
+     &     gchem_apresStartTime, gchem_apresPeriod, gchem_apresRepCycle,
      &     gchem_inscal_apres,
-     &     apres_exfremo_intercept, apres_exfremo_slope,
+     &     gchem_apres_exfremo_intercept, gchem_apres_exfremo_slope,
      &     gchemAtmosP, gchemAP0, gchemAP1,
 # ifdef USE_EXF_INTERPOLATION
      &     apres_lon0, apres_lon_inc,
@@ -269,10 +269,10 @@ C Atm pressure in Pascals, convert to atm
 
        IF ( gchem_silicafile .NE. ' ' ) THEN
         CALL EXF_SET_FLD(
-     &     'silica', gchem_silicafile, silicamask,
-     &     silicaStartTime, silicaperiod, silicaRepCycle,
-     &     gchem_inscal_silica,
-     &     silica_exfremo_intercept, silica_exfremo_slope,
+     &     'silica', gchem_silicafile, gchem_SiMask,
+     &     gchem_SiStartTime, gchem_SiPeriod, gchem_SiRepCycle,
+     &     gchem_inscal_Si,
+     &     gchem_Si_exfremo_intercept, gchem_Si_exfremo_slope,
      &     gchemSi, gchemSi0, gchemSi1,
 # ifdef USE_EXF_INTERPOLATION
      &     silica_lon0, silica_lon_inc,
@@ -285,10 +285,10 @@ C Atm pressure in Pascals, convert to atm
 
        IF ( gchem_PARfile .NE. ' '  ) THEN
         CALL EXF_SET_FLD(
-     &     'PAR', gchem_PARfile, PARmask,
-     &     PARStartTime, PARperiod, PARRepCycle,
-     &     gchem_inscal_PAR,
-     &     PAR_exfremo_intercept, PAR_exfremo_slope,
+     &     'PAR', gchem_PARfile, gchem_parMask,
+     &     gchem_parStartTime, gchem_parPeriod, gchem_parRepCycle,
+     &     gchem_inscal_par,
+     &     gchem_par_exfremo_intercept, gchem_par_exfremo_slope,
      &     gchemPAR, gchemPAR0, gchemPAR1,
 # ifdef USE_EXF_INTERPOLATION
      &     PAR_lon0, PAR_lon_inc,
@@ -301,10 +301,10 @@ C Atm pressure in Pascals, convert to atm
 
        IF ( gchem_ironfile .NE. ' '  ) THEN
         CALL EXF_SET_FLD(
-     &     'iron', gchem_ironfile, ironmask,
-     &     ironStartTime, ironperiod, ironRepCycle,
-     &     gchem_inscal_iron,
-     &     iron_exfremo_intercept, iron_exfremo_slope,
+     &     'iron', gchem_ironfile, gchem_FeMask,
+     &     gchem_FeStartTime, gchem_FePeriod, gchem_FeRepCycle,
+     &     gchem_inscal_Fe,
+     &     gchem_Fe_exfremo_intercept, gchem_Fe_exfremo_slope,
      &     gchemFe, gchemIron0, gchemIron1,
 # ifdef USE_EXF_INTERPOLATION
      &     iron_lon0, iron_lon_inc,
@@ -317,10 +317,10 @@ C Atm pressure in Pascals, convert to atm
 
        IF ( gchem_apco2file .NE. ' '  ) THEN
         CALL EXF_SET_FLD(
-     &     'apCO2', gchem_apCO2file, apCO2mask,
-     &     apCO2StartTime, apCO2period, apCO2RepCycle,
-     &     gchem_inscal_apCO2,
-     &     apCO2_exfremo_intercept, apCO2_exfremo_slope,
+     &     'apCO2', gchem_apCO2file, gchem_apco2Mask,
+     &     gchem_apco2StartTime, gchem_apco2Period, gchem_apco2RepCycle,
+     &     gchem_inscal_apco2,
+     &     gchem_apco2_exfremo_intercept, gchem_apco2_exfremo_slope,
      &     gchemApCO2, gchemApCO20, gchemApCO21,
 # ifdef USE_EXF_INTERPOLATION
      &     apCO2_lon0, apCO2_lon_inc,
@@ -334,10 +334,10 @@ C Atm pressure in Pascals, convert to atm
        IF ( gchem_IceFile .NE. ' ' ) THEN
 C     forcing load fields with pkg/exf tools
         CALL EXF_SET_FLD(
-     &     'gchemIce', gchem_icefile, icemask,
-     &     iceStartTime, iceperiod, iceRepCycle,
+     &     'gchemIce', gchem_icefile, gchem_iceMask,
+     &     gchem_iceStartTime, gchem_icePeriod, gchem_iceRepCycle,
      &     gchem_inscal_ice,
-     &     ice_exfremo_intercept, ice_exfremo_slope,
+     &     gchem_ice_exfremo_intercept, gchem_ice_exfremo_slope,
      &     gchemIce, gchemIce0, gchemIce1,
 # ifdef USE_EXF_INTERPOLATION
      &     ice_lon0, ice_lon_inc,

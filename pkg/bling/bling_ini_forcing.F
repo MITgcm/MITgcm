@@ -55,7 +55,6 @@ c !LOCAL VARIABLES: ===================================================
 #endif
 #endif /* USE_BLING_V1 */
 
-C Initialize to zero. Reasonable values are given in pkg/gchem
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1-OLy,sNy+OLy

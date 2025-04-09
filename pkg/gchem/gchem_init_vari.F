@@ -106,8 +106,8 @@ C     set reasonable values fields that need at least something
 
        IF ( gchem_silicafile .NE. ' ' ) THEN
         CALL EXF_INIT_FLD (
-     &     'silica', gchem_silicafile, silicamask,
-     &     silicaperiod, gchem_inscal_silica, gchem_silica_const,
+     &     'silica', gchem_silicafile, gchem_SiMask,
+     &     gchem_SiPeriod, gchem_inscal_Si, gchem_silica_const,
      &     gchemSi, gchemSi0, gchemSi1,
 #ifdef USE_EXF_INTERPOLATION
      &     silica_lon0, silica_lon_inc,
@@ -120,8 +120,8 @@ C     set reasonable values fields that need at least something
 
        IF ( gchem_PARfile .NE. ' ' ) THEN
         CALL EXF_INIT_FLD (
-     &     'PAR', gchem_PARfile, PARmask,
-     &     PARperiod, gchem_inscal_PAR, gchem_par_const,
+     &     'PAR', gchem_PARfile, gchem_parMask,
+     &     gchem_parPeriod, gchem_inscal_par, gchem_par_const,
      &     gchemPAR, gchemPAR0, gchemPAR1,
 #ifdef USE_EXF_INTERPOLATION
      &     PAR_lon0, PAR_lon_inc,
@@ -134,8 +134,8 @@ C     set reasonable values fields that need at least something
 
        IF ( gchem_ironfile .NE. ' ' ) THEN
         CALL EXF_INIT_FLD (
-     &     'iron', gchem_ironfile, ironmask,
-     &     ironperiod, gchem_inscal_iron, gchem_iron_const,
+     &     'iron', gchem_ironfile, gchem_FeMask,
+     &     gchem_FePeriod, gchem_inscal_Fe, gchem_iron_const,
      &     gchemFe, gchemIron0, gchemIron1,
 #ifdef USE_EXF_INTERPOLATION
      &     iron_lon0, iron_lon_inc,
@@ -148,8 +148,8 @@ C     set reasonable values fields that need at least something
 
        IF ( gchem_apCO2file .NE. ' ' ) THEN
         CALL EXF_INIT_FLD (
-     &     'apCO2', gchem_apCO2file, apCO2mask,
-     &     apCO2period, gchem_inscal_apCO2, gchem_apCO2_const,
+     &     'apCO2', gchem_apCO2file, gchem_apco2Mask,
+     &     gchem_apco2Period, gchem_inscal_apco2, gchem_apCO2_const,
      &     gchemapCO2, gchemApCO20, gchemApCO21,
 #ifdef USE_EXF_INTERPOLATION
      &     apCO2_lon0, apCO2_lon_inc,

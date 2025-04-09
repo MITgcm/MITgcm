@@ -74,35 +74,35 @@ C  to test the flag before any corresponding pkg S/R call
 
 # ifdef ALLOW_EXF
       NAMELIST /GCHEM_FORCING_PARAMS/
-     &     silicaperiod, silicaRepCycle, silicaStartTime,
-     &     silicastartdate1, silicastartdate2,
-     &     silica_exfremo_intercept, silica_exfremo_slope,
-     &     silicamask, gchem_inscal_silica,
+     &     gchem_SiPeriod, gchem_SiRepCycle, gchem_SiStartTime,
+     &     gchem_SiStartDate1, gchem_SiStartDate2,
+     &     gchem_Si_exfremo_intercept, gchem_Si_exfremo_slope,
+     &     gchem_SiMask, gchem_inscal_Si,
 C
-     &     PARperiod, PARRepCycle, PARStartTime,
-     &     PARstartdate1, PARstartdate2,
-     &     PAR_exfremo_intercept, PAR_exfremo_slope,
-     &     PARmask, gchem_inscal_PAR,
+     &     gchem_parPeriod, gchem_parRepCycle, gchem_parStartTime,
+     &     gchem_parStartDate1, gchem_parStartDate2,
+     &     gchem_par_exfremo_intercept, gchem_par_exfremo_slope,
+     &     gchem_parMask, gchem_inscal_par,
 C
-     &     ironperiod, ironRepCycle, ironStartTime,
-     &     ironstartdate1, ironstartdate2,
-     &     iron_exfremo_intercept, iron_exfremo_slope,
-     &     ironmask, gchem_inscal_iron,
+     &     gchem_FePeriod, gchem_FeRepCycle, gchem_FeStartTime,
+     &     gchem_FeStartDate1, gchem_FeStartDate2,
+     &     gchem_Fe_exfremo_intercept, gchem_Fe_exfremo_slope,
+     &     gchem_FeMask, gchem_inscal_Fe,
 C
-     &     apCO2period, apCO2RepCycle, apCO2StartTime,
-     &     apCO2startdate1, apCO2startdate2,
-     &     apCO2_exfremo_intercept, apCO2_exfremo_slope,
-     &     apCO2mask, gchem_inscal_apCO2,
+     &     gchem_apco2Period, gchem_apco2RepCycle, gchem_apco2StartTime,
+     &     gchem_apco2StartDate1, gchem_apco2StartDate2,
+     &     gchem_apco2_exfremo_intercept, gchem_apco2_exfremo_slope,
+     &     gchem_apco2Mask, gchem_inscal_apco2,
 C
-     &     windperiod, windRepCycle, windStartTime,
-     &     windstartdate1, windstartdate2,
-     &     wind_exfremo_intercept, wind_exfremo_slope,
-     &     windmask, gchem_inscal_wind,
+     &     gchem_wind2Period, gchem_windRepCycle, gchem_windStartTime,
+     &     gchem_windStartDate1, gchem_windStartDate2,
+     &     gchem_wind_exfremo_intercept, gchem_wind_exfremo_slope,
+     &     gchem_windMask, gchem_inscal_wind,
 C
-     &     apresperiod, apresRepCycle, apresStartTime,
-     &     apresstartdate1, apresstartdate2,
-     &     apres_exfremo_intercept, apres_exfremo_slope,
-     &     apresmask, gchem_inscal_apres
+     &     gchem_apresPeriod, gchem_apresRepCycle, gchem_apresStartTime,
+     &     gchem_apresStartDate1, gchem_apresStartDate2,
+     &     gchem_apres_exfremo_intercept, gchem_apres_exfremo_slope,
+     &     gchem_apresMask, gchem_inscal_apres
 
 #  ifdef USE_EXF_INTERPOLATION
       NAMELIST /GCHEM_INTERP_PARAMS/
@@ -199,64 +199,64 @@ C- Open and read the data.gchem file
 
       IF ( gchem_useEXF ) THEN
 
-       silicaperiod             = 0.0 _d 0
-       silicaRepCycle           = repeatPeriod
-       silicaStartTime          = UNSET_RL
-       silicastartdate1         = 0
-       silicastartdate2         = 0
-       silica_exfremo_intercept = 0.0 _d 0
-       silica_exfremo_slope     = 0.0 _d 0
-       silicamask               = 'c'
-       gchem_inscal_silica      = 1. _d 0
+       gchem_SiPeriod             = 0.0 _d 0
+       gchem_SiRepCycle           = repeatPeriod
+       gchem_SiStartTime          = UNSET_RL
+       gchem_SiStartDate1         = 0
+       gchem_SiStartDate2         = 0
+       gchem_Si_exfremo_intercept = 0.0 _d 0
+       gchem_Si_exfremo_slope     = 0.0 _d 0
+       gchem_SiMask               = 'c'
+       gchem_inscal_Si      = 1. _d 0
 
-       PARperiod             = 0.0 _d 0
-       PARRepCycle           = repeatPeriod
-       PARStartTime          = UNSET_RL
-       PARstartdate1         = 0
-       PARstartdate2         = 0
-       PAR_exfremo_intercept = 0.0 _d 0
-       PAR_exfremo_slope     = 0.0 _d 0
-       PARmask               = 'c'
-       gchem_inscal_PAR      = 1. _d 0
+       gchem_parPeriod             = 0.0 _d 0
+       gchem_parRepCycle           = repeatPeriod
+       gchem_parStartTime          = UNSET_RL
+       gchem_parStartDate1         = 0
+       gchem_parStartDate2         = 0
+       gchem_par_exfremo_intercept = 0.0 _d 0
+       gchem_par_exfremo_slope     = 0.0 _d 0
+       gchem_parMask               = 'c'
+       gchem_inscal_par      = 1. _d 0
 
-       ironperiod             = 0.0 _d 0
-       ironRepCycle           = repeatPeriod
-       ironStartTime          = UNSET_RL
-       ironstartdate1         = 0
-       ironstartdate2         = 0
-       iron_exfremo_intercept = 0.0 _d 0
-       iron_exfremo_slope     = 0.0 _d 0
-       ironmask               = 'c'
-       gchem_inscal_iron      = 1. _d 0
+       gchem_FePeriod             = 0.0 _d 0
+       gchem_FeRepCycle           = repeatPeriod
+       gchem_FeStartTime          = UNSET_RL
+       gchem_FeStartDate1         = 0
+       gchem_FeStartDate2         = 0
+       gchem_Fe_exfremo_intercept = 0.0 _d 0
+       gchem_Fe_exfremo_slope     = 0.0 _d 0
+       gchem_FeMask               = 'c'
+       gchem_inscal_Fe      = 1. _d 0
 
-       apCO2period             = 0.0 _d 0
-       apCO2RepCycle           = repeatPeriod
-       apCO2StartTime          = UNSET_RL
-       apCO2startdate1         = 0
-       apCO2startdate2         = 0
-       apCO2_exfremo_intercept = 0.0 _d 0
-       apCO2_exfremo_slope     = 0.0 _d 0
-       apCO2mask               = 'c'
-       gchem_inscal_apCO2      = 1. _d 0
+       gchem_apco2Period             = 0.0 _d 0
+       gchem_apco2RepCycle           = repeatPeriod
+       gchem_apco2StartTime          = UNSET_RL
+       gchem_apco2StartDate1         = 0
+       gchem_apco2StartDate2         = 0
+       gchem_apco2_exfremo_intercept = 0.0 _d 0
+       gchem_apco2_exfremo_slope     = 0.0 _d 0
+       gchem_apco2Mask               = 'c'
+       gchem_inscal_apco2      = 1. _d 0
 
-       windperiod             = 0.0 _d 0
-       windRepCycle           = repeatPeriod
-       windStartTime          = UNSET_RL
-       windstartdate1         = 0
-       windstartdate2         = 0
-       wind_exfremo_intercept = 0.0 _d 0
-       wind_exfremo_slope     = 0.0 _d 0
-       windmask               = 'c'
+       gchem_wind2Period             = 0.0 _d 0
+       gchem_windRepCycle           = repeatPeriod
+       gchem_windStartTime          = UNSET_RL
+       gchem_windStartDate1         = 0
+       gchem_windStartDate2         = 0
+       gchem_wind_exfremo_intercept = 0.0 _d 0
+       gchem_wind_exfremo_slope     = 0.0 _d 0
+       gchem_windMask               = 'c'
        gchem_inscal_wind      = 1. _d 0
 
-       apresperiod             = 0.0 _d 0
-       apresRepCycle           = repeatPeriod
-       apresStartTime          = UNSET_RL
-       apresstartdate1         = 0
-       apresstartdate2         = 0
-       apres_exfremo_intercept = 0.0 _d 0
-       apres_exfremo_slope     = 0.0 _d 0
-       apresmask               = 'c'
+       gchem_apresPeriod             = 0.0 _d 0
+       gchem_apresRepCycle           = repeatPeriod
+       gchem_apresStartTime          = UNSET_RL
+       gchem_apresStartDate1         = 0
+       gchem_apresStartDate2         = 0
+       gchem_apres_exfremo_intercept = 0.0 _d 0
+       gchem_apres_exfremo_slope     = 0.0 _d 0
+       gchem_apresMask               = 'c'
        gchem_inscal_apres      = 1. _d 0
 
        READ(UNIT=iUnit, NML=GCHEM_FORCING_PARAMS)
@@ -343,39 +343,39 @@ C- Close the open data file
 
 #ifdef ALLOW_EXF
       IF ( gchem_useEXF .AND. useExfYearlyFields ) THEN
-       IF ( PARRepCycle.NE.0. ) THEN
+       IF ( gchem_parRepCycle.NE.0. ) THEN
         WRITE(msgBuf,'(2A)') 'GCHEM_READPARMS: The use of ',
-     &    'useExfYearlyFields AND PARRepCycle is not implemented'
+     &   'useExfYearlyFields AND gchem_parRepCycle is not implemented'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
-       IF ( ironRepCycle.NE.0. ) THEN
+       IF ( gchem_FeRepCycle.NE.0. ) THEN
         WRITE(msgBuf,'(2A)') 'GCHEM_READPARMS: The use of ',
-     &    'useExfYearlyFields AND ironRepCycle is not implemented'
+     &   'useExfYearlyFields AND gchem_FeRepCycle is not implemented'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
-       IF ( silicaRepCycle.NE.0. ) THEN
+       IF ( gchem_SiRepCycle.NE.0. ) THEN
         WRITE(msgBuf,'(2A)') 'GCHEM_READPARMS: The use of ',
-     &    'useExfYearlyFields AND silicaRepCycle is not implemented'
+     &   'useExfYearlyFields AND gchem_SiRepCycle is not implemented'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
-       IF ( apCO2RepCycle.NE.0. ) THEN
+       IF ( gchem_apco2RepCycle.NE.0. ) THEN
         WRITE(msgBuf,'(2A)') 'GCHEM_READPARMS: The use of ',
-     &    'useExfYearlyFields AND apCO2RepCycle is not implemented'
+     &   'useExfYearlyFields AND gchem_apco2RepCycle is not implemented'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
-       IF ( windRepCycle.NE.0. ) THEN
+       IF ( gchem_windRepCycle.NE.0. ) THEN
         WRITE(msgBuf,'(2A)') 'GCHEM_READPARMS: The use of ',
-     &    'useExfYearlyFields AND windRepCycle is not implemented'
+     &   'useExfYearlyFields AND gchem_windRepCycle is not implemented'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
-       IF ( apresRepCycle.NE.0. ) THEN
+       IF ( gchem_apresRepCycle.NE.0. ) THEN
         WRITE(msgBuf,'(2A)') 'GCHEM_READPARMS: The use of ',
-     &    'useExfYearlyFields AND apresRepCycle is not implemented'
+     &   'useExfYearlyFields AND gchem_apresRepCycle is not implemented'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
