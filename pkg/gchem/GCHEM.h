@@ -12,6 +12,7 @@ C     useDIC    :: flag to turn on/off DIC pkg
 C     useBLING  :: flag to turn on/off BLING pkg
 C     useSPOIL  :: flag to turn on/off SPOIL pkg
 C     useDARWIN :: flag to turn on/off darwin pkg
+C     gchem_useEXF :: flag to read BGC input files using pkg/EXF
 C
 C--   COMMON /GCHEM_PARAMS/
 C  gchem_Tracer_num :: number of Geo-Chemistry tracers
@@ -29,8 +30,10 @@ CEOP
      &              useDIC,
      &              useBLING,
      &              useSPOIL,
-     &              useDARWIN
+     &              useDARWIN,
+     &              gchem_useEXF
       LOGICAL useCFC, useDIC, useBLING, useSPOIL, useDARWIN
+      LOGICAL gchem_useEXF
 
       COMMON /GCHEM_PARM_C/
      &                   fileName1, fileName2, fileName3,

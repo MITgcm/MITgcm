@@ -76,7 +76,7 @@ C     Define diagnostics Names :
 
 #ifdef ALLOW_EXF
 
-      IF ( useEXF ) THEN
+      IF ( gchem_useEXF ) THEN
 C-- from bling:
 c      apco2mask = 'c'
 c      IF ( useSEAICE ) THEN
@@ -132,7 +132,7 @@ c      ENDIF
 
        _END_MASTER( myThid )
 
-C     endif useEXF
+C     endif gchem_useEXF
       ENDIF
 
       _BARRIER

@@ -49,7 +49,7 @@ CEOP
 cccccccccccccccccccccccccc
 c load external data     c
 cccccccccccccccccccccccccc
-c     IF ( .NOT. useEXF ) THEN
+c     IF ( .NOT. gchem_useEXF ) THEN
 
        IF (  GCHEM_forcingCycle.gt.0. _d 0 ) THEN
 
@@ -202,13 +202,13 @@ C-     end if-bloc (time to load new fields)
         ENDDO
 C--   endif for GCHEM_forcingCycle
        ENDIF
-C--   endif .not. useEXF
+C--   endif .not. gchem_useEXF
 c     ENDIF
 
 C-----------------------------------------------------------
 #ifdef ALLOW_EXF
 C     forcing load fields with pkg/exf tools
-      IF ( useEXF ) THEN
+      IF ( gchem_useEXF ) THEN
 
 C If a wind file is given in data.gchem, read it
        IF ( gchem_WindFile .NE. ' ' ) THEN
@@ -347,7 +347,7 @@ C     forcing load fields with pkg/exf tools
 # endif
      &     mytime, myiter, mythid )
        ENDIF
-C     endif useEXF
+C     endif gchem_useEXF
       ENDIF
 # endif /* ALLOW_EXF */
 

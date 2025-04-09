@@ -57,6 +57,7 @@ C  to test the flag before any corresponding pkg S/R call
      &                   useBLING,
      &                   useSPOIL,
      &                   useDARWIN,
+     &                   gchem_useEXF,
      &           fileName1, fileName2, fileName3,
      &           fileName4, fileName5,
      &           gchem_int1, gchem_int2, gchem_int3,
@@ -145,6 +146,7 @@ C- Set defaults values for parameters in GCHEM.h
       useBLING  = .FALSE.
       useSPOIL  = .FALSE.
       useDARWIN = .FALSE.
+      gchem_useEXF = .FALSE.
       tIter0 = UNSET_I
       fileName1=' '
       fileName2=' '
@@ -195,7 +197,7 @@ C- Open and read the data.gchem file
 
 # ifdef ALLOW_EXF
 
-      IF ( useEXF ) THEN
+      IF ( gchem_useEXF ) THEN
 
        silicaperiod             = 0.0 _d 0
        silicaRepCycle           = repeatPeriod
@@ -313,7 +315,7 @@ C- Open and read the data.gchem file
        READ(UNIT=iUnit, NML=GCHEM_INTERP_PARAMS)
 
 #  endif /* USE_EXF_INTERPOLATION */
-C     useEXF
+C     gchem_useEXF
       ENDIF
 # endif /* ALLOW_EXF */
 
@@ -340,7 +342,7 @@ C- Close the open data file
       errCount = 0
 
 #ifdef ALLOW_EXF
-      IF ( useEXF .AND. useExfYearlyFields ) THEN
+      IF ( gchem_useEXF .AND. useExfYearlyFields ) THEN
        IF ( PARRepCycle.NE.0. ) THEN
         WRITE(msgBuf,'(2A)') 'GCHEM_READPARMS: The use of ',
      &    'useExfYearlyFields AND PARRepCycle is not implemented'
@@ -377,7 +379,7 @@ C- Close the open data file
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
-C     useEXF and useExfYearlyFields
+C     gchem_useEXF and useExfYearlyFields
       ENDIF
 #endif /* ALLOW_EXF */
 

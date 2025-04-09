@@ -86,7 +86,7 @@ C     set reasonable values fields that need at least something
        ENDDO
       ENDDO
 
-      IF ( .NOT. useEXF ) THEN
+      IF ( .NOT. gchem_useEXF ) THEN
        IF ( gchem_silicaFile .NE. ' '  ) THEN
         CALL READ_FLD_XY_RS( gchem_silicaFile,' ',gchemSi,0,myThid )
        ENDIF
@@ -102,7 +102,7 @@ C     set reasonable values fields that need at least something
       ENDIF
 
 #ifdef ALLOW_EXF
-      IF ( useEXF ) THEN
+      IF ( gchem_useEXF ) THEN
 
        IF ( gchem_silicafile .NE. ' ' ) THEN
         CALL EXF_INIT_FLD (
@@ -160,7 +160,7 @@ C     set reasonable values fields that need at least something
      &     mythid )
        ENDIF
 
-C     useEXF
+C     gchem_useEXF
       ENDIF
 #endif /* ALLOW_EXF */
 

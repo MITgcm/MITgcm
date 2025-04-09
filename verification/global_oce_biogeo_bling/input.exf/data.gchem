@@ -1,5 +1,6 @@
  &GCHEM_PARM01
   useBLING=.TRUE.,
+  gchem_useEXF=.TRUE.,
   nsubtime=1,
   GCHEM_windFile='tren_speed.bin',
   GCHEM_iceFile='fice.bin',
