@@ -606,6 +606,7 @@ makemodel()
 				>> $CDIR"/summary.txt"
 	#- report number of calls for some key S/R, i.e.,
 	#   load_fields_driver, do_oceanic_phys, and seaice_model
+	#  Multiple calls indicate hidden but expensive recomputations
 	FS='f'
 	if test -f genmake_state ; then eval `grep '^FS=' genmake_state` ; fi
 	if test "x$NOCATAD" = xt ; then
@@ -620,7 +621,6 @@ makemodel()
 	else
 	    nlfd=`grep "call load_fields_driver(" ${adfiles} | wc -l`
 	    nlfdmd=`grep "call load_fields_drivermd(" ${adfiles} | wc -l`
-	    # this should not be larger than one
 	    nlfd=$((nlfd+nlfdmd-1))
 	    ndop=`grep "call do_oceanic_phys(" ${adfiles} | wc -l`
 	    nsm=`grep "call seaice_model(" ${adfiles} | wc -l`
