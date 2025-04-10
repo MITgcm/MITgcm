@@ -290,8 +290,8 @@ the namelist looks like this:
 
 ::
 
-      OB_Iwest  = 1*0,1*5,142*0,
-      OB_Jsouth = 2*3,3*2,115*0,
+      OB_Iwest  = 0, 5, 2, 141*0,
+      OB_Jsouth = 2*3, 3*2, 115*0,
 
 .. figure:: figs/obcsexample.*
     :width: 70%
