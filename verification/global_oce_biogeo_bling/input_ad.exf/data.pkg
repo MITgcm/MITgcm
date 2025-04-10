@@ -1,0 +1,12 @@
+# Packages
+ &PACKAGES
+ useCAL         = .TRUE.,
+ useEXF         = .TRUE.,
+ useGMRedi      = .TRUE.,
+ usePTRACERS    = .TRUE.,
+ useGCHEM       = .TRUE.,
+ useECCO        = .TRUE.,
+ useGrdchk      = .TRUE.,
+ usePROFILEs    = .TRUE.,
+ useDIAGNOSTICS = .TRUE.,
+ &
