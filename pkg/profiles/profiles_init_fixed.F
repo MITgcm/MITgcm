@@ -862,7 +862,7 @@ C6) Available variables in the data set
 
                 ELSE
                   IF (debugLevel .GE. debLevA) THEN
-                   WRITE(msgBuf,'(3A)') 'S/R PROFILES_INIT_FIXED: no',
+                   WRITE(msgBuf,'(3A)') 'S/R PROFILES_INIT_FIXED: no ',
      &                  prof_names(num_file,num_var)(1:JL),
      &                  ', setting corresponding vec_quantities = F'
                    CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,

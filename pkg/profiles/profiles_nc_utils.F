@@ -1,6 +1,11 @@
 #include "PROFILES_OPTIONS.h"
 #include "AD_CONFIG.h"
 
+C--  File profiles_nc_utils.F:
+C--   Contents
+C--   o PROFILES_NF_ERROR
+C--   o PROFILES_NC_CLOSE
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C !ROUTINE: PROFILES_NF_ERROR
@@ -48,7 +53,7 @@ C     !LOCAL VARIABLES:
      &     'NF_MESSAGE: PROFILES_', message(1:IL),
      &     bi, bj, NF_STRERROR(STATUS)
         ELSE
-          WRITE(msgBuf,'(A,2I3,1X,A)') 'NF_MESSAGE: PROFILES_',
+          WRITE(msgBuf,'(A,2I3,1X,A)') 'NF_MESSAGE: PROFILES ',
      &     bi, bj, NF_STRERROR(STATUS)
         ENDIF
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -115,37 +120,45 @@ C     bi,bj :: Tile indices
                 CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &               SQUEEZE_RIGHT,myThid )
 C Data file
-                STATUS = NF_CLOSE( fiddata(numFile,bi,bj) )
-                WRITE(msgBuf,'(A,I3,I8)')
-     &           'NC_CLOSE: NF_CLOSE data unit',
-     &           numFile, fiddata(numFile,bi,bj)
-                CALL PROFILES_NF_ERROR( msgBuf, STATUS,
-     &               bi, bj, myThid )
+                IF ( fiddata(numFile,bi,bj) .GT. 0 ) THEN
+                 STATUS = NF_CLOSE( fiddata(numFile,bi,bj) )
+                 WRITE(msgBuf,'(A,I3,I8)')
+     &                'NC_CLOSE: NF_CLOSE data unit',
+     &                numFile, fiddata(numFile,bi,bj)
+                 CALL PROFILES_NF_ERROR( msgBuf, STATUS,
+     &                bi, bj, myThid )
+                ENDIF
 
 C Forward equivalent (.equi) file
-                STATUS = NF_CLOSE( fidforward(numFile,bi,bj) )
-                WRITE(msgBuf,'(A,I3,I8)')
-     &           'NC_CLOSE: NF_CLOSE fwd unit',
-     &           numFile, fidforward(numFile,bi,bj)
-                CALL PROFILES_NF_ERROR( msgBuf, STATUS,
-     &               bi, bj, myThid )
+                IF ( fidforward(numFile,bi,bj) .GT. 0 ) THEN
+                 STATUS = NF_CLOSE( fidforward(numFile,bi,bj) )
+                 WRITE(msgBuf,'(A,I3,I8)')
+     &                'NC_CLOSE: NF_CLOSE fwd unit',
+     &                numFile, fidforward(numFile,bi,bj)
+                 CALL PROFILES_NF_ERROR( msgBuf, STATUS,
+     &                bi, bj, myThid )
+                ENDIF
 #ifdef ALLOW_ADJOINT_RUN
 C Adjoint equivalent (.equi) file
-                STATUS = NF_CLOSE( fidadjoint(numFile,bi,bj) )
-                WRITE(msgBuf,'(A,I3,I8)')
-     &           'NC_CLOSE: NF_CLOSE adj unit',
-     &           numFile, fidadjoint(numFile,bi,bj)
-                CALL PROFILES_NF_ERROR( msgBuf, STATUS,
-     &               bi, bj, myThid )
+                IF ( fidadjoint(numFile,bi,bj) .GT. 0 ) THEN
+                 STATUS = NF_CLOSE( fidadjoint(numFile,bi,bj) )
+                 WRITE(msgBuf,'(A,I3,I8)')
+     &                'NC_CLOSE: NF_CLOSE adj unit',
+     &                numFile, fidadjoint(numFile,bi,bj)
+                 CALL PROFILES_NF_ERROR( msgBuf, STATUS,
+     &                bi, bj, myThid )
+                ENDIF
 #endif
 #ifdef ALLOW_TANGENTLINEAR_RUN
 C Tangent linear equivalent (.equi) file
-                STATUS = NF_CLOSE( fidtangent(numFile,bi,bj) )
-                WRITE(msgBuf,'(A,I3,I8)')
-     &           'NC_CLOSE: NF_CLOSE tlm unit',
-     &           numFile, fidtangent(numFile,bi,bj)
-                CALL PROFILES_NF_ERROR( msgBuf, STATUS,
-     &               bi, bj, myThid )
+                IF ( fidtangent(numFile,bi,bj) .GT. 0 ) THEN
+                 STATUS = NF_CLOSE( fidtangent(numFile,bi,bj) )
+                 WRITE(msgBuf,'(A,I3,I8)')
+     &                'NC_CLOSE: NF_CLOSE tlm unit',
+     &                numFile, fidtangent(numFile,bi,bj)
+                 CALL PROFILES_NF_ERROR( msgBuf, STATUS,
+     &                bi, bj, myThid )
+                ENDIF
 #endif
               ENDIF !(IL.NE.0)
 
