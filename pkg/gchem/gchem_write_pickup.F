@@ -35,7 +35,6 @@ C     myThid     :: My Thread Id number
       INTEGER myThid
 CEOP
 
-#ifdef ALLOW_GCHEM
 C     !LOCAL VARIABLES:
 
 #ifdef ALLOW_DIC
@@ -63,6 +62,5 @@ C     !LOCAL VARIABLES:
       ENDIF
 #endif /* ALLOW_DARWIN */
 
-#endif /* ALLOW_GCHEM */
       RETURN
       END
