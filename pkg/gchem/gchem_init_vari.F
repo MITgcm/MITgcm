@@ -74,12 +74,12 @@ C     First call requires that we initialize everything to zero for safety
 C     set reasonable values fields that need at least something
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          gchemapCO2 (i,j,bi,bj) = gchem_apCO2_const *maskC(i,j,1,bi,bj)
-          gchemWind  (i,j,bi,bj) = gchem_wind_const  *maskC(i,j,1,bi,bj)
-          gchemAtmosP(i,j,bi,bj) = gchem_apres_const *maskC(i,j,1,bi,bj)
-          gchemPAR   (i,j,bi,bj) = gchem_par_const   *maskC(i,j,1,bi,bj)
-          gchemFe    (i,j,bi,bj) = gchem_iron_const  *maskC(i,j,1,bi,bj)
-          gchemSi    (i,j,bi,bj) = gchem_silica_const*maskC(i,j,1,bi,bj)
+          gchemapCO2 (i,j,bi,bj) = gchem_apco2_const*maskC(i,j,1,bi,bj)
+          gchemWind  (i,j,bi,bj) = gchem_wind_const *maskC(i,j,1,bi,bj)
+          gchemAtmosP(i,j,bi,bj) = gchem_apres_const*maskC(i,j,1,bi,bj)
+          gchemPAR   (i,j,bi,bj) = gchem_par_const  *maskC(i,j,1,bi,bj)
+          gchemFe    (i,j,bi,bj) = gchem_Fe_const   *maskC(i,j,1,bi,bj)
+          gchemSi    (i,j,bi,bj) = gchem_Si_const   *maskC(i,j,1,bi,bj)
           gchemIce   (i,j,bi,bj) = 0. _d 0          * maskC(i,j,1,bi,bj)
          ENDDO
         ENDDO
@@ -87,75 +87,75 @@ C     set reasonable values fields that need at least something
       ENDDO
 
       IF ( .NOT. gchem_useEXF ) THEN
-       IF ( gchem_silicaFile .NE. ' '  ) THEN
-        CALL READ_FLD_XY_RS( gchem_silicaFile,' ',gchemSi,0,myThid )
+       IF ( gchem_SiFile .NE. ' '  ) THEN
+        CALL READ_FLD_XY_RS( gchem_SiFile,' ',gchemSi,0,myThid )
        ENDIF
-       IF ( gchem_PARfile .NE. ' '  ) THEN
-        CALL READ_FLD_XY_RS( gchem_PARfile,' ',gchemPAR,0,myThid )
+       IF ( gchem_parFile .NE. ' '  ) THEN
+        CALL READ_FLD_XY_RS( gchem_parFile,' ',gchemPAR,0,myThid )
        ENDIF
-       IF ( gchem_ironFile .NE. ' '  ) THEN
-        CALL READ_FLD_XY_RS( gchem_ironFile,' ',gchemFe,0,myThid )
+       IF ( gchem_FeFile .NE. ' '  ) THEN
+        CALL READ_FLD_XY_RS( gchem_FeFile,' ',gchemFe,0,myThid )
        ENDIF
-       IF ( gchem_apCO2file .NE. ' '  ) THEN
-        CALL READ_FLD_XY_RS( gchem_apCO2file,' ',gchemapCO2,0,myThid )
+       IF ( gchem_apco2File .NE. ' '  ) THEN
+        CALL READ_FLD_XY_RS( gchem_apco2File,' ',gchemapCO2,0,myThid )
        ENDIF
       ENDIF
 
 #ifdef ALLOW_EXF
       IF ( gchem_useEXF ) THEN
 
-       IF ( gchem_silicafile .NE. ' ' ) THEN
+       IF ( gchem_SiFile .NE. ' ' ) THEN
         CALL EXF_INIT_FLD (
-     &     'silica', gchem_silicafile, gchem_SiMask,
-     &     gchem_SiPeriod, gchem_inscal_Si, gchem_silica_const,
+     &     'gchemSi', gchem_SiFile, gchem_SiMask,
+     &     gchem_SiPeriod, gchem_inscal_Si, gchem_Si_const,
      &     gchemSi, gchemSi0, gchemSi1,
 #ifdef USE_EXF_INTERPOLATION
-     &     silica_lon0, silica_lon_inc,
-     &     silica_lat0, silica_lat_inc,
-     &     silica_nlon, silica_nlat, xC, yC,
-     &     silica_interpMethod,
+     &     Si_lon0, Si_lon_inc,
+     &     Si_lat0, Si_lat_inc,
+     &     Si_nlon, Si_nlat, xC, yC,
+     &     Si_interpMethod,
 #endif
      &     mythid )
        ENDIF
 
-       IF ( gchem_PARfile .NE. ' ' ) THEN
+       IF ( gchem_parFile .NE. ' ' ) THEN
         CALL EXF_INIT_FLD (
-     &     'PAR', gchem_PARfile, gchem_parMask,
+     &     'gchemPAR', gchem_parFile, gchem_parMask,
      &     gchem_parPeriod, gchem_inscal_par, gchem_par_const,
      &     gchemPAR, gchemPAR0, gchemPAR1,
 #ifdef USE_EXF_INTERPOLATION
-     &     PAR_lon0, PAR_lon_inc,
-     &     PAR_lat0, PAR_lat_inc,
-     &     PAR_nlon, PAR_nlat, xC, yC,
-     &     PAR_interpMethod,
+     &     par_lon0, par_lon_inc,
+     &     par_lat0, par_lat_inc,
+     &     par_nlon, par_nlat, xC, yC,
+     &     par_interpMethod,
 #endif
      &     mythid )
        ENDIF
 
-       IF ( gchem_ironfile .NE. ' ' ) THEN
+       IF ( gchem_FeFile .NE. ' ' ) THEN
         CALL EXF_INIT_FLD (
-     &     'iron', gchem_ironfile, gchem_FeMask,
-     &     gchem_FePeriod, gchem_inscal_Fe, gchem_iron_const,
-     &     gchemFe, gchemIron0, gchemIron1,
+     &     'gchemFe', gchem_FeFile, gchem_FeMask,
+     &     gchem_FePeriod, gchem_inscal_Fe, gchem_Fe_const,
+     &     gchemFe, gchemFe0, gchemFe1,
 #ifdef USE_EXF_INTERPOLATION
-     &     iron_lon0, iron_lon_inc,
-     &     iron_lat0, iron_lat_inc,
-     &     iron_nlon, iron_nlat, xC, yC,
-     &     iron_interpMethod,
+     &     Fe_lon0, Fe_lon_inc,
+     &     Fe_lat0, Fe_lat_inc,
+     &     Fe_nlon, Fe_nlat, xC, yC,
+     &     Fe_interpMethod,
 #endif
      &     mythid )
        ENDIF
 
-       IF ( gchem_apCO2file .NE. ' ' ) THEN
+       IF ( gchem_apco2File .NE. ' ' ) THEN
         CALL EXF_INIT_FLD (
-     &     'apCO2', gchem_apCO2file, gchem_apco2Mask,
-     &     gchem_apco2Period, gchem_inscal_apco2, gchem_apCO2_const,
-     &     gchemapCO2, gchemApCO20, gchemApCO21,
+     &     'gchemapCO2', gchem_apco2File, gchem_apco2Mask,
+     &     gchem_apco2Period, gchem_inscal_apco2, gchem_apco2_const,
+     &     gchemapCO2, gchemApco20, gchemApco21,
 #ifdef USE_EXF_INTERPOLATION
-     &     apCO2_lon0, apCO2_lon_inc,
-     &     apCO2_lat0, apCO2_lat_inc,
-     &     apCO2_nlon, apCO2_nlat, xC, yC,
-     &     apCO2_interpMethod,
+     &     apco2_lon0, apco2_lon_inc,
+     &     apco2_lat0, apco2_lat_inc,
+     &     apco2_nlon, apco2_nlat, xC, yC,
+     &     apco2_interpMethod,
 #endif
      &     mythid )
        ENDIF

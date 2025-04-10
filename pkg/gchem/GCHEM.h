@@ -73,29 +73,29 @@ C--   COMMON /GCHEM_FIELDS_C/
       COMMON /GCHEM_FIELDS_C/
      &    gchem_iceFile,
      &    gchem_windFile,
-     &    gchem_atmospFile,
-     &    gchem_silicafile,
-     &    gchem_PARfile,
-     &    gchem_ironfile,
-     &    gchem_apCO2file
+     &    gchem_apresFile,
+     &    gchem_SiFile,
+     &    gchem_parFile,
+     &    gchem_FeFile,
+     &    gchem_apco2File
 
       CHARACTER*128 gchem_iceFile
       CHARACTER*128 gchem_windFile
-      CHARACTER*128 gchem_silicafile
-      CHARACTER*128 gchem_PARfile
-      CHARACTER*128 gchem_ironfile
-      CHARACTER*128 gchem_apCO2file
-      CHARACTER*128 gchem_atmospFile
+      CHARACTER*128 gchem_SiFile
+      CHARACTER*128 gchem_parFile
+      CHARACTER*128 gchem_FeFile
+      CHARACTER*128 gchem_apco2File
+      CHARACTER*128 gchem_apresFile
 
 C--   COMMON /GCHEM_FIELDS_R/
       COMMON /GCHEM_FIELDS_R/
-     &     gchem_silica_const, gchem_par_const, gchem_iron_const,
-     &     gchem_apCO2_const, gchem_wind_const, gchem_apres_const
+     &     gchem_Si_const, gchem_par_const, gchem_Fe_const,
+     &     gchem_apco2_const, gchem_wind_const, gchem_apres_const
 
-      _RL gchem_silica_const
+      _RL gchem_Si_const
       _RL gchem_par_const
-      _RL gchem_iron_const
-      _RL gchem_apCO2_const
+      _RL gchem_Fe_const
+      _RL gchem_apco2_const
       _RL gchem_wind_const
       _RL gchem_apres_const
 

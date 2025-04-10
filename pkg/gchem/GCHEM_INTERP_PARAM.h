@@ -13,41 +13,41 @@ C Requires: EXF_INTERP_SIZE.h
 C Surface silica forcing parameters for exf
 
       COMMON/gchem_interp_Si_i/
-     &    silica_nlon, silica_nlat, silica_interpMethod
+     &    Si_nlon, Si_nlat, Si_interpMethod
       COMMON/gchem_interp_Si_r/
-     &    silica_lon0, silica_lat0, silica_lon_inc,
-     &    silica_lat_inc
-      INTEGER silica_interpMethod, silica_nlon, silica_nlat
-      _RL silica_lon0
-      _RL silica_lat0
-      _RL silica_lon_inc
-      _RL silica_lat_inc(MAX_LAT_INC)
+     &    Si_lon0, Si_lat0, Si_lon_inc,
+     &    Si_lat_inc
+      INTEGER Si_interpMethod, Si_nlon, Si_nlat
+      _RL Si_lon0
+      _RL Si_lat0
+      _RL Si_lon_inc
+      _RL Si_lat_inc(MAX_LAT_INC)
 
 C PAR forcing parameters for exf
 
       COMMON/gchem_interp_PAR_i/
-     &    PAR_nlon, PAR_nlat, PAR_interpMethod
+     &    par_nlon, par_nlat, par_interpMethod
       COMMON/gchem_interp_PAR_r/
-     &    PAR_lon0, PAR_lat0, PAR_lon_inc,
-     &    PAR_lat_inc
-      INTEGER PAR_interpMethod, PAR_nlon, PAR_nlat
-      _RL  PAR_lon0
-      _RL  PAR_lat0
-      _RL  PAR_lon_inc
-      _RL  PAR_lat_inc(MAX_LAT_INC)
+     &    par_lon0, par_lat0, par_lon_inc,
+     &    par_lat_inc
+      INTEGER par_interpMethod, par_nlon, par_nlat
+      _RL  par_lon0
+      _RL  par_lat0
+      _RL  par_lon_inc
+      _RL  par_lat_inc(MAX_LAT_INC)
 
 C Iron dust forcing parameters for exf
 
       COMMON/gchem_interp_iron_i/
-     &    iron_nlon, iron_nlat, iron_interpMethod
+     &    Fe_nlon, Fe_nlat, Fe_interpMethod
       COMMON/gchem_interp_iron_r/
-     &    iron_lon0, iron_lat0, iron_lon_inc,
-     &    iron_lat_inc
-      INTEGER iron_interpMethod, iron_nlon, iron_nlat
-      _RL iron_lon0
-      _RL iron_lat0
-      _RL iron_lon_inc
-      _RL iron_lat_inc(MAX_LAT_INC)
+     &    Fe_lon0, Fe_lat0, Fe_lon_inc,
+     &    Fe_lat_inc
+      INTEGER Fe_interpMethod, Fe_nlon, Fe_nlat
+      _RL Fe_lon0
+      _RL Fe_lat0
+      _RL Fe_lon_inc
+      _RL Fe_lat_inc(MAX_LAT_INC)
 
 C Ice forcing parameters for exf
 
@@ -78,15 +78,15 @@ C Wind forcing parameters for exf
 C Atmos pCO2 forcing parameters for exf
 
       COMMON/gchem_interp_pCO2_i/
-     &    apCO2_nlon, apCO2_nlat, apCO2_interpMethod
+     &    apco2_nlon, apco2_nlat, apco2_interpMethod
       COMMON/gchem_interp_pCO2_r/
-     &    apCO2_lon0, apCO2_lat0, apCO2_lon_inc,
-     &    apCO2_lat_inc
-      INTEGER apCO2_interpMethod, apCO2_nlon, apCO2_nlat
-      _RL apCO2_lon0
-      _RL apCO2_lat0
-      _RL apCO2_lon_inc
-      _RL apCO2_lat_inc(MAX_LAT_INC)
+     &    apco2_lon0, apco2_lat0, apco2_lon_inc,
+     &    apco2_lat_inc
+      INTEGER apco2_interpMethod, apco2_nlon, apco2_nlat
+      _RL apco2_lon0
+      _RL apco2_lat0
+      _RL apco2_lon_inc
+      _RL apco2_lat_inc(MAX_LAT_INC)
 
 C Atmos pressure forcing parameters for exf
 

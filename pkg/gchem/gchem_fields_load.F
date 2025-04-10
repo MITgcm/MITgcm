@@ -99,46 +99,46 @@ C     data for the period ahead and the period behind myTime.
 
          _BARRIER
 
-         IF ( GCHEM_windFile .NE. ' ' ) THEN
-          CALL READ_REC_XY_RS( GCHEM_windFile,gchemWind0,intime0,
+         IF ( gchem_windFile .NE. ' ' ) THEN
+          CALL READ_REC_XY_RS( gchem_windFile,gchemWind0,intime0,
      &         myIter,myThid )
-          CALL READ_REC_XY_RS( GCHEM_windFile,gchemWind1,intime1,
-     &         myIter,myThid )
-         ENDIF
-         IF ( GCHEM_atmospFile .NE. ' ' ) THEN
-          CALL READ_REC_XY_RS( GCHEM_atmospFile,gchemAP0,intime0,
-     &         myIter,myThid )
-          CALL READ_REC_XY_RS( GCHEM_atmospFile,gchemAP1,intime1,
+          CALL READ_REC_XY_RS( gchem_windFile,gchemWind1,intime1,
      &         myIter,myThid )
          ENDIF
-         IF ( gchem_silicaFile .NE. ' ' ) THEN
-          CALL READ_REC_XY_RS( gchem_silicaFile,gchemSi0,intime0,
+         IF ( gchem_apresFile .NE. ' ' ) THEN
+          CALL READ_REC_XY_RS( gchem_apresFile,gchemApres0,intime0,
      &         myIter,myThid )
-          CALL READ_REC_XY_RS( GCHEM_silicaFile,gchemSi1,intime1,
+          CALL READ_REC_XY_RS( gchem_apresFile,gchemApres1,intime1,
+     &         myIter,myThid )
+         ENDIF
+         IF ( gchem_SiFile .NE. ' ' ) THEN
+          CALL READ_REC_XY_RS( gchem_SiFile,gchemSi0,intime0,
+     &         myIter,myThid )
+          CALL READ_REC_XY_RS( gchem_SiFile,gchemSi1,intime1,
      &         myIter,myThid )
          ENDIF
          IF ( gchem_iceFile .NE. ' ' ) THEN
-          CALL READ_REC_XY_RS( GCHEM_iceFile,gchemIce0,intime0,
+          CALL READ_REC_XY_RS( gchem_iceFile,gchemIce0,intime0,
      &         myIter,myThid )
-          CALL READ_REC_XY_RS( GCHEM_iceFile,gchemIce1,intime1,
+          CALL READ_REC_XY_RS( gchem_iceFile,gchemIce1,intime1,
      &         myIter,myThid )
          ENDIF
-         IF ( gchem_ironFile .NE. ' ' ) THEN
-          CALL READ_REC_XY_RS( GCHEM_ironFile,gchemIron0,intime0,
+         IF ( gchem_FeFile .NE. ' ' ) THEN
+          CALL READ_REC_XY_RS( gchem_FeFile,gchemFe0,intime0,
      &         myIter,myThid )
-          CALL READ_REC_XY_RS( GCHEM_ironFile,gchemIron1,intime1,
+          CALL READ_REC_XY_RS( gchem_FeFile,gchemFe1,intime1,
      &         myIter,myThid )
          ENDIF
 
 C--   fill-in overlap after loading temp arrays:
          _EXCH_XY_RS(gchemWind0, myThid )
          _EXCH_XY_RS(gchemWind1, myThid )
-         _EXCH_XY_RS(gchemAP0, myThid )
-         _EXCH_XY_RS(gchemAP1, myThid )
+         _EXCH_XY_RS(gchemApres0, myThid )
+         _EXCH_XY_RS(gchemApres1, myThid )
          _EXCH_XY_RS(gchemIce0, myThid )
          _EXCH_XY_RS(gchemIce1, myThid )
-         _EXCH_XY_RS(gchemIron0, myThid )
-         _EXCH_XY_RS(gchemIron1, myThid )
+         _EXCH_XY_RS(gchemFe0, myThid )
+         _EXCH_XY_RS(gchemFe1, myThid )
          _EXCH_XY_RS(gchemSi0, myThid )
          _EXCH_XY_RS(gchemSi1, myThid )
 
@@ -154,7 +154,7 @@ C-     end if-bloc (time to load new fields)
 
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
-          IF ( GCHEM_windFile .NE. ' ' ) THEN
+          IF ( gchem_windFile .NE. ' ' ) THEN
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
              gchemWind(i,j,bi,bj) = bWght*gchemWind0(i,j,bi,bj)
@@ -163,16 +163,16 @@ C-     end if-bloc (time to load new fields)
            ENDDO
           ENDIF
 
-          IF ( GCHEM_atmospFile .NE. ' ' ) THEN
+          IF ( gchem_apresFile .NE. ' ' ) THEN
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
-             gchemAtmosP(i,j,bi,bj) = bWght*gchemAP0(i,j,bi,bj)
-     &                              + aWght*gchemAP1(i,j,bi,bj)
+             gchemAtmosP(i,j,bi,bj) = bWght*gchemApres0(i,j,bi,bj)
+     &                              + aWght*gchemApres1(i,j,bi,bj)
             ENDDO
            ENDDO
           ENDIF
 
-          IF ( GCHEM_silicaFile .NE. ' ' ) THEN
+          IF ( gchem_SiFile .NE. ' ' ) THEN
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
              gchemSi(i,j,bi,bj) = bWght*gchemSi0(i,j,bi,bj)
@@ -181,7 +181,7 @@ C-     end if-bloc (time to load new fields)
            ENDDO
           ENDIF
 
-          IF ( GCHEM_iceFile .NE. ' ' ) THEN
+          IF ( gchem_iceFile .NE. ' ' ) THEN
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
              gchemIce(i,j,bi,bj) = bWght*gchemIce0(i,j,bi,bj)
@@ -190,11 +190,11 @@ C-     end if-bloc (time to load new fields)
            ENDDO
           ENDIF
 
-          IF ( GCHEM_ironFile .NE. ' ' ) THEN
+          IF ( gchem_FeFile .NE. ' ' ) THEN
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
-             gchemFe(i,j,bi,bj) = bWght*gchemIron0(i,j,bi,bj)
-     &                          + aWght*gchemIron1(i,j,bi,bj)
+             gchemFe(i,j,bi,bj) = bWght*gchemFe0(i,j,bi,bj)
+     &                          + aWght*gchemFe1(i,j,bi,bj)
             ENDDO
            ENDDO
           ENDIF
@@ -239,13 +239,13 @@ C Otherwise get winds from PKG/EXF
        ENDIF
 
 C If a pressure files is given in data.gchem, read it
-       IF ( gchem_atmosPfile .NE. ' ' ) THEN
+       IF ( gchem_apresFile .NE. ' ' ) THEN
         CALL EXF_SET_FLD(
-     &     'gchemAtmosP', gchem_atmosPfile, gchem_apresMask,
+     &     'gchemAtmosP', gchem_apresFile, gchem_apresMask,
      &     gchem_apresStartTime, gchem_apresPeriod, gchem_apresRepCycle,
      &     gchem_inscal_apres,
      &     gchem_apres_exfremo_intercept, gchem_apres_exfremo_slope,
-     &     gchemAtmosP, gchemAP0, gchemAP1,
+     &     gchemAtmosP, gchemApres0, gchemApres1,
 # ifdef USE_EXF_INTERPOLATION
      &     apres_lon0, apres_lon_inc,
      &     apres_lat0, apres_lat_inc,
@@ -267,66 +267,66 @@ C Atm pressure in Pascals, convert to atm
         ENDDO
        ENDIF
 
-       IF ( gchem_silicafile .NE. ' ' ) THEN
+       IF ( gchem_SiFile .NE. ' ' ) THEN
         CALL EXF_SET_FLD(
-     &     'silica', gchem_silicafile, gchem_SiMask,
+     &     'gchemSi', gchem_SiFile, gchem_SiMask,
      &     gchem_SiStartTime, gchem_SiPeriod, gchem_SiRepCycle,
      &     gchem_inscal_Si,
      &     gchem_Si_exfremo_intercept, gchem_Si_exfremo_slope,
      &     gchemSi, gchemSi0, gchemSi1,
 # ifdef USE_EXF_INTERPOLATION
-     &     silica_lon0, silica_lon_inc,
-     &     silica_lat0, silica_lat_inc,
-     &     silica_nlon, silica_nlat, xC, yC,
-     &     silica_interpMethod,
+     &     Si_lon0, Si_lon_inc,
+     &     Si_lat0, Si_lat_inc,
+     &     Si_nlon, Si_nlat, xC, yC,
+     &     Si_interpMethod,
 # endif
      &     mytime, myiter, mythid )
        ENDIF
 
-       IF ( gchem_PARfile .NE. ' '  ) THEN
+       IF ( gchem_parFile .NE. ' '  ) THEN
         CALL EXF_SET_FLD(
-     &     'PAR', gchem_PARfile, gchem_parMask,
+     &     'gchemPAR', gchem_parFile, gchem_parMask,
      &     gchem_parStartTime, gchem_parPeriod, gchem_parRepCycle,
      &     gchem_inscal_par,
      &     gchem_par_exfremo_intercept, gchem_par_exfremo_slope,
      &     gchemPAR, gchemPAR0, gchemPAR1,
 # ifdef USE_EXF_INTERPOLATION
-     &     PAR_lon0, PAR_lon_inc,
-     &     PAR_lat0, PAR_lat_inc,
-     &     PAR_nlon, PAR_nlat, xC, yC,
-     &     PAR_interpMethod,
+     &     par_lon0, par_lon_inc,
+     &     par_lat0, par_lat_inc,
+     &     par_nlon, par_nlat, xC, yC,
+     &     par_interpMethod,
 # endif
      &     mytime, myiter, mythid )
        ENDIF
 
-       IF ( gchem_ironfile .NE. ' '  ) THEN
+       IF ( gchem_FeFile .NE. ' '  ) THEN
         CALL EXF_SET_FLD(
-     &     'iron', gchem_ironfile, gchem_FeMask,
+     &     'gchemFe', gchem_FeFile, gchem_FeMask,
      &     gchem_FeStartTime, gchem_FePeriod, gchem_FeRepCycle,
      &     gchem_inscal_Fe,
      &     gchem_Fe_exfremo_intercept, gchem_Fe_exfremo_slope,
-     &     gchemFe, gchemIron0, gchemIron1,
+     &     gchemFe, gchemFe0, gchemFe1,
 # ifdef USE_EXF_INTERPOLATION
-     &     iron_lon0, iron_lon_inc,
-     &     iron_lat0, iron_lat_inc,
-     &     iron_nlon, iron_nlat, xC, yC,
-     &     iron_interpMethod,
+     &     Fe_lon0, Fe_lon_inc,
+     &     Fe_lat0, Fe_lat_inc,
+     &     Fe_nlon, Fe_nlat, xC, yC,
+     &     Fe_interpMethod,
 # endif
      &     mytime, myiter, mythid )
        ENDIF
 
        IF ( gchem_apco2file .NE. ' '  ) THEN
         CALL EXF_SET_FLD(
-     &     'apCO2', gchem_apCO2file, gchem_apco2Mask,
+     &     'gchemapCO2', gchem_apco2File, gchem_apco2Mask,
      &     gchem_apco2StartTime, gchem_apco2Period, gchem_apco2RepCycle,
      &     gchem_inscal_apco2,
      &     gchem_apco2_exfremo_intercept, gchem_apco2_exfremo_slope,
-     &     gchemApCO2, gchemApCO20, gchemApCO21,
+     &     gchemApco2, gchemApco20, gchemApco21,
 # ifdef USE_EXF_INTERPOLATION
-     &     apCO2_lon0, apCO2_lon_inc,
-     &     apCO2_lat0, apCO2_lat_inc,
-     &     apCO2_nlon, apCO2_nlat, xC, yC,
-     &     apCO2_interpMethod,
+     &     apco2_lon0, apco2_lon_inc,
+     &     apco2_lat0, apco2_lat_inc,
+     &     apco2_nlon, apco2_nlat, xC, yC,
+     &     apco2_interpMethod,
 # endif
      &     mytime, myiter, mythid )
        ENDIF

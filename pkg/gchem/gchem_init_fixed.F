@@ -86,7 +86,7 @@ c      ENDIF
        _BEGIN_MASTER( myThid )
        errCount = 0
 
-       IF ( gchem_silicafile .NE. ' ' ) THEN
+       IF ( gchem_SiFile .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START silica',myThid)
 # endif
@@ -97,7 +97,7 @@ c      ENDIF
      I                          myThid )
        ENDIF
 
-       IF ( gchem_PARfile .NE. ' ' ) THEN
+       IF ( gchem_parFile .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START PAR',myThid)
 # endif
@@ -108,7 +108,7 @@ c      ENDIF
      I                         myThid )
        ENDIF
 
-       IF ( gchem_ironfile .NE. ' ' ) THEN
+       IF ( gchem_FeFile .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START iron',myThid)
 # endif
@@ -119,7 +119,7 @@ c      ENDIF
      I                         myThid )
        ENDIF
 
-       IF ( gchem_apCO2file .NE. ' ' ) THEN
+       IF ( gchem_apco2File .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START pCO2',myThid)
 # endif

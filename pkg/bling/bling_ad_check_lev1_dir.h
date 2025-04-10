@@ -33,8 +33,6 @@ CADJ STORE feinput1          = comlev1, key = ikey_dynamics, kind=isbyte
 #ifdef ALLOW_EXF
 CADJ STORE apressure         = comlev1, key = ikey_dynamics, kind=isbyte
 CADJ STORE wspeed            = comlev1, key = ikey_dynamics, kind=isbyte
-CADJ STORE apco20            = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE apco21            = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
 
 #endif /* ALLOW_BLING */

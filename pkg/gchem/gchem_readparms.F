@@ -65,11 +65,11 @@ C  to test the flag before any corresponding pkg S/R call
      &           gchem_rl1, gchem_rl2, gchem_rl3,
      &           gchem_rl4, gchem_rl5,
      &           gchem_ForcingPeriod, gchem_ForcingCycle,
-     &           gchem_silicafile, gchem_PARfile, gchem_ironfile,
-     &           gchem_apCO2file, gchem_windFile, gchem_atmospFile,
+     &           gchem_SiFile, gchem_parFile, gchem_FeFile,
+     &           gchem_apco2File, gchem_windFile, gchem_apresFile,
      &           gchem_iceFile,
-     &           gchem_silica_const, gchem_par_const, gchem_iron_const,
-     &           gchem_apCO2_const, gchem_wind_const, gchem_apres_const,
+     &           gchem_Si_const, gchem_par_const, gchem_Fe_const,
+     &           gchem_apco2_const, gchem_wind_const, gchem_apres_const,
      &           tIter0
 
 # ifdef ALLOW_EXF
@@ -106,17 +106,17 @@ C
 
 #  ifdef USE_EXF_INTERPOLATION
       NAMELIST /GCHEM_INTERP_PARAMS/
-     &     silica_lon0, silica_lat0, silica_nlon,silica_nlat,
-     &     silica_lon_inc, silica_lat_inc, silica_interpMethod,
+     &     Si_lon0, Si_lat0, Si_nlon,Si_nlat,
+     &     Si_lon_inc, Si_lat_inc, Si_interpMethod,
 C
-     &     PAR_lon0, PAR_lat0, PAR_nlon, PAR_nlat,
-     &     PAR_lon_inc, PAR_lat_inc, PAR_interpMethod,
+     &     par_lon0, par_lat0, par_nlon, par_nlat,
+     &     par_lon_inc, par_lat_inc, par_interpMethod,
 C
-     &     iron_lon0, iron_lat0, iron_nlon, iron_nlat,
-     &     iron_lon_inc, iron_lat_inc, iron_interpMethod,
+     &     Fe_lon0, Fe_lat0, Fe_nlon, Fe_nlat,
+     &     Fe_lon_inc, Fe_lat_inc, Fe_interpMethod,
 C
-     &     apCO2_lon0, apCO2_lat0, apCO2_nlon, apCO2_nlat,
-     &     apCO2_lon_inc, apCO2_lat_inc, apCO2_interpMethod,
+     &     apco2_lon0, apco2_lat0, apco2_nlon, apco2_nlat,
+     &     apco2_lon_inc, apco2_lat_inc, apco2_interpMethod,
 C
      &     wind_lon0, wind_lat0, wind_nlon, wind_nlat,
      &     wind_lon_inc, wind_lat_inc, wind_interpMethod,
@@ -170,20 +170,20 @@ C     default periodic forcing to same as for physics
       gchem_ForcingCycle=externForcingCycle
 
 C     some predefined forcing fields and constants
-      gchem_iceFile    = ' '
-      gchem_windFile   = ' '
-      gchem_atmospFile = ' '
-      gchem_silicafile = ' '
-      gchem_PARfile    = ' '
-      gchem_ironfile   = ' '
-      gchem_apCO2file  = ' '
+      gchem_iceFile   = ' '
+      gchem_windFile  = ' '
+      gchem_apresFile = ' '
+      gchem_SiFile    = ' '
+      gchem_parFile   = ' '
+      gchem_FeFile    = ' '
+      gchem_apco2File = ' '
 C     some sensible defaults
-      gchem_silica_const =    7.6 _d -3
-      gchem_par_const    =    0.  _d 0
-      gchem_iron_const   =    0.  _d 0
-      gchem_apCO2_const  =  280.  _d -6
-      gchem_wind_const   =    0.  _d 0
-      gchem_apres_const  = 1013.  _d 2
+      gchem_Si_const    =    7.6 _d -3
+      gchem_par_const   =    0.  _d 0
+      gchem_Fe_const    =    0.  _d 0
+      gchem_apco2_const =  280.  _d -6
+      gchem_wind_const  =    0.  _d 0
+      gchem_apres_const = 1013.  _d 2
 
 C- Open and read the data.gchem file
       WRITE(msgBuf,'(A)') ' GCHEM_READPARMS: opening data.gchem'
@@ -263,32 +263,32 @@ C- Open and read the data.gchem file
 
 #  ifdef USE_EXF_INTERPOLATION
 
-       silica_lon0 = inp_lon0
-       silica_lat0 = inp_lat0
-       silica_nlon = inp_gNx
-       silica_nlat = inp_gNy
-       silica_lon_inc = inp_dLon
-       silica_interpMethod  = 1
+       Si_lon0 = inp_lon0
+       Si_lat0 = inp_lat0
+       Si_nlon = inp_gNx
+       Si_nlat = inp_gNy
+       Si_lon_inc = inp_dLon
+       Si_interpMethod  = 1
 
-       PAR_lon0 = inp_lon0
-       PAR_lat0 = inp_lat0
-       PAR_nlon = inp_gNx
-       PAR_nlat = inp_gNy
-       PAR_lon_inc = inp_dLon
-       PAR_interpMethod  = 1
+       par_lon0 = inp_lon0
+       par_lat0 = inp_lat0
+       par_nlon = inp_gNx
+       par_nlat = inp_gNy
+       par_lon_inc = inp_dLon
+       par_interpMethod  = 1
 
-       iron_lon0 = inp_lon0
-       iron_lat0 = inp_lat0
-       iron_nlon = inp_gNx
-       iron_nlat = inp_gNy
-       iron_lon_inc = inp_dLon
-       iron_interpMethod  = 1
+       Fe_lon0 = inp_lon0
+       Fe_lat0 = inp_lat0
+       Fe_nlon = inp_gNx
+       Fe_nlat = inp_gNy
+       Fe_lon_inc = inp_dLon
+       Fe_interpMethod  = 1
 
-       apCO2_lat0 = inp_lat0
-       apCO2_nlon = inp_gNx
-       apCO2_nlat = inp_gNy
-       apCO2_lon_inc = inp_dLon
-       apCO2_interpMethod  = 1
+       apco2_lat0 = inp_lat0
+       apco2_nlon = inp_gNx
+       apco2_nlat = inp_gNy
+       apco2_lon_inc = inp_dLon
+       apco2_interpMethod  = 1
 
        wind_lon0 = inp_lon0
        wind_lat0 = inp_lat0
@@ -304,10 +304,10 @@ C- Open and read the data.gchem file
        apres_interpMethod  = 1
 
        DO j=1,MAX_LAT_INC
-        silica_lat_inc(j) = inp_dLat(j)
-        PAR_lat_inc(j)    = inp_dLat(j)
-        iron_lat_inc(j)   = inp_dLat(j)
-        apCO2_lat_inc(j)  = inp_dLat(j)
+        Si_lat_inc(j) = inp_dLat(j)
+        par_lat_inc(j)    = inp_dLat(j)
+        Fe_lat_inc(j)   = inp_dLat(j)
+        apco2_lat_inc(j)  = inp_dLat(j)
         wind_lat_inc(j)   = inp_dLat(j)
         apres_lat_inc(j)  = inp_dLat(j)
        ENDDO
@@ -331,10 +331,10 @@ C- Close the open data file
       CLOSE(iUnit,STATUS='DELETE')
 #endif /* SINGLE_DISK_IO */
 
-      IF (gchem_apCO2file.EQ.' ') THEN
+      IF (gchem_apco2File.EQ.' ') THEN
         WRITE(msgBuf,'(2A,E13.6,A)')
      &    '** WARNING ** GCHEM_READPARMS: ',
-     &    'default atmos pCO2 of ', gchem_apCO2_const,' atm is used'
+     &    'constant value atmos pCO2 = ', gchem_apco2_consti,' atm'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
       ENDIF

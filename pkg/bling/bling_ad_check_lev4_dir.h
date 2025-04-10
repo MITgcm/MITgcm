@@ -35,8 +35,6 @@ CADJ STORE feinput1          = tapelev4, key = ilev_4
 #ifdef ALLOW_EXF
 CADJ STORE apressure         = tapelev4, key = ilev_4
 CADJ STORE wspeed            = tapelev4, key = ilev_4
-CADJ STORE apco20            = tapelev4, key = ilev_4
-CADJ STORE apco21            = tapelev4, key = ilev_4
 # endif
 
 #endif /* ALLOW_BLING */
