@@ -101,14 +101,15 @@ C1) Creation :
      &           err,bi,bj,myThid )
 
           ELSE
-            CALL PROFILES_NF_ERROR(
-     &           'INIT_NCFILE: NF_INQ_VARID prof_names',
-     &           err,bi,bj,myThid )
             WRITE(msgBuf,'(2A)')
-     &       'S/R PROFILES_INIT_NCFILE: no variable ',
-     &       prof_names(num_file,num_var)
+     &          'S/R PROFILES_INIT_NCFILE: no variable ',
+     &          prof_names(num_file,num_var)
             CALL PRINT_MESSAGE( msgBuf,
      &           standardMessageUnit, SQUEEZE_RIGHT, myThid )
+            WRITE(msgBuf,'(2A)')
+     &           'INIT_NCFILE: NF_INQ_VARID prof_names = ',
+     &           prof_names(num_file,num_var)
+            CALL PROFILES_NF_ERROR( msgBuf, err, bi, bj, myThid )
 
           ENDIF
         ENDDO !DO num_var
