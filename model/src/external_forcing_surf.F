@@ -66,6 +66,9 @@ C     ks     :: index of surface interface layer
 #ifdef CHECK_OVERLAP_FORCING
       _RS fixVal
 #endif
+#ifdef SHORTWAVE_HEATING
+      _RS tmpFac
+#endif
 CEOP
 
       IF ( usingPCoords ) THEN
@@ -74,6 +77,10 @@ CEOP
        ks        = 1
       ENDIF
       recip_Cp = 1. _d 0 / HeatCapacity_Cp
+#ifdef SHORTWAVE_HEATING
+      tmpFac = oneRS
+      IF ( selectPenetratingSW .LE. 0 ) tmpFac = zeroRS
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -218,7 +225,7 @@ C     Net heat flux Qnet:
           surfaceForcingT(i,j,bi,bj) = surfaceForcingT(i,j,bi,bj)
      &       - ( Qnet(i,j,bi,bj)
 #ifdef SHORTWAVE_HEATING
-     &          -Qsw(i,j,bi,bj)
+     &          -Qsw(i,j,bi,bj)*tmpFac
 #endif
      &         ) *recip_Cp*mass2rUnit
 C     Net Salt Flux :
