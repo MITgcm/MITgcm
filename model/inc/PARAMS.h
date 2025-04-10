@@ -173,24 +173,18 @@ C     nonlinFreeSurf      :: option related to non-linear free surface
 C                           =0 Linear free surface ; >0 Non-linear
 C     select_rStar        :: option related to r* vertical coordinate
 C                           =0 (default) use r coord. ; > 0 use r*
-C     selectNHfreeSurf    :: option for Non-Hydrostatic (free-)Surface
-C                            formulation:
+C     selectNHfreeSurf    :: option for Non-Hydrostatic (free-)Surface formulation:
 C                           =0 (default) hydrostatic surf. ; > 0 add NH effects.
 C     selectP_inEOS_Zc    :: select which pressure to use in EOS (for z-coords)
 C                           =0: simply: -g*rhoConst*z
 C                           =1: use pRef = integral{-g*rho(Tref,Sref,pRef)*dz}
 C                           =2: use hydrostatic dynamical pressure
 C                           =3: use full (Hyd+NH) dynamical pressure
-C     selectAddFluid      :: option to add mass source/sink of fluid in the
-C                            interior (3-D generalisation of oceanic real-fresh
-C                            water flux)
-C                           = 0: off
-C                           = 1: add fluid
-C                           =-1: virtual flux (no massC added)
+C     selectAddFluid      :: option to add mass source/sink of fluid in the interior
+C                            (3-D generalisation of oceanic real-fresh water flux)
+C                           =0 off ; =1 add fluid ; =-1 virtual flux (no mass added)
 C     selectBalanceEmPmR  :: option to balance net surface fresh-water flux:
-C                           = 0: off
-C                           = 1: uniform correction
-C                           = 2: weighted correction
+C                           =0 off ; =1 uniform correction ; = 2 weighted correction
 C     selectImplicitDrag  :: select Implicit treatment of bottom/top drag
 C                           = 0: fully explicit
 C                           = 1: implicit on provisional velocity
@@ -206,10 +200,10 @@ C                                shortwave penetration (not yet coded)
 C                           > 2: time varying fraction of shortwave penetration
 C                                according to external function (e.g. BGC model,
 C                                not yet coded)
-C     momForcingOutAB     :: = 1: take momentum forcing contribution
+C     momForcingOutAB     :: =1: take momentum forcing contribution
 C                            out of (=0: in) Adams-Bashforth time stepping.
-C     tracForcingOutAB    :: = 1: take tracer (Temp,Salt,pTracers) forcing
-C                            contribution out of (=0: in) Adams-Bashforth
+C     tracForcingOutAB    :: =1: take tracer (Temp,Salt,pTracers) forcing contribution
+C                            out of (=0: in) Adams-Bashforth time stepping.
 C                            time stepping.
 C     tempAdvScheme       :: Temp. Horiz.Advection scheme selector
 C     tempVertAdvScheme   :: Temp. Vert. Advection scheme selector
@@ -224,8 +218,7 @@ C     selectBotDragQuadr  :: quadratic bottom drag discretisation option:
 C                           =0: average KE from grid center to U & V location
 C                           =1: use local velocity norm @ U & V location
 C                           =2: same with wet-point averaging of other component
-C     pCellMix_select     :: select option to enhance mixing near surface
-C                            & bottom
+C     pCellMix_select     :: select option to enhance mixing near surface & bottom
 C                            unit digit: near bottom ; tens digit: near surface
 C                            with digit =0 : disable ;
 C                           = 1 : increases mixing linearly with recip_hFac
@@ -240,8 +233,7 @@ C     monitorSelect       :: select group of variables to monitor
 C                            =1 : dynvars ; =2 : + vort ; =3 : + surface
 C-    debugLevel          :: controls printing of algorithm intermediate results
 C                            and statistics ; higher -> more writing
-C-    plotLevel           :: controls printing of field maps ;
-C                            higher -> more flds
+C-    plotLevel           :: controls printing of field maps ; higher -> more flds
 
       COMMON /PARM_I/
      &        cg2dMaxIters, cg2dMinItersNSA,
