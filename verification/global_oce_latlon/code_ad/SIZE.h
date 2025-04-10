@@ -44,8 +44,8 @@ CEOP
       PARAMETER (
      &           sNx =  45,
      &           sNy =  20,
-     &           OLx =   2,
-     &           OLy =   2,
+     &           OLx =   3,
+     &           OLy =   3,
      &           nSx =   2,
      &           nSy =   2,
      &           nPx =   1,
@@ -61,4 +61,3 @@ C                routine buffers.
       INTEGER MAX_OLY
       PARAMETER ( MAX_OLX = OLx,
      &            MAX_OLY = OLy )
-
