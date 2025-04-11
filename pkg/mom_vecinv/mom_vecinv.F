@@ -832,13 +832,15 @@ CADJ STORE vcf(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
 
 C--   Vertical shear terms (-w*du/dr & -w*dv/dr)
        IF ( .NOT. momImplVertAdv ) THEN
-        CALL MOM_VI_U_VERTSHEAR(bi,bj,k,uVel,wVel,uCf,myThid)
+        CALL MOM_VI_U_VERTSHEAR( bi, bj, k, deepFacAdv,
+     &                           uVel, wVel, uCf, myThid )
         DO j=jMin,jMax
          DO i=iMin,iMax
           gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+uCf(i,j)
          ENDDO
         ENDDO
-        CALL MOM_VI_V_VERTSHEAR(bi,bj,k,vVel,wVel,vCf,myThid)
+        CALL MOM_VI_V_VERTSHEAR( bi, bj, k, deepFacAdv,
+     &                           vVel, wVel, vCf, myThid )
         DO j=jMin,jMax
          DO i=iMin,iMax
           gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+vCf(i,j)
@@ -903,19 +905,25 @@ C-     presently, non zero angleSinC array only supported with Curvilinear-Grid
       ENDIF
 
 C--   Non-Hydrostatic (spherical) metric terms
+#ifdef MOM_USE_OLD_DEEP_VERT_ADV
       IF ( useNHMTerms ) THEN
+#else
+      IF ( useNHMTerms .AND. .NOT.deepAtmosphere ) THEN
+#endif
        CALL MOM_U_METRIC_NH(bi,bj,k,uFld,wVel,uCf,myThid)
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+uCf(i,j)
-        ENDDO
-       ENDDO
        CALL MOM_V_METRIC_NH(bi,bj,k,vFld,wVel,vCf,myThid)
        DO j=jMin,jMax
         DO i=iMin,iMax
-         gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+vCf(i,j)
+         gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj) + uCf(i,j)
+         gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj) + vCf(i,j)
         ENDDO
        ENDDO
+#ifdef ALLOW_DIAGNOSTICS
+       IF ( useDiagnostics ) THEN
+        CALL DIAGNOSTICS_FILL( uCf, 'Um_Metr ', k,1,2, bi,bj, myThid )
+        CALL DIAGNOSTICS_FILL( vCf, 'Vm_Metr ', k,1,2, bi,bj, myThid )
+       ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
       ENDIF
 
 C--   Set du/dt & dv/dt on boundaries to zero
