@@ -103,6 +103,10 @@ CEOP
 
 C--   Initialise forcing arrays that may receive multiple contributions
 #ifdef ALLOW_ADDFLUID
+C-- 3 cases: a) prescribe constant 3-D field "addMass" (loaded from addMassFile)
+C            b) prescribe time-variable 3-D field "addMass" (not yet coded)
+C            c) compute "addMass" at each time-step (sum of contrib from pkgs)
+C-  Note: Condition below might need an update once (b) is made available
       IF ( selectAddFluid.NE.0 .AND. addMassFile.EQ.' ' ) THEN
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)

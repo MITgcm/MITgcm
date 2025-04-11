@@ -68,5 +68,10 @@
 #                (see "available_diagnostics.log" file for the full list of diags)
 #--------------------
  &DIAG_STATIS_PARMS
+# diagSt_mnc    = .TRUE.,
+ stat_fields(1:4,1)  = 'ETAN    ','PHI_SURF','RSURF   ','PHI_NH  ',
+  stat_fName(1) = 'dynStDiag',
+   stat_freq(1) = 3600.,
+  stat_phase(1) = 0.,
  &
 

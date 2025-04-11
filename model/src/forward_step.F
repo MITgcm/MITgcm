@@ -874,9 +874,7 @@ C-    update CG2D matrix (and preconditioner)
         CALL TIMER_STOP ('UPDATE_CG2D         [FORWARD_STEP]',myThid)
       ENDIF
 # ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE aW2d, aS2d, aC2d =
-CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE pC, pS, pW =
+CADJ STORE aW2d, aS2d, aC2d, pC, pS, pW =
 CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
 # endif
 #endif /* NONLIN_FRSURF or ALLOW_SOLVE4_PS_AND_DRAG */
@@ -885,24 +883,13 @@ C--   Apply Filters to u*,v* before SOLVE_FOR_PRESSURE
 #ifdef ALLOW_SHAP_FILT
       IF (useSHAP_FILT .AND. shap_filt_uvStar) THEN
         CALL TIMER_START('SHAP_FILT_UV        [FORWARD_STEP]',myThid)
-        IF (implicDiv2DFlow.LT.1.) THEN
-C--   Explicit+Implicit part of the Barotropic Flow Divergence
-C      => Filtering of uVel,vVel is necessary
-          CALL SHAP_FILT_APPLY_UV( uVel,vVel,
-     &                             myTime, myIter, myThid )
-        ENDIF
-        CALL SHAP_FILT_APPLY_UV( gU,gV,myTime,myIter,myThid)
+        CALL SHAP_FILT_APPLY_UV( gU, gV, myTime, myIter, myThid )
         CALL TIMER_STOP ('SHAP_FILT_UV        [FORWARD_STEP]',myThid)
       ENDIF
 #endif
 #ifdef ALLOW_ZONAL_FILT
       IF (useZONAL_FILT .AND. zonal_filt_uvStar) THEN
         CALL TIMER_START('ZONAL_FILT_UV       [FORWARD_STEP]',myThid)
-        IF (implicDiv2DFlow.LT.1.) THEN
-C--   Explicit+Implicit part of the Barotropic Flow Divergence
-C      => Filtering of uVel,vVel is necessary
-          CALL ZONAL_FILT_APPLY_UV( uVel, vVel, myThid )
-        ENDIF
         CALL ZONAL_FILT_APPLY_UV( gU, gV, myThid )
         CALL TIMER_STOP ('ZONAL_FILT_UV       [FORWARD_STEP]',myThid)
       ENDIF
@@ -914,20 +901,11 @@ C     three-dimensional for non-hydrostatic and/or IGW scheme.
       IF ( momStepping ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 # if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
-CADJ STORE uVel, vVel
-CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE EmPmR,hFacS,hFacW
-CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
-# endif
-#if ( defined NONLIN_FRSURF || defined ALLOW_SOLVE4_PS_AND_DRAG )
-CADJ STORE aW2d, aS2d, aC2d =
-CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE pC, pS, pW =
-CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE hFacS, hFacW = comlev1, key = ikey_dynamics, kind = isbyte
 # endif
 #endif
         CALL TIMER_START('SOLVE_FOR_PRESSURE  [FORWARD_STEP]',myThid)
-        CALL SOLVE_FOR_PRESSURE(myTime, myIter, myThid)
+        CALL SOLVE_FOR_PRESSURE( myTime, myIter, myThid )
         CALL TIMER_STOP ('SOLVE_FOR_PRESSURE  [FORWARD_STEP]',myThid)
       ENDIF
 
@@ -936,14 +914,8 @@ C--   Correct divergence in flow field and cycle time-stepping momentum
 #ifndef ALLOW_AUTODIFF
       IF ( momStepping ) THEN
 #endif
-#ifdef ALLOW_AUTODIFF_TAMC
-# ifdef ALLOW_DEPTH_CONTROL
-CADJ STORE etaN, uVel,vVel
-CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
-# endif /* ALLOW_DEPTH_CONTROL */
-#endif /* ALLOW_AUTODIFF_TAMC */
         CALL TIMER_START('MOM_CORRECTION_STEP [FORWARD_STEP]',myThid)
-        CALL MOMENTUM_CORRECTION_STEP(myTime, myIter, myThid)
+        CALL MOMENTUM_CORRECTION_STEP( myTime, myIter, myThid )
         CALL TIMER_STOP ('MOM_CORRECTION_STEP [FORWARD_STEP]',myThid)
 #ifndef ALLOW_AUTODIFF
       ENDIF

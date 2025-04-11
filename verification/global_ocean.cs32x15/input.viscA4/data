@@ -26,12 +26,14 @@
  vectorInvariantMomentum=.TRUE.,
  implicitFreeSurface=.TRUE.,
  exactConserv=.TRUE.,
+#-- just to test (not physically justified):
  selectP_inEOS_Zc=3,
  nonHydrostatic=.TRUE.,
  selectNHfreeSurf=1,
  useNHMTerms=.TRUE.,
- hFacInf=0.2,
- hFacSup=2.0,
+ implicDiv2DFlow=0.5,
+ selectAddFluid=1,
+#---
  useRealFreshWaterFlux=.TRUE.,
  allowFreezing=.TRUE.,
  hFacMin=.1,
@@ -64,9 +66,11 @@
  taveFreq    =31104000.,
  dumpFreq    =31104000.,
  monitorFreq =86400.,
- periodicExternalForcing=.TRUE.,
- externForcingPeriod=2592000.,
- externForcingCycle=31104000.,
+#-- just to test: switch off periodic forcing --> constant forcing
+# periodicExternalForcing=.TRUE.,
+# externForcingPeriod=2592000.,
+# externForcingCycle=31104000.,
+#--
 # 2 months restoring timescale for temperature
  tauThetaClimRelax = 5184000.,
 # 2yrs restoring timescale for salinity
@@ -95,5 +99,8 @@
  thetaClimFile  ='lev_surfT_cs_12m.bin',
  saltClimFile   ='lev_surfS_cs_12m.bin',
  surfQnetFile   ='shiQnet_cs32.bin',
- EmPmRFile      ='shiEmPR_cs32.bin',
+#EmPmRFile      ='shiEmPR_cs32.bin',
+#- just to test using addMassFile:
+ addMassFile    ='addMass_k1.bin',
+#EmPmRFile      ='large_Precip.bin',
  &
