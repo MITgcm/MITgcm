@@ -76,22 +76,12 @@ C     Term is the vertical integral of the divergence of the
 C     time tendency terms along with a relaxation term that
 C     pulls div(U) + dh/dt back toward zero.
 
-      IF (implicDiv2Dflow.EQ.1.) THEN
-C     Fully Implicit treatment of the Barotropic Flow Divergence
-        DO j=1,sNy
-         DO i=1,sNx+1
-          pf(i,j) = xA(i,j)*gU(i,j,k,bi,bj) / deltaTMom
-         ENDDO
-        ENDDO
-      ELSE
 C     Implicit treatment of the Barotropic Flow Divergence
-        DO j=1,sNy
-         DO i=1,sNx+1
-          pf(i,j) = implicDiv2Dflow
-     &             *xA(i,j)*gU(i,j,k,bi,bj) / deltaTMom
-         ENDDO
-        ENDDO
-      ENDIF
+      DO j=1,sNy
+       DO i=1,sNx+1
+        pf(i,j) = implicDiv2Dflow*xA(i,j)*gU(i,j,k,bi,bj) / deltaTMom
+       ENDDO
+      ENDDO
       DO j=1,sNy
        DO i=1,sNx
         cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj) +
@@ -109,22 +99,12 @@ C     Implicit treatment of the Barotropic Flow Divergence
       ENDIF
 #endif
 
-      IF (implicDiv2Dflow.EQ.1.) THEN
-C     Fully Implicit treatment of the Barotropic Flow Divergence
-        DO j=1,sNy+1
-         DO i=1,sNx
-          pf(i,j) = yA(i,j)*gV(i,j,k,bi,bj) / deltaTMom
-         ENDDO
-        ENDDO
-      ELSE
 C     Implicit treatment of the Barotropic Flow Divergence
-        DO j=1,sNy+1
-         DO i=1,sNx
-          pf(i,j) = implicDiv2Dflow
-     &             *yA(i,j)*gV(i,j,k,bi,bj) / deltaTMom
-         ENDDO
-        ENDDO
-      ENDIF
+      DO j=1,sNy+1
+       DO i=1,sNx
+        pf(i,j) = implicDiv2Dflow*yA(i,j)*gV(i,j,k,bi,bj) / deltaTMom
+       ENDDO
+      ENDDO
       DO j=1,sNy
        DO i=1,sNx
         cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj) +
