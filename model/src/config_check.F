@@ -783,10 +783,10 @@ c     ENDIF
       IF ( useRealFreshWaterFlux .AND. implicDiv2DFlow.EQ.zeroRL
      &     .AND. startTime.NE.baseTime .AND. usePickupBeforeC54 ) THEN
         WRITE(msgBuf,'(A)')
-     &   'CONFIG_CHECK: RealFreshWaterFlux+implicSurfP=0+exactConserv:'
+     &   'CONFIG_CHECK: usePickupBeforeC54 restart does not work with'
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)')
-     &   'CONFIG_CHECK: restart not implemented in this config'
+     &   'CONFIG_CHECK:  implicDiv2DFlow=0 + useRealFreshWaterFlux'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
