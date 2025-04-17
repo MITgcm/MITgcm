@@ -473,6 +473,8 @@ c     initialize hbl and kbl to bottomed out values
 
 c     compute bfsfc = sw fraction at hbf * zgrid
 
+#ifdef SHORTWAVE_HEATING
+        IF ( selectPenetratingSW .GE. 1 ) THEN
 #ifdef KPP_USE_SWFRAC3D
          DO i = 1, imt
             worka(i) = 0.5*( swatt(i,kl) + swatt(i,kl-1) )
@@ -493,17 +495,19 @@ CADJ store worka = comlev1_kpp_k, key = kkey, kind=isbyte
 #endif
 #endif /* KPP_USE_SWFRAC3D */
 
-         DO i = 1, imt
-
-c     use caseA as temporary array
-
-            casea(i) = -zgrid(kl)
-
 c     compute bfsfc= Bo + radiative contribution down to hbf * hbl
-
+         DO i = 1, imt
             bfsfc(i) = bo(i) + bosol(i)*(1. - worka(i))
-
          ENDDO
+        ELSE
+#endif /* SHORTWAVE_HEATING */
+         DO i = 1, imt
+            bfsfc(i) = bo(i)
+         ENDDO
+#ifdef SHORTWAVE_HEATING
+        ENDIF
+#endif /* SHORTWAVE_HEATING */
+
 #ifdef ALLOW_SALT_PLUME
 c     compute bfsfc = plume fraction at hbf * zgrid
          IF ( useSALT_PLUME ) THEN
@@ -547,6 +551,8 @@ c     k level associated with this hbl, then sum up all SPforc[T,S]
          DO i = 1, imt
             stable(i) = p5 + sign(p5,bfsfc(i))
             sigma(i) = stable(i) + (1. - stable(i)) * epsilon
+c     use caseA as temporary array
+            casea(i) = -zgrid(kl)
          ENDDO
 
 c-----------------------------------------------------------------------
@@ -653,19 +659,21 @@ c-----------------------------------------------------------------------
 c     find stability and buoyancy forcing for boundary layer
 c-----------------------------------------------------------------------
 
+#ifdef SHORTWAVE_HEATING
+      IF ( selectPenetratingSW .GE. 1 ) THEN
 #ifdef KPP_USE_SWFRAC3D
-      DO i = 1, imt
+       DO i = 1, imt
          bfsfc(i)  = bo(i) + bosol(i) * (1. - swatt(i,kbl(i)))
-      ENDDO
+       ENDDO
 #else
-      DO i = 1, imt
+       DO i = 1, imt
          worka(i) = hbl(i)
-      ENDDO
+       ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ store worka = comlev1_kpp, key=ikey, kind=isbyte,
 CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 #endif
-      CALL SWFRAC(
+       CALL SWFRAC(
      I       imt, minusone,
      U       worka,
      I       myTime, myIter, myThid )
@@ -674,10 +682,18 @@ CADJ store worka = comlev1_kpp, key=ikey, kind=isbyte,
 CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 #endif
 
-      DO i = 1, imt
+       DO i = 1, imt
          bfsfc(i)  = bo(i) + bosol(i) * (1. - worka(i))
-      ENDDO
+       ENDDO
 #endif /* KPP_USE_SWFRAC3D */
+      ELSE
+#endif /* SHORTWAVE_HEATING */
+       DO i = 1, imt
+         bfsfc(i) = bo(i)
+       ENDDO
+#ifdef SHORTWAVE_HEATING
+      ENDIF
+#endif /* SHORTWAVE_HEATING */
 
 #ifdef ALLOW_SALT_PLUME
 # ifdef ALLOW_AUTODIFF_TAMC
@@ -780,19 +796,21 @@ c-----------------------------------------------------------------------
 c      find stability and buoyancy forcing for final hbl values
 c-----------------------------------------------------------------------
 
+#ifdef SHORTWAVE_HEATING
+      IF ( selectPenetratingSW .GE. 1 ) THEN
 #ifdef KPP_USE_SWFRAC3D
-      DO i = 1, imt
+       DO i = 1, imt
          bfsfc(i)  = bo(i) + bosol(i) * (1. - swatt(i,kbl(i)))
-      ENDDO
+       ENDDO
 #else
-      DO i = 1, imt
+       DO i = 1, imt
          worka(i) = hbl(i)
-      ENDDO
+       ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ store worka = comlev1_kpp, key=ikey, kind=isbyte,
 CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 #endif
-      CALL SWFRAC(
+       CALL SWFRAC(
      I     imt, minusone,
      U     worka,
      I     myTime, myIter, myThid )
@@ -801,10 +819,18 @@ CADJ store worka = comlev1_kpp, key=ikey, kind=isbyte,
 CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 #endif
 
-      DO i = 1, imt
+       DO i = 1, imt
          bfsfc(i) = bo(i) + bosol(i) * (1. - worka(i))
-      ENDDO
+       ENDDO
 #endif /* KPP_USE_SWFRAC3D */
+      ELSE
+#endif /* SHORTWAVE_HEATING */
+       DO i = 1, imt
+         bfsfc(i) = bo(i)
+       ENDDO
+#ifdef SHORTWAVE_HEATING
+      ENDIF
+#endif /* SHORTWAVE_HEATING */
 
 #ifdef ALLOW_SALT_PLUME
       IF ( useSALT_PLUME ) THEN
