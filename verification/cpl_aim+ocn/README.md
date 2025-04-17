@@ -33,7 +33,7 @@ To run primary setup, thermodynamic seaice only (no seaice dynamics):
 ```
 Step 2 above copies input files and directories, step 3 runs the coupled model.
 
-To run secondary test (with seaice dynamics as part of ocean component), using input parameter files in: input_cpl.icedyn, input_atm.icedyn, input_ocn.icedyn:
+To run secondary test (with seaice dynamics as part of ocean component), using input parameter files in: `input_cpl.icedyn`, `input_atm.icedyn`, `input_ocn.icedyn`:
 
 ```
   ../../tools/run_cpl_test 2 icedyn
@@ -49,7 +49,7 @@ and the secondary test, in the same directory:<br>
 
 #####Note:
 To check the results, the monitor output can be compared to the reference (in results/) using `run_cpl_test`, but this requires the additional comparison script `comp_res` and the program `cmpnum.f`. Both can be found in:
- [`http://wwwcvs.mitgcm.org/viewvc/MITgcm/MITgcm_contrib/jmc_script/`](http://wwwcvs.mitgcm.org/viewvc/MITgcm/MITgcm_contrib/jmc_script/); after compiling `cmpnum.f` (e.g. `gfortran -o cmpnum cmpnum.f`), moving `comp_res` to your path, and adjusting the path to `cmpnum` in `comp_res1, 
+ [`http://wwwcvs.mitgcm.org/viewvc/MITgcm/MITgcm_contrib/jmc_script/`](http://wwwcvs.mitgcm.org/viewvc/MITgcm/MITgcm_contrib/jmc_script/); after compiling `cmpnum.f` (e.g. `gfortran -o cmpnum cmpnum.f`), moving `comp_res` to your path, and adjusting the path to `cmpnum` in `comp_res`, 
 step 4 performs the comparison.<br>
 For primary set-up:
 
