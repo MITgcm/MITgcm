@@ -94,7 +94,7 @@ c     KPPdiffKzT  - KPP diffusion coefficient for temperature      (m^2/s)
 c     KPPdiffKzS  - KPP diffusion coefficient for salt and tracers (m^2/s)
 c     KPPghat     - Nonlocal transport coefficient                 (s/m^2)
 c     KPPhbl      - Boundary layer depth on "t-grid"                   (m)
-c     KPPfrac     - Fraction of short-wave flux penetrating mixing layer
+c     KPPfrac     - Fraction of short-wave flux heating the mixing layer
 c     KPPplumefrac- Fraction of saltplume (flux) penetrating mixing layer
 
 c--   KPP_CALC computes vertical viscosity and diffusivity for region
@@ -629,12 +629,14 @@ CADJ STORE KPPhbl = comlev1_kpp, key = ikey
 #endif /* ALLOW_AUTODIFF_TAMC */
 cph)
 
+#ifdef SHORTWAVE_HEATING
+      IF ( selectPenetratingSW .GE. 1 ) THEN
 #ifdef KPP_USE_SWFRAC3D
 C     Determine the fraction of solar shortwave flux penetrating to the
 C     bottom of the mixed layer.
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
-        KPPfrac(i,j,bi,bj) = SWFrac3D(i,j,kbl(i,j),bi,bj)
+        KPPfrac(i,j,bi,bj) = 1. _d 0 - SWFrac3D(i,j,kbl(i,j),bi,bj)
        ENDDO
       ENDDO
 #else
@@ -651,10 +653,12 @@ C     the bottom of the mixing layer.
      I     myTime, myIter, myThid )
       DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-            KPPfrac(i,j,bi,bj) = worka(i,j)
+            KPPfrac(i,j,bi,bj) = 1. _d 0 - worka(i,j)
          ENDDO
       ENDDO
 #endif /* KPP_USE_SWFRAC3D */
+      ENDIF
+#endif /* SHORTWAVE_HEATING */
 
 #ifdef ALLOW_SALT_PLUME
 C     Compute fraction of saltplume (flux) penetrating to
