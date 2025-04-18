@@ -1,6 +1,17 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - no "addMass" contribution to initial (iter=0) vertical velocity ;
+  - with selectAddFluid=1, fix missing implDiv2DFlow factor in "addMass"
+    contribution to solver RHS ;
+  - add a STOP if implDiv2DFlow < 1 with exactConserv=F, (was not right with
+    useRealFreshWaterFlux=T or selectAddFluid=1) and remove untested pieces
+    of code dealing with this case ;
+  - when using cg2d/cg3dTargetResWunit, add missing implDiv2DFlow factor to
+    solver tolerance setting (cg2d/cg3dTolerance) ;
+  - upgrade "global_ocean.cs32x15.viscA4" exp. to test selectAddFluid=1
+    with implDiv2DFlow=1/2 ; also update "short_surf_wave" exp. output.
 o tools/genmake2:
   - with Tapenade, remove list NON_AD_F77_SRC_FILES from Makefile (not used),
     remove processing of "dontCompile", "keepOriginal" and "cb2mFiles" lists ;
