@@ -94,7 +94,7 @@ c     KPPdiffKzT  - KPP diffusion coefficient for temperature      (m^2/s)
 c     KPPdiffKzS  - KPP diffusion coefficient for salt and tracers (m^2/s)
 c     KPPghat     - Nonlocal transport coefficient                 (s/m^2)
 c     KPPhbl      - Boundary layer depth on "t-grid"                   (m)
-c     KPPfrac     - Fraction of short-wave flux penetrating mixing layer
+c     KPPfrac     - Fraction of short-wave flux heating the mixing layer
 c     KPPplumefrac- Fraction of saltplume (flux) penetrating mixing layer
 
 c--   KPP_CALC computes vertical viscosity and diffusivity for region
@@ -172,7 +172,7 @@ c     vddiff (nx,ny,Nrp2,2)- vert. diff. on next row for salt&tracers (m^2/s)
 c     vddiff (nx,ny,Nrp2,3)- vert. diff. on next row for temperature  (m^2/s)
 c     ghat   (nx,ny,Nr)    - nonlocal transport coefficient           (s/m^2)
 c     hbl    (nx,ny)       - mixing layer depth                           (m)
-c     kmtj   (nx,ny)       - maximum number of wet levels in each column
+c     kbl    (nx,ny)       - k-cell index of mixing layer depth
       INTEGER work1 ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy            )
       _RL worka ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
       _RL work2 ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
@@ -195,6 +195,7 @@ c     kmtj   (nx,ny)       - maximum number of wet levels in each column
       _RL vddiff( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, 0:Nrp1, mdiff )
       _RL ghat  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr            )
       _RL hbl   ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
+      INTEGER kbl(1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
 cph(
       _RL TTALPHA( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
       _RL SSBETA ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
@@ -552,12 +553,18 @@ C     and salt are not passed to kppmix and are thus not available there.
 #endif /* SALT_PLUME_SPLIT_BASIN */
 #endif /* ALLOW_SALT_PLUME */
      I       dbloc, Ritop, work2,
+#ifdef KPP_USE_SWFRAC3D
+     I       SWFRac3D  (1-OLx,1-OLy,1,bi,bj),
+#endif
      I       KPPdiffKzS(1-OLx,1-OLy,1,bi,bj),
      I       KPPdiffKzT(1-OLx,1-OLy,1,bi,bj),
      I       ikey,
      O       vddiff,
      U       ghat,
      O       hbl,
+#ifdef KPP_USE_SWFRAC3D
+     O       kbl,
+#endif
      I       bi, bj, myTime, myIter, myThid )
 
 c-----------------------------------------------------------------------
@@ -622,6 +629,17 @@ CADJ STORE KPPhbl = comlev1_kpp, key = ikey
 #endif /* ALLOW_AUTODIFF_TAMC */
 cph)
 
+#ifdef SHORTWAVE_HEATING
+      IF ( selectPenetratingSW .GE. 1 ) THEN
+#ifdef KPP_USE_SWFRAC3D
+C     Determine the fraction of solar shortwave flux penetrating to the
+C     bottom of the mixed layer.
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+        KPPfrac(i,j,bi,bj) = 1. _d 0 - SWFrac3D(i,j,kbl(i,j),bi,bj)
+       ENDDO
+      ENDDO
+#else
 C     Compute fraction of solar short-wave flux penetrating to
 C     the bottom of the mixing layer.
       DO j=1-OLy,sNy+OLy
@@ -635,9 +653,12 @@ C     the bottom of the mixing layer.
      I     myTime, myIter, myThid )
       DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-            KPPfrac(i,j,bi,bj) = worka(i,j)
+            KPPfrac(i,j,bi,bj) = 1. _d 0 - worka(i,j)
          ENDDO
       ENDDO
+#endif /* KPP_USE_SWFRAC3D */
+      ENDIF
+#endif /* SHORTWAVE_HEATING */
 
 #ifdef ALLOW_SALT_PLUME
 C     Compute fraction of saltplume (flux) penetrating to

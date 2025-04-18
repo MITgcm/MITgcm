@@ -35,11 +35,17 @@ c***********************************************************************
 #endif /* SALT_PLUME_SPLIT_BASIN */
 #endif /* ALLOW_SALT_PLUME */
      I       dbloc, Ritop, coriol,
+#ifdef KPP_USE_SWFRAC3D
+     I       swatt,
+#endif
      I       diffusKzS, diffusKzT,
      I       ikey,
      O       diffus,
      U       ghat,
      O       hbl,
+#ifdef KPP_USE_SWFRAC3D
+     O       kbl,
+#endif
      I       bi, bj, myTime, myIter, myThid )
 
 c-----------------------------------------------------------------------
@@ -86,8 +92,11 @@ c                          stored in ghat to save space
 c     Ritop  (imt,Nr)  - numerator of bulk Richardson Number
 c                          (zref-z) * delta buoyancy w.r.t. surface   ((m/s)^2)
 c     coriol (imt)     - Coriolis parameter                               (1/s)
+c     swatt  (imt,Nr+1)- fraction of SW radiation entering kth-cell from above
 c     diffusKzS(imt,Nr)- background vertical diffusivity for scalars    (m^2/s)
 c     diffusKzT(imt,Nr)- background vertical diffusivity for theta      (m^2/s)
+c     hbl    (imt)     - mixing layer depth                                 (m)
+c     kbl    (imt)     - index of first grid level below hbl
 c     note: there is a conversion from 2-D to 1-D for input output variables,
 c           e.g., hbl(sNx,sNy) -> hbl(imt),
 c           where hbl(i,j) -> hbl((j-1)*sNx+i)
@@ -96,6 +105,7 @@ c           where hbl(i,j) -> hbl((j-1)*sNx+i)
       INTEGER myIter
       INTEGER myThid
       INTEGER kmtj (imt   )
+      INTEGER kbl  (imt   )
       _RL shsq     (imt,Nr)
       _RL dvsq     (imt,Nr)
       _RL ustar    (imt   )
@@ -112,6 +122,9 @@ c           where hbl(i,j) -> hbl((j-1)*sNx+i)
       _RL dbloc    (imt,Nr)
       _RL Ritop    (imt,Nr)
       _RL coriol   (imt   )
+#ifdef KPP_USE_SWFRAC3D
+      _RL swatt    (imt,Nr+1)
+#endif
       _RS msk      (imt   )
       _RL diffusKzS(imt,Nr)
       _RL diffusKzT(imt,Nr)
@@ -132,7 +145,6 @@ c     hbl    (imt)    - mixing layer depth                                  (m)
 #ifdef ALLOW_KPP
 
 c local
-c     kbl    (imt         ) - index of first grid level below hbl
 c     bfsfc  (imt         ) - surface buoyancy forcing                (m^2/s^3)
 c     casea  (imt         ) - 1 in case A; 0 in case B
 c     stable (imt         ) - 1 in stable forcing; 0 if unstable
@@ -141,7 +153,6 @@ c     blmc   (imt,Nr,mdiff) - boundary layer mixing coefficients
 c     sigma  (imt         ) - normalized depth (d / hbl)
 c     Rib    (imt,Nr      ) - bulk Richardson number
 
-      INTEGER kbl(imt         )
       _RL bfsfc  (imt         )
       _RL casea  (imt         )
       _RL stable (imt         )
@@ -212,6 +223,9 @@ c-----------------------------------------------------------------------
 #endif /* SALT_PLUME_SPLIT_BASIN */
 #endif /* ALLOW_SALT_PLUME */
      I       coriol,
+#ifdef KPP_USE_SWFRAC3D
+     I       swatt,
+#endif
      I       ikey,
      O       hbl, bfsfc, stable, casea, kbl, Rib, sigma,
      I       bi, bj, myTime, myIter, myThid )
@@ -300,6 +314,9 @@ c*************************************************************************
 #endif /* SALT_PLUME_SPLIT_BASIN */
 #endif /* ALLOW_SALT_PLUME */
      I       coriol,
+#ifdef KPP_USE_SWFRAC3D
+     I       swatt,
+#endif
      I       ikey,
      O       hbl, bfsfc, stable, casea, kbl, Rib, sigma,
      I       bi, bj, myTime, myIter, myThid )
@@ -364,6 +381,9 @@ c coriol    : Coriolis parameter                        (1/s)
       _RL bo      (imt)
       _RL bosol   (imt)
       _RL coriol  (imt)
+#ifdef KPP_USE_SWFRAC3D
+      _RL swatt   (imt,Nr+1)
+#endif
       INTEGER ikey
 #ifdef ALLOW_SALT_PLUME
       _RL boplume (imt,Nrp1)
@@ -453,6 +473,13 @@ c     initialize hbl and kbl to bottomed out values
 
 c     compute bfsfc = sw fraction at hbf * zgrid
 
+#ifdef SHORTWAVE_HEATING
+        IF ( selectPenetratingSW .GE. 1 ) THEN
+#ifdef KPP_USE_SWFRAC3D
+         DO i = 1, imt
+            worka(i) = 0.5*( swatt(i,kl) + swatt(i,kl-1) )
+         ENDDO
+#else
          DO i = 1, imt
             worka(i) = zgrid(kl)
          ENDDO
@@ -466,18 +493,21 @@ CADJ store worka = comlev1_kpp_k, key = kkey, kind=isbyte
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ store worka = comlev1_kpp_k, key = kkey, kind=isbyte
 #endif
-
-         DO i = 1, imt
-
-c     use caseA as temporary array
-
-            casea(i) = -zgrid(kl)
+#endif /* KPP_USE_SWFRAC3D */
 
 c     compute bfsfc= Bo + radiative contribution down to hbf * hbl
-
+         DO i = 1, imt
             bfsfc(i) = bo(i) + bosol(i)*(1. - worka(i))
-
          ENDDO
+        ELSE
+#endif /* SHORTWAVE_HEATING */
+         DO i = 1, imt
+            bfsfc(i) = bo(i)
+         ENDDO
+#ifdef SHORTWAVE_HEATING
+        ENDIF
+#endif /* SHORTWAVE_HEATING */
+
 #ifdef ALLOW_SALT_PLUME
 c     compute bfsfc = plume fraction at hbf * zgrid
          IF ( useSALT_PLUME ) THEN
@@ -521,6 +551,8 @@ c     k level associated with this hbl, then sum up all SPforc[T,S]
          DO i = 1, imt
             stable(i) = p5 + sign(p5,bfsfc(i))
             sigma(i) = stable(i) + (1. - stable(i)) * epsilon
+c     use caseA as temporary array
+            casea(i) = -zgrid(kl)
          ENDDO
 
 c-----------------------------------------------------------------------
@@ -627,14 +659,21 @@ c-----------------------------------------------------------------------
 c     find stability and buoyancy forcing for boundary layer
 c-----------------------------------------------------------------------
 
-      DO i = 1, imt
+#ifdef SHORTWAVE_HEATING
+      IF ( selectPenetratingSW .GE. 1 ) THEN
+#ifdef KPP_USE_SWFRAC3D
+       DO i = 1, imt
+         bfsfc(i)  = bo(i) + bosol(i) * (1. - swatt(i,kbl(i)))
+       ENDDO
+#else
+       DO i = 1, imt
          worka(i) = hbl(i)
-      ENDDO
+       ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ store worka = comlev1_kpp, key=ikey, kind=isbyte,
 CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 #endif
-      CALL SWFRAC(
+       CALL SWFRAC(
      I       imt, minusone,
      U       worka,
      I       myTime, myIter, myThid )
@@ -643,9 +682,18 @@ CADJ store worka = comlev1_kpp, key=ikey, kind=isbyte,
 CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 #endif
 
-      DO i = 1, imt
+       DO i = 1, imt
          bfsfc(i)  = bo(i) + bosol(i) * (1. - worka(i))
-      ENDDO
+       ENDDO
+#endif /* KPP_USE_SWFRAC3D */
+      ELSE
+#endif /* SHORTWAVE_HEATING */
+       DO i = 1, imt
+         bfsfc(i) = bo(i)
+       ENDDO
+#ifdef SHORTWAVE_HEATING
+      ENDIF
+#endif /* SHORTWAVE_HEATING */
 
 #ifdef ALLOW_SALT_PLUME
 # ifdef ALLOW_AUTODIFF_TAMC
@@ -748,14 +796,21 @@ c-----------------------------------------------------------------------
 c      find stability and buoyancy forcing for final hbl values
 c-----------------------------------------------------------------------
 
-      DO i = 1, imt
+#ifdef SHORTWAVE_HEATING
+      IF ( selectPenetratingSW .GE. 1 ) THEN
+#ifdef KPP_USE_SWFRAC3D
+       DO i = 1, imt
+         bfsfc(i)  = bo(i) + bosol(i) * (1. - swatt(i,kbl(i)))
+       ENDDO
+#else
+       DO i = 1, imt
          worka(i) = hbl(i)
-      ENDDO
+       ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ store worka = comlev1_kpp, key=ikey, kind=isbyte,
 CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 #endif
-      CALL SWFRAC(
+       CALL SWFRAC(
      I     imt, minusone,
      U     worka,
      I     myTime, myIter, myThid )
@@ -764,9 +819,18 @@ CADJ store worka = comlev1_kpp, key=ikey, kind=isbyte,
 CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 #endif
 
-      DO i = 1, imt
+       DO i = 1, imt
          bfsfc(i) = bo(i) + bosol(i) * (1. - worka(i))
-      ENDDO
+       ENDDO
+#endif /* KPP_USE_SWFRAC3D */
+      ELSE
+#endif /* SHORTWAVE_HEATING */
+       DO i = 1, imt
+         bfsfc(i) = bo(i)
+       ENDDO
+#ifdef SHORTWAVE_HEATING
+      ENDIF
+#endif /* SHORTWAVE_HEATING */
 
 #ifdef ALLOW_SALT_PLUME
       IF ( useSALT_PLUME ) THEN
@@ -1079,7 +1143,7 @@ c  evaluate f of Brunt-Vaisala squared for convection, store in fcon
 
 c  evaluate f of smooth Ri for shear instability, store in fRi
 
-            Rig  = MAX ( diffus(i,ki,1), c0 )
+            Rig   = MAX ( diffus(i,ki,1), c0 )
             ratio = MIN ( Rig / Riinfty , c1 )
             fRi   = c1 - ratio * ratio
             fRi   = fRi * fRi * fRi

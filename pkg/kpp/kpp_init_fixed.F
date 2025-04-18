@@ -105,7 +105,7 @@ C       Define grid types for KPP variables
         CALL MNC_CW_ADD_VATTR_TEXT('KPPFRAC','units','dimless',
      &       myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('KPPFRAC','long_name',
-     &       'KPP_short-wave_fraction_penetrating_mixing_layer',
+     &       'KPP_short-wave_fraction_heating_the_mixing_layer',
      &       myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('KPPFRAC',
      &       'coordinates','XC YC iter', myThid)

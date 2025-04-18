@@ -144,13 +144,6 @@ C     KPP needs implicit vertical diffusion and viscosity
          STOP 'ABNORMAL END: S/R KPP_CHECK'
       ENDIF
 
-C     Shortwave heating should be defined with KPP
-#ifndef SHORTWAVE_HEATING
-      WRITE(msgBuf,'(A)') 'KPP needs CPP flag SHORTWAVE_HEATING enabled'
-      CALL PRINT_ERROR( msgBuf , myThid )
-      STOP 'ABNORMAL END: S/R KPP_CHECK'
-#endif /* SHORTWAVE_HEATING */
-
 C     Check that overlap region is adequate.
 C     When horizontal smoothing is turned on,
 C     KPP_CALC computes vertical viscosity and diffusivity for region

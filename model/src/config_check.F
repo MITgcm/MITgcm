@@ -448,6 +448,18 @@ C     o Need to use S/R APPLY_FORCING_U,V to get Tidal forcing
       ENDIF
 #endif
 
+#ifndef SHORTWAVE_HEATING
+      IF ( selectPenetratingSW.GT.0 ) THEN
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: selectPenetratingSW>0',
+     &  ' but SHORTWAVE_HEATING code is not compiled.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: Re-compile with:',
+     &   ' "#define SHORTWAVE_HEATING" (CPP_OPTIONS.h)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+#endif
+
 #ifdef ALLOW_BALANCE_FLUXES
       IF ( selectBalanceEmPmR.LT.0 .OR. selectBalanceEmPmR.GT.2 ) THEN
         WRITE(msgBuf,'(2A,I6,A)') 'CONFIG_CHECK: ',
