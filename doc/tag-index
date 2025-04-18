@@ -1,6 +1,13 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools/genmake2:
+  - with Tapenade, remove list NON_AD_F77_SRC_FILES from Makefile (not used),
+    remove processing of "dontCompile", "keepOriginal" and "cb2mFiles" lists ;
+  - otherwise, in Makefile, move NON_AD_F77_SRC_FILES and NON_AD_F90_SRC_FILES
+    lists after AD_FILES and AD_F90FILES ;
+  - simplify (remove intermediate targets) and improve the "-ncad" Makefile
+    to ends cleanly when "staf" command fails.
 o utils:
   - improve gluemnc description (usage, dependencies, and example).
 o tools:
