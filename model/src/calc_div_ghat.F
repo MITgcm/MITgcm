@@ -89,54 +89,15 @@ C     Calculate vertical face areas
          ENDDO
         ENDDO
 
-        IF ( implicDiv2DFlow.EQ.oneRL ) THEN
-C     Fully Implicit treatment of the Barotropic Flow Divergence
-         DO j=1,sNy+1
-          DO i=1,sNx+1
-           xTrans(i,j) = xTrans(i,j)*gU(i,j,k,bi,bj) / deltaTMom
-           yTrans(i,j) = yTrans(i,j)*gV(i,j,k,bi,bj) / deltaTMom
-          ENDDO
-         ENDDO
-        ELSEIF ( exactConserv ) THEN
-c       ELSEIF (nonlinFreeSurf.GT.0) THEN
 C     Implicit treatment of the Barotropic Flow Divergence
-         DO j=1,sNy+1
-          DO i=1,sNx+1
-           xTrans(i,j) = implicDiv2DFlow
-     &                  *xTrans(i,j)*gU(i,j,k,bi,bj) / deltaTMom
-           yTrans(i,j) = implicDiv2DFlow
-     &                  *yTrans(i,j)*gV(i,j,k,bi,bj) / deltaTMom
-          ENDDO
+        DO j=1,sNy+1
+         DO i=1,sNx+1
+          xTrans(i,j) = implicDiv2DFlow
+     &                 *xTrans(i,j)*gU(i,j,k,bi,bj) / deltaTMom
+          yTrans(i,j) = implicDiv2DFlow
+     &                 *yTrans(i,j)*gV(i,j,k,bi,bj) / deltaTMom
          ENDDO
-        ELSE
-C     Explicit+Implicit part of the Barotropic Flow Divergence
-C      => Filtering of uVel,vVel is necessary
-C-- Now the filter are applied in the_correction_step().
-C   We have left this code here to indicate where the filters used to be
-C   in the algorithm before JMC moved them to after the pressure solver.
-c#ifdef ALLOW_ZONAL_FILT
-c        IF (zonal_filt_lat.LT.90.) THEN
-c          CALL ZONAL_FILTER(
-c    U                     uVel( 1-OLx,1-OLy,k,bi,bj),
-c    I                     hFacW(1-OLx,1-OLy,k,bi,bj),
-c    I                     0, sNy+1, 1, bi, bj, 1, myThid )
-c          CALL ZONAL_FILTER(
-c    U                     vVel( 1-OLx,1-OLy,k,bi,bj),
-c    I                     hFacS(1-OLx,1-OLy,k,bi,bj),
-c    I                     0, sNy+1, 1, bi, bj, 2, myThid )
-c        ENDIF
-c#endif
-         DO j=1,sNy+1
-          DO i=1,sNx+1
-           xTrans(i,j) = ( implicDiv2DFlow * gU(i,j,k,bi,bj)
-     &        + (1. _d 0-implicDiv2DFlow)* uVel(i,j,k,bi,bj)
-     &                   ) * xTrans(i,j) / deltaTMom
-           yTrans(i,j) = ( implicDiv2DFlow * gV(i,j,k,bi,bj)
-     &        + (1. _d 0-implicDiv2DFlow)* vVel(i,j,k,bi,bj)
-     &                   ) * yTrans(i,j) / deltaTMom
-          ENDDO
-         ENDDO
-        ENDIF
+        ENDDO
 
 #else /* PRESERVE_C69C_OUTPUT */
 
@@ -144,27 +105,15 @@ C--   Starts loop on level index k
       DO k=1,Nr
 
 C     Calculate horizontal transport (divided by deltaT ):
-        IF ( exactConserv .OR. implicDiv2DFlow.EQ.oneRL ) THEN
-         locFac = deepFacC(k)*drF(k)*rhoFacC(k)
-         DO j=1,sNy+1
-          DO i=1,sNx+1
+        locFac = deepFacC(k)*drF(k)*rhoFacC(k)
+        DO j=1,sNy+1
+         DO i=1,sNx+1
            xTrans(i,j) = _dyG(i,j,bi,bj)*_hFacW(i,j,k,bi,bj)*locFac
      &                  *gU(i,j,k,bi,bj)
            yTrans(i,j) = _dxG(i,j,bi,bj)*_hFacS(i,j,k,bi,bj)*locFac
      &                  *gV(i,j,k,bi,bj)
-          ENDDO
          ENDDO
-        ELSE
-         locFac = deepFacC(k)*drF(k)*rhoFacC(k)
-         DO j=1,sNy+1
-          DO i=1,sNx+1
-           xTrans(i,j) = _dyG(i,j,bi,bj)*_hFacW(i,j,k,bi,bj)*locFac
-     &                 *( gU(i,j,k,bi,bj) + tmpFac*uVel(i,j,k,bi,bj) )
-           yTrans(i,j) = _dxG(i,j,bi,bj)*_hFacS(i,j,k,bi,bj)*locFac
-     &                 *( gV(i,j,k,bi,bj) + tmpFac*vVel(i,j,k,bi,bj) )
-          ENDDO
-         ENDDO
-        ENDIF
+        ENDDO
 
 #endif /* PRESERVE_C69C_OUTPUT */
 
