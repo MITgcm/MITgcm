@@ -374,8 +374,13 @@ if test $kpr = 3 ; then
 fi
 
 if test $kpr = 4 ; then
- CompRes="$HOME/bin/comp_res"
- if test -x $CompRes ; then
+ CompRes="comp_res"
+ which $CompRes > /dev/null 2>&1 ; retVal=$?
+ if [ $retVal -ne 0 ] ; then
+   CompRes="$HOME/bin/$CompRes"
+   if test -x $CompRes ; then retVal=0 ; fi
+ fi
+ if [ $retVal -eq 0 ] ; then
   if test "x$sfx" = x ; then rfx='0000' ; else rfx=$sfx ; fi
 
   if test -f rank_$rnkO/STDOUT.0000 ; then
@@ -419,7 +424,7 @@ if test $kpr = 4 ; then
   else echo "No Atmos output file in rank_$rnkA" ; fi
 
   else
-    echo "No file '$CompRes' to run ==> skip step: $kpr "
+    echo "No 'comp_res' in PATH nor here '$CompRes' to run ==> skip step: $kpr "
   fi
 fi
 
