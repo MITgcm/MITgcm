@@ -3468,9 +3468,9 @@ adtaf: ad_taf_output.$FS
 
 ad_exe_target:
 	@echo Update AD_CONFIG.h and make \$(EXE_ADJ)
-	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "Adjoint version" -bAD_CONFIG_H -DALLOW_ADJOINT_RUN -UALLOW_TANGENTLINEAR_RUN > ad_config.template
-	@cmp ad_config.template AD_CONFIG.h || cat ad_config.template > AD_CONFIG.h
-	@-rm -f ad_config.template
+	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "Adjoint version" -bAD_CONFIG_H -DALLOW_ADJOINT_RUN -UALLOW_TANGENTLINEAR_RUN > ad_config.template0
+	@cmp ad_config.template0 AD_CONFIG.h || cat ad_config.template0 > AD_CONFIG.h
+	@-rm -f ad_config.template0
 	\$(MAKE) -f \$(MAKEFILE) \$(EXE_ADJ)
 
 EOF
@@ -3478,9 +3478,9 @@ EOF
 if test $CAT_SRC_FOR_TAF = 1 ; then
 cat >>$MAKEFILE <<EOF
 ad_input_code.$FS: \$(AD_FILES) \$(AD_FLOW_FILES)
-	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "Adjoint version" -bAD_CONFIG_H -DALLOW_ADJOINT_RUN -UALLOW_TANGENTLINEAR_RUN > ad_config.template
-	cmp ad_config.template AD_CONFIG.h || cat ad_config.template > AD_CONFIG.h
-	@-rm -f ad_config.template
+	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "Adjoint version" -bAD_CONFIG_H -DALLOW_ADJOINT_RUN -UALLOW_TANGENTLINEAR_RUN > ad_config.template1
+	cmp ad_config.template1 AD_CONFIG.h || cat ad_config.template1 > AD_CONFIG.h
+	@-rm -f ad_config.template1
 	@\$(MAKE) -f \$(MAKEFILE) \$(F77_PP_SRC_FILES)
 	cat \$(AD_FLOW_FILES) \$(AD_FILES) | sed -f \$(TOOLSDIR)/remove_comments_sed > ad_input_code.$FS
 
@@ -3504,9 +3504,9 @@ EOF
 else
 cat >>$MAKEFILE <<EOF
 ad_inpF90_code.$FS90: \$(AD_F90FILES) \$(AD_FLOW_FILES)
-	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "Adjoint version" -bAD_CONFIG_H -DALLOW_ADJOINT_RUN -UALLOW_TANGENTLINEAR_RUN > ad_config.template
-	cmp ad_config.template AD_CONFIG.h || cat ad_config.template > AD_CONFIG.h
-	@-rm -f ad_config.template
+	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "Adjoint version" -bAD_CONFIG_H -DALLOW_ADJOINT_RUN -UALLOW_TANGENTLINEAR_RUN > ad_config.template2
+	cmp ad_config.template2 AD_CONFIG.h || cat ad_config.template2 > AD_CONFIG.h
+	@-rm -f ad_config.template2
 	@\$(MAKE) -f \$(MAKEFILE) \$(F90_PP_SRC_FILES)
 	cat \$(AD_F90FILES) > ad_inpF90_code.$FS90
 
@@ -3536,9 +3536,9 @@ cat >>$MAKEFILE <<EOF
 adobjfiles: \$(AD_F90FILES:.$FS90=_ad.o) \$(AD_FILES:.$FS=_ad.o)
 
 ad_taf_output.$FS: \$(AD_FLOW_FILES) \$(AD_F90FILES) \$(AD_FILES)
-	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "Adjoint version" -bAD_CONFIG_H -DALLOW_ADJOINT_RUN -UALLOW_TANGENTLINEAR_RUN > ad_config.template
-	cmp ad_config.template AD_CONFIG.h || cat ad_config.template > AD_CONFIG.h
-	@-rm -f ad_config.template
+	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "Adjoint version" -bAD_CONFIG_H -DALLOW_ADJOINT_RUN -UALLOW_TANGENTLINEAR_RUN > ad_config.template1
+	cmp ad_config.template1 AD_CONFIG.h || cat ad_config.template1 > AD_CONFIG.h
+	@-rm -f ad_config.template1
 	@\$(MAKE) -f \$(MAKEFILE) \$(F90_PP_SRC_FILES) \$(F77_PP_SRC_FILES)
 	sed -i.bak -f \$(TOOLSDIR)/remove_comments_sed \$(AD_FILES)
 	@-rm -f \$(AD_F90FILES:.$FS90=_ad.$FS90) \$(AD_FILES:.$FS=_ad.$FS) \$(AD_FILES:.$FS=.$FS.bak); echo ''
@@ -3566,9 +3566,9 @@ ftltaf: ftl_taf_output.$FS
 
 ftl_exe_target:
 	@echo Update AD_CONFIG.h and make \$(EXE_TLM)
-	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "TangLin version" -bAD_CONFIG_H -UALLOW_ADJOINT_RUN -DALLOW_TANGENTLINEAR_RUN > ad_config.template
-	@cmp ad_config.template AD_CONFIG.h || cat ad_config.template > AD_CONFIG.h
-	@-rm -f ad_config.template
+	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "TangLin version" -bAD_CONFIG_H -UALLOW_ADJOINT_RUN -DALLOW_TANGENTLINEAR_RUN > ad_config.template0
+	@cmp ad_config.template0 AD_CONFIG.h || cat ad_config.template0 > AD_CONFIG.h
+	@-rm -f ad_config.template0
 	\$(MAKE) -f \$(MAKEFILE) \$(EXE_TLM)
 
 EOF
@@ -3576,9 +3576,9 @@ EOF
 if test $CAT_SRC_FOR_TAF = 1 ; then
 cat >>$MAKEFILE <<EOF
 ftl_input_code.$FS: \$(AD_FILES) \$(AD_FLOW_FILES)
-	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "TangLin version" -bAD_CONFIG_H -UALLOW_ADJOINT_RUN -DALLOW_TANGENTLINEAR_RUN > ad_config.template
-	cmp ad_config.template AD_CONFIG.h || cat ad_config.template > AD_CONFIG.h
-	@-rm -f ad_config.template
+	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "TangLin version" -bAD_CONFIG_H -UALLOW_ADJOINT_RUN -DALLOW_TANGENTLINEAR_RUN > ad_config.template1
+	cmp ad_config.template1 AD_CONFIG.h || cat ad_config.template1 > AD_CONFIG.h
+	@-rm -f ad_config.template1
 	@\$(MAKE) -f \$(MAKEFILE) \$(F77_PP_SRC_FILES)
 	cat \$(AD_FLOW_FILES) \$(AD_FILES) | sed -f \$(TOOLSDIR)/remove_comments_sed > ftl_input_code.$FS
 
@@ -3602,9 +3602,9 @@ EOF
 else
 cat >>$MAKEFILE <<EOF
 ftl_inpF90_code.$FS90: \$(AD_F90FILES) \$(AD_FLOW_FILES)
-	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "TangLin version" -bAD_CONFIG_H -UALLOW_ADJOINT_RUN -DALLOW_TANGENTLINEAR_RUN > ad_config.template
-	cmp ad_config.template AD_CONFIG.h || cat ad_config.template > AD_CONFIG.h
-	@-rm -f ad_config.template
+	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "TangLin version" -bAD_CONFIG_H -UALLOW_ADJOINT_RUN -DALLOW_TANGENTLINEAR_RUN > ad_config.template2
+	cmp ad_config.template2 AD_CONFIG.h || cat ad_config.template2 > AD_CONFIG.h
+	@-rm -f ad_config.template2
 	@\$(MAKE) -f \$(MAKEFILE) \$(F90_PP_SRC_FILES)
 	cat \$(AD_F90FILES) > ftl_inpF90_code.$FS90
 
@@ -3634,9 +3634,9 @@ cat >>$MAKEFILE <<EOF
 ftlobjfiles: \$(AD_F90FILES:.$FS90=_tl.o) \$(AD_FILES:.$FS=_tl.o)
 
 ftl_taf_output.$FS: \$(AD_FLOW_FILES) \$(AD_F90FILES) \$(AD_FILES)
-	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "TangLin version" -bAD_CONFIG_H -UALLOW_ADJOINT_RUN -DALLOW_TANGENTLINEAR_RUN > ad_config.template
-	cmp ad_config.template AD_CONFIG.h || cat ad_config.template > AD_CONFIG.h
-	@-rm -f ad_config.template
+	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "TangLin version" -bAD_CONFIG_H -UALLOW_ADJOINT_RUN -DALLOW_TANGENTLINEAR_RUN > ad_config.template1
+	cmp ad_config.template1 AD_CONFIG.h || cat ad_config.template1 > AD_CONFIG.h
+	@-rm -f ad_config.template1
 	@\$(MAKE) -f \$(MAKEFILE) \$(F90_PP_SRC_FILES) \$(F77_PP_SRC_FILES)
 	sed -i.bak -f \$(TOOLSDIR)/remove_comments_sed \$(AD_FILES)
 	@-rm -f \$(AD_F90FILES:.$FS90=_tl.$FS90) \$(AD_FILES:.$FS=_tl.$FS) \$(AD_FILES:.$FS=.$FS.bak); echo ''
