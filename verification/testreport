@@ -849,7 +849,7 @@ runmodel()
 	    #echo '' ; echo "  COMMAND='$COMMAND'"
 	    COMMAND=`echo $COMMAND | sed "s/ TR_NPROC/ $LOC_NPROC/"`
 	    if test "x$MPI_MFILE" != x ; then
-	      COMMAND=`echo $COMMAND | sed "s/ TR_MFILE / ..\/..\/$LOC_MFILE /"`
+	      COMMAND=`echo $COMMAND | sed "s/ TR_MFILE / ..\/$LOC_MFILE /"`
 	    fi
 	    #echo "  COMMAND='$COMMAND'"
 	fi
@@ -1411,7 +1411,7 @@ done
 if test $count = 1 ; then echo "" ; echo -n " ... " ; fi
 #echo 'TESTDIRS='${TESTDIRS}'<'
 
-LOC_MFILE='tr_mpi_mfile'
+LOC_MFILE='mpi_mfile.loc'
 RUNLOG="run.tr_log"
 if test "x$MPI" = x0 ; then
   OUTPUTFILE=$ref_outp
@@ -1677,17 +1677,17 @@ for dir in $TESTDIRS ; do
 	)
 	if test "x$MPI_MFILE" != x ; then
 	    #- create new MPI machine-file with the right number of Procs
-	    rm -f $LOC_MFILE
-	    cat $MPI_MFILE | sort | uniq | head -$LOC_NPROC > $LOC_MFILE
-	    nl=`wc -l $LOC_MFILE | awk '{print $1}'`
+	    rm -f $dir/$LOC_MFILE
+	    cat $MPI_MFILE | sort | uniq | head -$LOC_NPROC > $dir/$LOC_MFILE
+	    nl=`wc -l $dir/$LOC_MFILE | awk '{print $1}'`
 	    if [ $nl -lt $LOC_NPROC ] ; then
-		rm -f $LOC_MFILE
-		cat $MPI_MFILE | head -$LOC_NPROC > $LOC_MFILE
-		#sed -n "1,$LOC_NPROC p" $MPI_MFILE > $LOC_MFILE
+		rm -f $dir/$LOC_MFILE
+		cat $MPI_MFILE | head -$LOC_NPROC > $dir/$LOC_MFILE
+		#sed -n "1,$LOC_NPROC p" $MPI_MFILE > $dir/$LOC_MFILE
 	    fi
 	    if [ $verbose -gt 1 ]; then
 		nl=`wc -l $LOC_MFILE | awk '{print $1}'`
-		echo " new LOC_MFILE=$LOC_MFILE : $nl procs for LOC_NPROC=$LOC_NPROC"
+		echo " new LOC_MFILE=$dir/$LOC_MFILE : $nl procs for LOC_NPROC=$LOC_NPROC"
 	    fi
 	fi
 	if test "x$MULTI_THREAD" = "xt" ; then
@@ -1886,7 +1886,7 @@ for dir in $TESTDIRS ; do
 	makeclean $dir/$builddir \
 	    && run_clean $dir/$rundir
     fi
-    if test "x$MPI" != x0 -a "x$MPI_MFILE" != x ; then rm -f $LOC_MFILE ; fi
+    if test "x$MPI" != x0 -a "x$MPI_MFILE" != x ; then rm -f $dir/$LOC_MFILE ; fi
 
     echo "-------------------------------------------------------------------------------"
 
