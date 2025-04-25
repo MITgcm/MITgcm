@@ -17,6 +17,11 @@ and input parameter files in: `input_cpl`, `input_atm`, `input_ocn`.
 Requires the use of MPI; as default, use 1 proc for each component.
 
 ### Instructions:
+To help getting started with this coupled set-up, the bash script
+[../../tools/run_cpl_test](https://github.com/MITgcm/MITgcm/blob/master/tools/run_cpl_test)
+(a short option summary is displayed when run without argument)
+is provided and detailed instructions follow.
+
 To clean everything:
 ```
   ../../tools/run_cpl_test 0
@@ -41,7 +46,7 @@ input parameter files in: `input_cpl.icedyn`, `input_atm.icedyn`, `input_ocn.ice
   ../../tools/run_cpl_test 3
 ```
 
-Results are written in directories `rank_{0,1,2}`, for coupler, ocean and atmos 
+Results are written in directories `rank_{0,1,2}`, for coupler, ocean and atmos
 components, respectively.
 
 There is comparison output corresponding to the primary set-up in the directory:<br>
@@ -50,10 +55,10 @@ and the secondary test, in the same directory:<br>
 `results/atmSTDOUT.icedyn` & `results/ocnSTDOUT.icedyn`
 
 ##### Note:
-To check the results, the monitor output can be compared to the reference (in results/) 
-using `run_cpl_test`, but this requires the additional comparison script `comp_res` and 
+To check the results, the monitor output can be compared to the reference (in results/)
+using `run_cpl_test`, but this requires the additional comparison script `comp_res` and
 the program `cmpnum.f`. Both can be found in:
- [`http://wwwcvs.mitgcm.org/viewvc/MITgcm/MITgcm_contrib/jmc_script/`](http://wwwcvs.mitgcm.org/viewvc/MITgcm/MITgcm_contrib/jmc_script/), 
+ [`http://wwwcvs.mitgcm.org/viewvc/MITgcm/MITgcm_contrib/jmc_script/`](http://wwwcvs.mitgcm.org/viewvc/MITgcm/MITgcm_contrib/jmc_script/),
 see README there. Once in place, step 4 performs the output comparison:<br>
 For primary set-up:
 ```
