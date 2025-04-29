@@ -773,7 +773,8 @@ It is designed to accommodate datasets that are sparse, irregular, or non-local.
 OBSFIT performs grid-independent model-data comparisons, meaning that observations do not have to be on the same
 grid as the model or constrained to a fixed set of depth levels. This increases the efficiency of data
 assimilation for many datasets and allows compatibility with multi-grid state estimation. OBSFIT offers the
-capability of assimilating tomography data and high-resolution altimetry data (e.g., `SWOT <https://swot.jpl.nasa.gov>`_).
+capability of assimilating high-resolution altimetry data (e.g., `SWOT <https://swot.jpl.nasa.gov>`_), 
+high-frequency radar (HRF), and averaged data such as tomography or SST.
 
 Description
 ~~~~~~~~~~~
@@ -800,7 +801,7 @@ and the averaged/integrated values as *observations*.
 For example, consider observations of integrated sound speed along the acoustic ray path:
 in such case, one specifies multiple locations at which to sample the model, as we require model
 data at multiple locations to calculate the model-equivalent of a single observation. 
-Samples locations are used during the model run to extract model data (and save it to file). Then, sampled
+Sample locations are used during the model run to extract model data (and save it to file). Then, sampled
 values are combined at the end of the run to calculate the model-equivalent value. Observational values
 are only used at the end of the model run to calculate the cost, i.e., weighted misfits with model-equivalents. 
 
@@ -816,13 +817,15 @@ Sample types
 
 Each OBSFIT sample is assigned a type corresponding to the model variable that will be sampled.
 There are currently five types of variables implemented in the code: potential temperature, salinity,
-zonal velocity, meridional velocity, and sea surface height. Observations can be made of samples
+zonal velocity, meridional velocity, and sea surface height. Other variables can be added in 
+``obsfit_sampling.F``. Observations can be made of samples
 of different types; for example, one could compute the along-shore current speed (a combination of
-zonal and meridional velocities) or the water spiciness (a comnbination of temperature and salinity). 
+zonal and meridional velocities) or the water spiciness (a combination of temperature and salinity). 
+
 
 For sea surface height (SSH) observations, OBSFIT samples the model variable :varlink:`etaN`. Inputs should thus
-be the total SSH, not SSH anomalies. Because of arbitrary reference values for the dynamic topography,
-the mean offset between modeled and observed SSH is removed when the cost is calculated. 
+be the total dynamic height (SSH relative to the geoid), not SSH anomalies. Because of arbitrary reference 
+values for the dynamic topography, the mean offset between modeled and observed SSH is removed when the cost is calculated. 
 
 .. _obsfit_time: 
 
@@ -833,11 +836,12 @@ Each OBSFIT observation is assigned a start time and a duration.
 Observations with a specified positive duration are averaged in time, whereas a negative duration
 is used to indicate time integration, and instantaneous observations have duration=0
 (if no duration is provided, duration=0 is assumed). During each
-model time step which falls within the observation specified window, the model is sampled 
+model time step which falls within the specified observation window, the model is sampled 
 at each specified sample location.
 In other words, all samples inherit the time and duration from the corresponding observation.
 If observation time does not align exactly with model time steps, samples are taken from model data
-at the beginning of the time step in which the observation time falls.
+at the beginning of the time step in which the observation time falls (time interpolation is not 
+necessary as long as the model time step is relatively small).
 Sampled values are saved in tiled files. For non-zero specified duration, accumulated values
 are saved in the tiled files and the average is calculated at the end of the model run.
 
@@ -908,7 +912,32 @@ The following fields are optional:
 
 - sample_weight (weighting factor [default=1/obs_np])
 
-See make_obsfit_example.m for a matlab example
+
+If the grid is not longitude/latitude, i.e. for a generic grid case, additional fields are needed:
+
+- sample_point
+
+- sample_interp_XC11
+
+- sample_interp_YC11
+
+- sample_interp_XCNINJ
+
+- sample_interp_YCNINJ
+
+- sample_interp_i
+
+- sample_interp_j
+
+- sample_interp_k
+
+- sample_interp_frac
+
+
+
+See make_obsfit_example.m for a simple matlab example with a longitude-latitude grid. 
+A python toolbox, ObsPrep, for formatting ungridded datasets into objects readable by pkg/obsfit using xarray 
+is under development: https://github.com/ECCO-Hackweek/EH24-processors-llc/tree/main?tab=readme-ov-file. 
 
 In the simplest case, the number of samples per observation is 1; then obs_np = 1 (by default), sample_weight = 1 (by default), and sample_{type/lon/lat/depth} give the variable type/longitude/latitude/depth of the observation. If there are {N} observations, each field listed above is a vector of size {1xN}.
 
@@ -960,8 +989,6 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`obsfitDoNcOutput`        |     FALSE                    | boolean to generate tiled output file in netCDF format                  |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`obsfitDoGenGrid`         | TRUE (spherical grid, FALSE) | not sure we need this namelist parm                                     |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
 
 
 File ``data.obsfit`` must be present in the run folder. Here is an example:
@@ -1001,12 +1028,13 @@ A simple way to plot the observed values and model-equivalent values in matlab c
 
 ::
 
-    scatter(sample_lon, sample_lat, 30, obs_val);
-    scatter(sample_lon, sample_lat, 30, mod_val);
+    figure; scatter(sample_lon, sample_lat, 30, obs_val);
+    figure; scatter(sample_lon, sample_lat, 30, mod_val);
 
 Experiments and tutorials that use OBSFIT
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+/verification/global_oce_biogeo_bling/
 
 
 .. _sec:pkg:ctrl:

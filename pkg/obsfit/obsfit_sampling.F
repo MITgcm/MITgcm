@@ -4,10 +4,10 @@
 #endif
 
 CBOP
-C     !ROUTINE: OBSFIT_INTERP
+C     !ROUTINE: OBSFIT_SAMPLING
 
 C     !INTERFACE: 
-      SUBROUTINE OBSFIT_INTERP(
+      SUBROUTINE OBSFIT_SAMPLING(
      O                          modval_cur_out,
      I                          i_cur,
      I                          j_cur,
@@ -85,7 +85,7 @@ C     !FUNCTIONS:
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
 
-C Horizontal interpolation:
+C This is where sample types are assigned to model variables
       weighingSUM=0. _d 0
        DO q=1,NUM_INTERP_PTS_OBS
         IF (var_cur.EQ.1) THEN

@@ -97,7 +97,7 @@ C recorded value and add to it
      &          obsfit_dummy(num_file,bi,bj))
             ENDIF
 
-            CALL obsfit_interp(sample_modval,
+            CALL obsfit_sampling(sample_modval,
      &         sample_i,sample_j,sample_k,sample_frac,
      &         sample_type(num_file,sample_num,bi,bj),
      &         num_file,myTime,bi,bj,myThid)
