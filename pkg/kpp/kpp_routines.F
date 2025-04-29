@@ -35,7 +35,7 @@ c***********************************************************************
 #endif /* SALT_PLUME_SPLIT_BASIN */
 #endif /* ALLOW_SALT_PLUME */
      I       dbloc, Ritop, coriol,
-#ifdef KPP_USE_SWFRAC3D
+#ifdef SHORTWAVE_HEATING
      I       swatt,
 #endif
      I       diffusKzS, diffusKzT,
@@ -43,7 +43,7 @@ c***********************************************************************
      O       diffus,
      U       ghat,
      O       hbl,
-#ifdef KPP_USE_SWFRAC3D
+#ifdef SHORTWAVE_HEATING
      O       kbl,
 #endif
      I       bi, bj, myTime, myIter, myThid )
@@ -122,7 +122,7 @@ c           where hbl(i,j) -> hbl((j-1)*sNx+i)
       _RL dbloc    (imt,Nr)
       _RL Ritop    (imt,Nr)
       _RL coriol   (imt   )
-#ifdef KPP_USE_SWFRAC3D
+#ifdef SHORTWAVE_HEATING
       _RL swatt    (imt,Nr+1)
 #endif
       _RS msk      (imt   )
@@ -223,7 +223,7 @@ c-----------------------------------------------------------------------
 #endif /* SALT_PLUME_SPLIT_BASIN */
 #endif /* ALLOW_SALT_PLUME */
      I       coriol,
-#ifdef KPP_USE_SWFRAC3D
+#ifdef SHORTWAVE_HEATING
      I       swatt,
 #endif
      I       ikey,
@@ -314,7 +314,7 @@ c*************************************************************************
 #endif /* SALT_PLUME_SPLIT_BASIN */
 #endif /* ALLOW_SALT_PLUME */
      I       coriol,
-#ifdef KPP_USE_SWFRAC3D
+#ifdef SHORTWAVE_HEATING
      I       swatt,
 #endif
      I       ikey,
@@ -381,7 +381,7 @@ c coriol    : Coriolis parameter                        (1/s)
       _RL bo      (imt)
       _RL bosol   (imt)
       _RL coriol  (imt)
-#ifdef KPP_USE_SWFRAC3D
+#ifdef SHORTWAVE_HEATING
       _RL swatt   (imt,Nr+1)
 #endif
       INTEGER ikey
@@ -475,25 +475,34 @@ c     compute bfsfc = sw fraction at hbf * zgrid
 
 #ifdef SHORTWAVE_HEATING
         IF ( selectPenetratingSW .GE. 1 ) THEN
-#ifdef KPP_USE_SWFRAC3D
-         DO i = 1, imt
-            worka(i) = 0.5*( swatt(i,kl) + swatt(i,kl-1) )
-         ENDDO
-#else
-         DO i = 1, imt
-            worka(i) = zgrid(kl)
-         ENDDO
+         IF ( KPPuseSWfrac3D ) THEN
+C     worka is the value of swatt at cell centers kl
+C     swatt(kl) is defined at the upper interface
+          DO i = 1, imt
+           worka(i) = 0.5*( swatt(i,kl) + swatt(i,kl+1) )
+          ENDDO
+CMLC     far more accurate
+CML         IF ( kl .LT. Nr ) THEN
+CML          DO i = 1, imt
+CML           worka(i) = worka(i) - 0.128*( swatt(i,kl) + swatt(i,kl+1) )
+CML     &          +              0.128*( swatt(i,kl-1) + swatt(i,kl+2) )
+CML         ENDDO
+CML        ENDIF
+         ELSE
+          DO i = 1, imt
+           worka(i) = zgrid(kl)
+          ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ store worka = comlev1_kpp_k, key = kkey, kind=isbyte
 #endif
-         CALL SWFRAC(
+          CALL SWFRAC(
      I       imt, hbf,
      U       worka,
      I       myTime, myIter, myThid )
+         ENDIF
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ store worka = comlev1_kpp_k, key = kkey, kind=isbyte
 #endif
-#endif /* KPP_USE_SWFRAC3D */
 
 c     compute bfsfc= Bo + radiative contribution down to hbf * hbl
          DO i = 1, imt
@@ -661,31 +670,30 @@ c-----------------------------------------------------------------------
 
 #ifdef SHORTWAVE_HEATING
       IF ( selectPenetratingSW .GE. 1 ) THEN
-#ifdef KPP_USE_SWFRAC3D
-       DO i = 1, imt
-         bfsfc(i)  = bo(i) + bosol(i) * (1. - swatt(i,kbl(i)))
-       ENDDO
-#else
-       DO i = 1, imt
+       IF ( KPPuseSWfrac3D ) THEN
+        DO i = 1, imt
+         worka(i) = swatt(i,kbl(i))
+        ENDDO
+       ELSE
+        DO i = 1, imt
          worka(i) = hbl(i)
-       ENDDO
+        ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ store worka = comlev1_kpp, key=ikey, kind=isbyte,
 CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 #endif
-       CALL SWFRAC(
+        CALL SWFRAC(
      I       imt, minusone,
      U       worka,
      I       myTime, myIter, myThid )
+       ENDIF
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ store worka = comlev1_kpp, key=ikey, kind=isbyte,
 CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 #endif
-
        DO i = 1, imt
-         bfsfc(i)  = bo(i) + bosol(i) * (1. - worka(i))
+         bfsfc(i) = bo(i) + bosol(i) * (1. - worka(i))
        ENDDO
-#endif /* KPP_USE_SWFRAC3D */
       ELSE
 #endif /* SHORTWAVE_HEATING */
        DO i = 1, imt
@@ -798,22 +806,23 @@ c-----------------------------------------------------------------------
 
 #ifdef SHORTWAVE_HEATING
       IF ( selectPenetratingSW .GE. 1 ) THEN
-#ifdef KPP_USE_SWFRAC3D
-       DO i = 1, imt
-         bfsfc(i)  = bo(i) + bosol(i) * (1. - swatt(i,kbl(i)))
-       ENDDO
-#else
-       DO i = 1, imt
+       IF ( KPPuseSWfrac3D ) THEN
+        DO i = 1, imt
+         worka(i) = swatt(i,kbl(i))
+        ENDDO
+       ELSE
+        DO i = 1, imt
          worka(i) = hbl(i)
-       ENDDO
+        ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ store worka = comlev1_kpp, key=ikey, kind=isbyte,
 CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 #endif
-       CALL SWFRAC(
+        CALL SWFRAC(
      I     imt, minusone,
      U     worka,
      I     myTime, myIter, myThid )
+       ENDIF
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ store worka = comlev1_kpp, key=ikey, kind=isbyte,
 CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
@@ -822,7 +831,6 @@ CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
        DO i = 1, imt
          bfsfc(i) = bo(i) + bosol(i) * (1. - worka(i))
        ENDDO
-#endif /* KPP_USE_SWFRAC3D */
       ELSE
 #endif /* SHORTWAVE_HEATING */
        DO i = 1, imt

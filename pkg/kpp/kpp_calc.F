@@ -553,7 +553,7 @@ C     and salt are not passed to kppmix and are thus not available there.
 #endif /* SALT_PLUME_SPLIT_BASIN */
 #endif /* ALLOW_SALT_PLUME */
      I       dbloc, Ritop, work2,
-#ifdef KPP_USE_SWFRAC3D
+#ifdef SHORTWAVE_HEATING
      I       SWFRac3D  (1-OLx,1-OLy,1,bi,bj),
 #endif
      I       KPPdiffKzS(1-OLx,1-OLy,1,bi,bj),
@@ -562,7 +562,7 @@ C     and salt are not passed to kppmix and are thus not available there.
      O       vddiff,
      U       ghat,
      O       hbl,
-#ifdef KPP_USE_SWFRAC3D
+#ifdef SHORTWAVE_HEATING
      O       kbl,
 #endif
      I       bi, bj, myTime, myIter, myThid )
@@ -631,32 +631,32 @@ cph)
 
 #ifdef SHORTWAVE_HEATING
       IF ( selectPenetratingSW .GE. 1 ) THEN
-#ifdef KPP_USE_SWFRAC3D
+       IF ( KPPuseSWfrac3D ) THEN
 C     Determine the fraction of solar shortwave flux penetrating to the
 C     bottom of the mixed layer.
-      DO j=1-OLy,sNy+OLy
-       DO i=1-OLx,sNx+OLx
-        KPPfrac(i,j,bi,bj) = 1. _d 0 - SWFrac3D(i,j,kbl(i,j),bi,bj)
-       ENDDO
-      ENDDO
-#else
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          KPPfrac(i,j,bi,bj) = 1. _d 0 - SWFrac3D(i,j,kbl(i,j),bi,bj)
+         ENDDO
+        ENDDO
+       ELSE
 C     Compute fraction of solar short-wave flux penetrating to
 C     the bottom of the mixing layer.
-      DO j=1-OLy,sNy+OLy
+        DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-            worka(i,j) = KPPhbl(i,j,bi,bj)
+          worka(i,j) = KPPhbl(i,j,bi,bj)
          ENDDO
-      ENDDO
-      CALL SWFRAC(
+        ENDDO
+        CALL SWFRAC(
      I     (sNx+2*OLx)*(sNy+2*OLy), minusone,
      U     worka,
      I     myTime, myIter, myThid )
-      DO j=1-OLy,sNy+OLy
+        DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-            KPPfrac(i,j,bi,bj) = 1. _d 0 - worka(i,j)
+          KPPfrac(i,j,bi,bj) = 1. _d 0 - worka(i,j)
          ENDDO
-      ENDDO
-#endif /* KPP_USE_SWFRAC3D */
+        ENDDO
+       ENDIF
       ENDIF
 #endif /* SHORTWAVE_HEATING */
 

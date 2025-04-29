@@ -40,6 +40,8 @@ C--   Print out KPP parameters:
      &  ' /* non-local term fct of total diffus */')
       CALL WRITE_0D_L( KPPuseDoubleDiff, INDEX_NONE,
      &  'KPPuseDoubleDiff =', ' /* include double diffusive contrib */')
+      CALL WRITE_0D_L( KPPuseSWfrac3D, INDEX_NONE,
+     &  'KPPuseSWfrac3D =', ' /* for light attenuation use SWfrac3D */')
       CALL WRITE_0D_L( LimitHblStable, INDEX_NONE,
      &  'LimitHblStable =', ' /* limits depth of hbl if stable cond.*/')
       CALL WRITE_0D_RL( minKPPhbl, INDEX_NONE, ' minKPPhbl =',

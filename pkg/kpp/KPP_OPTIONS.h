@@ -74,10 +74,6 @@ C   usually not necessary, but useful for testing
 C o Vertically smooth Ri (for interior shear mixing)
 #undef ALLOW_KPP_VERTICALLY_SMOOTH
 
-C o use precomputed SWFrac3D field instead of computing SWfrac locally
-C   (changes results and is therefore off by default)
-#undef KPP_USE_SWFRAC3D
-
 #endif /* ALLOW_KPP */
 #endif /* KPP_OPTIONS_H */
 
