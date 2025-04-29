@@ -63,7 +63,8 @@ see README there. Once in place, step 4 performs the output comparison:<br>
 For primary set-up:<br>
 ```
   ../../tools/run_cpl_test 4
-```<br>
+```
+<br>
 and for secondary test:<br>
 ```
   ../../tools/run_cpl_test 4 icedyn
