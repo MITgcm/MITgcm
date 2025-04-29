@@ -200,6 +200,10 @@ cph(
       _RL TTALPHA( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
       _RL SSBETA ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
 cph)
+#ifdef SHORTWAVE_HEATING
+C     interpolation factor 1 >= (KPPhbl+rF(kbl))/drF(kbl) >= 0
+      _RL rFac
+#endif
       integer i, j, kSurf, k, kp1, km1, im1, ip1, jm1, jp1
 C     ikey :: tape key (depends on tiles)
       integer ikey
@@ -636,7 +640,10 @@ C     Determine the fraction of solar shortwave flux penetrating to the
 C     bottom of the mixed layer.
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          KPPfrac(i,j,bi,bj) = 1. _d 0 - SWFrac3D(i,j,kbl(i,j),bi,bj)
+          k = kbl(i,j)
+          rFac = MAX( (KPPhbl(i,j,bi,bj)+rF(k))/drF(k), zeroRL )
+          KPPfrac(i,j,bi,bj) = 1. _d 0 - SWFrac3D(i,j,k,bi,bj)
+     &         + rFac*(SWFrac3D(i,j,k,bi,bj) - SWFrac3D(i,j,k+1,bi,bj))
          ENDDO
         ENDDO
        ELSE

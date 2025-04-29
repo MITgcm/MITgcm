@@ -425,6 +425,10 @@ c wm, ws    : turbulent velocity scales         (m/s)
       PARAMETER ( p5=0.5, eins=1.0 )
       _RL         minusone
       PARAMETER ( minusone=-1.0 )
+#ifdef SHORTWAVE_HEATING
+      INTEGER k
+      _RL rFac
+#endif
 #ifdef SALT_PLUME_VOLUME
       INTEGER km, km1
       _RL temp
@@ -484,17 +488,14 @@ C     swatt(kl) is defined at the upper interface
 CMLC     far more accurate
 CML         IF ( kl .LT. Nr ) THEN
 CML          DO i = 1, imt
-CML           worka(i) = worka(i) - 0.128*( swatt(i,kl) + swatt(i,kl+1) )
-CML     &          +              0.128*( swatt(i,kl-1) + swatt(i,kl+2) )
+CML           worka(i) = worka(i) - 0.125*( swatt(i,kl) + swatt(i,kl+1) )
+CML     &          +              0.125*( swatt(i,kl-1) + swatt(i,kl+2) )
 CML         ENDDO
 CML        ENDIF
          ELSE
           DO i = 1, imt
            worka(i) = zgrid(kl)
           ENDDO
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ store worka = comlev1_kpp_k, key = kkey, kind=isbyte
-#endif
           CALL SWFRAC(
      I       imt, hbf,
      U       worka,
@@ -516,6 +517,9 @@ c     compute bfsfc= Bo + radiative contribution down to hbf * hbl
 #ifdef SHORTWAVE_HEATING
         ENDIF
 #endif /* SHORTWAVE_HEATING */
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ store bfsfc = comlev1_kpp_k, key = kkey, kind=isbyte
+#endif
 
 #ifdef ALLOW_SALT_PLUME
 c     compute bfsfc = plume fraction at hbf * zgrid
@@ -672,15 +676,16 @@ c-----------------------------------------------------------------------
       IF ( selectPenetratingSW .GE. 1 ) THEN
        IF ( KPPuseSWfrac3D ) THEN
         DO i = 1, imt
-         worka(i) = swatt(i,kbl(i))
+         k = kbl(i)
+         rFac = MAX( (hbl(i)+zgrid(k)+p5*hwide(k))/hwide(k), zeroRL )
+         worka(i) = swatt(i,k) - rFac*(swatt(i,k)-swatt(i,k+1))
         ENDDO
        ELSE
         DO i = 1, imt
          worka(i) = hbl(i)
         ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ store worka = comlev1_kpp, key=ikey, kind=isbyte,
-CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
+CADJ store worka = comlev1_kpp, key=ikey, kind=isbyte
 #endif
         CALL SWFRAC(
      I       imt, minusone,
@@ -808,15 +813,16 @@ c-----------------------------------------------------------------------
       IF ( selectPenetratingSW .GE. 1 ) THEN
        IF ( KPPuseSWfrac3D ) THEN
         DO i = 1, imt
-         worka(i) = swatt(i,kbl(i))
+         k = kbl(i)
+         rFac = MAX( (hbl(i)+zgrid(k)+p5*hwide(k))/hwide(k), zeroRL )
+         worka(i) = swatt(i,k) - rFac*(swatt(i,k)-swatt(i,k+1))
         ENDDO
        ELSE
         DO i = 1, imt
          worka(i) = hbl(i)
         ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ store worka = comlev1_kpp, key=ikey, kind=isbyte,
-CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
+CADJ store worka = comlev1_kpp, key=ikey, kind=isbyte
 #endif
         CALL SWFRAC(
      I     imt, minusone,
