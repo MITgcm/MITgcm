@@ -184,12 +184,8 @@ cph)
      O       diffus, myThid )
 
 cph(
-cph these storings avoid recomp. of Ri_iwmix
-cph DESPITE TAFs 'not necessary' warning!
+cph storing diffus avoids recomp. of Ri_iwmix
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE dbloc  = comlev1_kpp, key=ikey, kind=isbyte
-CADJ STORE shsq   = comlev1_kpp, key=ikey, kind=isbyte
-CADJ STORE ghat   = comlev1_kpp, key=ikey, kind=isbyte
 CADJ STORE diffus = comlev1_kpp, key=ikey, kind=isbyte
 #endif
 cph)
@@ -241,14 +237,11 @@ c-----------------------------------------------------------------------
 
       CALL blmix (
      I       ustar, bfsfc, hbl, stable, casea, diffus, kbl,
-     O       dkm1, blmc, ghat, sigma, ikey,
-     I       myThid )
+     O       dkm1, blmc, ghat, sigma,
+     I       ikey, myThid )
 cph(
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE dkm1,blmc,ghat = comlev1_kpp,
-CADJ &     key=ikey, kind=isbyte
-CADJ STORE hbl, kbl, diffus, casea = comlev1_kpp,
-CADJ &     key=ikey, kind=isbyte
+CADJ STORE dkm1,blmc,ghat = comlev1_kpp, key=ikey, kind=isbyte
 #endif
 cph)
 
@@ -634,8 +627,7 @@ cph(
 cph  without this store, there is a recomputation error for
 cph  rib in adbldepth (probably partial recomputation problem)
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ store Rib = comlev1_kpp, key=ikey, kind=isbyte,
-CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy),Nr /)
+CADJ store Rib = comlev1_kpp, key=ikey, kind=isbyte
 #endif
 cph)
 
@@ -646,8 +638,7 @@ cph)
       ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ store kbl = comlev1_kpp, key=ikey, kind=isbyte,
-CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
+CADJ store kbl = comlev1_kpp, key=ikey, kind=isbyte
 #endif
 
       DO i = 1, imt
@@ -664,8 +655,7 @@ CML     1           (Rib(i,kl)-Ricr)*zgrid(kl-1))/tempVar1
       ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ store hbl = comlev1_kpp, key=ikey, kind=isbyte,
-CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
+CADJ store hbl = comlev1_kpp, key=ikey, kind=isbyte
 #endif
 
 c-----------------------------------------------------------------------
@@ -693,8 +683,7 @@ CADJ store worka = comlev1_kpp, key=ikey, kind=isbyte
      I       myTime, myIter, myThid )
        ENDIF
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ store worka = comlev1_kpp, key=ikey, kind=isbyte,
-CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
+CADJ store worka = comlev1_kpp, key=ikey, kind=isbyte
 #endif
        DO i = 1, imt
          bfsfc(i) = bo(i) + bosol(i) * (1. - worka(i))
@@ -742,8 +731,7 @@ C            bfsfc(i) = bfsfc(i) + boplume(i,1)*temp
       ENDIF
 #endif /* ALLOW_SALT_PLUME */
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ store bfsfc = comlev1_kpp, key=ikey, kind=isbyte,
-CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
+CADJ store bfsfc = comlev1_kpp, key=ikey, kind=isbyte
 #endif
 
 c--   ensure bfsfc is never 0
@@ -755,8 +743,7 @@ c--   ensure bfsfc is never 0
 cph(
 cph  added stable to store list to avoid extensive recomp.
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ store bfsfc, stable = comlev1_kpp, key=ikey, kind=isbyte,
-CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
+CADJ store bfsfc, stable = comlev1_kpp, key=ikey, kind=isbyte
 #endif
 cph)
 
@@ -779,8 +766,7 @@ c-----------------------------------------------------------------------
       ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ store hbl = comlev1_kpp, key=ikey, kind=isbyte,
-CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
+CADJ store hbl = comlev1_kpp, key=ikey, kind=isbyte
 #endif
 
       DO i = 1, imt
@@ -789,8 +775,7 @@ CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
       ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ store hbl = comlev1_kpp, key=ikey, kind=isbyte,
-CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
+CADJ store hbl = comlev1_kpp, key=ikey, kind=isbyte
 #endif
 
 c-----------------------------------------------------------------------
@@ -830,8 +815,7 @@ CADJ store worka = comlev1_kpp, key=ikey, kind=isbyte
      I     myTime, myIter, myThid )
        ENDIF
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ store worka = comlev1_kpp, key=ikey, kind=isbyte,
-CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
+CADJ store worka = comlev1_kpp, key=ikey, kind=isbyte
 #endif
 
        DO i = 1, imt
@@ -876,8 +860,7 @@ C            bfsfc(i) = bfsfc(i) + boplume(i,1)*temp
       ENDIF
 #endif /* ALLOW_SALT_PLUME */
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ store bfsfc = comlev1_kpp, key=ikey, kind=isbyte,
-CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
+CADJ store bfsfc = comlev1_kpp, key=ikey, kind=isbyte
 #endif
 
 c--   ensures bfsfc is never 0
@@ -1377,8 +1360,8 @@ c*************************************************************************
 
       subroutine blmix (
      I       ustar, bfsfc, hbl, stable, casea, diffus, kbl,
-     O       dkm1, blmc, ghat, sigma, ikey,
-     I       myThid )
+     O       dkm1, blmc, ghat, sigma,
+     I       ikey, myThid )
 
 c     mixing coefficients within boundary layer depend on surface
 c     forcing and the magnitude and gradient of interior mixing below
