@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint69e (2025/05/01)
 o pkg/atm_ocn_coupler:
   - update local copy of setdir.c and CPP_EEOPTIONS.h (were left behind);
   - improve "run_cpl_test" step 1 (pass options to genmake2) and step 2.
