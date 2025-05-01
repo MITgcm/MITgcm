@@ -1,3 +1,6 @@
+#ifndef _CPP_EEOPTIONS_H_
+#define _CPP_EEOPTIONS_H_
+
 CBOP
 C     !ROUTINE: CPP_EEOPTIONS.h
 C     !INTERFACE:
@@ -28,9 +31,6 @@ C     |       options set at compile time.                       |
 C     *==========================================================*
 CEOP
 
-#ifndef _CPP_EEOPTIONS_H_
-#define _CPP_EEOPTIONS_H_
-
 C     In general the following convention applies:
 C     ALLOW  - indicates an feature will be included but it may
 C     CAN      have a run-time flag to allow it to be switched
@@ -43,6 +43,26 @@ C
 C     ALWAYS - indicates the choice will be fixed at compile time
 C              so no run-time option will be present
 
+C=== Macro related options ===
+C--   Control storage of floating point operands
+C     On many systems it improves performance only to use
+C     8-byte precision for time stepped variables.
+C     Constant in time terms ( geometric factors etc.. )
+C     can use 4-byte precision, reducing memory utilisation and
+C     boosting performance because of a smaller working set size.
+C     However, on vector CRAY systems this degrades performance.
+C     Enable to switch REAL4_IS_SLOW from genmake2 (with LET_RS_BE_REAL4):
+#ifdef LET_RS_BE_REAL4
+#undef REAL4_IS_SLOW
+#else /* LET_RS_BE_REAL4 */
+#define REAL4_IS_SLOW
+#endif /* LET_RS_BE_REAL4 */
+
+C--   Control use of "double" precision constants.
+C     Use D0 where it means REAL*8 but not where it means REAL*16
+#define D0 d0
+
+C=== IO related options ===
 C--   Flag used to indicate whether Fortran formatted write
 C     and read are threadsafe. On SGI the routines can be thread
 C     safe, on Sun it is not possible - if you are unsure then
@@ -56,44 +76,31 @@ C     a different file for each tile) and read are thread-safe.
 C--   Flag to turn off the writing of error message to ioUnit zero
 #undef DISABLE_WRITE_TO_UNIT_ZERO
 
-C--   Flag to turn on checking for errors from all threads and procs
-C     (calling S/R STOP_IF_ERROR) before stopping.
-#define USE_ERROR_STOP
+C--   Flag to turn on old default of opening scratch files with the
+C     STATUS='SCRATCH' option. This method, while perfectly FORTRAN-standard,
+C     caused filename conflicts on some multi-node/multi-processor platforms
+C     in the past and has been replace by something (hopefully) more robust.
+#undef USE_FORTRAN_SCRATCH_FILES
 
+C--   Flag defined for eeboot_minimal.F, eeset_parms.F and open_copy_data_file.F
+C     to write STDOUT, STDERR and scratch files from process 0 only.
+C WARNING: to use only when absolutely confident that the setup is working
+C     since any message (error/warning/print) from any proc <> 0 will be lost.
+#undef SINGLE_DISK_IO
+
+C=== MPI, EXCH and GLOBAL_SUM related options ===
 C--   Flag turns off MPI_SEND ready_to_receive polling in the
 C     gather_* subroutines to speed up integrations.
 #undef DISABLE_MPI_READY_TO_RECEIVE
 
-C--   Control MPI based parallel processing
-CXXX We no longer select the use of MPI via this file (CPP_EEOPTIONS.h)
-CXXX To use MPI, use an appropriate genmake2 options file or use
-CXXX genmake2 -mpi .
-CXXX #undef  ALLOW_USE_MPI
-CXXX #undef  ALWAYS_USE_MPI
-
 C--   Control use of communication that might overlap computation.
 C     Under MPI selects/deselects "non-blocking" sends and receives.
-#define ALLOW_ASYNC_COMMUNICATION
 #undef  ALLOW_ASYNC_COMMUNICATION
 #undef  ALWAYS_USE_ASYNC_COMMUNICATION
 C--   Control use of communication that is atomic to computation.
 C     Under MPI selects/deselects "blocking" sends and receives.
 #define ALLOW_SYNC_COMMUNICATION
 #undef  ALWAYS_USE_SYNC_COMMUNICATION
-
-C--   Control storage of floating point operands
-C     On many systems it improves performance only to use
-C     8-byte precision for time stepped variables.
-C     Constant in time terms ( geometric factors etc.. )
-C     can use 4-byte precision, reducing memory utilisation and
-C     boosting performance because of a smaller working
-C     set size. However, on vector CRAY systems this degrades
-C     performance.
-#define REAL4_IS_SLOW
-
-C--   Control use of "double" precision constants.
-C     Use D0 where it means REAL*8 but not where it means REAL*16
-#define D0 d0
 
 C--   Control XY periodicity in processor to grid mappings
 C     Note: Model code does not need to know whether a domain is
@@ -105,19 +112,36 @@ C           filled in some way.
 #define CAN_PREVENT_X_PERIODICITY
 #define CAN_PREVENT_Y_PERIODICITY
 
-C--   Alternative formulation of BYTESWAP, faster than
-C     compiler flag -byteswapio on the Altix.
-#undef FAST_BYTESWAP
+C--   disconnect tiles (no exchange between tiles, just fill-in edges
+C     assuming locally periodic subdomain)
+#undef DISCONNECTED_TILES
+
+C--   Always cumulate tile local-sum in the same order by applying MPI allreduce
+C     to array of tiles ; can get slower with large number of tiles (big set-up)
+#define GLOBAL_SUM_ORDER_TILES
 
 C--   Alternative way of doing global sum without MPI allreduce call
-C     but instead, explicit MPI send & recv calls.
+C     but instead, explicit MPI send & recv calls. Expected to be slower.
 #undef GLOBAL_SUM_SEND_RECV
 
 C--   Alternative way of doing global sum on a single CPU
-C     to eliminate tiling-dependent roundoff errors.
-C     Note: This is slow.
-#undef  CG2D_SINGLECPU_SUM
+C     to eliminate tiling-dependent roundoff errors. Note: This is slow.
+#undef CG2D_SINGLECPU_SUM
 
+C=== Other options (to add/remove pieces of code) ===
+C--   Flag to turn on checking for errors from all threads and procs
+C     (calling S/R STOP_IF_ERROR) before stopping.
+#define USE_ERROR_STOP
+
+C--   Control use of communication with other component:
+C     allow to import and export from/to Coupler interface.
+#undef COMPONENT_MODULE
+
+C--   Activate some pieces of code for coupling to GEOS AGCM
+#undef HACK_FOR_GMAO_CPL
+
+C=== And define Macros ===
+c#include "CPP_EEMACROS.h"
 C--- Taken from file "CPP_EEMACROS.h":
 
 C     Flag used to indicate which flavour of multi-threading
@@ -151,6 +175,10 @@ C                              system F90 compiler.
 
 #ifdef TARGET_CRAY_VECTOR
 #define USE_C90_THREADING
+#endif
+
+#ifdef USE_OMP_THREADING
+#define USING_THREADS
 #endif
 
 C--   Define the mapping for the _BARRIER macro
@@ -200,6 +228,15 @@ C  enable to call the corresponding R4 or R8 S/R.
 #define _GLOBAL_MAX_RL(a,b)    CALL GLOBAL_MAX_R8( a, b )
 #define _MPI_TYPE_RL MPI_DOUBLE_PRECISION
 
+#define _MPI_TYPE_R4 MPI_REAL
+#if (defined (TARGET_SGI) || defined (TARGET_AIX) || defined (TARGET_LAM))
+#define _MPI_TYPE_R8 MPI_DOUBLE_PRECISION
+#else
+#define _MPI_TYPE_R8 MPI_REAL8
+#endif
+#define _R4 Real*4
+#define _R8 Real*8
+
 C- Note: a) exch macros were used to switch to  JAM routines (obsolete)
 C        b) exch R4 & R8 macros are not practically used ; if needed,
 C           will directly call the corrresponding S/R.
@@ -210,7 +247,6 @@ C           will directly call the corrresponding S/R.
 
 C--   Control use of "double" precision constants.
 C     Use D0 where it means REAL*8 but not where it means REAL*16
-#define D0 d0
 #ifdef REAL_D0_IS_16BYTES
 #define D0
 #endif
@@ -220,13 +256,27 @@ C     Sun compilers do not use 8-byte precision for literals
 C     unless .Dnn is specified. CRAY vector machines use 16-byte
 C     precision when they see .Dnn which runs very slowly!
 #ifdef REAL_D0_IS_16BYTES
-#define _d
 #define _F64( a ) a
 #endif
 #ifndef REAL_D0_IS_16BYTES
-#define _d D
 #define _F64( a ) DFLOAT( a )
 #endif
 
-#endif /* _CPP_EEOPTIONS_H_ */
+C--   Set the format for writing processor IDs, e.g. in S/R eeset_parms
+C     and S/R open_copy_data_file. The default of I9.9 should work for
+C     a long time (until we will use 10e10 processors and more)
+#define FMT_PROC_ID 'I9.9'
 
+C--   Set the format for writing ensemble task IDs in S/R eeset_parms
+C     and S/R open_copy_data_file.
+#define FMT_TSK_ID 'I6.6'
+
+C--   Set ACTION= in OPEN instruction for input file (before doing IO)
+C     leave it empty (if EXCLUDE_OPEN_ACTION) or set it to proper value
+#ifdef EXCLUDE_OPEN_ACTION
+# define _READONLY_ACTION
+#else
+# define _READONLY_ACTION ACTION='read',
+#endif
+
+#endif /* _CPP_EEOPTIONS_H_ */

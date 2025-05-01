@@ -1,6 +1,13 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint69e (2025/05/01)
+o pkg/atm_ocn_coupler:
+  - update local copy of setdir.c and CPP_EEOPTIONS.h (were left behind);
+  - improve "run_cpl_test" step 1 (pass options to genmake2) and step 2.
+o tools/genmake2:
+  - use specific "ad_config.template{0,1,2}" in different stages of TAF
+    AD/TL built to avoid race condition issue with "make -jN".
 o model/src:
   - no "addMass" contribution to initial (iter=0) vertical velocity ;
   - with selectAddFluid=1, fix missing implDiv2DFlow factor in "addMass"
