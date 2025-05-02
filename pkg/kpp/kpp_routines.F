@@ -427,6 +427,7 @@ c wm, ws    : turbulent velocity scales         (m/s)
       _RL temp
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
+C     kkey :: tape key TAF-AD simulations (depends on vertical levels and tiles)
       INTEGER kkey
 #endif
 
@@ -472,6 +473,10 @@ c     compute bfsfc = sw fraction at hbf * zgrid
 
 #ifdef SHORTWAVE_HEATING
         IF ( selectPenetratingSW .GE. 1 ) THEN
+# ifdef ALLOW_AUTODIFF_TAMC
+C     suppress a TAF warning and recomputations
+CADJ incomplete worka
+# endif
          IF ( KPPuseSWfrac3D ) THEN
 C     worka is the value of swatt at cell centers kl
 C     swatt(kl) is defined at the upper interface
@@ -494,9 +499,9 @@ CML        ENDIF
      U       worka,
      I       myTime, myIter, myThid )
          ENDIF
-#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef ALLOW_AUTODIFF_TAMC
 CADJ store worka = comlev1_kpp_k, key = kkey, kind=isbyte
-#endif
+# endif
 
 c     compute bfsfc= Bo + radiative contribution down to hbf * hbl
          DO i = 1, imt
@@ -510,32 +515,32 @@ c     compute bfsfc= Bo + radiative contribution down to hbf * hbl
 #ifdef SHORTWAVE_HEATING
         ENDIF
 #endif /* SHORTWAVE_HEATING */
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ store bfsfc = comlev1_kpp_k, key = kkey, kind=isbyte
-#endif
 
 #ifdef ALLOW_SALT_PLUME
 c     compute bfsfc = plume fraction at hbf * zgrid
          IF ( useSALT_PLUME ) THEN
-#ifndef SALT_PLUME_VOLUME
+# ifndef SALT_PLUME_VOLUME
            DO i = 1, imt
               worka(i) = zgrid(kl)
            ENDDO
 Ccatn: in original way: accumulate all fractions of boplume above zgrid(kl)
            CALL SALT_PLUME_FRAC(
      I         imt, hbf,SPDepth,
-#ifdef SALT_PLUME_SPLIT_BASIN
+#  ifdef SALT_PLUME_SPLIT_BASIN
      I         lon,lat,
-#endif /* SALT_PLUME_SPLIT_BASIN */
+#  endif /* SALT_PLUME_SPLIT_BASIN */
      U         worka,
      I         myTime, myIter, myThid)
+#  ifdef ALLOW_AUTODIFF_TAMC
+CADJ store worka = comlev1_kpp_k, key = kkey, kind=isbyte
+#  endif
            DO i = 1, imt
               bfsfc(i) = bfsfc(i) + boplume(i,1)*(worka(i))
 C            km=MAX(1,kbl(i)-1)
 C            temp = (plumefrac(i,km)+plumefrac(i,kbl(i)))/2.0
 C            bfsfc(i) = bfsfc(i) + boplume(i,1)*temp
            ENDDO
-#else /* def SALT_PLUME_VOLUME */
+# else /* def SALT_PLUME_VOLUME */
 catn: in vol way: need to integrate down to hbl, so first locate
 c     k level associated with this hbl, then sum up all SPforc[T,S]
            DO i = 1, imt
@@ -544,9 +549,12 @@ c     k level associated with this hbl, then sum up all SPforc[T,S]
             temp = (boplume(i,km)+boplume(i,km1))*p5
             bfsfc(i) = bfsfc(i) + temp
            ENDDO
-#endif /* ndef SALT_PLUME_VOLUME */
+# endif /* ndef SALT_PLUME_VOLUME */
          ENDIF
 #endif /* ALLOW_SALT_PLUME */
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ store bfsfc = comlev1_kpp_k, key = kkey, kind=isbyte
+#endif
 
 #ifdef ALLOW_DIAGNOSTICS
          DO i = 1, imt
@@ -664,9 +672,16 @@ c-----------------------------------------------------------------------
 
 #ifdef SHORTWAVE_HEATING
       IF ( selectPenetratingSW .GE. 1 ) THEN
+# ifdef ALLOW_AUTODIFF_TAMC
+C     suppress a TAF warning and recomputations
+CADJ incomplete worka
+# endif
        IF ( KPPuseSWfrac3D ) THEN
         DO i = 1, imt
          k = kbl(i)
+C     since we do not have rF available we try to reconstruct as
+C     zgrid+0.5*hwide = rC+0.5*drF; this is only accurate if rC is
+C     really at the cell centers, which is not always the case
          rFac = MAX( (hbl(i)+zgrid(k)+p5*hwide(k))/hwide(k), zeroRL )
          worka(i) = swatt(i,k) - rFac*(swatt(i,k)-swatt(i,k+1))
         ENDDO
@@ -674,17 +689,14 @@ c-----------------------------------------------------------------------
         DO i = 1, imt
          worka(i) = hbl(i)
         ENDDO
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ store worka = comlev1_kpp, key=ikey, kind=isbyte
-#endif
         CALL SWFRAC(
-     I       imt, minusone,
-     U       worka,
-     I       myTime, myIter, myThid )
+     I     imt, minusone,
+     U     worka,
+     I     myTime, myIter, myThid )
        ENDIF
-#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef ALLOW_AUTODIFF_TAMC
 CADJ store worka = comlev1_kpp, key=ikey, kind=isbyte
-#endif
+# endif
        DO i = 1, imt
          bfsfc(i) = bo(i) + bosol(i) * (1. - worka(i))
        ENDDO
@@ -699,35 +711,38 @@ CADJ store worka = comlev1_kpp, key=ikey, kind=isbyte
 
 #ifdef ALLOW_SALT_PLUME
 # ifdef ALLOW_AUTODIFF_TAMC
-C     suppress a TAF warning
+C     suppress a TAF warning and recomputations
 CADJ incomplete worka
 # endif
       IF ( useSALT_PLUME ) THEN
-#ifndef SALT_PLUME_VOLUME
+# ifndef SALT_PLUME_VOLUME
         DO i = 1, imt
            worka(i) = hbl(i)
         ENDDO
         CALL SALT_PLUME_FRAC(
      I         imt,minusone,SPDepth,
-#ifdef SALT_PLUME_SPLIT_BASIN
+#  ifdef SALT_PLUME_SPLIT_BASIN
      I         lon,lat,
-#endif /* SALT_PLUME_SPLIT_BASIN */
+#  endif /* SALT_PLUME_SPLIT_BASIN */
      U         worka,
      I         myTime, myIter, myThid )
+#  ifdef ALLOW_AUTODIFF_TAMC
+CADJ store worka = comlev1_kpp, key = ikey, kind=isbyte
+#  endif
         DO i = 1, imt
            bfsfc(i) = bfsfc(i) + boplume(i,1) * (worka(i))
 C            km=MAX(1,kbl(i)-1)
 C            temp = (plumefrac(i,km)+plumefrac(i,kbl(i)))/2.0
 C            bfsfc(i) = bfsfc(i) + boplume(i,1)*temp
         ENDDO
-#else /* def SALT_PLUME_VOLUME */
+# else /* def SALT_PLUME_VOLUME */
         DO i = 1, imt
             km =MAX(1,kbl(i)-1)
             km1=MAX(1,kbl(i))
             temp = (boplume(i,km)+boplume(i,km1))/2.0
             bfsfc(i) = bfsfc(i) + temp
         ENDDO
-#endif /* ndef SALT_PLUME_VOLUME */
+# endif /* ndef SALT_PLUME_VOLUME */
       ENDIF
 #endif /* ALLOW_SALT_PLUME */
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -796,6 +811,10 @@ c-----------------------------------------------------------------------
 
 #ifdef SHORTWAVE_HEATING
       IF ( selectPenetratingSW .GE. 1 ) THEN
+# ifdef ALLOW_AUTODIFF_TAMC
+C     suppress a TAF warning and recomputations
+CADJ incomplete worka
+# endif
        IF ( KPPuseSWfrac3D ) THEN
         DO i = 1, imt
          k = kbl(i)
@@ -806,17 +825,14 @@ c-----------------------------------------------------------------------
         DO i = 1, imt
          worka(i) = hbl(i)
         ENDDO
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ store worka = comlev1_kpp, key=ikey, kind=isbyte
-#endif
         CALL SWFRAC(
      I     imt, minusone,
      U     worka,
      I     myTime, myIter, myThid )
        ENDIF
-#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef ALLOW_AUTODIFF_TAMC
 CADJ store worka = comlev1_kpp, key=ikey, kind=isbyte
-#endif
+# endif
 
        DO i = 1, imt
          bfsfc(i) = bo(i) + bosol(i) * (1. - worka(i))
@@ -831,32 +847,39 @@ CADJ store worka = comlev1_kpp, key=ikey, kind=isbyte
 #endif /* SHORTWAVE_HEATING */
 
 #ifdef ALLOW_SALT_PLUME
+# ifdef ALLOW_AUTODIFF_TAMC
+C     suppress a TAF warning and recomputations
+CADJ incomplete worka
+# endif
       IF ( useSALT_PLUME ) THEN
-#ifndef SALT_PLUME_VOLUME
+# ifndef SALT_PLUME_VOLUME
         DO i = 1, imt
            worka(i) = hbl(i)
         ENDDO
         CALL SALT_PLUME_FRAC(
      I         imt,minusone,SPDepth,
-#ifdef SALT_PLUME_SPLIT_BASIN
+#  ifdef SALT_PLUME_SPLIT_BASIN
      I         lon,lat,
-#endif /* SALT_PLUME_SPLIT_BASIN */
+#  endif /* SALT_PLUME_SPLIT_BASIN */
      U         worka,
      I         myTime, myIter, myThid )
+#  ifdef ALLOW_AUTODIFF_TAMC
+CADJ store worka = comlev1_kpp, key = ikey, kind=isbyte
+#  endif
         DO i = 1, imt
            bfsfc(i) = bfsfc(i) + boplume(i,1) * (worka(i))
 C            km=MAX(1,kbl(i)-1)
 C            temp = (plumefrac(i,km)+plumefrac(i,kbl(i)))/2.0
 C            bfsfc(i) = bfsfc(i) + boplume(i,1)*temp
         ENDDO
-#else /* def SALT_PLUME_VOLUME */
+# else /* def SALT_PLUME_VOLUME */
         DO i = 1, imt
             km =MAX(1,kbl(i)-1)
             km1=MAX(1,kbl(i)-0)
             temp = (boplume(i,km)+boplume(i,km1))/2.0
             bfsfc(i) = bfsfc(i) + temp
         ENDDO
-#endif /* ndef SALT_PLUME_VOLUME */
+# endif /* ndef SALT_PLUME_VOLUME */
       ENDIF
 #endif /* ALLOW_SALT_PLUME */
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -1432,6 +1455,7 @@ c     ws(imt), wm(imt)           turbulent velocity scales             (m/s)
       _RL    p0    , eins
       PARAMETER (p0=0.0, eins=1.0)
 #ifdef ALLOW_AUTODIFF_TAMC
+C     kkey :: tape key TAF-AD simulations (depends on vertical levels and tiles)
       INTEGER kkey
 #endif
 
@@ -1777,6 +1801,7 @@ c-------------- Routine arguments -----------------------------------------
       _RL DBSFC  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr   )
       _RL TTALPHA( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
       _RL SSBETA ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
+      INTEGER ikey
 
 #ifdef ALLOW_KPP
 
@@ -1797,18 +1822,18 @@ c     work1,2,3    - work arrays for holding horizontal slabs
       _RL WORK3 (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
       INTEGER i, j, k
-      INTEGER ikey, kkey
+#ifdef KPP_AUTODIFF_MORE_STORE
+C     kkey :: tape key TAF-AD simulations (depends on vertical levels and tiles)
+      INTEGER kkey
+#endif
 
 c calculate density, alpha, beta in surface layer, and set dbsfc to zero
 
-      kkey = (ikey-1)*Nr + 1
-
       k = 1
 #ifdef KPP_AUTODIFF_MORE_STORE
-CADJ STORE theta(:,:,k,bi,bj) = comlev1_kpp_k,
-CADJ &     key=kkey, kind=isbyte
-CADJ STORE salt (:,:,k,bi,bj) = comlev1_kpp_k,
-CADJ &     key=kkey, kind=isbyte
+      kkey = (ikey-1)*Nr + k
+CADJ STORE theta(:,:,k,bi,bj) = comlev1_kpp_k, key=kkey, kind=isbyte
+CADJ STORE salt (:,:,k,bi,bj) = comlev1_kpp_k, key=kkey, kind=isbyte
 #endif /* KPP_AUTODIFF_MORE_STORE */
       CALL FIND_RHO_2D(
      I     1-OLx, sNx+OLx, 1-OLy, sNy+OLy, 1,
@@ -1816,10 +1841,8 @@ CADJ &     key=kkey, kind=isbyte
      O     WORK1,
      I     k, bi, bj, myThid )
 #ifdef KPP_AUTODIFF_MORE_STORE
-CADJ STORE theta(:,:,k,bi,bj) = comlev1_kpp_k,
-CADJ &     key=kkey, kind=isbyte
-CADJ STORE salt (:,:,k,bi,bj) = comlev1_kpp_k,
-CADJ &     key=kkey, kind=isbyte
+CADJ STORE theta(:,:,k,bi,bj) = comlev1_kpp_k, key=kkey, kind=isbyte
+CADJ STORE salt (:,:,k,bi,bj) = comlev1_kpp_k, key=kkey, kind=isbyte
 #endif /* KPP_AUTODIFF_MORE_STORE */
 
       CALL FIND_ALPHA(
@@ -1844,13 +1867,10 @@ c calculate alpha, beta, and gradients in interior layers
 CHPF$  INDEPENDENT, NEW (RHOK,RHOKM1,RHO1K,WORK1,WORK2)
       DO k = 2, Nr
 
-         kkey = (ikey-1)*Nr + k
-
 #ifdef KPP_AUTODIFF_MORE_STORE
-CADJ STORE theta(:,:,k,bi,bj) = comlev1_kpp_k,
-CADJ &     key=kkey, kind=isbyte
-CADJ STORE salt (:,:,k,bi,bj) = comlev1_kpp_k,
-CADJ &     key=kkey, kind=isbyte
+         kkey = (ikey-1)*Nr + k
+CADJ STORE theta(:,:,k,bi,bj) = comlev1_kpp_k, key=kkey, kind=isbyte
+CADJ STORE salt (:,:,k,bi,bj) = comlev1_kpp_k, key=kkey, kind=isbyte
 #endif /* KPP_AUTODIFF_MORE_STORE */
          CALL FIND_RHO_2D(
      I        1-OLx, sNx+OLx, 1-OLy, sNy+OLy, k,
@@ -1859,10 +1879,8 @@ CADJ &     key=kkey, kind=isbyte
      I        k, bi, bj, myThid )
 
 #ifdef KPP_AUTODIFF_MORE_STORE
-CADJ STORE theta(:,:,k-1,bi,bj) = comlev1_kpp_k,
-CADJ &     key=kkey, kind=isbyte
-CADJ STORE salt (:,:,k-1,bi,bj) = comlev1_kpp_k,
-CADJ &     key=kkey, kind=isbyte
+CADJ STORE theta(:,:,k-1,bi,bj) = comlev1_kpp_k, key=kkey, kind=isbyte
+CADJ STORE salt (:,:,k-1,bi,bj) = comlev1_kpp_k, key=kkey, kind=isbyte
 #endif /* KPP_AUTODIFF_MORE_STORE */
          CALL FIND_RHO_2D(
      I        1-OLx, sNx+OLx, 1-OLy, sNy+OLy, k,
@@ -1871,10 +1889,8 @@ CADJ &     key=kkey, kind=isbyte
      I        k-1, bi, bj, myThid )
 
 #ifdef KPP_AUTODIFF_MORE_STORE
-CADJ STORE theta(:,:,1,bi,bj) = comlev1_kpp_k,
-CADJ &     key=kkey, kind=isbyte
-CADJ STORE salt (:,:,1,bi,bj) = comlev1_kpp_k,
-CADJ &     key=kkey, kind=isbyte
+CADJ STORE theta(:,:,1,bi,bj) = comlev1_kpp_k, key=kkey, kind=isbyte
+CADJ STORE salt (:,:,1,bi,bj) = comlev1_kpp_k, key=kkey, kind=isbyte
 #endif /* KPP_AUTODIFF_MORE_STORE */
          CALL FIND_RHO_2D(
      I        1-OLx, sNx+OLx, 1-OLy, sNy+OLy, k,
