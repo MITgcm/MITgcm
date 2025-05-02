@@ -1,6 +1,31 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint69e (2025/05/01)
+o pkg/atm_ocn_coupler:
+  - update local copy of setdir.c and CPP_EEOPTIONS.h (were left behind);
+  - improve "run_cpl_test" step 1 (pass options to genmake2) and step 2.
+o tools/genmake2:
+  - use specific "ad_config.template{0,1,2}" in different stages of TAF
+    AD/TL built to avoid race condition issue with "make -jN".
+o model/src:
+  - no "addMass" contribution to initial (iter=0) vertical velocity ;
+  - with selectAddFluid=1, fix missing implDiv2DFlow factor in "addMass"
+    contribution to solver RHS ;
+  - add a STOP if implDiv2DFlow < 1 with exactConserv=F, (was not right with
+    useRealFreshWaterFlux=T or selectAddFluid=1) and remove untested pieces
+    of code dealing with this case ;
+  - when using cg2d/cg3dTargetResWunit, add missing implDiv2DFlow factor to
+    solver tolerance setting (cg2d/cg3dTolerance) ;
+  - upgrade "global_ocean.cs32x15.viscA4" exp. to test selectAddFluid=1
+    with implDiv2DFlow=1/2 ; also update "short_surf_wave" exp. output.
+o tools/genmake2:
+  - with Tapenade, remove list NON_AD_F77_SRC_FILES from Makefile (not used),
+    remove processing of "dontCompile", "keepOriginal" and "cb2mFiles" lists ;
+  - otherwise, in Makefile, move NON_AD_F77_SRC_FILES and NON_AD_F90_SRC_FILES
+    lists after AD_FILES and AD_F90FILES ;
+  - simplify (remove intermediate targets) and improve the "-ncad" Makefile
+    to ends cleanly when "staf" command fails.
 o utils:
   - improve gluemnc description (usage, dependencies, and example).
 o tools:

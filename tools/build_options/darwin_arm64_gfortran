@@ -42,8 +42,12 @@ NOOPTFLAGS='-O0'
 NOOPTFILES=''
 
 FFLAGS="$FFLAGS -fconvert=big-endian"
-# for big objects:
-#FFLAGS="$FFLAGS -fPIC"
+# needed for big objects (e.g., to compile and run TAF AD of
+# global_ocean.cs32x15), but requires larger stack sizes (set with
+# ulimit -s) in other cases, so we leave this commented out:
+# man gfortran: Allow indirect recursion by forcing all local arrays
+#               to be allocated on the stack.
+#FFLAGS="$FFLAGS -frecursive"
 #- might want to use '-fdefault-real-8' for fizhi pkg:
 #FFLAGS="$FFLAGS -fdefault-real-8 -fdefault-double-8"
 

@@ -94,12 +94,12 @@ C--   Start bi,bj loops
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef EXACT_CONSERV
-      IF (exactConserv) THEN
+      IF ( exactConserv ) THEN
 
        facEmP = 0.
        IF ( fluidIsWater.AND.useRealFreshWaterFlux ) facEmP=mass2rUnit
        facMass = 0.
-       IF ( selectAddFluid.GE.1 ) facMass = mass2rUnit
+       IF ( selectAddFluid.GE.1 .AND. myIter.NE.0 ) facMass = mass2rUnit
 
 C--   Compute the Divergence of The Barotropic Flow :
 
@@ -215,7 +215,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Update etaN at the end of the time step :
 C     Incorporate the Implicit part of -Divergence(Barotropic_Flow)
 
-       IF (implicDiv2Dflow.EQ. 0. _d 0) THEN
+       IF ( implicDiv2Dflow.EQ.zeroRL ) THEN
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
            etaN(i,j,bi,bj) = etaH(i,j,bi,bj)
@@ -249,7 +249,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
 CADJ STORE dEtaHdt(:,:,bi,bj) = comlev1_bibj, key = tkey, kind = isbyte
 #  endif
-      IF (select_rStar .NE. 0) THEN
+      IF ( select_rStar.NE.0 ) THEN
 #  ifndef DISABLE_RSTAR_CODE
 C-- note: rStarDhDt is similar to rStarDhCDt from S/R CALC_R_STAR
 C         except for deep-factor and rho factor.
@@ -280,7 +280,7 @@ C--    Integrate continuity vertically for vertical velocity
      I                       bi, bj, k, uFld, vFld,
      I                       addMass, rStarDhDt,
      O                       wVel,
-     I                       myThid )
+     I                       myIter, myThid )
 
 #ifdef EXACT_CONSERV
        IF ( k.EQ.Nr .AND. myIter.NE.0 .AND. usingPCoords
@@ -334,11 +334,11 @@ C     In reverse, print adjoint variable for etaN
 
 #ifdef EXACT_CONSERV
 C--   Update etaH (from etaN and dEtaHdt):
-      IF (exactConserv) THEN
+      IF ( exactConserv ) THEN
 c       IF ( useRealFreshWaterFlux .AND. myIter.EQ.nIter0 )
 c    &    _EXCH_XY_RL( PmEpR, myThid )
 #ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('UPDATE_ETAH',myThid)
+        IF ( debugMode ) CALL DEBUG_CALL('UPDATE_ETAH',myThid)
 #endif
         CALL UPDATE_ETAH( myTime, myIter, myThid )
       ENDIF
