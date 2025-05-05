@@ -1,6 +1,28 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/mom_{common,fluxform,vecinv}:
+  - mom_fluxform, new option, selectCoriScheme=4: use hFac averaged transport in
+    Coriolis term so that column integral of tendency match Coriolis time
+    column integral U,V.
+  - mom_vecinv, new option, selectVortScheme=4: by-pass division by hFacZ and
+    instead apply recip_hFacW/S on final tendency. Note: this fixes Angular-Mom
+    (AM) conservation but breaks vorticity tendency matching advection of vort.
+  - new 3-d Coriolis option, select3dCoriScheme=2,3: Alternative discretization
+    using averaged transport; =3 (vs 2), an other alternative discretization of
+    vertical momentum tendency gW.
+  - deep-model, put gU,gV NH-metric terms inside vertical advection, to exactly
+    conserves AM (+ simplify & speed up by skipping NH metric-terms gU,gV
+    calculation). Add CPP option "MOM_USE_OLD_DEEP_VERT_ADV" (in
+    MOM_COMMON_OPTIONS.h) to recover the explicit NH metric-term calculation.
+  - mom_fluxform, new spherical Metric-terms option, selectMetricTerms=2,3: More
+    accurate discretization similar to manual eq. 2.102 & 2.103 but centered at
+    grid-cell corner; Also option (selectMetricTerms=3) to skip the gU spherical
+    metric term by advecting uVel*dxC (simpler, faster and exactly conserve AM).
+  - add diagnostics for Metric-Terms.
+  - verification exp. "deep_anelastic", new secondary "vecinv" test + also
+    update primary test ref output.
+
 checkpoint69e (2025/05/01)
 o pkg/atm_ocn_coupler:
   - update local copy of setdir.c and CPP_EEOPTIONS.h (were left behind);

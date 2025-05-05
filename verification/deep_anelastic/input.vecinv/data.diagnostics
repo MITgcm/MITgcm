@@ -53,8 +53,9 @@
 #--------------------
  &DIAG_STATIS_PARMS
 #---
- stat_fields(1:8,1)  = 'ETAN    ','UVEL    ','VVEL    ','WVEL    ',
-                       'THETA   ','Um_Metr ','Vm_Metr ','Wm_Metr ',
+ stat_fields(1:6,1)  = 'ETAN    ','UVEL    ','VVEL    ','WVEL    ',
+                       'THETA   ','Wm_Metr ',
+#                      'Um_Metr ','Vm_Metr ',  <-- these 2 are empty
   stat_fName(1) = 'dynStDiag',
    stat_freq(1) = 1800.,
  &
