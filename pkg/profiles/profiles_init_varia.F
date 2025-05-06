@@ -39,21 +39,14 @@ CEOP
 
 C     !LOCAL VARIABLES:
       INTEGER bi,bj
-      INTEGER itlo,ithi
-      INTEGER jtlo,jthi
       INTEGER num_file,num_var
 #ifdef ALLOW_GRDCHK
       INTEGER err
 #endif /* ALLOW_GRDCHK */
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
-
 C Initialize tiled cost function contributions.
-      DO bj = jtlo, jthi
-        DO bi = itlo, ithi
+      DO bj = myByLo(mythid), myByHi(mythid)
+        DO bi = myBxLo(mythid), myBxHi(mythid)
           DO num_file = 1, NFILESPROFMAX
             DO num_var = 1, NVARMAX
               objf_profiles(num_file,num_var,bi,bj) = 0. _d 0

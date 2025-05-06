@@ -58,7 +58,6 @@ C     !LOCAL VARIABLES:
         ENDIF
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &       SQUEEZE_RIGHT,myThid )
-        CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
 #endif /* ALLOW_PROFILES */
 

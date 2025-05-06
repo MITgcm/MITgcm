@@ -49,7 +49,8 @@ C     !LOCAL VARIABLES:
      &     (irec.GT.profiles_maxind_buff(bi,bj)) .OR.
      &     (profiles_curfile_buff(bi,bj).NE.fNb) ) THEN
         err = NF_INQ_DIMID(fiddata(fNb,bi,bj),'iPROF', varId1)
-        CALL PROFILES_NF_ERROR( 'READVECTOR: NF_INQ_DIMID fiddata',
+        CALL PROFILES_NF_ERROR(
+     &       'READVECTOR: NF_INQ_DIMID fiddata iProf',
      &       err,bi,bj,myThid )
         err = NF_INQ_DIMLEN( fiddata(fNb,bi,bj), varId1, tmpprofno )
         CALL PROFILES_NF_ERROR( 'READVECTOR: NF_INQ_DIMLEN tmpprofno',
@@ -139,7 +140,7 @@ C Implies that a forward loop is calling
                 profiles_weight_buff(v1,v2,num_var,bi,bj) =
      &           vec_tmp2((v2-1)*vec_count(1)+v1)
 
-# ifdef ALLOW_PROFILES_CLIMMASv1
+# ifdef ALLOW_PROFILES_CLIMMAS
                 IF (vec_tmp3((v2-1)*vec_count(1)+v1).LE.-990. _d 0)
      &            profiles_weight_buff(v1,v2,num_var,bi,bj) = 0. _d 0
 

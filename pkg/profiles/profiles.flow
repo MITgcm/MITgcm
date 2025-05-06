@@ -35,8 +35,8 @@ CADJ SUBROUTINE active_write_profile DEPEND  = 1,2,  4,5,6,7,8,9
 C----------------------------------------
 C NetCDF related functions and routines
 C----------------------------------------
-CADJ FUNCTION   NF_OPEN             INPUT = 1,2,3
-CADJ FUNCTION   NF_CLOSE            INPUT = 1
-CADJ FUNCTION   NF_SYNC             INPUT = 1
 CADJ SUBROUTINE PROFILES_NF_ERROR   INPUT = 1,2,3,4,5
-CADJ SUBROUTINE PROFILES_NC_CLOSE   INPUT = 1
+CADJ FUNCTION   NF_SYNC             INPUT = 1
+cCADJ SUBROUTINE PROFILES_NC_CLOSE   INPUT = 1
+cCADJ FUNCTION   NF_OPEN             INPUT = 1,2,3
+cCADJ FUNCTION   NF_CLOSE            INPUT = 1

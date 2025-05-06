@@ -42,7 +42,7 @@ C     !FUNCTIONS:
 C     !LOCAL VARIABLES:
 #ifdef ALLOW_PROFILES
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER kLev, kC, kCMax, kProf, prof_num
+      INTEGER kLev, kProf, prof_num
       INTEGER chunk, chunkProf, c, recLen
       INTEGER i,j,bi,bj,iG,jG,num_file,num_var,ProfNo_tile
       INTEGER stopProfiles
@@ -59,10 +59,15 @@ C     !LOCAL VARIABLES:
       _RL lon_tmp1, lon_tmp2
       _RL lat_fac, lon_fac
       INTEGER prof_i, prof_j
-      INTEGER vec_start(2), vec_count(2), profno_div1000, kk
+      INTEGER vec_start(2), vec_count(2), profno_div1000
       CHARACTER*(MAX_LEN_FNAM) profilesfile, fnamedatanc
       CHARACTER*(MAX_LEN_FNAM) fnameequinc
-      CHARACTER*(MAX_LEN_FNAM) adfnameequinc, tlfnameequinc
+# ifdef ALLOW_ADJOINT_RUN
+      CHARACTER*(MAX_LEN_FNAM) adfnameequinc
+# endif
+# ifdef ALLOW_TANGENTLINEAR_RUN
+      CHARACTER*(MAX_LEN_FNAM) tlfnameequinc
+# endif
       INTEGER IL, JL, KL, err, nerr
       LOGICAL  exst
 
@@ -78,6 +83,7 @@ C     !LOCAL VARIABLES:
       INTEGER vec_start2(2), vec_count2(2)
       INTEGER hh, ProfNo_hh
 # ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
+      INTEGER kC, kCMax
       INTEGER varId4
       _RL tmp_avgbin(1000)
 # endif /* ALLOW_PROFILES_SAMPLESPLIT_COST */
@@ -218,9 +224,6 @@ C1) Read the number of profiles and available dimensions:
      &             err,bi,bj,myThid )
 
               err = NF_INQ_DIMID( fid, 'iINTERP', dimId )
-              CALL PROFILES_NF_ERROR(
-     &             'INIT_FIXED: NF_INQ_DIMID iINTERP',
-     &             err,bi,bj,myThid )
               IF (err.EQ.NF_NOERR) THEN
                 err = NF_INQ_DIMLEN( fid, dimId, iINTERP )
                 CALL PROFILES_NF_ERROR(
@@ -229,6 +232,9 @@ C1) Read the number of profiles and available dimensions:
 
               ELSE
                 IF (debugLevel .GE. debLevA) THEN
+                  CALL PROFILES_NF_ERROR(
+     &                'INIT_FIXED: NF_INQ_DIMID iINTERP',
+     &                err,bi,bj,myThid )
                   WRITE(msgBuf,'(3A,I3)')
      &             'S/R PROFILES_INIT_FIXED: ',
      &             'no iINTERP dim in data file using iINTERP ',
@@ -743,9 +749,9 @@ C If yes then store prof_time and interpolation coeffs and indices:
                               prof_interp_weights(num_file,
      &                         ProfNo_tile,q,bi,bj) = tmp_weights(c,q)
                               prof_interp_i(num_file,ProfNo_tile,
-     &                         q,bi,bj) = tmp_i(c,q)
+     &                         q,bi,bj) = INT(tmp_i(c,q))
                               prof_interp_j(num_file,ProfNo_tile,
-     &                         q,bi,bj) = tmp_j(c,q)
+     &                         q,bi,bj) = INT(tmp_j(c,q))
                               tmp_sum_weights = tmp_sum_weights
      &                         + tmp_weights(c,q)
 
@@ -866,9 +872,6 @@ C6) Available variables in the data set
                 JL = ILNBLNK( prof_names(num_file,num_var) )
                 err = NF_INQ_VARID( fid,
      &                prof_names(num_file,num_var)(1:JL), varId1 )
-                CALL PROFILES_NF_ERROR(
-     &               'INIT_FIXED: NF_INQ_VARID prof_names',
-     &               err,bi,bj,myThid )
                 IF (err.EQ.NF_NOERR) THEN
                   vec_quantities(num_file,num_var,bi,bj) = .TRUE.
 
@@ -878,6 +881,10 @@ C6) Available variables in the data set
      &             prof_num_var_tot(num_file,bi,bj)
 
                 ELSE
+                  CALL PROFILES_NF_ERROR(
+     &                'INIT_FIXED: NF_INQ_VARID prof_names = '//
+     &                prof_names(num_file,num_var)(1:JL),
+     &                err,bi,bj,myThid )
                   IF (debugLevel .GE. debLevA) THEN
                    WRITE(msgBuf,'(3A)') 'S/R PROFILES_INIT_FIXED: no ',
      &                  prof_names(num_file,num_var)(1:JL),
