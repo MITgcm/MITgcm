@@ -334,7 +334,7 @@ C- Close the open data file
       IF (gchem_apco2File.EQ.' ') THEN
         WRITE(msgBuf,'(2A,E13.6,A)')
      &    '** WARNING ** GCHEM_READPARMS: ',
-     &    'constant value atmos pCO2 = ', gchem_apco2_consti,' atm'
+     &    'constant value atmos pCO2 = ', gchem_apco2_const,' atm'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
       ENDIF
