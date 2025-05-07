@@ -5,7 +5,7 @@
  useGCHEM       = .TRUE.,
  useECCO        = .TRUE.,
  useGrdchk      = .TRUE.,
-# usePROFILES    = .TRUE.,
- useOBSFIT      = .TRUE.,
+ usePROFILES    = .TRUE.,
+# useOBSFIT      = .TRUE.,
  useDIAGNOSTICS = .TRUE.,
  &
