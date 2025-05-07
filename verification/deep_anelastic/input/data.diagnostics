@@ -1,4 +1,4 @@
-# Diagnostic Package Choices
+# Diagnostics Package Choices
 #--------------------
 #  dumpAtLast (logical): always write output at the end of simulation (default=F)
 #  diag_mnc   (logical): write to NetCDF files (default=useMNC)
@@ -53,8 +53,8 @@
 #--------------------
  &DIAG_STATIS_PARMS
 #---
- stat_fields(1:5,1) = 'ETAN    ','UVEL    ','VVEL    ','WVEL    ',
-                      'THETA   ',
+ stat_fields(1:8,1)  = 'ETAN    ','UVEL    ','VVEL    ','WVEL    ',
+                       'THETA   ','Um_Metr ','Vm_Metr ','Wm_Metr ',
   stat_fName(1) = 'dynStDiag',
    stat_freq(1) = 1800.,
  &

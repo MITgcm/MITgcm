@@ -604,26 +604,26 @@ makemodel()
 	fi
 	echo " TAF reports $nerr Errors and $nwar Recomputation Warnings" \
 				>> $CDIR"/summary.txt"
-	if test -f ad_taf_output.f ; then
-	    adfile=ad_taf_output.f
-	elif test -f ad_taf_output.for ; then
-	    adfile=ad_taf_output.for
+	#- report number of calls for some key S/R, i.e.,
+	#   load_fields_driver, do_oceanic_phys, and seaice_model
+	#  Multiple calls indicate hidden but expensive recomputations
+	FS='f'
+	if test -f genmake_state ; then eval `grep '^FS=' genmake_state` ; fi
+	if test "x$NOCATAD" = xt ; then
+	    adfiles="*_ad.$FS"
 	else
-	    echo "WARNING: neither ad_output_ad.f nor ad_output_ad.for found" \
-				>> $CDIR"/summary.txt"
-	    adfile=missing ; nlfd=0 ; ndop=0 ; nsm=0
+	    adfiles=ad_taf_output.$FS
 	fi
-	if test $adfile != missing ; then
-	    # count number of times load_fields_driver and do_oceanic_phys are called
-	    nlfd=`grep "call load_fields_driver(" ${adfile} | wc -l`
-	    nlfdmd=`grep "call load_fields_drivermd(" ${adfile} | wc -l`
-	    if (( $nlfdmd == 0 )) ; then
-		# if there is no load_fields_driver, we can substract one assuming
-		# that load_fields_driver is called once from forward_stepmd
-		nlfd=$((nlfd-1))
-	    fi
-	    ndop=`grep "call do_oceanic_phys("    ${adfile} | wc -l`
-	    nsm=`grep "call seaice_model(" ${adfile} | wc -l`
+	nbf=`ls $adfiles 2> /dev/null | wc -l`
+	if [ $nbf -eq 0 ] ; then
+	    echo "WARNING: no adfiles '$adfiles' found" >> $CDIR"/summary.txt"
+	    nlfd=0 ; ndop=0 ; nsm=0
+	else
+	    nlfd=`grep "call load_fields_driver(" ${adfiles} | wc -l`
+	    nlfdmd=`grep "call load_fields_drivermd(" ${adfiles} | wc -l`
+	    nlfd=$((nlfd+nlfdmd-1))
+	    ndop=`grep "call do_oceanic_phys(" ${adfiles} | wc -l`
+	    nsm=`grep "call seaice_model(" ${adfiles} | wc -l`
 	fi
 	echo " load_fields_driver, do_oceanic_phys, seaice_model are called " \
 	     "( $nlfd , $ndop , $nsm ) time(s)" >> $CDIR"/summary.txt"
@@ -849,7 +849,7 @@ runmodel()
 	    #echo '' ; echo "  COMMAND='$COMMAND'"
 	    COMMAND=`echo $COMMAND | sed "s/ TR_NPROC/ $LOC_NPROC/"`
 	    if test "x$MPI_MFILE" != x ; then
-	      COMMAND=`echo $COMMAND | sed "s/ TR_MFILE / ..\/..\/$LOC_MFILE /"`
+	      COMMAND=`echo $COMMAND | sed "s/ TR_MFILE / ..\/$LOC_MFILE /"`
 	    fi
 	    #echo "  COMMAND='$COMMAND'"
 	fi
@@ -876,6 +876,7 @@ runmodel()
 	    rm -f $OUTPUTFILE $RUNLOG ; touch $RUNLOG
 	    if test -f run.log_tmp ; then cat run.log_tmp >> $RUNLOG ; fi
 	#- Divided Adjoint Run:
+	    add_DIVA_runs=0
 	#  get the number of additional runs (add_DIVA_runs) from file "run_ADM_DIVA"
 	    if test $KIND = 2 -a -f run_ADM_DIVA ; then
 	      adm_diva_nb=`sed -n '/^ *add_DIVA_runs *=/p' run_ADM_DIVA | sed 's/ //g'`
@@ -1411,7 +1412,7 @@ done
 if test $count = 1 ; then echo "" ; echo -n " ... " ; fi
 #echo 'TESTDIRS='${TESTDIRS}'<'
 
-LOC_MFILE='tr_mpi_mfile'
+LOC_MFILE='mpi_mfile.loc'
 RUNLOG="run.tr_log"
 if test "x$MPI" = x0 ; then
   OUTPUTFILE=$ref_outp
@@ -1652,7 +1653,9 @@ for dir in $TESTDIRS ; do
 	continue
     fi
 
-    if test "x$MPI" != "x0" ; then
+    if test "x$MPI" = "x0" ; then
+	LOC_NPROC=1
+    else
 	ntx=1 ; nty=1
 	if test "x$MULTI_THREAD" = "xt" ; then
 	  ff=$dir"/input/eedata.mth"
@@ -1677,17 +1680,17 @@ for dir in $TESTDIRS ; do
 	)
 	if test "x$MPI_MFILE" != x ; then
 	    #- create new MPI machine-file with the right number of Procs
-	    rm -f $LOC_MFILE
-	    cat $MPI_MFILE | sort | uniq | head -$LOC_NPROC > $LOC_MFILE
-	    nl=`wc -l $LOC_MFILE | awk '{print $1}'`
+	    rm -f $dir/$LOC_MFILE
+	    cat $MPI_MFILE | sort | uniq | head -$LOC_NPROC > $dir/$LOC_MFILE
+	    nl=`wc -l $dir/$LOC_MFILE | awk '{print $1}'`
 	    if [ $nl -lt $LOC_NPROC ] ; then
-		rm -f $LOC_MFILE
-		cat $MPI_MFILE | head -$LOC_NPROC > $LOC_MFILE
-		#sed -n "1,$LOC_NPROC p" $MPI_MFILE > $LOC_MFILE
+		rm -f $dir/$LOC_MFILE
+		cat $MPI_MFILE | head -$LOC_NPROC > $dir/$LOC_MFILE
+		#sed -n "1,$LOC_NPROC p" $MPI_MFILE > $dir/$LOC_MFILE
 	    fi
 	    if [ $verbose -gt 1 ]; then
 		nl=`wc -l $LOC_MFILE | awk '{print $1}'`
-		echo " new LOC_MFILE=$LOC_MFILE : $nl procs for LOC_NPROC=$LOC_NPROC"
+		echo " new LOC_MFILE=$dir/$LOC_MFILE : $nl procs for LOC_NPROC=$LOC_NPROC"
 	    fi
 	fi
 	if test "x$MULTI_THREAD" = "xt" ; then
@@ -1886,7 +1889,7 @@ for dir in $TESTDIRS ; do
 	makeclean $dir/$builddir \
 	    && run_clean $dir/$rundir
     fi
-    if test "x$MPI" != x0 -a "x$MPI_MFILE" != x ; then rm -f $LOC_MFILE ; fi
+    if test "x$MPI" != x0 -a "x$MPI_MFILE" != x ; then rm -f $dir/$LOC_MFILE ; fi
 
     echo "-------------------------------------------------------------------------------"
 

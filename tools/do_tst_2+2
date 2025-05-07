@@ -90,7 +90,7 @@ if test -x $SCRIPT ; then
  fi
  echo " $LIST"
  echo ""
- yy=`echo $SCRIPT | grep -c '^\/'`
+ yy=`echo $SCRIPT | grep -c '^/'`
  if test $yy = 0 ; then SCRIPT="../../$SCRIPT" ; fi
 else
  echo "ERROR: script '$SCRIPT' not found or not executable"
@@ -161,7 +161,7 @@ echo 'P. Run  Result     experiment'  >> $SUMMARY
 echo '  1 2 3'  >> $SUMMARY
 
 #-- For MPI test:
-LOC_MFILE='tr_mpi_mfile'
+LOC_MFILE='mpi_mfile.loc'
 RUNOUTP="output.txt"
 if [ $mpi -ge 1 ] ; then
   SCRIPT="$SCRIPT -mpi"
@@ -186,14 +186,14 @@ do
     rCommand=`echo $COMMAND | sed "s/ TR_NPROC / $LOC_NPROC /"`
     if test "x$MPI_MFILE" != x ; then
       #- create new MPI machine-file with the right number of Procs
-      rm -f $LOC_MFILE
-      cat $MPI_MFILE | sort | uniq | head -$LOC_NPROC > $LOC_MFILE
-      nl=`wc -l $LOC_MFILE | awk '{print $1}'`
+      rm -f $xx/$LOC_MFILE
+      cat $MPI_MFILE | sort | uniq | head -$LOC_NPROC > $xx/$LOC_MFILE
+      nl=`wc -l $xx/$LOC_MFILE | awk '{print $1}'`
       if [ $nl -lt $LOC_NPROC ] ; then
-        rm -f $LOC_MFILE
-        cat $MPI_MFILE | head -$LOC_NPROC > $LOC_MFILE
+        rm -f $xx/$LOC_MFILE
+        cat $MPI_MFILE | head -$LOC_NPROC > $xx/$LOC_MFILE
       fi
-      rCommand=`echo $rCommand | sed "s/ TR_MFILE / ..\/..\/$LOC_MFILE /"`
+      rCommand=`echo $rCommand | sed "s/ TR_MFILE / ..\/$LOC_MFILE /"`
     fi
   fi
 
@@ -255,7 +255,7 @@ do
       )
     fi
   done
-  if test "x$mpi" != x0 -a "x$MPI_MFILE" != x ; then rm -f $LOC_MFILE ; fi
+  if test "x$mpi" != x0 -a "x$MPI_MFILE" != x ; then rm -f $xx/$LOC_MFILE ; fi
 done
 printf "End time:    " >> $SUMMARY
 date >> $SUMMARY
