@@ -12,11 +12,11 @@ C !ROUTINE: GAD_SOM_ADVECT
 
 C !INTERFACE: ==========================================================
       SUBROUTINE GAD_SOM_ADVECT(
-     I     implicitAdvection, advectionScheme, vertAdvecScheme,
-     I     tracerIdentity, deltaTLev,
-     I     uFld, vFld, wFld, tracer,
+     I     implicitAdvection, diagAdvVar,
+     I     advectionScheme, vertAdvecScheme, tracerIdentity,
+     I     deltaTLev, uFld, vFld, wFld, tracer,
      U     smTr,
-     O     gTracer,
+     O     gTracer, tracTmp,
      I     bi,bj, myTime,myIter,myThid)
 
 C !DESCRIPTION:
@@ -46,6 +46,7 @@ C !USES: ===============================================================
 
 C !INPUT PARAMETERS: ===================================================
 C  implicitAdvection :: implicit vertical advection (later on)
+C  diagAdvVar        :: calculate variance budget diagnostics
 C  advectionScheme   :: advection scheme to use (Horizontal plane)
 C  vertAdvecScheme   :: advection scheme to use (vertical direction)
 C  tracerIdentity    :: tracer identifier (required only for OBCS)
@@ -57,7 +58,7 @@ C  bi,bj             :: tile indices
 C  myTime            :: current time
 C  myIter            :: iteration number
 C  myThid            :: thread number
-      LOGICAL implicitAdvection
+      LOGICAL implicitAdvection, diagAdvVar
       INTEGER advectionScheme, vertAdvecScheme
       INTEGER tracerIdentity
       _RL deltaTLev(Nr)
@@ -73,10 +74,24 @@ C  myThid            :: thread number
 C !OUTPUT PARAMETERS: ==================================================
 C  smTr              :: tracer 1rst & 2nd Order moments
 C  gTracer           :: tendency array
+C  tracTmp           :: tracer field updated value (for diagnostics)
       _RL smTr   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,nSOM)
       _RL gTracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+#ifdef ALLOW_DIAGNOSTICS
+      _RL tracTmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+#else
+      _RL tracTmp(1)
+#endif
 
 #if ( defined GAD_ALLOW_TS_SOM_ADV || defined PTRACERS_ALLOW_DYN_STATE )
+#ifdef ALLOW_DIAGNOSTICS
+C !FUNCTIONS: ==========================================================
+      CHARACTER*4 GAD_DIAG_SUFX
+      EXTERNAL    GAD_DIAG_SUFX
+      LOGICAL  DIAGNOSTICS_IS_ON
+      EXTERNAL DIAGNOSTICS_IS_ON
+#endif
+
 C !LOCAL VARIABLES: ====================================================
 C  maskUp        :: 2-D array mask for W points
 C  i,j,k         :: loop indices
@@ -85,10 +100,10 @@ C  kDown         :: index into 2 1/2D array, toggles between 2 and 1
 C  xA,yA         :: areas of X and Y face of tracer cells
 C  uTrans,vTrans :: 2-D arrays of volume transports at U,V points
 C  rTrans        :: 2-D arrays of volume transports at W points
+C  rTransKp      :: vertical volume transport at interface k+1
 C  afx           :: 2-D array for horizontal advective flux, x direction
 C  afy           :: 2-D array for horizontal advective flux, y direction
 C  afr           :: 2-D array for vertical advective flux
-C  fVerT         :: 2 1/2D arrays for vertical advective flux
 C  calc_fluxes_X :: logical to indicate to calculate fluxes in X dir
 C  calc_fluxes_Y :: logical to indicate to calculate fluxes in Y dir
 C  interiorOnly  :: only update the interior of myTile, but not the edges
@@ -137,7 +152,6 @@ C  msgBuf        :: Informational/error message buffer
       _RL  fp_yz  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL  fn_yz  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL  smCorners(OLx,OLy,4,-1:nSOM)
-c     _RL  localTr
       LOGICAL calc_fluxes_X, calc_fluxes_Y
       LOGICAL interiorOnly, overlapOnly
       INTEGER limiter
@@ -156,12 +170,22 @@ c     _RL  localTr
       CHARACTER*8 diagName
       CHARACTER*4 diagSufx
       LOGICAL     doDiagAdvX, doDiagAdvY, doDiagAdvR
-C-    Functions:
-      CHARACTER*4 GAD_DIAG_SUFX
-      EXTERNAL    GAD_DIAG_SUFX
-      LOGICAL  DIAGNOSTICS_IS_ON
-      EXTERNAL DIAGNOSTICS_IS_ON
-#endif
+      _RL rTransKp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL fVertKp1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL diagTr  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL diagT2  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL diagVTR (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL diagVPR (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL diagSqD (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL delTx, delTy, delTr, delT2
+      _RL barTx, barTy, barTr, barT2
+      _RL localTr, localT2, maskDwn
+C--   Evaluate square of tracer gradient from before the update (consistent
+C      with forward-in-time time-stepping); otherwise, from time-centered
+C     averaged (half sum of tracer-value before and after the update)
+      LOGICAL     fwdSqGrad
+      PARAMETER ( fwdSqGrad = .TRUE. )
+#endif /* ALLOW_DIAGNOSTICS */
 CEOP
 
 #ifdef ALLOW_DIAGNOSTICS
@@ -178,7 +202,7 @@ C--   Set diagnostics flags and suffix for the current tracer
         diagName = 'ADVr'//diagSufx
         doDiagAdvR = DIAGNOSTICS_IS_ON( diagName, myThid )
       ENDIF
-#endif
+#endif /* ALLOW_DIAGNOSTICS */
 
 C--   Set up work arrays with valid (i.e. not NaN) values
 C     These inital values do not alter the numerical results. They
@@ -189,6 +213,7 @@ C     uninitialised but inert locations.
        DO i=1-OLx,sNx+OLx
          afx(i,j) = 0.
          afy(i,j) = 0.
+         afr(i,j) = 0.
 C-    xA,yA,uTrans,vTrans are set over the full domain
 C      => no need for extra initialisation
 c       xA(i,j)      = 0. _d 0
@@ -358,6 +383,16 @@ C-     Internal exchange for calculations in X
      I                     ipass, k, Nr, bi, bj, myThid )
           ENDIF
 
+#ifdef ALLOW_DIAGNOSTICS
+          IF ( diagAdvVar .AND. .NOT.overlapOnly ) THEN
+           DO j=1,sNy
+            DO i=1-OLx+1,sNx+OLx-1
+             diagTr(i,j) = smTr0(i,j,k)/smVol(i,j,k)
+            ENDDO
+           ENDDO
+          ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+
 C-     Solve advection in X and update moments
           IF ( advectionScheme.EQ.ENUM_SOM_PRATHER
      &       .OR. advectionScheme.EQ.ENUM_SOM_LIMITER ) THEN
@@ -383,6 +418,43 @@ C-     Solve advection in X and update moments
            STOP 'GAD_SOM_ADVECT: adv. scheme incompatibale with SOM'
           ENDIF
 
+#ifdef ALLOW_DIAGNOSTICS
+          IF ( diagAdvVar .AND. .NOT.overlapOnly ) THEN
+           DO j=1,sNy
+            DO i=1-OLx+2,sNx+OLx-1
+             delTx = ( diagTr(i,j) - diagTr(i-1,j) )*maskW(i,j,k,bi,bj)
+             diagSqD(i,j) = delTx*delTx*xA(i,j)
+            ENDDO
+           ENDDO
+           DO j=1,sNy
+            DO i=1-OLx+1,sNx+OLx-1
+             localTr = smTr0(i,j,k)/smVol(i,j,k)
+             diagT2(i,j) = ( diagTr(i,j) * localTr )
+             diagTr(i,j) = ( diagTr(i,j) + localTr )*halfRL
+            ENDDO
+           ENDDO
+           DO j=1,sNy
+            DO i=1-OLx+2,sNx+OLx-1
+             delTx = ( diagTr(i,j) - diagTr(i-1,j) )*maskW(i,j,k,bi,bj)
+             barTx = ( diagTr(i,j) + diagTr(i-1,j) )*halfRL
+C- notes: masking delT2 is (most likely) not necessary
+             delT2 = ( diagT2(i,j) - diagT2(i-1,j) )*maskW(i,j,k,bi,bj)
+             barT2 = ( diagT2(i,j) + diagT2(i-1,j) )*halfRL
+             diagVTR(i,j) = twoRL*afx(i,j)*barTx
+     &                    - uTrans(i,j)*barT2
+             diagVPR(i,j) = twoRL*afx(i,j)*delTx
+     &                    - uTrans(i,j)*delT2
+            ENDDO
+           ENDDO
+           diagName = 'VTRx'//diagSufx
+           CALL DIAGNOSTICS_FILL( diagVTR,diagName,k,1,2,bi,bj,myThid )
+           diagName = 'VPRx'//diagSufx
+           CALL DIAGNOSTICS_FILL( diagVPR,diagName,k,1,2,bi,bj,myThid )
+           diagName = 'SqDx'//diagSufx
+           CALL DIAGNOSTICS_FILL( diagSqD,diagName,k,1,2,bi,bj,myThid )
+          ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+
 C--   End of X direction
         ENDIF
 
@@ -404,6 +476,16 @@ C-     Internal exchange for calculations in Y
      I                     N_edge, S_edge, E_edge, W_edge,
      I                     iPass, k, Nr, bi, bj, myThid )
           ENDIF
+
+#ifdef ALLOW_DIAGNOSTICS
+          IF ( diagAdvVar .AND. .NOT.overlapOnly ) THEN
+           DO j=1-OLy+1,sNy+OLy-1
+            DO i=1,sNx
+             diagTr(i,j) = smTr0(i,j,k)/smVol(i,j,k)
+            ENDDO
+           ENDDO
+          ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 C-     Solve advection in Y and update moments
           IF ( advectionScheme.EQ.ENUM_SOM_PRATHER
@@ -429,6 +511,43 @@ C-     Solve advection in Y and update moments
           ELSE
            STOP 'GAD_SOM_ADVECT: adv. scheme incompatibale with SOM'
           ENDIF
+
+#ifdef ALLOW_DIAGNOSTICS
+          IF ( diagAdvVar .AND. .NOT.overlapOnly ) THEN
+           DO j=1-OLy+2,sNy+OLy-1
+            DO i=1,sNx
+             delTy = ( diagTr(i,j) - diagTr(i,j-1) )*maskS(i,j,k,bi,bj)
+             diagSqD(i,j) = delTy*delTy*yA(i,j)
+            ENDDO
+           ENDDO
+           DO j=1-OLy+1,sNy+OLy-1
+            DO i=1,sNx
+             localTr = smTr0(i,j,k)/smVol(i,j,k)
+             diagT2(i,j) = ( diagTr(i,j) * localTr )
+             diagTr(i,j) = ( diagTr(i,j) + localTr )*halfRL
+            ENDDO
+           ENDDO
+           DO j=1-OLy+2,sNy+OLy-1
+            DO i=1,sNx
+             delTy = ( diagTr(i,j) - diagTr(i,j-1) )*maskS(i,j,k,bi,bj)
+             barTy = ( diagTr(i,j) + diagTr(i,j-1) )*halfRL
+C- notes: masking delT2 is (most likely) not necessary
+             delT2 = ( diagT2(i,j) - diagT2(i,j-1) )*maskS(i,j,k,bi,bj)
+             barT2 = ( diagT2(i,j) + diagT2(i,j-1) )*halfRL
+             diagVTR(i,j) = twoRL*afy(i,j)*barTy
+     &                    - vTrans(i,j)*barT2
+             diagVPR(i,j) = twoRL*afy(i,j)*delTy
+     &                    - vTrans(i,j)*delT2
+            ENDDO
+           ENDDO
+           diagName = 'VTRy'//diagSufx
+           CALL DIAGNOSTICS_FILL( diagVTR,diagName,k,1,2,bi,bj,myThid )
+           diagName = 'VPRy'//diagSufx
+           CALL DIAGNOSTICS_FILL( diagVPR,diagName,k,1,2,bi,bj,myThid )
+           diagName = 'SqDy'//diagSufx
+           CALL DIAGNOSTICS_FILL( diagSqD,diagName,k,1,2,bi,bj,myThid )
+          ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 C--   End of Y direction
         ENDIF
@@ -463,13 +582,13 @@ C--  consistent with rescaling of tendencies (in FREESURF_RESCALE_G):
          diagName = 'ADVy'//diagSufx
          CALL DIAGNOSTICS_FILL(afy,diagName, k,1, 2,bi,bj, myThid )
        ENDIF
-#ifdef ALLOW_LAYERS
+# ifdef ALLOW_LAYERS
        IF ( useLayers ) THEN
          CALL LAYERS_FILL(afx,tracerIdentity,'AFX',k,1,2,bi,bj,myThid)
          CALL LAYERS_FILL(afy,tracerIdentity,'AFY',k,1,2,bi,bj,myThid)
        ENDIF
-#endif /* ALLOW_LAYERS */
-#endif
+# endif /* ALLOW_LAYERS */
+#endif /* ALLOW_DIAGNOSTICS */
 
 #ifdef ALLOW_DEBUG
        IF ( debugLevel .GE. debLevC
@@ -481,6 +600,16 @@ C--  consistent with rescaling of tendencies (in FREESURF_RESCALE_G):
      &             afx,afy, k, standardMessageUnit,bi,bj,myThid )
        ENDIF
 #endif /* ALLOW_DEBUG */
+
+#ifdef ALLOW_DIAGNOSTICS
+       IF ( diagAdvVar ) THEN
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           tracTmp(i,j,k) = smTr0(i,j,k)/smVol(i,j,k)
+          ENDDO
+         ENDDO
+        ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 C--   End of K loop for horizontal fluxes
       ENDDO
@@ -658,16 +787,72 @@ C    inaccurate linFSConserveTr and "surfExpan_" monitor.
          CALL DIAGNOSTICS_FILL( afr,
      &                          diagName, k,1, 2,bi,bj, myThid )
         ENDIF
-#ifdef ALLOW_LAYERS
+# ifdef ALLOW_LAYERS
         IF ( useLayers ) THEN
           CALL LAYERS_FILL(afr,tracerIdentity,'AFR',
      &                     k,1,2,bi,bj,myThid)
         ENDIF
-#endif /* ALLOW_LAYERS */
-#endif
+# endif /* ALLOW_LAYERS */
+        IF ( k.EQ.Nr .AND. diagAdvVar ) THEN
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+C       store curent level values for next level (k-1) calculation
+           rTransKp(i,j) = rTrans(i,j)
+           fVertKp1(i,j) = afr(i,j)
+           localTr = smTr0(i,j,k)/smVol(i,j,k)
+           diagT2(i,j) = ( localTr * tracTmp(i,j,k) )
+           diagTr(i,j) = ( localTr + tracTmp(i,j,k) )*halfRL
+          ENDDO
+         ENDDO
+        ELSEIF ( diagAdvVar ) THEN
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           maskDwn = maskC(i,j,k,bi,bj)*maskC(i,j,k+1,bi,bj)
+           delTr = ( tracTmp(i,j,k+1) - tracTmp(i,j,k) )*rkSign
+     &             *maskDwn
+           diagSqD(i,j) = delTr*delTr*rA(i,j,bi,bj)
+           localTr = smTr0(i,j,k)/smVol(i,j,k)
+           localT2 = ( localTr * tracTmp(i,j,k) )
+           localTr = ( localTr + tracTmp(i,j,k) )*halfRL
+           delTr = ( diagTr(i,j) - localTr )*rkSign*maskDwn
+           barTr = ( diagTr(i,j) + localTr )*halfRL
+C- notes: masking delT2 is (most likely) not necessary
+           delT2 = ( diagT2(i,j) - localT2 )*rkSign*maskDwn
+           barT2 = ( diagT2(i,j) + localT2 )*halfRL
+           diagVTR(i,j) = twoRL*fVertKp1(i,j)*barTr
+     &                  - rTransKp(i,j)*barT2
+           diagVPR(i,j) = twoRL*fVertKp1(i,j)*delTr
+     &                  - rTransKp(i,j)*delT2
+C       store curent level values for next level (k-1) calculation
+           rTransKp(i,j) = rTrans(i,j)
+           fVertKp1(i,j) = afr(i,j)
+           diagT2(i,j) = localT2
+           diagTr(i,j) = localTr
+          ENDDO
+         ENDDO
+         diagName = 'VTRr'//diagSufx
+         CALL DIAGNOSTICS_FILL( diagVTR,diagName,k+1,1,2,bi,bj,myThid )
+         diagName = 'VPRr'//diagSufx
+         CALL DIAGNOSTICS_FILL( diagVPR,diagName,k+1,1,2,bi,bj,myThid )
+         diagName = 'SqDr'//diagSufx
+         CALL DIAGNOSTICS_FILL( diagSqD,diagName,k+1,1,2,bi,bj,myThid )
+        ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 C--   End of k loop for vertical flux
        ENDDO
+
+#ifdef ALLOW_DIAGNOSTICS
+       IF ( diagAdvVar ) THEN
+        DO k=1,Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           tracTmp(i,j,k) = smTr0(i,j,k)/smVol(i,j,k)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 C--   end of if not.implicitAdvection block
       ENDIF
 #endif /* GAD_ALLOW_TS_SOM_ADV or PTRACERS_ALLOW_DYN_STATE */
