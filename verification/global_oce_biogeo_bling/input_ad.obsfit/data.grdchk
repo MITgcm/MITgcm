@@ -7,7 +7,7 @@
  nbeg             = 0,
  nstep            = 1,
  nend             = 3,
-# testing dSST/dT
+# testing dpH/dALK
  grdchkvarname    = "xx_theta",
  iGloPos  =34,
  jGloPos  =10,
