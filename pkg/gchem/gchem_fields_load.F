@@ -259,7 +259,6 @@ C Otherwise get atmospheric pressure from PKG/EXF
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-C Atm pressure in Pascals, convert to atm
             gchemAtmosP(i,j,bi,bj) = apressure(i,j,bi,bj)
            ENDDO
           ENDDO
