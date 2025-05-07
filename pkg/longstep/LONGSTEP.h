@@ -62,7 +62,48 @@ C
       INTEGER LS_KwyCount(nSx,nSy)
       INTEGER LS_KwzCount(nSx,nSy)
       COMMON /LONGSTEP_GM_R/ LS_Kwx, LS_Kwy, LS_Kwz
-      COMMON /LONGSTEP_GM_I/ LS_KwxCount,LS_KwyCount,LS_KwzCount
+
+C     Horizontal part of the tensor
+C     LS_Kux :: longstep average of K_11 element of GM/Redi tensor, 
+C               X direction at U point
+C     LS_Kvy :: longstep average of K_22 element of GM/Redi tensor,
+C               Y direction at V point
+      _RL LS_Kux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL LS_Kvy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      INTEGER LS_KuxCount(nSx,nSy)
+      INTEGER LS_KvyCount(nSx,nSy)
+      COMMON /LONGSTEP_GM_H/ LS_Kux, LS_Kvy
+      COMMON /LONGSTEP_GM_I/ 
+     &       LS_KwxCount,LS_KwyCount,LS_KwzCount,
+     &       LS_KuxCount,LS_KvyCount
+
+#ifdef GM_EXTRA_DIAGONAL
+C     First/second rows of tensor corresponds to U/V points
+C     LS_Kuz :: longstep average of K_13 element of GM/Redi tensor,
+C               Z direction at U point
+C     LS_Kvz :: longstep average of K_23 element of GM/Redi tensor,
+C               Z direction at V point
+      _RL LS_Kuz(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL LS_Kvz(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      INTEGER LS_KuzCount(nSx,nSy)
+      INTEGER LS_KvzCount(nSx,nSy)
+      COMMON /LONGSTEP_GM_UV/ LS_Kuz, LS_Kvz
+      COMMON /LONGSTEP_GM_IE/ LS_KuzCount, LS_KvzCount 
+#else
+      _RL LS_Kuz, LS_Kvz
+      INTEGER LS_KuzCount, LS_KvzCount
+      PARAMETER( LS_Kuz=1., LS_Kvz=1., LS_KuzCount=1, LS_KvzCount=1)
+#endif
+
+C     streamfunction computed in GMREDI
+C     LS_PsiX :: longstep average of K_31 element, X direction at W point
+C     LS_PsiY :: longstep average of K_32 element, Y direction at W point
+      _RL LS_PsiX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL LS_PsiY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      INTEGER LS_PsiXCount(nSx,nSy)
+      INTEGER LS_PsiYCount(nSx,nSy)
+      COMMON /LONGSTEP_GM_PSI/ LS_PsiX, LS_PsiY
+
 #endif /* ALLOW_GMREDI */
 
 #ifdef ALLOW_KPP
