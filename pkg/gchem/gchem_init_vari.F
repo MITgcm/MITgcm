@@ -42,6 +42,8 @@ C  i,j,k,bi,bj          :: loop indices
 C  jTr                  :: ptracer number
       INTEGER bi,bj
       INTEGER i,j
+      INTEGER intimeP, intime0, intime1
+      _RL aWght,bWght
 #ifdef GCHEM_ADD2TR_TENDENCY
       INTEGER k
       INTEGER jTr
@@ -86,20 +88,39 @@ C     set reasonable values fields that need at least something
        ENDDO
       ENDDO
 
+      print*,'ZZZ',gchemapCO2(30,15,1,1)
+
       IF ( .NOT. gchem_useEXF ) THEN
-       IF ( gchem_SiFile .NE. ' '  ) THEN
-        CALL READ_FLD_XY_RS( gchem_SiFile,' ',gchemSi,0,myThid )
+         CALL LEF_ZERO( gchemSi0,myThid )
+         CALL LEF_ZERO( gchemSi1,myThid )
+
+C--   Now calculate whether it is time to update the forcing arrays
+       CALL GET_PERIODIC_INTERVAL(
+     O                   intimeP, intime0, intime1, bWght, aWght,
+     I                   externForcingCycle, externForcingPeriod,
+     I                   deltaTClock, startTime, myThid )
+
+        IF ( gchem_WindFile .NE. ' ' ) THEN
+          CALL READ_REC_XY_RS( gchem_WindFile,gchemWind0,intime0,
+     &         nIter0,myThid )
+          CALL READ_REC_XY_RS( gchem_WindFile,gchemWind1,intime1,
+     &         nIter0,myThid )
+        ENDIF
+
+        IF ( gchem_SiFile .NE. ' ' ) THEN
+          CALL READ_REC_XY_RS( gchem_SiFile,gchemSi0,intime0,
+     &         nIter0,myThid )
+          CALL READ_REC_XY_RS( gchem_SiFile,gchemSi1,intime1,
+     &         nIter0,myThid )
+        ENDIF
+
+        IF ( gchem_FeFile .NE. ' ' ) THEN
+          CALL READ_REC_XY_RS( gchem_FeFile,gchemFe0,intime0,
+     &         nIter0,myThid )
+          CALL READ_REC_XY_RS( gchem_FeFile,gchemFe1,intime1,
+     &         nIter0,myThid )
+         ENDIF
        ENDIF
-       IF ( gchem_parFile .NE. ' '  ) THEN
-        CALL READ_FLD_XY_RS( gchem_parFile,' ',gchemPAR,0,myThid )
-       ENDIF
-       IF ( gchem_FeFile .NE. ' '  ) THEN
-        CALL READ_FLD_XY_RS( gchem_FeFile,' ',gchemFe,0,myThid )
-       ENDIF
-       IF ( gchem_apco2File .NE. ' '  ) THEN
-        CALL READ_FLD_XY_RS( gchem_apco2File,' ',gchemapCO2,0,myThid )
-       ENDIF
-      ENDIF
 
 #ifdef ALLOW_EXF
       IF ( gchem_useEXF ) THEN
@@ -168,6 +189,8 @@ C     gchem_useEXF
       _EXCH_XY_RL( gchemPAR, myThid )
       _EXCH_XY_RL( gchemFe, myThid )
       _EXCH_XY_RL( gchemapCO2, myThid )
+
+      print*,'XXX gchem init vari'
 
 C--   Initialise other Geo-Chemistry pkg variables:
 

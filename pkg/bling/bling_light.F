@@ -41,6 +41,7 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "GCHEM.h"
 #include "BLING_VARS.h"
 #ifdef ALLOW_EXF
 #include "FFIELDS.h"
@@ -162,10 +163,15 @@ c  Surface insolation
 
 #ifndef ALLOW_EXF
       swdownfile = ' '
+#else
+      IF ( .NOT. gchem_useEXF) THEN
+        swdownfile = ' '
+      ENDIF
 #endif
 
 C If no EXF shortwave, calculate from time and latitude
       IF (swdownfile.EQ.' ') THEN
+
 C  From pkg/dic/dic_insol
 C  find light as function of date and latitude
 C  based on paltridge and parson

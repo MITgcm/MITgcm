@@ -49,7 +49,7 @@ CEOP
 cccccccccccccccccccccccccc
 c load external data     c
 cccccccccccccccccccccccccc
-c     IF ( .NOT. gchem_useEXF ) THEN
+      IF ( .NOT. gchem_useEXF ) THEN
 
        IF (  GCHEM_forcingCycle.gt.0. _d 0 ) THEN
 
@@ -203,7 +203,7 @@ C-     end if-bloc (time to load new fields)
 C--   endif for GCHEM_forcingCycle
        ENDIF
 C--   endif .not. gchem_useEXF
-c     ENDIF
+      ENDIF
 
 C-----------------------------------------------------------
 #ifdef ALLOW_EXF
@@ -214,7 +214,7 @@ C If a wind file is given in data.gchem, read it
        IF ( gchem_WindFile .NE. ' ' ) THEN
         CALL EXF_SET_FLD(
      &     'gchemWind', gchem_windfile, gchem_windMask,
-     &     gchem_windStartTime, gchem_wind2Period, gchem_windRepCycle,
+     &     gchem_windStartTime, gchem_windPeriod, gchem_windRepCycle,
      &     gchem_inscal_wind,
      &     gchem_wind_exfremo_intercept, gchem_wind_exfremo_slope,
      &     gchemWind, gchemWind0, gchemWind1,
