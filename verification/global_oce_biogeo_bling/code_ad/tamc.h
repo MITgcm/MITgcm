@@ -33,14 +33,9 @@ C     nchklev_3 :: length of outer loop of 3-level checkpointing
       INTEGER    nchklev_1
       PARAMETER( nchklev_1 =   1 )
       INTEGER    nchklev_2
-#ifdef AUTODIFF_2_LEVEL_CHECKPOINT
-C     use two-level checkpointing with the same storage
-      PARAMETER( nchklev_2 = 200 )
-#else
-      PARAMETER( nchklev_2 =  10 )
+      PARAMETER( nchklev_2 =   2 )
       INTEGER    nchklev_3
-      PARAMETER( nchklev_3 =  20 )
-#endif
+      PARAMETER( nchklev_3 =   2 )
 #ifdef AUTODIFF_4_LEVEL_CHECKPOINT
 C     nchklev_4 :: length of outer loop of 4-level checkpointing
       INTEGER    nchklev_4
@@ -80,7 +75,7 @@ C     maxpass :: maximum number of (active + passive) tracers
 C                Note: defined in PTRACERS_SIZE.h if compiling pkg/ptracers
 #ifndef ALLOW_PTRACERS
       INTEGER    maxpass
-      PARAMETER( maxpass   = 2 )
+      PARAMETER( maxpass   = 3 )
 #endif
 C     maxcube :: for Multi-Dim advection, max number of horizontal directions
       INTEGER    maxcube
