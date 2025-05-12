@@ -106,7 +106,7 @@ C Implies that a forward loop is calling
             err = NF_INQ_VARID( fiddata(fNb,bi,bj),
      &            prof_namesweight(fNb,num_var), varId1 )
             CALL PROFILES_NF_ERROR(
-     &           'READVECTOR: NF_INQ_VARID prof_namesweight',
+     &           'READVECTOR: NF_INQ_VARID '//prof_namesweight(fNb,num_var)',
      &           err,bi,bj,myThid )
             err = NF_GET_VARA_DOUBLE( fiddata(fNb,bi,bj),
      &            varId1, vec_start, vec_count, vec_tmp2 )
