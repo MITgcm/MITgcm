@@ -91,7 +91,7 @@ C Implies that a forward loop is calling
      &   profiles_maxind_buff(bi,bj)-profiles_minind_buff(bi,bj)+1
 
         DO num_var = 1, NVARMAX
-          IF (vec_quantities(fNb,num_var,bi,bj).EQV..TRUE.) THEN
+          IF ( vec_quantities(fNb,num_var,bi,bj) ) THEN
             err = NF_INQ_VARID( fiddata(fNb,bi,bj),
      &            prof_names(fNb,num_var), varId1 )
             CALL PROFILES_NF_ERROR(
@@ -106,7 +106,7 @@ C Implies that a forward loop is calling
             err = NF_INQ_VARID( fiddata(fNb,bi,bj),
      &            prof_namesweight(fNb,num_var), varId1 )
             CALL PROFILES_NF_ERROR(
-     &           'READVECTOR: NF_INQ_VARID '//prof_namesweight(fNb,num_var)',
+     &      'READVECTOR: NF_INQ_VARID '//prof_namesweight(fNb,num_var),
      &           err,bi,bj,myThid )
             err = NF_GET_VARA_DOUBLE( fiddata(fNb,bi,bj),
      &            varId1, vec_start, vec_count, vec_tmp2 )
