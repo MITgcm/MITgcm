@@ -54,15 +54,51 @@ C     Bottom row of tensor corresponds to W points
 C     LS_Kwx :: longstep average of K_31 element, X direction at W point
 C     LS_Kwy :: longstep average of K_32 element, Y direction at W point
 C     LS_Kwz :: longstep average of K_33 element, Z direction at W point
+C     Horizontal part of the tensor
+C     LS_Kux :: longstep average of K_11 element of GM/Redi tensor,
+C               X direction at U point
+C     LS_Kvy :: longstep average of K_22 element of GM/Redi tensor,
+C               Y direction at V point
+C     First/second rows of tensor corresponds to U/V points
+C     LS_Kuz :: longstep average of K_13 element of GM/Redi tensor,
+C               Z direction at U point
+C     LS_Kvz :: longstep average of K_23 element of GM/Redi tensor,
+C               Z direction at V point
 C
       _RL LS_Kwx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL LS_Kwy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL LS_Kwz(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL LS_Kux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL LS_Kvy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL LS_Kuz(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL LS_Kvz(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      COMMON /LONGSTEP_GM_R/
+     &       LS_Kwx, LS_Kwy, LS_Kwz,
+     &       LS_Kux, LS_Kvy,
+     &       LS_Kuz, LS_Kvz
+
+C     streamfunction computed in GMREDI
+C     LS_PsiX :: longstep average of K_31 element, X direction at W point
+C     LS_PsiY :: longstep average of K_32 element, Y direction at W point
+      _RL LS_PsiX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL LS_PsiY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      COMMON /LONGSTEP_GM_PSI/ LS_PsiX, LS_PsiY
+
+C     And all corresponding counters for GM/Redi Longstep-averaging
       INTEGER LS_KwxCount(nSx,nSy)
       INTEGER LS_KwyCount(nSx,nSy)
       INTEGER LS_KwzCount(nSx,nSy)
-      COMMON /LONGSTEP_GM_R/ LS_Kwx, LS_Kwy, LS_Kwz
-      COMMON /LONGSTEP_GM_I/ LS_KwxCount,LS_KwyCount,LS_KwzCount
+      INTEGER LS_KuxCount(nSx,nSy)
+      INTEGER LS_KvyCount(nSx,nSy)
+      INTEGER LS_KuzCount(nSx,nSy)
+      INTEGER LS_KvzCount(nSx,nSy)
+      INTEGER LS_PsiXCount(nSx,nSy)
+      INTEGER LS_PsiYCount(nSx,nSy)
+      COMMON /LONGSTEP_GM_I/
+     &       LS_KwxCount, LS_KwyCount, LS_KwzCount,
+     &       LS_KuxCount, LS_KvyCount,
+     &       LS_KuzCount, LS_KvzCount,
+     &       LS_PsiXCount, LS_PsiYCount
 #endif /* ALLOW_GMREDI */
 
 #ifdef ALLOW_KPP
