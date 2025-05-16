@@ -72,12 +72,14 @@ C     first iteration in a long time step? - reset averages
         CALL LONGSTEP_RESET_3D(LS_KwzCount, LS_Kwz, Nr, myThid)
         CALL LONGSTEP_RESET_3D(LS_KuxCount, LS_Kux, Nr, myThid)
         CALL LONGSTEP_RESET_3D(LS_KvyCount, LS_Kvy, Nr, myThid)
-#ifdef GM_EXTRA_DIAGONAL
-        CALL LONGSTEP_RESET_3D(LS_KuzCount, LS_Kuz, Nr, myThid)
-        CALL LONGSTEP_RESET_3D(LS_KvzCount, LS_Kvz, Nr, myThid)
-#endif
-        CALL LONGSTEP_RESET_3D(LS_PsiXCount, LS_PsiX, Nr, myThid)
-        CALL LONGSTEP_RESET_3D(LS_PsiYCount, LS_PsiY, Nr, myThid)
+        IF ( GM_ExtraDiag ) THEN
+         CALL LONGSTEP_RESET_3D(LS_KuzCount, LS_Kuz, Nr, myThid)
+         CALL LONGSTEP_RESET_3D(LS_KvzCount, LS_Kvz, Nr, myThid)
+        ENDIF
+        IF ( GM_AdvForm ) THEN
+         CALL LONGSTEP_RESET_3D(LS_PsiXCount, LS_PsiX, Nr, myThid)
+         CALL LONGSTEP_RESET_3D(LS_PsiYCount, LS_PsiY, Nr, myThid)
+        ENDIF
        ENDIF
 #endif
 #ifdef ALLOW_KPP
@@ -126,9 +128,9 @@ C--   update average inside tile (no overlaps) for all bi,bj
 #endif
 #ifdef GM_BOLUS_ADVEC
        IF ( GM_AdvForm ) THEN
-        CALL LONGSTEP_FILL_3D(LS_PsiXCount, LS_PsiX, GM_PsiX, 
+        CALL LONGSTEP_FILL_3D(LS_PsiXCount, LS_PsiX, GM_PsiX,
      &                        Nr, myThid)
-        CALL LONGSTEP_FILL_3D(LS_PsiYCount, LS_PsiY, GM_PsiY, 
+        CALL LONGSTEP_FILL_3D(LS_PsiYCount, LS_PsiY, GM_PsiY,
      &                        Nr, myThid)
        ENDIF
 #endif
@@ -168,12 +170,14 @@ C     time for a ptracer time step? - finish average
         CALL LONGSTEP_AVERAGE_3D(LS_KwzCount, LS_Kwz, Nr, myThid)
         CALL LONGSTEP_AVERAGE_3D(LS_KuxCount, LS_Kux, Nr, myThid)
         CALL LONGSTEP_AVERAGE_3D(LS_KvyCount, LS_Kvy, Nr, myThid)
-#ifdef GM_EXTRA_DIAGONAL
-        CALL LONGSTEP_AVERAGE_3D(LS_KuzCount, LS_Kuz, Nr, myThid)
-        CALL LONGSTEP_AVERAGE_3D(LS_KvzCount, LS_Kvz, Nr, myThid)
-#endif
-        CALL LONGSTEP_AVERAGE_3D(LS_PsiXCount, LS_PsiX, Nr, myThid)
-        CALL LONGSTEP_AVERAGE_3D(LS_PsiYCount, LS_PsiY, Nr, myThid)
+        IF ( GM_ExtraDiag ) THEN
+         CALL LONGSTEP_AVERAGE_3D(LS_KuzCount, LS_Kuz, Nr, myThid)
+         CALL LONGSTEP_AVERAGE_3D(LS_KvzCount, LS_Kvz, Nr, myThid)
+        ENDIF
+        IF ( GM_AdvForm ) THEN
+         CALL LONGSTEP_AVERAGE_3D(LS_PsiXCount, LS_PsiX, Nr, myThid)
+         CALL LONGSTEP_AVERAGE_3D(LS_PsiYCount, LS_PsiY, Nr, myThid)
+        ENDIF
        ENDIF
 #endif
 #ifdef ALLOW_KPP
@@ -200,10 +204,14 @@ C     and update overlaps
 #ifdef ALLOW_GMREDI
        IF ( useGMRedi ) THEN
         CALL EXCH_UV_AGRID_3D_RL( LS_Kwx, LS_Kwy, .TRUE., Nr, myThid )
-        CALL EXCH_UV_3D_RL( LS_Kux, LS_Kvy, .FALSE., Nr, myThid )
-        CALL EXCH_UV_3D_RL( LS_Kuz, LS_Kvz, .TRUE., Nr, myThid )
-        CALL EXCH_UV_3D_RL( LS_PsiX, LS_PsiY, .TRUE., Nr, myThid )
         CALL EXCH_3D_RL( LS_Kwz  , Nr, myThid )
+        CALL EXCH_UV_3D_RL( LS_Kux, LS_Kvy, .FALSE., Nr, myThid )
+        IF ( GM_ExtraDiag ) THEN
+         CALL EXCH_UV_3D_RL( LS_Kuz, LS_Kvz, .TRUE., Nr, myThid )
+        ENDIF
+        IF ( GM_AdvForm ) THEN
+         CALL EXCH_UV_3D_RL( LS_PsiX, LS_PsiY, .TRUE., Nr, myThid )
+        ENDIF
        ENDIF
 #endif
 #ifdef ALLOW_KPP
@@ -235,12 +243,14 @@ C     and update overlaps
          CALL DIAGNOSTICS_FILL(LS_Kwz , 'LSkwz   ',0,Nr,0,1,1,myThid)
          CALL DIAGNOSTICS_FILL(LS_Kux , 'LSkux   ',0,Nr,0,1,1,myThid)
          CALL DIAGNOSTICS_FILL(LS_Kvy , 'LSkvy   ',0,Nr,0,1,1,myThid)
-#ifdef GM_EXTRA_DIAGONAL
-         CALL DIAGNOSTICS_FILL(LS_Kuz , 'LSkuz   ',0,Nr,0,1,1,myThid)
-         CALL DIAGNOSTICS_FILL(LS_Kvz , 'LSkvz   ',0,Nr,0,1,1,myThid)
-#endif
-         CALL DIAGNOSTICS_FILL(LS_PsiX , 'LS_PsiX ',0,Nr,0,1,1,myThid)
-         CALL DIAGNOSTICS_FILL(LS_PsiY , 'LS_PsiY ',0,Nr,0,1,1,myThid)
+         IF ( GM_ExtraDiag ) THEN
+          CALL DIAGNOSTICS_FILL(LS_Kuz, 'LSkuz   ',0,Nr,0,1,1,myThid)
+          CALL DIAGNOSTICS_FILL(LS_Kvz, 'LSkvz   ',0,Nr,0,1,1,myThid)
+         ENDIF
+         IF ( GM_AdvForm ) THEN
+          CALL DIAGNOSTICS_FILL(LS_PsiX, 'LS_PsiX ',0,Nr,0,1,1,myThid)
+          CALL DIAGNOSTICS_FILL(LS_PsiY, 'LS_PsiY ',0,Nr,0,1,1,myThid)
+         ENDIF
         ENDIF
 #endif
 #ifdef ALLOW_KPP
