@@ -56,13 +56,10 @@ C be used with the advective form (Bolus velocity) of GM
 
 C Allows to use the advective form (Bolus velocity) of GM
 C  instead of the Skew-Flux form (=default)
-#undef GM_BOLUS_ADVEC
+#define GM_BOLUS_ADVEC
 
 C Allows to use the Boundary-Value-Problem method to evaluate GM Bolus transport
 #define GM_BOLUS_BVP
-#ifdef GM_BOLUS_BVP
-# define GM_BOLUS_ADVEC
-#endif
 
 C Allow QG Leith variable viscosity to be added to GMRedi coefficient
 #undef ALLOW_GM_LEITH_QG
