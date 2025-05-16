@@ -172,9 +172,6 @@ C-    just do a local copy:
 #ifdef ALLOW_GMREDI
 C-    add Bolus velocity to Eulerian-mean velocity:
         IF (useGMRedi) THEN
-C          CALL  GMREDI_RESIDUAL_FLOW(
-C     U                  uFld, vFld, wFld,
-C     I                  bi, bj, myIter, myThid )
           CALL  LONGSTEP_RESIDUAL_FLOW(
      U                  uFld, vFld, wFld,
      I                  bi, bj, myIter, myThid )

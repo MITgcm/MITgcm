@@ -1,7 +1,4 @@
 #include "LONGSTEP_OPTIONS.h"
-#ifdef ALLOW_GMREDI
-# include "GMREDI_OPTIONS.h"
-#endif
 
 CBOP
 C     !ROUTINE: LONGSTEP_INIT_VARIA
@@ -62,10 +59,8 @@ C     initialize longstep averages to zero
        CALL LONGSTEP_RESET_3D(LS_KwzCount, LS_Kwz, Nr, myThid)
        CALL LONGSTEP_RESET_3D(LS_KuxCount, LS_Kux, Nr, myThid)
        CALL LONGSTEP_RESET_3D(LS_KvyCount, LS_Kvy, Nr, myThid)
-#ifdef GM_EXTRA_DIAGONAL
        CALL LONGSTEP_RESET_3D(LS_KuzCount, LS_Kuz, Nr, myThid)
        CALL LONGSTEP_RESET_3D(LS_KvzCount, LS_Kvz, Nr, myThid)
-#endif
        CALL LONGSTEP_RESET_3D(LS_PsiXCount, LS_PsiX, Nr, myThid)
        CALL LONGSTEP_RESET_3D(LS_PsiYCount, LS_PsiY, Nr, myThid)
       ENDIF
