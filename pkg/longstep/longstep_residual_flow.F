@@ -1,8 +1,11 @@
-#include "GMREDI_OPTIONS.h"
+#include "LONGSTEP_OPTIONS.h"
+#ifdef ALLOW_GMREDI
+# include "GMREDI_OPTIONS.h"
+#endif
 
 CBOP
-C     !ROUTINE: GMREDI_RESIDUAL_FLOW
-C     !INTERFACE:
+C     !ROUTINE:
+C     !INTERFACE: LONGSTEP_RESIDUAL_FLOW
       SUBROUTINE LONGSTEP_RESIDUAL_FLOW(
      U                  uFld, vFld, wFld,
      I                  bi, bj, myIter, myThid )
@@ -17,13 +20,9 @@ C     == GLobal variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "GMREDI.h"
-#ifdef ALLOW_EDDYPSI
-# include "DYNVARS.h"
-# include "FFIELDS.h"
-#endif
-#ifdef ALLOW_LONGSTEP
 #include "LONGSTEP.h"
+#ifdef ALLOW_GMREDI
+# include "GMREDI.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -40,8 +39,6 @@ C     myThid :: my Thread Id number
       _RL wFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
 #ifdef ALLOW_GMREDI
-#ifdef GM_BOLUS_ADVEC
-
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     i, j, k :: loop indices
@@ -49,9 +46,6 @@ C     i, j, k :: loop indices
       INTEGER kp1
       _RL maskp1, flipSign4LHCoord
       _RL delPsi
-#ifdef ALLOW_EDDYPSI
-      _RL ustar, vstar
-#endif
 CEOP
 
 C     Since bolus transport is computed as curl of stream-function, needs to
@@ -99,47 +93,7 @@ C       deep-model: simplify FacF / Fac2F (from dx,y / rA) to: 1/FacF
         ENDDO
        ENDDO
 
-#ifdef ALLOW_EDDYPSI
-      ELSEIF( GM_AdvForm .AND. .NOT.GM_AdvSeparate
-     &        .AND. GM_InMomAsStress ) THEN
-
-C     Calculate the mean velocity from the residual and bolus
-       DO k=1,Nr
-        kp1 = MIN(k+1,Nr)
-        maskp1 = 1.
-        IF (k.GE.Nr) maskp1 = 0.
-
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          delPsi = GM_PsiX(i,j,kp1,bi,bj)*deepFacF(kp1)*maskp1
-     &           - GM_PsiX(i,j, k, bi,bj)*deepFacF(k)
-          ustar = delPsi*recip_drF(k)*_recip_hFacW(i,j,k,bi,bj)
-     &                  *recip_deepFacC(k)*flipSign4LHCoord
-          uEulerMean(i,j,k,bi,bj) = uVel(i,j,k,bi,bj) - ustar
-         ENDDO
-        ENDDO
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          delPsi = GM_PsiY(i,j,kp1,bi,bj)*deepFacF(kp1)*maskp1
-     &           - GM_PsiY(i,j, k, bi,bj)*deepFacF(k)
-          vstar  = delPsi*recip_drF(k)*_recip_hFacS(i,j,k,bi,bj)
-     &                   *recip_deepFacC(k)*flipSign4LHCoord
-          vEulerMean(i,j,k,bi,bj) = vVel(i,j,k,bi,bj) - vstar
-         ENDDO
-        ENDDO
-
-       ENDDO
-
-#ifdef ALLOW_DIAGNOSTICS
-       IF ( useDiagnostics ) THEN
-        CALL DIAGNOSTICS_FILL(uEulerMean,'U_EulerM',0,Nr,1,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(vEulerMean,'V_EulerM',0,Nr,1,bi,bj,myThid)
-       ENDIF
-#endif /* ALLOW_DIAGNOSTICS */
-#endif /* ALLOW_EDDYPSI */
-
       ENDIF
-#endif /* GM_BOLUS_ADVEC */
 #endif /* ALLOW_GMREDI */
 
       RETURN
