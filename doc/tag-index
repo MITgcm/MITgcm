@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - fix 3 output formats to allow to run with gfortran v.15
+  - also add "deep_anelastic.vecinv" to multi-threaded tests.
 o pkg/mom_{common,fluxform,vecinv}:
   - mom_fluxform, new option, selectCoriScheme=4: use hFac averaged transport in
     Coriolis term so that column integral of tendency match Coriolis time
