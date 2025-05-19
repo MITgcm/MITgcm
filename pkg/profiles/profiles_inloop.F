@@ -61,8 +61,6 @@ C     !LOCAL VARIABLES:
       optimcycle = 0
 # endif
 
-      _BEGIN_MASTER( myThid )
-
 # ifndef ALLOW_ECCO
       DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -81,6 +79,8 @@ C     !LOCAL VARIABLES:
      U     uVel, vVel, m_UE, m_VN,
      I     .TRUE., .TRUE., .FALSE., Nr, myThid )
 # endif /* not ALLOW_ECCO */
+
+      _BEGIN_MASTER( myThid )
 
       DO bj = 1, nSy
         DO bi = 1, nSx

@@ -1331,14 +1331,14 @@ C YC grid
         ENDDO !DO bi
       ENDDO !DO bj
 
+      _END_MASTER( myThid )
+      _BARRIER
+
 # ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
       NLEVELCOMBRL = NLEVELCOMB
       _GLOBAL_MAX_RL( NLEVELCOMBRL, myThid )
       NLEVELCOMB = NLEVELCOMBRL
 # endif
-
-      _END_MASTER( myThid )
-      _BARRIER
 
 C2) Stop after other kind of errors
       CALL GLOBAL_SUM_INT( stopProfiles, myThid )

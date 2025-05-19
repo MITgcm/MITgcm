@@ -104,9 +104,15 @@ C     bi,bj :: Tile indices
       INTEGER STATUS
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
+      _BEGIN_MASTER( myThid )
+
       IF (profilesDoNcOutput) THEN
-        DO bj = myByLo(myThid), myByHi(myThid)
-          DO bi = myBxLo(myThid), myBxHi(myThid)
+c       DO bj = myByLo(myThid), myByHi(myThid)
+c         DO bi = myBxLo(myThid), myBxHi(myThid)
+C     Since this is only done by the master thread, we loop over the
+C     enire range of tiles
+        DO bj = 1, nSy
+          DO bi = 1, nSx
             DO numFile = 1, NFILESPROFMAX
               IL = ILNBLNK( profilesfiles(numFile) )
 
@@ -165,6 +171,8 @@ C Tangent linear equivalent (.equi) file
           ENDDO
         ENDDO
       ENDIF
+
+      _END_MASTER( myThid )
 #endif /* ALLOW_PROFILES */
 
       RETURN
