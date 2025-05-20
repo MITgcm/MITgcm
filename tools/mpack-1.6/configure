@@ -1,7 +1,7 @@
 #! /bin/sh
 
 # Guess values for system-dependent variables and create Makefiles.
-# Generated automatically using autoconf version 2.13 
+# Generated automatically using autoconf version 2.13
 # Copyright (C) 1992, 93, 94, 95, 96 Free Software Foundation, Inc.
 #
 # This configure script is free software; the Free Software Foundation
@@ -520,7 +520,6 @@ else
   ac_n= ac_c='\c' ac_t=
 fi
 
-
 ac_aux_dir=
 for ac_dir in $srcdir $srcdir/.. $srcdir/../..; do
   if test -f $ac_dir/install-sh; then
@@ -688,7 +687,6 @@ else
   SET_MAKE="MAKE=${MAKE-make}"
 fi
 
-
 PACKAGE=mpack
 
 VERSION=1.6
@@ -703,8 +701,6 @@ EOF
 cat >> confdefs.h <<EOF
 #define VERSION "$VERSION"
 EOF
-
-
 
 missing_dir=`cd $ac_aux_dir && pwd`
 echo $ac_n "checking for working aclocal""... $ac_c" 1>&6
@@ -771,7 +767,6 @@ else
    MAKEINFO="$missing_dir/missing makeinfo"
    echo "$ac_t""missing" 1>&6
 fi
-
 
 # Extract the first word of "gcc", so it can be a program name with args.
 set dummy gcc; ac_word=$2
@@ -903,7 +898,7 @@ cat > conftest.$ac_ext << EOF
 #line 904 "configure"
 #include "confdefs.h"
 
-main(){return(0);}
+int main(){return(0);}
 EOF
 if { (eval echo configure:909: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   ac_cv_prog_cc_works=yes
@@ -994,8 +989,6 @@ else
     CFLAGS=
   fi
 fi
-
-
 
 	save_LIBS="$LIBS"
 	LIB_SOCKET=""
@@ -1214,8 +1207,7 @@ if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
 else
   echo "$ac_t""no" 1>&6
 fi
- 
-        
+
 fi
 
 	LIBS="$LIB_SOCKET $save_LIBS"
@@ -1268,7 +1260,7 @@ if eval "test \"`echo '$ac_cv_func_'$ac_func`\" = yes"; then
   cat >> confdefs.h <<EOF
 #define $ac_tr_func 1
 EOF
- 
+
 else
   echo "$ac_t""no" 1>&6
 fi
@@ -1327,7 +1319,7 @@ if eval "test \"`echo '$ac_cv_func_'$ac_func`\" = yes"; then
   cat >> confdefs.h <<EOF
 #define $ac_tr_func 1
 EOF
- 
+
 else
   echo "$ac_t""no" 1>&6
 fi
@@ -1382,7 +1374,7 @@ if eval "test \"`echo '$ac_cv_func_'$ac_func`\" = yes"; then
   cat >> confdefs.h <<EOF
 #define $ac_tr_func 1
 EOF
- 
+
 else
   echo "$ac_t""no" 1>&6
 LIBOBJS="$LIBOBJS ${ac_func}.${ac_objext}"
@@ -1426,7 +1418,7 @@ if eval "test \"`echo '$ac_cv_head_'$ac_head`\" = yes"; then
   cat >> confdefs.h <<EOF
 #define $ac_tr_head 1
 EOF
- 
+
 else
   echo "$ac_t""no" 1>&6
 fi
@@ -1509,7 +1501,6 @@ s%\$%$$%g
 EOF
 DEFS=`sed -f conftest.defs confdefs.h | tr '\012' ' '`
 rm -f conftest.defs
-
 
 # Without the "./", some shells look in PATH for config.status.
 : ${CONFIG_STATUS=./config.status}
