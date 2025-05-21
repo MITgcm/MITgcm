@@ -117,6 +117,7 @@ C     runoff_PO4           :: tendency due to river runoff
 #endif
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
+C     tkey :: tape key (tile dependent)
       INTEGER tkey
 #endif
 CEOP
@@ -168,7 +169,8 @@ c  carbon and oxygen air-sea interaction
      I                       myTime, myIter, myThid)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE ph(:,:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE ph(:,:,:,bi,bj), ak0(:,:,bi,bj), fugf(:,:,bi,bj)
+CADJ &     = comlev1_bibj, key = tkey, kind = isbyte
 #endif
 
 c-----------------------------------------------------------
@@ -180,6 +182,10 @@ c  determine calcite saturation for remineralization
 #endif
      I                         bi, bj, imin, imax, jmin, jmax,
      I                         myTime, myIter, myThid)
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE omegaC(:,:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
+#endif
 
 C-----------------------------------------------------------
 C  biological activity
