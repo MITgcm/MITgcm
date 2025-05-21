@@ -147,16 +147,17 @@ C FOR NON-INTERACTIVE Si
 
 #ifdef CARBONCHEM_SOLVESAPHE
 #ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('CARBON_COEFFS_SOLVESAPHE',myThid)
+c     IF (debugMode) CALL DEBUG_CALL('CARBON_COEFFS_SOLVESAPHE',myThid)
+      IF (debugMode) CALL DEBUG_CALL('DIC_COEFFS_SURF',myThid)
 #endif
         CALL DIC_COEFFS_SURF(
      I                       surftemp,surfsalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
 #else
 #ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('CARBON_COEFFS',myThid)
+      IF (debugMode) CALL DEBUG_CALL('GCHEM_CARBON_COEFFS',myThid)
 #endif
-         CALL CARBON_COEFFS(
+         CALL GCHEM_CARBON_COEFFS(
      I                       surftemp,surfsalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
 #endif
@@ -205,10 +206,10 @@ C Use the original Follows et al. (2006) solver
 #endif /* CARBONCHEM_SOLVESAPHE */
 #ifdef ALLOW_DEBUG
                 IF (debugMode) CALL DEBUG_CALL(
-     &        'CALC_PCO2_APPROX',myThid)
+     &        'GCHEM_CALC_PCO2_APPROX',myThid)
 #endif
 
-            CALL CALC_PCO2_APPROX(
+            CALL GCHEM_CALC_PCO2_APPROX(
      I        surftemp(i,j),surfsalt(i,j),
      I        surfdic(i,j), surfphos(i,j),
      I        surfsi(i,j),surfalk(i,j),

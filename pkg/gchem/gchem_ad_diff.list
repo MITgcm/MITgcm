@@ -4,3 +4,4 @@ gchem_fields_load.f
 gchem_forcing_sep.f
 gchem_init_vari.f
 gchem_surfmean.f
+gchem_carbon_chem.f

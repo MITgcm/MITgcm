@@ -155,10 +155,11 @@ C- convert carbonate to mol kg^-1-SW for calculation of saturation state
 C Use the original Follows et al. (2006) solver
 #endif /* CARBONCHEM_SOLVESAPHE */
 #ifdef ALLOW_DEBUG
-            IF (debugPrt) CALL DEBUG_CALL('CALC_PCO2_APPROX',myThid)
+            IF (debugPrt)
+     &           CALL DEBUG_CALL('GCHEM_CALC_PCO2_APPROX',myThid)
 #endif
             DO CO3iter = 1, doIterCO3
-             CALL CALC_PCO2_APPROX(
+             CALL GCHEM_CALC_PCO2_APPROX(
      I          locTemp(i,j), locSalt(i,j),
      I          diclocal, po4local,
      I          sitlocal, alklocal,

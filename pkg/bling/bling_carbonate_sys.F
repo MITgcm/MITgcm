@@ -109,11 +109,11 @@ C Now correct the coefficients for pressure dependence
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL(
-     &   'CARBON_COEFFS_PRESSURE_DEP',myThid)
+     &   'GCHEM_CARBON_COEFFS_PRESSURE_DEP',myThid)
 #endif
 
 C  Get coefficients for carbonate calculations
-        CALL CARBON_COEFFS_PRESSURE_DEP(
+        CALL GCHEM_CARBON_COEFFS_PRESSURE_DEP(
      I                       locTemp, locSalt,
      I                       bi, bj, iMin, iMax, jMin, jMax,
      I                       k, myThid )
@@ -178,7 +178,8 @@ C- convert carbonate to mol kg^-1-SW for calculation of saturation state
 C Use the original Follows et al. (2006) solver
 #endif /* CARBONCHEM_SOLVESAPHE */
 #ifdef ALLOW_DEBUG
-            IF (debugMode) CALL DEBUG_CALL('CALC_PCO2_APPROX',myThid)
+            IF (debugMode)
+     &           CALL DEBUG_CALL('GCHEM_CALC_PCO2_APPROX',myThid)
 #endif
 
 C  Evaluate carbonate (CO3) ions concentration
@@ -188,7 +189,7 @@ c           DO CO3iter = 1, CO3iterMax
 
 C--------------------------------------------------
 
-             CALL CALC_PCO2_APPROX(
+             CALL GCHEM_CALC_PCO2_APPROX(
      I          locTemp(i,j), locSalt(i,j),
      I          diclocal, po4local,
      I          sitlocal,alklocal,

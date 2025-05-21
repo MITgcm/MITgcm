@@ -213,9 +213,10 @@ C Now correct the coefficients for pressure dependence
      I                       k,myThid)
 #else
 #ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('CARBON_COEFFS',myThid)
+        IF (debugMode)
+     &       CALL DEBUG_CALL('GCHEM_CARBON_COEFFS_PRESSURE_DEP',myThid)
 #endif
-         CALL CARBON_COEFFS_PRESSURE_DEP(
+         CALL GCHEM_CARBON_COEFFS_PRESSURE_DEP(
      I                       thetatmp,salttmp,
      I                       bi,bj,iMin,iMax,jMin,jMax,k,myThid)
 #endif
@@ -259,11 +260,11 @@ C Use the original Follows et al. (2006) solver
 #endif /* CARBONCHEM_SOLVESAPHE */
 #ifdef ALLOW_DEBUG
               IF (debugMode) CALL DEBUG_CALL(
-     &           'CALC_PCO2_APPROX',myThid)
+     &           'GCHEM_CALC_PCO2_APPROX',myThid)
 #endif
 
              DO it=1,10
-              CALL CALC_PCO2_APPROX(
+              CALL GCHEM_CALC_PCO2_APPROX(
      I        thetatmp(i,j),salttmp(i,j),
      I        dictmp(i,j), phostmp(i,j),
      I        sitmp(i,j),alktmp(i,j),

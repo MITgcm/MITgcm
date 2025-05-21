@@ -1,14 +1,25 @@
-#include "BLING_OPTIONS.h"
+#include "GCHEM_OPTIONS.h"
+#ifdef ALLLOW_DIC
+# include "DIC_OPTIONS.h"
+#endif
+#ifdef ALLLOW_BLING
+# include "BLING_OPTIONS.h"
+#endif
 
-C--  File bling_carbon_chem.F:
+C--  File gchem_carbon_chem.F:
 C--   Contents
-C--   o CALC_PCO2
-C--   o CALC_PCO2_APPROX
-C--   o CARBON_COEFFS
-C--   o CARBON_COEFFS_PRESSURE_DEP
+C--   o GCHEM_CALC_PCO2
+C--   o GCHEM_CALC_PCO2_APPROX
+C--   o GCHEM_CARBON_COEFFS
+C--   o GCHEM_CARBON_COEFFS_PRESSURE_DEP
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP
-       subroutine CALC_PCO2(
+C !ROUTINE: GCHEM_CALC_PCO2
+
+C !INTERFACE: ==========================================================
+       SUBROUTINE GCHEM_CALC_PCO2(
      I                       donewt,inewtonmax,ibrackmax,
      I                       t,s,diclocal,pt,sit,ta,
      I                       k1local,k2local,
@@ -20,23 +31,24 @@ CBOP
      U                       pHlocal,pCO2surfloc,
      I                       i,j,k,bi,bj,myIter,myThid )
 
-C     =================================================================
-C     | subroutine bling_carbon_chem
-C     | o Calculates ocean inorganic carbon chemistry
-C     |   Adapted from pkg/dic/carbon_chem.F
-C     |   from OCMIP2 code
-C     =================================================================
+C !DESCRIPTION:
+C  surface ocean inorganic carbon chemistry to OCMIP2
+C  regulations modified from OCMIP2 code;
+C  Mick Follows, MIT, Oct 1999.
 
+C Apr 2011: fix vapour bug (following Bennington)
+
+C !USES: ===============================================================
       IMPLICIT NONE
-
-C     === Global variables ===
 #include "SIZE.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "GRID.h"
-#include "FFIELDS.h"
-#include "BLING_VARS.h"
+#ifdef ALLOW_DIC
+# include "DIC_VARS.h"
+#endif
+#ifdef ALLOW_BLING
+# include "BLING_VARS.h"
+#endif
 
 C     == Routine arguments ==
 C       diclocal = total inorganic carbon (mol/m^3)
@@ -298,8 +310,13 @@ c ---------------------------------------------------------------
 c Add two output arguments for storing pCO2surf
 c Should we be using K0 or ff for the solubility here?
 c ---------------------------------------------------------------
+#ifdef WATERVAP_BUG
+        pCO2surfloc = co2star / fflocal
+#else
+c Corrected by Val Bennington (Nov 2010)
         fco2 = co2star / k0local
         pCO2surfloc = fco2/fugflocal
+#endif
 
 C ----------------------------------------------------------------
 C Reconvert units back to original values for input arguments
@@ -317,7 +334,10 @@ c       Reconvert from mol/kg -> mol/m^3
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP
-      subroutine CALC_PCO2_APPROX(
+C !ROUTINE: GCHEM_CALC_PCO2_APPROX
+
+C !INTERFACE: ==========================================================
+       SUBROUTINE GCHEM_CALC_PCO2_APPROX(
      I                       t,s,diclocal,pt,sit,ta,
      I                       k1local,k2local,
      I                       k1plocal,k2plocal,k3plocal,
@@ -330,7 +350,7 @@ CBOP
 
 C !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE CALC_PCO2_APPROX                              |
+C     | SUBROUTINE GCHEM_CALC_PCO2_APPROX                        |
 C     *==========================================================*
 C     CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 C     C  New efficient pCO2 solver, Mick Follows         CC
@@ -341,16 +361,20 @@ C     CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 C      Apr 2011: fix vapour bug (following Bennington)
 C      Oct 2011: add CO3 extimation and pass out
 
+C !USES: ===============================================================
       IMPLICIT NONE
 
-C     === Global variables ===
+C     == GLobal variables ==
 #include "SIZE.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "FFIELDS.h"
-#include "BLING_VARS.h"
+#ifdef ALLOW_DIC
+# include "DIC_VARS.h"
+#endif
+#ifdef ALLOW_BLING
+# include "BLING_VARS.h"
+#endif
 
 C     == Routine arguments ==
 C       diclocal = total inorganic carbon (mol/m^3)
@@ -423,14 +447,16 @@ cmick - estimate contribution from silicate
 cmick based on Dickson and Goyet
         siooh3g = sit*ksilocal / (ksilocal + hguess)
 
+#ifdef ALLOW_BLING
 cmm - rare, but ice melt can cause prescribed silicate alkalinity to be
 cmm   larger than total alkalinity. Crop here to account for this
         IF (siooh3g.GT.0.2 _d 0*ta) siooh3g = 0.2 _d 0*ta
-
+#endif
 cmick - now estimate carbonate alkalinity
         cag = ta - bohg - (kwlocal/hguess) + hguess
      &           - hpo4g - 2.0 _d 0*po4g + h3po4g
      &           - siooh3g
+#ifdef ALLOW_BLING
 CMM(
         IF ( cag .LT. (0.1 _d 0*ta) )  THEN
        print *,'CMMcag1', cag,i,j,k,xC(i,j,1,1),yC(i,j,1,1)
@@ -440,12 +466,14 @@ C myXGlobalLo-1+(bi-1)*sNx+i,        myYGlobalLo-1+(bj-1)*sNy+j
        cag = 0.1 _d 0*ta
         ENDIF
 CMM)
+#endif
 cmick - now evaluate better guess of hydrogen ion conc
 cmick   htotal = [H+], hydrogen ion conc
         gamm  = diclocal/cag
         stuff = (1.0 _d 0-gamm)*(1.0 _d 0-gamm)*k1local*k1local
      &          - 4.0 _d 0*k1local*k2local*(1.0 _d 0-2.0 _d 0*gamm)
         hnew  = 0.5 _d 0*( (gamm-1.0 _d 0)*k1local + sqrt(stuff) )
+#ifdef ALLOW_BLING
 CMM(
         IF ( hnew .GT. (0.00001 _d 0) )  THEN
 cmm          print *,'CMMhnew reset:',hnew,i,j,k,xC(i,j,1,1),yC(i,j,1,1)
@@ -456,6 +484,7 @@ cmm          print *,'CMMhnew reset:',hnew,i,j,k,xC(i,j,1,1),yC(i,j,1,1)
           hnew = 0.00000001 _d 0
         ENDIF
 CMM)
+#endif
 cmick - now determine [CO2*]
         co2s  = diclocal/
      &   (1.0 _d 0 + (k1local/hnew) + (k1local*k2local/(hnew*hnew)))
@@ -470,8 +499,13 @@ c Karsten Friis & Mick - Sep 2004
 
 c ---------------------------------------------------------------
 c surface pCO2 (following Dickson and Goyet, DOE...)
+#ifdef WATERVAP_BUG
+        pCO2surfloc = co2s/fflocal
+#else
+c bug fix by Bennington
         fco2 = co2s/k0local
         pco2surfloc = fco2/fugflocal
+#endif
 
 C ----------------------------------------------------------------
 c Reconvert from mol/kg -> mol/m^3
@@ -485,13 +519,16 @@ c Reconvert from mol/kg -> mol/m^3
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-      subroutine CARBON_COEFFS(
+C !ROUTINE: GCHEM_CARBON_COEFFS
+
+C !INTERFACE: ==========================================================
+      SUBROUTINE GCHEM_CARBON_COEFFS(
      I                   ttemp,stemp,
      I                   bi,bj,iMin,iMax,jMin,jMax,myThid)
 
 C !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE CARBON_COEFFS                                 |
+C     | SUBROUTINE GCHEM_CARBON_COEFFS                           |
 C     | determine coefficients for surface carbon chemistry      |
 C     | adapted from OCMIP2:  SUBROUTINE CO2CALC                 |
 C     | mick follows, oct 1999                                   |
@@ -519,16 +556,19 @@ C
 C Apr 2011: fix vapour bug (following Bennington)
 C--------------------------------------------------------------------------
 
-      IMPLICIT NONE
-
-C     === Global variables ===
+C !USES: ===============================================================
+        IMPLICIT NONE
+C     == GLobal variables ==
 #include "SIZE.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "FFIELDS.h"
-#include "BLING_VARS.h"
+#ifdef ALLOW_DIC
+# include "DIC_VARS.h"
+#endif
+#ifdef ALLOW_BLING
+# include "BLING_VARS.h"
+#endif
 
 C     == Routine arguments ==
 C ttemp and stemp are local theta and salt arrays
@@ -566,8 +606,11 @@ c add Bennington
 #ifdef CARBONCHEM_TOTALPHSCALE
 c pH scale converstions
         _RL total2free
+        _RL free2total
         _RL free2sw
+        _RL sw2free
         _RL total2sw
+        _RL sw2total
 #endif
         INTEGER i
         INTEGER j
@@ -585,7 +628,7 @@ C....................................................................
 
         do i=imin,imax
          do j=jmin,jmax
-          if (hFacC(i,j,1,bi,bj).gt.0. _d 0) then
+          IF ( maskC(i,j,1,bi,bj).EQ.oneRS ) THEN
            t = ttemp(i,j)
            s = stemp(i,j)
 C terms used more than once for:
@@ -615,9 +658,11 @@ C Weiss (1974) Marine Chemistry
            delta = (57.7 _d 0 - 0.118 _d 0*tk)
            B1 = -1636.75 _d 0 + 12.0408 _d 0*tk - 0.0327957 _d 0*tk*tk
            B = B1 + 3.16528 _d 0*tk*tk*tk*(0.00001 _d 0)
-           fugf(i,j,bi,bj) = exp( (B+2. _d 0*delta) *
-     &                            AtmosP(i,j,bi,bj) * P1atm / RT)
-
+           fugf(i,j,bi,bj) = exp( (B+2. _d 0*delta)
+#ifdef ALLOW_BLING
+     &                           * AtmosP(i,j,bi,bj)
+#endif
+     &                           * P1atm / RT )
 C------------------------------------------------------------------------
 C f = k0(1-pH2O)*correction term for non-ideality
 C Weiss & Price (1980, Mar. Chem., 8, 347-359; Eq 13 with table 6 values)
@@ -735,35 +780,44 @@ C Convert between pH scales, we want everything to end up on the total scale
 C ak1 and ak2 are on seawater scale and aks is on the free scale
            total2free = 1. _d 0/
      &                 (1. _d 0 + st(i,j,bi,bj)/aks(i,j,bi,bj))
+
+           free2total = (1. _d 0 + st(i,j,bi,bj)/aks(i,j,bi,bj))
+
            free2sw = 1. _d 0
      &                 + st(i,j,bi,bj)/ aks(i,j,bi,bj)
      &                 + ft(i,j,bi,bj)/(akf(i,j,bi,bj)*total2free)
+
+           sw2free = 1. _d 0 / free2sw
+
            total2sw = total2free * free2sw
-           ak1(i,j,bi,bj)  = ak1(i,j,bi,bj)/total2sw
-           ak2(i,j,bi,bj)  = ak2(i,j,bi,bj)/total2sw
-           aks(i,j,bi,bj)  = aks(i,j,bi,bj)/total2free
+
+           sw2total = 1. _d 0 / total2sw
+
+           ak1(i,j,bi,bj)  = ak1(i,j,bi,bj)*sw2total
+           ak2(i,j,bi,bj)  = ak2(i,j,bi,bj)*sw2total
+           aks(i,j,bi,bj)  = aks(i,j,bi,bj)*free2total
 #endif
-         else
+          ELSE
 c add Bennington
-            fugf(i,j,bi,bj)=0. _d 0
-            ff(i,j,bi,bj)=0. _d 0
-            ak0(i,j,bi,bj)= 0. _d 0
-            ak1(i,j,bi,bj)= 0. _d 0
-            ak2(i,j,bi,bj)= 0. _d 0
-            akb(i,j,bi,bj)= 0. _d 0
-            ak1p(i,j,bi,bj) = 0. _d 0
-            ak2p(i,j,bi,bj) = 0. _d 0
-            ak3p(i,j,bi,bj) = 0. _d 0
-            aksi(i,j,bi,bj) = 0. _d 0
-            akw(i,j,bi,bj) = 0. _d 0
-            aks(i,j,bi,bj)= 0. _d 0
-            akf(i,j,bi,bj)= 0. _d 0
-            bt(i,j,bi,bj) = 0. _d 0
-            st(i,j,bi,bj) = 0. _d 0
-            ft(i,j,bi,bj) = 0. _d 0
-         endif
-         end do
-        end do
+           fugf(i,j,bi,bj)=0. _d 0
+           ff(i,j,bi,bj)=0. _d 0
+           ak0(i,j,bi,bj)= 0. _d 0
+           ak1(i,j,bi,bj)= 0. _d 0
+           ak2(i,j,bi,bj)= 0. _d 0
+           akb(i,j,bi,bj)= 0. _d 0
+           ak1p(i,j,bi,bj) = 0. _d 0
+           ak2p(i,j,bi,bj) = 0. _d 0
+           ak3p(i,j,bi,bj) = 0. _d 0
+           aksi(i,j,bi,bj) = 0. _d 0
+           akw(i,j,bi,bj) = 0. _d 0
+           aks(i,j,bi,bj)= 0. _d 0
+           akf(i,j,bi,bj)= 0. _d 0
+           bt(i,j,bi,bj) = 0. _d 0
+           st(i,j,bi,bj) = 0. _d 0
+           ft(i,j,bi,bj) = 0. _d 0
+          ENDIF
+         enddo
+        enddo
 
         RETURN
         END
@@ -771,14 +825,17 @@ c add Bennington
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP
-      subroutine CARBON_COEFFS_PRESSURE_DEP(
+C !ROUTINE: GCHEM_CARBON_COEFFS_PRESSURE_DEP
+
+C !INTERFACE: ==========================================================
+      SUBROUTINE GCHEM_CARBON_COEFFS_PRESSURE_DEP(
      I                   ttemp,stemp,
      I                   bi,bj,iMin,iMax,jMin,jMax,
      I                   Klevel,myThid)
 
 C !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE CARBON_COEFFS                                 |
+C     | SUBROUTINE GCHEM_CARBON_COEFFS                           |
 C     | determine coefficients for surface carbon chemistry      |
 C     | adapted from OCMIP2:  SUBROUTINE CO2CALC                 |
 C     | mick follows, oct 1999                                   |
@@ -811,16 +868,19 @@ C based on Takahashi, GEOSECS Atlantic Report, Vol. 1 (1981)
 C
 C--------------------------------------------------------------------------
 
-      IMPLICIT NONE
-
-C     === Global variables ===
+C !USES: ===============================================================
+        IMPLICIT NONE
+C     == GLobal variables ==
 #include "SIZE.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "FFIELDS.h"
-#include "BLING_VARS.h"
+#ifdef ALLOW_DIC
+# include "DIC_VARS.h"
+#endif
+#ifdef ALLOW_BLING
+# include "BLING_VARS.h"
+#endif
 
 C     == Routine arguments ==
 C ttemp and stemp are local theta and salt arrays
@@ -850,6 +910,7 @@ C LOCAL VARIABLES
         _RL  invtk
         _RL  is
         _RL  is2
+#ifdef ALLOW_BLING
 c add Bennington
         _RL  P1atm
         _RL  Rgas
@@ -857,6 +918,7 @@ c add Bennington
         _RL  delta
         _RL  B1
         _RL  B
+#endif
         INTEGER i
         INTEGER j
         INTEGER k
@@ -864,14 +926,18 @@ c add Bennington
         _RL  cdepth
         _RL  pressc
         _RL  Ksp_T_Calc
+#ifdef ALLOW_BLING
         _RL  Ksp_T_Arag
+#endif
         _RL  xvalue
         _RL  zdum
         _RL  tmpa1
         _RL  tmpa2
         _RL  tmpa3
         _RL  logKspc
+#ifdef ALLOW_BLING
         _RL  logKspa
+#endif
         _RL  dv
         _RL  dk
         _RL  pfactor
@@ -882,10 +948,12 @@ c pH scale converstions
         _RL free2sw_surf
         _RL total2sw_surf
         _RL total2free
+        _RL free2total
         _RL free2sw
+        _RL sw2free
         _RL total2sw
+        _RL sw2total
 #endif
-
 C.....................................................................
 C OCMIP note:
 C Calculate all constants needed to convert between various measured
@@ -902,41 +970,50 @@ c 1 BAR at z=0m (atmos pressure)
 c use UPPER surface of cell so top layer pressure = 0 bar
 c for surface exchange coeffs
 
-        bdepth = 0.0d0
-        cdepth = 0.0d0
-        pressc = 1.0d0
-        do k = 1,Klevel
-            cdepth = bdepth + 0.5d0*drF(k)
-            bdepth = bdepth + drF(k)
-            pressc = 1.0d0 + 0.1d0*cdepth
-        end do
+cmick..............................
+c        write(6,*)'Klevel ',klevel
 
+        bdepth = 0. _d 0
+        cdepth = 0. _d 0
+        pressc = 1. _d 0
+        do k = 1,Klevel
+            cdepth = bdepth + 0.5 _d 0*drF(k)
+            bdepth = bdepth + drF(k)
+            pressc = 1. _d 0 + 0.1 _d 0*cdepth
+        enddo
+cmick...................................................
+c        write(6,*)'depth,pressc ',cdepth,pressc
+cmick....................................................
+
+#ifdef ALLOW_BLING
         bigR = 83.145 _d 0
         P1atm = 1.01325 _d 0 ! bars
         Rgas = 83.1451 _d 0 ! bar*cm3/(mol*K)
+#endif
 
         do i=imin,imax
          do j=jmin,jmax
-          if (hFacC(i,j,Klevel,bi,bj).gt.0.d0) then
+          IF ( maskC(i,j,Klevel,bi,bj).EQ.oneRS ) THEN
            t = ttemp(i,j)
            s = stemp(i,j)
 C terms used more than once for:
 C temperature
-           tk = 273.15 + t
-           tk100 = tk/100.0
+           tk = 273.15 _d 0 + t
+           tk100 = tk/100. _d 0
            tk1002=tk100*tk100
-           invtk=1.0/tk
+           invtk=1.0 _d 0/tk
            dlogtk=log(tk)
 C ionic strength
-           is=19.924*s/(1000.-1.005*s)
+           is=19.924 _d 0*s/(1000. _d 0-1.005 _d 0*s)
            is2=is*is
            sqrtis=sqrt(is)
 C salinity
            s2=s*s
            sqrts=sqrt(s)
-           s15=s**1.5
-           scl=s/1.80655
+           s15=s**1.5 _d 0
+           scl=s/1.80655 _d 0
 
+#ifdef ALLOW_BLING
 C-----------------------------------------------------------------------
 C Ariane adding this - copied from non-pressure-dep case
 C added by Val Bennington Nov 2010
@@ -949,52 +1026,57 @@ C Weiss (1974) Marine Chemistry
            B = B1 + 3.16528 _d 0*tk*tk*tk*(0.00001 _d 0)
            fugf(i,j,bi,bj) = exp( (B+2. _d 0*delta) *
      &                            AtmosP(i,j,bi,bj) * P1atm / RT)
+#else
+           bigR = 83.14472 _d 0
+#endif
 C------------------------------------------------------------------------
 C f = k0(1-pH2O)*correction term for non-ideality
-C Weiss & Price (1980, Mar. Chem., 8, 347-359; Eq 13 with table 6 values)
-           ff(i,j,bi,bj) = exp(-162.8301 + 218.2968/tk100  +
-     &          90.9241*log(tk100) - 1.47696*tk1002 +
-     &          s * (.025695 - .025225*tk100 +
-     &          0.0049867*tk1002))
+C Weiss & Price (1980, Mar. Chem., 8, 347-359;  Eq 13 with table 6 values)
+           ff(i,j,bi,bj) = exp(-162.8301 _d 0 + 218.2968 _d 0/tk100  +
+     &          90.9241 _d 0*log(tk100) - 1.47696 _d 0*tk1002 +
+     &          s * (.025695 _d 0 - .025225 _d 0*tk100 +
+     &          0.0049867 _d 0*tk1002))
 C------------------------------------------------------------------------
 C K0 from Weiss 1974
 C Independent of pH scale
-           ak0(i,j,bi,bj) = exp(93.4517/tk100 - 60.2409 +
-     &        23.3585 * log(tk100) +
-     &        s * (0.023517 - 0.023656*tk100 +
-     &        0.0047036*tk1002))
+           ak0(i,j,bi,bj) = exp(93.4517 _d 0/tk100 - 60.2409 _d 0 +
+     &        23.3585 _d 0 * log(tk100) +
+     &        s * (0.023517 _d 0 - 0.023656 _d 0*tk100 +
+     &        0.0047036 _d 0*tk1002))
 C------------------------------------------------------------------------
 C k1 = [H][HCO3]/[H2CO3]
 C k2 = [H][CO3]/[HCO3]
 C Millero p.664 (1995) using Mehrbach et al. data on seawater scale
 C Both on seawater pH scale
-           ak1(i,j,bi,bj)=10.**(-1.*(3670.7*invtk -
-     &          62.008 + 9.7944*dlogtk -
-     &          0.0118 * s + 0.000116*s2))
-           ak2(i,j,bi,bj)=10.**(-1.*(1394.7*invtk + 4.777 -
-     &          0.0184*s + 0.000118*s2))
+           ak1(i,j,bi,bj)=10.**(-1. _d 0*(3670.7 _d 0*invtk -
+     &          62.008 _d 0 + 9.7944 _d 0*dlogtk -
+     &          0.0118 _d 0 * s + 0.000116 _d 0*s2))
+           ak2(i,j,bi,bj)=10.**(-1.*(1394.7 _d 0*invtk + 4.777 _d 0 -
+     &          0.0184 _d 0*s + 0.000118 _d 0*s2))
 C NOW PRESSURE DEPENDENCE:
 c Following Takahashi (1981) GEOSECS report - quoting Culberson and
 c Pytkowicz (1968)
 c pressc = pressure in bars
            ak1(i,j,bi,bj) = ak1(i,j,bi,bj)*
-     &             exp( (24.2-0.085*t)*(pressc-1.0)/(83.143*tk) )
+     &         exp( (24.2 _d 0-0.085 _d 0*t)
+     &             *(pressc-1.0 _d 0)/(83.143 _d 0*tk) )
 c FIRST GO FOR K2: According to GEOSECS (1982) report
 c          ak2(i,j,bi,bj) = ak2(i,j,bi,bj)*
 c    &             exp( (26.4-0.040*t)*(pressc-1.0)/(83.143*tk) )
 c SECOND GO FOR K2: corrected coeff according to CO2sys documentation
 c                   E. Lewis and D. Wallace (1998) ORNL/CDIAC-105
            ak2(i,j,bi,bj) = ak2(i,j,bi,bj)*
-     &             exp( (16.4-0.040*t)*(pressc-1.0)/(83.143*tk) )
+     &         exp( (16.4 _d 0-0.040 _d 0*t)
+     &             *(pressc-1.0 _d 0)/(83.143 _d 0*tk) )
 C------------------------------------------------------------------------
 C kb = [H][BO2]/[HBO2]
 C Millero p.669 (1995) using data from dickson (1990)
 C On total pH scale
-           akb(i,j,bi,bj)=exp((-8966.90 - 2890.53*sqrts - 77.942*s +
-     &          1.728*s15 - 0.0996*s2)*invtk +
-     &          (148.0248 + 137.1942*sqrts + 1.62142*s) +
-     &          (-24.4344 - 25.085*sqrts - 0.2474*s) *
-     &          dlogtk + 0.053105*sqrts*tk)
+           akb(i,j,bi,bj)=exp((-8966.90 _d 0- 2890.53 _d 0*sqrts -
+     &          77.942 _d 0*s + 1.728 _d 0*s15 - 0.0996 _d 0*s2)*invtk +
+     &          (148.0248 _d 0 + 137.1942 _d 0*sqrts + 1.62142 _d 0*s) +
+     &          (-24.4344 _d 0 - 25.085 _d 0*sqrts - 0.2474 _d 0*s) *
+     &          dlogtk + 0.053105 _d 0*sqrts*tk)
 #ifdef CARBONCHEM_TOTALPHSCALE
 C JML Not yet, need to account for pH scale conversions
 C    (pressure correct on the seawater scale, not the total scale)
@@ -1002,6 +1084,9 @@ C Mick and Karsten - Dec 04
 C ADDING pressure dependence based on Millero (1995), p675
 C with additional info from CO2sys documentation (E. Lewis and
 C D. Wallace, 1998 - see endnotes for commentary on Millero, 95)
+#ifndef ALLOW_BLING
+C           bigR = 83.145
+#endif
 C           dv = -29.48 + 0.1622*t + 2.608d-3*t*t
 C           dk = -2.84d-3
 C           pfactor = - (dv/(bigR*tk))*pressc
@@ -1012,6 +1097,9 @@ C Mick and Karsten - Dec 04
 C ADDING pressure dependence based on Millero (1995), p675
 C with additional info from CO2sys documentation (E. Lewis and
 C D. Wallace, 1998 - see endnotes for commentary on Millero, 95)
+#ifndef ALLOW_BLING
+           bigR = 83.145 _d 0
+#endif
            dv = -29.48 _d 0 + 0.1622 _d 0*t + 2.608 _d -3*t*t
            dk = -2.84 _d -3
            pfactor = - (dv/(bigR*tk))*pressc
@@ -1024,29 +1112,29 @@ C DOE(1994) eq 7.2.20 with footnote using data from Millero (1974)
 C The constant 115.525 is an approximation to convert to the total pH scale
 C  (Dickson et al., 2007). Use Millero's 115.540 constant to stay on the seawater
 C  pH scale (everything else is the same).
-           ak1p(i,j,bi,bj) = exp(-4576.752*invtk + 115.525 -
-     &          18.453*dlogtk +
-     &          (-106.736*invtk + 0.69171)*sqrts +
-     &          (-0.65643*invtk - 0.01844)*s)
+           ak1p(i,j,bi,bj) = exp(-4576.752 _d 0*invtk + 115.525 _d 0 -
+     &          18.453 _d 0*dlogtk +
+     &          (-106.736 _d 0*invtk + 0.69171 _d 0)*sqrts +
+     &          (-0.65643 _d 0*invtk - 0.01844 _d 0)*s)
 C------------------------------------------------------------------------
 C k2p = [H][HPO4]/[H2PO4]
-C DOE(1994) eq 7.2.23 with footnote using data from Millero (1974))
+C DOE(1994) eq 7.2.23 with footnote using data from Millero (1974)
 C The constant 172.0833 is an approximation to convert to the total pH scale
 C  (Dickson et al., 2007). Use Millero's 172.1033 constant to stay on the seawater
 C  pH scale (everything else is the same).
-           ak2p(i,j,bi,bj) = exp(-8814.715*invtk + 172.0883 -
-     &          27.927*dlogtk +
-     &          (-160.340*invtk + 1.3566) * sqrts +
-     &          (0.37335*invtk - 0.05778) * s)
+           ak2p(i,j,bi,bj) = exp(-8814.715 _d 0*invtk + 172.0883 _d 0 -
+     &          27.927 _d 0*dlogtk +
+     &          (-160.34 _d 0*invtk + 1.3566 _d 0) * sqrts +
+     &          (0.37335 _d 0*invtk - 0.05778 _d 0) * s)
 C------------------------------------------------------------------------
 C k3p = [H][PO4]/[HPO4]
 C DOE(1994) eq 7.2.26 with footnote using data from Millero (1974)
 C The constant 18.141 is an approximation to convert to the total pH scale
 C  (Dickson et al., 2007). Use Millero's 18.126 constant to stay on the seawater
 C  pH scale (everything else is the same).
-           ak3p(i,j,bi,bj) = exp(-3070.75*invtk - 18.141 +
-     &          (17.27039*invtk + 2.81197) *
-     &          sqrts + (-44.99486*invtk - 0.09984) * s)
+           ak3p(i,j,bi,bj) = exp(-3070.75 _d 0*invtk - 18.141 _d 0 +
+     &          (17.27039 _d 0*invtk + 2.81197 _d 0) *
+     &          sqrts + (-44.99486 _d 0*invtk - 0.09984 _d 0) * s)
 C------------------------------------------------------------------------
 C ksi = [H][SiO(OH)3]/[Si(OH)4]
 C Millero p.671 (1995) using data from Yao and Millero (1995)
@@ -1054,48 +1142,52 @@ C The constant 117.385 is an approximation to convert to the total pH scale
 C  (Dickson et al., 2007). Use Millero's 117.400 constant to stay on the seawater
 C  pH scale (everything else is the same).
 C Note: converted here from mol/kg-H2O to mol/kg-SW
-           aksi(i,j,bi,bj) = exp(-8904.2*invtk + 117.385 -
-     &          19.334*dlogtk +
-     &          (-458.79*invtk + 3.5913) * sqrtis +
-     &          (188.74*invtk - 1.5998) * is +
-     &          (-12.1652*invtk + 0.07871) * is2 +
-     &          log(1.0-0.001005*s))
+           aksi(i,j,bi,bj) = exp(-8904.2 _d 0*invtk + 117.385 _d 0 -
+     &          19.334 _d 0*dlogtk +
+     &          (-458.79 _d 0*invtk + 3.5913 _d 0) * sqrtis +
+     &          (188.74 _d 0*invtk - 1.5998 _d 0) * is +
+     &          (-12.1652 _d 0*invtk + 0.07871 _d 0) * is2 +
+     &          log(1.0 _d 0-0.001005 _d 0*s))
 C------------------------------------------------------------------------
 C kw = [H][OH]
 C Millero p.670 (1995) using composite data
 C The constant 148.9652 is an approximation to convert to the total pH scale
 C  (Dickson et al., 2007). Use Millero's 148.9802 constant to stay on the seawater
 C  pH scale (everything else is the same).
-           akw(i,j,bi,bj) = exp(-13847.26*invtk + 148.9652 -
-     &          23.6521*dlogtk +
-     &          (118.67*invtk - 5.977 + 1.0495 * dlogtk) *
-     &          sqrts - 0.01615 * s)
+           akw(i,j,bi,bj) = exp(-13847.26 _d 0*invtk + 148.9652 _d 0 -
+     &          23.6521 _d 0*dlogtk + (118.67 _d 0*invtk
+     &          - 5.977 _d 0 + 1.0495 _d 0 * dlogtk) *
+     &          sqrts - 0.01615 _d 0 * s)
 C------------------------------------------------------------------------
 C ks = [H][SO4]/[HSO4]
 C dickson (1990, J. chem. Thermodynamics 22, 113)
 C On the free pH scale
 C Note: converted here from mol/kg-H2O to mol/kg-SW
-           aks(i,j,bi,bj)=exp(-4276.1*invtk + 141.328 -
-     &          23.093*dlogtk +
-     &          (-13856*invtk + 324.57 - 47.986*dlogtk)*sqrtis +
-     &          (35474*invtk - 771.54 + 114.723*dlogtk)*is -
-     &          2698*invtk*is**1.5 + 1776*invtk*is2 +
-     &          log(1.0 - 0.001005*s))
+           aks(i,j,bi,bj)=exp(-4276.1 _d 0*invtk + 141.328 _d 0 -
+     &          23.093 _d 0*dlogtk +
+     &          (-13856 _d 0*invtk + 324.57 _d 0 - 47.986 _d 0*dlogtk)
+     &          *sqrtis +
+     &          (35474 _d 0*invtk - 771.54 _d 0 + 114.723 _d 0*dlogtk)
+     &          *is -
+     &          2698 _d 0*invtk*is**1.5 _d 0 + 1776 _d 0*invtk*is2 +
+     &          log(1.0 _d 0 - 0.001005 _d 0*s))
 C------------------------------------------------------------------------
 C kf = [H][F]/[HF]
 C dickson and Riley (1979) -- change pH scale to total (following Dickson & Goyet, 1994)
 C Note: converted here from mol/kg-H2O to mol/kg-SW
-           akf(i,j,bi,bj)=exp(1590.2*invtk - 12.641 + 1.525*sqrtis +
-     &          log(1.0 - 0.001005*s) +
-     &          log(1.0 + (0.1400/96.062)*(scl)/aks(i,j,bi,bj)))
+           akf(i,j,bi,bj)=exp(1590.2 _d 0*invtk - 12.641 _d 0
+     &          + 1.525 _d 0*sqrtis
+     &          + log(1.0 _d 0 - 0.001005 _d 0*s)
+     &          + log(1.0 _d 0 + (0.1400 _d 0/96.062 _d 0)
+     &          *(scl)/aks(i,j,bi,bj)))
 C------------------------------------------------------------------------
 C Calculate concentrations for borate, sulfate, and fluoride
 C Uppstrom (1974)
-           bt(i,j,bi,bj) = 0.000232 * scl/10.811
+           bt(i,j,bi,bj) = 0.000232 _d 0 * scl/10.811 _d 0
 C Morris & Riley (1966)
-           st(i,j,bi,bj) = 0.14 * scl/96.062
+           st(i,j,bi,bj) = 0.14 _d 0 * scl/96.062 _d 0
 C Riley (1965)
-           ft(i,j,bi,bj) = 0.000067 * scl/18.9984
+           ft(i,j,bi,bj) = 0.000067 _d 0 * scl/18.9984 _d 0
 C------------------------------------------------------------------------
 
 #ifdef CARBONCHEM_TOTALPHSCALE
@@ -1127,11 +1219,14 @@ C Pressure correct aks on native free pH scale
 
            total2free = 1. _d 0/
      &                 (1. _d 0 + st(i,j,bi,bj)/aks(i,j,bi,bj))
+
+           free2total = (1. _d 0 + st(i,j,bi,bj)/aks(i,j,bi,bj))
+
 C free2sw has an additional component from fluoride
            free2sw    = 1. _d 0
      &                 + st(i,j,bi,bj)/ aks(i,j,bi,bj)
 
-           aks(i,j,bi,bj) = aks(i,j,bi,bj)/total2free
+           aks(i,j,bi,bj) = aks(i,j,bi,bj)*free2total
 
 C------------------------------------------------------------------------
 C Pressure correct akf on the free scale before converting back to total
@@ -1141,16 +1236,27 @@ C Pressure correct akf on the free scale before converting back to total
            pfactor = -(dv/(bigR*tk))*pressc
      &               +(0.5*dk/(bigR*tk))*pressc*pressc
            akf(i,j,bi,bj) = akf(i,j,bi,bj) * exp(pfactor)
-           akf(i,j,bi,bj) = akf(i,j,bi,bj)/total2free
+           akf(i,j,bi,bj) = akf(i,j,bi,bj)*free2total
 
+C free2sw has an additional component from fluoride, add it here
            free2sw = free2sw
      &               + ft(i,j,bi,bj)/(akf(i,j,bi,bj)*total2free)
+
+           sw2free  = 1. _d 0 / free2sw
+
            total2sw = total2free * free2sw
+
+           sw2total = 1. _d 0 / total2sw
 
 C------------------------------------------------------------------------
 C Convert pressure corrected ak1 and ak2 from the seawater pH scale to the total scale
-           ak1(i,j,bi,bj)  = ak1(i,j,bi,bj)/total2sw
-           ak2(i,j,bi,bj)  = ak1(i,j,bi,bj)/total2sw
+           ak1(i,j,bi,bj)  = ak1(i,j,bi,bj)*sw2total
+#ifdef ALLOW_BLING
+C     this is probably a bug
+           ak2(i,j,bi,bj)  = ak1(i,j,bi,bj)*sw2total
+#else
+           ak2(i,j,bi,bj)  = ak2(i,j,bi,bj)*sw2total
+#endif
 
 C------------------------------------------------------------------------
 C Pressure correct akb on the seawater scale before converting back to total scale
@@ -1159,7 +1265,7 @@ C Pressure correct akb on the seawater scale before converting back to total sca
             pfactor = - (dv/(bigR*tk))*pressc
      &                + (0.5*dk/(bigR*tk))*pressc*pressc
             akb(i,j,bi,bj) = total2sw_surf*akb(i,j,bi,bj)*exp(pfactor)
-            akb(i,j,bi,bj) = akb(i,j,bi,bj)/total2sw
+            akb(i,j,bi,bj) = akb(i,j,bi,bj)*sw2total
 
 C------------------------------------------------------------------------
 C Pressure correct ak1p on the seawater scale before converting back to total scale
@@ -1168,7 +1274,7 @@ C Pressure correct ak1p on the seawater scale before converting back to total sc
             pfactor = - (dv/(bigR*tk))*pressc
      &                + (0.5*dk/(bigR*tk))*pressc*pressc
             ak1p(i,j,bi,bj) = total2sw_surf*ak1p(i,j,bi,bj)*exp(pfactor)
-            ak1p(i,j,bi,bj) = ak1p(i,j,bi,bj)/total2sw
+            ak1p(i,j,bi,bj) = ak1p(i,j,bi,bj)*sw2total
 
 C------------------------------------------------------------------------
 C Pressure correct ak2p on the seawater scale before converting back to total scale
@@ -1177,7 +1283,7 @@ C Pressure correct ak2p on the seawater scale before converting back to total sc
             pfactor = - (dv/(bigR*tk))*pressc
      &                + (0.5*dk/(bigR*tk))*pressc*pressc
             ak2p(i,j,bi,bj) = total2sw_surf*ak2p(i,j,bi,bj)*exp(pfactor)
-            ak2p(i,j,bi,bj) = ak2p(i,j,bi,bj)/total2sw
+            ak2p(i,j,bi,bj) = ak2p(i,j,bi,bj)*sw2total
 
 C------------------------------------------------------------------------
 C Pressure correct ak3p on the seawater scale before converting back to total scale
@@ -1186,7 +1292,7 @@ C Pressure correct ak3p on the seawater scale before converting back to total sc
             pfactor = - (dv/(bigR*tk))*pressc
      &                + (0.5*dk/(bigR*tk))*pressc*pressc
             ak3p(i,j,bi,bj) = total2sw_surf*ak3p(i,j,bi,bj)*exp(pfactor)
-            ak3p(i,j,bi,bj) = ak3p(i,j,bi,bj)/total2sw
+            ak3p(i,j,bi,bj) = ak3p(i,j,bi,bj)*sw2total
 
 C------------------------------------------------------------------------
 C Pressure correct akw on the seawater scale before converting back to total scale
@@ -1195,7 +1301,7 @@ C Pressure correct akw on the seawater scale before converting back to total sca
             pfactor = - (dv/(bigR*tk))*pressc
      &                + (0.5*dk/(bigR*tk))*pressc*pressc
             akw(i,j,bi,bj) = total2sw_surf*akw(i,j,bi,bj)*exp(pfactor)
-            akw(i,j,bi,bj) = akw(i,j,bi,bj)/total2sw
+            akw(i,j,bi,bj) = akw(i,j,bi,bj)*sw2total
 
 C------------------------------------------------------------------------
 C Pressure correct aksi on the seawater scale before converting back to total scale
@@ -1205,11 +1311,11 @@ C Estimated from the effect on akb
             pfactor = - (dv/(bigR*tk))*pressc
      &                + (0.5*dk/(bigR*tk))*pressc*pressc
             aksi(i,j,bi,bj) = total2sw_surf*aksi(i,j,bi,bj)*exp(pfactor)
-            aksi(i,j,bi,bj) = aksi(i,j,bi,bj)/total2sw
+            aksi(i,j,bi,bj) = aksi(i,j,bi,bj)*sw2total
 #endif
 
 C------------------------------------------------------------------------
-C solubility product for calcite
+C Solubility product for calcite
 cav                  and aragonite
 C
 c Following Takahashi (1982) GEOSECS handbook
@@ -1224,20 +1330,24 @@ c          Ksp_TP_Calc(i,j,bi,bj) = Ksp_T_Calc*exp(xvalue)
 c
 c
 C Following Mucci (1983) - from Zeebe/Wolf-Gladrow equic.m
-         tmpa1 = - 171.9065 - (0.077993*tk) + (2839.319/tk)
-     &            + (71.595*log10(tk))
-         tmpa2 = +(-0.77712 + (0.0028426*tk) + (178.34/tk) )*sqrts
-         tmpa3 = -(0.07711*s) + (0.0041249*s15)
-         logKspc = tmpa1 + tmpa2 + tmpa3
-         Ksp_T_Calc = 10.0**logKspc
+            tmpa1 = - 171.9065 _d 0 - (0.077993 _d 0*tk)
+     &            + (2839.319 _d 0/tk) + (71.595 _d 0*log10(tk))
+            tmpa2 = +(-0.77712 _d 0 + (0.0028426 _d 0*tk)
+     &           + (178.34 _d 0/tk) )*sqrts
+            tmpa3 = -(0.07711 _d 0*s) + (0.0041249 _d 0*s15)
+            logKspc = tmpa1 + tmpa2 + tmpa3
+            Ksp_T_Calc = 10.0 _d 0**logKspc
+c        write(6,*)i,j,k,tmpa1,tmpa2,tmpa3,logkspc,Ksp_T_Calc
+#ifdef ALLOW_BLING
 C
-         tmpa1 = - 171.945 - (0.077993*tk) + (2903.293/tk)
-     &            + (71.595*log10(tk))
-         tmpa2 = +(-0.068393 + (0.0017276*tk) + (88.135/tk) )*sqrts
-         tmpa3 = -(0.10018*s) + (0.0059415*s15)
-         logKspa = tmpa1 + tmpa2 + tmpa3
-         Ksp_T_Arag = 10.0**logKspa
-
+            tmpa1 = - 171.945 _d 0 - (0.077993 _d 0*tk)
+     &           + (2903.293 _d 0/tk) + (71.595 _d 0*log10(tk))
+            tmpa2 = +(-0.068393 _d 0 + (0.0017276 _d 0*tk)
+     &           + (88.135 _d 0/tk) )*sqrts
+            tmpa3 = -(0.10018 _d 0*s) + (0.0059415 _d 0*s15)
+            logKspa = tmpa1 + tmpa2 + tmpa3
+            Ksp_T_Arag = 10.0**logKspa
+#endif
 c with pressure dependence Culberson and Pytkowicz (1968)
 c        xvalue  =  (36.0-0.20*t)*(pressc-1.0)/(83.143*tk)
 c        Ksp_TP_Calc(i,j,bi,bj) = Ksp_T_Calc*exp(xvalue)
@@ -1253,37 +1363,41 @@ c          Ksp_TP_Calc(i,j,bi,bj) = Ksp_T_Calc*exp(xvalue)
 
 c alternative pressure dependence from Ingle (1975)
 
-           zdum   = (pressc*10.0d0 - 10.0d0)/10.0d0
-           xvalue = ( (48.8d0 - 0.53d0*t)*zdum
-     &                 + (-0.00588d0 + 0.0001845d0*t)*zdum*zdum)
-     &            / (188.93d0*(t + 273.15d0))
+CML         zdum   = (pressc - oneRL) ????
+            zdum   = (pressc*10. _d 0 - 10. _d 0)/10. _d 0
+            xvalue = ( (48.8 _d 0 - 0.53 _d 0*t)*zdum
+     &                 + (-0.00588 _d 0 + 0.0001845 _d 0*t)*zdum*zdum)
+     &            / (188.93 _d 0*(t + 273.15 _d 0))
 
-           Ksp_TP_Calc(i,j,bi,bj) = Ksp_T_Calc*10.**(xvalue)
-           Ksp_TP_Arag(i,j,bi,bj) = Ksp_T_Arag*10.**(xvalue)
+            Ksp_TP_Calc(i,j,bi,bj) = Ksp_T_Calc*10.**(xvalue)
+#ifdef ALLOW_BLING
+            Ksp_TP_Arag(i,j,bi,bj) = Ksp_T_Arag*10.**(xvalue)
+#endif
 
 C------------------------------------------------------------------------
-         else
-            fugf(i,j,bi,bj) = 0.d0
-            ff(i,j,bi,bj) = 0.d0
-            ak0(i,j,bi,bj)= 0.d0
-            ak1(i,j,bi,bj)= 0.d0
-            ak2(i,j,bi,bj)= 0.d0
-            akb(i,j,bi,bj)= 0.d0
-            ak1p(i,j,bi,bj) = 0.d0
-            ak2p(i,j,bi,bj) = 0.d0
-            ak3p(i,j,bi,bj) = 0.d0
-            aksi(i,j,bi,bj) = 0.d0
-            akw(i,j,bi,bj) = 0.d0
-            aks(i,j,bi,bj)= 0.d0
-            akf(i,j,bi,bj)= 0.d0
-            bt(i,j,bi,bj) = 0.d0
-            st(i,j,bi,bj) = 0.d0
-            ft(i,j,bi,bj) = 0.d0
-            Ksp_TP_Calc(i,j,bi,bj) = 0.d0
-            Ksp_TP_Arag(i,j,bi,bj) = 0.d0
-         endif
-         end do
-        end do
+          ELSE
+            ff(i,j,bi,bj)=0. _d 0
+            ak0(i,j,bi,bj)= 0. _d 0
+            ak1(i,j,bi,bj)= 0. _d 0
+            ak2(i,j,bi,bj)= 0. _d 0
+            akb(i,j,bi,bj)= 0. _d 0
+            ak1p(i,j,bi,bj) = 0. _d 0
+            ak2p(i,j,bi,bj) = 0. _d 0
+            ak3p(i,j,bi,bj) = 0. _d 0
+            aksi(i,j,bi,bj) = 0. _d 0
+            akw(i,j,bi,bj) = 0. _d 0
+            aks(i,j,bi,bj)= 0. _d 0
+            akf(i,j,bi,bj)= 0. _d 0
+            bt(i,j,bi,bj) = 0. _d 0
+            st(i,j,bi,bj) = 0. _d 0
+            ft(i,j,bi,bj) = 0. _d 0
+            Ksp_TP_Calc(i,j,bi,bj) = 0. _d 0
+#ifdef ALLOW_BLING
+            Ksp_TP_Arag(i,j,bi,bj) = 0. _d 0
+#endif
+          ENDIF
+         enddo
+        enddo
 
-        return
-        end
+        RETURN
+        END
