@@ -52,7 +52,7 @@ CEOP
 C     !LOCAL VARIABLES:
 C     bi,bj     :: Tile indices
       INTEGER num_file,sample_num
-      INTEGER bi,bj,iG,jG
+      INTEGER bi,bj
       _RL sample_modval
       _RL obs_modval
       _RL obs_data, obs_uncert, obs_weight
@@ -60,7 +60,7 @@ C     bi,bj     :: Tile indices
       INTEGER optimcycle
 #endif
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      CHARACTER*(MAX_LEN_FNAM) obsfitfile, fnameequinc
+      CHARACTER*(MAX_LEN_FNAM) obsfitfile
       CHARACTER*(MAX_LEN_FNAM) fnamemisfit
       INTEGER IL, JL, err
       INTEGER irec, ii, varid
@@ -101,20 +101,8 @@ C File maintenance
 
          IF ( (sampleNo(num_file,bi,bj).GT.0).AND.
      &         (obsfitDoNcOutput) ) THEN
-C Need to close the file so that the data is not lost when run finishes
-           err = NF_CLOSE(fidfwd_obs(num_file,bi,bj))
-C Then re-open it to compute cost function
-           iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
-           jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
-           IL  = ILNBLNK( obsfitfiles(num_file) )
-           WRITE(obsfitfile,'(1a)')
-     &     obsfitfiles(num_file)(1:IL)
-           IL  = ILNBLNK( obsfitfile )
-           JL  = ILNBLNK( obsfitDir )
-           WRITE(fnameequinc,'(3a,i3.3,a,i3.3,a)')
-     &     obsfitDir(1:JL),obsfitfile(1:IL),'.',iG,'.',jG,'.equi.nc'
-           err = NF_OPEN(fnameequinc,NF_NOWRITE,
-     &     fidfwd_obs(num_file,bi,bj))
+C Need to sync the file so that the data is not lost when run finishes
+           err = NF_SYNC(fidfwd_obs(num_file,bi,bj))
          ENDIF
 
         ENDDO
@@ -216,14 +204,8 @@ C Write to global netcdf file
          ENDIF !if (obs_num.LE.ObsNo(num_file)) then
         ENDDO !do obs_num
 
-        err = NF_CLOSE(fidglobal(num_file))
-        IL  = ILNBLNK( obsfitfiles(num_file) )
-        WRITE(obsfitfile,'(1a)') obsfitfiles(num_file)(1:IL)
-        IL  = ILNBLNK( obsfitfile )
-        JL  = ILNBLNK( obsfitDir )
-        WRITE(fnameequinc,'(3a)')
-     &      obsfitDir(1:JL),obsfitfile(1:IL),'.equi.nc'
-        err = NF_OPEN(fnameequinc,NF_NOWRITE,fidglobal(num_file))
+C Need to sync the file so that the data is not lost when run finishes
+        err = NF_SYNC(fidglobal(num_file))
 
         IF (obs_is_ssh(num_file).GT.0) THEN
 C Read data to calculate the mean offset between model and obs
@@ -266,11 +248,11 @@ CAV - Does this work?
 
           ENDIF !if (obs_num.LE.ObsNo(num_file)) then
          ENDDO !do obs_num
-         
+
          obs_mean=obs_mean/nobsmean
          mod_mean=mod_mean/nobsmean
          offset=mod_mean-obs_mean
-         
+
         ELSE
          offset=0.
         ENDIF
@@ -350,7 +332,7 @@ C Print cost function values
        objf_obsfit_glo = objf_obsfit(num_file)
        num_obsfit_glo  = num_obsfit(num_file)
 
-       WRITE(msgBuf,'(a,I2,a,2D12.5)')
+       WRITE(msgBuf,'(a,I2,a,E20.13,1X,D12.5)')
      &  ' obsfit_cost(',num_file,')= ', objf_obsfit_glo, num_obsfit_glo
 
        IF ( num_obsfit_glo .GT. 0. ) CALL PRINT_MESSAGE( msgBuf,
