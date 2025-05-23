@@ -738,7 +738,7 @@ c--   Accumulate in-situ time averages of temperature, salinity, SSH.
         CALL PROFILES_INLOOP( endtime, myThid )
         CALL TIMER_STOP ('PROFILES_INLOOP    [THE_MAIN_LOOP]', myThid)
 c--   Compute all profiles cost function contributions.
-        CALL COST_PROFILES( myIter, myTime, myThid )
+        CALL PROFILES_COST( myIter, myTime, myThid )
       ENDIF
 #endif
 
