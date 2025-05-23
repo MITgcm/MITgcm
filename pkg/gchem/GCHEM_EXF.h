@@ -100,14 +100,14 @@ C Wind forcing parameters for exf
      &    gchem_windStartDate1, gchem_windStartDate2
       COMMON/gchem_forcing_wind_r/
      &    gchem_windStartTime,
-     &    gchem_wind2Period, gchem_windRepCycle,
+     &    gchem_windPeriod, gchem_windRepCycle,
      &    gchem_wind_exfremo_intercept, gchem_wind_exfremo_slope,
      &    gchem_inscal_wind
       CHARACTER*1 gchem_windMask
       INTEGER gchem_windStartDate1
       INTEGER gchem_windStartDate2
       _RL gchem_windStartTime
-      _RL gchem_wind2Period
+      _RL gchem_windPeriod
       _RL gchem_windRepCycle
       _RL gchem_wind_exfremo_intercept
       _RL gchem_wind_exfremo_slope

@@ -94,7 +94,7 @@ C
      &     gchem_apco2_exfremo_intercept, gchem_apco2_exfremo_slope,
      &     gchem_apco2Mask, gchem_inscal_apco2,
 C
-     &     gchem_wind2Period, gchem_windRepCycle, gchem_windStartTime,
+     &     gchem_windPeriod, gchem_windRepCycle, gchem_windStartTime,
      &     gchem_windStartDate1, gchem_windStartDate2,
      &     gchem_wind_exfremo_intercept, gchem_wind_exfremo_slope,
      &     gchem_windMask, gchem_inscal_wind,
@@ -239,7 +239,7 @@ C- Open and read the data.gchem file
        gchem_apco2Mask               = 'c'
        gchem_inscal_apco2      = 1. _d 0
 
-       gchem_wind2Period             = 0.0 _d 0
+       gchem_windPeriod             = 0.0 _d 0
        gchem_windRepCycle           = repeatPeriod
        gchem_windStartTime          = UNSET_RL
        gchem_windStartDate1         = 0

@@ -90,7 +90,8 @@ C--   COMMON /GCHEM_FIELDS_C/
 C--   COMMON /GCHEM_FIELDS_R/
       COMMON /GCHEM_FIELDS_R/
      &     gchem_Si_const, gchem_par_const, gchem_Fe_const,
-     &     gchem_apco2_const, gchem_wind_const, gchem_apres_const
+     &     gchem_apco2_const, gchem_wind_const, gchem_apres_const,
+     &     gchem_ice_const
 
       _RL gchem_Si_const
       _RL gchem_par_const
@@ -98,5 +99,6 @@ C--   COMMON /GCHEM_FIELDS_R/
       _RL gchem_apco2_const
       _RL gchem_wind_const
       _RL gchem_apres_const
+      _RL gchem_ice_const
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

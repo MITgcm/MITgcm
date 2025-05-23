@@ -88,8 +88,6 @@ C     set reasonable values fields that need at least something
        ENDDO
       ENDDO
 
-      print*,'ZZZ',gchemapCO2(30,15,1,1)
-
       IF ( .NOT. gchem_useEXF ) THEN
          CALL LEF_ZERO( gchemSi0,myThid )
          CALL LEF_ZERO( gchemSi1,myThid )
@@ -120,7 +118,54 @@ C--   Now calculate whether it is time to update the forcing arrays
           CALL READ_REC_XY_RS( gchem_FeFile,gchemFe1,intime1,
      &         nIter0,myThid )
          ENDIF
+
+        _EXCH_XY_RS(gchemWind0, myThid )
+        _EXCH_XY_RS(gchemWind1, myThid )
+        _EXCH_XY_RS(gchemSi0, myThid )
+        _EXCH_XY_RS(gchemSi1, myThid )
+        _EXCH_XY_RS(gchemFe0, myThid )
+        _EXCH_XY_RS(gchemFe1, myThid )
+
+        IF ( gchem_WindFile .NE. ' '  ) THEN
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             gchemWind(i,j,bi,bj)= bWght*gchemWind0(i,j,bi,bj)
+     &                        + aWght*gchemWind1(i,j,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDIF
+
+        IF ( gchem_SiFile .NE. ' '  ) THEN
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             gchemSi(i,j,bi,bj)= bWght*gchemSi0(i,j,bi,bj)
+     &                        + aWght*gchemSi1(i,j,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDIF
+
+        IF ( gchem_FeFile .NE. ' '  ) THEN
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             gchemFe(i,j,bi,bj)= bWght*gchemFe0(i,j,bi,bj)
+     &                        + aWght*gchemFe1(i,j,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDIF
        ENDIF
+
 
 #ifdef ALLOW_EXF
       IF ( gchem_useEXF ) THEN
@@ -189,8 +234,6 @@ C     gchem_useEXF
       _EXCH_XY_RL( gchemPAR, myThid )
       _EXCH_XY_RL( gchemFe, myThid )
       _EXCH_XY_RL( gchemapCO2, myThid )
-
-      print*,'XXX gchem init vari'
 
 C--   Initialise other Geo-Chemistry pkg variables:
 
