@@ -93,7 +93,7 @@ C     set reasonable values fields that need at least something
          CALL LEF_ZERO( gchemSi1,myThid )
 
 C--   Now calculate whether it is time to update the forcing arrays
-       CALL GET_PERIODIC_INTERVAL(
+        CALL GET_PERIODIC_INTERVAL(
      O                   intimeP, intime0, intime1, bWght, aWght,
      I                   externForcingCycle, externForcingPeriod,
      I                   deltaTClock, startTime, myThid )
@@ -117,7 +117,7 @@ C--   Now calculate whether it is time to update the forcing arrays
      &         nIter0,myThid )
           CALL READ_REC_XY_RS( gchem_FeFile,gchemFe1,intime1,
      &         nIter0,myThid )
-         ENDIF
+        ENDIF
 
         _EXCH_XY_RS(gchemWind0, myThid )
         _EXCH_XY_RS(gchemWind1, myThid )
@@ -164,8 +164,8 @@ C--   Now calculate whether it is time to update the forcing arrays
           ENDDO
          ENDDO
         ENDIF
-       ENDIF
-
+C     if not gchem_useEXF
+      ENDIF
 
 #ifdef ALLOW_EXF
       IF ( gchem_useEXF ) THEN
