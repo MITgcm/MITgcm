@@ -20,6 +20,7 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
+#include "GCHEM_VARS.h"
 #include "DIC_VARS.h"
 
 C !INPUT PARAMETERS: ===================================================
@@ -155,10 +156,11 @@ C- convert carbonate to mol kg^-1-SW for calculation of saturation state
 C Use the original Follows et al. (2006) solver
 #endif /* CARBONCHEM_SOLVESAPHE */
 #ifdef ALLOW_DEBUG
-            IF (debugPrt) CALL DEBUG_CALL('CALC_PCO2_APPROX',myThid)
+            IF (debugPrt)
+     &           CALL DEBUG_CALL('GCHEM_CALC_PCO2_APPROX',myThid)
 #endif
             DO CO3iter = 1, doIterCO3
-             CALL CALC_PCO2_APPROX(
+             CALL GCHEM_CALC_PCO2_APPROX(
      I          locTemp(i,j), locSalt(i,j),
      I          diclocal, po4local,
      I          sitlocal, alklocal,
@@ -168,6 +170,7 @@ C Use the original Follows et al. (2006) solver
      I          aksi(i,j,bi,bj),akf(i,j,bi,bj),
      I          ak0(i,j,bi,bj), fugf(i,j,bi,bj), ff(i,j,bi,bj),
      I          bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
+     I          permil,
      U          pH3d(i,j,k,bi,bj), pCO2local(i,j), carbonate(i,j),
      I          i,j,k,bi,bj,myIter,myThid )
             ENDDO

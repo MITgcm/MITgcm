@@ -92,6 +92,7 @@ C                       and the 2nd order approximation does not have a solution
 C     MITgcm GLobal variables
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "GCHEM_VARS.h"
 #include "DIC_VARS.h"
 
 C -----------------------------------------------------------------------
@@ -237,6 +238,7 @@ C      =========================================================================
 C     MITgcm GLobal variables
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "GCHEM_VARS.h"
 #include "DIC_VARS.h"
 
 C -----------------------------------------------------------------------
@@ -393,6 +395,7 @@ C     MITgcm GLobal variables
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "GCHEM_VARS.h"
 #include "DIC_VARS.h"
 
       _RL  ttemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -911,6 +914,7 @@ C     MITgcm GLobal variables
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "GCHEM_VARS.h"
 #include "DIC_VARS.h"
 
       _RL  ttemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -1224,6 +1228,7 @@ C      =========================================================================
 C     MITgcm GLobal variables
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "GCHEM_VARS.h"
 #include "DIC_VARS.h"
 
 C      --------------------
@@ -1547,6 +1552,7 @@ C      determines upper an lower bounds for the solution if required
 C     MITgcm GLobal variables
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "GCHEM_VARS.h"
 #include "DIC_VARS.h"
 
 C      _RL SOLVE_AT_GENERAL
@@ -1813,6 +1819,7 @@ C      determines upper an lower bounds for the solution if required
 C     MITgcm GLobal variables
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "GCHEM_VARS.h"
 #include "DIC_VARS.h"
 
 C     --------------------

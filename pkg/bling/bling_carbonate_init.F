@@ -19,6 +19,7 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "FFIELDS.h"
+#include "GCHEM_VARS.h"
 #include "BLING_VARS.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
@@ -213,10 +214,12 @@ C Now correct the coefficients for pressure dependence
      I                       k,myThid)
 #else
 #ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('CARBON_COEFFS',myThid)
+        IF (debugMode)
+     &       CALL DEBUG_CALL('GCHEM_CARBON_COEFFS_PRESSURE_DEP',myThid)
 #endif
-         CALL CARBON_COEFFS_PRESSURE_DEP(
+         CALL GCHEM_CARBON_COEFFS_PRESSURE_DEP(
      I                       thetatmp,salttmp,
+     I                       atmosP(1-OLx,1-OLy,bi,bj),
      I                       bi,bj,iMin,iMax,jMin,jMax,k,myThid)
 #endif
 
@@ -259,11 +262,11 @@ C Use the original Follows et al. (2006) solver
 #endif /* CARBONCHEM_SOLVESAPHE */
 #ifdef ALLOW_DEBUG
               IF (debugMode) CALL DEBUG_CALL(
-     &           'CALC_PCO2_APPROX',myThid)
+     &           'GCHEM_CALC_PCO2_APPROX',myThid)
 #endif
 
              DO it=1,10
-              CALL CALC_PCO2_APPROX(
+              CALL GCHEM_CALC_PCO2_APPROX(
      I        thetatmp(i,j),salttmp(i,j),
      I        dictmp(i,j), phostmp(i,j),
      I        sitmp(i,j),alktmp(i,j),
@@ -274,6 +277,7 @@ C Use the original Follows et al. (2006) solver
      I        ak0(i,j,bi,bj), fugf(i,j,bi,bj),
      I        ff(i,j,bi,bj),
      I        bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
+     I        permil,
      U        pH(i,j,k,bi,bj),pCO2(i,j,bi,bj),co3dummy,
      I        i,j,k,bi,bj, it ,  myThid )
              ENDDO

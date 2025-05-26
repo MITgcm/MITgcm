@@ -23,6 +23,7 @@ C     == GLobal variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "GCHEM_VARS.h"
 #include "BLING_VARS.h"
 
 C     == Routine arguments ==
@@ -109,12 +110,13 @@ C Now correct the coefficients for pressure dependence
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL(
-     &   'CARBON_COEFFS_PRESSURE_DEP',myThid)
+     &   'GCHEM_CARBON_COEFFS_PRESSURE_DEP',myThid)
 #endif
 
 C  Get coefficients for carbonate calculations
-        CALL CARBON_COEFFS_PRESSURE_DEP(
+        CALL GCHEM_CARBON_COEFFS_PRESSURE_DEP(
      I                       locTemp, locSalt,
+     I                       atmosP(1-OLx,1-OLy,bi,bj),
      I                       bi, bj, iMin, iMax, jMin, jMax,
      I                       k, myThid )
 #endif /* CARBONCHEM_SOLVESAPHE */
@@ -178,7 +180,8 @@ C- convert carbonate to mol kg^-1-SW for calculation of saturation state
 C Use the original Follows et al. (2006) solver
 #endif /* CARBONCHEM_SOLVESAPHE */
 #ifdef ALLOW_DEBUG
-            IF (debugMode) CALL DEBUG_CALL('CALC_PCO2_APPROX',myThid)
+            IF (debugMode)
+     &           CALL DEBUG_CALL('GCHEM_CALC_PCO2_APPROX',myThid)
 #endif
 
 C  Evaluate carbonate (CO3) ions concentration
@@ -188,7 +191,7 @@ c           DO CO3iter = 1, CO3iterMax
 
 C--------------------------------------------------
 
-             CALL CALC_PCO2_APPROX(
+             CALL GCHEM_CALC_PCO2_APPROX(
      I          locTemp(i,j), locSalt(i,j),
      I          diclocal, po4local,
      I          sitlocal,alklocal,
@@ -198,6 +201,7 @@ C--------------------------------------------------
      I          aksi(i,j,bi,bj),akf(i,j,bi,bj),
      I          ak0(i,j,bi,bj),fugf(i,j,bi,bj),ff(i,j,bi,bj),
      I          bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
+     I          permil,
      U          pHlocal,pCO2local,carbonate,
      I          i,j,k,bi,bj,myIter,myThid )
 c           ENDDO
