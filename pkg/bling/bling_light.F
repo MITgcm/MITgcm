@@ -164,9 +164,14 @@ c  Surface insolation
 #ifndef ALLOW_EXF
       swdownfile = ' '
 #else
+# ifndef ALLOW_AUTODIFF_TAMC
+C     The following code makes TAF want to recompute swdownfile because
+C     of the IF-statement. I do not think that this code is necessary at
+C     all, but for now we just hide from TAF.
       IF ( .NOT. gchem_useEXF) THEN
         swdownfile = ' '
       ENDIF
+# endif
 #endif
 
 C If no EXF shortwave, calculate from time and latitude
