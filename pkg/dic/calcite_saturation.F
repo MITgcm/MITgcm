@@ -20,6 +20,7 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
+#include "GCHEM_VARS.h"
 #include "DIC_VARS.h"
 
 C !INPUT PARAMETERS: ===================================================
@@ -83,15 +84,15 @@ c      ENDIF
         ENDDO
 #ifdef CARBONCHEM_SOLVESAPHE
 #ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL( 'DIC_COEFFS_DEEP',myThid )
+        IF (debugMode) CALL DEBUG_CALL( 'GCHEM_COEFFS_DEEP',myThid )
 #endif
 C Calculate carbon coefficients
-        CALL DIC_COEFFS_SURF(
+        CALL GCHEM_COEFFS_SURF(
      I                       locTemp, locSalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
 
 C Now correct the coefficients for pressure dependence
-        CALL DIC_COEFFS_DEEP(
+        CALL GCHEM_COEFFS_DEEP(
      I                       locTemp, locSalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,
      I                       k,myThid)
@@ -112,7 +113,7 @@ C Now correct the coefficients for pressure dependence
 
           IF ( maskC(i,j,k,bi,bj).EQ.oneRS ) THEN
 #ifdef CARBONCHEM_SOLVESAPHE
-C calcium concentration already calculated in S/R DIC_COEFFS_SURF
+C calcium concentration already calculated in S/R GCHEM_COEFFS_SURF
            calcium = cat(i,j,bi,bj)
 #else
            calcium = 1.028 _d -2*salt(i,j,k,bi,bj)/35. _d 0
@@ -145,7 +146,7 @@ C call AHINI_FOR_AT to get better initial guess of pH
             CALL CALC_PCO2_SOLVESAPHE(
      I          locTemp(i,j), locSalt(i,j),
      I          diclocal, po4local,
-     I          sitlocal, alklocal,
+     I          sitlocal, alklocal, permil,
      U          pH3d(i,j,k,bi,bj), pCO2local(i,j), carbonate(i,j),
      I          i,j,k,bi,bj, debugPrt,myIter,myThid )
 
@@ -155,10 +156,11 @@ C- convert carbonate to mol kg^-1-SW for calculation of saturation state
 C Use the original Follows et al. (2006) solver
 #endif /* CARBONCHEM_SOLVESAPHE */
 #ifdef ALLOW_DEBUG
-            IF (debugPrt) CALL DEBUG_CALL('CALC_PCO2_APPROX',myThid)
+            IF (debugPrt)
+     &           CALL DEBUG_CALL('GCHEM_CALC_PCO2_APPROX',myThid)
 #endif
             DO CO3iter = 1, doIterCO3
-             CALL CALC_PCO2_APPROX(
+             CALL GCHEM_CALC_PCO2_APPROX(
      I          locTemp(i,j), locSalt(i,j),
      I          diclocal, po4local,
      I          sitlocal, alklocal,
@@ -168,6 +170,7 @@ C Use the original Follows et al. (2006) solver
      I          aksi(i,j,bi,bj),akf(i,j,bi,bj),
      I          ak0(i,j,bi,bj), fugf(i,j,bi,bj), ff(i,j,bi,bj),
      I          bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
+     I          permil,
      U          pH3d(i,j,k,bi,bj), pCO2local(i,j), carbonate(i,j),
      I          i,j,k,bi,bj,myIter,myThid )
             ENDDO
