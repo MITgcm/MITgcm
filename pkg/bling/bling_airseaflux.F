@@ -200,7 +200,7 @@ C Use Munhoven (2013) Solvesaphe routine to calculate pH and pCO2
                 CALL CALC_PCO2_SOLVESAPHE(
      I        surftemp(i,j),surfsalt(i,j),
      I        surfdic(i,j), surfphos(i,j),
-     I        surfsi(i,j),surfalk(i,j),
+     I        surfsi(i,j),surfalk(i,j),permil,
      U        pH(i,j,klev,bi,bj),pCO2(i,j,bi,bj),co3dummy,
      I        i,j,klev,bi,bj,myIter, myThid )
              ELSE

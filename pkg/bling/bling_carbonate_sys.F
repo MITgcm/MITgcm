@@ -170,7 +170,7 @@ c     I           i,j,k,bi,bj,myIter,myThid )
             CALL CALC_PCO2_SOLVESAPHE(
      I          locTemp(i,j), locSalt(i,j),
      I          diclocal, po4local,
-     I          sitlocal, alklocal,
+     I          sitlocal, alklocal, permil,
      U          pHlocal, pCO2local, carbonate,
      I          i,j,k,bi,bj,myIter,myThid )
 

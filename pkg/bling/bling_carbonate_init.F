@@ -254,7 +254,7 @@ CAV C$TAF STORE alktmp(i,j), phostmp(i,j), sitmp(i,j)      = dic_surf
               CALL CALC_PCO2_SOLVESAPHE(
      I        thetatmp(i,j),salttmp(i,j),
      I        dictmp(i,j), phostmp(i,j),
-     I        sitmp(i,j),alktmp(i,j),
+     I        sitmp(i,j),alktmp(i,j),permil,
      U        pH(i,j,k,bi,bj),pCO2(i,j,bi,bj),co3dummy,
      I        i,j,k,bi,bj, it ,  myThid )
              ELSE

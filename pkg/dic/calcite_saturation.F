@@ -84,15 +84,15 @@ c      ENDIF
         ENDDO
 #ifdef CARBONCHEM_SOLVESAPHE
 #ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL( 'DIC_COEFFS_DEEP',myThid )
+        IF (debugMode) CALL DEBUG_CALL( 'GCHEM_COEFFS_DEEP',myThid )
 #endif
 C Calculate carbon coefficients
-        CALL DIC_COEFFS_SURF(
+        CALL GCHEM_COEFFS_SURF(
      I                       locTemp, locSalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
 
 C Now correct the coefficients for pressure dependence
-        CALL DIC_COEFFS_DEEP(
+        CALL GCHEM_COEFFS_DEEP(
      I                       locTemp, locSalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,
      I                       k,myThid)
@@ -113,7 +113,7 @@ C Now correct the coefficients for pressure dependence
 
           IF ( maskC(i,j,k,bi,bj).EQ.oneRS ) THEN
 #ifdef CARBONCHEM_SOLVESAPHE
-C calcium concentration already calculated in S/R DIC_COEFFS_SURF
+C calcium concentration already calculated in S/R GCHEM_COEFFS_SURF
            calcium = cat(i,j,bi,bj)
 #else
            calcium = 1.028 _d -2*salt(i,j,k,bi,bj)/35. _d 0
@@ -146,7 +146,7 @@ C call AHINI_FOR_AT to get better initial guess of pH
             CALL CALC_PCO2_SOLVESAPHE(
      I          locTemp(i,j), locSalt(i,j),
      I          diclocal, po4local,
-     I          sitlocal, alklocal,
+     I          sitlocal, alklocal, permil,
      U          pH3d(i,j,k,bi,bj), pCO2local(i,j), carbonate(i,j),
      I          i,j,k,bi,bj, debugPrt,myIter,myThid )
 
