@@ -90,7 +90,7 @@ C--   Calculate length-scale factor (used in S/R MOM_CALC_VISC)
             IF ( recip_dxF(i,j,bi,bj).NE.0. .OR.
      &           recip_dyF(i,j,bi,bj).NE.0. ) THEN
               L2_D(i,j,bi,bj) = 2. _d 0
-     &           /((recip_dxF(i,j,bi,bj)**2+recip_dyF(i,j,bi,bj)**2))
+     &           /(recip_dxF(i,j,bi,bj)**2 + recip_dyF(i,j,bi,bj)**2)
             ENDIF
            ENDDO
           ENDDO
