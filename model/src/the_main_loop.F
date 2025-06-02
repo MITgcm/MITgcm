@@ -321,6 +321,10 @@ CADJ INIT tapelev_ini_bibj_k = USER
 c--   exclusive tape for variables with suffix "_dummy"
 CADJ INIT dummytape          = COMMON, 1
 # endif
+c--   initialise storage for cost function
+# ifdef ALLOW_OBSFIT
+CADJ INIT tapelev_obsfit = COMMON, NFILESMAX_OBS
+# endif
 
 c--   Initialize storage for the outermost loop.
 # ifdef ALLOW_TAMC_CHECKPOINTING

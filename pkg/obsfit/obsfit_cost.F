@@ -110,8 +110,8 @@ C Need to sync the file so that the data is not lost when run finishes
 
 C Loop over samples
        DO ii=1,NSAMPLESMAX
-        samples_buff(ii) = 0.
-        samples_mask_buff(ii) = 0.
+        samples_buff(ii)      = zeroRL
+        samples_mask_buff(ii) = zeroRL
        ENDDO
 
        DO bj=1,nSy
@@ -121,7 +121,7 @@ C Open tiled files and read to buffer
          DO sample_num=1,NSAMPLESMAX
           IF (sample_num.LE.sampleNo(num_file,bi,bj)) THEN
 
-            sample_modval=0.
+            sample_modval = zeroRL
 
             CALL ACTIVE_READ_OBS_TILE(num_file,
      &           sample_modval,
@@ -158,9 +158,9 @@ C Loop over obs
         DO obs_num=1,NOBSMAX_OBS
          IF (obs_num.LE.ObsNo(num_file)) THEN
 
-          obs_modval=0.
-          sample_mask_sum=0
-          num_valid_samples=0
+          obs_modval        = zeroRL
+          sample_mask_sum   = zeroRL
+          num_valid_samples = 0
 
 C Calculate model equi of each obs by averaging NP samples
           DO sample_num=1,NSAMP_PER_OBS_MAX
@@ -184,16 +184,19 @@ C Time averaging
 
 C Spatial averaging
           IF (num_valid_samples.GT.0) THEN
+C     I would argue that it makes more sense to do this:
+C         IF (sample_mask_sum.GT.zeroRL) THEN
            obs_modval = obs_modval/sample_mask_sum
-           obs_modmask = 1
+           obs_modmask = oneRL
           ELSE
-           obs_modval = -9999.
-           obs_modmask = 0
+           obs_modval = -9999. _d 0
+           obs_modmask = zeroRL
           ENDIF
 
-          IF (obs_modval.eq.-9999) THEN
-           obs_modmask = 0
-          ENDIF
+C     This does not seem to be necessary
+c         IF (obs_modval.eq.-9999) THEN
+c          obs_modmask = zeroRL
+c         ENDIF
 
 C Write to global netcdf file
           CALL ACTIVE_WRITE_OBS_GLOB(num_file,
@@ -203,24 +206,28 @@ C Write to global netcdf file
 
          ENDIF !if (obs_num.LE.ObsNo(num_file)) then
         ENDDO !do obs_num
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE obs_modmask, obsfit_globaldummy(num_file)
+CADJ &     = tapelev_obsfit, key = num_file, kind = isbyte
+#endif
 
 C Need to sync the file so that the data is not lost when run finishes
         err = NF_SYNC(fidglobal(num_file))
 
         IF (obs_is_ssh(num_file).GT.0) THEN
 C Read data to calculate the mean offset between model and obs
-         offset=0.
-         mod_mean=0.
-         obs_mean=0.
-         nobsmean=0
+         offset   = zeroRL
+         mod_mean = zeroRL
+         obs_mean = zeroRL
+         nobsmean = 0
 
 C Loop over obs
          DO obs_num=1,NOBSMAX_OBS
           IF (obs_num.LE.ObsNo(num_file)) THEN
 
-           obs_modval=0.
-           obs_data  =0.
-           obs_uncert=0.
+           obs_modval = zeroRL
+           obs_data   = zeroRL
+           obs_uncert = zeroRL
 
 C Read model equivalent from global file
            CALL ACTIVE_READ_OBS_GLOB(num_file,
@@ -237,24 +244,22 @@ C Read observation and uncertainty
      &           obs_ind_glob(num_file,obs_num),
      &           obs_uncert,myThid)
 
-CAV - This causes major recomputations (obs_modmask)
-CAV            IF ((obs_data.GT.-9999).AND.(obs_modmask.GT.0)) THEN
-CAV - Does this work?
-            IF ((obs_data.GT.-9999).AND.(obs_modval.GT.-9999)) THEN
-             obs_mean=obs_mean+obs_data
-             mod_mean=mod_mean+obs_modval
-             nobsmean=nobsmean+1
-            ENDIF
+           IF ( obs_data.GT.-9999. _d 0 .AND.
+     &          obs_modmask.GT.zeroRL ) THEN
+            obs_mean = obs_mean + obs_data
+            mod_mean = mod_mean + obs_modval
+            nobsmean = nobsmean + 1
+           ENDIF
 
           ENDIF !if (obs_num.LE.ObsNo(num_file)) then
          ENDDO !do obs_num
 
-         obs_mean=obs_mean/nobsmean
-         mod_mean=mod_mean/nobsmean
-         offset=mod_mean-obs_mean
+         obs_mean = obs_mean/nobsmean
+         mod_mean = mod_mean/nobsmean
+         offset   = mod_mean-obs_mean
 
         ELSE
-         offset=0.
+         offset = zeroRL
         ENDIF
 
 C Read data to calculate the cost
@@ -274,15 +279,9 @@ C Loop over obs
         DO obs_num=1,NOBSMAX_OBS
          IF (obs_num.LE.ObsNo(num_file)) THEN
 
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE obs_modmask         = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
-CADJ STORE obsfit_globaldummy  = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
-#endif
-          obs_modval=0.
-          obs_data  =0.
-          obs_uncert=0.
+          obs_modval = zeroRL
+          obs_data   = zeroRL
+          obs_uncert = zeroRL
 
 C Read observation and uncertainty
           CALL OBSFIT_READ_OBS(num_file,1,
@@ -293,8 +292,8 @@ C Read observation and uncertainty
      &           obs_ind_glob(num_file,obs_num),
      &           obs_uncert,myThid)
 
-          IF (obs_data.eq.-9999) THEN
-           obs_uncert=0
+          IF ( obs_data .EQ. -9999. _d 0 ) THEN
+           obs_uncert = zeroRL
           ENDIF
 
 C Read model equivalent from global file
@@ -303,7 +302,7 @@ C Read model equivalent from global file
      &         obs_num,.FALSE.,optimcycle,myThid,
      &         obsfit_globaldummy(num_file))
 
-          IF (obs_uncert.GT.0.) THEN
+          IF ( obs_uncert.GT.zeroRL ) THEN
            obs_weight = 1. _d 0 / (obs_uncert*obs_uncert)
            misfit     = obs_modval-obs_data-offset
            objf_obsfit(num_file) = objf_obsfit(num_file)
