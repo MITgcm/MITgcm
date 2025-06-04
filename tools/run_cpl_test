@@ -8,8 +8,7 @@
 #   Note: currently these coupled set-up are not covered by "testreport"
 # 1) running "./run_cpl_test" show the different steps (+ some options) available
 # 2) some options are not available as argument and require editing this script, e.g.,
-#    a) to run Ocean or Atmos component on more that 1 MPI process (edit: NpOc and Npr)
-#    b) to use compiler Optimisation (edit: GMKopt)
+#    to run Ocean or Atmos component on more that 1 MPI process (edit: NpOc and Npr)
 #---
 
 bdPfx='build'; # build-dir prefix
@@ -23,11 +22,6 @@ bdPfx='build'; # build-dir prefix
 
 # MTH :: genmake2 option for multi-threading compilation
 MTH=
-
-# GMKopt :: other genmake2 option (empty --> use compiler optimisation)
-GMKopt='-devel'
-#GMKopt='-ieee'
-#GMKopt=
 
 rnkO=1 ; rnkA=`expr $rnkO + $NpOc`
 MTHo=
@@ -56,7 +50,7 @@ if [ $chkArg -ne 1 ]; then
   echo ' typ = -mth : compile and run (if eedata.mth) 2-threads for ocn & atm'
   echo ' step = 0 : clean all directories'
   echo ' step = 1 : compile the 3 executables (cpl,ocn,atm);'
-  echo '       opt-arg: -of Optfile_Name : using option-file "Optfile_Name"'
+  echo '       opt-arg: all are passed to "genmake2" (e.g., "-of Opt-File")'
   echo ' step = 2 : copy input files and dir(s);'
   echo " step = 3 : run with $Npr mpi processes"
   echo ' step = 4 : check the results'
@@ -103,32 +97,40 @@ fi
 
 if test $kpr = 1 ; then
 
-#- choice of the optfile:
-#  default: take a local one in dir verification with sufix '+mpi'
- nbOpF=`ls ../linux_* | grep '+mpi' 2> /dev/null | wc -l`
-#  or take the one given as argument:
- if [ $# -ge 3 ]; then
-   if test $2 = '-of' -a -f $3 ; then nbOpF=-1 ; OPTFILE=$3 ; fi
+#- set list of opt-arg to pass to genmake2 ( $GMKopt )
+ shift ; args="$*"
+ #- simplify the list, remove "-omp" and find optfile name:
+ arg1=`echo $args | sed 's/=/ /g' | sed 's/-optfile /-of /g' | sed 's/--of /-of /g'`
+ args=`echo $arg1 | sed 's/ *-\+omp\>//'`
+ zz=`echo $args | grep -c '\-of '`
+ if test $zz = 0 ; then
+   echo "Error: Need to specify an Opt-File for 'genmake2' (-of Opt-File)"
+   exit
  fi
- if test $nbOpF = 1 ; then
-   OPTFILE=`ls ../linux_* | grep '+mpi'`
- elif [ $nbOpF -ge 2 ] ; then
-   echo "pick the 1rst of these ( $nbOpF ) optfiles:"
-   ls ../linux_* | grep '+mpi'
-   OPTFILE=`ls ../linux_* | grep '+mpi' | head -1`
- elif [ $nbOpF -ne -1 ] ; then
-   echo "Pb in finding optfile: found $nbOpF :"
-   ls ../linux_* | grep '+mpi' ; exit
+ #- get the opt-file name:
+ OPTFILE=`echo $args | sed 's/^.*-of //' | awk '{print $1}'`
+ #- set options to pass to genmake2:
+ zz=`echo $args | grep -c '\-mpi\>'`
+ if test $zz = 0 ; then
+   GMKopt=`echo -mpi $args | sed "s: *-of $OPTFILE::"`
+ else
+   GMKopt=`echo $args | sed "s: *-of $OPTFILE::"`
  fi
- zz=`grep '^ *FC=' $OPTFILE | tail -1`
- echo " Using optfile: $OPTFILE  (compiler: $zz) $MTH"
- zz=`echo $OPTFILE | grep -c '^\/'`
+ if test -r $OPTFILE ; then
+   zz=`grep '^ *FC=' $OPTFILE | tail -1`
+   echo " Using optfile: $OPTFILE  (compiler: $zz) $MTH"
+ else
+   echo "Error: optfile '$OPTFILE' not found or not readable"
+   exit
+ fi
+ zz=`echo $OPTFILE | grep -c '^/'`
  if test $zz = 0 ; then OPTFILE="../$OPTFILE" ; fi
+#echo "CMDarg='-of $OPTFILE $GMKopt'" ; exit 66
 #---
  echo '==== compile coupler:'
  cd ${bdPfx}_cpl
  echo ' --- genmake2 (cpl):'
- ../../../tools/genmake2 -of $OPTFILE -mpi $GMKopt >  TTT.genmake.$$ 2>&1
+ ../../../tools/genmake2 -of $OPTFILE $GMKopt >  TTT.genmake.$$ 2>&1
  RetVal=$? ; tail -5 TTT.genmake.$$
  if test "x$RetVal" != x0 ; then
    echo "Error in genmake2 (cpl)" ; exit 11
@@ -151,7 +153,7 @@ if test $kpr = 1 ; then
  echo '==== compile OGCM:'
  cd ${bdPfx}_ocn
  echo ' --- genmake2 (ocn):'
- ../../../tools/genmake2 -of $OPTFILE -mpi $MTHo $GMKopt >  TTT.genmake.$$ 2>&1
+ ../../../tools/genmake2 -of $OPTFILE $MTHo $GMKopt >  TTT.genmake.$$ 2>&1
  RetVal=$? ; tail -5 TTT.genmake.$$
  if test "x$RetVal" != x0 ; then
    echo "Error in genmake2 (ocn)" ; exit 21
@@ -174,7 +176,7 @@ if test $kpr = 1 ; then
  echo '==== compile AGCM:'
  cd ${bdPfx}_atm
  echo ' --- genmake2 (atm):'
- ../../../tools/genmake2 -of $OPTFILE -mpi $MTHa $GMKopt >  TTT.genmake.$$ 2>&1
+ ../../../tools/genmake2 -of $OPTFILE $MTHa $GMKopt >  TTT.genmake.$$ 2>&1
  RetVal=$? ; tail -5 TTT.genmake.$$
  if test "x$RetVal" != x0 ; then
    echo "Error in genmake2 (atm)" ; exit 31
@@ -204,24 +206,44 @@ if test $kpr = 2 ; then
   n=0 ; inpDr='input_cpl';
   mkdir rank_$n
   ( cd rank_$n
-    if test -d ../$inpDr.$sfx ; then
+    if test "x$sfx" != x -a -d ../$inpDr.$sfx ; then
       echo 'Link files from dir:' $inpDr.$sfx '->' rank_$n
-      ln -s ../$inpDr.$sfx/* .
+      files=`( cd ../$inpDr.$sfx ; ls -1 )`
+      for ff in $files ; do
+        if test ! -d "../$inpDr.$sfx/$ff" -a ! -f $ff ; then
+          ln -s ../$inpDr.$sfx/$ff $ff
+        fi
+      done
     fi
     echo 'Link files from dir:' $inpDr '->' rank_$n
-    ln -s ../$inpDr/* .
+    files=`( cd ../$inpDr ; ls -1 )`
+    for ff in $files ; do
+        if test ! -d "../$inpDr/$ff" -a ! -f $ff ; then
+          ln -s ../$inpDr/$ff $ff
+        fi
+    done
     if test -x prepare_run ; then ./prepare_run ; fi
   )
 
   n=$rnkO ; inpDr='input_ocn';
   mkdir rank_$n
   ( cd rank_$n
-    if test -d ../$inpDr.$sfx ; then
+    if test "x$sfx" != x -a -d ../$inpDr.$sfx ; then
       echo 'Link files from dir:' $inpDr.$sfx '->' rank_$n
-      ln -s ../$inpDr.$sfx/* .
+      files=`( cd ../$inpDr.$sfx ; ls -1 )`
+      for ff in $files ; do
+        if test ! -d "../$inpDr.$sfx/$ff" -a ! -f $ff ; then
+          ln -s ../$inpDr.$sfx/$ff $ff
+        fi
+      done
     fi
     echo 'Link files from dir:' $inpDr '->' rank_$n
-    ln -s ../$inpDr/* .
+    files=`( cd ../$inpDr ; ls -1 )`
+    for ff in $files ; do
+        if test ! -d "../$inpDr/$ff" -a ! -f $ff ; then
+          ln -s ../$inpDr/$ff $ff
+        fi
+    done
     if test -x prepare_run ; then ./prepare_run ; fi
     if test "x$MTHo" != x ; then
       echo " MTH run: mv -f eedata.mth eedata"
@@ -238,12 +260,22 @@ if test $kpr = 2 ; then
   n=$rnkA ; inpDr='input_atm';
   mkdir rank_$n
   ( cd rank_$n
-    if test -d ../$inpDr.$sfx ; then
+    if test "x$sfx" != x -a -d ../$inpDr.$sfx ; then
       echo 'Link files from dir:' $inpDr.$sfx '->' rank_$n
-      ln -s ../$inpDr.$sfx/* .
+      files=`( cd ../$inpDr.$sfx ; ls -1 )`
+      for ff in $files ; do
+        if test ! -d "../$inpDr.$sfx/$ff" -a ! -f $ff ; then
+          ln -s ../$inpDr.$sfx/$ff $ff
+        fi
+      done
     fi
     echo 'Link files from dir:' $inpDr '->' rank_$n
-    ln -s ../$inpDr/* .
+    files=`( cd ../$inpDr ; ls -1 )`
+    for ff in $files ; do
+        if test ! -d "../$inpDr/$ff" -a ! -f $ff ; then
+          ln -s ../$inpDr/$ff $ff
+        fi
+    done
     if test -x prepare_run ; then ./prepare_run ; fi
     if test "x$MTHa" != x ; then
       echo " MTH run: mv -f eedata.mth eedata"
@@ -342,8 +374,13 @@ if test $kpr = 3 ; then
 fi
 
 if test $kpr = 4 ; then
- CompRes="$HOME/bin/comp_res"
- if test -x $CompRes ; then
+ CompRes="comp_res"
+ which $CompRes > /dev/null 2>&1 ; retVal=$?
+ if [ $retVal -ne 0 ] ; then
+   CompRes="$HOME/bin/$CompRes"
+   if test -x $CompRes ; then retVal=0 ; fi
+ fi
+ if [ $retVal -eq 0 ] ; then
   if test "x$sfx" = x ; then rfx='0000' ; else rfx=$sfx ; fi
 
   if test -f rank_$rnkO/STDOUT.0000 ; then
@@ -387,7 +424,7 @@ if test $kpr = 4 ; then
   else echo "No Atmos output file in rank_$rnkA" ; fi
 
   else
-    echo "No file '$CompRes' to run ==> skip step: $kpr "
+    echo "No 'comp_res' in PATH nor here '$CompRes' to run ==> skip step: $kpr "
   fi
 fi
 
