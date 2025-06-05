@@ -33,6 +33,7 @@ C     myThid: my thread ID number
       INTEGER myThid
 CEOP
 
+#ifdef ALLOW_PROFILES
 C     !FUNCTIONS:
       INTEGER ILNBLNK
       EXTERNAL ILNBLNK
@@ -40,7 +41,6 @@ C     !FUNCTIONS:
       EXTERNAL MDS_RECLEN
 
 C     !LOCAL VARIABLES:
-#ifdef ALLOW_PROFILES
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER kLev, kProf, prof_num
       INTEGER chunk, chunkProf, c, recLen
@@ -83,7 +83,7 @@ C     !LOCAL VARIABLES:
       INTEGER vec_start2(2), vec_count2(2)
       INTEGER hh, ProfNo_hh
 # ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
-      INTEGER kC, kCMax
+      INTEGER m, kC, kCMax
       INTEGER varId4
       _RL tmp_avgbin(1000)
 # endif /* ALLOW_PROFILES_SAMPLESPLIT_COST */
@@ -1192,7 +1192,7 @@ C Sort
                       prof_depth_comb(NLEVELCOMBMAX,bi,bj) =
      &                 prof_depth_comb(kCMax+1,bi,bj)
 
-                      prof_depth_comb(kCMax+1,bi,bj)i =
+                      prof_depth_comb(kCMax+1,bi,bj) =
      &                 prof_depth(num_file, kProf,bi,bj)
 
                       DO kC = NLEVELCOMBMAX-1, kCMax+3, -1
