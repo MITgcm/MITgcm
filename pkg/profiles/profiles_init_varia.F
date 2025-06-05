@@ -34,7 +34,7 @@ C     == Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid: my thread ID number
-      INTEGER mythid
+      INTEGER myThid
 CEOP
 
 C     !LOCAL VARIABLES:
@@ -45,8 +45,8 @@ C     !LOCAL VARIABLES:
 #endif /* ALLOW_GRDCHK */
 
 C Initialize tiled cost function contributions.
-      DO bj = myByLo(mythid), myByHi(mythid)
-        DO bi = myBxLo(mythid), myBxHi(mythid)
+      DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
           DO num_file = 1, NFILESPROFMAX
             DO num_var = 1, NVARMAX
               objf_profiles(num_file,num_var,bi,bj) = 0. _d 0

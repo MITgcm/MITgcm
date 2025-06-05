@@ -233,7 +233,6 @@ C Subcase 2: only 1 wet point just above => upper cell value
             traj_cur_out(kProf) = traj_cur(kcur)
             prof_mask1D_cur(kProf,bi,bj) = mask_cur(kcur)
 
-
           ENDIF !IF (mask_cur(kcur+1).EQ.oneRL)
 
         ENDIF !IF (prof_depth(file_cur,kProf,bi,bj).LT.-rC(1))

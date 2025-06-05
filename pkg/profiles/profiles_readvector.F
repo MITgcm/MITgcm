@@ -1,6 +1,5 @@
 #include "PROFILES_OPTIONS.h"
 
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C !ROUTINE: PROFILES_READPARMS
@@ -80,7 +79,7 @@ C Implies that a forward loop is calling
      &     profiles_minind_buff(bi,bj), profiles_maxind_buff(bi,bj),
      &     irec, profNo(fNb,bi,bj), tmpprofno
           CALL PRINT_MESSAGE( msgBuf,
-     &         standardmessageunit, SQUEEZE_RIGHT, myThid )
+     &         standardMessageUnit, SQUEEZE_RIGHT, myThid )
         ENDIF
 # endif
 

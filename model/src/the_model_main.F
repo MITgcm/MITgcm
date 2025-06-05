@@ -777,11 +777,11 @@ C       Close all open NetCDF files
 #endif
 
 #ifdef ALLOW_PROFILES
-      IF ( useProfiles ) THEN
+      IF ( usePROFILES ) THEN
 C       Close all open NetCDF files
         CALL PROFILES_NC_CLOSE( myThid )
       ENDIF
-#endif
+#endif /* ALLOW_PROFILES */
 
 C--   This timer encompasses the whole code
       CALL TIMER_STOP ('ALL                    [THE_MODEL_MAIN]',myThid)
