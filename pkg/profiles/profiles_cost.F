@@ -8,7 +8,7 @@ CBOP
 C !ROUTINE: PROFILES_COST
 
 C !INTERFACE:
-      SUBROUTINE PROFILES_COST( myIter, myTime, myThid )
+      SUBROUTINE PROFILES_COST( myTime, myIter, myThid )
 
 C     !DESCRIPTION:
 C     Computes the cost for netcdf profiles data
@@ -35,34 +35,34 @@ C     == Global variables ===
 #endif
 
 C     !INPUT PARAMETERS:
-C     myIter: iteration counter for this thread
-C     myTime: time counter for this thread
-C     myThid: my thread ID number
-      INTEGER myIter
+C     myTime :: time counter for this thread
+C     myIter :: iteration counter for this thread
+C     myThid :: my thread ID number
       _RL     myTime
+      INTEGER myIter
       INTEGER myThid
 C     !OUTPUT PARAMETERS:
-CEOP
 
+#ifdef ALLOW_PROFILES
 C     !FUNCTIONS:
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
-#ifdef ALLOW_PROFILES
       INTEGER kLev, kC, kCMax, kProf
       INTEGER num_file,num_var,prof_num
       INTEGER bi,bj
+      INTEGER err
       _RL prof_traj1D(NLEVELMAX), prof_traj1D_mean(NLEVELMAX)
       _RL prof_data1D(NLEVELMAX), prof_weights1D(NLEVELMAX)
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifndef ALLOW_CTRL
       INTEGER optimcycle
 #endif
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
-      INTEGER IL
+      INTEGER iL
 #endif
-      INTEGER err
+CEOP
 
       _RL  objf_prof_tile (nSx,nSy)
       _RL  objf_prof_glo
@@ -90,7 +90,7 @@ C     !LOCAL VARIABLES:
       _RL  objf_prof_mean_glo
       _RL  num_prof_mean_tile (nSx,nSy)
       _RL  num_prof_mean_glo
-#endif
+#endif /* ALLOW_PROFILES_SAMPLESPLIT_COST */
 
 #ifndef ALLOW_CTRL
       optimcycle = 0
@@ -158,8 +158,7 @@ C Find vertical indices
             ENDDO
 
             DO num_var = 1, NVARMAX
-              IF (vec_quantities(num_file,num_var,bi,bj).EQV..TRUE.)
-     &        THEN
+              IF ( vec_quantities(num_file,num_var,bi,bj) ) THEN
                 DO prof_num = 1, NOBSGLOB
                   IF (prof_num.LE.ProfNo(num_file,bi,bj)) THEN
                     DO kLev = 1, NLEVELMAX
@@ -240,7 +239,7 @@ C Find vertical indices
 
                   ENDIF !IF (prof_num.LE.ProfNo(num_file,bi,bj))
                 ENDDO !DO prof_num...
-              ENDIF !IF (vec_quantities(num_file,num_var,bi,bj).EQV.
+              ENDIF !IF vec_quantities(num_file,num_var,bi,bj)
             ENDDO !DO num_var
 
           ENDDO !DO num_file = 1, NFILESPROFMAX
@@ -262,9 +261,8 @@ C Accumulate globally
         DO bj = 1, nSy
           DO bi = 1, nSx
             DO num_file = 1, NFILESPROFMAX
-              IF (vec_quantities(num_file,num_var,bi,bj).EQV..TRUE.)
+              IF ( vec_quantities(num_file,num_var,bi,bj) )
      &          doglbsum = .TRUE.
-
             ENDDO !DO num_file
           ENDDO !DO bi
         ENDDO !DO bj
@@ -400,7 +398,7 @@ C prof_weights1D_all_mean is still sigam^2. Convert to weight
 
         ENDDO !DO num_var
       ENDIF !IF (myProcId.EQ.0)
-#endif
+#endif /* ALLOW_PROFILES_SAMPLESPLIT_COST */
 
       DO bj = 1, nSy
         DO bi = 1, nSx
@@ -427,12 +425,9 @@ C Sync file so that data is not lost when run finishes
                     prof_data1D_mean(kLev) = 0.
                     prof_weights1D_mean(kLev) = 0.
 #endif
-
                   ENDDO
 
-                  IF
-     &          (vec_quantities(num_file,num_var,bi,bj).EQV..TRUE.)
-     &            THEN
+                  IF ( vec_quantities(num_file,num_var,bi,bj) ) THEN
 #ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
                     itmp = prof_ind_avgbin(num_file,prof_num,bi,bj)
 
@@ -451,7 +446,7 @@ C Sync file so that data is not lost when run finishes
 
                       ENDDO
                     ENDIF !IF (itmp.GE.0)
-#endif
+#endif /* ALLOW_PROFILES_SAMPLESPLIT_COST */
 
                     CALL ACTIVE_READ_PROFILE( num_file,
      &                   ProfDepthNo(num_file,bi,bj),prof_traj1D,
@@ -653,8 +648,7 @@ C Print cost function values
      &         standardMessageUnit, SQUEEZE_RIGHT, myThid )
 
       ENDDO !DO num_var
-
-#endif
+#endif /* ALLOW_PROFILES_SAMPLESPLIT_COST */
 
       WRITE(msgBuf,'(A)') '== profiles_cost: end   =='
       CALL PRINT_MESSAGE( msgBuf,
@@ -667,7 +661,7 @@ C Print cost function values
         CALL PROFILES_MAKE_NCFILE( myThid )
       ENDIF
 
-#endif
+#endif /* ALLOW_PROFILES */
 
       RETURN
       END
