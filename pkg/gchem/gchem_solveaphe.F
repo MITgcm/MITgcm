@@ -1,13 +1,19 @@
-#include "DIC_OPTIONS.h"
+#include "GCHEM_OPTIONS.h"
+#ifdef ALLOW_DIC
+# include "DIC_OPTIONS.h"
+#endif
+#ifdef ALLOW_BLING
+# include "BLING_OPTIONS.h"
+#endif
 
-C--  File dic_solvesaphe.F:
+C--  File gchem_solvesaphe.F:
 C--   Contents:
 C--   o AHINI_FOR_AT
 C--   o ANW_INFSUP
 C--   o EQUATION_AT
 C--   o CALC_PCO2_SOLVESAPHE
-C--   o DIC_COEFFS_SURF
-C--   o DIC_COEFFS_DEEP
+C--   o GCHEM_COEFFS_SURF
+C--   o GCHEM_COEFFS_DEEP
 C--   o SOLVE_AT_FAST
 C--   o SOLVE_AT_GENERAL
 C--   o SOLVE_AT_GENERAL_SEC
@@ -39,12 +45,12 @@ C        MOD_PHSOLVERS SOLVE_AT_GENERAL SOLVE_AT_GENERAL_SEC and SOLVE_AT_FAST.
 C        Use runtime flags in data.dic to use GENERAL (selectPHsolver=1,
 C        default), SEC (selectPHsolver=2) or FAST (selectPHsolver=3).
 C
-C    - MOD_CHEMCONST is included here as DIC_COEFFS_SURF, with the
-C        style brought in line with S/R CARBON_COEFF (i.e all ak values are
+C    - MOD_CHEMCONST is included here as GCHEM_COEFFS_SURF, with the
+C        style brought in line with S/R GCHEM_CARBON_COEFF (i.e all ak values are
 C        filled in one call, rather than all as separate functions).
 C
 C    - MOD_CHEMCONST pressure corrections have been split off into the new
-C        S/R DIC_COEFFS_DEEP, call both to get pressure
+C        S/R GCHEM_COEFFS_DEEP, call both to get pressure
 C        adjusted dissociation constants
 C
 C    - Different coefficients can be accessed using runtime flags in data.dic:
@@ -92,7 +98,7 @@ C                       and the 2nd order approximation does not have a solution
 C     MITgcm GLobal variables
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "DIC_VARS.h"
+#include "GCHEM_VARS.h"
 
 C -----------------------------------------------------------------------
 C     Argument variables
@@ -173,7 +179,7 @@ C      inf(TA - [OH-] + [H+]) and sup(TA - [OH-] + [H+])
 C     MITgcm GLobal variables
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "DIC_VARS.h"
+#include "GCHEM_VARS.h"
 
 C      --------------------
 C      Argument variables
@@ -229,6 +235,7 @@ C      =========================================================================
 C      =========================================================================
       SUBROUTINE CALC_PCO2_SOLVESAPHE(
      I                    t,s,z_dictot,z_po4tot,z_siltot,z_alktot,
+     I                    permil,
      U                    pHlocal,z_pco2,z_co3,
      I                    i,j,k,bi,bj,debugPrt,myIter,myThid )
 
@@ -237,7 +244,7 @@ C      =========================================================================
 C     MITgcm GLobal variables
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "DIC_VARS.h"
+#include "GCHEM_VARS.h"
 
 C -----------------------------------------------------------------------
 C General parameters
@@ -249,7 +256,10 @@ C       pt  = inorganic phosphate (mol/^3)
 C       sit = inorganic silicate (mol/^3)
 C       t   = temperature (degrees C)
 C       s   = salinity (g/kg)
+C       permil = conversion factor for mol/m3 to mol/kg
+C                assumes uniform (surface) density
       _RL  t, s, z_po4tot, z_siltot, z_alktot
+      _RL  permil
       _RL  z_pco2, z_dictot, pHlocal
       _RL  z_co3
       INTEGER i,j,k,bi,bj
@@ -379,7 +389,7 @@ C      END SUBROUTINE CALC_PCO2_SOLVESAPHE
 C      =========================================================================
 
 C      =========================================================================
-      SUBROUTINE DIC_COEFFS_SURF(
+      SUBROUTINE GCHEM_COEFFS_SURF(
      &                   ttemp,stemp,
      &                   bi,bj,iMin,iMax,jMin,jMax,myThid)
 
@@ -393,7 +403,7 @@ C     MITgcm GLobal variables
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "DIC_VARS.h"
+#include "GCHEM_VARS.h"
 
       _RL  ttemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  stemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -892,11 +902,11 @@ C       Units     : (mol/kg-SW)^2
 #endif /* CARBONCHEM_SOLVESAPHE */
       RETURN
       END
-C     END SUBROUTINE DIC_COEFFS_SURF
+C     END SUBROUTINE GCHEM_COEFFS_SURF
 C -----------------------------------------------------------------------
 
 C -----------------------------------------------------------------------
-      SUBROUTINE DIC_COEFFS_DEEP(
+      SUBROUTINE GCHEM_COEFFS_DEEP(
      &                   ttemp,stemp,
      &                   bi,bj,iMin,iMax,jMin,jMax,
      &                   Klevel,myThid)
@@ -911,7 +921,7 @@ C     MITgcm GLobal variables
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "DIC_VARS.h"
+#include "GCHEM_VARS.h"
 
       _RL  ttemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  stemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -1208,7 +1218,7 @@ C       References: Millero (1979) for pressure correction
 
       RETURN
       END
-C     END SUBROUTINE DIC_COEFFS_DEEP
+C     END SUBROUTINE GCHEM_COEFFS_DEEP
 C      =========================================================================
 
 C      =========================================================================
@@ -1224,7 +1234,7 @@ C      =========================================================================
 C     MITgcm GLobal variables
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "DIC_VARS.h"
+#include "GCHEM_VARS.h"
 
 C      --------------------
 C      Argument variables
@@ -1388,7 +1398,7 @@ C      Fast version of SOLVE_AT_GENERAL, without any bounds checking.
 C     MITgcm GLobal variables
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "DIC_VARS.h"
+#include "GCHEM_VARS.h"
 
 C     _RL SOLVE_AT_FAST
 
@@ -1547,7 +1557,7 @@ C      determines upper an lower bounds for the solution if required
 C     MITgcm GLobal variables
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "DIC_VARS.h"
+#include "GCHEM_VARS.h"
 
 C      _RL SOLVE_AT_GENERAL
 
@@ -1813,7 +1823,7 @@ C      determines upper an lower bounds for the solution if required
 C     MITgcm GLobal variables
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "DIC_VARS.h"
+#include "GCHEM_VARS.h"
 
 C     --------------------
 C     Argument variables
