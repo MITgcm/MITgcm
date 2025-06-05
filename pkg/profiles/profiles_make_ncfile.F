@@ -91,8 +91,7 @@ C Need to close file so that data is not lost when run finishes
 
 C Loop over variables
             DO num_var = 1, NVARMAX
-              IF (vec_quantities(num_file,num_var,bi,bj).EQV..TRUE.)
-     &        THEN
+              IF (vec_quantities(num_file,num_var,bi,bj)) THEN
 C Loop over profiles
                 DO prof_num = 1, NOBSGLOB
                   IF (prof_num.LE.ProfNo(num_file,bi,bj)) THEN
@@ -266,8 +265,7 @@ C Define variables and attributes
 
 C Write profiles
             DO num_var = 1, NVARMAX
-              IF (vec_quantities(num_file,num_var,1,1).EQV..TRUE.)
-     &        THEN
+              IF (vec_quantities(num_file,num_var,1,1)) THEN
                 DO prof_num = 1, NOBSGLOB
                   IF (prof_num.LE.length) THEN
                     DO k = 1, Zlength
@@ -312,7 +310,7 @@ C Write profiles
 
                   ENDIF !IF (prof_num.LE.length)
                 ENDDO !DO prof_num
-              ENDIF !IF (vec_quantities(num_file,num_var,1,1).EQV.
+              ENDIF !IF vec_quantities(num_file,num_var,1,1)
             ENDDO !DO num_var
 
             err = NF_CLOSE( fid2 )
