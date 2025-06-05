@@ -237,10 +237,10 @@ C       - We denote "predictors" with an asterisk (*).
 C         U* = U[n] + dt x ( 3/2 Gu[n] - 1/2 Gu[n-1] )
 C         V* = V[n] + dt x ( 3/2 Gv[n] - 1/2 Gv[n-1] )
 C         theta[n+1] = theta[n] + dt x ( 3/2 Gt[n] - 1/2 atG[n-1] )
-C         salt[n+1] = salt[n] + dt x ( 3/2 Gt[n] - 1/2 atG[n-1] )
+C         salt[n+1] = salt[n] + dt x ( 3/2 Gs[n] - 1/2 atG[n-1] )
 C       With implicit diffusion:
 C         theta* = theta[n] + dt x ( 3/2 Gt[n] - 1/2 atG[n-1] )
-C         salt* = salt[n] + dt x ( 3/2 Gt[n] - 1/2 atG[n-1] )
+C         salt* = salt[n] + dt x ( 3/2 Gs[n] - 1/2 atG[n-1] )
 C         (1 + dt * K * d_zz) theta[n] = theta*
 C         (1 + dt * K * d_zz) salt[n] = salt*
 C---
