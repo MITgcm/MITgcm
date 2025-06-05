@@ -68,9 +68,10 @@ C-----------------------------------------------------------------------
       LOGICAL KPPwriteState, KPP_ghatUseTotalDiffus
       LOGICAL KPPuseDoubleDiff
       LOGICAL LimitHblStable
+      LOGICAL KPPuseSWfrac3D
       COMMON /KPP_PARM_L/
      &        KPPwriteState, KPP_ghatUseTotalDiffus,
-     &        KPPuseDoubleDiff, LimitHblStable
+     &        KPPuseDoubleDiff, LimitHblStable, KPPuseSWfrac3D
 
       _RL                 minKPPhbl
       COMMON /KPP_PARM_R/ minKPPhbl

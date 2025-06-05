@@ -14,7 +14,7 @@ C     |   temperature flux.
 C     *==========================================================*
 C     | The nonlocal transport term is nonzero only for scalars
 C     | in unstable (convective) forcing conditions.
-C     | Note: [surfaceForcingT + Qsw * (1-KPPfrac)]
+C     | Note: [surfaceForcingT + Qsw * KPPfrac]
 C     |       is the total heat flux penetrating the mixed layer
 C     |       from the surface in deg C / s referenced to the
 C     |       top layer.
@@ -79,7 +79,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &          *( surfaceForcingT(i,j,bi,bj)
      &            +adjustColdSST_diag(i,j,bi,bj)
      &            -Qsw(i,j,bi,bj)*recip_Cp*recip_rhoConst
-     &            *(1.-KPPfrac(i,j,bi,bj))
+     &            *KPPfrac(i,j,bi,bj)
      &           )
          ENDDO
       ENDDO
@@ -94,7 +94,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &          *( surfaceForcingT(i,j,bi,bj)
      &            +adjustColdSST_diag(i,j,bi,bj)
      &            -Qsw(i,j,bi,bj)*recip_Cp*recip_rhoConst
-     &            *(1.-KPPfrac(i,j,bi,bj))
+     &            *KPPfrac(i,j,bi,bj)
      &           )
          ENDDO
       ENDDO
