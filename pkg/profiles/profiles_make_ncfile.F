@@ -54,8 +54,6 @@ C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_FNAM) fnamedata
       LOGICAL exst
 
-      _BEGIN_MASTER( myThid )
-
 C Set new netcdf variables names
       DO num_file = 1, NFILESPROFMAX
         DO num_var = 1, NVARMAX
@@ -77,6 +75,8 @@ C Initialize buffers
 
 C Loop over files
       DO num_file = 1, NFILESPROFMAX
+
+        _BEGIN_MASTER( myThid )
 C File maintenance
         DO bj = 1, nSy
           DO bi = 1, nSx
@@ -132,6 +132,7 @@ C Combine all threads
 
           ENDDO !DO bi
         ENDDO !DO bj
+        _END_MASTER( myThid )
 
 C Combine all processes
         DO num_var = 1, NVARMAX
@@ -150,6 +151,7 @@ C Combine all processes
           ENDDO !DO prof_num
         ENDDO !DO num_var
 
+        _BEGIN_MASTER( myThid )
         IF (myProcId.EQ.0) THEN
 C Get dimensions of input file
           profFile=' '
@@ -319,9 +321,9 @@ C Write profiles
 
           ENDIF !IF (IL.NE.0)
         ENDIF !IF (myProcId.EQ.0)
-      ENDDO !DO num_file
+        _END_MASTER( myThid )
 
-      _END_MASTER( myThid )
+      ENDDO !DO num_file
 
       RETURN
       END
