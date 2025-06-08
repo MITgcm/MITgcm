@@ -13,6 +13,8 @@ C !INTERFACE:
 C     !DESCRIPTION:
 C     Computes the cost for netcdf profiles data
 C     Started: Gael Forget 15-March-2006
+C-- Note: GLOBAL_SUM/MAX called from single thread block will prevent
+C         this routine to work in multi-threaded env.
 
 C     !USES:
       IMPLICIT NONE
