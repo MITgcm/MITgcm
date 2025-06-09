@@ -2881,7 +2881,6 @@ if test "x$TAPENADE" != x ; then
     if [[ "$PACKAGES" =~ streamice ]]; then 
      XTRATAPFILE=" streamice_cg_solve.f"
     fi
-    TAP_DONT_COMPILE="/dev/null"
     TAP_DONT_TRANSFORM="/dev/null"
     TAPTOOLS="$TOOLSDIR/TAP_support"
     TAPTOOLSMK='$(TOOLSDIR)/TAP_support'
