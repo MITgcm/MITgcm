@@ -76,7 +76,7 @@ C     eta_qrNM1     denote current and previous iterations respectively.
 C     recip_eta_qrNM1 :: reciprocal of eta_qrNM1
 C     cgBeta     :: coeff used to update conjugate direction vector "s".
 C     alpha      :: coeff used to update solution & residual
-C     alphaSum   :: to avoid the statement: alpha = 1./alpha (for TAMC/TAF)
+C     alphaSum   :: to avoid the statement: alpha = 1./alpha (for TAF)
 C     sumRHS     :: Sum of right-hand-side. Sometimes this is a useful
 C                   debugging/trouble shooting diagnostic. For neumann problems
 C                   sumRHS needs to be ~0 or it converge at a non-zero residual.
@@ -97,7 +97,6 @@ C     ikey       :: tape key (depends on iteration it2d)
 #else
       _RL    rhsNorm
 #endif
-      _RL    cg2dTolerance_sq
       _RL    err_sq,  errTile(nSx,nSy)
       _RL    eta_qrN, eta_qrNtile(nSx,nSy)
       _RL    eta_qrNM1, recip_eta_qrNM1
@@ -133,7 +132,6 @@ CEOP
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Initialise auxiliary constant, some output variable and inverter
-      cg2dTolerance_sq = cg2dTolerance*cg2dTolerance
       minResidualSq = -1. _d 0
       eta_qrNM1     =  1. _d 0
       recip_eta_qrNM1= 1. _d 0
@@ -228,7 +226,7 @@ c     CALL EXCH_S3D_RL( cg2d_r, 1, myThid )
       IF ( debugLevel .GE. debLevZero ) THEN
         _BEGIN_MASTER( myThid )
         printResidual = printResidualFreq.GE.1
-        WRITE(standardmessageunit,'(A,1P2E22.14)')
+        WRITE(standardMessageUnit,'(A,1P2E22.14)')
      &  ' cg2d_nsa: Sum(rhs),rhsMax = ', sumRHS,rhsMax
         _END_MASTER( myThid )
       ENDIF
@@ -401,7 +399,7 @@ C--   Return parameters to caller
 
 #if ((defined ALLOW_AUTODIFF_TAMC) && (defined ALLOW_LOOP_DIRECTIVE))
 
-C     These routines are routinely part of the TAMC/TAF library that is
+C     These routines are routinely part of the TAF library that is
 C     not included in the MITcgm, therefore they are mimicked here.
 
       SUBROUTINE ADSTORE(chardum,int1,idow,int2,int3,icount)

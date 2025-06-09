@@ -415,7 +415,7 @@ typical output might be as follows:
 
   ===  Processing options files and arguments  ===
     getting local config information:  none found
-  Warning: ROOTDIR was not specified ; try using a local copy of MITgcm found at "../../.."
+  Warning: MITgcm root directory was not specified ; try using a local copy of MITgcm found at "../../.."
     getting OPTFILE information:
       using OPTFILE="../../../tools/build_options/linux_amd64_gfortran"
     getting AD_OPTFILE information:
@@ -480,12 +480,12 @@ typical output might be as follows:
 
 In the above, notice:
 
-- we did not specify ``ROOTDIR``,
+- we did not specify MITgcm root directory,
   i.e., a path to your MITgcm repository,
   but here we are building code from within the repository (specifically,
   in one of the verification subdirectory experiments). As such,
   :filelink:`genmake2 <tools/genmake2>` was smart enough to
-  locate all necessary files on its own. To specify a remote ``ROOTDIR``,
+  locate all necessary files on its own. To specify a remote MITgcm root directory,
   see :ref:`here <build_elsewhere>`.
 - we specified the :ref:`optfile <genmake2_optfiles>`
   :filelink:`linux_amd64_gfortran <tools/build_options/linux_amd64_gfortran>`
@@ -578,7 +578,7 @@ The most important command-line options are:
 .. _build_elsewhere:
 
 ``-rootdir «/PATH/TO/MITGCMDIR»``
-    specify the location of the MITgcm repository top directory (``ROOTDIR``).
+    specify the location of the MITgcm repository top directory (MITgcm root directory).
     By default, :filelink:`genmake2 <tools/genmake2>` will try to find this
     location by looking in parent directories from where
     :filelink:`genmake2 <tools/genmake2>` is executed
@@ -1365,6 +1365,29 @@ into `Python <https://www.python.org/>`_:
 
   Eta = xr.open_dataset('Eta.nc')
 
+Bash scripts
+~~~~~~~~~~~~
+
+The repository includes utilities for handling model input and output. You can 
+add these command line scripts to the system's search path by modifying the
+unix `PATH <https://www.digitalocean.com/community/tutorials/how-to-view-and-update-the-linux-path-environment-variable>`_
+variable. To permanently access MITgcm bash utilities, put this line in 
+your shell configuration file e.g. ``.bashrc`` or ``.zshrc``:
+
+::
+
+    export PATH=$PATH:/path/to/your/MITgcm/utils/scripts
+
+NetCDF output
+^^^^^^^^^^^^^
+
+`netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ output is produced 
+with one file per processor. This means unique tiles need to be stitched 
+together to create a single 
+`netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ file that spans the
+model domain. The script :filelink:`utils/scripts/gluemnc` can do this from the 
+command line. For usage information and dependencies, see :numref:`gluemnc`.
+
 .. _customize_compilation:
 
 Customizing the Model Configuration - Code Parameters and Compilation Options
@@ -1494,14 +1517,6 @@ somewhat obscure, so newer users of the MITgcm are encouraged to jump to
    | :varlink:`SOLVE_DIAGONAL_LOWMEMORY`           | #undef  | low memory footprint (not suitable for AD) choice for implicit solver routines solve_*diagonal.F                     |
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
    | :varlink:`SOLVE_DIAGONAL_KINNER`              | #undef  | choice for implicit solver routines solve_*diagonal.F suitable for AD                                                |
-   +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`COSINEMETH_III`                     | #define | selects implementation form of :math:`\cos{\varphi}` scaling of bi-harmonic term for viscosity                       |
-   |                                               |         | (note, CPP option for tracer diffusivity set independently in                                                        |
-   |                                               |         | :filelink:`GAD_OPTIONS.h <pkg/generic_advdiff/GAD_OPTIONS.h>`)                                                       |
-   +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`ISOTROPIC_COS_SCALING`              | #undef  | selects isotropic scaling of harmonic and bi-harmonic viscous terms when using the :math:`\cos{\varphi}` scaling     |
-   |                                               |         | (note, CPP option for tracer diffusivity set independently in                                                        |
-   |                                               |         | :filelink:`GAD_OPTIONS.h <pkg/generic_advdiff/GAD_OPTIONS.h>`)                                                       |
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
 
 .. _default_pkg_list:
@@ -2081,6 +2096,9 @@ elliptic solvers are the variables :varlink:`cg2dMaxIters` and
    | :varlink:`cg3dTargetResidual`          | PARM02    | 1.0E-07                                          | 3D conjugate gradient target residual (non-dim. due to RHS normalization );                             |
    |                                        |           |                                                  | requires #define :varlink:`ALLOW_NONHYDROSTATIC`                                                        |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+   | :varlink:`cg3dTargetResWunit`          | PARM02    | -1.0E+00                                         | 3D conjugate gradient target residual (:math:`\dot{r}` units);                                          |
+   |                                        |           |                                                  | <0: use RHS normalization, i.e., :varlink:`cg3dTargetResidual` instead                                  |
+   +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`useSRCGSolver`               | PARM02    | FALSE                                            | use conjugate gradient solver with single reduction (single call of mpi_allreduce)                      |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`printResidualFreq`           | PARM02    | 1 unless :varlink:`debugLevel` >4                | frequency (in number of iterations) of printing conjugate gradient residual                             |
@@ -2313,7 +2331,13 @@ schemes are covered in :numref:`discret_algorithm`.
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`momPressureForcing`          | PARM01    | TRUE                                             | pressure term in momentum equation on/off flag                                                          |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-   | :varlink:`metricTerms`                 | PARM01    | TRUE                                             | include metric terms (spherical polar, momentum flux-form) on/off flag                                  |
+   | :varlink:`selectmetricTerms`           | PARM01    | 1                                                | spherical-polar, cyclindrical grid momentum flux-form metric terms options                              |
+   |                                        |           |                                                  |                                                                                                         |
+   |                                        |           |                                                  | - 0: don't include terms                                                                                |
+   |                                        |           |                                                  | - 1 (and above): include terms (1=original discretization)                                              |
+   |                                        |           |                                                  | - 2: alternate discretization, see :eq:`gu_metric`, :eq:`gv_metric` but averaging centered              |
+   |                                        |           |                                                  |   at gridcell corner                                                                                    |
+   |                                        |           |                                                  | - 3: as 2 but skip gU spherical terms by advecting :varlink:`uVel` * :varlink:`dxC`                     |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`useNHMTerms`                 | PARM01    | FALSE                                            | use "non-hydrostatic form" of metric terms on/off flag; (see :numref:`non_hyd_metric_terms`;            |
    |                                        |           |                                                  | note these terms are non-zero in many model configurations beside non-hydrostatic)                      |
@@ -2328,14 +2352,20 @@ schemes are covered in :numref:`discret_algorithm`.
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`useCoriolis`                 | PARM01    | TRUE                                             | include Coriolis terms on/off flag                                                                      |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-   | :varlink:`use3dCoriolis`               | PARM01    | TRUE                                             | include :math:`\cos{\varphi}` Coriolis terms on/off flag                                                |
-   +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`selectCoriScheme`            | PARM01    | 0                                                | Coriolis scheme selector                                                                                |
    |                                        |           |                                                  |                                                                                                         |
    |                                        |           |                                                  | - 0: original scheme                                                                                    |
    |                                        |           |                                                  | - 1: wet-point averaging method                                                                         |
    |                                        |           |                                                  | - 2: Flux-Form: energy conserving; Vector-Inv: hFac weighted average                                    |
    |                                        |           |                                                  | - 3: Flux-Form: energy conserving using wet-point method; Vector-Inv: energy conserving with hFac weight|
+   |                                        |           |                                                  | - 4: Flux-Form: hFac weighted average (angular momentum conserving)                                     |
+   +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+   | :varlink:`select3dCoriScheme`          | PARM01    | 1                                                | :math:`\cos{\varphi}` Coriolis terms options                                                            |
+   |                                        |           |                                                  |                                                                                                         |
+   |                                        |           |                                                  | - 0: don't include terms                                                                                |
+   |                                        |           |                                                  | - 1: (and above): include terms (1=original discretization)                                             |
+   |                                        |           |                                                  | - 2: alternative discretization using averaged transport                                                |
+   |                                        |           |                                                  | - 3: same as 2 with hFac in :math:`G_w^{\rm Cor}` term                                                  |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`vectorInvariantMomentum`     | PARM01    | FALSE                                            | use vector-invariant form of momentum equations flag                                                    |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
@@ -2346,6 +2376,7 @@ schemes are covered in :numref:`discret_algorithm`.
    |                                        |           |                                                  | - 0,1: enstrophy conserving forms                                                                       |
    |                                        |           |                                                  | - 2: energy conserving form                                                                             |
    |                                        |           |                                                  | - 3: energy and enstrophy conserving form                                                               |
+   |                                        |           |                                                  | - 4: shift 1/hFac from vorticity equation to final gU, gV tendency (angular momentum conserving)        |
    |                                        |           |                                                  |                                                                                                         |
    |                                        |           |                                                  | see Sadourny 1975 :cite:`sadourny:75` and Burridge & Haseler 1977 :cite:`burridge:77`                   |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+

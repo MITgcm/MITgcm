@@ -115,6 +115,10 @@ C
 # ifdef SEAICE_ALLOW_BOTTOMDRAG
           CbotC(i,j,bi,bj)   = 0. _d 0
 # endif /* SEAICE_ALLOW_BOTTOMDRAG */
+# ifdef SEAICE_ALLOW_SIDEDRAG
+          sideDragU(i,j,bi,bj) = 0. _d 0
+          sideDragV(i,j,bi,bj) = 0. _d 0
+# endif /* SEAICE_ALLOW_SIDEDRAG */
 #endif /* SEAICE_CGRID */
 #ifdef SEAICE_BGRID_DYNAMICS
           uIceB(i,j,bi,bj)   = 0. _d 0
@@ -181,7 +185,7 @@ C     Initialize averages to zero
 
 C--   Initialize (variable) grid info. As long as we allow masking of
 C--   velocities outside of ice covered areas (in seaice_dynsolver)
-C--   we need to re-initialize seaiceMaskU/V here for TAF/TAMC
+C--   we need to re-initialize seaiceMaskU/V here for TAF
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 #ifdef SEAICE_CGRID

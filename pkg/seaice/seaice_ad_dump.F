@@ -3,9 +3,6 @@
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
 #endif
-#ifdef ALLOW_DIAGNOSTICS
-# include "DIAG_OPTIONS.h"
-#endif
 
 CBOP
 C     !ROUTINE: SEAICE_AD_DUMP
@@ -16,7 +13,7 @@ C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE seaice_ad_dump
 C     *==========================================================*
-C     Extract adjoint variable from TAMC/TAF-generated
+C     Extract adjoint variable from TAF-generated
 C     adjoint common blocks, contained in adcommon.h
 C     and write fields to file;
 C     Make sure common blocks in adcommon.h are up-to-date
@@ -44,8 +41,7 @@ C     == Global variables ===
 # include "AUTODIFF.h"
 # include "adcommon.h"
 # ifdef ALLOW_DIAGNOSTICS
-#  include "DIAGNOSTICS_SIZE.h"
-#  include "DIAGNOSTICS.h"
+#  include "DIAGNOSTICS_P2SHARE.h"
 # endif
 #endif
 
@@ -113,14 +109,7 @@ C--   need to all the correct OpenAD EXCH S/R ; left empty for now
 
 C-----------------------------------------------------------------------
 C--- Turn diagnostics on/off
-C-----------------------------------------------------------------------
-#ifdef ALLOW_DIAGNOSTICS
-C     This has already been done in addummy_in_stepping,
-C     from where this is called
-CML      IF ( useDiag4AdjOutp ) THEN
-CML        CALL DIAGNOSTICS_SWITCH_ONOFF( myTime, myIter, myThid )
-CML      ENDIF
-#endif
+C    <-- This has already been done in autodiff_inadmode_set_ad.F
 
 C-----------------------------------------------------------------------
 C--- do dump?

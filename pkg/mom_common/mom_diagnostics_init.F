@@ -383,6 +383,32 @@ C--   add diagnostics of tendencies from each terms
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
 #ifdef ALLOW_MOM_VECINV
+      diagName  = 'Um_hDis2'
+      diagTitle = 'U momentum tendency from harmonic visc alone'
+      diagCode  = 'UUR     MR      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+      diagName  = 'Vm_hDis2'
+      diagTitle = 'V momentum tendency from harmonic visc alone'
+      diagCode  = 'VVR     MR      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+      diagName  = 'Um_hDis4'
+      diagTitle = 'U momentum tendency from biharmonic visc alone'
+      diagCode  = 'UUR     MR      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+      diagName  = 'Vm_hDis4'
+      diagTitle = 'V momentum tendency from biharmonic visc alone'
+      diagCode  = 'VVR     MR      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
       diagName  = 'Um_AdvZ3'
       diagTitle = 'U momentum tendency from Vorticity Advection'
       diagCode  = 'UUR     MR      '
@@ -413,6 +439,20 @@ C--   add diagnostics of tendencies from each terms
 
 #endif /* ALLOW_MOM_VECINV */
 
+C-    diagnostics of metric-terms tendencies:
+      diagName  = 'Um_Metr '
+      diagTitle = 'U momentum tendency from Metric terms'
+      diagCode  = 'UUR     MR      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+      diagName  = 'Vm_Metr '
+      diagTitle = 'V momentum tendency from Metric terms'
+      diagCode  = 'VVR     MR      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
 #ifdef ALLOW_NONHYDROSTATIC
 C-    vertical momentum tendencies
       IF ( usingPCoords ) THEN
@@ -420,6 +460,11 @@ C-    vertical momentum tendencies
       ELSE
         diagUnits = 'm/s^2           '
       ENDIF
+      diagName  = 'WSidDrag'
+      diagTitle = 'Vertical momentum tendency from Side Drag'
+      diagCode  = 'WMr     LR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
       diagName  = 'Wm_Diss '
       diagTitle = 'W momentum tendency from Dissipation'
       diagCode  = 'WMr     LR      '
@@ -431,13 +476,28 @@ C-    vertical momentum tendencies
       diagCode  = 'WMr     LR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      diagName  = 'WSidDrag'
-      diagTitle = 'Vertical momentum tendency from Side Drag'
+      diagName  = 'Wm_Metr '
+      diagTitle = 'W momentum tendency from Metric terms'
       diagCode  = 'WMr     LR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 #endif /* ALLOW_NONHYDROSTATIC */
+
+#ifdef ALLOW_MOM_TEND_EXTRA_DIAGS
+cHP putting this back in
+      diagName  = 'UBotDrag'
+      diagTitle = 'U momentum tendency from Bottom Drag'
+      diagCode  = 'UUR     MR      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+      diagName  = 'VBotDrag'
+      diagTitle = 'V momentum tendency from Bottom Drag'
+      diagCode  = 'VVR     MR      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+#endif
 
 C--   add diagnostics of advective & viscous flux :
 C-    bottom fluxes:

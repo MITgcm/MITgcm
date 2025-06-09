@@ -3,9 +3,6 @@
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
 #endif
-#ifdef ALLOW_DIAGNOSTICS
-# include "DIAG_OPTIONS.h"
-#endif
 
 CBOP
 C     !ROUTINE: ADEXF_ADJOINT_SNAPSHOTS
@@ -18,7 +15,7 @@ C     *==========================================================*
 C     | SUBROUTINE ADEXF_ADJOINT_SNAPSHOTS                       |
 C     *==========================================================*
 C     Adjoint version of EXF Adjoint-variable output subroutine:
-C     extract adjoint variable from TAMC/TAF-generated
+C     extract adjoint variable from TAF-generated
 C     adjoint common blocks, contained in adcommon.h
 C     and write fields to file;
 C     Make sure common blocks in adcommon.h are up-to-date
@@ -44,10 +41,6 @@ C     == Global variables ===
 # include "AUTODIFF_PARAMS.h"
 # include "AUTODIFF.h"
 # include "adcommon.h"
-# ifdef ALLOW_DIAGNOSTICS
-#  include "DIAGNOSTICS_SIZE.h"
-#  include "DIAGNOSTICS.h"
-# endif
 #endif
 #endif /* ALLOW_AUTODIFF */
 

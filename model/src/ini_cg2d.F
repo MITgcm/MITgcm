@@ -41,6 +41,7 @@ C     myNorm   :: Work variable used in calculating normalisation factor
       INTEGER bi, bj
       INTEGER i, j, k, ks
       _RL     faceArea
+      _RL     cg2dTolerance
       _RS     myNorm
       _RS     aC, aCw, aCs
 CEOP
@@ -63,9 +64,11 @@ C     but safer when EXCH do not fill all the overlap regions.
       ENDDO
 
 C--   Init. scalars
+      _BEGIN_MASTER(myThid)
       cg2dNorm = 0. _d 0
       cg2dNormaliseRHS = .FALSE.
-      cg2dtolerance = 0. _d 0
+      cg2dTolerance_sq = 0. _d 0
+      _END_MASTER(myThid)
 
 C--   Initialise laplace operator
 C     aW2d: integral in Z Ax/dX
@@ -111,7 +114,7 @@ C  deep-model: *deepFacC (faceArea), /deepFacC (recip_dx,y): => no net effect
        ENDDO
       ENDDO
       _GLOBAL_MAX_RS( myNorm, myThid )
-      IF ( myNorm .NE. 0. _d 0 ) THEN
+      IF ( myNorm .NE. zeroRS ) THEN
        myNorm = 1. _d 0/myNorm
       ELSE
        myNorm = 1. _d 0
@@ -142,15 +145,22 @@ CcnhDebugEnds
 C-- set global parameter in common block:
       cg2dNorm = myNorm
 C-- Define the solver tolerance in the appropriate Unit :
-      cg2dNormaliseRHS = cg2dTargetResWunit.LE.0.
-      IF (cg2dNormaliseRHS) THEN
+      cg2dNormaliseRHS = cg2dTargetResWunit.LE.zeroRL
+      IF ( cg2dNormaliseRHS ) THEN
 C-  when using a normalisation of RHS, tolerance has no unit => no conversion
         cg2dTolerance = cg2dTargetResidual
-      ELSE
+      ELSEIF ( implicDiv2DFlow.GT.zeroRL ) THEN
 C-  convert Target-Residual (in W unit) to cg2d-solver residual unit [m^2/s^2]
+        cg2dTolerance = cg2dNorm * cg2dTargetResWunit
+     &                           * implicDiv2DFlow
+     &                           * globalArea / deltaTMom
+      ELSE
+C-  special case implicDiv2DFlow=0 :
+C   not much to solve anyway, cg2dTolerance does not matter as long as it is > 0
         cg2dTolerance = cg2dNorm * cg2dTargetResWunit
      &                           * globalArea / deltaTMom
       ENDIF
+      cg2dTolerance_sq = cg2dTolerance*cg2dTolerance
       _END_MASTER(myThid)
 
 CcnhDebugStarts
@@ -201,18 +211,18 @@ C-    calculate and store solver main diagonal :
            aC  = aC2d( i, j, bi,bj)
            aCs = aC2d( i,j-1,bi,bj)
            aCw = aC2d(i-1,j, bi,bj)
-           IF ( aC .EQ. 0. ) THEN
+           IF ( aC .EQ. zeroRS ) THEN
             pC(i,j,bi,bj) = 1. _d 0
            ELSE
             pC(i,j,bi,bj) =  1. _d 0 / aC
            ENDIF
-           IF ( aC + aCw .EQ. 0. ) THEN
+           IF ( aC + aCw .EQ. zeroRS ) THEN
             pW(i,j,bi,bj) = 0.
            ELSE
             pW(i,j,bi,bj) =
      &         -aW2d(i,j,bi,bj)/((cg2dpcOffDFac *(aCw+aC))**2 )
            ENDIF
-           IF ( aC + aCs .EQ. 0. ) THEN
+           IF ( aC + aCs .EQ. zeroRS ) THEN
             pS(i,j,bi,bj) = 0.
            ELSE
             pS(i,j,bi,bj) =

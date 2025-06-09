@@ -107,6 +107,12 @@ C ==========================================================
      &                     k_NO3,
      &                     k_PtoN,
      &                     k_FetoN,
+     &                     k_NO3_sm,
+     &                     k_NO3_lg,
+     &                     k_PO4_sm,
+     &                     k_PO4_lg,
+     &                     k_Fe_sm,
+     &                     k_Fe_lg,
      &                     PtoN_min,
      &                     PtoN_max,
      &                     FetoN_min,
@@ -169,6 +175,7 @@ C ==========================================================
      &                     alpfe,
      &                     k0,
      &                     MLmix_max,
+     &                     chlsat_locTimWindow,
      &                     river_conc_po4,
      &                     river_dom_to_nut
 
@@ -285,6 +292,8 @@ C   k0               :: Light attentuation coefficient
 C   MLmix_max        :: Maximum depth over which light and biomass can be mixed
 C   river_conc_po4   :: Phosphate concentration in river runoff
 C   river_dom_to_nut :: DOM to PO4 ratio in river runoff
+C   chlsat_locTimWindow(1:2) :: local-time window (in h) for
+C                       satellite-equivalent chlorophyll diagnostic (and cost)
 
       _RL secperday
 #ifdef ALLOW_EXF
@@ -338,6 +347,12 @@ C     Default values
       k_Fe_diaz            = 7. _d -10 / permil
       k_NO3                = 2. _d -6 / permil
       k_PO4                = 1. _d -8 / permil
+      k_NO3_sm             = 2.0 _d -6 / permil
+      k_NO3_lg             = 6.0 _d -6 / permil
+      k_PO4_sm             = 1.0 _d -8 / permil
+      k_PO4_lg             = 3.0 _d -8 / permil
+      k_Fe_sm              = 1.6 _d -10 / permil
+      k_Fe_lg              = 4.8 _d -10 / permil
       k_PtoN               = 1.5 _d -6 / permil
       k_FetoN              = 8. _d -10 / permil
       remin_min            = 0.15 _d 0
@@ -399,6 +414,8 @@ C     Default values
       alpfe                = 0.01 _d 0
       k0                   = 0.04 _d 0
       MLmix_max            = 200.0 _d 0
+      chlsat_locTimWindow(1) = 12.0 _d 0
+      chlsat_locTimWindow(2) = 13.5 _d 0
 
       bling_windFile         = ' '
       bling_atmospFile       = ' '

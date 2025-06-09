@@ -20,21 +20,19 @@ C     !USES:
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "PARAMS.h"
-#include "GRID.h"
-#include "SURFACE.h"
-#include "CG3D.h"
-#include "SOLVE_FOR_PRESSURE3D.h"
+#ifdef ALLOW_NONHYDROSTATIC
+# include "PARAMS.h"
+# include "GRID.h"
+# include "SURFACE.h"
+# include "CG3D.h"
+#endif /* ALLOW_NONHYDROSTATIC */
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     === Routine arguments ===
 C     myThid   :: My Thread Id number
       INTEGER myThid
 
 #ifdef ALLOW_NONHYDROSTATIC
-
 C     !LOCAL VARIABLES:
-C     === Local variables ===
 C     bi,bj    :: tile indices
 C     i,j,k    :: Loop counters
 C     faceArea :: Temporary used to hold cell face areas.
@@ -45,6 +43,7 @@ C     myNorm   :: Work variable used in clculating normalisation factor
       _RL     faceArea
       _RS     myNorm
       _RL     theRecip_Dr
+      _RL     cg3dTolerance
       _RL     aU, aL, aW, aE, aN, aS
       _RL     tmpFac, nh_Fac, igwFac
       _RL     locGamma
@@ -76,12 +75,6 @@ C-       From common bloc CG3D_WK_R:
            cg3d_q(i,j,k,bi,bj) = 0.
            cg3d_r(i,j,k,bi,bj) = 0.
            cg3d_s(i,j,k,bi,bj) = 0.
-          ENDDO
-         ENDDO
-C-       From common bloc SFP3D_COMMON_R:
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           cg3d_b(i,j,k,bi,bj) = 0.
           ENDDO
          ENDDO
         ENDDO
@@ -118,7 +111,7 @@ C     aV3d: Ar/dR
 C  deep-model: *deepFacC (faceArea), /deepFacC (recip_dx,y): => no net effect
          DO j=1,sNy+1
           DO i=1,sNx
-           faceArea = _dxG(i,j,bi,bj)*drF(K)
+           faceArea = _dxG(i,j,bi,bj)*drF(k)
      &               *_hFacS(i,j,k,bi,bj)
 #ifdef ALLOW_OBCS
      &               *maskInC(i,j,bi,bj)*maskInC(i,j-1,bi,bj)
@@ -172,10 +165,29 @@ c    &      theRecip_Dr = 1. _d 0/theRecip_Dr
       _BEGIN_MASTER( myThid )
 C-- set global parameter in common block:
        cg3dNorm = myNorm
+C-- Define the solver tolerance in the appropriate Unit :
+      cg3dNormaliseRHS = cg3dTargetResWunit.LE.zeroRL
+      IF (cg3dNormaliseRHS) THEN
+C-  when using a normalisation of RHS, tolerance has no unit => no conversion
+        cg3dTolerance = cg3dTargetResidual
+      ELSE
+C-  convert Target-Residual (in W unit) to cg3d-solver residual unit [m^2/s^2]
+        cg3dTolerance = cg3dNorm * cg3dTargetResWunit
+     &                           * implicDiv2DFlow
+     &                           * globalArea / deltaTMom
+      ENDIF
+      cg3dTolerance_sq = cg3dTolerance*cg3dTolerance
+C-- print param values:
        WRITE(msgBuf,'(2A,1PE23.16)') 'INI_CG3D: ',
      &      'CG3D normalisation factor = ', cg3dNorm
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
+       IF (.NOT.cg3dNormaliseRHS) THEN
+        WRITE(msgBuf,'(2A,1PE22.15,A,1PE16.10,A)') 'INI_CG3D: ',
+     &      'cg3dTolerance =', cg3dTolerance, ' (Area=',globalArea,')'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+       ENDIF
        WRITE(msgBuf,*) '                               '
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )

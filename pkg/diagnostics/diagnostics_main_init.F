@@ -1,7 +1,7 @@
 #include "DIAG_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP 0
+CBOP
 C     !ROUTINE: DIAGNOSTICS_MAIN_INIT
 
 C     !INTERFACE:
@@ -16,39 +16,39 @@ C            since they get filled-in with S/R FILL_DIAGNOSTICS
 C            2) GDIAG is defined as character*16 and can be to character*1
 C            parse(16) with the following codes currently defined:
 
-C     \begin{center}
-C       \begin{tabular}[h]{|c|c|}\hline
-C         \textbf{Positions}  &  \textbf{Characters}
-C         &  \textbf{Meanings} \\\hline
-C         parse(1)  &  S  &  scalar \\
-C                   &  U  &  vector component in X direction \\
-C                   &  V  &  vector component in Y direction \\
-C                   &  W  &  vector component in vertical direction \\
-C         parse(2)  &  U  &  C-grid U-Point  \\
-C                   &  V  &  C-grid V-Point  \\
-C                   &  M  &  C-grid Mass Point  \\
-C                   &  Z  &  C-grid Corner Point  \\
-C         parse(3)  &     &  Used for Level Integrated output: cumulate levels \\
-C                   &  r  &  same but cumulate product by model level thickness \\
-C                   &  R  &  same but cumulate product by hFac & level thickness \\
-C         parse(4)  &  P  &  positive definite  \\
-C         parse(5 ) &  C  &  with counter array  \\
-C                   &  P  &  post-processed (not filled up) from other diags  \\
-C                   &  D  &  disable an array for output  \\
-C         parse(6--8) & '123'  &  retired, formerly: 3-digit mate number \\
-C         parse(9)  &  U  &  model-level plus 1/2  \\
-C                   &  M  &  model-level middle  \\
-C                   &  L  &  model-level minus 1/2  \\
-C         parse(10) &  0  &  levels = 0  \\
-C                   &  1  &  levels = 1  \\
-C                   &  R  &  levels = Nr  \\
-C                   &  L  &  levels = MAX(Nr,NrPhys)  \\
-C                   &  M  &  levels = MAX(Nr,NrPhys) - 1  \\
-C                   &  G  &  levels = Ground_level Number \\
-C                   &  I  &  levels = sea-Ice_level Number \\
-C                   &  X  &  free levels option (need to be set explicitly) \\
-C       \end{tabular}
-C     \end{center}
+C \begin{center}
+C   \begin{tabular}[h]{|c|c|}\hline
+C     \textbf{Positions} & \textbf{Characters} & \textbf{Meanings} \\\hline
+C     parse(1)  &  S  &  scalar \\
+C               &  U  &  vector component in X direction \\
+C               &  V  &  vector component in Y direction \\
+C               &  W  &  vector component in vertical direction \\
+C     parse(2)  &  U  &  C-grid U-Point  \\
+C               &  V  &  C-grid V-Point  \\
+C               &  M  &  C-grid Mass Point  \\
+C               &  Z  &  C-grid Corner Point  \\
+C     parse(3)  &     &  Used for Level Integrated output: cumulate levels \\
+C               &  r  &  same but cumulate product by model level thickness \\
+C               &  R  &  same but cumulate product by hFac & level thickness \\
+C     parse(4)  &  P  &  positive definite  \\
+C               &  A  &  Adjoint variable diagnostics \\
+C     parse(5 ) &  C  &  with counter array  \\
+C               &  P  &  post-processed (not filled up) from other diags  \\
+C               &  D  &  disable an array for output  \\
+C     parse(6--8) & '123'  &  retired, formerly: 3-digit mate number \\
+C     parse(9)  &  U  &  model-level plus 1/2  \\
+C               &  M  &  model-level middle  \\
+C               &  L  &  model-level minus 1/2  \\
+C     parse(10) &  0  &  levels = 0  \\
+C               &  1  &  levels = 1  \\
+C               &  R  &  levels = Nr  \\
+C               &  L  &  levels = MAX(Nr,NrPhys)  \\
+C               &  M  &  levels = MAX(Nr,NrPhys) - 1  \\
+C               &  G  &  levels = Ground_level Number \\
+C               &  I  &  levels = sea-Ice_level Number \\
+C               &  X  &  free levels option (need to be set explicitly) \\
+C   \end{tabular}
+C \end{center}
 
 C     !USES:
       IMPLICIT NONE
@@ -64,8 +64,10 @@ C     !LOCAL VARIABLES:
 C     rTitle     :: r-coordinate title
 C     eTitle     :: free-surface title
 C     fTitle     :: fixed boundary title
-C     pTitle     :: "Phi"  title
-C     sTitle     :: "salt" title
+C     pTitle     :: "Phi"   title
+C     sTitle     :: "salt"  title
+C     tTitl1     :: first part of "theta" title
+C     tTitl2     :: short "theta" title
       INTEGER        diagNum
       INTEGER        diagMate
       CHARACTER*8    diagName
@@ -75,8 +77,8 @@ C     sTitle     :: "salt" title
       CHARACTER*2    rUnit2c
       CHARACTER*4    tUnit4c
       CHARACTER*5    sUnit5c
-      CHARACTER*(10) rTitle, eTitle, fTitle
-      CHARACTER*(20) pTitle, sTitle
+      CHARACTER*(10) rTitle, eTitle, fTitle, tTitl2
+      CHARACTER*(20) pTitle, sTitle, tTitl1
 
       CHARACTER*(16) DIAGS_MK_UNITS
       EXTERNAL DIAGS_MK_UNITS
@@ -102,17 +104,24 @@ C----------------------------------------------------------------------
         tUnit4c= 'K   '
         sUnit5c= 'kg/kg'
         sTitle = ' Specific Humidity  '
+        tTitl1 = ' Potential          '
+c       tTitl2 = ' Pot.Temp.'
+        tTitl2 = ' Pot Temp '
         IF (useAIM) sUnit5c= 'g/kg '
       ELSEIF ( eosType.EQ.'TEOS10' ) THEN
         tUnit4c= 'degC'
         sUnit5c= 'g/kg '
-c       tTitle = 'Conservative Temp.   '
         sTitle = ' Absolute Salinity  '
+        tTitl1 = ' Conservative       '
+c       tTitl2 = 'Cons.Temp.'
+        tTitl2 = 'Cons Temp '
       ELSE
         tUnit4c= 'degC'
         sUnit5c= 'g/kg '
-c       tTitle = 'Potential Temperature'
         sTitle = ' Salinity           '
+        tTitl1 = ' Potential          '
+c       tTitl2 = ' Pot.Temp.'
+        tTitl2 = ' Pot Temp '
       ENDIF
 C-    free-surface (eTitle) and fixed-boundary (fTitle) position:
       IF ( fluidIsAir ) THEN
@@ -155,7 +164,7 @@ c    &diagTitle = 'Sea Surface Elevation'
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'THETA   '
-      diagTitle = 'Potential Temperature'
+      diagTitle = DIAGS_MK_TITLE( tTitl1//' Temperature',  myThid )
       diagUnits = DIAGS_MK_UNITS( tUnit4c, myThid )
       diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -222,7 +231,8 @@ c    I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'THETASQ '
-      diagTitle = 'Square of Potential Temperature'
+      diagTitle = DIAGS_MK_TITLE( 'Square of '
+     I                  //tTitl1//' Temperature', myThid )
       diagUnits = DIAGS_MK_UNITS( tUnit4c//'^2', myThid )
       diagCode  = 'SMRP    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -354,7 +364,8 @@ C-    use 'PhiVEL' as mate.
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
       diagName  = 'UTHMASS '
-      diagTitle = 'Zonal Mass-Weight Transp of Pot Temp'
+      diagTitle = DIAGS_MK_TITLE( 'Zonal Mass-Weight Transp of '
+     I                           //tTitl2, myThid )
       diagUnits = DIAGS_MK_UNITS( tUnit4c//'.m/s', myThid )
       diagCode  = 'UUr     MR      '
       diagMate  = diagNum + 2
@@ -362,7 +373,8 @@ C-    use 'PhiVEL' as mate.
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
       diagName  = 'VTHMASS '
-      diagTitle = 'Meridional Mass-Weight Transp of Pot Temp'
+      diagTitle = DIAGS_MK_TITLE( 'Meridional Mass-Weight Transp of '
+     I                           //tTitl2, myThid )
       diagUnits = DIAGS_MK_UNITS( tUnit4c//'.m/s', myThid )
       diagCode  = 'VVr     MR      '
       diagMate  = diagNum
@@ -370,7 +382,8 @@ C-    use 'PhiVEL' as mate.
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
       diagName  = 'WTHMASS '
-      diagTitle = 'Vertical Mass-Weight Transp of Pot Temp (K.m/s)'
+      diagTitle = DIAGS_MK_TITLE( 'Vertical Mass-Weight Transp of '
+     I                           //tTitl2, myThid )
       diagUnits = DIAGS_MK_UNITS(tUnit4c//'.'//rUnit2c//'/s', myThid )
       diagCode  = 'WM      LR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -403,7 +416,8 @@ C-    use 'PhiVEL' as mate.
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'UVELTH  '
-      diagTitle = 'Zonal Transport of Pot Temp'
+      diagTitle = DIAGS_MK_TITLE( 'Zonal Transport of '
+     I                          //tTitl2, myThid )
       diagUnits = DIAGS_MK_UNITS( tUnit4c//'.m/s', myThid )
       diagCode  = 'UUR     MR      '
       diagMate  = diagNum + 2
@@ -411,7 +425,8 @@ C-    use 'PhiVEL' as mate.
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
       diagName  = 'VVELTH  '
-      diagTitle = 'Meridional Transport of Pot Temp'
+      diagTitle = DIAGS_MK_TITLE( 'Meridional Transport of '
+     I                          //tTitl2, myThid )
       diagUnits = DIAGS_MK_UNITS( tUnit4c//'.m/s', myThid )
       diagCode  = 'VVR     MR      '
       diagMate  = diagNum
@@ -419,7 +434,8 @@ C-    use 'PhiVEL' as mate.
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
       diagName  = 'WVELTH  '
-      diagTitle = 'Vertical Transport of Pot Temp'
+      diagTitle = DIAGS_MK_TITLE( 'Vertical Transport of '
+     I                          //tTitl2, myThid )
       diagUnits = DIAGS_MK_UNITS(tUnit4c//'.'//rUnit2c//'/s', myThid )
       diagCode  = 'WM      LR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -604,6 +620,15 @@ c     diagTitle = 'Square of ocean bottom pressure / top. geo-Potential'
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+      IF ( fluidIsWater ) THEN
+       diagName  = 'GCM_SST '
+       diagTitle = 'Ocean model Sea Surface Temperature (degC)'
+       diagUnits = 'degC            '
+       diagCode  = 'SM      M1      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+      ENDIF
+
 C--   surface fluxes:
       diagName  = 'oceTAUX '
       diagTitle = 'zonal surface wind stress, >0 increases uVel'
@@ -780,7 +805,8 @@ c     diagTitle = 'Free-Surface r-Position (Pressure, Height) (Pa,m)'
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
       diagName  = 'TOTTTEND'
-      diagTitle = 'Tendency of Potential Temperature'
+      diagTitle = DIAGS_MK_TITLE( 'Tendency of '
+     I                  //tTitl1//' Temperature', myThid )
       diagUnits = DIAGS_MK_UNITS( tUnit4c//'/day', myThid )
       diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -811,45 +837,48 @@ c     diagTitle = 'Free-Surface r-Position (Pressure, Height) (Pa,m)'
 
 #ifdef ALLOW_GENERIC_ADVDIFF
       diagName  = 'gT_Forc '
-      diagTitle = 'Potential Temp. forcing tendency'
+      diagTitle = DIAGS_MK_TITLE( tTitl1//' Temp. '
+     I                  //'forcing tendency', myThid )
       diagUnits = DIAGS_MK_UNITS( tUnit4c//'/s', myThid )
       diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'gS_Forc '
-      diagTitle = DIAGS_MK_TITLE(
-     &            sTitle//'forcing tendency', myThid )
+      diagTitle = DIAGS_MK_TITLE( sTitle
+     &                  //'forcing tendency', myThid )
       diagUnits = DIAGS_MK_UNITS( sUnit5c//'/s', myThid )
       diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'AB_gT   '
-      diagTitle = 'Potential Temp. tendency from Adams-Bashforth'
+      diagTitle = DIAGS_MK_TITLE( tTitl1//' Temp. '
+     I                  //'tendency from Adams-Bashforth', myThid )
       diagUnits = DIAGS_MK_UNITS( tUnit4c//'/s', myThid )
       diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'AB_gS   '
-      diagTitle = DIAGS_MK_TITLE(
-     &            sTitle//'tendency from Adams-Bashforth', myThid )
+      diagTitle = DIAGS_MK_TITLE( sTitle
+     &                  //'tendency from Adams-Bashforth', myThid )
       diagUnits = DIAGS_MK_UNITS( sUnit5c//'/s', myThid )
       diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'gTinAB  '
-      diagTitle = 'Potential Temp. tendency going in Adams-Bashforth'
+      diagTitle = DIAGS_MK_TITLE( tTitl1//' Temp. '
+     I                  //'tendency going in Adams-Bashforth', myThid )
       diagUnits = DIAGS_MK_UNITS( tUnit4c//'/s', myThid )
       diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'gSinAB  '
-      diagTitle = DIAGS_MK_TITLE(
-     &            sTitle//'tendency going in Adams-Bashforth', myThid )
+      diagTitle = DIAGS_MK_TITLE( sTitle
+     &                  //'tendency going in Adams-Bashforth', myThid )
       diagUnits = DIAGS_MK_UNITS( sUnit5c//'/s', myThid )
       diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
