@@ -34,6 +34,7 @@ C     myThid               :: thread Id. number
 C     === Local variables ===
        INTEGER i,j, k, it
        INTEGER intimeP, intime0, intime1
+       LOGICAL debugPrt
        _RL aWght, bWght, co3dummy
 C Number of iterations for pCO2 solvers...
 C Solubility relation coefficients
@@ -227,6 +228,7 @@ C====================================================================
 
 c first approximation
 
+          debugPrt = .FALSE.
           DO j=jMin,jMax
            DO i=iMin,iMax
             IF ( maskC(i,j,k,bi,bj) .NE. 0. _d 0) THEN
@@ -256,7 +258,8 @@ CAV C$TAF STORE alktmp(i,j), phostmp(i,j), sitmp(i,j)      = dic_surf
      I        dictmp(i,j), phostmp(i,j),
      I        sitmp(i,j),alktmp(i,j),permil,
      U        pH(i,j,k,bi,bj),pCO2(i,j,bi,bj),co3dummy,
-     I        i,j,k,bi,bj, it ,  myThid )
+     I        i,j,k,bi,bj,debugPrt, it ,  myThid )
+              debugPrt = .FALSE.
              ELSE
 C Use the original Follows et al. (2006) solver
 #endif /* CARBONCHEM_SOLVESAPHE */

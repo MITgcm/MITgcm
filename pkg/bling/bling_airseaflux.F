@@ -79,6 +79,7 @@ C     (FluxCO2 is a global variable)
 C     === Local variables ===
 C     i,j              :: Loop counters
       INTEGER i,j,klev
+      LOGICAL debugPrt
 C Number of iterations for pCO2 solvers
       _RL co3dummy
       _RL Kwexch_Pre   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -184,6 +185,7 @@ c pCO2 solver...
 CADJ STORE ph(:,:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
 #endif
 
+       debugPrt = debugMode
 C$TAF LOOP = parallel
        DO j=jmin,jmax
 C$TAF LOOP = parallel
@@ -202,7 +204,8 @@ C Use Munhoven (2013) Solvesaphe routine to calculate pH and pCO2
      I        surfdic(i,j), surfphos(i,j),
      I        surfsi(i,j),surfalk(i,j),permil,
      U        pH(i,j,klev,bi,bj),pCO2(i,j,bi,bj),co3dummy,
-     I        i,j,klev,bi,bj,myIter, myThid )
+     I        i,j,klev,bi,bj,debugPrt,myIter, myThid )
+                debugPrt = .FALSE.
              ELSE
 C Use the original Follows et al. (2006) solver
 #endif /* CARBONCHEM_SOLVESAPHE */
