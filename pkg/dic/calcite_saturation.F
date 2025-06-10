@@ -131,19 +131,20 @@ C     DIC_deepSilicaFile provided.
 C Use Munhoven (2013) Solvesaphe routine to calculate pH and pCO2
             IF ( doIni_pH ) THEN
 #ifdef ALLOW_DEBUG
-             IF (debugPrt) CALL DEBUG_CALL('AHINI_FOR_AT',myThid)
+             IF (debugPrt) CALL DEBUG_CALL('GCHEM_AHINI_FOR_AT',myThid)
 #endif
 C call AHINI_FOR_AT to get better initial guess of pH
-             CALL AHINI_FOR_AT(alklocal*permil,
+             CALL GCHEM_AHINI_FOR_AT(alklocal*permil,
      I              diclocal*permil,
      I              bt(i,j,bi,bj),
      O              pH3d(i,j,k,bi,bj),
      I              i,j,k,bi,bj,myIter,myThid )
             ENDIF /* 3d pH is not loaded */
 #ifdef ALLOW_DEBUG
-            IF (debugPrt) CALL DEBUG_CALL('CALC_PCO2_SOLVESAPHE',myThid)
+            IF (debugPrt)
+     &           CALL DEBUG_CALL('GCHEM_CALC_PCO2_SOLVESAPHE',myThid)
 #endif
-            CALL CALC_PCO2_SOLVESAPHE(
+            CALL GCHEM_CALC_PCO2_SOLVESAPHE(
      I          locTemp(i,j), locSalt(i,j),
      I          diclocal, po4local,
      I          sitlocal, alklocal, permil,

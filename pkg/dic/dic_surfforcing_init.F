@@ -166,10 +166,10 @@ C$TAF init dic_surf = static, 10
              IF ( selectPHsolver.GT.0 ) THEN
 C Use Munhoven (2013) Solvesaphe routine to initialize pH
 #ifdef ALLOW_DEBUG
-              IF (debugPrt) CALL DEBUG_CALL('AHINI_FOR_AT',myThid)
+              IF (debugPrt) CALL DEBUG_CALL('GCHEM_AHINI_FOR_AT',myThid)
 #endif
 C call AHINI_FOR_AT to get better initial guess of pH
-              CALL AHINI_FOR_AT(
+              CALL GCHEM_AHINI_FOR_AT(
      I           surfalk(i,j)*permil,
      I           surfdic(i,j)*permil,
      I           bt(i,j,bi,bj),
@@ -183,7 +183,7 @@ C$TAF STORE surfalk(i,j), surfphos(i,j), surfsi(i,j)   = dic_surf
               IF (debugPrt)
      &          CALL DEBUG_CALL('CALC_PCO2_SOLVESAPHE',myThid)
 #endif
-              CALL CALC_PCO2_SOLVESAPHE(
+              CALL GCHEM_CALC_PCO2_SOLVESAPHE(
      I         surftemp(i,j),surfsalt(i,j),
      I         surfdic(i,j), surfphos(i,j),
      I         surfsi(i,j),surfalk(i,j), permil,

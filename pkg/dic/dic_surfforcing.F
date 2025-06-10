@@ -178,9 +178,9 @@ C$TAF LOOP = parallel
 C Use Munhoven (2013) Solvesaphe routine to calculate pH and pCO2
 #ifdef ALLOW_DEBUG
               IF (debugPrt) CALL DEBUG_CALL(
-     &     'CALC_PCO2_SOLVESAPHE from DIC_SURFFORCING',myThid)
+     &     'GCHEM_CALC_PCO2_SOLVESAPHE from DIC_SURFFORCING',myThid)
 #endif
-              CALL CALC_PCO2_SOLVESAPHE(
+              CALL GCHEM_CALC_PCO2_SOLVESAPHE(
      I          surftemp(i,j),surfsalt(i,j),
      I          surfdic(i,j), surfphos(i,j),
      I          surfsi(i,j),surfalk(i,j), permil,
