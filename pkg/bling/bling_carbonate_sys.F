@@ -58,6 +58,7 @@ C     pHlocal           :: local value of pH
 C     CO3iter           :: iterations counter for CO3 ion calculation
 C     CO3iterMax        :: total number of iterations
        INTEGER i,j,k
+       LOGICAL debugPrt
        _RL carbonate
        _RL calcium
        _RL po4local
@@ -123,6 +124,7 @@ C  Get coefficients for carbonate calculations
 
 C--------------------------------------------------
 
+        debugPrt = debugMode
 C$TAF LOOP = parallel
         DO j=jMin,jMax
 C$TAF LOOP = parallel
@@ -173,7 +175,9 @@ c     I           i,j,k,bi,bj,myIter,myThid )
      I          diclocal, po4local,
      I          sitlocal, alklocal, permil,
      U          pHlocal, pCO2local, carbonate,
-     I          i,j,k,bi,bj,myIter,myThid )
+     I          i,j,k,bi,bj,debugPrt,myIter,myThid )
+            debugPrt = .FALSE.
+
 
 C- convert carbonate to mol kg^-1-SW for calculation of saturation state
             carbonate = carbonate*permil
