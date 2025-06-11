@@ -1031,6 +1031,8 @@ C Following Mucci (1983) - from Zeebe/Wolf-Gladrow equic.m
 c        write(6,*)i,j,k,tmpa1,tmpa2,tmpa3,logkspc,Ksp_T_Calc
 #ifdef ALLOW_BLING
 C
+           tmpa1 = - 171.945 _d 0 - (0.077993 _d 0*tk)
+     &           + (2903.293 _d 0/tk) + (71.595 _d 0*log10(tk))
            tmpa2 = +(-0.068393 _d 0 + (0.0017276 _d 0*tk)
      &           + (88.135 _d 0/tk) )*sqrts
            tmpa3 = -(0.10018 _d 0*s) + (0.0059415 _d 0*s15)
