@@ -128,7 +128,7 @@ C for non-interactive Si
 
 #ifdef CARBONCHEM_SOLVESAPHE
 #ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('DIC_COEFFS_SURF',myThid)
+        IF (debugMode) CALL DEBUG_CALL('GCHEM_COEFFS_SURF',myThid)
 #endif
         CALL GCHEM_COEFFS_SURF(
      I                       surftemp,surfsalt,
@@ -139,7 +139,7 @@ C for non-interactive Si
 #endif
         CALL GCHEM_CARBON_COEFFS(
      I                       surftemp,surfsalt,
-     I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
+     I                       bi,bj,iMin,iMax,jMin,jMax,0,myThid)
 
 #endif /* CARBONCHEM_SOLVESAPHE */
 
@@ -168,7 +168,7 @@ C Use Munhoven (2013) Solvesaphe routine to initialize pH
 #ifdef ALLOW_DEBUG
               IF (debugPrt) CALL DEBUG_CALL('GCHEM_AHINI_FOR_AT',myThid)
 #endif
-C call AHINI_FOR_AT to get better initial guess of pH
+C call GCHEM_AHINI_FOR_AT to get better initial guess of pH
               CALL GCHEM_AHINI_FOR_AT(
      I           surfalk(i,j)*permil,
      I           surfdic(i,j)*permil,
@@ -181,7 +181,7 @@ C$TAF STORE surfalk(i,j), surfphos(i,j), surfsi(i,j)   = dic_surf
 
 #ifdef ALLOW_DEBUG
               IF (debugPrt)
-     &          CALL DEBUG_CALL('CALC_PCO2_SOLVESAPHE',myThid)
+     &          CALL DEBUG_CALL('GCHEM_CALC_PCO2_SOLVESAPHE',myThid)
 #endif
               CALL GCHEM_CALC_PCO2_SOLVESAPHE(
      I         surftemp(i,j),surfsalt(i,j),

@@ -133,7 +133,7 @@ C Use Munhoven (2013) Solvesaphe routine to calculate pH and pCO2
 #ifdef ALLOW_DEBUG
              IF (debugPrt) CALL DEBUG_CALL('GCHEM_AHINI_FOR_AT',myThid)
 #endif
-C call AHINI_FOR_AT to get better initial guess of pH
+C call GCHEM_AHINI_FOR_AT to get better initial guess of pH
              CALL GCHEM_AHINI_FOR_AT(alklocal*permil,
      I              diclocal*permil,
      I              bt(i,j,bi,bj),

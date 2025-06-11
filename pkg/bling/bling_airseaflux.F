@@ -149,9 +149,9 @@ C FOR NON-INTERACTIVE Si
 #ifdef CARBONCHEM_SOLVESAPHE
 #ifdef ALLOW_DEBUG
 c     IF (debugMode) CALL DEBUG_CALL('CARBON_COEFFS_SOLVESAPHE',myThid)
-      IF (debugMode) CALL DEBUG_CALL('DIC_COEFFS_SURF',myThid)
+      IF (debugMode) CALL DEBUG_CALL('GCHEM_COEFFS_SURF',myThid)
 #endif
-        CALL DIC_COEFFS_SURF(
+        CALL GCHEM_COEFFS_SURF(
      I                       surftemp,surfsalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
 #else
@@ -161,7 +161,7 @@ c     IF (debugMode) CALL DEBUG_CALL('CARBON_COEFFS_SOLVESAPHE',myThid)
          CALL GCHEM_CARBON_COEFFS(
      I                       surftemp,surfsalt,
      I                       atmosP(1-OLx,1-OLy,bi,bj),
-     I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
+     I                       bi,bj,iMin,iMax,jMin,jMax,0,myThid)
 #endif
 
        DO j=jmin,jmax
@@ -189,29 +189,29 @@ C$TAF LOOP = parallel
 C$TAF LOOP = parallel
         DO i=imin,imax
 
-          IF ( maskC(i,j,klev,bi,bj).NE.0. _d 0 ) THEN
+         IF ( maskC(i,j,klev,bi,bj).NE.0. _d 0 ) THEN
 #ifdef CARBONCHEM_SOLVESAPHE
-             IF ( selectPHsolver.GT.0 ) THEN
+          IF ( selectPHsolver.GT.0 ) THEN
 C Use Munhoven (2013) Solvesaphe routine to calculate pH and pCO2
 #ifdef ALLOW_DEBUG
-                IF (debugMode) CALL DEBUG_CALL(
-     &     'CALC_PCO2_SOLVESAPHE from DIC_SURFFORCING',myThid)
+           IF (debugMode) CALL DEBUG_CALL(
+     &     'GCHEM_CALC_PCO2_SOLVESAPHE from DIC_SURFFORCING',myThid)
 #endif
-                CALL CALC_PCO2_SOLVESAPHE(
+           CALL GCHEM_CALC_PCO2_SOLVESAPHE(
      I        surftemp(i,j),surfsalt(i,j),
      I        surfdic(i,j), surfphos(i,j),
      I        surfsi(i,j),surfalk(i,j),permil,
      U        pH(i,j,klev,bi,bj),pCO2(i,j,bi,bj),co3dummy,
      I        i,j,klev,bi,bj,myIter, myThid )
-             ELSE
+          ELSE
 C Use the original Follows et al. (2006) solver
 #endif /* CARBONCHEM_SOLVESAPHE */
 #ifdef ALLOW_DEBUG
-                IF (debugMode) CALL DEBUG_CALL(
-     &        'GCHEM_CALC_PCO2_APPROX',myThid)
+           IF (debugMode) CALL DEBUG_CALL(
+     &          'GCHEM_CALC_PCO2_APPROX',myThid)
 #endif
 
-            CALL GCHEM_CALC_PCO2_APPROX(
+           CALL GCHEM_CALC_PCO2_APPROX(
      I        surftemp(i,j),surfsalt(i,j),
      I        surfdic(i,j), surfphos(i,j),
      I        surfsi(i,j),surfalk(i,j),
@@ -227,12 +227,12 @@ C Use the original Follows et al. (2006) solver
      I        i,j,klev,bi,bj,myIter,myThid )
 
 #ifdef CARBONCHEM_SOLVESAPHE
-             ENDIF
+          ENDIF
 #endif /* CARBONCHEM_SOLVESAPHE */
 
-          ELSE
-            pCO2(i,j,bi,bj) = 0. _d 0
-          ENDIF
+         ELSE
+          pCO2(i,j,bi,bj) = 0. _d 0
+         ENDIF
 
         ENDDO
        ENDDO

@@ -201,14 +201,14 @@ C FOR NON-INTERACTIVE Si
 
 #ifdef CARBONCHEM_SOLVESAPHE
 #ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('DIC_COEFFS_DEEP',myThid)
+      IF (debugMode) CALL DEBUG_CALL('GCHEM_COEFFS_DEEP',myThid)
 #endif
-        CALL DIC_COEFFS_SURF(
+        CALL GCHEM_COEFFS_SURF(
 cav changing surftheta to thetatmp
      I                       thetatmp,salttmp,
      I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
 C Now correct the coefficients for pressure dependence
-        CALL DIC_COEFFS_DEEP(
+        CALL GCHEM_COEFFS_DEEP(
      I                       thetatmp,salttmp,
      I                       bi,bj,iMin,iMax,jMin,jMax,
      I                       k,myThid)
@@ -217,7 +217,7 @@ C Now correct the coefficients for pressure dependence
         IF (debugMode)
      &       CALL DEBUG_CALL('GCHEM_CARBON_COEFFS_PRESSURE_DEP',myThid)
 #endif
-         CALL GCHEM_CARBON_COEFFS_PRESSURE_DEP(
+         CALL GCHEM_CARBON_COEFFS(
      I                       thetatmp,salttmp,
      I                       atmosP(1-OLx,1-OLy,bi,bj),
      I                       bi,bj,iMin,iMax,jMin,jMax,k,myThid)
@@ -236,10 +236,10 @@ c first approximation
 C Use Munhoven (2013) Solvesaphe routine to initialize pH
 #ifdef ALLOW_DEBUG
               IF (debugMode) CALL DEBUG_CALL(
-     &            'AHINI_FOR_AT',myThid)
+     &            'GCHEM_AHINI_FOR_AT',myThid)
 #endif
-C call AHINI_FOR_AT to get better initial guess of pH
-              CALL AHINI_FOR_AT(
+C call GCHEM_AHINI_FOR_AT to get better initial guess of pH
+              CALL GCHEM_AHINI_FOR_AT(
      I           alktmp(i,j)*permil,
      I           dictmp(i,j)*permil,
      I           bt(i,j,bi,bj),
@@ -249,9 +249,9 @@ CAV C$TAF STORE pH(i,j,k,bi,bj)                            = dic_surf
 CAV C$TAF STORE alktmp(i,j), phostmp(i,j), sitmp(i,j)      = dic_surf
 #ifdef ALLOW_DEBUG
               IF (debugMode) CALL DEBUG_CALL(
-     &           'CALC_PCO2_SOLVESAPHE',myThid)
+     &           'GCHEM_CALC_PCO2_SOLVESAPHE',myThid)
 #endif
-              CALL CALC_PCO2_SOLVESAPHE(
+              CALL GCHEM_CALC_PCO2_SOLVESAPHE(
      I        thetatmp(i,j),salttmp(i,j),
      I        dictmp(i,j), phostmp(i,j),
      I        sitmp(i,j),alktmp(i,j),permil,

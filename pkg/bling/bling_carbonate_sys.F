@@ -93,15 +93,15 @@ C$TAF LOOP = parallel
 #ifdef CARBONCHEM_SOLVESAPHE
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL(
-     &   'DIC_COEFFS_DEEP',myThid)
+     &   'GCHEM_COEFFS_DEEP',myThid)
 #endif
 C Calculate carbon coefficients
-        CALL DIC_COEFFS_SURF(
+        CALL GCHEM_COEFFS_SURF(
      I                       locTemp, locSalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
 
 C Now correct the coefficients for pressure dependence
-        CALL DIC_COEFFS_DEEP(
+        CALL GCHEM_COEFFS_DEEP(
      I                       locTemp, locSalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,
      I                       k,myThid)
@@ -114,7 +114,7 @@ C Now correct the coefficients for pressure dependence
 #endif
 
 C  Get coefficients for carbonate calculations
-        CALL GCHEM_CARBON_COEFFS_PRESSURE_DEP(
+        CALL GCHEM_CARBON_COEFFS(
      I                       locTemp, locSalt,
      I                       atmosP(1-OLx,1-OLy,bi,bj),
      I                       bi, bj, iMin, iMax, jMin, jMax,
@@ -155,19 +155,20 @@ C  unless SIBLING is used
            IF ( selectPHsolver.GT.0 ) THEN
 C Use Munhoven (2013) Solvesaphe routine to calculate pH and pCO2
 #ifdef ALLOW_DEBUG
-         IF (debugMode) CALL DEBUG_CALL('AHINI_FOR_AT',myThid)
+            IF (debugMode) CALL DEBUG_CALL('GCHEM_AHINI_FOR_AT',myThid)
 #endif
 CAV since we carry pH, no need for an initial guess
-C call AHINI_FOR_AT to get better initial guess of pH
-c               CALL AHINI_FOR_AT(alklocal*permil,
+C call GCHEM_AHINI_FOR_AT to get better initial guess of pH
+c               CALL GCHEM_AHINI_FOR_AT(alklocal*permil,
 c     I           diclocal*permil,
 c     I           bt(i,j,bi,bj),
 c     O           pHlocal,
 c     I           i,j,k,bi,bj,myIter,myThid )
 #ifdef ALLOW_DEBUG
-         IF (debugMode) CALL DEBUG_CALL('CALC_PCO2_SOLVESAPHE',myThid)
+            IF (debugMode)
+     &           CALL DEBUG_CALL('GCHEM_CALC_PCO2_SOLVESAPHE',myThid)
 #endif
-            CALL CALC_PCO2_SOLVESAPHE(
+            CALL GCHEM_CALC_PCO2_SOLVESAPHE(
      I          locTemp(i,j), locSalt(i,j),
      I          diclocal, po4local,
      I          sitlocal, alklocal, permil,

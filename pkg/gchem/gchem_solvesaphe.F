@@ -57,22 +57,22 @@ C    - Different coefficients can be accessed using runtime flags in data.dic:
 C
 C    Borate concentration from salinity:
 C     selectBTconst=1 for the default formulation of Uppström (1974)
-C                     i.e. the same as S/R CARBON_COEFFS
+C                     i.e. the same as S/R GCHEM_CARBON_COEFFS
 C     selectBTconst=2 for the new formulation from Lee et al (2010)
 C
 C    Fluoride concentration from salinity:
 C     selectFTconst=1 for the default formulation of Riley (1965)
-C                     i.e. the same as S/R CARBON_COEFFS
+C                     i.e. the same as S/R GCHEM_CARBON_COEFFS
 C     selectFTconst=2 for the new formulation from Culkin (1965)
 C
 C    First dissociation constant for hydrogen fluoride:
 C     selectHFconst=1 for the default  Dickson and Riley (1979)
-C                     i.e. the same as S/R CARBON_COEFFS
+C                     i.e. the same as S/R GCHEM_CARBON_COEFFS
 C     selectHFconst=2 for the formulation of Perez and Fraga (1987)
 C
 C    First and second dissociation constants of carbonic acid:
 C     selectK1K2const=1 for the default formulation of Millero (1995) with data
-C              from Mehrbach et al. (1973),  i.e. the same as S/R CARBON_COEFFS
+C        from Mehrbach et al. (1973), i.e. the same as S/R GCHEM_CARBON_COEFFS
 C     selectK1K2const=2 for the formulation of Roy et al. (1993)
 C     selectK1K2const=3 for the "combination" formulation of Millero (1995)
 C     selectK1K2const=4 for the formulation of Luecker et al. (2000)
