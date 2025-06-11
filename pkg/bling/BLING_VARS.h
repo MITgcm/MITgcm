@@ -21,64 +21,6 @@ C ==========================================================
       _RL  apco21(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
-#ifdef CARBONCHEM_SOLVESAPHE
-C If using Solvesaphe routines (Munhoven, 2013) then in adittion,
-C  cat  = total calcium concentration, Ref.: Culkin (1965)
-C   akn = the dissociation constant of ammonium [H][NH3]/[NH4]
-C           Ref.: Yao and Millero (1995)
-C   akhs = the dissociation constant of hydrogen sulfide [H][HS]/[H2S]
-C           Ref.: Millero et al. (1988)
-C          (cited by Millero (1995) and Yao and Millero (1995))
-C  aphscale = pH scale conversion factor ; convert from the total to the free
-C          scale for solvesaphe calculations;  Ref.: Munhoven, 2013
-C   Ksp_TP_Arag = solubility product for aragonite, Ref.: Mucci (1983)
-C----
-C  selectBTconst :: estimates borate concentration from salinity:
-C     =1 :: use default formulation of Uppström (1974)(same as S/R CARBON_COEFFS)
-C     =2 :: use new formulation from Lee et al (2010)
-C
-C  selectFTconst :: estimates fluoride concentration from salinity:
-C     =1 :: use default formulation of Riley (1965) (same as S/R CARBON_COEFFS)
-C     =2 :: use new formulation from Culkin (1965)
-C
-C  selectHFconst :: sets the first dissociation constant for hydrogen fluoride:
-C     =1 :: use default  Dickson and Riley (1979) (same as S/R CARBON_COEFFS)
-C     =2 :: use new formulation of Perez and Fraga (1987)
-C
-C  selectK1K2const :: sets the 1rst & 2nd dissociation constants of carbonic acid:
-C     =1 :: use default formulation of Millero (1995) with data
-C            from Mehrbach et al. (1973) (same as S/R CARBON_COEFFS)
-C     =2 :: use formulation of Roy et al. (1993)
-C     =3 :: use "combination" formulation of Millero (1995)
-C     =4 :: use formulation of Luecker et al. (2000)
-C     =5 :: use formulation of Millero (2010, Mar. Fresh Wat. Res.)
-C     =6 :: use formulation of Waters, Millero, Woosley (2014, Mar. Chem.)
-C  selectPHsolver :: sets the pH solver to use:
-C     =1 :: use the GENERAL solver ;  =2 :: use SEC solver ;
-C     =3 :: use FAST solver routine.
-
-       COMMON /CARBONCHEM_SOLVESAPHE_ARIANE/
-cav     &                     cat, akn, akhs, aphscale, Ksp_TP_Arag,
-     &                     cat, akn, akhs, aphscale,
-     &                     at_maxniter,
-     &                     selectBTconst,selectFTconst,
-     &                     selectHFconst,selectK1K2const,
-     &                     selectPHsolver
-
-      _RL  cat(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  akn(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  akhs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  aphscale(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-cav      _RL  Ksp_TP_Arag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
-      INTEGER at_maxniter
-      INTEGER selectBTconst
-      INTEGER selectFTconst
-      INTEGER selectHFconst
-      INTEGER selectK1K2const
-      INTEGER selectPHsolver
-#endif /* CARBONCHEM_SOLVESAPHE */
-
        COMMON /OXYGEN_CHEM/
      &                     oA0,oA1,oA2,oA3,oA4,oA5,
      &                     oB0,oB1,oB2,oB3,
