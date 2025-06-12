@@ -38,7 +38,7 @@ C--   KPP vertical mixing parameters
       NAMELIST /KPP_PARM01/
      & kpp_freq, kpp_dumpFreq, kpp_taveFreq,
      & KPPwriteState, KPP_ghatUseTotalDiffus,
-     & KPPuseDoubleDiff, LimitHblStable,
+     & KPPuseDoubleDiff, LimitHblStable, KPPuseSWfrac3D,
      & minKPPhbl,
      & epsln, phepsi, epsilon, vonk, dB_dz,
      & conc1, conam, concm, conc2, zetam,
@@ -84,6 +84,7 @@ C--   set default KPP vertical mixing parameters
       KPPuseDoubleDiff       = .FALSE.
       LimitHblStable         = .TRUE.
       KPP_ghatUseTotalDiffus = .FALSE.
+      KPPuseSWfrac3D         = .FALSE.
       minKPPhbl = UNSET_RL
 
 C-----------------------------------------------------------------------
