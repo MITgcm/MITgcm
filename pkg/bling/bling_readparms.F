@@ -22,6 +22,7 @@ C     === Global variables ===
 # include "EXF_INTERP_SIZE.h"
 # include "EXF_INTERP_PARAM.h"
 #endif /* ALLOW_EXF */
+#include "GCHEM_VARS.h"
 #include "BLING_VARS.h"
 
 C     === Routine arguments ===
