@@ -1,8 +1,8 @@
 #include "GCHEM_OPTIONS.h"
-#ifdef ALLLOW_DIC
+#ifdef ALLOW_DIC
 # include "DIC_OPTIONS.h"
 #endif
-#ifdef ALLLOW_BLING
+#ifdef ALLOW_BLING
 # include "BLING_OPTIONS.h"
 #endif
 
