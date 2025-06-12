@@ -99,9 +99,9 @@ C Now correct the coefficients for pressure dependence
 #else
 #ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL(
-     &      'CARBON_COEFFS_PRESSURE_DEP',myThid)
+     &      'GCHEM_CARBON_COEFFS',myThid)
 #endif
-        CALL CARBON_COEFFS_PRESSURE_DEP(
+        CALL GCHEM_CARBON_COEFFS(
      I                       locTemp, locSalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,
      I                       k,myThid)

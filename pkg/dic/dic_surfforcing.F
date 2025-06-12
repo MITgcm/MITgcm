@@ -137,7 +137,7 @@ C for non-interactive Si
 #endif
        CALL GCHEM_CARBON_COEFFS(
      I                       surftemp,surfsalt,
-     I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
+     I                       bi,bj,iMin,iMax,jMin,jMax,0,myThid)
 #endif /* CARBONCHEM_SOLVESAPHE */
 C====================================================================
 
