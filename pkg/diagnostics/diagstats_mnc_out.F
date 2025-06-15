@@ -126,7 +126,7 @@ C       no specified vertical location.
         CALL MNC_CW_ADD_VNAME('diag_levels', 'diag_levels',
      &       0,0, myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('diag_levels','description',
-     &       'Idicies of vertical levels within the source arrays',
+     &       'Indicies of vertical levels within the source arrays',
      &       myThid)
 
         CALL MNC_CW_RL_W('D',diag_mnc_bn,1,1,
