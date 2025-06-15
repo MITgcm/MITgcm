@@ -216,12 +216,12 @@ C       ===================
 C       This is where all the accelerations and tendencies (ie.
 C       physics, parameterizations etc...) are calculated
 C         rho = rho ( theta[n], salt[n] )
-C         b   = b(rho, theta)
-C         K31 = K31 ( rho )
-C         Gu[n] = Gu( u[n], v[n], wVel, b, ... )
-C         Gv[n] = Gv( u[n], v[n], wVel, b, ... )
-C         Gt[n] = Gt( theta[n], u[n], v[n], wVel, K31, ... )
-C         Gs[n] = Gs( salt[n], u[n], v[n], wVel, K31, ... )
+C         Ph  = Ph(rho, z)
+C         K33 = K33 ( rho )
+C         Gu[n] = Gu( u[n], v[n], wVel, Ph, ... )
+C         Gv[n] = Gv( u[n], v[n], wVel, Ph, ... )
+C         Gt[n] = Gt( theta[n], u[n], v[n], wVel, K33, ... )
+C         Gs[n] = Gs( salt[n], u[n], v[n], wVel, K33, ... )
 C
 C       "Time-stepping" or "Prediction"
 C       ================================
@@ -236,13 +236,13 @@ C       is also *only* a prediction.
 C       - We denote "predictors" with an asterisk (*).
 C         U* = U[n] + dt x ( 3/2 Gu[n] - 1/2 Gu[n-1] )
 C         V* = V[n] + dt x ( 3/2 Gv[n] - 1/2 Gv[n-1] )
-C         theta[n+1] = theta[n] + dt x ( 3/2 Gt[n] - 1/2 atG[n-1] )
-C         salt[n+1] = salt[n] + dt x ( 3/2 Gs[n] - 1/2 atG[n-1] )
+C         theta[n+1] = theta[n] + dt x ( 3/2 Gt[n] - 1/2 Gt[n-1] )
+C         salt[n+1]  = salt[n]  + dt x ( 3/2 Gs[n] - 1/2 Gs[n-1] )
 C       With implicit diffusion:
-C         theta* = theta[n] + dt x ( 3/2 Gt[n] - 1/2 atG[n-1] )
-C         salt* = salt[n] + dt x ( 3/2 Gs[n] - 1/2 atG[n-1] )
-C         (1 + dt * K * d_zz) theta[n] = theta*
-C         (1 + dt * K * d_zz) salt[n] = salt*
+C         theta* = theta[n] + dt x ( 3/2 Gt[n] - 1/2 Gt[n-1] )
+C         salt*  = salt[n]  + dt x ( 3/2 Gs[n] - 1/2 Gs[n-1] )
+C         (1 - dt * K * d_zz) theta[n+1] = theta*
+C         (1 - dt * K * d_zz) salt[n+1]  = salt*
 C---
 CEOP
 
