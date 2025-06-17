@@ -11,7 +11,6 @@ C--   Contents
 C--   o GCHEM_CALC_PCO2
 C--   o GCHEM_CALC_PCO2_APPROX
 C--   o GCHEM_CARBON_COEFFS
-C--   o GCHEM_CARBON_COEFFS_PRESSURE_DEP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -21,7 +20,7 @@ C !ROUTINE: GCHEM_CALC_PCO2
 C !INTERFACE: ==========================================================
        SUBROUTINE GCHEM_CALC_PCO2(
      I                       donewt,inewtonmax,ibrackmax,
-     I                       t,s,diclocal,pt,sit,ta,
+     I                       t,s,diclocal0,pt0,sit0,ta0,
      I                       k1local,k2local,
      I                       k1plocal,k2plocal,k3plocal,
      I                       kslocal,kblocal,kwlocal,
@@ -46,11 +45,11 @@ C !USES: ===============================================================
 #include "GCHEM_VARS.h"
 
 C     == Routine arguments ==
-C       diclocal = total inorganic carbon (mol/m^3)
+C       diclocal0 = total inorganic carbon (mol/m^3)
 C             where 1 T = 1 metric ton = 1000 kg
-C       ta  = total alkalinity (eq/m^3)
-C       pt  = inorganic phosphate (mol/^3)
-C       sit = inorganic silicate (mol/^3)
+C       ta0 = total alkalinity (eq/m^3)
+C       pt0 = inorganic phosphate (mol/^3)
+C       sit0= inorganic silicate (mol/^3)
 C       t   = temperature (degrees C)
 C       s   = salinity (g/kg)
 C       permil = conversion factor for mol/m3 to mol/kg
@@ -58,8 +57,8 @@ C                assumes uniform (surface) density
         INTEGER donewt
         INTEGER inewtonmax
         INTEGER ibrackmax
-        _RL  t, s, pt, sit, ta
-        _RL  pCO2surfloc, diclocal, pHlocal
+        _RL  t, s, pt0, sit0, ta0
+        _RL  pCO2surfloc, diclocal0, pHlocal
         _RL  fflocal, btlocal, stlocal, ftlocal
         _RL  k1local, k2local
         _RL  k1plocal, k2plocal, k3plocal
@@ -91,6 +90,7 @@ C       given in mol/m^3; output arguments "co2star" and "dco2star"
 C       are likewise be in mol/m^3.
 C ---------------------------------------------------------------------
 
+        _RL  pt, sit, ta, diclocal
         _RL  phhi
         _RL  phlo
         _RL  c
@@ -136,10 +136,10 @@ c for calculations.  Units are reconverted back to mol/m^3 at the
 c end of this routine.
 c ---------------------------------------------------------------------
 c To convert input in mol/m^3 -> mol/kg
-        pt=pt*permil
-        sit=sit*permil
-        ta=ta*permil
-        diclocal=diclocal*permil
+        pt=pt0*permil
+        sit=sit0*permil
+        ta=ta0*permil
+        diclocal=diclocal0*permil
 c ---------------------------------------------------------------------
 c set first guess and brackets for [H+] solvers
 c first guess (for newton-raphson)
@@ -316,16 +316,6 @@ c Corrected by Val Bennington (Nov 2010)
         pCO2surfloc = fco2/fugflocal
 #endif
 
-C ----------------------------------------------------------------
-C Reconvert units back to original values for input arguments
-C no longer necessary????
-C ----------------------------------------------------------------
-c       Reconvert from mol/kg -> mol/m^3
-        pt=pt/permil
-        sit=sit/permil
-        ta=ta/permil
-        diclocal=diclocal/permil
-
         RETURN
         END
 
@@ -336,7 +326,7 @@ C !ROUTINE: GCHEM_CALC_PCO2_APPROX
 
 C !INTERFACE: ==========================================================
        SUBROUTINE GCHEM_CALC_PCO2_APPROX(
-     I                       t,s,diclocal,pt,sit,ta,
+     I                       t,s,diclocal0,pt0,sit0,ta0,
      I                       k1local,k2local,
      I                       k1plocal,k2plocal,k3plocal,
      I                       kslocal,kblocal,kwlocal,
@@ -372,17 +362,17 @@ C     == GLobal variables ==
 #include "GCHEM_VARS.h"
 
 C     == Routine arguments ==
-C       diclocal = total inorganic carbon (mol/m^3)
+C       diclocal0 = total inorganic carbon (mol/m^3)
 C             where 1 T = 1 metric ton = 1000 kg
-C       ta  = total alkalinity (eq/m^3)
-C       pt  = inorganic phosphate (mol/^3)
-C       sit = inorganic silicate (mol/^3)
+C       ta0 = total alkalinity (eq/m^3)
+C       pt0 = inorganic phosphate (mol/^3)
+C       sit0= inorganic silicate (mol/^3)
 C       t   = temperature (degrees C)
 C       s   = salinity (g/kg)
 C       permil = conversion factor for mol/m3 to mol/kg
 C                assumes uniform (surface) density
-        _RL  t, s, pt, sit, ta
-        _RL  pCO2surfloc, diclocal, pHlocal
+        _RL  t, s, pt0, sit0, ta0
+        _RL  pCO2surfloc, diclocal0, pHlocal
         _RL  fflocal, btlocal, stlocal, ftlocal
         _RL  k1local, k2local
         _RL  k1plocal, k2plocal, k3plocal
@@ -395,6 +385,7 @@ C                assumes uniform (surface) density
 CEOP
 
 C     == Local variables ==
+        _RL  pt, sit, ta, diclocal
         _RL  phguess
         _RL  cag
         _RL  bohg
@@ -415,10 +406,10 @@ c Note: mol/kg are actually what the body of this routine uses
 c for calculations.  Units are reconverted back to mol/m^3 at the
 c end of this routine.
 c To convert input in mol/m^3 -> mol/kg
-        pt=pt*permil
-        sit=sit*permil
-        ta=ta*permil
-        diclocal=diclocal*permil
+        pt=pt0*permil
+        sit=sit0*permil
+        ta=ta0*permil
+        diclocal=diclocal0*permil
 c ---------------------------------------------------------------------
 c set first guess and brackets for [H+] solvers
 c first guess (for newton-raphson)
@@ -487,7 +478,12 @@ cmick - now determine [CO2*]
         co2s  = diclocal/
      &   (1.0 _d 0 + (k1local/hnew) + (k1local*k2local/(hnew*hnew)))
 cmick - return update pH to main routine
+#ifdef ALLOW_DARWIN
+C     copied from darwin_carbon_gchem.F, maybe useful for all models
+        phlocal = -log10(MAX(hnew, 1 _d -14))
+#else
         phlocal = -log10(hnew)
+#endif
 
 c NOW EVALUATE CO32-, carbonate ion concentration
 c used in determination of calcite compensation depth
@@ -504,13 +500,6 @@ c bug fix by Bennington
         fco2 = co2s/k0local
         pco2surfloc = fco2/fugflocal
 #endif
-
-C ----------------------------------------------------------------
-c Reconvert from mol/kg -> mol/m^3
-        pt=pt/permil
-        sit=sit/permil
-        ta=ta/permil
-        diclocal=diclocal/permil
 
         RETURN
         END
@@ -672,8 +661,8 @@ C surface, so we compute the calcite coefficients also for zero depth
         ELSE
          pSurf = 1. _d 0
 C Compute at layer center for non-surface layers
-         pAppl = -0.1 _d 0*rC(kLevel)
-         zdum = -rC(kLevel)/10. _d 0
+         pAppl = -0.1 _d 0*rC(k)
+         zdum = -rC(k)/10. _d 0
         ENDIF
 
         DO i=imin,imax
@@ -732,9 +721,9 @@ C Independent of pH scale
 C------------------------------------------------------------------------
 C k1 = [H][HCO3]/[H2CO3]
 C k2 = [H][CO3]/[HCO3]
-C Millero p.664 (1995) using Mehrbach et al. data on seawater scale
+C Millero p.664 (1995) using Mehrbach et al. data
 C Both on seawater pH scale
-C     For faster code, this type of expression should rewritten:
+C     For faster code, this type of expression should be rewritten as:
 C     x**a = exp ( a*log(x) ), where ln(x) = ln(10) = 2.30... needs to
 C     be computed only once.
            ak1(i,j,bi,bj)=10.**(-1. _d 0*(3670.7 _d 0*invtk -
@@ -747,16 +736,16 @@ c Following Takahashi (1981) GEOSECS report - quoting Culberson and
 c Pytkowicz (1968)
            IF (kLevel.GE.1) THEN
 c pAppl = applied pressure in bars (p - p_atm)
-            ak1(i,j,bi,bj) = ak1(i,j,bi,bj)*
-     &             exp( (24.2 _d 0-0.085 _d 0*t)
+            ak1(i,j,bi,bj) = ak1(i,j,bi,bj)
+     &             *exp( (24.2 _d 0-0.085 _d 0*t)
      &                 *pAppl/(83.143 _d 0*tk) )
 c FIRST GO FOR K2: According to GEOSECS (1982) report
 c          ak2(i,j,bi,bj) = ak2(i,j,bi,bj)*
 c    &             exp( (26.4-0.040*t)*(pAppl-1.0)/(83.143*tk) )
 c SECOND GO FOR K2: corrected coeff according to CO2sys documentation
 c                   E. Lewis and D. Wallace (1998) ORNL/CDIAC-105
-            ak2(i,j,bi,bj) = ak2(i,j,bi,bj)*
-     &             exp( (16.4 _d 0-0.040 _d 0*t)
+            ak2(i,j,bi,bj) = ak2(i,j,bi,bj)
+     &             *exp( (16.4 _d 0-0.040 _d 0*t)
      &                 *pAppl/(83.143 _d 0*tk) )
            ENDIF
 C------------------------------------------------------------------------
@@ -907,8 +896,7 @@ C Pressure correct aks on native free pH scale
      &                 (1. _d 0 + st(i,j,bi,bj)/aks(i,j,bi,bj))
 
 C free2sw has an additional component from fluoride
-            free2sw    = 1. _d 0
-     &                 + st(i,j,bi,bj)/ aks(i,j,bi,bj)
+            free2sw    = 1. _d 0  + st(i,j,bi,bj)/aks(i,j,bi,bj)
            ENDIF
 
            free2total = (1. _d 0 + st(i,j,bi,bj)/aks(i,j,bi,bj))
@@ -942,7 +930,8 @@ C free2sw has an additional component from fluoride, add it here
            sw2total = 1. _d 0 / total2sw
 
 C------------------------------------------------------------------------
-C Convert pressure corrected ak1, ak2 from the seawater pH scale to the total scale
+C Convert pressure corrected ak1, ak2 from the seawater pH scale to the
+C total scale
            ak1(i,j,bi,bj)  = ak1(i,j,bi,bj)*sw2total
            ak2(i,j,bi,bj)  = ak2(i,j,bi,bj)*sw2total
 
