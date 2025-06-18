@@ -147,23 +147,24 @@ C FOR NON-INTERACTIVE Si
           ENDDO
          ENDDO
 
-#ifdef CARBONCHEM_SOLVESAPHE
+      IF ( selectModernCoeffs.GT.0 ) THEN
 #ifdef ALLOW_DEBUG
 c     IF (debugMode) CALL DEBUG_CALL('CARBON_COEFFS_SOLVESAPHE',myThid)
-      IF (debugMode) CALL DEBUG_CALL('GCHEM_COEFFS_SURF',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GCHEM_COEFFS_SURF',myThid)
 #endif
-        CALL GCHEM_COEFFS_SURF(
+       CALL GCHEM_COEFFS_SURF(
      I                       surftemp,surfsalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
-#else
+      ELSE
 #ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('GCHEM_CARBON_COEFFS',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GCHEM_CARBON_COEFFS',myThid)
 #endif
-         CALL GCHEM_CARBON_COEFFS(
+       CALL GCHEM_CARBON_COEFFS(
      I                       surftemp,surfsalt,
      I                       atmosP(1-OLx,1-OLy,bi,bj),
      I                       bi,bj,iMin,iMax,jMin,jMax,0,myThid)
-#endif
+      ENDIF
+
 
        DO j=jmin,jmax
         DO i=imin,imax
@@ -192,7 +193,6 @@ C$TAF LOOP = parallel
         DO i=imin,imax
 
          IF ( maskC(i,j,klev,bi,bj).NE.0. _d 0 ) THEN
-#ifdef CARBONCHEM_SOLVESAPHE
           IF ( selectPHsolver.GT.0 ) THEN
 C Use Munhoven (2013) Solvesaphe routine to calculate pH and pCO2
 #ifdef ALLOW_DEBUG
@@ -208,7 +208,6 @@ C Use Munhoven (2013) Solvesaphe routine to calculate pH and pCO2
            debugPrt = .FALSE.
           ELSE
 C Use the original Follows et al. (2006) solver
-#endif /* CARBONCHEM_SOLVESAPHE */
 #ifdef ALLOW_DEBUG
            IF (debugMode) CALL DEBUG_CALL(
      &          'GCHEM_CALC_PCO2_APPROX',myThid)
@@ -228,10 +227,7 @@ C Use the original Follows et al. (2006) solver
      I        permil,
      U        pH(i,j,klev,bi,bj),pCO2(i,j,bi,bj),co3dummy,
      I        i,j,klev,bi,bj,myIter,myThid )
-
-#ifdef CARBONCHEM_SOLVESAPHE
           ENDIF
-#endif /* CARBONCHEM_SOLVESAPHE */
 
          ELSE
           pCO2(i,j,bi,bj) = 0. _d 0

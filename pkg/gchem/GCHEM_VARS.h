@@ -64,7 +64,6 @@ C Fugacity Factor added by Val Bennington Nov. 2010
       _RL Ksp_TP_Calc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL Ksp_TP_Arag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-#ifdef CARBONCHEM_SOLVESAPHE
 C If using Solvesaphe routines (Munhoven, 2013) then in adittion,
 C  cat  = total calcium concentration, Ref.: Culkin (1965)
 C   akn = the dissociation constant of ammonium [H][NH3]/[NH4]
@@ -117,11 +116,11 @@ C     =3 :: use FAST solver routine.
       COMMON /CARBONCHEM_SOLVESAPHE_PARAMS/
      &                     selectBTconst,selectFTconst,
      &                     selectHFconst,selectK1K2const,
-     &                     selectPHsolver
+     &                     selectPHsolver,selectModernCoeffs
 
       INTEGER selectBTconst
       INTEGER selectFTconst
       INTEGER selectHFconst
       INTEGER selectK1K2const
       INTEGER selectPHsolver
-#endif /* CARBONCHEM_SOLVESAPHE */
+      INTEGER selectModernCoeffs

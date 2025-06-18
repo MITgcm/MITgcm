@@ -110,7 +110,6 @@ C -----------------------------------------------------------------------
       _RL p_hini
       INTEGER i,j,k,bi,bj,myIter,myThid
 
-#ifdef CARBONCHEM_SOLVESAPHE
 C -----------------------------------------------------------------------
 C     Local variables
 C -----------------------------------------------------------------------
@@ -155,7 +154,6 @@ C      If the discriminant is positive
        ENDIF
       ENDIF
 
-#endif /* CARBONCHEM_SOLVESAPHE */
       RETURN
       END
 C      END SUBROUTINE GCHEM_AHINI_FOR_AT
@@ -197,7 +195,6 @@ C      --------------------
       _RL p_alknw_sup
       INTEGER i,j,k,bi,bj,myIter,myThid
 
-#ifdef CARBONCHEM_SOLVESAPHE
 C      p_alknw_inf = -\Sum_i m_i Xtot_i
 C
 C      p_alknw_inf =-p_dictot*0. _d 0 & ! n = 2, m = 0
@@ -226,7 +223,6 @@ C                  p_flutot*(1. _d 0-1. _d 0)      ! n = 1, m = 1
      &             + p_po4tot + p_po4tot + p_siltot
      &             + p_nh4tot + p_h2stot
 
-#endif /* CARBONCHEM_SOLVESAPHE */
       RETURN
       END
 C      END SUBROUTINE GCHEM_ANW_INFSUP
@@ -265,8 +261,6 @@ C                assumes uniform (surface) density
       INTEGER i,j,k,bi,bj
       LOGICAL debugPrt
       INTEGER myIter,myThid
-
-#ifdef CARBONCHEM_SOLVESAPHE
 
 C     == Local variables ==
       _RL  z_h
@@ -384,7 +378,6 @@ C Reconvert from mol/kg -> mol/m^3
       z_co3    = z_co3/permil
       z_co2aq  = z_co2s/permil
 
-#endif /* CARBONCHEM_SOLVESAPHE */
       RETURN
       END
 C      END SUBROUTINE GCHEM_CALC_PCO2_SOLVESAPHE
@@ -410,8 +403,6 @@ C     MITgcm GLobal variables
       _RL  ttemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  stemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER bi,bj,iMin,iMax,jMin,jMax,myThid
-
-#ifdef CARBONCHEM_SOLVESAPHE
 
 C LOCAL VARIABLES
       INTEGER i, j
@@ -901,7 +892,6 @@ C       Units     : (mol/kg-SW)^2
          endif
          end do
         end do
-#endif /* CARBONCHEM_SOLVESAPHE */
       RETURN
       END
 C     END SUBROUTINE GCHEM_COEFFS_SURF
@@ -929,7 +919,6 @@ C     MITgcm GLobal variables
       _RL  stemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER bi,bj,iMin,iMax,jMin,jMax,Klevel,myThid
 
-#ifdef CARBONCHEM_SOLVESAPHE
 C LOCAL VARIABLES
       INTEGER i, j, k
       _RL  bdepth
@@ -1216,7 +1205,6 @@ C       References: Millero (1979) for pressure correction
          endif
        enddo
       enddo
-#endif /* CARBONCHEM_SOLVESAPHE */
 
       RETURN
       END
@@ -1255,8 +1243,6 @@ C      --------------------
       _RL p_deriveqn
       _RL p_eqn
       INTEGER i,j,k,bi,bj,myIter,myThid
-
-#ifdef CARBONCHEM_SOLVESAPHE
 
 C      -----------------
 C      Local variables
@@ -1379,7 +1365,6 @@ C      HF - F : n=1
      &             - akw(i,j,bi,bj)/p_h**2 - 1. _d 0/aphscale(i,j,bi,bj)
 C      ENDIF
 
-#endif /* CARBONCHEM_SOLVESAPHE */
       RETURN
       END
 C     END SUBROUTINE GCHEM_EQUATION_AT
@@ -1423,8 +1408,6 @@ C     --------------------
       INTEGER i, j, k, bi, bj
       LOGICAL debugPrt
       INTEGER myIter, myThid
-
-#ifdef CARBONCHEM_SOLVESAPHE
 
 C     --------------------
 C     Local variables
@@ -1538,7 +1521,6 @@ c          p_val = HUGE(1. _d 0)
         ENDIF
 C     ENDIF
 
-#endif /* CARBONCHEM_SOLVESAPHE */
       RETURN
       END
 C END FUNCTION GCHEM_SOLVE_AT_FAST
@@ -1580,8 +1562,6 @@ C     --------------------
       INTEGER i, j, k, bi, bj
       LOGICAL debugPrt
       INTEGER myIter, myThid
-
-#ifdef CARBONCHEM_SOLVESAPHE
 
 C     -----------------
 C     Local variables
@@ -1800,7 +1780,6 @@ C      ENDIF
 #ifdef ALLOW_DEBUG
       IF (debugPrt) CALL DEBUG_LEAVE('GCHEM_SOLVE_AT_GENERAL',myThid)
 #endif
-#endif /* CARBONCHEM_SOLVESAPHE */
       RETURN
       END
 C      END FUNCTION GCHEM_SOLVE_AT_GENERAL
@@ -1844,8 +1823,6 @@ C     --------------------
       INTEGER i, j, k, bi, bj
       LOGICAL debugPrt
       INTEGER myIter, myThid
-
-#ifdef CARBONCHEM_SOLVESAPHE
 
 C     -----------------
 C     Local variables
@@ -2150,7 +2127,6 @@ c         p_val = HUGE(1. _d 0)
        ENDIF
 C      ENDIF
 
-#endif /* CARBONCHEM_SOLVESAPHE */
       RETURN
       END
 C      END FUNCTION GCHEM_GCHEM_SOLVE_AT_GENERAL_SEC

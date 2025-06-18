@@ -141,12 +141,10 @@ C =================================================================
           ft(i,j,bi,bj)=0. _d 0
           st(i,j,bi,bj)=0. _d 0
           bt(i,j,bi,bj)=0. _d 0
-#ifdef CARBONCHEM_SOLVESAPHE
           cat(i,j,bi,bj)=0. _d 0
           akn(i,j,bi,bj)=0. _d 0
           akhs(i,j,bi,bj)=0. _d 0
           aphscale(i,j,bi,bj)=0. _d 0
-#endif
          ENDDO
         ENDDO
        ENDDO
@@ -200,29 +198,29 @@ C FOR NON-INTERACTIVE Si
           ENDDO
          ENDDO
 
-#ifdef CARBONCHEM_SOLVESAPHE
+         IF ( selectModernCoeffs.GT.0 ) THEN
 #ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('GCHEM_COEFFS_DEEP',myThid)
+          IF (debugMode) CALL DEBUG_CALL('GCHEM_COEFFS_DEEP',myThid)
 #endif
-        CALL GCHEM_COEFFS_SURF(
+          CALL GCHEM_COEFFS_SURF(
 cav changing surftheta to thetatmp
      I                       thetatmp,salttmp,
      I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
 C Now correct the coefficients for pressure dependence
-        CALL GCHEM_COEFFS_DEEP(
+          CALL GCHEM_COEFFS_DEEP(
      I                       thetatmp,salttmp,
      I                       bi,bj,iMin,iMax,jMin,jMax,
      I                       k,myThid)
-#else
+         ELSE
 #ifdef ALLOW_DEBUG
-        IF (debugMode)
+          IF (debugMode)
      &       CALL DEBUG_CALL('GCHEM_CARBON_COEFFS_PRESSURE_DEP',myThid)
 #endif
-         CALL GCHEM_CARBON_COEFFS(
+          CALL GCHEM_CARBON_COEFFS(
      I                       thetatmp,salttmp,
      I                       atmosP(1-OLx,1-OLy,bi,bj),
      I                       bi,bj,iMin,iMax,jMin,jMax,k,myThid)
-#endif
+         ENDIF
 
 C====================================================================
 
@@ -233,7 +231,6 @@ c first approximation
            DO i=iMin,iMax
             IF ( maskC(i,j,k,bi,bj) .NE. 0. _d 0) THEN
 
-#ifdef CARBONCHEM_SOLVESAPHE
              IF ( selectPHsolver.GT.0 ) THEN
 C Use Munhoven (2013) Solvesaphe routine to initialize pH
 #ifdef ALLOW_DEBUG
@@ -262,7 +259,6 @@ CAV C$TAF STORE alktmp(i,j), phostmp(i,j), sitmp(i,j)      = dic_surf
               debugPrt = .FALSE.
              ELSE
 C Use the original Follows et al. (2006) solver
-#endif /* CARBONCHEM_SOLVESAPHE */
 #ifdef ALLOW_DEBUG
               IF (debugMode) CALL DEBUG_CALL(
      &           'GCHEM_CALC_PCO2_APPROX',myThid)
@@ -285,9 +281,7 @@ C Use the original Follows et al. (2006) solver
      I        i,j,k,bi,bj, it ,  myThid )
              ENDDO
             ENDIF
-#ifdef CARBONCHEM_SOLVESAPHE
-             ENDIF
-#endif /* CARBONCHEM_SOLVESAPHE */
+            ENDIF
            ENDDO
           ENDDO
          ENDDO

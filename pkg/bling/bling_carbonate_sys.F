@@ -109,7 +109,7 @@ C$TAF LOOP = parallel
          ENDDO
         ENDDO
 
-#ifdef CARBONCHEM_SOLVESAPHE
+      IF ( selectModernCoeffs.GT.0 ) THEN
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL(
      &   'GCHEM_COEFFS_DEEP',myThid)
@@ -125,7 +125,7 @@ C Now correct the coefficients for pressure dependence
      I                       bi,bj,iMin,iMax,jMin,jMax,
      I                       k,myThid)
 
-#else /* CARBONCHEM_SOLVESAPHE */
+      ELSE
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL(
@@ -138,7 +138,7 @@ C  Get coefficients for carbonate calculations
      I                       atmosP(1-OLx,1-OLy,bi,bj),
      I                       bi, bj, iMin, iMax, jMin, jMax,
      I                       k, myThid )
-#endif /* CARBONCHEM_SOLVESAPHE */
+      ENDIF
 
 C--------------------------------------------------
 
@@ -153,12 +153,12 @@ C$TAF LOOP = parallel
 #ifdef ALLOW_AUTODIFF_TAMC
            ikey = i + (j - 1)*sNx + (kkey - 1)*sNx*sNy
 #endif
-#ifdef CARBONCHEM_SOLVESAPHE
-           calcium = cat(i,j,bi,bj)
-#else
+           IF ( selectModernCoeffs.GT.0 ) THEN
+            calcium = cat(i,j,bi,bj)
+           ELSE
 C  Estimate calcium concentration from salinity
-           calcium = 1.028 _d -2*salt(i,j,k,bi,bj)/35. _d 0
-#endif
+            calcium = 1.028 _d -2*salt(i,j,k,bi,bj)/35. _d 0
+           ENDIF
 
            po4local = PTR_PO4(i,j,k)
            diclocal = PTR_DIC(i,j,k)
@@ -174,7 +174,6 @@ C  unless SIBLING is used
            sitlocal = 0.03 _d 0
 #endif
 
-#ifdef CARBONCHEM_SOLVESAPHE
            IF ( selectPHsolver.GT.0 ) THEN
 C Use Munhoven (2013) Solvesaphe routine to calculate pH and pCO2
 #ifdef ALLOW_DEBUG
@@ -204,7 +203,6 @@ C- convert carbonate to mol kg^-1-SW for calculation of saturation state
             carbonate = carbonate*permil
            ELSE
 C Use the original Follows et al. (2006) solver
-#endif /* CARBONCHEM_SOLVESAPHE */
 #ifdef ALLOW_DEBUG
             IF (debugMode)
      &           CALL DEBUG_CALL('GCHEM_CALC_PCO2_APPROX',myThid)
@@ -231,10 +229,8 @@ C--------------------------------------------------
      U          pHlocal,pCO2local,carbonate,
      I          i,j,k,bi,bj,myIter,myThid )
 c           ENDDO
-
-#ifdef CARBONCHEM_SOLVESAPHE
            ENDIF
-#endif /* CARBONCHEM_SOLVESAPHE */
+
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ store carbonate = comlev1_bibj_ijk, key = ikey, kind = isbyte
 #endif

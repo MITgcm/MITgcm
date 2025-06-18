@@ -82,42 +82,42 @@ c      ENDIF
             pCO2local(i,j) = 0. _d 0
          ENDDO
         ENDDO
-#ifdef CARBONCHEM_SOLVESAPHE
+        IF ( selectModernCoeffs.GT.0 ) THEN
 #ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL( 'GCHEM_COEFFS_DEEP',myThid )
+         IF (debugMode) CALL DEBUG_CALL( 'GCHEM_COEFFS_DEEP',myThid )
 #endif
 C Calculate carbon coefficients
-        CALL GCHEM_COEFFS_SURF(
+         CALL GCHEM_COEFFS_SURF(
      I                       locTemp, locSalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
 
 C Now correct the coefficients for pressure dependence
-        CALL GCHEM_COEFFS_DEEP(
+         CALL GCHEM_COEFFS_DEEP(
      I                       locTemp, locSalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,
      I                       k,myThid)
-#else
+        ELSE
 #ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL(
+         IF (debugMode) CALL DEBUG_CALL(
      &      'GCHEM_CARBON_COEFFS',myThid)
 #endif
-        CALL GCHEM_CARBON_COEFFS(
+         CALL GCHEM_CARBON_COEFFS(
      I                       locTemp, locSalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,
      I                       k,myThid)
-#endif
+        ENDIF
 
         debugPrt = debugMode
         DO j=jmin,jmax
          DO i=imin,imax
 
           IF ( maskC(i,j,k,bi,bj).EQ.oneRS ) THEN
-#ifdef CARBONCHEM_SOLVESAPHE
+           IF ( selectModernCoeffs.GT.0 ) THEN
 C calcium concentration already calculated in S/R GCHEM_COEFFS_SURF
-           calcium = cat(i,j,bi,bj)
-#else
-           calcium = 1.028 _d -2*salt(i,j,k,bi,bj)/35. _d 0
-#endif
+            calcium = cat(i,j,bi,bj)
+           ELSE
+            calcium = 1.028 _d -2*salt(i,j,k,bi,bj)/35. _d 0
+           ENDIF
 
 C SilicaDeep filled with constant value of 0.03 mol/m3 unless
 C     DIC_deepSilicaFile provided.
@@ -126,7 +126,6 @@ C     DIC_deepSilicaFile provided.
            diclocal = PTR_DIC(i,j,k)
            alklocal = PTR_ALK(i,j,k)
 
-#ifdef CARBONCHEM_SOLVESAPHE
            IF ( selectPHsolver.GT.0 ) THEN
 C Use Munhoven (2013) Solvesaphe routine to calculate pH and pCO2
             IF ( doIni_pH ) THEN
@@ -155,7 +154,6 @@ C- convert carbonate to mol kg^-1-SW for calculation of saturation state
             carbonate(i,j) = carbonate(i,j)*permil
            ELSE
 C Use the original Follows et al. (2006) solver
-#endif /* CARBONCHEM_SOLVESAPHE */
 #ifdef ALLOW_DEBUG
             IF (debugPrt)
      &           CALL DEBUG_CALL('GCHEM_CALC_PCO2_APPROX',myThid)
@@ -175,10 +173,7 @@ C Use the original Follows et al. (2006) solver
      U          pH3d(i,j,k,bi,bj), pCO2local(i,j), carbonate(i,j),
      I          i,j,k,bi,bj,myIter,myThid )
             ENDDO
-
-#ifdef CARBONCHEM_SOLVESAPHE
            ENDIF
-#endif /* CARBONCHEM_SOLVESAPHE */
 
            omegaC(i,j,k,bi,bj) = calcium * carbonate(i,j)
      &                         / Ksp_TP_Calc(i,j,bi,bj)

@@ -126,22 +126,21 @@ C for non-interactive Si
          ENDDO
         ENDDO
 
-#ifdef CARBONCHEM_SOLVESAPHE
+        IF ( selectModernCoeffs.GT.0 ) THEN
 #ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('GCHEM_COEFFS_SURF',myThid)
+         IF (debugMode) CALL DEBUG_CALL('GCHEM_COEFFS_SURF',myThid)
 #endif
-        CALL GCHEM_COEFFS_SURF(
+         CALL GCHEM_COEFFS_SURF(
      I                       surftemp,surfsalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
-#else /* CARBONCHEM_SOLVESAPHE */
+        ELSE
 #ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('GCHEM_CARBON_COEFFS',myThid)
+         IF (debugMode) CALL DEBUG_CALL('GCHEM_CARBON_COEFFS',myThid)
 #endif
-        CALL GCHEM_CARBON_COEFFS(
+         CALL GCHEM_CARBON_COEFFS(
      I                       surftemp,surfsalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,0,myThid)
-
-#endif /* CARBONCHEM_SOLVESAPHE */
+        ENDIF
 
 C====================================================================
 
@@ -162,7 +161,6 @@ C$TAF LOOP = parallel
            DO i=iMin,iMax
             IF ( maskC(i,j,kLev,bi,bj) .NE. 0. _d 0) THEN
 C$TAF init dic_surf = static, 10
-#ifdef CARBONCHEM_SOLVESAPHE
              IF ( selectPHsolver.GT.0 ) THEN
 C Use Munhoven (2013) Solvesaphe routine to initialize pH
 #ifdef ALLOW_DEBUG
@@ -192,7 +190,6 @@ C$TAF STORE surfalk(i,j), surfphos(i,j), surfsi(i,j)   = dic_surf
               debugPrt = .FALSE.
              ELSE
 C Use the original Follows et al. (2006) solver
-#endif /* CARBONCHEM_SOLVESAPHE */
 #ifdef ALLOW_DEBUG
               IF (debugPrt) THEN
                 CALL DEBUG_CALL('GCHEM_CALC_PCO2_APPROX',myThid)
@@ -217,9 +214,7 @@ cC$TAF STORE surfalk(i,j), surfphos(i,j), surfsi(i,j)   = dic_surf
      U          pH(i,j,bi,bj),pCO2(i,j,bi,bj),co3dummy,
      I          i,j,kLev,bi,bj, it ,  myThid )
               ENDDO
-#ifdef CARBONCHEM_SOLVESAPHE
              ENDIF
-#endif /* CARBONCHEM_SOLVESAPHE */
             ENDIF
            ENDDO
           ENDDO
