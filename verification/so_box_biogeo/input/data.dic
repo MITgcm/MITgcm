@@ -1,5 +1,6 @@
 # DIC parameters
  &ABIOTIC_PARMS
+  selectModernCoeffs=1,
  &
 
  &BIOTIC_PARMS
