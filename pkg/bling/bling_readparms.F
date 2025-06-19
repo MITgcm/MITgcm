@@ -528,7 +528,7 @@ C Record which carbonate coefficients are used and which pH/pCO2 solver
        WRITE(msgBuf,'(A)')
      &  'Using Munhoven (2013) Solvesaphe carbon coefficients'
        CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
-C Munhoven (2013)'s "Solvesaphe" coefficients have several options:
+C Munhoven (2013) "Solvesaphe" coefficients have several options:
        IF ( selectK1K2const.EQ.1 ) THEN
          WRITE(msgBuf,'(A)')
      &  'Using Millero (1995)/Mehrbach K1 and K2 coefficients'
@@ -597,30 +597,38 @@ C OCMIP2 Coefficients from S/R CARBON_COEFFS in CARBON_CHEM.F
        CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
       ENDIF
 
+#ifdef ALLOW_AUTODIFF
+      IF ( selectPHsolver .GT. 0 .OR. selectModernCoeffs .GT. 0 ) THEN
+       WRITE(msgBuf,'(3A)') 'BLING_READPARMS: ',
+     &      'selectModernCoeffs = 1 or selectPHsolver > 0 ',
+     &      'not implemented for ALLOW_AUTODIFF'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       errCount = errCount + 1
+      ENDIF
+#endif
+
+      IF ( selectHFconst.GT.2 .OR. selectBTconst.GT.2
+     & .OR. selectFTconst.GT.2 ) THEN
+       WRITE(msgBuf,'(2A)')
+     &      'BLING_READPARMS: selectHF, selectBT or selectFT > 2',
+     &      ' is not allowed'
+       errCount = errCount + 1
+      ELSEIF ( selectK1K2const.GT.6 ) THEN
+       WRITE(msgBuf,'(A)')
+     &      'BLING_READPARMS: selectK1K2const > 6 is not allowed'
+       errCount = errCount + 1
+      ELSEIF ( selectPHsolver.GT.3 ) THEN
+       WRITE(msgBuf,'(A)')
+     &      'BLING_READPARMS: selectPHsolver > 3 is not allowed'
+       errCount = errCount + 1
+      ENDIF
+
       IF ( errCount.GE.1 ) THEN
        WRITE(msgBuf,'(A,I3,A)')
      &     'BLING_READPARMS: detected', errCount,' fatal error(s)'
        CALL PRINT_ERROR( msgBuf, myThid )
        CALL ALL_PROC_DIE( 0 )
        STOP 'ABNORMAL END: S/R BLING_READPARMS'
-      ENDIF
-
-      IF ( selectHFconst.GT.2 .OR. selectBTconst.GT.2
-     & .OR. selectFTconst.GT.2 ) THEN
-        WRITE(msgBuf,'(A)')
-     &    'BLING_READPARMS: selectHF, selectBT or selectFT > 2'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R BLING_READPARMS: solvesaphe_const error'
-      ELSEIF ( selectK1K2const.GT.6 ) THEN
-        WRITE(msgBuf,'(A)')
-     &    'BLING_READPARMS: selectK1K2const > 6 '
-        CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R BLING_READPARMS: solvesaphe_const error'
-      ELSEIF ( selectPHsolver.GT.3 ) THEN
-        WRITE(msgBuf,'(A)')
-     &    'BLING_READPARMS: selectPHsolver > 3 '
-        CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R BLING_READPARMS: select pH solver error'
       ENDIF
 
       _END_MASTER(myThid)

@@ -82,6 +82,7 @@ c      ENDIF
             pCO2local(i,j) = 0. _d 0
          ENDDO
         ENDDO
+#ifndef ALLOW_AUTODIFF
         IF ( selectModernCoeffs.GT.0 ) THEN
 #ifdef ALLOW_DEBUG
          IF (debugMode) CALL DEBUG_CALL( 'GCHEM_COEFFS_DEEP',myThid )
@@ -97,6 +98,7 @@ C Now correct the coefficients for pressure dependence
      I                       bi,bj,iMin,iMax,jMin,jMax,
      I                       k,myThid)
         ELSE
+#endif /* ALLOW_AUTODIFF */
 #ifdef ALLOW_DEBUG
          IF (debugMode) CALL DEBUG_CALL(
      &      'GCHEM_CARBON_COEFFS',myThid)
@@ -105,19 +107,25 @@ C Now correct the coefficients for pressure dependence
      I                       locTemp, locSalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,
      I                       k,myThid)
+#ifndef ALLOW_AUTODIFF
         ENDIF
+#endif
 
         debugPrt = debugMode
         DO j=jmin,jmax
          DO i=imin,imax
 
           IF ( maskC(i,j,k,bi,bj).EQ.oneRS ) THEN
+#ifndef ALLOW_AUTODIFF
            IF ( selectModernCoeffs.GT.0 ) THEN
 C calcium concentration already calculated in S/R GCHEM_COEFFS_SURF
             calcium = cat(i,j,bi,bj)
            ELSE
+#endif
             calcium = 1.028 _d -2*salt(i,j,k,bi,bj)/35. _d 0
+#ifndef ALLOW_AUTODIFF
            ENDIF
+#endif
 
 C SilicaDeep filled with constant value of 0.03 mol/m3 unless
 C     DIC_deepSilicaFile provided.
@@ -126,6 +134,7 @@ C     DIC_deepSilicaFile provided.
            diclocal = PTR_DIC(i,j,k)
            alklocal = PTR_ALK(i,j,k)
 
+#ifndef ALLOW_AUTODIFF
            IF ( selectPHsolver.GT.0 ) THEN
 C Use Munhoven (2013) Solvesaphe routine to calculate pH and pCO2
             IF ( doIni_pH ) THEN
@@ -153,6 +162,7 @@ C call GCHEM_AHINI_FOR_AT to get better initial guess of pH
 C- convert carbonate to mol kg^-1-SW for calculation of saturation state
             carbonate(i,j) = carbonate(i,j)*permil
            ELSE
+#endif /* ALLOW_AUTODIFF */
 C Use the original Follows et al. (2006) solver
 #ifdef ALLOW_DEBUG
             IF (debugPrt)
@@ -173,8 +183,9 @@ C Use the original Follows et al. (2006) solver
      U          pH3d(i,j,k,bi,bj), pCO2local(i,j), carbonate(i,j),
      I          i,j,k,bi,bj,myIter,myThid )
             ENDDO
+#ifndef ALLOW_AUTODIFF
            ENDIF
-
+#endif
            omegaC(i,j,k,bi,bj) = calcium * carbonate(i,j)
      &                         / Ksp_TP_Calc(i,j,bi,bj)
            debugPrt = .FALSE.

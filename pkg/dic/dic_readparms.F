@@ -640,6 +640,16 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        ENDIF
       ENDIF
 
+#ifdef ALLOW_AUTODIFF
+      IF ( selectPHsolver .GT. 0 .OR. selectModernCoeffs .GT. 0 ) THEN
+       WRITE(msgBuf,'(3A)') 'DIC_READPARMS: ',
+     &      'selectModernCoeffs = 1 or selectPHsolver > 0 ',
+     &      'not implemented for ALLOW_AUTODIFF'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       errCount = errCount + 1
+      ENDIF
+#endif
+
 #ifdef DIC_CALCITE_SAT
 C Issue an error and stop for invalid selectCalciteDissolution
       IF ( ( selectCalciteDissolution .LT. 0 .OR.

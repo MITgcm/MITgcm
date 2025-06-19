@@ -125,6 +125,7 @@ C for non-interactive Si
         ENDDO
        ENDDO
 
+#ifndef ALLOW_AUTODIFF
       IF ( selectModernCoeffs.GT.0 ) THEN
 #ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('GCHEM_COEFFS_SURF',myThid)
@@ -133,13 +134,16 @@ C for non-interactive Si
      I                       surftemp,surfsalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
       ELSE
+#endif /*f ALLOW_AUTODIFF */
 #ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('GCHEM_CARBON_COEFFS',myThid)
 #endif
         CALL GCHEM_CARBON_COEFFS(
      I                       surftemp,surfsalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,0,myThid)
+#ifndef ALLOW_AUTODIFF
       ENDIF
+#endif
 C====================================================================
 
        DO j=jMin,jMax
@@ -174,6 +178,7 @@ C$TAF LOOP = parallel
 C$TAF LOOP = parallel
         DO i=iMin,iMax
           IF ( maskC(i,j,kLev,bi,bj).NE.0. _d 0 ) THEN
+#ifndef ALLOW_AUTODIFF
             IF ( selectPHsolver.GT.0 ) THEN
 C Use Munhoven (2013) Solvesaphe routine to calculate pH and pCO2
 #ifdef ALLOW_DEBUG
@@ -188,6 +193,7 @@ C Use Munhoven (2013) Solvesaphe routine to calculate pH and pCO2
      I          i,j,kLev,bi,bj, debugPrt, myIter, myThid )
               debugPrt = .FALSE.
             ELSE
+#endif /* ALLOW_AUTODIFF */
 C Use the original Follows et al. (2006) solver
 #ifdef ALLOW_DEBUG
               IF (debugPrt) CALL DEBUG_CALL(
@@ -208,7 +214,9 @@ C Use the original Follows et al. (2006) solver
      I          permil,
      U          pH(i,j,bi,bj),pCO2(i,j,bi,bj),co3dummy,
      I          i,j,kLev,bi,bj,myIter, myThid )
+#ifndef ALLOW_AUTODIFF
             ENDIF
+#endif
           ELSE
             pCO2(i,j,bi,bj)=0. _d 0
           ENDIF

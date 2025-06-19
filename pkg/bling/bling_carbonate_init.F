@@ -198,6 +198,7 @@ C FOR NON-INTERACTIVE Si
           ENDDO
          ENDDO
 
+#ifndef ALLOW_AUTODIFF
          IF ( selectModernCoeffs.GT.0 ) THEN
 #ifdef ALLOW_DEBUG
           IF (debugMode) CALL DEBUG_CALL('GCHEM_COEFFS_DEEP',myThid)
@@ -212,6 +213,7 @@ C Now correct the coefficients for pressure dependence
      I                       bi,bj,iMin,iMax,jMin,jMax,
      I                       k,myThid)
          ELSE
+#endif
 #ifdef ALLOW_DEBUG
           IF (debugMode)
      &       CALL DEBUG_CALL('GCHEM_CARBON_COEFFS_PRESSURE_DEP',myThid)
@@ -220,7 +222,9 @@ C Now correct the coefficients for pressure dependence
      I                       thetatmp,salttmp,
      I                       atmosP(1-OLx,1-OLy,bi,bj),
      I                       bi,bj,iMin,iMax,jMin,jMax,k,myThid)
+#ifndef ALLOW_AUTODIFF
          ENDIF
+#endif
 
 C====================================================================
 
@@ -231,6 +235,7 @@ c first approximation
            DO i=iMin,iMax
             IF ( maskC(i,j,k,bi,bj) .NE. 0. _d 0) THEN
 
+#ifndef ALLOW_AUTODIFF
              IF ( selectPHsolver.GT.0 ) THEN
 C Use Munhoven (2013) Solvesaphe routine to initialize pH
 #ifdef ALLOW_DEBUG
@@ -258,6 +263,7 @@ CAV C$TAF STORE alktmp(i,j), phostmp(i,j), sitmp(i,j)      = dic_surf
      I        i,j,k,bi,bj,debugPrt, it ,  myThid )
               debugPrt = .FALSE.
              ELSE
+#endif /* ALLOW_AUTODIFF */
 C Use the original Follows et al. (2006) solver
 #ifdef ALLOW_DEBUG
               IF (debugMode) CALL DEBUG_CALL(
@@ -280,7 +286,9 @@ C Use the original Follows et al. (2006) solver
      U        pH(i,j,k,bi,bj),pCO2(i,j,bi,bj),co3dummy,
      I        i,j,k,bi,bj, it ,  myThid )
              ENDDO
+#ifndef ALLOW_AUTODIFF
             ENDIF
+#endif /* ALLOW_AUTODIFF */
             ENDIF
            ENDDO
           ENDDO
