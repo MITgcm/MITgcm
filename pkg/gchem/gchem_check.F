@@ -19,6 +19,7 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GCHEM.h"
+#include "GCHEM_VARS.h"
 #ifdef ALLOW_CFC
 # include "CFC_SIZE.h"
 #endif
@@ -135,6 +136,57 @@ c    &  ' exceeds number of PTRACERS(_numInUse)=', PTRACERS_numInUse
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
+
+C     check for invalid parameter settings:
+C     Carbon chemistry:
+      IF ( selectHFconst.LT.1 .OR. selectHFconst.GT.2 .OR.
+     &     selectBTconst.LT.1 .OR. selectBTconst.GT.2 .OR.
+     &     selectFTconst.LT.1 .OR. selectFTconst.GT.2 ) THEN
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
+     &        'Invalid value for selectHF, selectBT or selectFT'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+      IF ( selectK1K2const.LT.1 .OR. selectK1K2const.GT.6 ) THEN
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
+     &        'Invalid value for selectK1K2const (< 1 or > 6)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+      IF ( selectPHsolver.LT.0 .OR. selectPHsolver.GT.3 ) THEN
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
+     &        'Invalid value for selectPHsolver (< 0 or > 3)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+      IF ( selectPHsolver.GT.0 .AND. selectModernCoeffs.EQ.0) THEN
+       WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
+     &   'selectPHsolver > 0 requires selectModernCoeffs = 1'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       errCount = errCount + 1
+      ENDIF
+      IF ( selectModernCoeffs.EQ.0 ) THEN
+       IF ( selectBTconst.NE.1 .OR. selectFTconst.NE.1 .OR.
+     &      selectHFconst.NE.1 .OR. selectK1K2const.NE.1 ) THEN
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
+     &    'to use: selectHF, selectBT, selectFT or selectK1K2const'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
+     &    'need: selectModernCoeffs = 1 or selectPHsolver > 0'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+      ENDIF
+
+#ifdef ALLOW_AUTODIFF
+      IF ( selectPHsolver .GT. 0 .OR. selectModernCoeffs .GT. 0 ) THEN
+       WRITE(msgBuf,'(3A)') 'DIC_READPARMS: ',
+     &      'selectModernCoeffs = 1 or selectPHsolver > 0 ',
+     &      'not implemented for ALLOW_AUTODIFF'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       errCount = errCount + 1
+      ENDIF
+#endif
 
       IF ( errCount.GE.1 ) THEN
         WRITE(msgBuf,'(A,I3,A)')

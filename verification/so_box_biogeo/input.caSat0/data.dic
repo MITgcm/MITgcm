@@ -1,6 +1,5 @@
 # DIC parameters
  &ABIOTIC_PARMS
-  selectModernCoeffs=1,
   useCalciteSaturation= .TRUE.,
 # calcOmegaCalciteFreq= 86400.,
 #- Calcite-Dissolution option:  =0 : Constant rate ; =1 : Follows sinking flux (default) ;
