@@ -5,6 +5,9 @@
 #ifdef ALLOW_BLING
 # include "BLING_OPTIONS.h"
 #endif
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 C--  File gchem_carbon_chem.F:
 C--   Contents
@@ -559,6 +562,11 @@ C     == GLobal variables ==
 #include "EEPARAMS.h"
 #include "GRID.h"
 #include "GCHEM_VARS.h"
+#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef CARBONCHEM_TOTALPHSCALE
+# include "tamc.h"
+#endif
+#endif
 
 C     == Routine arguments ==
 C ttemp and stemp are local theta and salt arrays
@@ -627,6 +635,12 @@ c pH scale converstions
         _RL sw2free
         _RL total2sw
         _RL sw2total
+#ifdef ALLOW_AUTODIFF_TAMC
+C     tkey :: tape key (tile dependent)
+C     kkey :: tape key (tile and k dependent)
+C     ikey :: tape key (tile, k and i,j dependent)
+      INTEGER tkey, kkey, ikey
+#endif
 #endif
         INTEGER i
         INTEGER j
@@ -665,8 +679,23 @@ C Compute at layer center for non-surface layers
          zdum = -rC(k)/10. _d 0
         ENDIF
 
+#ifdef CARBONCHEM_TOTALPHSCALE
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ INIT loctape_gchem
+CADJ &  = COMMON, Nr*(sNx+2*OLx)*nSx*(sNy+2*OLy)*nSy
+        tkey = bi + (bj - 1)*nSx + (ikey_dynamics - 1)*nSx*nSy
+        kkey = k + (tkey -1)*Nr
+#endif
+#endif
         DO i=imin,imax
          DO j=jmin,jmax
+#ifdef CARBONCHEM_TOTALPHSCALE
+#ifdef ALLOW_AUTODIFF_TAMC
+          ikey = i + ( j-1 + (kkey-1)*(jMax-jMin+1) )*(iMax-iMin+1)
+CADJ store free2sw, total2free
+CADJ &     = loctape_gchem, key = ikey, kind = isbyte
+#endif
+#endif
           IF ( maskC(i,j,k,bi,bj).EQ.oneRS ) THEN
            t = ttemp(i,j)
            s = stemp(i,j)
@@ -757,10 +786,10 @@ C On total pH scale
      &          (148.0248 _d 0 + 137.1942 _d 0*sqrts + 1.62142 _d 0*s) +
      &          (-24.4344 _d 0 - 25.085 _d 0*sqrts - 0.2474 _d 0*s) *
      &          dlogtk + 0.053105 _d 0*sqrts*tk)
-           IF (kLevel.GE.1) THEN
 #ifdef CARBONCHEM_TOTALPHSCALE
 C JML Not yet, need to account for pH scale conversions
 C    (pressure correct on the seawater scale, not the total scale)
+C          IF (kLevel.GE.1) THEN
 C Mick and Karsten - Dec 04
 C ADDING pressure dependence based on Millero (1995), p675
 C with additional info from CO2sys documentation (E. Lewis and
@@ -771,19 +800,21 @@ C           dk = -2.84d-3
 C           pfactor = - (dv/(bigR*tk))*pAppl
 C     &               + (0.5*dk/(bigR*tk))*pAppl*pAppl
 C           akb(i,j,bi,bj) = akb(i,j,bi,bj)*exp(pfactor)
+C          ENDIF
 #else
 C Mick and Karsten - Dec 04
 C ADDING pressure dependence based on Millero (1995), p675
 C with additional info from CO2sys documentation (E. Lewis and
 C D. Wallace, 1998 - see endnotes for commentary on Millero, 95)
+           IF (kLevel.GE.1) THEN
             bigR = 83.145 _d 0
             dv = -29.48 _d 0 + 0.1622 _d 0*t + 2.608 _d -3*t*t
             dk = -2.84 _d -3
             pfactor = - (dv/(bigR*tk))*pAppl
      &                + (0.5 _d 0*dk/(bigR*tk))*pAppl*pAppl
             akb(i,j,bi,bj) = akb(i,j,bi,bj)*exp(pfactor)
-#endif /*  CARBONCHEM_TOTALPHSCALE */
            ENDIF
+#endif /*  CARBONCHEM_TOTALPHSCALE */
 C------------------------------------------------------------------------
 C k1p = [H][H2PO4]/[H3PO4]
 C DOE(1994) eq 7.2.20 with footnote using data from Millero (1974)
@@ -865,6 +896,10 @@ C Riley (1965)
 C------------------------------------------------------------------------
 
 #ifdef CARBONCHEM_TOTALPHSCALE
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ store ak1(i,j,bi,bj),ak2(i,j,bi,bj),aks(i,j,bi,bj),akf(i,j,bi,bj)
+CADJ &     = loctape_gchem, key = ikey, kind = isbyte
+#endif
 C JML Convert between pH scales, we want everything to end up on the total scale
 C ak1 and ak2 are on seawater scale and are pressure corrected, so they just need converting.
 C aks is on the free scale, it needs pressure correcting then converting to the total scale.
@@ -890,6 +925,10 @@ C Pressure correct aks on native free pH scale
             dk=-4.53 _d -3 + 0.09 _d -3 *t
             pfactor = -(dv/(bigR*tk))*pAppl
      &                +(0.5*dk/(bigR*tk))*pAppl*pAppl
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ store pfactor, aks(i,j,bi,bj)
+CADJ &     = loctape_gchem, key = ikey, kind = isbyte
+#endif
             aks(i,j,bi,bj) = aks(i,j,bi,bj)*exp(pfactor)
 
             total2free = 1. _d 0/
@@ -906,12 +945,22 @@ C free2sw has an additional component from fluoride
 C------------------------------------------------------------------------
            IF (kLevel.GE.1) THEN
 C Pressure correct akf on the free scale before converting back to total
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ store akf(i,j,bi,bj) = loctape_gchem, key = ikey, kind = isbyte
+#endif
             akf(i,j,bi,bj) = akf(i,j,bi,bj) * total2free_surf
             dv  =  -9.78 _d 0 -0.0090 _d 0 *t -0.942 _d -3 *t*t
             dk  =  -3.91 _d -3 + 0.054 _d -3 *t
             pfactor = -(dv/(bigR*tk))*pAppl
      &                +(0.5*dk/(bigR*tk))*pAppl*pAppl
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ store pfactor, akf(i,j,bi,bj)
+CADJ &     = loctape_gchem, key = ikey, kind = isbyte
+#endif
             akf(i,j,bi,bj) = akf(i,j,bi,bj) * exp(pfactor)
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ store akf(i,j,bi,bj) = loctape_gchem, key = ikey, kind = isbyte
+#endif
             akf(i,j,bi,bj) = akf(i,j,bi,bj)*free2total
 
 C free2sw has an additional component from fluoride, add it here
@@ -942,6 +991,10 @@ C Pressure correct akb on the seawater scale before converting back to total sca
             dk = -2.84 _d -3
             pfactor = - (dv/(bigR*tk))*pAppl
      &                + (0.5*dk/(bigR*tk))*pAppl*pAppl
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ store pFactor, akb(i,j,bi,bj)
+CADJ &     = loctape_gchem, key = ikey, kind = isbyte
+#endif
             akb(i,j,bi,bj) = total2sw_surf*akb(i,j,bi,bj)*exp(pfactor)
             akb(i,j,bi,bj) = akb(i,j,bi,bj)*sw2total
 
@@ -951,6 +1004,10 @@ C Pressure correct ak1p on the seawater scale before converting back to total sc
             dk = -2.67 _d -3 + 0.0427 _d -3*t
             pfactor = - (dv/(bigR*tk))*pAppl
      &                + (0.5*dk/(bigR*tk))*pAppl*pAppl
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ store pFactor, ak1p(i,j,bi,bj)
+CADJ &     = loctape_gchem, key = ikey, kind = isbyte
+#endif
             ak1p(i,j,bi,bj) = total2sw_surf*ak1p(i,j,bi,bj)*exp(pfactor)
             ak1p(i,j,bi,bj) = ak1p(i,j,bi,bj)*sw2total
 
@@ -960,6 +1017,10 @@ C Pressure correct ak2p on the seawater scale before converting back to total sc
             dk = -5.15 _d -3 + 0.09 _d -3*t
             pfactor = - (dv/(bigR*tk))*pAppl
      &                + (0.5*dk/(bigR*tk))*pAppl*pAppl
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ store pFactor, ak2p(i,j,bi,bj)
+CADJ &     = loctape_gchem, key = ikey, kind = isbyte
+#endif
             ak2p(i,j,bi,bj) = total2sw_surf*ak2p(i,j,bi,bj)*exp(pfactor)
             ak2p(i,j,bi,bj) = ak2p(i,j,bi,bj)*sw2total
 
@@ -969,6 +1030,10 @@ C Pressure correct ak3p on the seawater scale before converting back to total sc
             dk = -4.08 _d -3 + 0.0714 _d -3*t
             pfactor = - (dv/(bigR*tk))*pAppl
      &                + (0.5*dk/(bigR*tk))*pAppl*pAppl
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ store pFactor, ak3p(i,j,bi,bj)
+CADJ &     = loctape_gchem, key = ikey, kind = isbyte
+#endif
             ak3p(i,j,bi,bj) = total2sw_surf*ak3p(i,j,bi,bj)*exp(pfactor)
             ak3p(i,j,bi,bj) = ak3p(i,j,bi,bj)*sw2total
 
@@ -978,6 +1043,10 @@ C Pressure correct akw on the seawater scale before converting back to total sca
             dk = -5.13 _d -3 + 0.0794 _d -3 *t
             pfactor = - (dv/(bigR*tk))*pAppl
      &                + (0.5*dk/(bigR*tk))*pAppl*pAppl
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ store pFactor, akw(i,j,bi,bj)
+CADJ &     = loctape_gchem, key = ikey, kind = isbyte
+#endif
             akw(i,j,bi,bj) = total2sw_surf*akw(i,j,bi,bj)*exp(pfactor)
             akw(i,j,bi,bj) = akw(i,j,bi,bj)*sw2total
 
@@ -988,6 +1057,10 @@ C Estimated from the effect on akb
             dk = -2.84 _d -3
             pfactor = - (dv/(bigR*tk))*pAppl
      &                + (0.5*dk/(bigR*tk))*pAppl*pAppl
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ store pFactor, aksi(i,j,bi,bj)
+CADJ &     = loctape_gchem, key = ikey, kind = isbyte
+#endif
             aksi(i,j,bi,bj) = total2sw_surf*aksi(i,j,bi,bj)*exp(pfactor)
             aksi(i,j,bi,bj) = aksi(i,j,bi,bj)*sw2total
            ENDIF
