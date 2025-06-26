@@ -1,0 +1,10 @@
+# ********************
+# OBSFIT cost function
+# ********************
+#
+ &OBSFIT_NML
+# obsfitDir       = 'OBSFIT',
+ obsfitFiles(1)   = 'obsfit_t',
+ mult_obsfit(1)   = 1.0,
+ obsfitdoncoutput = .false.,
+ &
