@@ -39,6 +39,7 @@ C     === Global variables ===
 #ifdef ALLOW_EXF
 # include "EXF_INTERP_SIZE.h"
 #endif
+#include "GCHEM_VARS.h"
 #include "BLING_VARS.h"
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -78,6 +79,7 @@ C     (FluxCO2 is a global variable)
 C     === Local variables ===
 C     i,j              :: Loop counters
       INTEGER i,j,klev
+      LOGICAL debugPrt
 C Number of iterations for pCO2 solvers
       _RL co3dummy
       _RL Kwexch_Pre   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -145,20 +147,26 @@ C FOR NON-INTERACTIVE Si
           ENDDO
          ENDDO
 
-#ifdef CARBONCHEM_SOLVESAPHE
+#ifndef ALLOW_AUTODIFF
+      IF ( selectModernCoeffs.GT.0 ) THEN
 #ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('CARBON_COEFFS_SOLVESAPHE',myThid)
+c     IF (debugMode) CALL DEBUG_CALL('CARBON_COEFFS_SOLVESAPHE',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GCHEM_COEFFS_SURF',myThid)
 #endif
-        CALL DIC_COEFFS_SURF(
+       CALL GCHEM_COEFFS_SURF(
      I                       surftemp,surfsalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
-#else
-#ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('CARBON_COEFFS',myThid)
+      ELSE
 #endif
-         CALL CARBON_COEFFS(
+#ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('GCHEM_CARBON_COEFFS',myThid)
+#endif
+       CALL GCHEM_CARBON_COEFFS(
      I                       surftemp,surfsalt,
-     I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
+     I                       atmosP(1-OLx,1-OLy,bi,bj),
+     I                       bi,bj,iMin,iMax,jMin,jMax,0,myThid)
+#ifndef ALLOW_AUTODIFF
+      ENDIF
 #endif
 
        DO j=jmin,jmax
@@ -181,34 +189,36 @@ c pCO2 solver...
 CADJ STORE ph(:,:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
 #endif
 
+       debugPrt = debugMode
 C$TAF LOOP = parallel
        DO j=jmin,jmax
 C$TAF LOOP = parallel
         DO i=imin,imax
 
-          IF ( maskC(i,j,klev,bi,bj).NE.0. _d 0 ) THEN
-#ifdef CARBONCHEM_SOLVESAPHE
-             IF ( selectPHsolver.GT.0 ) THEN
+         IF ( maskC(i,j,klev,bi,bj).NE.0. _d 0 ) THEN
+#ifndef ALLOW_AUTODIFF
+          IF ( selectPHsolver.GT.0 ) THEN
 C Use Munhoven (2013) Solvesaphe routine to calculate pH and pCO2
 #ifdef ALLOW_DEBUG
-                IF (debugMode) CALL DEBUG_CALL(
-     &     'CALC_PCO2_SOLVESAPHE from DIC_SURFFORCING',myThid)
+           IF (debugMode) CALL DEBUG_CALL(
+     &     'GCHEM_CALC_PCO2_SOLVESAPHE from DIC_SURFFORCING',myThid)
 #endif
-                CALL CALC_PCO2_SOLVESAPHE(
+           CALL GCHEM_CALC_PCO2_SOLVESAPHE(
      I        surftemp(i,j),surfsalt(i,j),
      I        surfdic(i,j), surfphos(i,j),
-     I        surfsi(i,j),surfalk(i,j),
+     I        surfsi(i,j),surfalk(i,j),permil,
      U        pH(i,j,klev,bi,bj),pCO2(i,j,bi,bj),co3dummy,
-     I        i,j,klev,bi,bj,myIter, myThid )
-             ELSE
+     I        i,j,klev,bi,bj,debugPrt,myIter, myThid )
+           debugPrt = .FALSE.
+          ELSE
+#endif
 C Use the original Follows et al. (2006) solver
-#endif /* CARBONCHEM_SOLVESAPHE */
 #ifdef ALLOW_DEBUG
-                IF (debugMode) CALL DEBUG_CALL(
-     &        'CALC_PCO2_APPROX',myThid)
+           IF (debugMode) CALL DEBUG_CALL(
+     &          'GCHEM_CALC_PCO2_APPROX',myThid)
 #endif
 
-            CALL CALC_PCO2_APPROX(
+           CALL GCHEM_CALC_PCO2_APPROX(
      I        surftemp(i,j),surfsalt(i,j),
      I        surfdic(i,j), surfphos(i,j),
      I        surfsi(i,j),surfalk(i,j),
@@ -219,16 +229,16 @@ C Use the original Follows et al. (2006) solver
      I        ak0(i,j,bi,bj), fugf(i,j,bi,bj),
      I        ff(i,j,bi,bj),
      I        bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
+     I        permil,
      U        pH(i,j,klev,bi,bj),pCO2(i,j,bi,bj),co3dummy,
      I        i,j,klev,bi,bj,myIter,myThid )
-
-#ifdef CARBONCHEM_SOLVESAPHE
-             ENDIF
-#endif /* CARBONCHEM_SOLVESAPHE */
-
-          ELSE
-            pCO2(i,j,bi,bj) = 0. _d 0
+#ifndef ALLOW_AUTODIFF
           ENDIF
+#endif
+
+         ELSE
+          pCO2(i,j,bi,bj) = 0. _d 0
+         ENDIF
 
         ENDDO
        ENDDO
