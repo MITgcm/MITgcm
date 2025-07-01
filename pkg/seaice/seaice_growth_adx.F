@@ -296,7 +296,7 @@ C ===================================================================
        kSrfS    = Nr
       ELSE
        kSurface = 1
-       kSrfS    = MIN(2,Nr)
+       kSrfS    = 2
       ENDIF
 
 C     Cutoff for iceload
@@ -607,7 +607,7 @@ C     uppermost ocean grid cell (calculated in initialise_fixed.F)
 C The contribution of shortwave heating is
 C not included without #define SHORTWAVE_HEATING
 #ifdef SHORTWAVE_HEATING
-        IF ( selectPenetratingSW .GT. 0 ) THEN
+        IF ( selectPenetratingSW .GE. 1 ) THEN
          DO J=1,sNy
           DO I=1,sNx
            tmpscal0 = SWFrac3D(I,J,kSrfS,bi,bj)
@@ -1090,7 +1090,7 @@ c     Sanity checks
         ENDDO
 
 #ifdef SHORTWAVE_HEATING
-        IF ( selectPenetratingSW .GT. 0 ) THEN
+        IF ( selectPenetratingSW .GE. 1 ) THEN
          DO J=1,sNy
           DO I=1,sNx
 

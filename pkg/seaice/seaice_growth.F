@@ -342,7 +342,7 @@ C ===================================================================
       IF ( usingPCoords ) THEN
        kSrfS    = Nr
       ELSE
-       kSrfS    = MIN(2,Nr)
+       kSrfS    = 2
       ENDIF
 #endif
 
