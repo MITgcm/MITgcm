@@ -152,17 +152,6 @@ C                 to maintain the symmetry w.r.t. z vs. p-coordinates.
       _RS  SWFrac3D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
 #endif
 
-C- jmc: commented out until corresponding (ghost-like) code apparition
-C     dQdT  :: Thermal relaxation coefficient in W/m^2/degrees
-C              Southwest C-grid tracer point
-c     COMMON /FFIELDS_dQdT/ dQdT
-c     _RS  dQdT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-c#ifdef ALLOW_EP_FLUX
-c     COMMON /FFIELDS_eflux/ EfluxY,EfluxP
-c     _RL  EfluxY (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-c     _RL  EfluxP (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-c#endif
-
 #ifdef ALLOW_EDDYPSI
 C     uEulerMean  :: The Eulerian mean Zonal  velocity (residual less bolus velocity)
 C     vEulerMean  :: The Eulerian mean Merid. velocity (residual less bolus velocity)
