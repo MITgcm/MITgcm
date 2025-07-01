@@ -190,11 +190,11 @@ C                           = 0: fully explicit
 C                           = 1: implicit on provisional velocity
 C                                (i.e., before grad.Eta increment)
 C                           = 2: fully implicit (combined with Impl Surf.Press)
-C     selectPenetratingSW :: select treatment of penetrating shortwave
-C                            radiation, requires to define SHORTWAVE_HEATING
+C     selectPenetratingSW :: select treatment of penetrating shortwave radiation
+C                            (requires to define SHORTWAVE_HEATING):
 C                           = 0: no shortwave penetration
-C                           = 1: constant in time and space fraction of
-C                                shortwave penetration (default)
+C                           = 1: constant in time and horizontally uniform
+C                                fraction of shortwave penetration (default)
 C                           = 2: constant in time, but non-uniform fraction of
 C                                shortwave penetration (not yet coded)
 C                           > 2: time varying fraction of shortwave penetration
@@ -204,7 +204,6 @@ C     momForcingOutAB     :: =1: take momentum forcing contribution
 C                            out of (=0: in) Adams-Bashforth time stepping.
 C     tracForcingOutAB    :: =1: take tracer (Temp,Salt,pTracers) forcing contribution
 C                            out of (=0: in) Adams-Bashforth time stepping.
-C                            time stepping.
 C     tempAdvScheme       :: Temp. Horiz.Advection scheme selector
 C     tempVertAdvScheme   :: Temp. Vert. Advection scheme selector
 C     saltAdvScheme       :: Salt. Horiz.advection scheme selector
