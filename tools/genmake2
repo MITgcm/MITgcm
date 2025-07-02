@@ -1561,6 +1561,16 @@ for ac_option in "$@" ; do
 	-tap | --tap)
 	    TAPENADE="true" ; ALWAYS_USE_F90=1 ;;
 
+        -taparg | --taparg)
+            ac_prev=TAPARG ;;
+        -taparg=* | --taparg)
+            TAPARG=$ac_optarg ;;
+
+
+
+	-taparg | --taparg | -taparg=* | --taparg=*)
+	    TAPPASSCMD="true" ;;
+
 	-oad | --oad)
 	    OPENAD="true" ; ALWAYS_USE_F90=1 ;;
 	-oadsingularity | --oadsingularity | -oadsngl | --oadsngl)
@@ -3743,7 +3753,7 @@ TAP_TLM_FILES: \$(AD_FILES) f95_test_mods.f90
 .PHONY: TAP_ADJ_FILES
 TAP_ADJ_FILES: \$(AD_FILES) f95_test_mods.f90 ${XTRATAPFILE}
 	touch \$(AD_FILES_ADJ)
-	\$(TAPENADECMD) -b -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90  ${XTRATAPFILE}
+	\$(TAPENADECMD) ${TAPARG} -b -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90  ${XTRATAPFILE}
 
 tap_adj: ad_exe_target
 ad_exe_target:

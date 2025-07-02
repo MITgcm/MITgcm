@@ -105,7 +105,7 @@ c      print *, "GOT HERE myThid=", myThid, tolerance
 
 c      print *, "GOT HERE 2 myThid=", myThid, tolerance
 
-#ifndef ALLOW_OPENAD
+#if !defined(ALLOW_OPENAD) & !defined(ALLOW_TAPENADE)
       CALL STREAMICE_CG_SOLVE(
      &  U_state,
      &  V_state,

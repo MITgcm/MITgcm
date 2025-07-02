@@ -31,6 +31,39 @@
       CALL GLOBAL_ADSUM_TILE_RL(phiTileb, sumPhib, myThid)
       END
 
+      SUBROUTINE GLOBAL_SUM_TILE_RL_FWD(phiTile,
+     &     sumPhi, myThid)
+      IMPLICIT NONE
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "EESUPPORT.h"
+#include "GLOBAL_SUM.h"
+      _RL     phiTile(nSx,nSy)
+      _RL     sumPhi
+      INTEGER myThid
+      CALL PUSHINTEGER4(myThid)
+      CALL GLOBAL_SUM_TILE_RL(phiTile, sumPhi, myThid)
+      CALL PUSHREAL8(sumPhi)
+      END
+
+      SUBROUTINE GLOBAL_SUM_TILE_RL_BWD(phiTile, phiTileb,
+     &     sumPhi, sumPhib, myThid)
+      IMPLICIT NONE
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "EESUPPORT.h"
+#include "GLOBAL_SUM.h"
+      _RL     phiTile(nSx,nSy)
+      _RL     phiTileb(nSx,nSy)
+      _RL     sumPhib
+      _RL     sumPhi
+      INTEGER myThid
+
+      CALL POPREAL8(sumPhi)
+      CALL POPINTEGER4(myThid)
+      CALL GLOBAL_ADSUM_TILE_RL(phiTileb, sumPhib, myThid)
+      END
+
 !     Adjoint of global_sum_r8 for arguments Arg1=(in;out)
       SUBROUTINE GLOBAL_SUM_R8_B(sumPhi, sumPhib, myThid)
       IMPLICIT NONE
@@ -115,16 +148,91 @@
       WRITE(*,*) "Called not yet defined"
       END
 
-      SUBROUTINE STREAMICE_CG_SOLVE_D(cg_uin, cg_uinb, cg_vin, cg_vinb,
-     &                                cg_bu, cg_bub, cg_bv, cg_bvb, a_uu
-     &                                , a_uub, a_uv, a_uvb, a_vu, a_vub
-     &                                , a_vv, a_vvb, tolerance, iters,
-     &                                maxiter, mythid)
+
+C [llh] Hand-written forward-sweep adjoint code of STREAMICE_CG_SOLVE
+C [llh] Adjoint of solving Ax=b,
+C [llh]  where A is (Auu, Auv, Avu, Avv), x is (xu,xv), b is (bu,bv)
+      SUBROUTINE STREAMICE_CG_SOLVE_FWD(cg_uin, 
+     &                                  cg_vin,
+     &                                  cg_bu,
+     &                                  cg_bv,
+     &                                  a_uu, a_uv, 
+     &                                  a_vu, a_vv,
+     &                                  tolerance, iters,
+     &                                  maxiters, mythid)
+
+
       IMPLICIT NONE
 
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_STREAMICE
+#include "STREAMICE.h"
+#include "STREAMICE_CG.h"
+#endif
+
+
+      !INPUT/OUTPUT ARGUMENTS
+      _RL cg_Uin (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL cg_Vin (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL cg_Bu (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL cg_Bv (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL
+     & A_uu (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
+     & A_vu (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
+     & A_uv (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
+     & A_vv (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1)
+      _RL tolerance
+      INTEGER maxiters
+      INTEGER iters
+      INTEGER myThid
+
+C     !LOCAL VARIABLES
+      INTEGER i, j, bi, bj, colx, coly
+      INTEGER conv_flag, tmpiter
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+
+      conv_flag = 0
+      CALL STREAMICE_CG_SOLVE(
+     &  cg_uin,
+     &  cg_vin,
+     &  cg_bu,
+     &  cg_bv,
+     &  A_uu,
+     &  A_uv,
+     &  A_vu,
+     &  A_vv,
+     &  tolerance,
+     &  iters,
+     &  maxiters,
+     &  myThid )
+
+      CALL PUSHREAL8ARRAY(cg_uin, (snx+2*olx)*(sny+2*oly)*nsx*nsy)
+      CALL PUSHREAL8ARRAY(cg_vin, (snx+2*olx)*(sny+2*oly)*nsx*nsy)
+
+      END
+
+
+C [llh] Hand-written backward-sweep adjoint code of STREAMICE_CG_SOLVE
+C [llh] Adjoint of solving Ax=b,
+C [llh]  where A is (Auu, Auv, Avu, Avv), x is (xu,xv), b is (bu,bv)
+      SUBROUTINE STREAMICE_CG_SOLVE_BWD(
+     &                                cg_uin, cg_uinb, cg_vin, cg_vinb,
+     &                                cg_bu, cg_bub, cg_bv, cg_bvb, a_uu
+     &                                , a_uub, a_uv, a_uvb, a_vu, a_vub
+     &                                , a_vv, a_vvb, tolerance, iters,
+     &                                maxiter, mythid)
+
+      IMPLICIT NONE
+
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#ifdef ALLOW_STREAMICE
+#include "STREAMICE.h"
+#include "STREAMICE_CG.h"
+#endif
 
       INTEGER myThid
       INTEGER iters
@@ -148,6 +256,33 @@
      & A_vub (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
      & A_uvb (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
      & A_vvb (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1)
+
+      CALL POPREAL8ARRAY(cg_Uin, (snx+2*olx)*(sny+2*oly)*nsx*nsy)
+      CALL POPREAL8ARRAY(cg_Vin, (snx+2*olx)*(sny+2*oly)*nsx*nsy)
+
+#ifdef ALLOW_STREAMICE
+
+      CALL ADSTREAMICE_CG_SOLVE(
+     U                               cg_Uin,    ! velocities - need to be recalc ed
+     I                               cg_Uinb,      ! adjoint of vel (input)
+     U                               cg_Vin,    ! velocities - need to be recalc ed
+     I                               cg_Vinb,      ! adjoint of vel (input)
+     I                               cg_Bu,   ! to recalc velocities
+     U                               cg_Bub,     ! adjoint of RHS (output)
+     I                               cg_Bv,   ! to recalc velocities
+     U                               cg_Bvb,     ! adjoint of RHS (output)
+     I                               A_uu,       ! section of matrix that multiplies u and projects on u
+     U                               A_uub,     ! adjoint of matrix coeffs (output)
+     I                               A_uv,       ! section of matrix that multiplies v and projects on u
+     U                               A_uvb,     ! adjoint of matrix coeffs (output)
+     I                               A_vu,       ! section of matrix that multiplies u and projects on v
+     U                               A_vub,     ! adjoint of matrix coeffs (output)
+     I                               A_vv,       ! section of matrix that multiplies v and projects on v
+     U                               A_vvb,     ! adjoint of matrix coeffs (output)
+     I                               tolerance,
+     I                               maxiter,
+     I                               myThid )
+#endif
       END
 
 
@@ -213,4 +348,39 @@
      I                               maxiter,
      I                               myThid )
 #endif
+      END
+
+      SUBROUTINE STREAMICE_CG_SOLVE_D(cg_uin, cg_uinb, cg_vin, cg_vinb,
+     &                                cg_bu, cg_bub, cg_bv, cg_bvb, a_uu
+     &                                , a_uub, a_uv, a_uvb, a_vu, a_vub
+     &                                , a_vv, a_vvb, tolerance, iters,
+     &                                maxiter, mythid)
+      IMPLICIT NONE
+
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+
+      INTEGER myThid
+      INTEGER iters
+      INTEGER maxIter
+      _RL tolerance
+      _RL cg_Uin (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL cg_Vin (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL cg_Bu (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL cg_Bv (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL
+     & A_uu (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
+     & A_vu (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
+     & A_uv (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
+     & A_vv (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1)
+      _RL cg_Uinb (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL cg_Vinb (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL cg_Bub (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL cg_Bvb (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL
+     & A_uub (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
+     & A_vub (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
+     & A_uvb (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
+     & A_vvb (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1)
       END
