@@ -121,9 +121,9 @@ c           where hbl(i,j) -> hbl((j-1)*sNx+i)
 #endif /* ALLOW_SALT_PLUME */
       _RL dbloc    (imt,Nr)
       _RL Ritop    (imt,Nr)
-      _RL coriol   (imt   )
+      _RS coriol   (imt   )
 #ifdef SHORTWAVE_HEATING
-      _RL swatt    (imt,Nr+1)
+      _RS swatt    (imt,Nr+1)
 #endif
       _RS msk      (imt   )
       _RL diffusKzS(imt,Nr)
@@ -373,9 +373,9 @@ c coriol    : Coriolis parameter                        (1/s)
       _RL ustar   (imt)
       _RL bo      (imt)
       _RL bosol   (imt)
-      _RL coriol  (imt)
+      _RS coriol  (imt)
 #ifdef SHORTWAVE_HEATING
-      _RL swatt   (imt,Nr+1)
+      _RS swatt   (imt,Nr+1)
 #endif
       INTEGER ikey
 #ifdef ALLOW_SALT_PLUME
