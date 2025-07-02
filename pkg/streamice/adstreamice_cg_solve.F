@@ -81,7 +81,6 @@ c       iters = streamice_max_cg_iter
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT , 1)
 
-c      print *, "GOT HERE myThid=", myThid, tolerance
 
       conv_flag = 0
       ad_tolerance = 1.e-14
@@ -103,8 +102,6 @@ c      print *, "GOT HERE myThid=", myThid, tolerance
        ENDDO
       ENDDO
 
-c      print *, "GOT HERE 2 myThid=", myThid, tolerance
-
 #if !defined(ALLOW_OPENAD) & !defined(ALLOW_TAPENADE)
       CALL STREAMICE_CG_SOLVE(
      &  U_state,
@@ -121,12 +118,11 @@ c      print *, "GOT HERE 2 myThid=", myThid, tolerance
      &  myThid )
 #endif
 
-c      print *, "GOT HERE 3 myThid=", myThid, tolerance
-
       tmpiter = 0
 
       _EXCH_XY_RL( cg_Bu, myThid )
       _EXCH_XY_RL( cg_Bv, myThid )
+
 
       CALL STREAMICE_CG_SOLVE(
      &  cg_Uin,
@@ -141,8 +137,6 @@ c      print *, "GOT HERE 3 myThid=", myThid, tolerance
      &  tmpiter,
      &  maxiters,
      &  myThid )
-
-c      print *, "GOT HERE 4 myThid=", myThid, tolerance
 
       _EXCH_XY_RL( cg_Uin, myThid )
       _EXCH_XY_RL( cg_Vin, myThid )

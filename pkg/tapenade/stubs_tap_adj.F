@@ -208,8 +208,8 @@ C     !LOCAL VARIABLES
      &  maxiters,
      &  myThid )
 
-      CALL PUSHREAL8ARRAY(cg_uin, (snx+2*olx)*(sny+2*oly)*nsx*nsy)
       CALL PUSHREAL8ARRAY(cg_vin, (snx+2*olx)*(sny+2*oly)*nsx*nsy)
+      CALL PUSHREAL8ARRAY(cg_uin, (snx+2*olx)*(sny+2*oly)*nsx*nsy)
 
       END
 
