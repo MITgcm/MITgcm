@@ -118,6 +118,14 @@ C     data for the period ahead and the period behind myTime.
           CALL READ_REC_XY_RS( gchem_SiFile,gchemSi1,intime1,
      &         myIter,myThid )
          ENDIF
+#ifdef GCHEM_3D_SILICA
+         IF ( gchem3DSiFile .NE. ' '  ) THEN
+          CALL READ_REC_XYZ_RS( gchem3DSiFile,gchem3DSi0,intime0,
+      &        myIter,myThid )
+          CALL READ_REC_XYZ_RS( gchem3DSiFile,gchem3DSi1,intime1,
+      &        myIter,myThid )
+         ENDIF
+#endif
          IF ( gchem_iceFile .NE. ' ' ) THEN
           CALL READ_REC_XY_RS( gchem_iceFile,gchemIce0,intime0,
      &         myIter,myThid )
@@ -130,7 +138,25 @@ C     data for the period ahead and the period behind myTime.
           CALL READ_REC_XY_RS( gchem_FeFile,gchemFe1,intime1,
      &         myIter,myThid )
          ENDIF
-
+         IF ( gchem_parFile .NE. ' ' ) THEN
+          CALL READ_REC_XY_RS( gchem_parFile,gchemPAR0,intime0,
+     &         myIter,myThid )
+          CALL READ_REC_XY_RS( gchem_parFile,gchemPAR1,intime1,
+     &         myIter,myThid )
+         ENDIF
+         IF ( gchem_apco2File .NE. ' ' ) THEN
+          CALL READ_REC_XY_RS( gchem_apco2File,gchemApco20,intime0,
+     &         myIter,myThid )
+          CALL READ_REC_XY_RS( gchem_apco2File,gchemApco21,intime1,
+     &         myIter,myThid )
+         ENDIF
+         IF ( gchem_chlFile .NE. ' ' ) THEN
+          CALL READ_REC_XY_RS( gchem_chlFile,gchemchl0,intime0,
+     &         myIter,myThid )
+          CALL READ_REC_XY_RS( gchem_chlFile,gchemchl1,intime1,
+     &         myIter,myThid )
+         ENDIF
+         
 C--   fill-in overlap after loading temp arrays:
          _EXCH_XY_RS(gchemWind0, myThid )
          _EXCH_XY_RS(gchemWind1, myThid )
@@ -142,6 +168,18 @@ C--   fill-in overlap after loading temp arrays:
          _EXCH_XY_RS(gchemFe1, myThid )
          _EXCH_XY_RS(gchemSi0, myThid )
          _EXCH_XY_RS(gchemSi1, myThid )
+#ifdef GCHEM_3D_SILICA
+         IF ( gchem3DSiFile .NE. ' '  ) THEN
+           _EXCH_XYZ_RS(gchem3DSi0, myThid )
+           _EXCH_XYZ_RS(gchem3DSi1, myThid )
+         ENDIF
+#endif
+         _EXCH_XY_RS(gchemPAR0, myThid )
+         _EXCH_XY_RS(gchemPAR1, myThid )
+         _EXCH_XY_RS(gchemApco20, myThid )
+         _EXCH_XY_RS(gchemApco21, myThid )
+         _EXCH_XY_RS(gchemchl0, myThid )
+         _EXCH_XY_RS(gchemchl1, myThid )
 
 C-    save newly loaded time-record
          DO bj = myByLo(myThid), myByHi(myThid)
@@ -182,6 +220,19 @@ C-     end if-bloc (time to load new fields)
            ENDDO
           ENDIF
 
+#ifdef GCHEM_3D_SILICA
+          IF ( gchem3DSiFile .NE. ' '  ) THEN
+           DO k=1,Nr
+            DO j=1-OLy,sNy+OLy
+             DO i=1-OLx,sNx+OLx
+              gchem3DSi(i,j,k,bi,bj) = bWght*gchem3DSi0(i,j,k,bi,bj)
+      &                              + aWght*gchem3DSi1(i,j,k,bi,bj)
+             ENDDO
+            ENDDO
+           ENDDO
+          ENDIF
+ #endif
+
           IF ( gchem_iceFile .NE. ' ' ) THEN
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
@@ -196,6 +247,33 @@ C-     end if-bloc (time to load new fields)
             DO i=1-OLx,sNx+OLx
              gchemFe(i,j,bi,bj) = bWght*gchemFe0(i,j,bi,bj)
      &                          + aWght*gchemFe1(i,j,bi,bj)
+            ENDDO
+           ENDDO
+          ENDIF
+          
+          IF ( GCHEM_parFile .NE. ' ' ) THEN
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             gchemPAR(i,j,bi,bj) = bWght*gchemPAR0(i,j,bi,bj)
+     &                           + aWght*gchemPAR1(i,j,bi,bj)
+            ENDDO
+           ENDDO
+          ENDIF
+
+          IF ( gchem_apco2File .NE. ' ' ) THEN
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             gchemapCO2(i,j,bi,bj) = bWght*gchemApco20(i,j,bi,bj)
+     &                             + aWght*gchemApco21(i,j,bi,bj)
+            ENDDO
+           ENDDO
+          ENDIF
+
+          IF ( GCHEM_chlFile .NE. ' ' ) THEN
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             gchemChl(i,j,bi,bj) = bWght*gchemChl0(i,j,bi,bj)
+     &                           + aWght*gchemChl1(i,j,bi,bj)
             ENDDO
            ENDDO
           ENDIF
@@ -227,7 +305,8 @@ C If a wind file is given in data.gchem, read it
 # endif
      &     mytime, myiter, mythid )
 C Otherwise get winds from PKG/EXF
-       ELSEIF ( uwindfile .NE. ' ' .AND. vwindfile .NE. ' ' ) THEN
+       ELSEIF ( uwindfile .NE. ' ' .AND. vwindfile .NE. ' ' ) .OR.
+     &      ( ustressfile .NE. ' ' .AND. vstressfile .NE. ' ' ) THEN
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
@@ -282,6 +361,24 @@ C Otherwise get atmospheric pressure from PKG/EXF
 # endif
      &     mytime, myiter, mythid )
        ENDIF
+
+#ifdef GCHEM_3D_SILICA
+       IF ( gchem3DSiFile .NE. ' '  ) THEN
+          CALL EXF_SET_FLD(
+     &     'gchem3DSi', gchem3DSiFile, gchem3DSiMask,
+     &     gchem_3DSiStartTime, gchem_3DSiPeriod, gchem_3DSiRepCycle,
+     &     gchem_inscal_3DSi,
+     &     gchem_3DSi_exfremo_intercept, gchem_3DSi_exfremo_slope,
+     &     gchem3DSi, gchem3DSi0, gchem3DSi1,
+# ifdef USE_EXF_INTERPOLATION
+     &     Si3D_lon0, Si3D_lon_inc,
+     &     Si3D_lat0, Si3D_lat_inc,
+     &     Si3D_nlon, Si3D_nlat, xC, yC,
+     &     Si3D_interpMethod,
+# endif
+     &     mytime, myiter, mythid )
+       ENDIF
+#endif
 
        IF ( gchem_parFile .NE. ' '  ) THEN
         CALL EXF_SET_FLD(
@@ -344,6 +441,34 @@ C     forcing load fields with pkg/exf tools
      &     ice_lat0, ice_lat_inc,
      &     ice_nlon, ice_nlat, xC, yC,
      &     ice_interpMethod,
+# endif
+     &     mytime, myiter, mythid )
+     C Otherwise get sea ice fraction from PKG/EXF
+       ELSEIF ( areamaskfile .NE. ' ' ) THEN
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            gchemIce(i,j,bi,bj) = areamask(i,j,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
+       
+       IF ( gchem_chlFile .NE. ' ' ) THEN
+C     forcing load fields with pkg/exf tools
+        CALL EXF_SET_FLD(
+     &     'gchemchl', gchem_chlfile, chlmask,
+     &     chlStartTime, chlperiod, chlRepCycle,
+     &     gchem_inscal_chl,
+     &     chl_exfremo_intercept, chl_exfremo_slope,
+     &     gchemchl, gchemchl0, gchemchl1,
+# ifdef USE_EXF_INTERPOLATION
+     &     chl_lon0, chl_lon_inc,
+     &     chl_lat0, chl_lat_inc,
+     &     chl_nlon, chl_nlat, xC, yC,
+     &     chl_interpMethod,
 # endif
      &     mytime, myiter, mythid )
        ENDIF

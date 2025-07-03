@@ -17,6 +17,7 @@ C     !USES:
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DIC_VARS.h"
+#include "GCHEM.h" 
 #include "DIC_ATMOS.h"
 
 C     !INPUT PARAMETERS:
@@ -44,7 +45,7 @@ C define Schmidt no. coefficients for CO2
 C define Schmidt no. coefficients for O2
 C based on Keeling et al [GBC, 12, 141, (1998)]
       sox1 = 1638.0 _d 0
-      sox2 = -81.83 _d 0
+      sox2 =  -81.83 _d 0
       sox3 =    1.483 _d 0
       sox4 =   -0.008004 _d 0
 
@@ -112,7 +113,7 @@ c     WRITE(msgBuf,'(2A)') ' DIC_INI_FORCING: ',
       STOP 'ABNORMAL END: S/R DIC_INIT_FIXED'
 #endif
       IF ( DIC_forcingCycle.GT.0. _d 0
-     &     .AND. DIC_parFile .EQ. ' '  ) THEN
+     &     .AND. gchem_parFile .EQ. ' '  ) THEN
 c       WRITE(msgBuf,'(2A)') ' DIC_FIELDS_LOAD: ',
         WRITE(msgBuf,'(2A)') 'DIC_INIT_FIXED: ',
      &     'You need to provide a file if you want to use READ_PAR'

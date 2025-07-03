@@ -29,6 +29,25 @@ C Surface silica forcing parameters for exf
       _RL gchem_Si_exfremo_slope
       _RL gchem_inscal_Si
 
+      COMMON/gchem_forcing_silica3D_c/
+     &    gchem_3DSiMask
+      COMMON/gchem_forcing_silica3D_i/
+     &    gchem_3DSiStartDate1, gchem_3DSiStartDate2
+      COMMON/gchem_forcing_silica3D_r/
+     &    gchem_3DSiStartTime,
+     &    gchem_3DSiPeriod, gchem_3DSiRepCycle,
+     &    gchem_3DSi_exfremo_intercept, gchem_3DSi_exfremo_slope,
+     &    gchem_inscal_3DSi
+      CHARACTER*1 gchem_3DSiMask
+      INTEGER gchem_3DSiStartDate1
+      INTEGER gchem_3DSiStartDate2
+      _RL gchem_3DSiStartTime
+      _RL gchem_3DSiPeriod
+      _RL gchem_3DSiRepCycle
+      _RL gchem_3DSi_exfremo_intercept
+      _RL gchem_3DSi_exfremo_slope
+      _RL gchem_inscal_3DSi
+
 C PAR forcing parameters for exf
 
       COMMON/gchem_forcing_PAR_c/
@@ -154,3 +173,24 @@ C Atmos pressure forcing parameters for exf
       _RL gchem_apres_exfremo_intercept
       _RL gchem_apres_exfremo_slope
       _RL gchem_inscal_apres
+
+C Chlorophyll forcing parameters for exf
+
+      COMMON/gchem_forcing_chl_c/
+     &    gchem_chlMask
+      COMMON/gchem_forcing_chl_i/
+     &    gchem_chlStartDate1, gchem_chlStartDate2
+      COMMON/gchem_forcing_chl_r/
+     &    gchem_chlStartTime,
+     &    gchem_chlPeriod, gchem_chlRepCycle,
+     &    gchem_chl_exfremo_intercept, gchem_chl_exfremo_slope,
+     &    gchem_inscal_chl
+      CHARACTER*1 gchem_chlMask
+      INTEGER gchem_chlStartDate1
+      INTEGER gchem_chlStartDate2
+      _RL gchem_chlStartTime
+      _RL gchem_chlPeriod
+      _RL gchem_chlRepCycle
+      _RL gchem_chl_exfremo_intercept
+      _RL gchem_chl_exfremo_slope
+      _RL gchem_inscal_chl

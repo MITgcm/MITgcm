@@ -1,5 +1,5 @@
 #include "DIC_OPTIONS.h"
-
+#include "GCHEM_OPTIONS.h"
 CBOP
 C !ROUTINE: DIC_INI_FORCING
 
@@ -17,6 +17,7 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DIC_VARS.h"
+#include "GCHEM_FIELDS.h"
 #include "DIC_LOAD.h"
 
 C !INPUT PARAMETERS: ===================================================
@@ -38,31 +39,40 @@ C--   Initialise forcing arrays in common blocks
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
-C-    Initialise DIC_VARS.h forcing-field arrays:
+C-    Initialise DIC_VARS.h forcing-field arrays from reasonable values in pkg/gchem
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-           wind      (i,j,bi,bj) = 0. _d 0
-           fIce      (i,j,bi,bj) = 0. _d 0
-           AtmosP    (i,j,bi,bj) = 0. _d 0
-           silicaSurf(i,j,bi,bj) = 0. _d 0
+           wind      (i,j,bi,bj) = gchemWind(i,j,bi,bj)
+           fIce      (i,j,bi,bj) = gchemIce(i,j,bi,bj)
+           AtmosP    (i,j,bi,bj) = gchemAtmosp(i,j,bi,bj)/Pa2atm
+           silicaSurf(i,j,bi,bj) = gchemSi(i,j,bi,bj)
+           AtmospCO2 (i,j,bi,bj) = gchemapCO2(i,j,bi,bj)
 #ifdef DIC_BIOTIC
-           par       (i,j,bi,bj) = 0. _d 0
-           CHL       (i,j,bi,bj) = 0. _d 0
-           InputFe   (i,j,bi,bj) = 0. _d 0
+           par       (i,j,bi,bj) = gchemPAR(i,j,bi,bj)
+           CHL       (i,j,bi,bj) = gchemCHL(i,j,bi,bj)
+           InputFe   (i,j,bi,bj) = gchemFe(i,j,bi,bj)
 #endif
          ENDDO
         ENDDO
-#ifdef DIC_CALCITE_SAT
+#if defined(DIC_CALCITE_SAT) && defined(GCHEM_3D_SILICA) 
         DO k=1,Nr
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           silicaDeep(i,j,k,bi,bj) = 0. _d 0
+           silicaDeep(i,j,k,bi,bj) = gchemSi3D(i,j,k,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+#elif defined(DIC_CALCITE_SAT)
+        DO k=1,Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           silicaDeep(i,j,k,bi,bj) = 3.  _d -2
           ENDDO
          ENDDO
         ENDDO
 #endif
 
-C-    Initialise DIC_LOAD.h arrays:
+CC-    Initialise DIC_LOAD.h arrays:
         DIC_ldRec(bi,bj) = 0
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
@@ -87,6 +97,7 @@ C-    Initialise DIC_LOAD.h arrays:
 #endif
          ENDDO
         ENDDO
+
 #ifdef DIC_CALCITE_SAT
         DO k=1,Nr
          DO j=1-OLy,sNy+OLy
@@ -102,47 +113,9 @@ C-   end bi,bj loops:
       ENDDO
 
 C ======================================================================
-
-C--   Set reasonable values to those that need at least something
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-            wind(i,j,bi,bj)       = 5. _d 0*maskC(i,j,1,bi,bj)
-            AtmosP(i,j,bi,bj)     = 1. _d 0*maskC(i,j,1,bi,bj)
-            silicaSurf(i,j,bi,bj) = 7.6838 _d -3*maskC(i,j,1,bi,bj)
-            fIce(i,j,bi,bj)       = 0. _d 0
-#ifdef READ_PAR
-            par(i,j,bi,bj)        = 100. _d 0*maskC(i,j,1,bi,bj)
-#endif
-#ifdef LIGHT_CHL
-C If the chlorophyll climatology is not provided, use this default value.
-            CHL(i,j,bi,bj)        = 1. _d -2*maskC(i,j,1,bi,bj)
-#endif
-#ifdef ALLOW_FE
-            InputFe(i,j,bi,bj)    = 1. _d -11*maskC(i,j,1,bi,bj)
-#endif
-          ENDDO
-         ENDDO
-#ifdef DIC_CALCITE_SAT
-         IF ( useCalciteSaturation ) THEN
-          DO k=1,Nr
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-              silicaDeep(i,j,k,bi,bj) = 3. _d -2*maskC(i,j,k,bi,bj)
-            ENDDO
-           ENDDO
-          ENDDO
-         ENDIF
-#endif
-C-    end bi,bj loops
-       ENDDO
-      ENDDO
-
-C ======================================================================
-
-C--   Load constant forcing-file (used if DIC_forcingCycle=0 )
-c     IF ( DIC_forcingCycle .LE. zeroRL ) THEN
+C
+CC--   Load constant forcing-file (used if DIC_forcingCycle=0 )
+Cc     IF ( DIC_forcingCycle .LE. zeroRL ) THEN
        IF ( DIC_windFile .NE. ' '  ) THEN
          CALL READ_REC_XY_RL( DIC_windFile, wind,
      &                        1, nIter0, myThid )
@@ -164,28 +137,28 @@ c     IF ( DIC_forcingCycle .LE. zeroRL ) THEN
          _EXCH_XY_RL( fIce, myThid )
        ENDIF
 #ifdef DIC_BIOTIC
-c#ifdef READ_PAR
+Cc#ifdef READ_PAR
        IF ( DIC_parFile .NE. ' '  ) THEN
          CALL READ_REC_XY_RL( DIC_parFile, par,
      &                        1, nIter0, myThid )
          _EXCH_XY_RL( par, myThid )
        ENDIF
-c#endif
-c#ifdef LIGHT_CHL
-C--   Load chlorophyll climatology data, unit for chlorophyll : mg/m3
+Cc#endif
+Cc#ifdef LIGHT_CHL
+CC--   Load chlorophyll climatology data, unit for chlorophyll : mg/m3
        IF ( DIC_chlaFile .NE. ' '  ) THEN
          CALL READ_REC_XY_RL( DIC_chlaFile, CHL,
      &                        1, nIter0, myThid )
          _EXCH_XY_RL( CHL, myThid )
        ENDIF
-c#endif
-c#ifdef ALLOW_FE
+Cc#endif
+Cc#ifdef ALLOW_FE
        IF ( DIC_ironFile .NE. ' '  ) THEN
          CALL READ_REC_XY_RL( DIC_ironFile, InputFe,
      &                        1, nIter0, myThid )
          _EXCH_XY_RL( InputFe, myThid )
        ENDIF
-c#endif
+Cc#endif
 #endif /* DIC_BIOTIC */
 #ifdef DIC_CALCITE_SAT
        IF ( useCalciteSaturation .AND.
@@ -195,17 +168,17 @@ c#endif
          _EXCH_XYZ_RL( silicaDeep, myThid )
        ENDIF
 #endif
-c     ENDIF
+Cc     ENDIF
 
 C ======================================================================
 
       IF ( DIC_forcingCycle .GT. zeroRL ) THEN
 C--   Load some initial forcing from file
-
+C
 C-    Read in surface silica field (used to compute initial surf. pH)
 C     Note: For this purpose, might be accurate enough to use first record
 C           in silica file (already loaded) and skip all this block.
-
+C
 C-    Get reccord number and weight for time interpolation:
        CALL GET_PERIODIC_INTERVAL(
      O                   intimeP, intime0, intime1, bWght, aWght,
@@ -238,7 +211,7 @@ C-    If file provided for surface silicate, read it in
 #ifndef ALLOW_AUTODIFF
 #ifdef DIC_CALCITE_SAT
        ELSEIF ( DIC_deepSilicaFile .NE. ' '  ) THEN
-C-    If no surface silicate file but deep (3d) silicate provided, use top level
+C-    If no surface silicate file but deep (3d) silicate provided, use top Clevel
          k = 1
          CALL READ_REC_XYZ_RS( DIC_deepSilicaFile, silicaDeep0,
      &                         intime0, nIter0, myThid )

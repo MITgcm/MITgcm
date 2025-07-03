@@ -47,7 +47,9 @@ c !LOCAL VARIABLES: ===================================================
 #endif
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
-
+      IF (  DIC_forcingCycle.GT.0. _d 0 ) THEN
+C     Update forcing fields in pkg/dic common blocks, otherwise this is handled
+C     in pkg/gchem        
         IF ( useThSIce ) THEN
 #ifdef ALLOW_THSICE
           DO j=1-OLy,sNy+OLy
@@ -66,13 +68,13 @@ CEOP
 #endif /* ALLOW_SEAICE */
         ELSEIF ( useCoupler ) THEN
 #ifdef ALLOW_OCN_COMPON_INTERF
-         IF ( useImportFice ) THEN
+          IF ( useImportFice ) THEN
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
              fIce(i,j,bi,bj) = sIceFrac_cpl(i,j,bi,bj)
             ENDDO
            ENDDO
-         ENDIF
+          ENDIF
 #endif /* ALLOW_OCN_COMPON_INTERF */
         ENDIF
 
@@ -94,7 +96,8 @@ CEOP
          ENDIF
         ENDIF
 #endif /* ALLOW_OCN_COMPON_INTERF */
-
+      ENDIF
+      
 #endif /* ALLOW_DIC */
       RETURN
       END

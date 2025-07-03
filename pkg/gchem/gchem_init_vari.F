@@ -83,21 +83,45 @@ C     set reasonable values fields that need at least something
         m = 1
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          gchemapCO2 (i,j,bi,bj) = gchem_apco2_const*maskC(i,j,m,bi,bj)
-          gchemWind  (i,j,bi,bj) = gchem_wind_const *maskC(i,j,m,bi,bj)
-          gchemAtmosP(i,j,bi,bj) = gchem_apres_const*maskC(i,j,m,bi,bj)
-          gchemPAR   (i,j,bi,bj) = gchem_par_const  *maskC(i,j,m,bi,bj)
-          gchemFe    (i,j,bi,bj) = gchem_Fe_const   *maskC(i,j,m,bi,bj)
-          gchemSi    (i,j,bi,bj) = gchem_Si_const   *maskC(i,j,m,bi,bj)
-          gchemIce   (i,j,bi,bj) = gchem_ice_const  *maskC(i,j,m,bi,bj)
+          gchemapCO2 (i,j,bi,bj) = gchem_apco2_const*maskC(i,j,1,bi,bj)
+          gchemWind  (i,j,bi,bj) = gchem_wind_const *maskC(i,j,1,bi,bj)
+          gchemAtmosP(i,j,bi,bj) = gchem_apres_const*maskC(i,j,1,bi,bj)
+          gchemPAR   (i,j,bi,bj) = gchem_par_const  *maskC(i,j,1,bi,bj)
+          gchemFe    (i,j,bi,bj) = gchem_Fe_const   *maskC(i,j,1,bi,bj)
+          gchemSi    (i,j,bi,bj) = gchem_Si_const   *maskC(i,j,1,bi,bj)
+#ifdef GCHEM_3D_SILICA
+          DO k = 1, Nr
+           gchemSi3D(i,j,k,bi,bj)= gchem_3DSi_const *maskC(i,j,k,bi,bj)
+          ENDDO
+#endif
+          gchemIce   (i,j,bi,bj) = gchem_ice_const  *maskC(i,j,1,bi,bj)
+          gchemChl   (i,j,bi,bj) = gchem_chl_const  *maskC(i,j,1,bi,bj)
          ENDDO
         ENDDO
        ENDDO
       ENDDO
 
       IF ( .NOT. gchem_useEXF ) THEN
-        CALL LEF_ZERO( gchemSi0,myThid )
-        CALL LEF_ZERO( gchemSi1,myThid )
+       CALL LEF_ZERO( gchemSi0,myThid )
+       CALL LEF_ZERO( gchemSi1,myThid )
+#ifdef GCHEM_3D_SILICA
+       CALL LEF_ZERO( gchem3DSi0,myThid )
+       CALL LEF_ZERO( gchem3DSi1,myThid )
+#endif
+       CALL LEF_ZERO( gchemWind0,myThid )
+       CALL LEF_ZERO( gchemWind1,myThid )
+       CALL LEF_ZERO( gchemIce0,myThid )
+       CALL LEF_ZERO( gchemIce1,myThid )
+       CALL LEF_ZERO( gchemApres0,myThid )
+       CALL LEF_ZERO( gchemApres1,myThid )
+       CALL LEF_ZERO( gchemPAR0,myThid )
+       CALL LEF_ZERO( gchemPAR1,myThid )
+       CALL LEF_ZERO( gchemFe0,myThid )
+       CALL LEF_ZERO( gchemFe1,myThid )
+       CALL LEF_ZERO( gchemapCO20,myThid )
+       CALL LEF_ZERO( gchemapCO21,myThid )
+       CALL LEF_ZERO( gchemchl0,myThid )
+       CALL LEF_ZERO( gchemchl1,myThid )
 
 C--   Now calculate whether it is time to update the forcing arrays
         CALL GET_PERIODIC_INTERVAL(
@@ -119,11 +143,28 @@ C--   Now calculate whether it is time to update the forcing arrays
      &         nIter0,myThid )
         ENDIF
 
+#ifdef GCHEM_3D_SILICA
+        IF ( gchem_3DSiFile .NE. ' ' ) THEN
+          CALL READ_REC_XYZ_RS( gchem_3DSiFile,gchem3DSi0,intime0,
+     &         nIter0,myThid )
+          CALL READ_REC_XYZ_RS( gchem_3DSiFile,gchem3DSi1,intime1,
+     &         nIter0,myThid )
+        ENDIF
+#endif
+
+        IF ( gchem_parFile .NE. ' ' ) THEN
+          CALL READ_REC_XY_RS( gchem_parFile,gchemPAR0,intime0,
+     &         nIter0,myThid )
+          CALL READ_REC_XY_RS( gchem_parFile,gchemPAR1,intime1,
+     &         nIter0,myThid )
+        ENDIF
+
         IF ( gchem_FeFile .NE. ' ' ) THEN
           CALL READ_REC_XY_RS( gchem_FeFile,gchemFe0,intime0,
      &         nIter0,myThid )
           CALL READ_REC_XY_RS( gchem_FeFile,gchemFe1,intime1,
      &         nIter0,myThid )
+         ENDIF
         ENDIF
 
         IF ( gchem_IceFile .NE. ' ' ) THEN
@@ -133,65 +174,32 @@ C--   Now calculate whether it is time to update the forcing arrays
      &         nIter0,myThid )
         ENDIF
 
-        _EXCH_XY_RS(gchemWind0, myThid )
-        _EXCH_XY_RS(gchemWind1, myThid )
-        _EXCH_XY_RS(gchemSi0, myThid )
-        _EXCH_XY_RS(gchemSi1, myThid )
-        _EXCH_XY_RS(gchemFe0, myThid )
-        _EXCH_XY_RS(gchemFe1, myThid )
-        _EXCH_XY_RS(gchemIce0, myThid )
-        _EXCH_XY_RS(gchemIce1, myThid )
-
-        IF ( gchem_WindFile .NE. ' '  ) THEN
-         DO bj = myByLo(myThid), myByHi(myThid)
-          DO bi = myBxLo(myThid), myBxHi(myThid)
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             gchemWind(i,j,bi,bj)= bWght*gchemWind0(i,j,bi,bj)
-     &                           + aWght*gchemWind1(i,j,bi,bj)
-            ENDDO
-           ENDDO
-          ENDDO
-         ENDDO
+        IF ( gchem_apco2File .NE. ' ' ) THEN
+          CALL READ_REC_XY_RS( gchem_apco2File,gchemapco20,intime0,
+     &         nIter0,myThid )
+          CALL READ_REC_XY_RS( gchem_apco2File,gchemapco21,intime1,
+     &         nIter0,myThid )
         ENDIF
 
-        IF ( gchem_SiFile .NE. ' '  ) THEN
-         DO bj = myByLo(myThid), myByHi(myThid)
-          DO bi = myBxLo(myThid), myBxHi(myThid)
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             gchemSi(i,j,bi,bj)= bWght*gchemSi0(i,j,bi,bj)
-     &                         + aWght*gchemSi1(i,j,bi,bj)
-            ENDDO
-           ENDDO
-          ENDDO
-         ENDDO
+        IF ( gchem_iceFile .NE. ' ' ) THEN
+          CALL READ_REC_XY_RS( gchem_iceFile,gchemIce0,intime0,
+     &         nIter0,myThid )
+          CALL READ_REC_XY_RS( gchem_iceFile,gchemIce1,intime1,
+     &         nIter0,myThid )
         ENDIF
 
-        IF ( gchem_FeFile .NE. ' '  ) THEN
-         DO bj = myByLo(myThid), myByHi(myThid)
-          DO bi = myBxLo(myThid), myBxHi(myThid)
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             gchemFe(i,j,bi,bj)= bWght*gchemFe0(i,j,bi,bj)
-     &                         + aWght*gchemFe1(i,j,bi,bj)
-            ENDDO
-           ENDDO
-          ENDDO
-         ENDDO
+        IF ( gchem_apresFile .NE. ' ' ) THEN
+          CALL READ_REC_XY_RS( gchem_apresFile,gchemApres0,intime0,
+     &         nIter0,myThid )
+          CALL READ_REC_XY_RS( gchem_apresFile,gchemApres1,intime1,
+     &         nIter0,myThid )
         ENDIF
 
-        IF ( gchem_IceFile .NE. ' '  ) THEN
-         DO bj = myByLo(myThid), myByHi(myThid)
-          DO bi = myBxLo(myThid), myBxHi(myThid)
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             gchemIce(i,j,bi,bj)= bWght*gchemIce0(i,j,bi,bj)
-     &                          + aWght*gchemIce1(i,j,bi,bj)
-            ENDDO
-           ENDDO
-          ENDDO
-         ENDDO
+        IF ( gchem_chlFile .NE. ' ' ) THEN
+          CALL READ_REC_XY_RS( gchem_chlFile,gchemCHL0,intime0,
+     &         nIter0,myThid )
+          CALL READ_REC_XY_RS( gchem_chlFile,gchemCHL1,intime1,
+     &         nIter0,myThid )
         ENDIF
 
 C     if not gchem_useEXF
@@ -233,6 +241,122 @@ c     &     mythid )
      &     Si_interpMethod,
 # endif
      &     myLocTime, nIter0, mythid )
+       ENDIF
+
+#ifdef GCHEM_3D_SILICA
+       IF ( gchem_3DSiFile .NE. ' ' ) THEN
+        CALL EXF_INIT_FLD (
+     &     'gchem3DSi', gchem_3DSiFile, gchem_3DSiMask,
+     &     gchem_3DSiPeriod, gchem_inscal_3DSi, gchem_3DSi_const,
+     &     gchem3DSi, gchem3DSi0, gchem3DSi1,
+#ifdef USE_EXF_INTERPOLATION
+     &     3DSi_lon0, 3DSi_lon_inc,
+     &     3DSi_lat0, 3DSi_lat_inc,
+     &     3DSi_nlon, 3DSi_nlat, xC, yC,
+     &     3DSi_interpMethod,
+#endif
+     &     mythid )
+       ENDIF
+#endif /* GCHEM_3D_SILICA */
+
+       IF ( gchem_WindFile .NE. ' ' ) THEN
+        CALL EXF_INIT_FLD (
+      &     'gchemWind', gchem_WindFile, gchem_WindMask,
+      &     gchem_WindPeriod, gchem_inscal_Wind, gchem_wind_const,
+      &     gchemWind, gchemWind0, gchemWind1,
+#ifdef USE_EXF_INTERPOLATION
+      &     wind_lon0, wind_lon_inc,
+      &     wind_lat0, wind_lat_inc,
+      &     wind_nlon, wind_nlat, xC, yC,
+      &     wind_interpMethod,
+#endif
+      &     mythid )
+       ENDIF
+
+       IF ( gchem_apresFile .NE. ' ' ) THEN
+        CALL EXF_INIT_FLD (
+     &     'gchemApres', gchem_apresFile, gchem_apresMask,
+     &     gchem_apresPeriod, gchem_inscal_apres, gchem_apres_const,
+     &     gchemApres, gchemApres0, gchemApres1,
+#ifdef USE_EXF_INTERPOLATION
+     &     apres_lon0, apres_lon_inc,
+     &     apres_lat0, apres_lat_inc,
+     &     apres_nlon, apres_nlat, xC, yC,
+     &     apres_interpMethod,
+#endif
+     &     mythid )
+       ENDIF
+
+       IF ( gchem_iceFile .NE. ' ' ) THEN
+        CALL EXF_INIT_FLD (
+     &     'gchemIce', gchem_iceFile, gchem_iceMask,
+     &     gchem_icePeriod, gchem_inscal_ice, gchem_ice_const,
+     &     gchemIce, gchemIce0, gchemIce1,
+#ifdef USE_EXF_INTERPOLATION
+     &     ice_lon0, ice_lon_inc,
+     &     ice_lat0, ice_lat_inc,
+     &     ice_nlon, ice_nlat, xC, yC,
+     &     ice_interpMethod,
+#endif
+     &     mythid )
+       ENDIF
+
+#ifdef GCHEM_3D_SILICA
+       IF ( gchem_3DSiFile .NE. ' ' ) THEN
+        CALL EXF_INIT_FLD (
+     &     'gchem3DSi', gchem_3DSiFile, gchem_3DSiMask,
+     &     gchem_3DSiPeriod, gchem_inscal_3DSi, gchem_3DSi_const,
+     &     gchem3DSi, gchem3DSi0, gchem3DSi1,
+#ifdef USE_EXF_INTERPOLATION
+     &     3DSi_lon0, 3DSi_lon_inc,
+     &     3DSi_lat0, 3DSi_lat_inc,
+     &     3DSi_nlon, 3DSi_nlat, xC, yC,
+     &     3DSi_interpMethod,
+#endif
+     &     mythid )
+       ENDIF
+#endif /* GCHEM_3D_SILICA */
+
+       IF ( gchem_WindFile .NE. ' ' ) THEN
+        CALL EXF_INIT_FLD (
+      &     'gchemWind', gchem_WindFile, gchem_WindMask,
+      &     gchem_WindPeriod, gchem_inscal_Wind, gchem_wind_const,
+      &     gchemWind, gchemWind0, gchemWind1,
+#ifdef USE_EXF_INTERPOLATION
+      &     wind_lon0, wind_lon_inc,
+      &     wind_lat0, wind_lat_inc,
+      &     wind_nlon, wind_nlat, xC, yC,
+      &     wind_interpMethod,
+#endif
+      &     mythid )
+       ENDIF
+
+       IF ( gchem_apresFile .NE. ' ' ) THEN
+        CALL EXF_INIT_FLD (
+     &     'gchemApres', gchem_apresFile, gchem_apresMask,
+     &     gchem_apresPeriod, gchem_inscal_apres, gchem_apres_const,
+     &     gchemApres, gchemApres0, gchemApres1,
+#ifdef USE_EXF_INTERPOLATION
+     &     apres_lon0, apres_lon_inc,
+     &     apres_lat0, apres_lat_inc,
+     &     apres_nlon, apres_nlat, xC, yC,
+     &     apres_interpMethod,
+#endif
+     &     mythid )
+       ENDIF
+
+       IF ( gchem_iceFile .NE. ' ' ) THEN
+        CALL EXF_INIT_FLD (
+     &     'gchemIce', gchem_iceFile, gchem_iceMask,
+     &     gchem_icePeriod, gchem_inscal_ice, gchem_ice_const,
+     &     gchemIce, gchemIce0, gchemIce1,
+#ifdef USE_EXF_INTERPOLATION
+     &     ice_lon0, ice_lon_inc,
+     &     ice_lat0, ice_lat_inc,
+     &     ice_nlon, ice_nlat, xC, yC,
+     &     ice_interpMethod,
+#endif
+     &     mythid )
        ENDIF
 
        IF ( gchem_parFile .NE. ' ' ) THEN
@@ -277,31 +401,36 @@ c     &     mythid )
      &     mythid )
        ENDIF
 
-       IF ( gchem_IceFile .NE. ' ' ) THEN
-C     forcing load fields with pkg/exf tools
-        CALL EXF_INIT_FLD(
-     &     'gchemIce', gchem_icefile, gchem_iceMask,
-     &     gchem_icePeriod, gchem_inscal_ice, gchem_ice_const,
-     &     gchemIce, gchemIce0, gchemIce1,
-# ifdef USE_EXF_INTERPOLATION
-     &     ice_lon0, ice_lon_inc,
-     &     ice_lat0, ice_lat_inc,
-     &     ice_nlon, ice_nlat, xC, yC,
-     &     ice_interpMethod,
-# endif
+       IF ( gchem_chlFile .NE. ' ' ) THEN
+        CALL EXF_INIT_FLD (
+     &     'gchemCHL', gchem_chlFile, gchem_chlMask,
+     &     gchem_chlPeriod, gchem_inscal_chl, gchem_chl_const,
+     &     gchemchl, gchemchl0, gchemchl1,
+#ifdef USE_EXF_INTERPOLATION
+     &     chl_lon0, chl_lon_inc,
+     &     chl_lat0, chl_lat_inc,
+     &     chl_nlon, chl_nlat, xC, yC,
+     &     chl_interpMethod,
+#endif
      &     mythid )
        ENDIF
 
-C     gchem_useEXF
+C     useEXF
       ENDIF
 #endif /* ALLOW_EXF */
 
       _EXCH_XY_RL( gchemSi, myThid )
+#ifdef GCHEM_3D_SILICA
+      _EXCH_XYZ_RL( gchem3DSi, myThid )
+#endif
+      _EXCH_XY_RL( gchemWind, myThid )
+      _EXCH_XY_RL( gchemIce, myThid )
+      _EXCH_XY_RL( gchemAtmosP, myThid )
       _EXCH_XY_RL( gchemPAR, myThid )
       _EXCH_XY_RL( gchemFe, myThid )
       _EXCH_XY_RL( gchemapCO2, myThid )
-      _EXCH_XY_RL( gchemIce, myThid )
-#endif /* GCHEM_ALLOW_FFIELDS */
+      _EXCH_XY_RL( gchemchl, myThid )
+      #endif /* GCHEM_ALLOW_FFIELDS */
 
 C--   Initialise other Geo-Chemistry pkg variables:
 

@@ -65,12 +65,12 @@ C  to test the flag before any corresponding pkg S/R call
      &           gchem_rl1, gchem_rl2, gchem_rl3,
      &           gchem_rl4, gchem_rl5,
      &           gchem_ForcingPeriod, gchem_ForcingCycle,
-     &           gchem_SiFile, gchem_parFile, gchem_FeFile,
-     &           gchem_apco2File, gchem_windFile, gchem_apresFile,
-     &           gchem_iceFile,
-     &           gchem_Si_const, gchem_par_const, gchem_Fe_const,
-     &           gchem_apco2_const, gchem_wind_const, gchem_apres_const,
-     &           gchem_ice_const,
+     &           gchem_SiFile, gchem_3DSiFile, gchem_parFile, 
+     &           gchem_FeFile, gchem_apco2File, gchem_windFile, 
+     &           gchem_apresFile, gchem_iceFile, gchem_chlFile,
+     &           gchem_Si_const, gchem_3DSi_const, gchem_par_const, 
+     &           gchem_Fe_const, gchem_apco2_const, gchem_wind_const, 
+     &           gchem_apres_const, gchem_ice_const, gchem_chl_const,
      &           tIter0
 
 # ifdef ALLOW_EXF
@@ -79,6 +79,11 @@ C  to test the flag before any corresponding pkg S/R call
      &     gchem_SiStartDate1, gchem_SiStartDate2,
      &     gchem_Si_exfremo_intercept, gchem_Si_exfremo_slope,
      &     gchem_SiMask, gchem_inscal_Si,
+C
+     &     gchem_3DSiPeriod, gchem_3DSiRepCycle, gchem_3DSiStartTime,
+     &     gchem_3DSiStartDate1, gchem_3DSiStartDate2,
+     &     gchem_3DSi_exfremo_intercept, gchem_3DSi_exfremo_slope,
+     &     gchem_3DSiMask, gchem_inscal_3DSi,
 C
      &     gchem_parPeriod, gchem_parRepCycle, gchem_parStartTime,
      &     gchem_parStartDate1, gchem_parStartDate2,
@@ -100,20 +105,27 @@ C
      &     gchem_wind_exfremo_intercept, gchem_wind_exfremo_slope,
      &     gchem_windMask, gchem_inscal_wind,
 C
-     &     gchem_apresPeriod, gchem_apresRepCycle, gchem_apresStartTime,
-     &     gchem_apresStartDate1, gchem_apresStartDate2,
-     &     gchem_apres_exfremo_intercept, gchem_apres_exfremo_slope,
-     &     gchem_apresMask, gchem_inscal_apres,
-C
      &     gchem_icePeriod, gchem_iceRepCycle, gchem_iceStartTime,
      &     gchem_iceStartDate1, gchem_iceStartDate2,
      &     gchem_ice_exfremo_intercept, gchem_ice_exfremo_slope,
-     &     gchem_iceMask, gchem_inscal_apres
-
+     &     gchem_iceMask, gchem_inscal_ice,
+C
+     &     gchem_apresPeriod, gchem_apresRepCycle, gchem_apresStartTime,
+     &     gchem_apresStartDate1, gchem_apresStartDate2,
+     &     gchem_apres_exfremo_intercept, gchem_apres_exfremo_slope,
+     &     gchem_apresMask, gchem_inscal_apres
+C
+     &     gchem_chlperiod, gchem_chlRepCycle, gchem_chlStartTime,
+     &     gchem_chlstartdate1, gchem_chlstartdate2,
+     &     gchem_chl_exfremo_intercept, chl_exfremo_slope,
+     &     gchem_chlMask, gchem_inscal_chl
 #  ifdef USE_EXF_INTERPOLATION
       NAMELIST /GCHEM_INTERP_PARAMS/
      &     Si_lon0, Si_lat0, Si_nlon,Si_nlat,
      &     Si_lon_inc, Si_lat_inc, Si_interpMethod,
+C
+     &     3DSi_lon0, 3DSi_lat0, 3DSi_nlon,Si_nlat,
+     &     3DSi_lon_inc, 3DSi_lat_inc, 3DSi_interpMethod,
 C
      &     par_lon0, par_lat0, par_nlon, par_nlat,
      &     par_lon_inc, par_lat_inc, par_interpMethod,
@@ -127,11 +139,14 @@ C
      &     wind_lon0, wind_lat0, wind_nlon, wind_nlat,
      &     wind_lon_inc, wind_lat_inc, wind_interpMethod,
 C
-     &     apres_lon0, apres_lat0, apres_nlon, apres_nlat,
-     &     apres_lon_inc, apres_lat_inc, apres_interpMethod,
-C
      &     ice_lon0, ice_lat0, ice_nlon, ice_nlat,
-     &     ice_lon_inc, ice_lat_inc, ice_interpMethod
+     &     ice_lon_inc, ice_lat_inc, ice_interpMethod,
+C
+     &     apres_lon0, apres_lat0, apres_nlon, apres_nlat,
+     &     apres_lon_inc, apres_lat_inc, apres_interpMethod
+C
+     &     chl_lon0, chl_lat0, chl_nlon, chl_nlat,
+     &     chl_lon_inc, chl_lat_inc, chl_interpMethod
 #  endif
 # endif /* ALLOW_EXF */
 
@@ -183,17 +198,21 @@ C     some predefined forcing fields and constants
       gchem_windFile  = ' '
       gchem_apresFile = ' '
       gchem_SiFile    = ' '
+      gchem_3DSiFile  = ' '
       gchem_parFile   = ' '
       gchem_FeFile    = ' '
       gchem_apco2File = ' '
+      gchem_chlFile   = ' '
 C     some sensible defaults
-      gchem_ice_const   =    0.  _d 0
+      gchem_ice_const   =    0. _d 0
+      gchem_wind_const  =    0.  _d 0
+      gchem_apres_const = 1013.  _d 2
       gchem_Si_const    =    7.6 _d -3
+      gchem_3DSi_const  =    3.  _d -2
       gchem_par_const   =    0.  _d 0
       gchem_Fe_const    =    0.  _d 0
       gchem_apco2_const =  280.  _d -6
-      gchem_wind_const  =    0.  _d 0
-      gchem_apres_const = 1013.  _d 2
+      gchem_chl_const   =    0.  _d 0
 
 C- Open and read the data.gchem file
       WRITE(msgBuf,'(A)') ' GCHEM_READPARMS: opening data.gchem'
@@ -217,7 +236,17 @@ C- Open and read the data.gchem file
        gchem_Si_exfremo_intercept = 0.0 _d 0
        gchem_Si_exfremo_slope     = 0.0 _d 0
        gchem_SiMask               = 'c'
-       gchem_inscal_Si      = 1. _d 0
+       gchem_inscal_Si            = 1. _d 0
+
+       gchem_3DSiPeriod             = 0.0 _d 0
+       gchem_3DSiRepCycle           = repeatPeriod
+       gchem_3DSiStartTime          = UNSET_RL
+       gchem_3DSiStartDate1         = 0
+       gchem_3DSiStartDate2         = 0
+       gchem_3DSi_exfremo_intercept = 0.0 _d 0
+       gchem_3DSi_exfremo_slope     = 0.0 _d 0
+       gchem_3DSiMask               = 'c'
+       gchem_3Dinscal_Si            = 1. _d 0
 
        gchem_parPeriod             = 0.0 _d 0
        gchem_parRepCycle           = repeatPeriod
@@ -227,7 +256,7 @@ C- Open and read the data.gchem file
        gchem_par_exfremo_intercept = 0.0 _d 0
        gchem_par_exfremo_slope     = 0.0 _d 0
        gchem_parMask               = 'c'
-       gchem_inscal_par      = 1. _d 0
+       gchem_inscal_par            = 1. _d 0
 
        gchem_FePeriod             = 0.0 _d 0
        gchem_FeRepCycle           = repeatPeriod
@@ -237,7 +266,7 @@ C- Open and read the data.gchem file
        gchem_Fe_exfremo_intercept = 0.0 _d 0
        gchem_Fe_exfremo_slope     = 0.0 _d 0
        gchem_FeMask               = 'c'
-       gchem_inscal_Fe      = 1. _d 0
+       gchem_inscal_Fe            = 1. _d 0
 
        gchem_apco2Period             = 0.0 _d 0
        gchem_apco2RepCycle           = repeatPeriod
@@ -247,7 +276,17 @@ C- Open and read the data.gchem file
        gchem_apco2_exfremo_intercept = 0.0 _d 0
        gchem_apco2_exfremo_slope     = 0.0 _d 0
        gchem_apco2Mask               = 'c'
-       gchem_inscal_apco2      = 1. _d 0
+       gchem_inscal_apco2            = 1. _d 0
+
+       gchem_icePeriod               = 0.0 _d 0
+       gchem_iceRepCycle             = repeatPeriod
+       gchem_iceStartTime            = UNSET_RL
+       gchem_iceStartDate1           = 0
+       gchem_iceStartDate2           = 0
+       gchem_ice_exfremo_intercept   = 0.0 _d 0
+       gchem_ice_exfremo_slope       = 0.0 _d 0
+       gchem_iceMask                 = 'c'
+       gchem_inscal_ice              = 1. _d 0
 
        gchem_windPeriod             = 0.0 _d 0
        gchem_windRepCycle           = repeatPeriod
@@ -257,7 +296,7 @@ C- Open and read the data.gchem file
        gchem_wind_exfremo_intercept = 0.0 _d 0
        gchem_wind_exfremo_slope     = 0.0 _d 0
        gchem_windMask               = 'c'
-       gchem_inscal_wind      = 1. _d 0
+       gchem_inscal_wind            = 1. _d 0
 
        gchem_apresPeriod             = 0.0 _d 0
        gchem_apresRepCycle           = repeatPeriod
@@ -267,17 +306,17 @@ C- Open and read the data.gchem file
        gchem_apres_exfremo_intercept = 0.0 _d 0
        gchem_apres_exfremo_slope     = 0.0 _d 0
        gchem_apresMask               = 'c'
-       gchem_inscal_apres      = 1. _d 0
-
-       gchem_icePeriod             = 0.0 _d 0
-       gchem_iceRepCycle           = repeatPeriod
-       gchem_iceStartTime          = UNSET_RL
-       gchem_iceStartDate1         = 0
-       gchem_iceStartDate2         = 0
-       gchem_ice_exfremo_intercept = 0.0 _d 0
-       gchem_ice_exfremo_slope     = 0.0 _d 0
-       gchem_iceMask               = 'c'
-       gchem_inscal_ice        = 1. _d 0
+       gchem_inscal_apres            = 1. _d 0
+       
+       gchem_chlPeriod               = 0.0 _d 0
+       gchem_chlRepCycle             = repeatPeriod
+       gchem_chlStartTime            = UNSET_RL
+       gchem_chlStartDate1           = 0
+       gchem_chlStartDate2           = 0
+       gchem_chl_exfremo_intercept   = 0.0 _d 0
+       gchem_chl_exfremo_slope       = 0.0 _d 0
+       gchem_chlMask                 = 'c'
+       gchem_inscal_chl              = 1. _d 0
 
        READ(UNIT=iUnit, NML=GCHEM_FORCING_PARAMS)
 
@@ -289,6 +328,13 @@ C- Open and read the data.gchem file
        Si_nlat = inp_gNy
        Si_lon_inc = inp_dLon
        Si_interpMethod  = 1
+
+       3DSi_lon0 = inp_lon0
+       3DSi_lat0 = inp_lat0
+       3DSi_nlon = inp_gNx
+       3DSi_nlat = inp_gNy
+       3DSi_lon_inc = inp_dLon
+       3DSi_interpMethod  = 1
 
        par_lon0 = inp_lon0
        par_lat0 = inp_lat0
@@ -317,26 +363,35 @@ C- Open and read the data.gchem file
        wind_lon_inc = inp_dLon
        wind_interpMethod  = 1
 
-       apres_lat0 = inp_lat0
-       apres_nlon = inp_gNx
-       apres_nlat = inp_gNy
-       apres_lon_inc = inp_dLon
-       apres_interpMethod  = 1
-
+       ice_lon0 = inp_lon0
        ice_lat0 = inp_lat0
        ice_nlon = inp_gNx
        ice_nlat = inp_gNy
        ice_lon_inc = inp_dLon
        ice_interpMethod  = 1
 
+       apres_lat0 = inp_lat0
+       apres_nlon = inp_gNx
+       apres_nlat = inp_gNy
+       apres_lon_inc = inp_dLon
+       apres_interpMethod  = 1
+
+       chl_lat0 = inp_lat0
+       chl_nlon = inp_gNx
+       chl_nlat = inp_gNy
+       chl_lon_inc = inp_dLon
+       chl_interpMethod  = 1
+       
        DO j=1,MAX_LAT_INC
         Si_lat_inc(j)    = inp_dLat(j)
+        3DSi_lat_inc(j)  = inp_dLat(j)
         par_lat_inc(j)   = inp_dLat(j)
         Fe_lat_inc(j)    = inp_dLat(j)
         apco2_lat_inc(j) = inp_dLat(j)
         wind_lat_inc(j)  = inp_dLat(j)
-        apres_lat_inc(j) = inp_dLat(j)
         ice_lat_inc(j)   = inp_dLat(j)
+        apres_lat_inc(j) = inp_dLat(j)
+        chl_lat_inc(j)   = inp_dLat(j)
        ENDDO
 
        READ(UNIT=iUnit, NML=GCHEM_INTERP_PARAMS)
@@ -369,6 +424,7 @@ C- Close the open data file
       errCount = 0
 
 #ifdef ALLOW_EXF
+C     gchem_useEXF and useExfYearlyFields
       IF ( gchem_useEXF .AND. useExfYearlyFields ) THEN
        IF ( gchem_parRepCycle.NE.0. ) THEN
         WRITE(msgBuf,'(2A)') 'GCHEM_READPARMS: The use of ',
@@ -388,6 +444,12 @@ C- Close the open data file
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
+       IF ( gchem_3DSiRepCycle.NE.0. ) THEN
+        WRITE(msgBuf,'(2A)') 'GCHEM_READPARMS: The use of ',
+     &    'useExfYearlyFields AND gchem_3DSiRepCycle is not implemented'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
        IF ( gchem_apco2RepCycle.NE.0. ) THEN
         WRITE(msgBuf,'(2A)') 'GCHEM_READPARMS: The use of ',
      &   'useExfYearlyFields AND gchem_apco2RepCycle is not implemented'
@@ -400,20 +462,33 @@ C- Close the open data file
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
-       IF ( gchem_apresRepCycle.NE.0. ) THEN
-        WRITE(msgBuf,'(2A)') 'GCHEM_READPARMS: The use of ',
-     &   'useExfYearlyFields AND gchem_apresRepCycle is not implemented'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        errCount = errCount + 1
-       ENDIF
        IF ( gchem_iceRepCycle.NE.0. ) THEN
         WRITE(msgBuf,'(2A)') 'GCHEM_READPARMS: The use of ',
      &   'useExfYearlyFields AND gchem_iceRepCycle is not implemented'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
-C     gchem_useEXF and useExfYearlyFields
+       IF ( gchem_apresRepCycle.NE.0. ) THEN
+        WRITE(msgBuf,'(2A)') 'GCHEM_READPARMS: The use of ',
+     &   'useExfYearlyFields AND gchem_apresRepCycle is not implemented'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+       IF ( gchem_chlRepCycle.NE.0. ) THEN
+        WRITE(msgBuf,'(2A)') 'GCHEM_READPARMS: The use of ',
+     &    'useExfYearlyFields AND gchem_chlRepCycle is not implemented'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+C     useEXF and useExfYearlyFields
+#ifndef GCHEM_3D_SILICA
+      IF ( gchem_3DSiFile .NE. ' ' ) THEN
+        WRITE(msgBuf,'(2A)') 'GCHEM_READPARMS: The use of ',
+     &   'gchem_3DSiFile is not implemented unless GCHEM_3D_SILICA is defined'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
       ENDIF
+#endif
 #endif /* ALLOW_EXF */
 
 C- Check for retired parameters:

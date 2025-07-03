@@ -97,6 +97,19 @@ c      ENDIF
      I                          myThid )
        ENDIF
 
+#ifdef GCHEM_3D_SILICA
+       IF ( gchem_Si3DFile .NE. ' ' ) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START silica3D',myThid)
+# endif
+        CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                          'gchem', '3DSi', gchem_3DSiPeriod,
+     I                          gchem_3DSiStartDate1, gchem_3DSiStartDate2,
+     U                          gchem_3DSiStartTime, errCount,
+     I                          myThid )
+       ENDIF
+#endif
+
        IF ( gchem_parFile .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START PAR',myThid)
@@ -105,6 +118,39 @@ c      ENDIF
      I                         'gchem', 'PAR', gchem_parPeriod,
      I                         gchem_parStartDate1, gchem_parStartDate2,
      U                         gchem_parStartTime, errCount,
+     I                         myThid )
+       ENDIF
+
+       IF ( gchem_apresFile .NE. ' ' ) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START APRES',myThid)
+# endif
+        CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                         'gchem', 'APRES', gchem_apresPeriod,
+     I                         gchem_apresStartDate1, gchem_apresStartDate2,
+     U                         gchem_apresStartTime, errCount,
+     I                         myThid )
+       ENDIF
+
+       IF ( gchem_windFile .NE. ' ' ) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START wind',myThid)
+# endif
+        CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                         'gchem', 'wind', gchem_windPeriod,
+     I                         gchem_windStartDate1, gchem_windStartDate2,
+     U                         gchem_windStartTime, errCount,
+     I                         myThid )
+       ENDIF
+       
+       IF ( gchem_iceFile .NE. ' ' ) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START ice',myThid)
+# endif
+        CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                         'gchem', 'ice', gchem_icePeriod,
+     I                         gchem_iceStartDate1, gchem_iceStartDate2,
+     U                         gchem_iceStartTime, errCount,
      I                         myThid )
        ENDIF
 
@@ -131,6 +177,17 @@ c      ENDIF
      I                         myThid )
        ENDIF
 
+IF ( gchem_chlfile .NE. ' ' ) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START CHL',myThid)
+# endif
+        CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                         'gchem', 'chl', chlperiod,
+     I                         chlstartdate1, chlstartdate2,
+     U                         chlStartTime, errCount,
+     I                         myThid )
+       ENDIF
+       
        _END_MASTER( myThid )
 
 C     endif gchem_useEXF

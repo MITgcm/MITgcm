@@ -19,14 +19,21 @@ CEOP
 
 #ifdef GCHEM_ALLOW_FFIELDS
       COMMON /GCHEM_FORCING_R/
+#ifdef GCHEM_3D_SILICATE
+     &    gchem3DSi,
+#endif
      &    gchemSi,
      &    gchemPAR,
      &    gchemFe,
      &    gchemapCO2,
      &    gchemIce,
      &    gchemWind,
-     &    gchemAtmosP
+     &    gchemAtmosP,
+     &    gchemChl
 
+#ifdef GCHEM_3D_SILICATE
+      _RL gchem3DSi  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif
       _RL gchemSi    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL gchemPAR   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL gchemFe    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -34,6 +41,7 @@ CEOP
       _RL gchemIce   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL gchemWind  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL gchemAtmosP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL gchemChl   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif /* GCHEM_ALLOW_FFIELDS */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

@@ -17,14 +17,22 @@ C--   COMMON /GCHEM_LOAD_I/
 #ifdef GCHEM_ALLOW_FFIELDS
 C--   COMMON /GCHEM_AUX_FIELDS_R/
       COMMON /GCHEM_AUX_FIELDS_R/
+#ifdef GCHEM_3D_SILICA
+      &    gchem3DSi0, gchem3DSi1,
+#endif
      &    gchemSi0, gchemSi1,
      &    gchemPAR0, gchemPAR1,
      &    gchemFe0, gchemFe1,
      &    gchemApco20, gchemApco21,
      &    gchemIce0, gchemIce1,
      &    gchemWind0, gchemWind1,
-     &    gchemApres0, gchemApres1
+     &    gchemApres0, gchemApres1,
+     &    gchemChl0, gchemChl1
 
+#ifdef GCHEM_3D_SILICA
+      _RL gchem3DSi0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL gchem3DSi1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif
       _RL gchemSi0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL gchemSi1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
@@ -46,5 +54,8 @@ C--   COMMON /GCHEM_AUX_FIELDS_R/
       _RL gchemApres0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL gchemApres1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif /* GCHEM_ALLOW_FFIELDS */
+
+      _RL gchemChl0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL gchemChl1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
