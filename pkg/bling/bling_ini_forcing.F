@@ -1,3 +1,4 @@
+#include "GCHEM_OPTIONS.h"
 #include "BLING_OPTIONS.h"
 
 CBOP
@@ -59,6 +60,7 @@ c !LOCAL VARIABLES: ===================================================
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
+#ifdef GCHEM_ALLOW_FFIELDS
            fIce(i,j,bi,bj)    = gchemIce(i,j,bi,bj)
            wind(i,j,bi,bj)    = gchemWind(i,j,bi,bj)
 C     Atm pressure in Pascals, convert to atm
@@ -67,6 +69,15 @@ C     Atm pressure in Pascals, convert to atm
 c          PAR(i,j,bi,bj)     = gchemPAR(i,j,bi,bj)
            inputFe(i,j,bi,bj) = gchemFe(i,j,bi,bj)
            apCO2(i,j,bi,bj)   = gchemapCO2(i,j,bi,bj)
+#else
+           fIce(i,j,bi,bj)    = 0. _d 0
+           wind(i,j,bi,bj)    = 0. _d 0
+           AtmosP(i,j,bi,bj)  = 0. _d 0
+           silica(i,j,bi,bj)  = 0. _d 0
+c          PAR(i,j,bi,bj)     = 0. _d 0
+           inputFe(i,j,bi,bj) = 0. _d 0
+           apCO2(i,j,bi,bj)   = 0. _d 0
+#endif
            fluxCO2(i,j,bi,bj) = 0. _d 0
           ENDDO
          ENDDO

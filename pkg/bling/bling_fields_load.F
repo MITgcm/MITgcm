@@ -1,3 +1,4 @@
+#include "GCHEM_OPTIONS.h"
 #include "BLING_OPTIONS.h"
 
 CBOP
@@ -30,7 +31,7 @@ C  myTime               :: current time
       _RL myTime
       INTEGER myThid
 
-#ifdef ALLOW_BLING
+#if defined ALLOW_BLING && GCHEM_ALLOW_FFIELDS
 
 C !LOCAL VARIABLES: ===================================================
       INTEGER bi, bj, i, j

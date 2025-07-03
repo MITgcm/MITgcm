@@ -17,6 +17,7 @@ CEOP
      &     gchemTendency
 #endif /* GCHEM_ADD2TR_TENDENCY */
 
+#ifdef GCHEM_ALLOW_FFIELDS
       COMMON /GCHEM_FORCING_R/
      &    gchemSi,
      &    gchemPAR,
@@ -33,5 +34,6 @@ CEOP
       _RL gchemIce   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL gchemWind  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL gchemAtmosP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif /* GCHEM_ALLOW_FFIELDS */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

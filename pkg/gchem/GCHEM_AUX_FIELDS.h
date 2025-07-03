@@ -14,6 +14,7 @@ C--   COMMON /GCHEM_LOAD_I/
       COMMON /GCHEM_LOAD_I/ GCHEM_ldRec
       INTEGER GCHEM_ldRec(nSx,nSy)
 
+#ifdef GCHEM_ALLOW_FFIELDS
 C--   COMMON /GCHEM_AUX_FIELDS_R/
       COMMON /GCHEM_AUX_FIELDS_R/
      &    gchemSi0, gchemSi1,
@@ -44,5 +45,6 @@ C--   COMMON /GCHEM_AUX_FIELDS_R/
 
       _RL gchemApres0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL gchemApres1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif /* GCHEM_ALLOW_FFIELDS */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

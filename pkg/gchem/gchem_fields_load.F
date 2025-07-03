@@ -40,6 +40,7 @@ C  myThid               :: thread number
       INTEGER myIter
       INTEGER myThid
 
+#ifdef GCHEM_ALLOW_FFIELDS
 C !LOCAL VARIABLES: ===================================================
       INTEGER bi, bj, i, j
       INTEGER intimeP, intime0, intime1
@@ -378,6 +379,7 @@ C pkg/seaice/thsIce
         ENDDO
        ENDDO
       ENDIF
+#endif /* GCHEM_ALLOW_FFIELDS */
 
 C     now the various BGC packages can use the gchem fields
 #ifdef ALLOW_DIC

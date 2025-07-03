@@ -42,8 +42,10 @@ C  i,j,k,bi,bj          :: loop indices
 C  jTr                  :: ptracer number
       INTEGER bi,bj
       INTEGER i,j
+#ifdef GCHEM_ALLOW_FFIELDS
       INTEGER intimeP, intime0, intime1
       _RL aWght,bWght
+#endif
 #ifdef GCHEM_ADD2TR_TENDENCY
       INTEGER k
       INTEGER jTr
@@ -69,6 +71,7 @@ C--   Initialise GCHEM variables:
 
 C-- Initialize Geo-Chemistry forcing fields
 
+#ifdef GCHEM_ALLOW_FFIELDS
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 C     First call requires that we initialize everything to zero for safety
@@ -234,6 +237,7 @@ C     gchem_useEXF
       _EXCH_XY_RL( gchemPAR, myThid )
       _EXCH_XY_RL( gchemFe, myThid )
       _EXCH_XY_RL( gchemapCO2, myThid )
+#endif /* GCHEM_ALLOW_FFIELDS */
 
 C--   Initialise other Geo-Chemistry pkg variables:
 

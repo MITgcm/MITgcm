@@ -1,3 +1,4 @@
+#include "GCHEM_OPTIONS.h"
 #include "BLING_OPTIONS.h"
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
@@ -530,6 +531,35 @@ C OCMIP2 Coefficients from S/R CARBON_COEFFS in CARBON_CHEM.F
       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
 #endif
 
+#ifdef CARBONCHEM_SOLVESAPHE
+      IF ( selectHFconst.GT.2 .OR. selectBTconst.GT.2
+     & .OR. selectFTconst.GT.2 ) THEN
+        WRITE(msgBuf,'(2A)')
+     &    'BLING_READPARMS: selectHF, selectBT or selectFT > 2, '
+     &    'solvesaphe_const error'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ELSEIF ( selectK1K2const.GT.6 ) THEN
+        WRITE(msgBuf,'(A)')
+     &    'BLING_READPARMS: selectK1K2const > 6, solvesaphe_const error'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ELSEIF ( selectPHsolver.GT.3 ) THEN
+        WRITE(msgBuf,'(A)')
+     &    'BLING_READPARMS: selectPHsolver > 3, select pH solver error'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+#endif
+
+#ifndef GCHEM_ALLOW_FFIELDS
+      WRITE(msgBuf,'(2A)')
+     &     'BLING requires ',
+     &     '#defined GCHEM_ALLOW_FFIELDS in GCHEM_OPTIONS.h'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      errCount = errCount + 1
+#endif
+
       IF ( errCount.GE.1 ) THEN
        WRITE(msgBuf,'(A,I3,A)')
      &     'BLING_READPARMS: detected', errCount,' fatal error(s)'
@@ -537,27 +567,6 @@ C OCMIP2 Coefficients from S/R CARBON_COEFFS in CARBON_CHEM.F
        CALL ALL_PROC_DIE( 0 )
        STOP 'ABNORMAL END: S/R BLING_READPARMS'
       ENDIF
-
-#ifdef CARBONCHEM_SOLVESAPHE
-      IF ( selectHFconst.GT.2 .OR. selectBTconst.GT.2
-     & .OR. selectFTconst.GT.2 ) THEN
-        WRITE(msgBuf,'(A)')
-     &    'BLING_READPARMS: selectHF, selectBT or selectFT > 2'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R BLING_READPARMS: solvesaphe_const error'
-      ELSEIF ( selectK1K2const.GT.6 ) THEN
-        WRITE(msgBuf,'(A)')
-     &    'BLING_READPARMS: selectK1K2const > 6 '
-        CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R BLING_READPARMS: solvesaphe_const error'
-      ELSEIF ( selectPHsolver.GT.3 ) THEN
-        WRITE(msgBuf,'(A)')
-     &    'BLING_READPARMS: selectPHsolver > 3 '
-        CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R BLING_READPARMS: select pH solver error'
-      ENDIF
-#endif
-
       _END_MASTER(myThid)
 
 C--   Everyone else must wait for the parameters to be loaded
