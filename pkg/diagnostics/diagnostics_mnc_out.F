@@ -117,7 +117,7 @@ c       dn(1)(1:NLEN) = dn_blnk(1:NLEN)
         CALL MNC_CW_ADD_VNAME('diag_levels', 'diag_levels',
      &       0,0, myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('diag_levels','description',
-     &       'Idicies of vertical levels within the source arrays',
+     &       'Indicies of vertical levels within the source arrays',
      &       myThid)
 C     suppress the missing value attribute (iflag = 0)
         CALL MNC_CW_VATTR_MISSING('diag_levels', 0,

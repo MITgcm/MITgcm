@@ -1,4 +1,4 @@
-# Diagnostic Package Choices
+# Diagnostics Package Choices
 #--------------------
 #  dumpAtLast (logical): always write output at the end of simulation (default=F)
 #  diag_mnc   (logical): write to NetCDF files (default=useMNC)
@@ -21,33 +21,17 @@
 # diag_mnc     = .FALSE.,
 # dumpAtLast   = .TRUE.,
 #--
-  fields(1:4,1)  = 'ETAN    ','PHI_SURF',
-                   'oceTAUX ','oceTAUY ',
-#                  'botTauX ','botTauY ',
-   fileName(1) = 'srfDiag',
-  fileFlags(1) = 'D       ',
-  frequency(1) = -36000.,
+  fields(1,1) = 'RHOAnoma',
+  fileName(1) = 'Rho',
+  frequency(1) = 86400.,
 
-  fields(1:14,6) = 'UVEL    ','VVEL    ','TOTUTEND','TOTVTEND',
-                   'Um_Advec','Vm_Advec','Um_dPHdx','Vm_dPHdy',
-                   'Um_Ext  ','Vm_Ext  ','Um_Diss ','Vm_Diss ',
-#                  'Um_ImplD','Vm_ImplD',
-                   'AB_gU   ','AB_gV   ',
-#                  'VISrI_Um','VISrI_Vm',
-#                  'UBotDrag','VBotDrag',
-#                  'Um_Cori ','Vm_Cori ','Um_AdvZ3','Vm_AdvZ3',
-#                  'Um_AdvRe','Vm_AdvRe','USidDrag','VSidDrag',
-#                  'Um_dPhiX','Vm_dPhiY','momKE   ',
-   fileName(6) = 'momDiag',
-  fileFlags(6) = 'D       ',
-  frequency(6) = -36000.,
-#
-  fields(1:1,7)  = 'PHI_NH  ',
-   fileName(7) = 'pnhDiag',
-  fileFlags(7) = 'D       ',
-  timePhase(7) =  21600.,
-  frequency(7) = -36000.,
+  fields(1,2) = 'PHIHYD  ',
+  frequency(2) = 86400.,
+  fileName(2) = 'P0',
 
+  fields(1,3) = 'DRHODR  ',
+  fileName(3) = 'N2',
+  frequency(3) = 86400.,
  &
 
 #--------------------
@@ -68,10 +52,10 @@
 #                (see "available_diagnostics.log" file for the full list of diags)
 #--------------------
  &DIAG_STATIS_PARMS
-# diagSt_mnc    = .TRUE.,
- stat_fields(1:4,1)  = 'ETAN    ','PHI_SURF','RSURF   ','PHI_NH  ',
+#---
+ stat_fields(1:6,1)  = 'ETAN    ','UVEL    ','VVEL    ','WVEL    ',
+                       'THETA   ','Wm_Metr ',
+#                      'Um_Metr ','Vm_Metr ',  <-- these 2 are empty
   stat_fName(1) = 'dynStDiag',
-   stat_freq(1) = 3600.,
-  stat_phase(1) = 0.,
+   stat_freq(1) = 1800.,
  &
-
