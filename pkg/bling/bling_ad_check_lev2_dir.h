@@ -13,8 +13,8 @@ CADJ STORE phyto_diaz        = tapelev2, key = ilev_2
 # endif
 
 #ifdef ALLOW_EXF
-CADJ STORE apressure         = tapelev2, key = ilev_2
-CADJ STORE wspeed            = tapelev2, key = ilev_2
+cCADJ STORE apressure         = tapelev2, key = ilev_2
+cCADJ STORE wspeed            = tapelev2, key = ilev_2
 # endif
 
 #endif /* ALLOW_BLING */
