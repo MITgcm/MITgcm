@@ -31,7 +31,7 @@ C  myTime               :: current time
       _RL myTime
       INTEGER myThid
 
-#if defined ALLOW_BLING && GCHEM_ALLOW_FFIELDS
+#if defined ALLOW_BLING && defined GCHEM_ALLOW_FFIELDS
 
 C !LOCAL VARIABLES: ===================================================
       INTEGER bi, bj, i, j
@@ -57,6 +57,6 @@ c         PAR(i,j,bi,bj)     = gchemPAR(i,j,bi,bj)
         ENDDO
        ENDDO
       ENDDO
-#endif /* ALLOW_BLING */
+#endif /* ALLOW_BLING && GCHEM_ALLOW_FFIELDS */
       RETURN
       END
