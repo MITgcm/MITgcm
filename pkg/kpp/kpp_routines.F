@@ -683,7 +683,7 @@ C     since we do not have rF available we try to reconstruct as
 C     zgrid+0.5*hwide = rC+0.5*drF; this is only accurate if rC is
 C     really at the cell centers, which is not always the case
          rFac = MAX( (hbl(i)+zgrid(k)+p5*hwide(k))/hwide(k), zeroRL )
-         worka(i) = swatt(i,k) - rFac*(swatt(i,k)-swatt(i,k+1))
+         worka(i) = swatt(i,k) + rFac*(swatt(i,k+1)-swatt(i,k))
         ENDDO
        ELSE
         DO i = 1, imt
@@ -819,7 +819,7 @@ CADJ incomplete worka
         DO i = 1, imt
          k = kbl(i)
          rFac = MAX( (hbl(i)+zgrid(k)+p5*hwide(k))/hwide(k), zeroRL )
-         worka(i) = swatt(i,k) - rFac*(swatt(i,k)-swatt(i,k+1))
+         worka(i) = swatt(i,k) + rFac*(swatt(i,k+1)-swatt(i,k))
         ENDDO
        ELSE
         DO i = 1, imt

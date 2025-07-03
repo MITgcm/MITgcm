@@ -196,12 +196,12 @@ c     kmtj   (nx,ny)       - maximum number of wet levels in each column
       _RL vddiff( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, 0:Nrp1, mdiff )
       _RL ghat  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr            )
       _RL hbl   ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
-      INTEGER kbl(1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
 cph(
       _RL TTALPHA( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
       _RL SSBETA ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
 cph)
 #ifdef SHORTWAVE_HEATING
+      INTEGER kbl(1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
 C     interpolation factor 1 >= (KPPhbl+rF(kbl))/drF(kbl) >= 0
       _RL rFac
 #endif
@@ -633,7 +633,7 @@ cph)
 #ifdef SHORTWAVE_HEATING
       IF ( selectPenetratingSW .GE. 1 ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
-C     Avoid ueslessly recomputing this block because of re-using worka
+C     Avoid uselessly recomputing this block because of re-using worka
 CADJ INCOMPLETE worka
 #endif
        IF ( KPPuseSWfrac3D ) THEN
@@ -642,9 +642,9 @@ C     bottom of the mixed layer by interpolation.
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           k = kbl(i,j)
-          rFac = MAX( (KPPhbl(i,j,bi,bj)+rF(k))/drF(k), zeroRL )
+          rFac = MAX( (KPPhbl(i,j,bi,bj)+rF(k))*recip_drF(k), zeroRL )
           worka(i,j) = SWFrac3D(i,j,k,bi,bj)
-     &         - rFac*(SWFrac3D(i,j,k,bi,bj) - SWFrac3D(i,j,k+1,bi,bj))
+     &         + rFac*(SWFrac3D(i,j,k+1,bi,bj) - SWFrac3D(i,j,k,bi,bj))
          ENDDO
         ENDDO
        ELSE
@@ -672,7 +672,7 @@ C     the bottom of the mixing layer.
 C     Compute fraction of saltplume (flux) penetrating to
 C     the bottom of the mixing layer.
 #ifdef ALLOW_AUTODIFF_TAMC
-C     Avoid ueslessly recomputing the previous block because of worka
+C     Avoid uselessly recomputing the previous block because of worka
 CADJ INCOMPLETE worka
 #endif
       IF ( useSALT_PLUME ) THEN
