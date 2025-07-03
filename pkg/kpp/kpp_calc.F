@@ -153,13 +153,10 @@ c     iMin, iMax, jMin, jMax  - array computation indices
       PARAMETER(iMin=2-OLx,iMax=sNx+OLx-1,jMin=2-OLy,jMax=sNy+OLy-1)
 
 c Local arrays and variables
-c     work?  (nx,ny)       - horizontal working arrays
-c     temp?  (nx,ny,Nr)    - 3d working arrays
 c     sdens  (nx,ny        - density of surface layer                (kg/m^3)
 c     ustar  (nx,ny)       - surface friction velocity                  (m/s)
 c     bo     (nx,ny)       - surface turbulent buoyancy forcing     (m^2/s^3)
 c     bosol  (nx,ny)       - surface radiative buoyancy forcing     (m^2/s^3)
-c     boplume(nx,ny,Nrp1)  - surface haline buoyancy forcing        (m^2/s^3)
 c     shsq   (nx,ny,Nr)    - local velocity shear squared
 c                            at interfaces for ri_iwmix             (m^2/s^2)
 c     dVsq   (nx,ny,Nr)    - velocity shear re surface squared
@@ -175,20 +172,13 @@ c     ghat   (nx,ny,Nr)    - nonlocal transport coefficient           (s/m^2)
 c     hbl    (nx,ny)       - mixing layer depth                           (m)
 c     kbl    (nx,ny)       - k-cell index of mixing layer depth
 c     kmtj   (nx,ny)       - maximum number of wet levels in each column
-      _RL worka ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
+c     work?  (nx,ny)       - horizontal working arrays
+c     temp?  (nx,ny,Nr)    - 3d working arrays
+c     boplume(nx,ny,Nrp1)  - surface haline buoyancy forcing        (m^2/s^3)
       _RL sdens ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
       _RL ustar ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
       _RL bo    ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
       _RL bosol ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
-#ifdef ALLOW_SALT_PLUME
-      _RL temp1   ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr          )
-      _RL temp2   ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr          )
-      _RL boplume ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1        )
-#ifdef SALT_PLUME_SPLIT_BASIN
-      _RL lon ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                  )
-      _RL lat ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                  )
-#endif /* SALT_PLUME_SPLIT_BASIN */
-#endif /* ALLOW_SALT_PLUME */
       _RL shsq  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr            )
       _RL dVsq  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr            )
       _RL dbloc ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr            )
@@ -200,14 +190,26 @@ cph(
       _RL TTALPHA( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
       _RL SSBETA ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
 cph)
+#if ( defined ALLOW_SALT_PLUME || defined SHORTWAVE_HEATING )
+      _RL worka ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
+#endif
+#ifdef ALLOW_SALT_PLUME
+      _RL temp1   ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr          )
+      _RL temp2   ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr          )
+      _RL boplume ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1        )
+#ifdef SALT_PLUME_SPLIT_BASIN
+      _RL lon ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                  )
+      _RL lat ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                  )
+#endif /* SALT_PLUME_SPLIT_BASIN */
+#endif /* ALLOW_SALT_PLUME */
 #ifdef SHORTWAVE_HEATING
       INTEGER kbl(1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
 C     interpolation factor 1 >= (KPPhbl+rF(kbl))/drF(kbl) >= 0
       _RL rFac
 #endif
-      integer i, j, kSurf, k, kp1, km1, im1, ip1, jm1, jp1
+      INTEGER i, j, kSurf, k, kp1, km1, im1, ip1, jm1, jp1
 C     ikey :: tape key (depends on tiles)
-      integer ikey
+      INTEGER ikey
 CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC

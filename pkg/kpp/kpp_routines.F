@@ -410,7 +410,6 @@ c  local
 c-------
 c wm, ws    : turbulent velocity scales         (m/s)
       _RL wm(imt), ws(imt)
-      _RL worka(imt)
       _RL bvsq, vtsq, hekman, hmonob, hlimit, tempVar1, tempVar2
       INTEGER i, kl
 
@@ -418,6 +417,9 @@ c wm, ws    : turbulent velocity scales         (m/s)
       PARAMETER ( p5=0.5, eins=1.0 )
       _RL         minusone
       PARAMETER ( minusone=-1.0 )
+#if ( defined ALLOW_SALT_PLUME || defined SHORTWAVE_HEATING )
+      _RL worka(imt)
+#endif
 #ifdef SHORTWAVE_HEATING
       INTEGER k
       _RL rFac
