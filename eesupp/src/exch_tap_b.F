@@ -147,7 +147,6 @@ c [llh] the following PUSHREAL8ARRAY could certainly be refined!
 c [ssg] for halfpipe_streamice
 c      CALL PUSHREAL8ARRAY(array, 26**2*2)
 c [ssg] for tutorial_global_oce_biogeo
-      CALL PUSHREAL8ARRAY(array, 72*40*2*2)
       CALL PUSHBOOLEAN(withSigns)
       CALL PUSHINTEGER4(myOLw)
       CALL PUSHINTEGER4(myOLe)
@@ -191,14 +190,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       INTEGER cornerMode
       INTEGER myThid
 
-      CALL POPINTEGER4(exchWidthY)
-      CALL POPINTEGER4(exchWidthX)
-      CALL POPINTEGER4(myNz)
-      CALL POPINTEGER4(myOLn)
-      CALL POPINTEGER4(myOLs)
-      CALL POPINTEGER4(myOLe)
-      CALL POPINTEGER4(myOLw)
       CALL POPBOOLEAN(withSigns)
+      CALL POPINTEGER4(myOLw)
+      CALL POPINTEGER4(myOLe)
+      CALL POPINTEGER4(myOLs)
+      CALL POPINTEGER4(myOLn)
+      CALL POPINTEGER4(myNz)
+      CALL POPINTEGER4(exchWidthX)
+      CALL POPINTEGER4(exchWidthY)
       CALL POPINTEGER4(cornerMode)
       CALL POPINTEGER4(myThid)
       CALL EXCH1_RL_CUBE_AD(
@@ -210,7 +209,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 c [ssg] for halfpipe_streamice
 c      CALL POPREAL8ARRAY(array, 26**2*2)
 c [ssg] for tutorial_global_oce_biogeo
-      CALL POPREAL8ARRAY(array, (snx+2*olx)*(sny+2*oly)*nsx*nsy)
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -293,8 +291,6 @@ c [llh] the following PUSHREAL8ARRAY could certainly be refined!
 c [ssg] for halfpipe_streamice
 c      CALL PUSHREAL8ARRAY(array, 26**2*2)
 c [ssg] for tutorial_global_oce_biogeo
-      CALL PUSHREAL8ARRAY(array, 
-     &     (snx+myole+myolw)*(sny+myols+myoln)*nsx*nsy*myNz)
       CALL PUSHINTEGER4(myOLw)
       CALL PUSHINTEGER4(myOLe)
       CALL PUSHINTEGER4(myOLs)
@@ -330,7 +326,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       INTEGER myThid
       INTEGER tempCM
       
-
       CALL POPINTEGER4(myThid)
       CALL POPINTEGER4(tempCM)
       CALL POPINTEGER4(exchWidthY)
@@ -340,9 +335,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       CALL POPINTEGER4(myOLs)
       CALL POPINTEGER4(myOLe)
       CALL POPINTEGER4(myOLw)
-
-      CALL POPREAL8ARRAY(array,
-     &     (snx+myole+myolw)*(sny+myols+myoln)*nsx*nsy*myNz)
       CALL EXCH1_RL_AD(arrayb, myOLw, myOLe, myOLs, myOLn,
      &     myNz, exchWidthX , exchWidthY, tempCM, myThid )
 c [ssg] for halfpipe_streamice
@@ -399,7 +391,6 @@ c [llh] the following PUSHREAL8ARRAY could certainly be refined!
 c [ssg] for halfpipe_streamice
 c      CALL PUSHREAL8ARRAY(array, 26**2*2)
 c [ssg] for tutorial_global_oce_biogeo
-      CALL PUSHREAL8ARRAY(array, (snx+2*olx)*(sny+2*oly)*nsx*nsy)
       CALL PUSHINTEGER4(myOLw)
       CALL PUSHINTEGER4(myOLe)
       CALL PUSHINTEGER4(myOLs)
@@ -435,18 +426,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       INTEGER myThid
       INTEGER tempCM
 
-      CALL PUSHREAL8ARRAY(array, (snx+2*olx)*(sny+2*oly)*nsx*nsy)
-      CALL PUSHINTEGER4(myOLw)
-      CALL PUSHINTEGER4(myOLe)
-      CALL PUSHINTEGER4(myOLs)
-      CALL PUSHINTEGER4(myOLn)
-      CALL PUSHINTEGER4(myNz)
-      CALL PUSHINTEGER4(exchWidthX)
-      CALL PUSHINTEGER4(exchWidthY)
-      CALL PUSHINTEGER4(cornerMode)
-      CALL PUSHINTEGER4(myThid)
-
-
       CALL POPINTEGER4(myThid)
       CALL POPINTEGER4(tempCM)
       CALL POPINTEGER4(exchWidthY)
@@ -459,8 +438,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       CALL EXCH1_RS_AD(arrayb, myOLw, myOLe, myOLs, myOLn,
      &     myNz, exchWidthX , exchWidthY, cornerMode, myThid )
 c [ssg] for tutorial_global_oce_biogeo
-      CALL POPREAL8ARRAY(array, (snx+myolw+myole)*(sny+myols+myoln)*
-     &      nsx*nsy*myNz)
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

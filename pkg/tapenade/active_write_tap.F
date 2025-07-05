@@ -180,6 +180,7 @@ C     !USES:
       IMPLICIT NONE
 
 C     == global variables ==
+#include "EEPARAMS.h"
 #include "SIZE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -198,25 +199,94 @@ C     myThid         :: thread number for this instance
       Real*8     dummy
       Real*8     dummyb
 
-c [llh] I believe this code should rather do nothing.
-c There is no reason to write in file the adjoint of active_var.
-cC     !LOCAL VARIABLES:
-c      CHARACTER*(2) adpref
-c      CHARACTER*(80) fname
-c      INTEGER myNr
-c      LOGICAL globalFile
-c      LOGICAL useCurrentDir
-cCEOP
-c      adpref = 'ad'
-c      CALL ADD_PREFIX( adpref, active_var_file, fname )
-c      myNr = 1
-c      globalFile = .FALSE.
-c      useCurrentDir = .FALSE.
-c      CALL ACTIVE_WRITE_3D_RL(
-c     &                 fname, active_varb, globalFile,
-c     &                 useCurrentDir, iRec, myNr,
-c     &                 1, myOptimIter, myThid )
-c      RETURN
+C     !LOCAL VARIABLES:
+      CHARACTER*(2) adpref
+      CHARACTER*(80) fname
+      INTEGER myNr
+      LOGICAL globalFile
+      LOGICAL useCurrentDir
+CEOP
+      adpref = 'ad'
+      CALL ADD_PREFIX( adpref, active_var_file, fname )
+      myNr = 1
+      globalFile = .FALSE.
+      useCurrentDir = .FALSE.
+      CALL ACTIVE_WRITE_3D_RL(
+     &                 fname, active_varb, globalFile,
+     &                 useCurrentDir, iRec, myNr,
+     &                 REVERSE_SIMULATION, myOptimIter, myThid )
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+CBOP
+C     !ROUTINE: ACTIVE_WRITE_XYZ_B
+C     !INTERFACE:
+      subroutine ACTIVE_WRITE_XYZ_B(
+     I                              active_var_file,
+     I                              active_var,
+     U                              active_varb,
+     I                              iRec,
+     I                              myOptimIter,
+     I                              myThid,
+     I                              dummy,
+     O                              dummyb
+     &                            )
+
+C     *==========================================================*
+C     | SUBROUTINE ACTIVE_WRITE_XYZ_B
+C     | o Reverse differentiation of ACTIVE_WRITE_XYZ.
+C     *==========================================================*
+C     | written by Shreyas Gaikwad, Laurent Hascoet in Nov 2022
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     == global variables ==
+#include "EEPARAMS.h"
+#include "SIZE.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     active_var_file:: filename
+C     active_var     :: array
+C     active_varb    :: reverse derivative of active_var
+C     iRec           :: record number
+C     myOptimIter    :: number of optimization iteration (default: 0)
+C     myThid         :: thread number for this instance
+      CHARACTER*(80) active_var_file
+      Real*8     active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      Real*8     active_varb(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      INTEGER iRec
+      INTEGER myOptimIter
+      INTEGER myThid
+      Real*8     dummy
+      Real*8     dummyb
+
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
+C     !LOCAL VARIABLES:
+      CHARACTER*(2) adpref
+      CHARACTER*(80) fname
+      INTEGER il
+      INTEGER myNr
+      LOGICAL globalFile
+      LOGICAL useCurrentDir
+CEOP
+      adpref = 'ad'
+      CALL ADD_PREFIX( adpref, active_var_file, fname )
+      myNr = Nr
+      globalFile = .FALSE.
+      useCurrentDir = .FALSE.
+      CALL ACTIVE_WRITE_3D_RL(
+     &                 fname, active_varb, globalFile,
+     &                 useCurrentDir, iRec, myNr,
+     &                 REVERSE_SIMULATION, myOptimIter, myThid )
+      RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -260,22 +330,19 @@ C     myThid         :: thread number for this instance
       INTEGER myThid
       Real*8     dummy
 
-C     !LOCAL VARIABLES:
-      CHARACTER*(2) adpref
-      CHARACTER*(80) fname
-      INTEGER myNr
-      LOGICAL globalFile
-      LOGICAL useCurrentDir
-CEOP
-      myNr = 1
-      globalFile = .FALSE.
-      useCurrentDir = .FALSE.
-      CALL ACTIVE_WRITE_3D_RL(
-     &                 active_var_file, active_var, globalFile,
-     &                 useCurrentDir, iRec, myNr,
-     &                 1, myOptimIter, myThid )
+      CALL active_write_xy(
+     I                 active_var_file,
+     I                 active_var,
+     I                 iRec,
+     I                 myOptimIter,
+     I                 myThid,
+     I                 dummy
+     &                    )
+
       RETURN
-      END
+
+      END      
+
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -323,14 +390,7 @@ C     myThid         :: thread number for this instance
       Real*8     dummy
       Real*8     dummyb
 
-      END
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-CBOP
-C     !ROUTINE: ACTIVE_WRITE_XYZ_B
-C     !INTERFACE:
-      subroutine ACTIVE_WRITE_XYZ_B(
+      CALL ACTIVE_WRITE_XY_B(
      I                              active_var_file,
      I                              active_var,
      U                              active_varb,
@@ -341,56 +401,6 @@ C     !INTERFACE:
      O                              dummyb
      &                            )
 
-C     *==========================================================*
-C     | SUBROUTINE ACTIVE_WRITE_XYZ_B
-C     | o Reverse differentiation of ACTIVE_WRITE_XYZ.
-C     *==========================================================*
-C     | written by Shreyas Gaikwad, Laurent Hascoet in Nov 2022
-C     *==========================================================*
-C     \ev
-
-C     !USES:
-      IMPLICIT NONE
-
-C     == global variables ==
-#include "SIZE.h"
-
-C     !INPUT/OUTPUT PARAMETERS:
-C     active_var_file:: filename
-C     active_var     :: array
-C     active_varb    :: reverse derivative of active_var
-C     iRec           :: record number
-C     myOptimIter    :: number of optimization iteration (default: 0)
-C     myThid         :: thread number for this instance
-      CHARACTER*(80) active_var_file
-      Real*8     active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      Real*8     active_varb(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      INTEGER iRec
-      INTEGER myOptimIter
-      INTEGER myThid
-      Real*8     dummy
-      Real*8     dummyb
-
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
-C     !LOCAL VARIABLES:
-      CHARACTER*(2) adpref
-      CHARACTER*(80) fname
-      INTEGER il
-      INTEGER myNr
-      LOGICAL globalFile
-      LOGICAL useCurrentDir
-CEOP
-      adpref = 'ad'
-      CALL ADD_PREFIX( adpref, active_var_file, fname )
-      myNr = Nr
-      globalFile = .FALSE.
-      useCurrentDir = .FALSE.
-      CALL ACTIVE_WRITE_3D_RL(
-     &                 fname, active_varb, globalFile,
-     &                 useCurrentDir, iRec, myNr,
-     &                 1, myOptimIter, myThid )
       RETURN
+
       END

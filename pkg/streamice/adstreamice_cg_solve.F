@@ -22,10 +22,105 @@ CBOP
      U                               adA_vv,     ! adjoint of matrix coeffs (output)
      I                               tolerance,
      I                               maxiters,
+     I                               myThid)
+C     *============================================================*
+C     | SUBROUTINE ADSTREAMICE_CG_SOLVE                            |
+C     | o wrapper for ADSTREAMICE_CG_SOLVE_RECALC                  |              
+C     *============================================================*
+
+C     !USES:
+      IMPLICIT NONE
+
+C     === Global variables ===
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+
+C     !INPUT/OUTPUT ARGUMENTS
+C     cg_Uin, cg_Vin - input and output velocities
+C     cg_Bu, cg_Bv - driving stress
+      _RL cg_Uin (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL cg_Vin (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL cg_Bu (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL cg_Bv (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL U_state (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL V_state (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL Bu_state (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL Bv_state (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL
+     & A_uu (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
+     & A_vu (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
+     & A_uv (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
+     & A_vv (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
+     & adA_uu (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
+     & adA_vu (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
+     & adA_uv (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
+     & adA_vv (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1)
+      _RL tolerance
+      INTEGER maxiters
+      INTEGER myThid
+
+#ifdef ALLOW_STREAMICE
+      INTEGER recalc_vel
+
+      recalc_vel = 0
+      CALL ADSTREAMICE_CG_SOLVE_RECALC(
+     U                               U_state,    ! velocities - need to be recalc ed
+     I                               cg_Bu,      ! adjoint of vel (input)
+     U                               V_state,    ! velocities - need to be recalc ed
+     I                               cg_Bv,      ! adjoint of vel (input)
+     I                               Bu_state,   ! to recalc velocities
+     U                               cg_Uin,     ! adjoint of RHS (output)
+     I                               Bv_state,   ! to recalc velocities
+     U                               cg_Vin,     ! adjoint of RHS (output)
+     I                               A_uu,       ! section of matrix that multiplies u and projects on u
+     U                               adA_uu,     ! adjoint of matrix coeffs (output)
+     I                               A_uv,       ! section of matrix that multiplies v and projects on u
+     U                               adA_uv,     ! adjoint of matrix coeffs (output)
+     I                               A_vu,       ! section of matrix that multiplies u and projects on v
+     U                               adA_vu,     ! adjoint of matrix coeffs (output)
+     I                               A_vv,       ! section of matrix that multiplies v and projects on v
+     U                               adA_vv,     ! adjoint of matrix coeffs (output)
+     I                               tolerance,
+     I                               maxiters,
+     I                               recalc_vel, 
+     I                               myThid)
+
+
+
+c       iters = streamice_max_cg_iter
+
+#endif
+      RETURN
+      END
+CEOP
+
+CBOP
+      SUBROUTINE ADSTREAMICE_CG_SOLVE_RECALC(
+     U                               U_state,    ! velocities - need to be recalc ed
+     I                               cg_Bu,      ! adjoint of vel (input)
+     U                               V_state,    ! velocities - need to be recalc ed
+     I                               cg_Bv,      ! adjoint of vel (input)
+     I                               Bu_state,   ! to recalc velocities
+     U                               cg_Uin,     ! adjoint of RHS (output)
+     I                               Bv_state,   ! to recalc velocities
+     U                               cg_Vin,     ! adjoint of RHS (output)
+     I                               A_uu,       ! section of matrix that multiplies u and projects on u
+     U                               adA_uu,     ! adjoint of matrix coeffs (output)
+     I                               A_uv,       ! section of matrix that multiplies v and projects on u
+     U                               adA_uv,     ! adjoint of matrix coeffs (output)
+     I                               A_vu,       ! section of matrix that multiplies u and projects on v
+     U                               adA_vu,     ! adjoint of matrix coeffs (output)
+     I                               A_vv,       ! section of matrix that multiplies v and projects on v
+     U                               adA_vv,     ! adjoint of matrix coeffs (output)
+     I                               tolerance,
+     I                               maxiters,
+     I                               recalc_vel,
      I                               myThid )
 C     *============================================================*
-C     | SUBROUTINE                                                 |
-C     | o                                                          |
+C     | SUBROUTINE ADSTREAMICE_CG_SOLVE_RECALC                     |
+C     | o called by ADSTREAMICE_CG_SOLVE or directly               |              
+C     | o can enable recalc of velocity if needed                  |              
 C     *============================================================*
 
 C     !USES:
@@ -60,6 +155,9 @@ C     cg_Bu, cg_Bv - driving stress
      & adA_vv (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1)
       _RL tolerance
       INTEGER maxiters
+      INTEGER recalc_vel ! 1 = recalculate forward velocity 
+                         !     before solving adjoint
+                         ! 0 = velocity already correct
       INTEGER myThid
 
 C     !LOCAL VARIABLES
@@ -102,8 +200,9 @@ c       iters = streamice_max_cg_iter
        ENDDO
       ENDDO
 
-#if !defined(ALLOW_OPENAD) & !defined(ALLOW_TAPENADE)
-      CALL STREAMICE_CG_SOLVE(
+!#if !defined(ALLOW_OPENAD) & !defined(ALLOW_TAPENADE)
+      if (recalc_vel .eq. 1) then
+       CALL STREAMICE_CG_SOLVE(
      &  U_state,
      &  V_state,
      &  Bu_state,
@@ -116,7 +215,8 @@ c       iters = streamice_max_cg_iter
      &  tmpiter,
      &  maxiters,
      &  myThid )
-#endif
+      endif
+!#endif
 
       tmpiter = 0
 

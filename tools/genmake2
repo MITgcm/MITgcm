@@ -19,6 +19,14 @@ Usage: "$0" [OPTIONS]
     -tap | --tap
           Generate a Makefile for a Tapenade build
 
+    -taparg ARG | --taparg ARG | -taparg=ARGS | --taparg=ARGS
+          Here, "ARG" or "ARGS" specifies a list of cmd line arguments
+          passed to the tapenade tool
+
+    -tapthread | --tapthread 
+          Uses the -lpthread linking option when compiling the executable
+          Intended to be used with tapenade
+
     -oad | --oad
 	  Generate a Makefile for an OpenAD built
 
@@ -1566,10 +1574,13 @@ for ac_option in "$@" ; do
         -taparg=* | --taparg)
             TAPARG=$ac_optarg ;;
 
+	-tapthread | --tapthread)
+	    TAPFFLAG=-lpthread ;;
 
-
-	-taparg | --taparg | -taparg=* | --taparg=*)
-	    TAPPASSCMD="true" ;;
+	-tapgcc | --tapgcc)
+	    ac_prev=TAPGCC ;;
+        -tapgcc=* | --tapgcc)
+            TAPGCC=$ac_optarg ;;
 
 	-oad | --oad)
 	    OPENAD="true" ; ALWAYS_USE_F90=1 ;;
@@ -2096,6 +2107,11 @@ if test ! "x$GSL" = x ; then
       INCLUDES="$INCLUDES $GSLINC"
       LIBS="$LIBS $GSLLIB"
 fi
+if test ! "x$TAPENADE" = x ; then
+      echo "  Turning on pthread with use of tapenade"
+      echo "  Enables asynchronous offloading of stack"
+      LIBS="$LIBS $TAPFFLAG"
+fi	
 #- if USE_EXTENDED_SRC is set, add EXTENDED_SRC_FLAG to FFLAGS :
 if test ! "x$USE_EXTENDED_SRC" = x ; then
       FFLAGS="$FFLAGS $EXTENDED_SRC_FLAG"
@@ -3418,6 +3434,8 @@ CPPCMD = cat \$< | ${CPP} \$(DEFINES) \$(INCLUDES) | ${S64}
 .f$FS90.o:
 	cp \$< \$(basename  \$<).$FS90
 	\$(F90C) \$(F90FLAGS) \$(F90OPTIM) -c \$(F90FIXEDFORMAT) \$(basename  \$<).$FS90
+adStack.o: adStack.c
+	\$(CC) \$(CFLAGS) \$(DEFINES) \$(INCLUDES) \$(TAPGCC) -c $<
 .c.o:
 	\$(CC) \$(CFLAGS) \$(DEFINES) \$(INCLUDES) -c \$<
 
