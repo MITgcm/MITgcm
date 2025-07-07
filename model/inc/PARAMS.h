@@ -190,6 +190,16 @@ C                           = 0: fully explicit
 C                           = 1: implicit on provisional velocity
 C                                (i.e., before grad.Eta increment)
 C                           = 2: fully implicit (combined with Impl Surf.Press)
+C     selectPenetratingSW :: select treatment of penetrating shortwave radiation
+C                            (requires to define SHORTWAVE_HEATING):
+C                           = 0: no shortwave penetration
+C                           = 1: constant in time and horizontally uniform
+C                                fraction of shortwave penetration (default)
+C                           = 2: constant in time, but non-uniform fraction of
+C                                shortwave penetration (not yet coded)
+C                           > 2: time varying fraction of shortwave penetration
+C                                according to external function (e.g. BGC model,
+C                                not yet coded)
 C     momForcingOutAB     :: =1: take momentum forcing contribution
 C                            out of (=0: in) Adams-Bashforth time stepping.
 C     tracForcingOutAB    :: =1: take tracer (Temp,Salt,pTracers) forcing contribution
@@ -239,7 +249,7 @@ C-    plotLevel           :: controls printing of field maps ; higher -> more fl
      &        saltAdvScheme, saltVertAdvScheme,
      &        selectKEscheme, selectVortScheme, selectMetricTerms,
      &        selectCoriScheme, select3dCoriScheme,
-     &        selectBotDragQuadr, pCellMix_select,
+     &        selectBotDragQuadr, selectPenetratingSW, pCellMix_select,
      &        readBinaryPrec, writeBinaryPrec,
      &        rwSuffixType, monitorSelect, debugLevel, plotLevel
       INTEGER cg2dMaxIters
@@ -270,6 +280,7 @@ C-    plotLevel           :: controls printing of field maps ; higher -> more fl
       INTEGER selectCoriScheme
       INTEGER select3dCoriScheme
       INTEGER selectBotDragQuadr
+      INTEGER selectPenetratingSW
       INTEGER pCellMix_select
       INTEGER readBinaryPrec
       INTEGER writeBinaryPrec
