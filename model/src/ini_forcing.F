@@ -35,7 +35,7 @@ C     i, j   :: Loop counters
       INTEGER bi, bj
       INTEGER  i, j
 #ifdef SHORTWAVE_HEATING
-      INTEGER  k, kp
+      INTEGER  k, km
       _RL SWFracK(Nr+1), swfac
 #endif
 CEOP
@@ -168,18 +168,18 @@ c        SWFracK(k) = ( phiRef(2*k-1) - phiRef(2*Nr+1) )*recip_gravity
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO k = 1,Nr+1
           swfac = 1. _d 0
-C     Here, kp is the index for the mask physically below the current level k.
+C     Here, km is the index for the mask physically below the interface k.
           IF ( usingZCoords ) THEN
-           kp = MIN(k,Nr)
+           km = MIN(k,Nr)
            IF ( k .EQ. Nr+1 ) swfac = 0. _d 0
           ELSE
-           kp = MAX(k-1,1)
+           km = MAX(k-1,1)
            IF ( k .EQ. 1 ) swfac = 0. _d 0
           ENDIF
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
             SWFrac3D(i,j,k,bi,bj) = SWFracK(k)*swfac
-     &           *maskC(i,j,kp,bi,bj)
+     &           *maskC(i,j,km,bi,bj)
            ENDDO
           ENDDO
          ENDDO
@@ -187,12 +187,12 @@ C     Here, kp is the index for the mask physically below the current level k.
        ENDDO
 C     endif selectPenetratingSW
       ENDIF
-#endif
+#endif /* SHORTWAVE_HEATING */
 #ifdef ATMOSPHERIC_LOADING
       IF ( pLoadFile .NE. ' '  ) THEN
        CALL READ_FLD_XY_RS( pLoadFile, ' ', pLoad, 0, myThid )
       ENDIF
-#endif
+#endif /* ATMOSPHERIC_LOADING */
 #ifdef ALLOW_ADDFLUID
       IF ( addMassFile .NE. ' ' ) THEN
        CALL READ_FLD_XYZ_RL( addMassFile, ' ', addMass, 0, myThid )
