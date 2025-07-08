@@ -52,7 +52,7 @@ C     ProfNo_tile  :: counter
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
       INTEGER kLev, prof_num
-      INTEGER chunk, chunkProf, c, recLen
+      INTEGER chunk, chunkProf, ic, recLen
       INTEGER i,j,bi,bj,iG,jG,num_file,num_var,ProfNo_tile
       INTEGER stopProfiles
       INTEGER fid, dimId, varId1, varId1a, varId1b
@@ -81,7 +81,7 @@ C     ProfNo_tile  :: counter
       LOGICAL exst
 
       INTEGER varId_intp1, varId_intp2, varId_intp11, varId_intp22
-      INTEGER varId_intp3, varId_intp4, varId_intp5, q, iINTERP
+      INTEGER varId_intp3, varId_intp4, varId_intp5, iq, iINTERP
       _RL tmp_i(1000,NUM_INTERP_POINTS)
       _RL tmp_j(1000,NUM_INTERP_POINTS)
       _RL tmp_weights(1000,NUM_INTERP_POINTS),tmp_sum_weights
@@ -157,10 +157,10 @@ C     ProfNo_tile  :: counter
         hhmmssMax=modelenddate(2)
 
         DO kLev = 1, NLEVELMAX
-         DO c = 1, 1000
+         DO ic = 1, 1000
           DO num_var = 1, NVARMAX
-           profiles_data_buff(kLev,c,num_var,bi,bj) = 0. _d 0
-           profiles_weight_buff(kLev,c,num_var,bi,bj) = 0. _d 0
+           profiles_data_buff  (kLev,ic,num_var,bi,bj) = 0. _d 0
+           profiles_weight_buff(kLev,ic,num_var,bi,bj) = 0. _d 0
           ENDDO
          ENDDO
         ENDDO
@@ -390,10 +390,10 @@ C     4) Default values
            prof_ind_avgbin(num_file,prof_num,bi,bj) = -999
 # endif /* ALLOW_PROFILES_SAMPLESPLIT_COST */
 
-           DO q = 1, NUM_INTERP_POINTS
-            prof_interp_i(num_file,prof_num,q,bi,bj) = 1
-            prof_interp_j(num_file,prof_num,q,bi,bj) = 1
-            prof_interp_weights(num_file,prof_num,q,bi,bj) = 0. _d 0
+           DO iq = 1, NUM_INTERP_POINTS
+            prof_interp_i(num_file,prof_num,iq,bi,bj) = 1
+            prof_interp_j(num_file,prof_num,iq,bi,bj) = 1
+            prof_interp_weights(num_file,prof_num,iq,bi,bj) = 0. _d 0
            ENDDO
 
            prof_interp_xC11  (num_file,prof_num,bi,bj) = -999. _d 0
@@ -496,24 +496,24 @@ C     If profilesDoGenGrid, then read interpolation coeffs and indices
      &            'INIT_FIXED: NF_GET_VARA_DOUBLE tmp_yCNINJ',
      &            err,bi,bj,myThid )
 
-             DO q = 1, iINTERP
-              vec_start2(1) = q
+             DO iq = 1, iINTERP
+              vec_start2(1) = iq
               vec_start2(2) = 1+chunk
               vec_count2(1) = 1
               vec_count2(2) = MIN(1000,ProfNo(num_file,bi,bj)-chunk)
 
               err = NF_GET_VARA_DOUBLE( fid, varId_intp3,
-     &             vec_start2,vec_count2, tmp_weights(1,q) )
+     &             vec_start2,vec_count2, tmp_weights(1,iq) )
               CALL PROFILES_NF_ERROR(
      &             'INIT_FIXED: NF_GET_VARA_DOUBLE tmp_weights',
      &             err,bi,bj,myThid )
               err = NF_GET_VARA_DOUBLE( fid, varId_intp4,
-     &             vec_start2,vec_count2, tmp_i(1,q) )
+     &             vec_start2,vec_count2, tmp_i(1,iq) )
               CALL PROFILES_NF_ERROR(
      &             'INIT_FIXED: NF_GET_VARA_DOUBLE tmp_i',
      &             err,bi,bj,myThid )
               err = NF_GET_VARA_DOUBLE(fid, varId_intp5,
-     &             vec_start2,vec_count2, tmp_j(1,q) )
+     &             vec_start2,vec_count2, tmp_j(1,iq) )
               CALL PROFILES_NF_ERROR(
      &             'INIT_FIXED: NF_GET_VARA_DOUBLE tmp_j',
      &             err,bi,bj,myThid )
@@ -521,23 +521,23 @@ C     If profilesDoGenGrid, then read interpolation coeffs and indices
             ENDIF !IF (profilesDoGenGrid)
 
 C     5.2) Loop through this chunk
-            DO c = 1, MIN(1000,ProfNo(num_file,bi,bj)-chunk)
+            DO ic = 1, MIN(1000,ProfNo(num_file,bi,bj)-chunk)
              IF (stopProfiles.EQ.0) THEN
 
               profIsInRunTime = 1
 
-              IF (( (tmpyymmdd(c).GT.yymmddMin).OR.
-     &             ((tmpyymmdd(c).EQ.yymmddMin) .AND.
-     &              (tmphhmmss(c).GT.hhmmssMin)) ) .AND.
-     &            ( (tmpyymmdd(c).LT.yymmddMax).OR.
-     &             ((tmpyymmdd(c).EQ.yymmddMax) .AND.
-     &              (tmphhmmss(c).LT.hhmmssMax)) )) THEN
-               hh = INT(tmphhmmss(c))/10000
+              IF (( (tmpyymmdd(ic).GT.yymmddMin).OR.
+     &             ((tmpyymmdd(ic).EQ.yymmddMin) .AND.
+     &              (tmphhmmss(ic).GT.hhmmssMin)) ) .AND.
+     &            ( (tmpyymmdd(ic).LT.yymmddMax).OR.
+     &             ((tmpyymmdd(ic).EQ.yymmddMax) .AND.
+     &              (tmphhmmss(ic).LT.hhmmssMax)) )) THEN
+               hh = INT(tmphhmmss(ic))/10000
                IF (hh.LT.hoursPerDay) THEN
                 profIsInRunTime = 1
 
-                CALL CAL_FULLDATE( INT(tmpyymmdd(c)),
-     &               INT(tmphhmmss(c)),tmpdate,myThid )
+                CALL CAL_FULLDATE( INT(tmpyymmdd(ic)),
+     &               INT(tmphhmmss(ic)),tmpdate,myThid )
                 CALL CAL_TIMEPASSED( modelstartdate,tmpdate,
      &               tmpdiff,myThid )
                 CALL CAL_TOSECONDS(
@@ -557,7 +557,7 @@ C     If tmp hhmmss is out of range then disregard profile
                profIsInRunTime = 0
                diffsecs = -deltaTClock
 
-              ENDIF !IF (( (tmpyymmdd(c)
+              ENDIF !IF (( (tmpyymmdd(ic)
 
 C     5.2a) Determine profiles in current tile domain (lat-lon grid case)
               IF ( (.NOT.profilesDoGenGrid) .AND.
@@ -568,19 +568,19 @@ C     5.2a) Determine profiles in current tile domain (lat-lon grid case)
                 tmp_lon = xC(sNx+1,1,bi,bj)
                ENDIF
 
-               IF ( (xC(1,1,bi,bj).LE.tmp_lon2(c)) .AND.
-     &              (tmp_lon.GT.tmp_lon2(c)) .AND.
-     &              (yC(1,1,bi,bj).LE.tmp_lat2(c)) .AND.
-     &              (yC(1,sNy+1,bi,bj).GT.tmp_lat2(c)) ) THEN
-                lon_cur = tmp_lon2(c)
-                lat_cur = tmp_lat2(c)
+               IF ( (xC(1,1,bi,bj).LE.tmp_lon2(ic)) .AND.
+     &              (tmp_lon.GT.tmp_lon2(ic)) .AND.
+     &              (yC(1,1,bi,bj).LE.tmp_lat2(ic)) .AND.
+     &              (yC(1,sNy+1,bi,bj).GT.tmp_lat2(ic)) ) THEN
+                lon_cur = tmp_lon2(ic)
+                lat_cur = tmp_lat2(ic)
                ELSEIF ( (xC(sNx+1,1,bi,bj).LT.xC(1,1,bi,bj))
-     &               .AND. (xC(1,1,bi,bj).LE. tmp_lon2(c)+360. _d 0)
-     &               .AND. (tmp_lon.GT.tmp_lon2(c)+360. _d 0)
-     &               .AND. (yC(1,1,bi,bj).LE.tmp_lat2(c))
-     &               .AND. (yC(1,sNy+1,bi,bj).GT.tmp_lat2(c)) ) THEN
-                lon_cur = tmp_lon2(c)+360. _d 0
-                lat_cur = tmp_lat2(c)
+     &               .AND. (xC(1,1,bi,bj).LE. tmp_lon2(ic)+360. _d 0)
+     &               .AND. (tmp_lon.GT.tmp_lon2(ic)+360. _d 0)
+     &               .AND. (yC(1,1,bi,bj).LE.tmp_lat2(ic))
+     &               .AND. (yC(1,sNy+1,bi,bj).GT.tmp_lat2(ic)) ) THEN
+                lon_cur = tmp_lon2(ic)+360. _d 0
+                lat_cur = tmp_lat2(ic)
                ELSE
                 profIsInRunTime = 0
                ENDIF
@@ -637,10 +637,10 @@ C     If yes then store prof_time and longitude and latitude:
                 prof_time(num_file,ProfNo_tile,bi,bj)     =  diffsecs
                 prof_lon(num_file,ProfNo_tile,bi,bj)      = lon_cur
                 prof_lat(num_file,ProfNo_tile,bi,bj)      = lat_cur
-                prof_ind_glob(num_file,ProfNo_tile,bi,bj) = c+chunk
+                prof_ind_glob(num_file,ProfNo_tile,bi,bj) = ic+chunk
 # ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
                 prof_ind_avgbin(num_file,ProfNo_tile,bi,bj)
-     &               = tmp_avgbin(c)
+     &               = tmp_avgbin(ic)
 # endif /* ALLOW_PROFILES_SAMPLESPLIT_COST */
 C     Then store interpolation coeffs and indices
                 lon_fac = (lon_cur-lon_1)/(lon_2-lon_1)
@@ -671,41 +671,41 @@ C     5.2a) Determine profiles in current tile domain (gen grid case)
               ELSEIF (profIsInRunTime.EQ.1) THEN
 
                IF (stopGenericGrid.EQ.0) THEN
-                IF ( ABS(tmp_xC11(c)-xC(1,1,bi,bj)).LT.0.0001 _d 0
-     &         .AND. ABS(tmp_yC11(c)-yC(1,1,bi,bj)).LT.0.0001 _d 0
-     &         .AND. ABS(tmp_xCNINJ(c)-xC(sNx,sNy,bi,bj)).LT.0.0001 _d 0
-     &         .AND. ABS(tmp_yCNINJ(c)-yC(sNx,sNy,bi,bj)).LT.0.0001 _d 0
-     &         .AND. profIsInRunTime.EQ.1 ) THEN
+                IF (ABS(tmp_xC11(ic)-xC(1,1,bi,bj)).LT.0.0001 _d 0
+     &         .AND.ABS(tmp_yC11(ic)-yC(1,1,bi,bj)).LT.0.0001 _d 0
+     &         .AND.ABS(tmp_xCNINJ(ic)-xC(sNx,sNy,bi,bj)).LT.0.0001 _d 0
+     &         .AND.ABS(tmp_yCNINJ(ic)-yC(sNx,sNy,bi,bj)).LT.0.0001 _d 0
+     &         .AND.profIsInRunTime.EQ.1 ) THEN
 C     If yes then store prof_time and interpolation coeffs and indices:
                  ProfNo_tile = ProfNo_tile+1
                  prof_time(num_file,ProfNo_tile,bi,bj) = diffsecs
 # ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
                  prof_ind_avgbin(num_file,rofNo_tile,bi,bj)
-     &                = tmp_avgbin(c)
+     &                = tmp_avgbin(ic)
 # endif /* ALLOW_PROFILES_SAMPLESPLIT_COST */
                  prof_interp_xC11(num_file,ProfNo_tile,bi,bj)
-     &                = tmp_xC11(c)
+     &                = tmp_xC11(ic)
                  prof_interp_yC11(num_file,ProfNo_tile,bi,bj)
-     &                = tmp_yC11(c)
+     &                = tmp_yC11(ic)
                  prof_interp_xCNINJ(num_file,ProfNo_tile,bi,bj)
-     &                = tmp_xCNINJ(c)
+     &                = tmp_xCNINJ(ic)
                  prof_interp_yCNINJ(num_file,ProfNo_tile,bi,bj)
-     &                = tmp_yCNINJ(c)
+     &                = tmp_yCNINJ(ic)
                  tmp_sum_weights = 0. _d 0
 
-                 DO q = 1, iINTERP
+                 DO iq = 1, iINTERP
 
-                  prof_interp_weights(num_file,ProfNo_tile,q,bi,bj)
-     &                 = tmp_weights(c,q)
-                  prof_interp_i(num_file,ProfNo_tile,q,bi,bj)
-     &                 = INT(tmp_i(c,q))
-                  prof_interp_j(num_file,ProfNo_tile,q,bi,bj)
-     &                 = INT(tmp_j(c,q))
-                  tmp_sum_weights = tmp_sum_weights + tmp_weights(c,q)
+                  prof_interp_weights(num_file,ProfNo_tile,iq,bi,bj)
+     &                 = tmp_weights(ic,iq)
+                  prof_interp_i(num_file,ProfNo_tile,iq,bi,bj)
+     &                 = INT(tmp_i(ic,iq))
+                  prof_interp_j(num_file,ProfNo_tile,iq,bi,bj)
+     &                 = INT(tmp_j(ic,iq))
+                  tmp_sum_weights = tmp_sum_weights + tmp_weights(ic,iq)
 C     More test of the inputs: is the offline-computed
 C     Interpolation information consistent (self and with grid)
-                  IF ( tmp_i(c,q).LT.0     .OR. tmp_j(c,q).LT.0 .OR.
-     &                 tmp_i(c,q).GT.sNx+1 .OR. tmp_j(c,q).GT.sNy+1
+                  IF ( tmp_i(ic,iq).LT.0     .OR. tmp_j(ic,iq).LT.0 .OR.
+     &                 tmp_i(ic,iq).GT.sNx+1 .OR. tmp_j(ic,iq).GT.sNy+1
      &                 ) THEN
                    WRITE(msgBuf,'(4A)')
      &                  'PROFILES_INIT_FIXED: file ',
@@ -718,15 +718,16 @@ C     Interpolation information consistent (self and with grid)
                   ENDIF
 
 # ifdef ALLOW_PROFILES_EXCLUDE_CORNERS
-                  IF (tmp_weights(c,q).NE.0. _d 0) THEN
-                   IF ( (tmp_i(c,q).EQ.0.AND.tmp_j(c,q).EQ.0)
-     &             .OR. (tmp_i(c,q).EQ.sNx+1.AND.tmp_j(c,q).EQ.sNy+1)
-     &             .OR. (tmp_i(c,q).EQ.0.AND.tmp_j(c,q).EQ.sNy+1)
-     &             .OR. (tmp_i(c,q).EQ.sNx+1.AND.tmp_j(c,q).EQ.0) ) THEN
+                  IF (tmp_weights(ic,iq).NE.0. _d 0) THEN
+C     We should not reach the corners just outside of the current tile.
+c                   IF ( (tmp_i(ic,iq).EQ.0.AND.tmp_j(ic,iq).EQ.0)
+c     &             .OR. (tmp_i(ic,iq).EQ.sNx+1.AND.tmp_j(ic,iq).EQ.sNy+1)
+c     &             .OR. (tmp_i(ic,iq).EQ.0.AND.tmp_j(ic,iq).EQ.sNy+1)
+c     &             .OR. (tmp_i(ic,iq).EQ.sNx+1.AND.tmp_j(ic,iq).EQ.0) ) THEN
 C     This should be the same, fewer evaluations, and easier to read?
-c                  IF( (tmp_i(c,q).EQ.0 .OR. tmp_i(c,q).EQ.sNx+1) .AND.
-c    &                 (tmp_j(c,q).EQ.0 .OR. tmp_j(c,q).EQ.sNy+1)
-c    &                 ) THEN
+                   IF((tmp_i(ic,iq).EQ.0.OR.tmp_i(ic,iq).EQ.sNx+1) .AND.
+     &                (tmp_j(ic,iq).EQ.0.OR.tmp_j(ic,iq).EQ.sNy+1)
+     &                ) THEN
                     WRITE(msgBuf,'(5A)')
      &                   'PROFILES_INIT_FIXED: file ',
      &                   profilesfile(1:IL),
@@ -740,8 +741,8 @@ c    &                 ) THEN
                   ENDIF
 # endif /* ALLOW_PROFILES_EXCLUDE_CORNERS */
 
-                  IF ( (tmp_weights(c,q).LT.0. _d 0) .OR.
-     &                 (tmp_weights(c,q).GT.1. _d 0) ) THEN
+                  IF ( (tmp_weights(ic,iq).LT.0. _d 0) .OR.
+     &                 (tmp_weights(ic,iq).GT.1. _d 0) ) THEN
                    WRITE(msgBuf,'(5A)')
      &                  'PROFILES_INIT_FIXED: file ',
      &                  profilesfile(1:IL),
@@ -753,7 +754,7 @@ c    &                 ) THEN
                    stopGenericGrid = 1
                   ENDIF
 
-                 ENDDO !DO q
+                 ENDDO !DO iq
 
                  IF (ABS(tmp_sum_weights -1. _d 0).GT. 0.0001 _d 0) THEN
                   WRITE(msgBuf,'(4A)')
@@ -765,9 +766,9 @@ c    &                 ) THEN
                   stopGenericGrid = 1
                  ENDIF
 
-                 prof_ind_glob(num_file,ProfNo_tile,bi,bj) = c + chunk
+                 prof_ind_glob(num_file,ProfNo_tile,bi,bj) = ic + chunk
 
-                ENDIF !IF ( ( ABS(tmp_xC11(c)...
+                ENDIF !IF ( ( ABS(tmp_xC11(ic)...
                ENDIF !IF (stopGenericGrid.EQ.0)
               ENDIF!IF (.NOT.profilesDoGenGrid ... ELSEIF ...
 
@@ -1041,10 +1042,10 @@ C     ===========================================================
            prof_ind_avgbin(num_file,prof_num,bi,bj) = -999
 # endif /* ALLOW_PROFILES_SAMPLESPLIT_COST */
 
-           DO q = 1, NUM_INTERP_POINTS
-            prof_interp_i(num_file,prof_num,q,bi,bj) = 1
-            prof_interp_j(num_file,prof_num,q,bi,bj) = 1
-            prof_interp_weights(num_file,prof_num,q,bi,bj) = 0. _d 0
+           DO iq = 1, NUM_INTERP_POINTS
+            prof_interp_i(num_file,prof_num,iq,bi,bj) = 1
+            prof_interp_j(num_file,prof_num,iq,bi,bj) = 1
+            prof_interp_weights(num_file,prof_num,iq,bi,bj) = 0. _d 0
            ENDDO
 
            prof_interp_xC11  (num_file,prof_num,bi,bj) = -999. _d 0
