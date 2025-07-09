@@ -141,8 +141,8 @@ C     Grid variables  ------------------------------------------------
       CALL MNC_CW_ADD_VNAME('AngleSN','Cen_xy_Hn__-__-', 3,4,myThid)
       CALL MNC_CW_ADD_VNAME('fCori', 'Cen_xy_Hn__-__-', 3,4,myThid)
       CALL MNC_CW_ADD_VNAME('fCoriG','Cor_xy_Hn__-__-', 3,4,myThid)
-      CALL MNC_CW_ADD_VNAME('R_low', 'Cen_xy_Hn__-__-', 3,4,myThid)
-      CALL MNC_CW_ADD_VNAME('Ro_surf','Cen_xy_Hn__-__-',3,4,myThid)
+      CALL MNC_CW_ADD_VNAME('rLowC', 'Cen_xy_Hn__-__-', 3,4,myThid)
+      CALL MNC_CW_ADD_VNAME('rSurfC','Cen_xy_Hn__-__-',3,4,myThid)
       CALL MNC_CW_ADD_VNAME('Depth', 'Cen_xy_Hn__-__-', 3,4,myThid)
       CALL MNC_CW_ADD_VNAME('hFacC', 'Cen_xy_Hn__C__-', 4,5,myThid)
       CALL MNC_CW_ADD_VNAME('hFacW', 'U_xy_Hn__C__-', 4,5,myThid)
@@ -184,9 +184,9 @@ C     Grid variables  ------------------------------------------------
      &     'Coriolis f at cell center',myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('fCoriG','description',
      &     'Coriolis f at cell corner',myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('R_low','description',
+      CALL MNC_CW_ADD_VATTR_TEXT('rLowC','description',
      &     'base of fluid in r-units',myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('Ro_surf','description',
+      CALL MNC_CW_ADD_VATTR_TEXT('rSurfC','description',
      &     'surface reference (at rest) position',myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('Depth','description',
      &     'fluid thickness in r coordinates (at rest)',myThid)
