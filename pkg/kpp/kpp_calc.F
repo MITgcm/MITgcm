@@ -94,7 +94,7 @@ c     KPPdiffKzT  - KPP diffusion coefficient for temperature      (m^2/s)
 c     KPPdiffKzS  - KPP diffusion coefficient for salt and tracers (m^2/s)
 c     KPPghat     - Nonlocal transport coefficient                 (s/m^2)
 c     KPPhbl      - Boundary layer depth on "t-grid"                   (m)
-c     KPPfrac     - Fraction of short-wave flux penetrating mixing layer
+c     KPPfrac     - Fraction of short-wave flux heating the mixing layer
 c     KPPplumefrac- Fraction of saltplume (flux) penetrating mixing layer
 
 c--   KPP_CALC computes vertical viscosity and diffusivity for region
@@ -153,12 +153,10 @@ c     iMin, iMax, jMin, jMax  - array computation indices
       PARAMETER(iMin=2-OLx,iMax=sNx+OLx-1,jMin=2-OLy,jMax=sNy+OLy-1)
 
 c Local arrays and variables
-c     work?  (nx,ny)       - horizontal working arrays
-c     temp?  (nx,ny,Nr)    - 3d working arrays
+c     sdens  (nx,ny        - density of surface layer                (kg/m^3)
 c     ustar  (nx,ny)       - surface friction velocity                  (m/s)
 c     bo     (nx,ny)       - surface turbulent buoyancy forcing     (m^2/s^3)
 c     bosol  (nx,ny)       - surface radiative buoyancy forcing     (m^2/s^3)
-c     boplume(nx,ny,Nrp1)  - surface haline buoyancy forcing        (m^2/s^3)
 c     shsq   (nx,ny,Nr)    - local velocity shear squared
 c                            at interfaces for ri_iwmix             (m^2/s^2)
 c     dVsq   (nx,ny,Nr)    - velocity shear re surface squared
@@ -172,22 +170,15 @@ c     vddiff (nx,ny,Nrp2,2)- vert. diff. on next row for salt&tracers (m^2/s)
 c     vddiff (nx,ny,Nrp2,3)- vert. diff. on next row for temperature  (m^2/s)
 c     ghat   (nx,ny,Nr)    - nonlocal transport coefficient           (s/m^2)
 c     hbl    (nx,ny)       - mixing layer depth                           (m)
+c     kbl    (nx,ny)       - k-cell index of mixing layer depth
 c     kmtj   (nx,ny)       - maximum number of wet levels in each column
-      INTEGER work1 ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy            )
-      _RL worka ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
-      _RL work2 ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
+c     work?  (nx,ny)       - horizontal working arrays
+c     temp?  (nx,ny,Nr)    - 3d working arrays
+c     boplume(nx,ny,Nrp1)  - surface haline buoyancy forcing        (m^2/s^3)
+      _RL sdens ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
       _RL ustar ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
       _RL bo    ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
       _RL bosol ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
-#ifdef ALLOW_SALT_PLUME
-      _RL temp1   ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr          )
-      _RL temp2   ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr          )
-      _RL boplume ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1        )
-#ifdef SALT_PLUME_SPLIT_BASIN
-      _RL lon ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                  )
-      _RL lat ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                  )
-#endif /* SALT_PLUME_SPLIT_BASIN */
-#endif /* ALLOW_SALT_PLUME */
       _RL shsq  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr            )
       _RL dVsq  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr            )
       _RL dbloc ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr            )
@@ -199,9 +190,26 @@ cph(
       _RL TTALPHA( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
       _RL SSBETA ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
 cph)
-      integer i, j, kSurf, k, kp1, km1, im1, ip1, jm1, jp1
+#if ( defined ALLOW_SALT_PLUME || defined SHORTWAVE_HEATING )
+      _RL worka ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
+#endif
+#ifdef ALLOW_SALT_PLUME
+      _RL temp1   ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr          )
+      _RL temp2   ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr          )
+      _RL boplume ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1        )
+#ifdef SALT_PLUME_SPLIT_BASIN
+      _RL lon ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                  )
+      _RL lat ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                  )
+#endif /* SALT_PLUME_SPLIT_BASIN */
+#endif /* ALLOW_SALT_PLUME */
+#ifdef SHORTWAVE_HEATING
+      INTEGER kbl(1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
+C     interpolation factor 1 >= (KPPhbl+rF(kbl))/drF(kbl) >= 0
+      _RL rFac
+#endif
+      INTEGER i, j, kSurf, k, kp1, km1, im1, ip1, jm1, jp1
 C     ikey :: tape key (depends on tiles)
-      integer ikey
+      INTEGER ikey
 CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -234,22 +242,20 @@ c------------------------------------------------------------------------
 c     density related quantities
 c     --------------------------
 c
-c      work2   - density of surface layer                        (kg/m^3)
+c      sdens   - density of surface layer                        (kg/m^3)
 c      dbloc   - local buoyancy gradient at Nr interfaces
 c                g/rho{k+1,k+1} * [ drho{k,k+1}-drho{k+1,k+1} ]   (m/s^2)
 c      dbsfc (stored in Ritop to conserve stack memory)
 c              - buoyancy difference with respect to the surface
 c                g * [ drho{1,k}/rho{1,k} - drho{k,k}/rho{k,k} ]  (m/s^2)
-c      ttalpha (stored in vddiff(:,:,:,1) to conserve stack memory)
-c              - thermal expansion coefficient without 1/rho factor
+c      ttalpha - thermal expansion coefficient without 1/rho factor
 c                d(rho{k,k})/d(T(k))                           (kg/m^3/C)
-c      ssbeta (stored in vddiff(:,:,:,2) to conserve stack memory)
-c              - salt expansion coefficient without 1/rho factor
+c      ssbeta  - salt expansion coefficient without 1/rho factor
 c                d(rho{k,k})/d(S(k))                    ((kg/m^3)/(g/kg))
 c------------------------------------------------------------------------
 
       CALL STATEKPP(
-     O     work2, dbloc, Ritop,
+     O     sdens, dbloc, Ritop,
      O     TTALPHA, SSBETA,
      I     ikey, bi, bj, myThid )
 
@@ -280,7 +286,7 @@ c     levels therefore k+1 mask must be used
 c     horizontally smooth density related quantities with 121 filters
       CALL SMOOTH_HORIZ (
      I     1, bi, bj,
-     U     work2,
+     U     sdens,
      I     myThid )
       DO k = 1, Nr
          CALL SMOOTH_HORIZ (
@@ -342,12 +348,8 @@ c     so that the subroutine "bldepth" works correctly
 cph(
 cph  this avoids a single or double recomp./call of statekpp
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE work2              = comlev1_kpp, key = ikey
-#ifdef KPP_AUTODIFF_EXCESSIVE_STORE
-CADJ STORE dbloc, Ritop, ghat = comlev1_kpp, key = ikey
-CADJ STORE vddiff             = comlev1_kpp, key = ikey
+CADJ STORE sdens, Ritop       = comlev1_kpp, key = ikey
 CADJ STORE TTALPHA, SSBETA    = comlev1_kpp, key = ikey
-#endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 cph)
 
@@ -415,7 +417,7 @@ c------------------------------------------------------------------------
 #endif /* ALLOW_SALT_PLUME */
 
       CALL KPP_FORCING_SURF(
-     I     work2, surfaceForcingU, surfaceForcingV,
+     I     sdens, surfaceForcingU, surfaceForcingV,
      I     surfaceForcingT, surfaceForcingS, adjustColdSST_diag,
      I     Qsw,
 #ifdef KPP_ESTIMATE_UREF
@@ -432,11 +434,12 @@ c------------------------------------------------------------------------
      O     dVsq,
      I     ikey, iMin, iMax, jMin, jMax, bi, bj, myTime, myThid )
 
-CMLcph(
-CML#ifdef ALLOW_AUTODIFF_TAMC
-CMLCADJ STORE ustar = comlev1_kpp, key = ikey
-CML#endif
-CMLcph)
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE ustar, bo, bosol, dVsq = comlev1_kpp, key = ikey
+# ifdef ALLOW_SALT_PLUME
+CADJ STORE boplume = comlev1_kpp, key = ikey
+# endif
+#endif
 
 c initialize arrays to zero
       DO k = 1, Nr
@@ -496,7 +499,7 @@ c     shsq computation
 cph(
 #ifdef ALLOW_AUTODIFF_TAMC
 #ifdef KPP_AUTODIFF_EXCESSIVE_STORE
-CADJ STORE dvsq, shsq = comlev1_kpp, key = ikey
+CADJ STORE shsq = comlev1_kpp, key = ikey
 #endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 cph)
@@ -534,15 +537,13 @@ C     and salt are not passed to kppmix and are thus not available there.
      I      ikey,1-OLx,sNx+OLx,1-OLy,sNy+OLy,bi,bj,myThid)
       ENDIF
 #endif /* ndef EXCLUDE_KPP_DOUBLEDIFF */
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE KPPdiffKzS(:,:,:,bi,bj) = comlev1_kpp, key = ikey
+CADJ STORE KPPdiffKzT(:,:,:,bi,bj) = comlev1_kpp, key = ikey
+#endif
 
-      DO j = 1-OLy, sNy+OLy
-         DO i = 1-OLx, sNx+OLx
-            work1(i,j) = nzmax(i,j,bi,bj)
-            work2(i,j) = Fcori(i,j,bi,bj)
-         ENDDO
-      ENDDO
       CALL KPPMIX (
-     I       work1, shsq, dVsq, ustar,
+     I       nzmax(1-OLx,1-OLy,bi,bj), shsq, dVsq, ustar,
      I       maskC(1-OLx,1-OLy,1,bi,bj),
      I       bo, bosol,
 #ifdef ALLOW_SALT_PLUME
@@ -551,13 +552,19 @@ C     and salt are not passed to kppmix and are thus not available there.
      I       XC(1-OLx,1-OLy,bi,bj), YC(1-OLx,1-OLy,bi,bj),
 #endif /* SALT_PLUME_SPLIT_BASIN */
 #endif /* ALLOW_SALT_PLUME */
-     I       dbloc, Ritop, work2,
+     I       dbloc, Ritop, fCori(1-OLx,1-OLy,bi,bj),
+#ifdef SHORTWAVE_HEATING
+     I       SWFRac3D  (1-OLx,1-OLy,1,bi,bj),
+#endif
      I       KPPdiffKzS(1-OLx,1-OLy,1,bi,bj),
      I       KPPdiffKzT(1-OLx,1-OLy,1,bi,bj),
      I       ikey,
      O       vddiff,
      U       ghat,
      O       hbl,
+#ifdef SHORTWAVE_HEATING
+     O       kbl,
+#endif
      I       bi, bj, myTime, myIter, myThid )
 
 c-----------------------------------------------------------------------
@@ -618,35 +625,62 @@ c     horizontal smoothing of vertical diffusivity
 cph(
 cph  crucial: this avoids full recomp./call of kppmix
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE KPPhbl = comlev1_kpp, key = ikey
+CADJ STORE KPPhbl(:,:,bi,bj) = comlev1_kpp, key = ikey
+# ifdef SHORTWAVE_HEATING
+CADJ STORE kbl = comlev1_kpp, key = ikey
+# endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 cph)
 
+#ifdef SHORTWAVE_HEATING
+      IF ( selectPenetratingSW .GE. 1 ) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+C     Avoid uselessly recomputing this block because of re-using worka
+CADJ INCOMPLETE worka
+#endif
+       IF ( KPPuseSWfrac3D ) THEN
+C     Determine the fraction of solar shortwave flux penetrating to the
+C     bottom of the mixed layer by interpolation.
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          k = kbl(i,j)
+          rFac = MAX( (KPPhbl(i,j,bi,bj)+rF(k))*recip_drF(k), zeroRL )
+          worka(i,j) = SWFrac3D(i,j,k,bi,bj)
+     &         + rFac*(SWFrac3D(i,j,k+1,bi,bj) - SWFrac3D(i,j,k,bi,bj))
+         ENDDO
+        ENDDO
+       ELSE
 C     Compute fraction of solar short-wave flux penetrating to
 C     the bottom of the mixing layer.
-      DO j=1-OLy,sNy+OLy
+        DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-            worka(i,j) = KPPhbl(i,j,bi,bj)
+          worka(i,j) = KPPhbl(i,j,bi,bj)
          ENDDO
-      ENDDO
-      CALL SWFRAC(
+        ENDDO
+        CALL SWFRAC(
      I     (sNx+2*OLx)*(sNy+2*OLy), minusone,
      U     worka,
      I     myTime, myIter, myThid )
-      DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-            KPPfrac(i,j,bi,bj) = worka(i,j)
-         ENDDO
-      ENDDO
+       ENDIF
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         KPPfrac(i,j,bi,bj) = 1. _d 0 - worka(i,j)
+        ENDDO
+       ENDDO
+      ENDIF
+#endif /* SHORTWAVE_HEATING */
 
 #ifdef ALLOW_SALT_PLUME
 C     Compute fraction of saltplume (flux) penetrating to
 C     the bottom of the mixing layer.
+#ifdef ALLOW_AUTODIFF_TAMC
+C     Avoid uselessly recomputing the previous block because of worka
+CADJ INCOMPLETE worka
+#endif
       IF ( useSALT_PLUME ) THEN
 #ifndef SALT_PLUME_VOLUME
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-         work2(i,j) = SaltPlumeDepth(i,j,bi,bj)
          worka(i,j) = KPPhbl(i,j,bi,bj)
 #ifdef SALT_PLUME_SPLIT_BASIN
          lon(i,j) = XC(i,j,bi,bj)
@@ -655,7 +689,8 @@ C     the bottom of the mixing layer.
         ENDDO
        ENDDO
        CALL SALT_PLUME_FRAC(
-     I      (sNx+2*OLx)*(sNy+2*OLy), minusone, work2,
+     I      (sNx+2*OLx)*(sNy+2*OLy), minusone,
+     I      SaltPlumeDepth(1-OLx,1-OLy,bi,bj),
 #ifdef SALT_PLUME_SPLIT_BASIN
      I      lon,lat,
 #endif /* SALT_PLUME_SPLIT_BASIN */
