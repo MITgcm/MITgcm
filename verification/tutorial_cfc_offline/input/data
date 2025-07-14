@@ -48,7 +48,6 @@
  pChkptFreq=3110400000.,
 #chkptFreq= 3110400000.,
  dumpFreq=  31104000.,
- taveFreq=  31104000.,
 #monitorFreq= 4853865600.,
  monitorFreq= 2592000.,
 #tauThetaClimRelax = 5184000.0,
