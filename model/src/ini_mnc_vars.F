@@ -148,33 +148,33 @@ C     Grid variables  ------------------------------------------------
       CALL MNC_CW_ADD_VNAME('hFacW', 'U_xy_Hn__C__-', 4,5,myThid)
       CALL MNC_CW_ADD_VNAME('hFacS', 'V_xy_Hn__C__-', 4,5,myThid)
 
-      CALL MNC_CW_ADD_VATTR_TEXT('DRC','description',
+      CALL MNC_CW_ADD_VATTR_TEXT('drC','description',
      &     'r cell center separation',myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('DRF','description',
+      CALL MNC_CW_ADD_VATTR_TEXT('drF','description',
      &     'r cell face separation',myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('DXC','description',
+      CALL MNC_CW_ADD_VATTR_TEXT('dxC','description',
      &     'x cell center separation',myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('DYC','description',
+      CALL MNC_CW_ADD_VATTR_TEXT('dyC','description',
      &       'y cell center separation',myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('DXF','description',
+      CALL MNC_CW_ADD_VATTR_TEXT('dxF','description',
      &     'x cell face separation',myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('DYF','description',
+      CALL MNC_CW_ADD_VATTR_TEXT('dyF','description',
      &     'y cell face separation',myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('DXG','description',
+      CALL MNC_CW_ADD_VATTR_TEXT('dxG','description',
      &     'x cell corner separation',myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('DYG','description',
+      CALL MNC_CW_ADD_VATTR_TEXT('dyG','description',
      &     'y cell corner separation',myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('DXV','description',
+      CALL MNC_CW_ADD_VATTR_TEXT('dxV','description',
      &     'x v-velocity separation',myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('DYU','description',
+      CALL MNC_CW_ADD_VATTR_TEXT('dyU','description',
      &     'y u-velocity separation',myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('RA','description',
+      CALL MNC_CW_ADD_VATTR_TEXT('rA','description',
      &     'r-face area at cell center',myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('RAW','description',
+      CALL MNC_CW_ADD_VATTR_TEXT('rAw','description',
      &     'r-face area at U point',myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('RAS','description',
+      CALL MNC_CW_ADD_VATTR_TEXT('rAs','description',
      &     'r-face area at V point',myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('RAZ','description',
+      CALL MNC_CW_ADD_VATTR_TEXT('rAz','description',
      &     'r-face area at cell corner',myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('AngleCS','description',
      &     'Cos of grid orientation angle at cell center',myThid)
