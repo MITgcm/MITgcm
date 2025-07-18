@@ -214,6 +214,7 @@ c      & streamice_cg_A1(i,3,1,1,1,0),
 c      & visc_streamice(i,1,1,1),visc_streamice(i,2,1,1),
 c      & visc_streamice(i,3,1,1)
 c       enddo
+      print *, "GOT HERE STARTING STREAMICE SOLVE 3"
 
       CALL STREAMICE_CG_SOLVE(
      &  cg_Uin,

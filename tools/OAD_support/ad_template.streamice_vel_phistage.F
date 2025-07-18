@@ -458,7 +458,7 @@
            if (adj_iter.eq.MAXNLITER) then
             STREAMICE_need2createmat=.true.
             STREAMICE_need2destroymat=.true.
-            CALL streamice_petscmatdestroy(myThid)
+            CALL streamice_petscmatdestroy()
             PETSC_PRECOND_TYPE = PETSC_PRECOND_TMP
            endif
           ENDIF
@@ -528,7 +528,7 @@
             IF (STREAMICE_OAD_petsc_reuse.AND.ADJ_CONVERGED) THEN
               STREAMICE_need2createmat=.true.
               STREAMICE_need2destroymat=.true.
-              CALL streamice_petscmatdestroy(myThid)
+              CALL streamice_petscmatdestroy()
               PETSC_PRECOND_TYPE = PETSC_PRECOND_TMP
             ENDIF
 #endif

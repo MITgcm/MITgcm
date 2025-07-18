@@ -45,6 +45,7 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "STREAMICE.h"
+#include "STREAMICE_FP.h"      
 #include "STREAMICE_CG.h"
 
 C     !INPUT/OUTPUT ARGUMENTS
@@ -79,6 +80,8 @@ C     LOCAL VARIABLES
 #ifndef ALLOW_STREAMICE_TAP_FP              
         IF (.NOT. CONVERGED) THEN
 #endif                
+      !comment
+      print *, "GOT HERE STARTING STREAMICE SOLVE 2"
           NL_ITER = (NL_ITER + 1)
           CALL streamice_vel_phi(MYTHID,MAXNLITER,MAXCGITER,CGTOL
      +,CG_ITERS,err_max)

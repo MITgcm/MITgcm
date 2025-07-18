@@ -62,6 +62,8 @@ C     LOCAL VARIABLES
 #endif
 
       CALL TIMER_START ('STREAMICE_VEL_SOLVE',myThid)
+      !comment
+      print *, "GOT HERE STARTING STREAMICE SOLVE 1"
 
       cgtol = streamice_cg_tol
       nl_iter = 0
@@ -223,11 +225,14 @@ C-------------------------------------------------------------------
      &         nl_iter, ' iterations'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT , 1)
+       PRINT *, 'VELOCITY SOLVE CONVERGED, ', nl_iter, 'iterations'
       else
        WRITE(msgBuf,'(A,I5,A)') 'VELOCITY SOLVE NOT CONVERGED IN ',
      &         nl_iter, ' iterations'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT , 1)
+       PRINT *, 'VELOCITY SOLVE NOT CONVERGED IN ', nl_iter, 
+     &        'iterations'
       endif
 
       _EXCH_XY_RL(U_streamice, myThid)

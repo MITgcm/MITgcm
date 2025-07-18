@@ -16,6 +16,7 @@ C     !USES:
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "STREAMICE.h"
+#include "STREAMICE_FP.h"
 #include "STREAMICE_CG.h"
 #include "STREAMICE_BDRY.h"
 #include "GRID.h"
@@ -26,6 +27,12 @@ C     !USES:
 C     myThid ::  my Thread Id number
       INTEGER myThid
 CEOP
+
+#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP) ) 
+#    define ALLOW_STREAMICE_FP_ADJ  
+#elif (defined (ALLOW_TAPENADE) && defined (ALLOW_STREAMICE_TAP_FP) ) 
+#    define ALLOW_STREAMICE_FP_ADJ  
+#endif
 
 #ifdef ALLOW_STREAMICE
 C     !LOCAL VARIABLES:
@@ -588,12 +595,21 @@ c      _EXCH_XY_RL(STREAMICE_ctrl_mask, myThid )
 
       CALL STREAMICE_INIT_PHI( myThid )
 
-#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP) )
+#ifdef ALLOW_STREAMICE_FP_ADJ      
 #ifdef ALLOW_PETSC
       STREAMICE_need2createmat = .true.
       STREAMICE_need2destroymat = .true.
 #endif
-#endif
+#ifdef ALLOW_TAPENADE
+      DO i=1,5
+        refCumuls(i) = 0.0
+        prevCumuls(i) = 0.0
+        adjIters(i) = 0
+      ENDDO
+      fpDepth = 0
+#endif      
+      
+#endif      
 
 #endif /* ALLOW_STREAMICE */
 

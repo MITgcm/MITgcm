@@ -142,6 +142,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       INTEGER exchWidthY
       INTEGER cornerMode
       INTEGER myThid
+#ifdef ALLOW_TAPENADE      
 
 c [llh] the following PUSHREAL8ARRAY could certainly be refined!
 c [ssg] for halfpipe_streamice
@@ -163,6 +164,7 @@ c [ssg] for tutorial_global_oce_biogeo
      I                 myOLw, myOLe, myOLs, myOLn, myNz,
      I                 exchWidthX, exchWidthY,
      I                 cornerMode, myThid )
+#endif      
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -189,6 +191,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       INTEGER exchWidthY
       INTEGER cornerMode
       INTEGER myThid
+#ifdef ALLOW_TAPENADE      
 
       CALL POPBOOLEAN(withSigns)
       CALL POPINTEGER4(myOLw)
@@ -209,6 +212,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 c [ssg] for halfpipe_streamice
 c      CALL POPREAL8ARRAY(array, 26**2*2)
 c [ssg] for tutorial_global_oce_biogeo
+#endif
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -287,6 +291,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       INTEGER cornerMode
       INTEGER myThid
 
+#ifdef ALLOW_TAPENADE      
 c [llh] the following PUSHREAL8ARRAY could certainly be refined!
 c [ssg] for halfpipe_streamice
 c      CALL PUSHREAL8ARRAY(array, 26**2*2)
@@ -302,6 +307,7 @@ c [ssg] for tutorial_global_oce_biogeo
       CALL PUSHINTEGER4(myThid)
       CALL EXCH1_RL(array, myOLw, myOLe, myOLs, myOLn,
      &     myNz, exchWidthX , exchWidthY, cornerMode, myThid )
+#endif      
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -325,6 +331,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       INTEGER cornerMode
       INTEGER myThid
       INTEGER tempCM
+
+#ifdef ALLOW_TAPENADE      
       
       CALL POPINTEGER4(myThid)
       CALL POPINTEGER4(tempCM)
@@ -340,6 +348,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 c [ssg] for halfpipe_streamice
 c      CALL POPREAL8ARRAY(array, 26**2*2)
 c [ssg] for tutorial_global_oce_biogeo
+#endif
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -387,6 +396,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       INTEGER cornerMode
       INTEGER myThid
 
+#ifdef ALLOW_TAPENADE      
 c [llh] the following PUSHREAL8ARRAY could certainly be refined!
 c [ssg] for halfpipe_streamice
 c      CALL PUSHREAL8ARRAY(array, 26**2*2)
@@ -402,6 +412,7 @@ c [ssg] for tutorial_global_oce_biogeo
       CALL PUSHINTEGER4(myThid)
       CALL EXCH1_RS(array, myOLw, myOLe, myOLs, myOLn,
      &     myNz, exchWidthX , exchWidthY, cornerMode, myThid )
+#endif      
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -426,6 +437,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       INTEGER myThid
       INTEGER tempCM
 
+#ifdef ALLOW_TAPENADE      
       CALL POPINTEGER4(myThid)
       CALL POPINTEGER4(tempCM)
       CALL POPINTEGER4(exchWidthY)
@@ -438,6 +450,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       CALL EXCH1_RS_AD(arrayb, myOLw, myOLe, myOLs, myOLn,
      &     myNz, exchWidthX , exchWidthY, cornerMode, myThid )
 c [ssg] for tutorial_global_oce_biogeo
+#endif      
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

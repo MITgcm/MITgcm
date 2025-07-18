@@ -7,6 +7,7 @@ double prevCumuls[5] = {0.0, 0.0, 0.0, 0.0, 0.0} ;
 int adjIters[5] = {0, 0, 0, 0, 0} ;
 int fpDepth = -1 ;
 
+/*
 int adFixedPoint_notReduced(double cumul, float reduction) {
   // Dan's method: stop when cumul has reduced by a factor "reduction"
   if (cumul<0.0) {
@@ -54,6 +55,7 @@ int adFixedPoint_notReduced(double cumul, float reduction) {
     }
   }
 }
+*/
 
 int adFixedPoint_tooLarge(double cumul, float minCumul) {
   // Naive method: stop when cumul becomes less than given minCumul
@@ -81,9 +83,11 @@ int adFixedPoint_tooLarge(double cumul, float minCumul) {
 
 /****************** INTERFACE CALLED FROM FORTRAN *******************/
 
+/*
 int adfixedpoint_notreduced_(double *cumul, float *reduction) {
   return adFixedPoint_notReduced(*cumul, *reduction) ;
 }
+*/
 
 int adfixedpoint_toolarge_(double *cumul, float *minCumul) {
   return adFixedPoint_tooLarge(*cumul, *minCumul) ;

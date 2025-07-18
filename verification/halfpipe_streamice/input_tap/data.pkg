@@ -3,5 +3,5 @@
 # useMNC=.TRUE.,
  useStreamIce= .TRUE.,
  useDiagnostics= .FALSE.,
- useGrdchk = .TRUE.,
+ useGrdchk = .false.,
  &

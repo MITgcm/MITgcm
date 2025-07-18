@@ -93,11 +93,12 @@ c#endif
 
 #ifdef ALLOW_PETSC
 
-#ifndef ALLOW_OPENAD
+#if ((!defined ALLOW_OPENAD) && (!defined ALLOW_TAPENADE))
       if (streamice_use_petsc.and.petscFlag.eq.1) then
 #else
       if (streamice_use_petsc) then
 #endif
+      print *, "GOT HERE STARTING STREAMICE SOLVE 4"
 
       CALL STREAMICE_CG_SOLVE_PETSC(
      U         cg_Uin,     ! x-velocities

@@ -92,9 +92,6 @@ C                                    melt exponent
      & C_basal_fric_const, n_basal_friction, streamice_input_flux_unif,
      & streamice_vel_update, streamice_cg_tol, streamice_nonlin_tol,
      & streamice_nonlin_tol_fp, streamice_err_norm,
-#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
-     & streamice_nonlin_tol_adjoint, streamice_nonlin_tol_adjoint_rl,
-#endif
      & streamice_CFL_factor, streamice_adjDump,
      & streamice_bg_surf_slope_x, streamice_bg_surf_slope_y,
      & streamice_kx_b_init, streamice_ky_b_init,
@@ -129,10 +126,6 @@ C                                    melt exponent
       _RL streamice_nonlin_tol_fp
       _RL streamice_err_norm
 
-#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
-      _RL streamice_nonlin_tol_adjoint
-      _RL streamice_nonlin_tol_adjoint_rl
-#endif
       _RL streamice_CFL_factor
       _RL streamice_adjDump
       _RL streamice_bg_surf_slope_x, streamice_bg_surf_slope_y
@@ -437,10 +430,6 @@ C     THE FOLLOWING FILENAMES ARE FOR SPECIFYING buttressing along calving front
 c     CHARACTER PARAMS FOR PETSC
       CHARACTER*(MAX_LEN_FNAM) PETSC_SOLVER_TYPE
       CHARACTER*(MAX_LEN_FNAM) PETSC_PRECOND_TYPE
-#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
-      CHARACTER*(MAX_LEN_FNAM) PETSC_PRECOND_TMP
-      CHARACTER*(MAX_LEN_FNAM) PETSC_PRECOND_OAD
-#endif
 #endif
 
 #ifdef ALLOW_STREAMICE_2DTRACER
@@ -504,9 +493,6 @@ c     CHARACTER PARAMS FOR TRACER
       COMMON /PETSC_PARM_C/
      &     PETSC_SOLVER_TYPE,
      &     PETSC_PRECOND_TYPE
-#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
-     &     ,PETSC_PRECOND_TMP, PETSC_PRECOND_OAD
-#endif
 #endif
 
 #ifdef ALLOW_STREAMICE_2DTRACER
@@ -601,13 +587,6 @@ C                                    floating ice in cost function
       LOGICAL STREAMICE_do_verification_cost
       LOGICAL STREAMICE_do_vaf_cost
       LOGICAL STREAMICE_shelf_dhdt_ctrl
-#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP) )
-#ifdef ALLOW_PETSC
-      LOGICAL STREAMICE_need2createmat
-      LOGICAL STREAMICE_need2destroymat
-      LOGICAL STREAMICE_OAD_petsc_reuse
-#endif
-#endif
 #ifdef STREAMICE_FLOWLINE_BUTTRESS
       LOGICAL useStreamiceFlowlineButtr
 #endif
@@ -651,13 +630,13 @@ C      LOGICAL STREAMICE_hybrid_stress
 #endif
      & STREAMICE_apply_firn_correction
 
-#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP) )
-#ifdef ALLOW_PETSC
-      COMMON /STREAMICE_PERSIST_PETSC_L
-     & STREAMICE_need2createmat, STREAMICE_need2destroymat,
-     & STREAMICE_OAD_petsc_reuse
-#endif
-#endif
+!#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP) )
+!#ifdef ALLOW_PETSC
+!      COMMON /STREAMICE_PERSIST_PETSC_L
+!     & STREAMICE_need2createmat, STREAMICE_need2destroymat,
+!     & STREAMICE_OAD_petsc_reuse
+!#endif
+!#endif
 
 C     -------------------------- AND NOW ARRAYS ---------------------------------------------------
 
@@ -990,12 +969,14 @@ C  POSITIVE WHERE MELTING
      &       cost_surf_streamice,
      &       cost_smooth_fric_streamice,
      &       cost_smooth_glen_streamice,
+     &       cost_smooth_bdotmelt_streamice,
      &       cost_prior_streamice
       _RL cost_func1_streamice(nSx,nSy)
       _RL cost_vel_streamice(nSx,nSy)
       _RL cost_surf_streamice(nSx,nSy)
       _RL cost_smooth_fric_streamice(nSx,nSy)
       _RL cost_smooth_glen_streamice(nSx,nSy)
+      _RL cost_smooth_bdotmelt_streamice(nSx,nSy)
       _RL cost_prior_streamice(nSx,nSy)
 
 C    NOTES :
@@ -1032,31 +1013,28 @@ C        velocity initial guess, so they are kept
      & (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL V_streamice_dvals
      & (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
-#ifdef STREAMICE_HYBRID_STRESS
-      COMMON /STREAMICE_PHISTAGE_ADARRS_HYBRID/
-     & taubx_dvals, tauby_dvals,
-     & visc_full_dvals,
-     & taubx_new_si, tauby_new_si,
-     & visc_full_new_si
-      _RL taubx_new_si (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL taubx_dvals (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL tauby_new_si (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL tauby_dvals (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL visc_full_new_si (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL visc_full_dvals (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-#endif
-#endif
+#endif	
 
 #if (defined(ALLOW_STREAMICE_OAD_FP) || defined(ALLOW_STREAMICE_TAP_FP)) 
 #ifdef STREAMICE_HYBRID_STRESS
+
       COMMON /STREAMICE_PHISTAGE_ADARRS_HYBRID/
      & taubx_new_si, tauby_new_si,
      & visc_full_new_si
+#ifdef ALLOW_OPENAD     
+     & ,taubx_dvals, tauby_dvals,
+     & visc_full_dvals,
+#endif     
       _RL taubx_new_si (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL tauby_new_si (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL visc_full_new_si (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-#endif	
+#ifdef ALLOW_OPENAD     
+      _RL tauby_dvals (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL taubx_dvals (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL visc_full_dvals (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif
+
+#endif
 #endif
 
 #endif /* ALLOW_STREAMICE */
