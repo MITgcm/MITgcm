@@ -46,7 +46,7 @@ C     kLev         :: vertical level index
 C     prof_num, num_file, num_var
 C                  :: loop indices for profiles, files, and variables
 C     iG,jG        :: global indices
-C     c, chunkProf :: chunk-related indices
+C     ic, chunkProf:: chunk-related indices
 C     chunk        :: chunk size
 C     ProfNo_tile  :: counter
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -720,10 +720,10 @@ C     Interpolation information consistent (self and with grid)
 # ifdef ALLOW_PROFILES_EXCLUDE_CORNERS
                   IF (tmp_weights(ic,iq).NE.0. _d 0) THEN
 C     We should not reach the corners just outside of the current tile.
-c                   IF ( (tmp_i(ic,iq).EQ.0.AND.tmp_j(ic,iq).EQ.0)
-c     &             .OR. (tmp_i(ic,iq).EQ.sNx+1.AND.tmp_j(ic,iq).EQ.sNy+1)
-c     &             .OR. (tmp_i(ic,iq).EQ.0.AND.tmp_j(ic,iq).EQ.sNy+1)
-c     &             .OR. (tmp_i(ic,iq).EQ.sNx+1.AND.tmp_j(ic,iq).EQ.0) ) THEN
+c             IF ( (tmp_i(ic,iq).EQ.0.AND.tmp_j(ic,iq).EQ.0)
+c    &        .OR. (tmp_i(ic,iq).EQ.sNx+1.AND.tmp_j(ic,iq).EQ.sNy+1)
+c    &        .OR. (tmp_i(ic,iq).EQ.0.AND.tmp_j(ic,iq).EQ.sNy+1)
+c    &        .OR. (tmp_i(ic,iq).EQ.sNx+1.AND.tmp_j(ic,iq).EQ.0) ) THEN
 C     This should be the same, fewer evaluations, and easier to read?
                    IF((tmp_i(ic,iq).EQ.0.OR.tmp_i(ic,iq).EQ.sNx+1) .AND.
      &                (tmp_j(ic,iq).EQ.0.OR.tmp_j(ic,iq).EQ.sNy+1)
@@ -784,7 +784,7 @@ C     Check that maximum size was not reached:
               ENDIF
 
              ENDIF !IF (stopProfiles.EQ.0)
-            ENDDO !DO c
+            ENDDO !DO ic
 
            ENDIF !IF (MIN(ProfNo(num_file,bi,bj)
           ENDDO !DO chunkProf
