@@ -96,6 +96,7 @@ c          h_after_uflux_si(i,j,bi,bj) = 0. _d 0
      &  myIter, myTime/86400.0/365.0, 'seconds'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT , 1)
+      print *, msgBuf
 
       CALL STREAMICE_DUMP( myTime, myIter, myThid )
 
@@ -128,9 +129,6 @@ c NEW DIRECTIVES - DNG
       IF (.not.(STREAMICE_vel_ext.OR.STREAMICE_vel_ext_cgrid)) THEN
 
 #if(defined(ALLOW_STREAMICE_OAD_FP) || defined(ALLOW_STREAMICE_TAP_FP))              
-       _BARRIER
-       print *, "GOT HERE CALLING VEL"
-       _BARRIER
        CALL STREAMICE_VEL_SOLVE_OPENAD ( myThid,
      &                           streamice_max_nl_iter,
      &                           streamice_max_cg_iter,

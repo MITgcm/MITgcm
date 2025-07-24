@@ -20,12 +20,21 @@ C     !INPUT PARAMETERS:
 C     == Routine arguments ==
       _RL CUMUL
       _RL REDUCTION
+      _RL CUMUL_GLOB
       INTEGER iterate
       INTEGER growth
+      INTEGER bi, bj, jtlo, jthi, itlo, ithi
 
 
 CEOP
-#ifdef ALLOW_TAPENADE      
+#ifdef ALLOW_TAPENADE     
+
+
+      CALL GLOBAL_SUM_TILE_RL
+     &   ( cumul, cumul_glob, 1 )
+
+      cumul = cumul_glob
+
       IF (cumul .LT. 0.0D0) THEN
 C         Begin 1st iteration of a new adjoint FP loop
           IF (fpDepth .GE. 5) THEN

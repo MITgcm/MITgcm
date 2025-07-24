@@ -62,8 +62,6 @@ C     LOCAL VARIABLES
 #endif
 
       CALL TIMER_START ('STREAMICE_VEL_SOLVE',myThid)
-      !comment
-      print *, "GOT HERE STARTING STREAMICE SOLVE 1"
 
       cgtol = streamice_cg_tol
       nl_iter = 0
@@ -136,7 +134,7 @@ C     LOCAL VARIABLES
 
 #ifdef ALLOW_STREAMICE_TAP_FP
 #ifdef STREAMICE_HYBRID_STRESS
-!$AD FP-LOOP "u_streamice,v_streamice,streamice_taubx,streamice_tauby,visc_streamice_full" adj_reduction=1.e-9
+!$AD FP-LOOP "u_streamice,v_streamice,streamice_taubx,streamice_tauby,visc_streamice_full" adj_reduction=1.e-6
 #else
 !$AD FP-LOOP "u_streamice,v_streamice" adj_reduction=2.e-8
 #endif      

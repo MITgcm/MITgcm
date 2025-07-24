@@ -223,7 +223,6 @@ c       iters = streamice_max_cg_iter
       _EXCH_XY_RL( cg_Bu, myThid )
       _EXCH_XY_RL( cg_Bv, myThid )
 
-
       CALL STREAMICE_CG_SOLVE(
      &  cg_Uin,
      &  cg_Vin,

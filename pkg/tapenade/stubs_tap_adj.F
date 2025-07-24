@@ -1,5 +1,8 @@
 #include "CPP_EEOPTIONS.h"
-#include "TAPENADE_OPTIONS.h"      
+#include "TAPENADE_OPTIONS.h"
+#ifdef ALLOW_STREAMICE
+# include "STREAMICE_OPTIONS.h"
+#endif      
 
       SUBROUTINE GLOBAL_MAX_R8_B(rhsmax, rhsmaxb, myThid)
       IMPLICIT NONE
@@ -319,12 +322,22 @@ C     !LOCAL VARIABLES
 C [llh] Hand-written backward-sweep adjoint code of STREAMICE_CG_SOLVE
 C [llh] Adjoint of solving Ax=b,
 C [llh]  where A is (Auu, Auv, Avu, Avv), x is (xu,xv), b is (bu,bv)
+#ifndef ALLOW_PETSC
       SUBROUTINE STREAMICE_CG_SOLVE_BWD(
      &                                cg_uin, cg_uinb, cg_vin, cg_vinb,
      &                                cg_bu, cg_bub, cg_bv, cg_bvb, a_uu
      &                                , a_uub, a_uv, a_uvb, a_vu, a_vub
      &                                , a_vv, a_vvb, tolerance, iters,
      &                                maxiter, mythid)
+#else              
+      SUBROUTINE STREAMICE_CG_SOLVE_BWD(
+     &                                cg_uin, cg_uinb, cg_vin, cg_vinb,
+     &                                cg_bu, cg_bub, cg_bv, cg_bvb, a_uu
+     &                                , a_uub, a_uv, a_uvb, a_vu, a_vub
+     &                                , a_vv, a_vvb, tolerance, 
+     &                                toleranceb, iters, maxiter, 
+     &                                mythid)
+#endif              
 
       IMPLICIT NONE
 
@@ -340,6 +353,7 @@ C [llh]  where A is (Auu, Auv, Avu, Avv), x is (xu,xv), b is (bu,bv)
       INTEGER iters
       INTEGER maxIter
       _RL tolerance
+      _RL toleranceb
       _RL cg_Uin (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL cg_Vin (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL cg_Bu (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

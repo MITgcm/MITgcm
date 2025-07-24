@@ -98,7 +98,6 @@ c#endif
 #else
       if (streamice_use_petsc) then
 #endif
-      print *, "GOT HERE STARTING STREAMICE SOLVE 4"
 
       CALL STREAMICE_CG_SOLVE_PETSC(
      U         cg_Uin,     ! x-velocities

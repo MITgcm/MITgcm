@@ -80,8 +80,6 @@ C     LOCAL VARIABLES
 #ifndef ALLOW_STREAMICE_TAP_FP              
         IF (.NOT. CONVERGED) THEN
 #endif                
-      !comment
-      print *, "GOT HERE STARTING STREAMICE SOLVE 2"
           NL_ITER = (NL_ITER + 1)
           CALL streamice_vel_phi(MYTHID,MAXNLITER,MAXCGITER,CGTOL
      +,CG_ITERS,err_max)

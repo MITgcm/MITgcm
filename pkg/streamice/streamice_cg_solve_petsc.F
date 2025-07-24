@@ -122,7 +122,6 @@ c      PC  pc
 #endif
 
 #ifdef ALLOW_USE_MPI
-      print *, "GOT HERE CG -1"
 
       CALL MPI_COMM_RANK( MPI_COMM_WORLD, mpiMyWId, mpiRC )
       local_dofs = n_dofs_process (mpiMyWid)
@@ -145,7 +144,6 @@ c      PC  pc
       local_offset = 0
 
 #endif
-      print *, "GOT HERE CG 0"
 c      call petscInitialize(PETSC_NULL_CHARACTER,ierr)
 
 c----------------------
@@ -153,9 +151,7 @@ c----------------------
       CALL TIMER_START ('STREAMICE_PETSC_SETUP',myThid)
 
       call VecCreate(PETSC_COMM_WORLD, rhs, ierr)
-      print *, "GOT HERE CG 1"
       call VecSetSizes(rhs, local_dofs, global_dofs, ierr)
-      print *, "GOT HERE CG 2"
       call VecSetType(rhs, VECMPI, ierr)
 
       call VecCreate(PETSC_COMM_WORLD, solution, ierr)
