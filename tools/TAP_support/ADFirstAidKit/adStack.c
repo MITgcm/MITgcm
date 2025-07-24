@@ -50,7 +50,7 @@
  * size of each separate storage file, when the stack is offloaded to disk storage. */
 // #define ADSTACK_BLOCK_SIZE 17 // A very small ADSTACK_BLOCK_SIZE allows for stronger testing!
 // #define ADSTACK_BLOCK_SIZE 1000 // ridiculously small, just for testing.
-#define ADSTACK_BLOCK_SIZE 2097152
+#define ADSTACK_BLOCK_SIZE 1048576
 #endif
 
 #ifndef ADSTACK_MAX_SPACES
