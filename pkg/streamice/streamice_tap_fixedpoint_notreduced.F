@@ -21,6 +21,7 @@ C     == Routine arguments ==
       _RL CUMUL
       _RL REDUCTION
       _RL CUMUL_GLOB
+      _RL CUMUL_TILE(1:nSx, 1:nSy)
       INTEGER iterate
       INTEGER growth
       INTEGER bi, bj, jtlo, jthi, itlo, ithi
@@ -29,11 +30,21 @@ C     == Routine arguments ==
 CEOP
 #ifdef ALLOW_TAPENADE     
 
+      IF (nTx.gt.1 .or. nTy.gt.1) THEN
+       STOP 'ADFIXEDPOINT_NOTREDUCED: multithread not available'
+      ENDIF
+
+      DO bi=1,nSx
+        DO bj=1,nSy
+          CUMUL_TILE(bi,bj)=0.0
+        ENDDO
+      ENDDO
+      CUMUL_TILE(1,1) = CUMUL
 
       CALL GLOBAL_SUM_TILE_RL
-     &   ( cumul, cumul_glob, 1 )
+     &   ( CUMUL_TILE, CUMUL_GLOB, 1 )
 
-      cumul = cumul_glob
+      CUMUL = CUMUL_GLOB
 
       IF (cumul .LT. 0.0D0) THEN
 C         Begin 1st iteration of a new adjoint FP loop
