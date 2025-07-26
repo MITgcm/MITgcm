@@ -116,7 +116,7 @@ C             Compare with reference value
                   if (STREAMICE_OAD_petsc_reuse) then
                     streamice_need2createmat=.false.
                     streamice_need2destroymat=.true.
-                    CALL streamice_petscmatdestroy()
+                    !CALL streamice_petscmatdestroy()
                   endif
 #endif          
               ELSE
@@ -128,7 +128,7 @@ C             Compare with reference value
                   if (STREAMICE_OAD_petsc_reuse) then
                     streamice_need2createmat=.false.
                     streamice_need2destroymat=.true.
-                    CALL streamice_petscmatdestroy()
+                    !CALL streamice_petscmatdestroy()
                   endif
 #endif          
               ENDIF
@@ -139,7 +139,7 @@ C             Compare with reference value
                   if (STREAMICE_OAD_petsc_reuse) then
                     streamice_need2createmat=.false.
                     streamice_need2destroymat=.true.
-                    CALL streamice_petscmatdestroy()
+                    !CALL streamice_petscmatdestroy()
                   endif
 #endif          
                   RETURN
