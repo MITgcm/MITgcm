@@ -96,7 +96,6 @@ c          h_after_uflux_si(i,j,bi,bj) = 0. _d 0
      &  myIter, myTime/86400.0/365.0, 'seconds'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT , 1)
-      print *, msgBuf
 
       CALL STREAMICE_DUMP( myTime, myIter, myThid )
 
