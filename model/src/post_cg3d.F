@@ -4,7 +4,7 @@ CBOP
 C     !ROUTINE: POST_CG3D
 C     !INTERFACE:
       SUBROUTINE POST_CG3D(
-     I                      cg3d_x, wSurfP2d,
+     I                      cg3d_x, wFld, wSurfP2d,
      I                      myTime, myIter, myThid )
 
 C     !DESCRIPTION:
@@ -20,18 +20,18 @@ C     == Global variables
 # include "PARAMS.h"
 # include "GRID.h"
 # include "SURFACE.h"
-c#include "FFIELDS.h"
-# include "DYNVARS.h"
 # include "NH_VARS.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     cg3d_x      :: Solution vector of the 3-D solver equation A.X=B
+C     wFld        :: Provisional vertical velocity
 C     wSurfP2d    :: surface vertical velocity after 2-D solver
 C     myTime      :: Current time in simulation
 C     myIter      :: Current iteration number in simulation
 C     myThid      :: My Thread Id. number
       _RL     cg3d_x  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL     wFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL     wSurfP2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL     myTime
       INTEGER myIter
@@ -64,11 +64,11 @@ C     from the Non-hydrostatic pressure (since cg3d_x contains both contribution
             ks = 1
 c           ks = kSurfC(i,j,bi,bj)
 c           IF ( ks.LE.Nr ) THEN
-             dPhiNH(i,j,bi,bj) = ( cg3d_x(i,j,ks,bi,bj)
+             dPhiNH(i,j,bi,bj) =
+     &            cg3d_x(i,j,ks,bi,bj)/(1. _d 0 + locGamma )
      &          + locGamma*Bo_surf(i,j,bi,bj)
      &                    *implicDiv2DFlow*deltaTFreeSurf
-     &                    *( wVel(i,j,ks,bi,bj) - wSurfP2d(i,j,bi,bj) )
-     &                           )/(1. _d 0 + locGamma )
+     &                    *( wFld(i,j,ks,bi,bj) - wSurfP2d(i,j,bi,bj) )
 c           ENDIF
            ENDDO
           ENDDO

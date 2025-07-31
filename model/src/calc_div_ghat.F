@@ -1,5 +1,5 @@
 #include "CPP_OPTIONS.h"
-#undef PRESERVE_C69C_OUTPUT
+#include "BACKWARD_COMPAT_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: CALC_DIV_GHAT
@@ -7,6 +7,7 @@ C     !INTERFACE:
       SUBROUTINE CALC_DIV_GHAT(
      I                bi, bj, oldFreeSurfTerm,
      U                cg2d_b, cg3d_b,
+     O                wSurfP2d,
      I                myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -27,26 +28,26 @@ C     == Global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SURFACE.h"
+#include "FFIELDS.h"
 #include "DYNVARS.h"
 #ifdef ALLOW_NONHYDROSTATIC
 # include "NH_VARS.h"
-#endif
-#ifdef ALLOW_ADDFLUID
-# include "FFIELDS.h"
 #endif
 C     !INPUT/OUTPUT PARAMETERS:
 C     bi, bj  :: tile indices
 C     oldFreeSurfTerm :: old free-surface treatment in NH code (exactConserv=F)
 C     cg2d_b  :: Conjugate Gradient 2-D solver : Right-hand side vector
 C     cg3d_b  :: Conjugate Gradient 3-D solver : Right-hand side vector
+C     wSurfP2d  :: surface vertical velocity after 2-D solver
 C     myThid  :: my Thread Id number
       INTEGER bi, bj
       LOGICAL oldFreeSurfTerm
       _RL cg2d_b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifdef ALLOW_NONHYDROSTATIC
       _RL cg3d_b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL wSurfP2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #else
-      _RL cg3d_b(1)
+      _RL cg3d_b(1), wSurfP2d(1)
 #endif
       INTEGER myThid
 
@@ -59,8 +60,13 @@ C     locFac  :: temp/local factor from this level
       INTEGER i, j, k, ks
       _RL xTrans(1:sNx+1,1:sNy+1)
       _RL yTrans(1:sNx+1,1:sNy+1)
+#ifndef PRESERVE_C69C_OUTPUT
       _RL locFac
+#endif
       _RL tmpFac
+#if ( defined ALLOW_NONHYDROSTATIC && defined EXACT_CONSERV )
+      _RL locGamma
+#endif
 #ifdef ALLOW_ADDFLUID
       _RL unitsFac
 #endif
@@ -74,7 +80,29 @@ CEOP
 # endif
 #endif
 
+#ifdef ALLOW_NONHYDROSTATIC
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+         wSurfP2d(i,j,bi,bj) = 0. _d 0
+       ENDDO
+      ENDDO
+#else
+      wSurfP2d(1) = 0. _d 0
+#endif
+
 #ifdef PRESERVE_C69C_OUTPUT
+C--   add Fresh-water contribution to "cg2d_b"
+      IF ( useRealFreshWaterFlux.AND.fluidIsWater
+     &     .AND. ( selectNHfreeSurf.EQ.0 .OR. usingPCoords ) ) THEN
+         tmpFac = freeSurfFac*mass2rUnit*implicDiv2DFlow
+         DO j=1,sNy
+          DO i=1,sNx
+           cg2d_b(i,j,bi,bj) = tmpFac*_rA(i,j,bi,bj)*EmPmR(i,j,bi,bj)
+     &                       / deltaTMom
+          ENDDO
+         ENDDO
+      ENDIF
+
 C- Note: no reason for this reverse k loop except changing it does affect
 C        results at machine truncation level
       DO k=Nr,1,-1
@@ -179,6 +207,7 @@ C     Add same contribution at each level (more terms added after CG2D call)
 #endif /* PRESERVE_C69C_OUTPUT */
 
 #ifdef ALLOW_ADDFLUID
+C--   add source term from "addMass"
         IF ( selectAddFluid.GE.1 ) THEN
           DO j=1,sNy
            DO i=1,sNx
@@ -201,6 +230,79 @@ C     Add same contribution at each level (more terms added after CG2D call)
 
 C--   end of loop on level index k
       ENDDO
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifndef PRESERVE_C69C_OUTPUT
+C--   add Fresh-water contribution to "cg2d_b", "cg3d_b" or to wSurfP2d in case
+C     use3Dsolver & exactConserv, to be added later (with scaling ?)
+      IF ( useRealFreshWaterFlux.AND.fluidIsWater ) THEN
+#ifdef ALLOW_NONHYDROSTATIC
+       IF ( use3Dsolver .AND. exactConserv .AND. usingZCoords ) THEN
+         DO j=1,sNy
+          DO i=1,sNx
+           wSurfP2d(i,j,bi,bj) = mass2rUnit*EmPmR(i,j,bi,bj)
+          ENDDO
+         ENDDO
+       ELSE
+#endif /* ALLOW_NONHYDROSTATIC */
+        IF ( usingPCoords .OR. uniformFreeSurfLev
+     &                    .OR. .NOT.deepAtmosphere ) THEN
+         ks = 1
+         IF ( usingPCoords ) ks = Nr+1
+         tmpFac = freeSurfFac*mass2rUnit*deepFac2F(ks)
+         DO j=1,sNy
+          DO i=1,sNx
+           cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
+     &                       + tmpFac*_rA(i,j,bi,bj)*EmPmR(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ELSE
+         tmpFac = freeSurfFac*mass2rUnit
+         DO j=1,sNy
+          DO i=1,sNx
+           ks = kSurfC(i,j,bi,bj)
+           cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
+     &         + deepFac2F(ks)*tmpFac*_rA(i,j,bi,bj)*EmPmR(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDIF
+#ifdef ALLOW_NONHYDROSTATIC
+        IF ( use3Dsolver ) THEN
+C-      case ( oldFreeSurfTerm.OR.usingPCoords ): add EmPmR directly to cg3d_b
+         IF ( usingPCoords .OR. uniformFreeSurfLev  ) THEN
+           IF ( usingZCoords ) THEN
+             ks = 1
+             tmpFac = freeSurfFac*mass2rUnit*deepFac2F(ks)
+           ELSE
+             ks = Nr
+             tmpFac = freeSurfFac*mass2rUnit*deepFac2F(ks+1)
+           ENDIF
+           DO j=1,sNy
+            DO i=1,sNx
+              cg3d_b(i,j,ks,bi,bj) = cg3d_b(i,j,ks,bi,bj)
+     &          + tmpFac*_rA(i,j,bi,bj)*EmPmR(i,j,bi,bj)
+            ENDDO
+           ENDDO
+         ELSE
+           tmpFac = freeSurfFac*mass2rUnit
+           DO j=1,sNy
+            DO i=1,sNx
+             ks = kSurfC(i,j,bi,bj)
+             IF ( ks.LE.Nr )
+     &        cg3d_b(i,j,ks,bi,bj) = cg3d_b(i,j,ks,bi,bj)
+     &          + tmpFac*deepFac2F(ks)*_rA(i,j,bi,bj)*EmPmR(i,j,bi,bj)
+            ENDDO
+           ENDDO
+         ENDIF
+        ENDIF
+C      end if/else use3Dsolver & exactConserv &. usingZCoords
+       ENDIF
+#endif /* ALLOW_NONHYDROSTATIC */
+      ENDIF
+#endif /* PRESERVE_C69C_OUTPUT */
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_NONHYDROSTATIC
       IF ( oldFreeSurfTerm ) THEN
@@ -231,15 +333,81 @@ C--   Add source term arising from w=d/dt (p_s + p_nh)
           ENDIF
          ENDDO
         ENDDO
-# ifdef EXACT_CONSERV
-      ELSEIF ( solveForDeltaP ) THEN
-# else
-      ELSE
-# endif
 #endif /* ALLOW_NONHYDROSTATIC */
 C--   Add source term arising from w=d/dt (p_s)
 #ifdef EXACT_CONSERV
-# ifndef ALLOW_NONHYDROSTATIC
+# ifdef ALLOW_NONHYDROSTATIC
+#ifdef PRESERVE_C69C_OUTPUT
+      ELSEIF ( selectNHfreeSurf.GE.1 ) THEN
+#else
+      ELSEIF ( use3Dsolver ) THEN
+#endif
+        IF ( .NOT.solveForDeltaP ) THEN
+         tmpFac = oneRL/(implicDiv2DFlow*deltaTFreeSurf)
+         DO j=1,sNy
+          DO i=1,sNx
+           wSurfP2d(i,j,bi,bj) = wSurfP2d(i,j,bi,bj)
+     &                         - tmpFac*EtaH(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ELSEIF ( implicDiv2DFlow.NE.oneRL ) THEN
+         tmpFac = oneRL/implicDiv2DFlow - oneRL
+         DO j=1,sNy
+          DO i=1,sNx
+           wSurfP2d(i,j,bi,bj) = wSurfP2d(i,j,bi,bj)
+     &                         - tmpFac*dEtaHdt(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDIF
+#ifdef PRESERVE_C69C_OUTPUT
+        IF ( useRealFreshWaterFlux .AND. fluidIsWater
+     &                             .AND. usingZCoords ) THEN
+         DO j=1,sNy
+          DO i=1,sNx
+           wSurfP2d(i,j,bi,bj) = wSurfP2d(i,j,bi,bj)
+     &                 + mass2rUnit*EmPmR(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDIF
+#endif
+        IF ( selectNHfreeSurf.NE.2 ) THEN
+#ifdef PRESERVE_C69C_OUTPUT
+         tmpFac = freeSurfFac*implicDiv2DFlow/deltaTMom
+#else
+         tmpFac = freeSurfFac
+#endif
+         DO j=1,sNy
+          DO i=1,sNx
+           ks = kSurfC(i,j,bi,bj)
+           cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
+     &       + tmpFac*deepFac2F(ks)*_rA(i,j,bi,bj)*wSurfP2d(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDIF
+        ks = 1
+        IF ( selectNHfreeSurf.GE.1 ) THEN
+         DO j=1,sNy
+          DO i=1,sNx
+           locGamma = drC(1)*recip_Bo(i,j,bi,bj)
+     &              /( deltaTMom*deltaTFreeSurf
+     &                *implicitNHPress*implicDiv2DFlow )
+           wSurfP2d(i,j,bi,bj) = ( wSurfP2d(i,j,bi,bj)
+     &                           + locGamma*wVel(i,j,ks,bi,bj)
+     &                           )/(1. _d 0 + locGamma)
+          ENDDO
+         ENDDO
+        ENDIF
+        IF ( selectNHfreeSurf.EQ.2 ) THEN
+         tmpFac = freeSurfFac*deepFac2F(ks)
+         DO j=1,sNy
+          DO i=1,sNx
+           cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
+     &       + tmpFac*_rA(i,j,bi,bj)*wSurfP2d(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDIF
+      ELSEIF ( solveForDeltaP ) THEN
+# else
       IF ( solveForDeltaP ) THEN
 # endif
         IF ( implicDiv2DFlow.NE.oneRL ) THEN
@@ -249,7 +417,7 @@ C--   Add source term arising from w=d/dt (p_s)
            ks = kSurfC(i,j,bi,bj)
            cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
 c#ifdef EXACT_CONSERV
-     &       -tmpFac*_rA(i,j,bi,bj)*deepFac2F(ks)*dEtaHdt(i,j,bi,bj)
+     &       - tmpFac*_rA(i,j,bi,bj)*deepFac2F(ks)*dEtaHdt(i,j,bi,bj)
 c#endif
           ENDDO
          ENDDO
@@ -261,15 +429,19 @@ c#endif
            ks = kSurfC(i,j,bi,bj)
            cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
 #ifdef PRESERVE_C69C_OUTPUT
-     &       -freeSurfFac*_rA(i,j,bi,bj)*deepFac2F(ks)
+     &       - freeSurfFac*_rA(i,j,bi,bj)*deepFac2F(ks)
      &         /deltaTMom/deltaTFreeSurf
      &         * etaH(i,j,bi,bj)
 #else
-     &       -tmpFac*_rA(i,j,bi,bj)*deepFac2F(ks)*etaH(i,j,bi,bj)
+     &       - tmpFac*_rA(i,j,bi,bj)*deepFac2F(ks)*etaH(i,j,bi,bj)
 #endif
          ENDDO
         ENDDO
       ELSE
+#else /* EXACT_CONSERV */
+# ifdef ALLOW_NONHYDROSTATIC
+      ELSE
+# endif
 #endif /* EXACT_CONSERV */
         tmpFac = freeSurfFac/deltaTFreeSurf
         DO j=1,sNy
@@ -277,11 +449,11 @@ c#endif
            ks = kSurfC(i,j,bi,bj)
            cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
 #ifdef PRESERVE_C69C_OUTPUT
-     &       -freeSurfFac*_rA(i,j,bi,bj)*deepFac2F(ks)
+     &       - freeSurfFac*_rA(i,j,bi,bj)*deepFac2F(ks)
      &         /deltaTMom/deltaTFreeSurf
      &         * etaN(i,j,bi,bj)
 #else
-     &       -tmpFac*_rA(i,j,bi,bj)*deepFac2F(ks)*etaN(i,j,bi,bj)
+     &       - tmpFac*_rA(i,j,bi,bj)*deepFac2F(ks)*etaN(i,j,bi,bj)
 #endif
          ENDDO
         ENDDO

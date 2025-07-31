@@ -1,6 +1,6 @@
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
-#undef PRESERVE_C69C_OUTPUT
+#include "BACKWARD_COMPAT_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: SOLVE_FOR_PRESSURE
@@ -25,7 +25,6 @@ C     == Global variables
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SURFACE.h"
-#include "FFIELDS.h"
 #include "DYNVARS.h"
 #ifdef ALLOW_NONHYDROSTATIC
 # include "NH_VARS.h"
@@ -78,14 +77,12 @@ C     wSurfP2d :: surface vertical velocity after 2-D solver
       _RL  wSurfP2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER k
 #else /* ALLOW_NONHYDROSTATIC */
-      _RL     cg3d_b(1)
+      _RL     cg3d_b(1), wSurfP2d(1)
 #endif /* ALLOW_NONHYDROSTATIC */
       LOGICAL oldFreeSurfTerm
-      LOGICAL putPmEinXvector
       INTEGER i, j, bi, bj
       INTEGER numIters, nIterMin
       _RL firstResidual, minResidualSq, lastResidual
-      _RL tmpFac, sumEmP, tileEmP(nSx,nSy)
       INTEGER ioUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_DIAGNOSTICS
@@ -109,12 +106,6 @@ C        (b) gradient of surf.Press in momentum eq. (<- add 1/rhoFac)
 C       => 2 factors cancel in elliptic eq. for Phi_s ,
 C       but 1rst factor(a) remains in RHS cg2d_b.
 
-C--   Initialise the Vector solution with etaN + deltaT*Global_mean_PmE
-C     instead of simply etaN ; This can speed-up the solver convergence in
-C     the case where |Global_mean_PmE| is large.
-      putPmEinXvector = .FALSE.
-c     putPmEinXvector = useRealFreshWaterFlux.AND.fluidIsWater
-
       IF ( myIter.EQ.1+nIter0 .AND. debugLevel .GE. debLevA ) THEN
         _BEGIN_MASTER( myThid )
         ioUnit = standardMessageUnit
@@ -125,9 +116,6 @@ c     putPmEinXvector = useRealFreshWaterFlux.AND.fluidIsWater
          CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
         ENDIF
 #endif
-        WRITE(msgBuf,'(2A,L5)') 'SOLVE_FOR_PRESSURE:',
-     &       ' putPmEinXvector =', putPmEinXvector
-        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 #ifdef ALLOW_NONHYDROSTATIC
         WRITE(msgBuf,'(2A,L5)') 'SOLVE_FOR_PRESSURE:',
      &       ' oldFreeSurfTerm =', oldFreeSurfTerm
@@ -137,7 +125,6 @@ c     putPmEinXvector = useRealFreshWaterFlux.AND.fluidIsWater
       ENDIF
 
 C--   Save previous solution & Initialise Vector solution and source term :
-      sumEmP = 0.
 C-    first bi,bj loops:
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -182,39 +169,9 @@ C-    first bi,bj loops:
          ENDDO
         ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
-#ifdef PRESERVE_C69C_OUTPUT
-        IF ( useRealFreshWaterFlux.AND.fluidIsWater ) THEN
-         tmpFac = freeSurfFac*mass2rUnit*implicDiv2DFlow
-#else
-        IF ( useRealFreshWaterFlux.AND.fluidIsWater
-     &              .AND. implicDiv2DFlow.NE.zeroRL ) THEN
-         tmpFac = freeSurfFac*mass2rUnit
-#endif
-         DO j=1,sNy
-          DO i=1,sNx
-           cg2d_b(i,j,bi,bj) = tmpFac*_rA(i,j,bi,bj)*EmPmR(i,j,bi,bj)
-#ifdef PRESERVE_C69C_OUTPUT
-     &                       / deltaTMom
-#endif
-          ENDDO
-         ENDDO
-        ENDIF
-        IF ( putPmEinXvector ) THEN
-         tileEmP(bi,bj) = 0. _d 0
-         DO j=1,sNy
-          DO i=1,sNx
-            tileEmP(bi,bj) = tileEmP(bi,bj)
-     &                     + rA(i,j,bi,bj)*EmPmR(i,j,bi,bj)
-     &                                    *maskInC(i,j,bi,bj)
-          ENDDO
-         ENDDO
-        ENDIF
 C-    end first bi,bj loops
        ENDDO
       ENDDO
-      IF ( putPmEinXvector ) THEN
-        CALL GLOBAL_SUM_TILE_RL( tileEmP, sumEmP, myThid )
-      ENDIF
 
 #ifndef PRESERVE_C69C_OUTPUT
       IF ( implicDiv2DFlow.NE.zeroRL ) THEN
@@ -224,22 +181,12 @@ C---  Solver Matrix is well defined, including Free-Surf term, do the solving:
 C-    second bi,bj loops:
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-         IF ( putPmEinXvector ) THEN
-          tmpFac = 0. _d 0
-          IF ( globalArea.GT.zeroRL ) tmpFac =
-     &      freeSurfFac*deltaTFreeSurf*mass2rUnit*sumEmP/globalArea
-          DO j=1,sNy
-           DO i=1,sNx
-            cg2d_x(i,j,bi,bj) = cg2d_x(i,j,bi,bj)
-     &                        - tmpFac*Bo_surf(i,j,bi,bj)
-           ENDDO
-          ENDDO
-         ENDIF
 C- RHS: similar to the divergence of the vertically integrated mass transport:
 C       del_i { Sum_k [ rhoFac.(dr.hFac).(dy.deepFac).(u*) ] }
          CALL CALC_DIV_GHAT(
      I                       bi, bj, oldFreeSurfTerm,
      U                       cg2d_b, cg3d_b,
+     O                       wSurfP2d,
      I                       myThid )
 
 #ifdef ALLOW_OBCS
@@ -377,28 +324,12 @@ C--   Fill diagnostics
 #endif /* ALLOW_DIAGNOSTICS */
 
 C--   Transfert the 2D-solution to "etaN" :
-C     not needed with exactConserv=T except in pre_cg3d.F (if solveForDeltaP=F)
-c#ifdef ALLOW_AUTODIFF
-c      IF ( solveForDeltaP ) THEN
-c       DO bj=myByLo(myThid),myByHi(myThid)
-c        DO bi=myBxLo(myThid),myBxHi(myThid)
-c          DO j=1-OLy,sNy+OLy
-c           DO i=1-OLx,sNx+OLx
-c            etaN(i,j,bi,bj) = etaN(i,j,bi,bj)
-c    &                       + recip_Bo(i,j,bi,bj)*cg2d_x(i,j,bi,bj)
-c           ENDDO
-c          ENDDO
-c        ENDDO
-c       ENDDO
-c      ELSE
-c#else /* ALLOW_AUTODIFF */
 #ifdef PRESERVE_C69C_OUTPUT
        IF ( .NOT.solveForDeltaP ) THEN
 #else
-       IF ( ( .NOT.exactConserv .OR. use3Dsolver )
-     &      .AND. .NOT.solveForDeltaP ) THEN
+C     not needed with exactConserv=T or solveForDeltaP=T
+       IF ( .NOT.solveForDeltaP .AND. .NOT.exactConserv ) THEN
 #endif
-c#endif /* ALLOW_AUTODIFF */
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
            DO j=1-OLy,sNy+OLy
@@ -447,15 +378,14 @@ C---  end if implicDiv2DFlow=0 special case
 C--   Solve for a three-dimensional pressure term (NH or IGW or both ).
 C     see CG3D.h for the interface to this routine.
 
-C--   Finish updating cg3d_b: 1) Add EmPmR contribution to top level cg3d_b:
-C                             2) Update or Add free-surface contribution
-C                             3) increment in horiz velocity due to new cg2d_x
-C                             4) add vertical velocity contribution.
+C--   Finish updating cg3d_b: 1) Update or Add free-surface contribution
+C                             2) increment in horiz velocity due to new cg2d_x
+C                             3) add vertical velocity contribution.
        CALL PRE_CG3D(
      I                oldFreeSurfTerm,
      I                cg2d_x,
      U                cg3d_b, cg3d_x,
-     O                wSurfP2d,
+     U                wSurfP2d,
      I                myTime, myIter, myThid )
 
 #ifdef ALLOW_DEBUG
@@ -506,8 +436,8 @@ c      IF ( nonHydrostatic .AND. exactConserv ) THEN
         IF ( DIFFERENT_MULTIPLE( diagFreq, myTime, deltaTClock) ) THEN
          CALL WRITE_FLD_XYZ_RL('cg3d_x','I10', cg3d_x, myIter,myThid )
         ENDIF
-        CALL POST_CG3D(
-     I                  cg3d_x, wSurfP2d, myTime, myIter, myThid )
+        CALL POST_CG3D( cg3d_x, wVel, wSurfP2d,
+     I                  myTime, myIter, myThid )
 c      ENDIF
 
       ENDIF
