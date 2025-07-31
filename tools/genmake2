@@ -23,6 +23,10 @@ Usage: "$0" [OPTIONS]
           Here, "ARG" or "ARGS" specifies a list of cmd line arguments
           passed to the tapenade tool
 
+    -tapgcc ARG | --tapgcc ARG | -tapgcc=ARGS | --tapgcc=ARGS
+          Here, "ARG" or "ARGS" specifies a list of compile flags
+          passed to the C compiler for select Tapenade ADFirstAidKit files
+
     -tapthread | --tapthread 
           Uses the -lpthread linking option when compiling the executable
           Intended to be used with tapenade
