@@ -1,6 +1,6 @@
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
-#undef PRESERVE_C69C_OUTPUT
+#include "BACKWARD_COMPAT_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: INI_CG2D
@@ -42,7 +42,7 @@ C     myNorm   :: Work variable used in calculating normalisation factor
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER bi, bj
       INTEGER i, j, k, ks
-      _RL     faceArea, tmpFac
+      _RL     faceArea, tmpFac, locGamma
       _RL     cg2dTolerance
       _RS     myNorm
       _RS     aC, aCw, aCs
@@ -216,8 +216,29 @@ C           defaults to 0.51 but can be set at runtime.
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 C-    calculate and store solver main diagonal :
-        DO j=0,sNy
-         DO i=0,sNx
+        IF ( selectNHfreeSurf.EQ.2 ) THEN
+C-    with adjusted free-surface contribution due to Non-Hydrostatic Free-Surf
+         DO j=0,sNy
+          DO i=0,sNx
+           locGamma = drC(1)*recip_Bo(i,j,bi,bj)
+     &              /( deltaTMom*deltaTFreeSurf
+     &                *implicitNHPress*implicDiv2DFlow )
+           ks = 1
+c          ks = kSurfC(i,j,bi,bj)
+c          IF ( ks.LE.Nr ) THEN
+           aC2d(i,j,bi,bj) = -(
+     &       aW2d(i,j,bi,bj) + aW2d(i+1,j, bi,bj)
+     &      +aS2d(i,j,bi,bj) + aS2d( i,j+1,bi,bj)
+     &      +tmpFac*recip_Bo(i,j,bi,bj)*rA(i,j,bi,bj)*deepFac2F(ks)
+     &          / (1. _d 0 + locGamma )
+     &                        )
+c          ENDIF
+          ENDDO
+         ENDDO
+        ELSE
+C-    with default Hydrostatic free-surface contribution
+         DO j=0,sNy
+          DO i=0,sNx
            ks = kSurfC(i,j,bi,bj)
            aC2d(i,j,bi,bj) = -(
      &       aW2d(i,j,bi,bj) + aW2d(i+1,j, bi,bj)
@@ -229,8 +250,9 @@ C-    calculate and store solver main diagonal :
      &      +tmpFac*recip_Bo(i,j,bi,bj)*rA(i,j,bi,bj)*deepFac2F(ks)
 #endif
      &                        )
+          ENDDO
          ENDDO
-        ENDDO
+        ENDIF
         DO j=1,sNy
          DO i=1,sNx
            aC  = aC2d( i, j, bi,bj)
@@ -263,6 +285,12 @@ C          pS(i,j,bi,bj) = 0.
 C--   Update overlap regions
       CALL EXCH_XY_RS( pC, myThid )
       CALL EXCH_UV_XY_RS( pW, pS, .FALSE., myThid )
+
+      IF ( debugLevel .GE. debLevC ) THEN
+        CALL WRITE_FLD_XY_RS( 'aW2d', ' ', aW2d, -1, myThid )
+        CALL WRITE_FLD_XY_RS( 'aS2d', ' ', aS2d, -1, myThid )
+        CALL WRITE_FLD_XY_RS( 'aC2d', ' ', aC2d, -1, myThid )
+      ENDIF
 CcnhDebugStarts
 C     CALL PLOT_FIELD_XYRS( pC, 'pC   INI_CG2D.2' , 1, myThid )
 C     CALL PLOT_FIELD_XYRS( pW, 'pW   INI_CG2D.2' , 1, myThid )
