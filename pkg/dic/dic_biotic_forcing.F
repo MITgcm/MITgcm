@@ -1,4 +1,7 @@
 #include "DIC_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
 C !ROUTINE: DIC_BIOTIC_FORCING
@@ -29,6 +32,9 @@ C !USES: ===============================================================
 #include "DIC_VARS.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+#endif
 
 C !INPUT/OUTPUT PARAMETERS: ===================================================
 C  PTR_DIC              :: dissolced inorganic carbon
@@ -105,12 +111,19 @@ C  freefe                 :: iron not bound to ligand
       INTEGER kBottom
 # endif
 #endif
+#ifdef ALLOW_AUTODIFF_TAMC
+C     tkey :: tape key TAF-AD simulations (depends on tiles)
+      INTEGER tkey
+#endif
 CEOP
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_ENTER('DIC_BIOTIC_FORCING',myThid)
 #endif
 
+#ifdef ALLOW_AUTODIFF_TAMC
+      tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+#endif
       IF ( useThSIce .OR. useSEAICE .OR. useCoupler ) THEN
 #ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('DIC_FIELDS_UPDATE',myThid)
@@ -162,6 +175,10 @@ C carbon air-sea interaction
      I                    bi, bj, iMin, iMax, jMin, jMax,
      I                    myTime, myIter, myThid )
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE Kwexch_pre(:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
+#endif
+
 C alkalinity air-sea interaction
 #ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('ALK_SURFFORCING',myThid)
@@ -207,6 +224,9 @@ C biological activity
      O                    BIOac,
      I                    bi, bj, iMin, iMax, jMin, jMax,
      I                    myTime, myIter, myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE BIOac = comlev1_bibj, key = tkey, kind = isbyte
+#endif
 
 C flux of po4 from layers with biological activity
 #ifdef ALLOW_DEBUG

@@ -45,11 +45,6 @@ C     i,j, bi,bj  :: Loop counters
 #ifdef ALLOW_SITRACER
       INTEGER iTracer
 #endif
-#ifdef SHORTWAVE_HEATING
-cif   Helper variable for determining the fraction of sw radiation
-cif   penetrating the model shallowest layer
-      _RL swfracba(2)
-#endif /* SHORTWAVE_HEATING */
 C     local copy of surface layer thickness in meters
       _RL dzSurf
 #ifdef SEAICE_BGRID_DYNAMICS
@@ -79,24 +74,6 @@ C     Only Master Thread updates parameter in commom block:
 C     restart parameter
       SEAICEmomStartBDF = 0
       IF ( SEAICEuseBDF2 ) SEAICEmomStartBDF = nIter0
-
-#ifdef SHORTWAVE_HEATING
-       IF ( usingZCoords ) THEN
-        swfracba(1) = rF(1)
-        swfracba(2) = rF(2)
-       ELSE
-C     this is the oceanic pressure coordinate case
-        swfracba(1) = -rF(Nr+1)*recip_rhoConst*recip_gravity
-        swfracba(2) = -rF(Nr)  *recip_rhoConst*recip_gravity
-       ENDIF
-       CALL SWFRAC(
-     I       2, oneRL,
-     U       swfracba,
-     I       oneRL, 0, myThid )
-       SEAICE_SWFrac = swfracba(2)
-#else /* SHORTWAVE_HEATING */
-       SEAICE_SWFrac = 0. _d 0
-#endif /* SHORTWAVE_HEATING */
 
 C--   Set mcPheePiston coeff (if still unset)
        dzSurf = drF(kSrf)
