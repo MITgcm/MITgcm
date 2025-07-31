@@ -1,6 +1,6 @@
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
-#undef PRESERVE_C69C_OUTPUT
+#include "BACKWARD_COMPAT_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: INI_CG3D
@@ -371,6 +371,10 @@ C--   Update overlap regions
       _EXCH_XYZ_RS(zMU, myThid)
 
       IF ( debugLevel .GE. debLevC ) THEN
+        CALL WRITE_FLD_XYZ_RS( 'aW3d', ' ', aW3d, -1, myThid )
+        CALL WRITE_FLD_XYZ_RS( 'aS3d', ' ', aS3d, -1, myThid )
+        CALL WRITE_FLD_XYZ_RS( 'aV3d', ' ', aV3d, -1, myThid )
+        CALL WRITE_FLD_XYZ_RS( 'aC3d', ' ', aC3d, -1, myThid )
         CALL WRITE_FLD_XYZ_RS( 'zMC',' ',zMC, 0, myThid )
         CALL WRITE_FLD_XYZ_RS( 'zML',' ',zML, 0, myThid )
         CALL WRITE_FLD_XYZ_RS( 'zMU',' ',zMU, 0, myThid )

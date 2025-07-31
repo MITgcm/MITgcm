@@ -6,7 +6,7 @@
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
-#undef PRESERVE_C69C_OUTPUT
+#include "BACKWARD_COMPAT_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: INTEGR_CONTINUITY
@@ -69,9 +69,6 @@ C     hDivFlow :: Div. Barotropic Flow [wVel units, m/s]
       _RL hDivFlow(1:sNx,1:sNy)
       _RL facEmP
 #endif /* EXACT_CONSERV */
-#ifndef ALLOW_ADDFLUID
-      _RL addMass(1)
-#endif /* ndef ALLOW_ADDFLUID */
 #if (defined NONLIN_FRSURF) && !(defined DISABLE_RSTAR_CODE)
       _RL rStarDhDt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 # if (defined ALLOW_AUTODIFF_TAMC) && (defined ALLOW_DEPTH_CONTROL)
