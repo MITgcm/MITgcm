@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint69f (2025/07/10)
 o model/src, pkg/kpp:
   - store shortwave penetration fraction in 3D field SWFrac3D and add run-time
     params "selectPenetratingSW" to chose between different short-wave heating
