@@ -290,7 +290,7 @@ c  Irradiance in middle of top layer
 #else /* PHYTO_SELF_SHADING */
 C SW radiation attenuated exponentially
 c  Light attenuation in middle of top layer
-           atten = k0*drF(1)/2. _d 0*hFacC(i,j,1,bi,bj)
+           atten = k0_2d(i,j,bi,bj)*drF(1)/2. _d 0*hFacC(i,j,1,bi,bj)
            irr_inst(i,j,1) = irr_surf(i,j)*exp(-atten)
 
 #endif /* PHYTO_SELF_SHADING */
@@ -340,8 +340,8 @@ c  Irradiance in middle of layer k
 #else /* PHYTO_SELF_SHADING */
 C SW radiation attenuated exponentially
 c  Attenuation from one more layer
-           atten = k0*drF(k)/2. _d 0*hFacC(i,j,k,bi,bj)
-     &           + k0*drF(k-1)/2. _d 0*hFacC(i,j,k-1,bi,bj)
+           atten = k0_2d(i,j,bi,bj)*drF(k)/2. _d 0*hFacC(i,j,k,bi,bj)
+     &           + k0_2d(i,j,bi,bj)*drF(k-1)/2. _d 0*hFacC(i,j,k-1,bi,bj)
            irr_inst(i,j,k) = irr_inst(i,j,k-1)*exp(-atten)
 
 #endif /* PHYTO_SELF_SHADING */
@@ -362,7 +362,7 @@ c           sat_atten = irr_inst(i,j,k)/irr_surf(i,j)
 #ifdef PHYTO_SELF_SHADING
            sat_atten = exp(-2. _d 0 * k0_bg * (-rC(k)))
 #else
-           sat_atten = exp(-2. _d 0 * k0 * (-rC(k)))
+           sat_atten = exp(-2. _d 0 * k0_2d(i,j,bi,bj) * (-rC(k)))
 #endif
            chl_sat_sum(i,j) = chl_sat_sum(i,j)
      &                 + chl(i,j,k,bi,bj)*sat_atten
