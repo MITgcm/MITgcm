@@ -46,7 +46,7 @@ C     !LOCAL VARIABLES:
       INTEGER i, j, bi, bj
       INTEGER k, ks
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
-      _RL     locGamma
+      _RL     rec_dT2, locGamma
 CEOP
 
 C--   Separate the Hydrostatic Surface Pressure adjusment (=> put it in dPhiNH)
@@ -56,16 +56,16 @@ C     from the Non-hydrostatic pressure (since cg3d_x contains both contribution
         DO bi=myBxLo(myThid),myBxHi(myThid)
 
          IF ( selectNHfreeSurf.GE.1 ) THEN
+          rec_dT2 = oneRL / ( implicitNHPress * deltaTMom
+     &                      * implicDiv2DFlow * deltaTFreeSurf )
           DO j=1,sNy
            DO i=1,sNx
-            locGamma = drC(1)*recip_Bo(i,j,bi,bj)
-     &               /( deltaTMom*deltaTFreeSurf
-     &                 *implicitNHPress*implicDiv2DFlow )
             ks = 1
 c           ks = kSurfC(i,j,bi,bj)
 c           IF ( ks.LE.Nr ) THEN
+             locGamma = rec_dT2 * drC(1)*recip_Bo(i,j,bi,bj)
              dPhiNH(i,j,bi,bj) =
-     &            cg3d_x(i,j,ks,bi,bj)/(1. _d 0 + locGamma )
+     &            cg3d_x(i,j,ks,bi,bj)/( oneRL + locGamma )
      &          + locGamma*Bo_surf(i,j,bi,bj)
      &                    *implicDiv2DFlow*deltaTFreeSurf
      &                    *( wFld(i,j,ks,bi,bj) - wSurfP2d(i,j,bi,bj) )

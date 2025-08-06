@@ -57,15 +57,16 @@ C     ks      :: free-surface level index
 C     xTrans  :: Transport divided by deltaT, in X-dir
 C     yTrans  :: Transport divided by deltaT, in Y-dir
 C     locFac  :: temp/local factor from this level
+C     rec_dTfs :: freeSurfFac divided by ( detalTFreeSurf x implicDiv2DFlow )
       INTEGER i, j, k, ks
       _RL xTrans(1:sNx+1,1:sNy+1)
       _RL yTrans(1:sNx+1,1:sNy+1)
-#ifndef PRESERVE_C69C_OUTPUT
-      _RL locFac
-#endif
       _RL tmpFac
+#ifndef PRESERVE_C69C_OUTPUT
+      _RL locFac, rec_dTfs
+#endif
 #if ( defined ALLOW_NONHYDROSTATIC && defined EXACT_CONSERV )
-      _RL locGamma
+      _RL rec_dT2, locGamma
 #endif
 #ifdef ALLOW_ADDFLUID
       _RL unitsFac
@@ -78,6 +79,9 @@ CEOP
       unitsFac = mass2rUnit/deltaTMom
       IF ( exactConserv ) unitsFac = unitsFac*implicDiv2DFlow
 # endif
+#endif
+#ifndef PRESERVE_C69C_OUTPUT
+      rec_dTfs = freeSurfFac /( implicDiv2DFlow*deltaTFreeSurf )
 #endif
 
 #ifdef ALLOW_NONHYDROSTATIC
@@ -300,33 +304,32 @@ C      end if/else use3Dsolver & exactConserv &. usingZCoords
        ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
       ENDIF
-#endif /* PRESERVE_C69C_OUTPUT */
+#endif /* ndef PRESERVE_C69C_OUTPUT */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_NONHYDROSTATIC
       IF ( oldFreeSurfTerm ) THEN
 C--   Add source term arising from w=d/dt (p_s + p_nh)
-        tmpFac = freeSurfFac/deltaTFreeSurf
         DO j=1,sNy
          DO i=1,sNx
           ks = kSurfC(i,j,bi,bj)
           IF ( ks.LE.Nr ) THEN
            cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
 #ifdef PRESERVE_C69C_OUTPUT
-     &       -freeSurfFac*_rA(i,j,bi,bj)*deepFac2F(ks)
+     &       - freeSurfFac*_rA(i,j,bi,bj)*deepFac2F(ks)
      &         /deltaTMom/deltaTFreeSurf
 #else
-     &       -tmpFac*_rA(i,j,bi,bj)*deepFac2F(ks)
+     &       - rec_dTfs*_rA(i,j,bi,bj)*deepFac2F(ks)
 #endif
      &         *( etaN(i,j,bi,bj)
      &           +phi_nh(i,j,ks,bi,bj)*recip_Bo(i,j,bi,bj) )
            cg3d_b(i,j,ks,bi,bj) = cg3d_b(i,j,ks,bi,bj)
 #ifdef PRESERVE_C69C_OUTPUT
-     &       -freeSurfFac*_rA(i,j,bi,bj)*deepFac2F(ks)
+     &       - freeSurfFac*_rA(i,j,bi,bj)*deepFac2F(ks)
      &         /deltaTMom/deltaTFreeSurf
 #else
-     &       -tmpFac*_rA(i,j,bi,bj)*deepFac2F(ks)
+     &       - rec_dTfs*_rA(i,j,bi,bj)*deepFac2F(ks)
 #endif
      &         *( etaN(i,j,bi,bj)
      &           +phi_nh(i,j,ks,bi,bj)*recip_Bo(i,j,bi,bj) )
@@ -386,14 +389,14 @@ C--   Add source term arising from w=d/dt (p_s)
         ENDIF
         ks = 1
         IF ( selectNHfreeSurf.GE.1 ) THEN
+         rec_dT2 = oneRL / ( implicitNHPress * deltaTMom
+     &                     * implicDiv2DFlow * deltaTFreeSurf )
          DO j=1,sNy
           DO i=1,sNx
-           locGamma = drC(1)*recip_Bo(i,j,bi,bj)
-     &              /( deltaTMom*deltaTFreeSurf
-     &                *implicitNHPress*implicDiv2DFlow )
+           locGamma = rec_dT2 * drC(1)*recip_Bo(i,j,bi,bj)
            wSurfP2d(i,j,bi,bj) = ( wSurfP2d(i,j,bi,bj)
      &                           + locGamma*wVel(i,j,ks,bi,bj)
-     &                           )/(1. _d 0 + locGamma)
+     &                           )/( oneRL + locGamma )
           ENDDO
          ENDDO
         ENDIF
@@ -407,23 +410,20 @@ C--   Add source term arising from w=d/dt (p_s)
          ENDDO
         ENDIF
       ELSEIF ( solveForDeltaP ) THEN
-# else
+# else /* ALLOW_NONHYDROSTATIC */
       IF ( solveForDeltaP ) THEN
-# endif
+# endif /* ALLOW_NONHYDROSTATIC */
         IF ( implicDiv2DFlow.NE.oneRL ) THEN
          tmpFac = freeSurfFac*( oneRL/implicDiv2DFlow - oneRL )
          DO j=1,sNy
           DO i=1,sNx
            ks = kSurfC(i,j,bi,bj)
            cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
-c#ifdef EXACT_CONSERV
      &       - tmpFac*_rA(i,j,bi,bj)*deepFac2F(ks)*dEtaHdt(i,j,bi,bj)
-c#endif
           ENDDO
          ENDDO
         ENDIF
       ELSEIF ( exactConserv ) THEN
-        tmpFac = freeSurfFac/(implicDiv2DFlow*deltaTFreeSurf)
         DO j=1,sNy
          DO i=1,sNx
            ks = kSurfC(i,j,bi,bj)
@@ -433,7 +433,7 @@ c#endif
      &         /deltaTMom/deltaTFreeSurf
      &         * etaH(i,j,bi,bj)
 #else
-     &       - tmpFac*_rA(i,j,bi,bj)*deepFac2F(ks)*etaH(i,j,bi,bj)
+     &       - rec_dTfs*_rA(i,j,bi,bj)*deepFac2F(ks)*etaH(i,j,bi,bj)
 #endif
          ENDDO
         ENDDO
@@ -443,7 +443,6 @@ c#endif
       ELSE
 # endif
 #endif /* EXACT_CONSERV */
-        tmpFac = freeSurfFac/deltaTFreeSurf
         DO j=1,sNy
          DO i=1,sNx
            ks = kSurfC(i,j,bi,bj)
@@ -453,7 +452,7 @@ c#endif
      &         /deltaTMom/deltaTFreeSurf
      &         * etaN(i,j,bi,bj)
 #else
-     &       - tmpFac*_rA(i,j,bi,bj)*deepFac2F(ks)*etaN(i,j,bi,bj)
+     &       - rec_dTfs*_rA(i,j,bi,bj)*deepFac2F(ks)*etaN(i,j,bi,bj)
 #endif
          ENDDO
         ENDDO

@@ -42,7 +42,7 @@ C     myNorm   :: Work variable used in calculating normalisation factor
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER bi, bj
       INTEGER i, j, k, ks
-      _RL     faceArea, tmpFac, locGamma
+      _RL     faceArea, tmpFac, dT2impl
       _RL     cg2dTolerance
       _RS     myNorm
       _RS     aC, aCw, aCs
@@ -208,46 +208,46 @@ C           number of iterations for convergence in a test case to
 C           drop form 192 -> 134! Need to investigate this further!
 C           For now I have introduced a parameter cg2dpcOffDFac which
 C           defaults to 0.51 but can be set at runtime.
-      IF ( implicDiv2DFlow.GT.zeroRL ) THEN
-        tmpFac = freeSurfFac*myNorm/(implicDiv2DFlow*deltaTFreeSurf)
-      ELSE
-        tmpFac = 0. _d 0
-      ENDIF
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 C-    calculate and store solver main diagonal :
         IF ( selectNHfreeSurf.EQ.2 ) THEN
-C-    with adjusted free-surface contribution due to Non-Hydrostatic Free-Surf
+C-    with adjusted free-surface contribution due to Non-Hydrostatic Free-Surf:
+C     since Gamma = drC(1)/( beta * gamma * g * deltaT^2 )
+C     1/[(1+Gamma)*g*beta*deltaT] = gamma*deltaT/(g*beta*gamma*deltaT^2 +drC(1))
+         tmpFac = freeSurfFac*myNorm * implicitNHPress*deltaTMom
+         dT2impl = implicitNHPress * deltaTMom
+     &           * implicDiv2DFlow * deltaTFreeSurf
          DO j=0,sNy
           DO i=0,sNx
-           locGamma = drC(1)*recip_Bo(i,j,bi,bj)
-     &              /( deltaTMom*deltaTFreeSurf
-     &                *implicitNHPress*implicDiv2DFlow )
            ks = 1
 c          ks = kSurfC(i,j,bi,bj)
 c          IF ( ks.LE.Nr ) THEN
            aC2d(i,j,bi,bj) = -(
-     &       aW2d(i,j,bi,bj) + aW2d(i+1,j, bi,bj)
-     &      +aS2d(i,j,bi,bj) + aS2d( i,j+1,bi,bj)
-     &      +tmpFac*recip_Bo(i,j,bi,bj)*rA(i,j,bi,bj)*deepFac2F(ks)
-     &          / (1. _d 0 + locGamma )
+     &        aW2d(i,j,bi,bj) + aW2d(i+1,j, bi,bj)
+     &      + aS2d(i,j,bi,bj) + aS2d( i,j+1,bi,bj)
+     &      + tmpFac*rA(i,j,bi,bj)*deepFac2F(ks)
+     &                 /( dT2impl*Bo_surf(i,j,bi,bj) + drC(1) )
      &                        )
 c          ENDIF
           ENDDO
          ENDDO
         ELSE
 C-    with default Hydrostatic free-surface contribution
+         IF ( implicDiv2DFlow.GT.zeroRL ) THEN
+           tmpFac = freeSurfFac*myNorm/(implicDiv2DFlow*deltaTFreeSurf)
+         ENDIF
          DO j=0,sNy
           DO i=0,sNx
            ks = kSurfC(i,j,bi,bj)
            aC2d(i,j,bi,bj) = -(
-     &       aW2d(i,j,bi,bj) + aW2d(i+1,j, bi,bj)
-     &      +aS2d(i,j,bi,bj) + aS2d( i,j+1,bi,bj)
+     &        aW2d(i,j,bi,bj) + aW2d(i+1,j, bi,bj)
+     &      + aS2d(i,j,bi,bj) + aS2d( i,j+1,bi,bj)
 #ifdef PRESERVE_C69C_OUTPUT
-     &      +freeSurfFac*myNorm*recip_Bo(i,j,bi,bj)*deepFac2F(ks)
+     &      + freeSurfFac*myNorm*recip_Bo(i,j,bi,bj)*deepFac2F(ks)
      &                  *rA(i,j,bi,bj)/deltaTMom/deltaTFreeSurf
 #else
-     &      +tmpFac*recip_Bo(i,j,bi,bj)*rA(i,j,bi,bj)*deepFac2F(ks)
+     &      + tmpFac*recip_Bo(i,j,bi,bj)*rA(i,j,bi,bj)*deepFac2F(ks)
 #endif
      &                        )
           ENDDO
@@ -261,7 +261,7 @@ C-    with default Hydrostatic free-surface contribution
            IF ( aC .EQ. zeroRS ) THEN
             pC(i,j,bi,bj) = 1. _d 0
            ELSE
-            pC(i,j,bi,bj) =  1. _d 0 / aC
+            pC(i,j,bi,bj) = 1. _d 0 / aC
            ENDIF
            IF ( aC + aCw .EQ. zeroRS ) THEN
             pW(i,j,bi,bj) = 0.

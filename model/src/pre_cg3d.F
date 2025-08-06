@@ -58,7 +58,7 @@ C     !LOCAL VARIABLES:
       INTEGER ks, kp1
 c     CHARACTER*10 sufx
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
-      _RL     locGamma, tmpFac
+      _RL     tmpFac, dT2impl
       _RL     wFacKm, wFacKp
       _RL     uf(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     vf(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -77,15 +77,16 @@ C     see CG3D.h for the interface to this routine.
 C--   Calculate updated (after 2-D solver) vertical velocity at the surface
          IF ( selectNHfreeSurf.GE.1 ) THEN
            ks = 1
-           tmpFac = oneRL / ( implicDiv2DFlow*deltaTFreeSurf )
+C     since Gamma = drC(1)/( beta * gamma * g * deltaT^2 )
+C     1/[(1+Gamma)*g*beta*deltaT] = gamma*deltaT/(g*beta*gamma*deltaT^2 +drC(1))
+           tmpFac  = implicitNHPress * deltaTMom
+           dT2impl = implicitNHPress * deltaTMom
+     &             * implicDiv2DFlow * deltaTFreeSurf
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
-              locGamma = drC(1)*recip_Bo(i,j,bi,bj)
-     &                 /( deltaTMom*deltaTFreeSurf
-     &                   *implicitNHPress*implicDiv2DFlow )
               wSurfP2d(i,j,bi,bj) = wSurfP2d(i,j,bi,bj)
-     &                + recip_Bo(i,j,bi,bj)*cg2d_x(i,j,bi,bj)*tmpFac
-     &                 /(oneRL + locGamma)
+     &                + cg2d_x(i,j,bi,bj)*tmpFac
+     &                 /( dT2impl*Bo_surf(i,j,bi,bj) + drC(1) )
             ENDDO
            ENDDO
 #ifdef PRESERVE_C69C_OUTPUT

@@ -43,13 +43,12 @@ C     locFac   :: temp/local factor from this level
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER bi, bj
       INTEGER i, j, k, ks
-      _RL     faceArea, tmpFac
+      _RL     faceArea, tmpFac, dT2impl
       _RS     myNorm
       _RL     theRecip_Dr
       _RL     cg3dTolerance
       _RL     aU, aL, aW, aE, aN, aS
       _RL     nh_Fac, igwFac, locFac
-      _RL     locGamma
 CEOP
 
 CcnhDebugStarts
@@ -84,8 +83,9 @@ C-       From common bloc CG3D_WK_R:
        ENDDO
       ENDDO
 
-      nh_Fac = 0.
-      igwFac = 0.
+      nh_Fac = 0. _d 0
+      igwFac = 0. _d 0
+      tmpFac = 0. _d 0
       IF ( nonHydrostatic
      &      .AND. nh_Am2.NE.0. ) nh_Fac = 1. _d 0 / nh_Am2
       IF ( implicitIntGravWave ) igwFac = 1. _d 0
@@ -238,29 +238,32 @@ C-    Set solver main diagonal term
           ENDDO
          ENDDO
         ENDDO
-C-    Add free-surface source term
-        tmpFac = freeSurfFac /(implicDiv2DFlow*deltaTFreeSurf)
+C-    Add free-surface source term:
         IF ( selectNHfreeSurf.GE.1 ) THEN
+C     since Gamma = drC(1)/( beta * gamma * g * deltaT^2 )
+C     1/[(1+Gamma)*g*beta*deltaT] = gamma*deltaT/(g*beta*gamma*deltaT^2 +drC(1))
+#ifdef PRESERVE_C69C_OUTPUT
+         tmpFac = freeSurfFac * implicitNHPress*implicDiv2DFlow
+#else
+         tmpFac = freeSurfFac * implicitNHPress*deltaTMom
+#endif
+         dT2impl = implicitNHPress * deltaTMom
+     &           * implicDiv2DFlow * deltaTFreeSurf
          DO j=1,sNy
           DO i=1,sNx
-           locGamma = drC(1)*recip_Bo(i,j,bi,bj)
-     &              /( deltaTMom*deltaTFreeSurf
-     &                *implicitNHPress*implicDiv2DFlow )
            ks = 1
 c          ks = kSurfC(i,j,bi,bj)
 c          IF ( ks.LE.Nr ) THEN
              aC3d(i,j,ks,bi,bj) = aC3d(i,j,ks,bi,bj)
-#ifdef PRESERVE_C69C_OUTPUT
-     &         - freeSurfFac*recip_Bo(i,j,bi,bj)
-     &          *rA(i,j,bi,bj)*deepFac2F(ks)/deltaTMom/deltaTFreeSurf
-#else
-     &         - tmpFac*recip_Bo(i,j,bi,bj)*rA(i,j,bi,bj)*deepFac2F(ks)
-#endif
-     &          / (1. _d 0 + locGamma )
+     &                - tmpFac*rA(i,j,bi,bj)*deepFac2F(ks)
+     &                 /( dT2impl*Bo_surf(i,j,bi,bj) + drC(1) )
 c          ENDIF
           ENDDO
          ENDDO
         ELSE
+         IF ( implicDiv2DFlow.GT.zeroRL ) THEN
+           tmpFac = freeSurfFac /(implicDiv2DFlow*deltaTFreeSurf)
+         ENDIF
          DO j=1,sNy
           DO i=1,sNx
            ks = kSurfC(i,j,bi,bj)
@@ -309,7 +312,7 @@ C     assuming zML is lower and zMU is upper!
         DO k=1,Nr
          DO j=1,sNy
           DO i=1,sNx
-           IF ( aC3d(i,j,k,bi,bj) .NE. 0. ) THEN
+           IF ( aC3d(i,j,k,bi,bj) .NE. zeroRS ) THEN
             zMC(i,j,k,bi,bj) = aC3d(i,j,k,bi,bj)
             zML(i,j,k,bi,bj) = aV3d(i,j,k,bi,bj)
             IF ( k.NE.Nr ) THEN
@@ -333,14 +336,14 @@ CcnhDebugEnds
         k = 1
          DO j=1,sNy
           DO i=1,sNx
-           zMC(i,j,k,bi,bj) = 1. _d 0 / zMC(i,j,k,bi,bj)
+           zMC(i,j,k,bi,bj) = oneRS / zMC(i,j,k,bi,bj)
            zMU(i,j,k,bi,bj) = zMU(i,j,k,bi,bj)*zMC(i,j,k,bi,bj)
           ENDDO
          ENDDO
         DO k=2,Nr
          DO j=1,sNy
           DO i=1,sNx
-           zMC(i,j,k,bi,bj) = 1. _d 0 /
+           zMC(i,j,k,bi,bj) = oneRS /
      &     (zMC(i,j,k,bi,bj)-zML(i,j,k,bi,bj)*zMU(i,j,k-1,bi,bj))
            zMU(i,j,k,bi,bj) = zMU(i,j,k,bi,bj)*zMC(i,j,k,bi,bj)
           ENDDO
@@ -349,7 +352,7 @@ CcnhDebugEnds
         DO k=1,Nr
          DO j=1,sNy
           DO i=1,sNx
-           IF ( aC3d(i,j,k,bi,bj) .EQ. 0. ) THEN
+           IF ( aC3d(i,j,k,bi,bj) .EQ. zeroRS ) THEN
             zMC(i,j,k,bi,bj) = 1.
             zML(i,j,k,bi,bj) = 0.
             zMU(i,j,k,bi,bj) = 0.
