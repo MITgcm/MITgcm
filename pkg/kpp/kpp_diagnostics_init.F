@@ -92,7 +92,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
         diagName  = 'KPPfrac '
-        diagTitle = 'Short-wave flux fraction penetrating mixing layer'
+        diagTitle = 'Short-wave flux fraction heating the mixing layer'
         diagUnits = '                '
         diagCode  = 'SM P     1      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,

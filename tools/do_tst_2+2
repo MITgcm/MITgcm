@@ -6,7 +6,7 @@ usage()
         echo "    -> perform test 2+2=4 for several experiments"
         echo ""
         echo "where possible OPTIONS are:"
-        echo "  -help         : print usage"
+        echo " (-help|-h)     : print usage"
         echo "  -t   LIST_EXP : only check experiments in LIST_EXP"
         echo "  -skd LIST_EXP : skip experiments in LIST_EXP"
         echo "  -exe  COMMAND : use COMMAND to run the tests"
@@ -48,7 +48,7 @@ do
         yy=
     else
       case $xx in
-      -help ) usage ;;
+      -help|-h ) usage ;;
       -clean) CLEAN=1 ;;
       -t    ) yy=TESTDIRS ;;
       -skd  ) yy=SKIPDIRS ;;
@@ -90,7 +90,7 @@ if test -x $SCRIPT ; then
  fi
  echo " $LIST"
  echo ""
- yy=`echo $SCRIPT | grep -c '^\/'`
+ yy=`echo $SCRIPT | grep -c '^/'`
  if test $yy = 0 ; then SCRIPT="../../$SCRIPT" ; fi
 else
  echo "ERROR: script '$SCRIPT' not found or not executable"
@@ -161,7 +161,7 @@ echo 'P. Run  Result     experiment'  >> $SUMMARY
 echo '  1 2 3'  >> $SUMMARY
 
 #-- For MPI test:
-LOC_MFILE='tr_mpi_mfile'
+LOC_MFILE='mpi_mfile.loc'
 RUNOUTP="output.txt"
 if [ $mpi -ge 1 ] ; then
   SCRIPT="$SCRIPT -mpi"
@@ -186,14 +186,14 @@ do
     rCommand=`echo $COMMAND | sed "s/ TR_NPROC / $LOC_NPROC /"`
     if test "x$MPI_MFILE" != x ; then
       #- create new MPI machine-file with the right number of Procs
-      rm -f $LOC_MFILE
-      cat $MPI_MFILE | sort | uniq | head -$LOC_NPROC > $LOC_MFILE
-      nl=`wc -l $LOC_MFILE | awk '{print $1}'`
+      rm -f $xx/$LOC_MFILE
+      cat $MPI_MFILE | sort | uniq | head -$LOC_NPROC > $xx/$LOC_MFILE
+      nl=`wc -l $xx/$LOC_MFILE | awk '{print $1}'`
       if [ $nl -lt $LOC_NPROC ] ; then
-        rm -f $LOC_MFILE
-        cat $MPI_MFILE | head -$LOC_NPROC > $LOC_MFILE
+        rm -f $xx/$LOC_MFILE
+        cat $MPI_MFILE | head -$LOC_NPROC > $xx/$LOC_MFILE
       fi
-      rCommand=`echo $rCommand | sed "s/ TR_MFILE / ..\/..\/$LOC_MFILE /"`
+      rCommand=`echo $rCommand | sed "s/ TR_MFILE / ..\/$LOC_MFILE /"`
     fi
   fi
 
@@ -255,7 +255,7 @@ do
       )
     fi
   done
-  if test "x$mpi" != x0 -a "x$MPI_MFILE" != x ; then rm -f $LOC_MFILE ; fi
+  if test "x$mpi" != x0 -a "x$MPI_MFILE" != x ; then rm -f $xx/$LOC_MFILE ; fi
 done
 printf "End time:    " >> $SUMMARY
 date >> $SUMMARY
@@ -271,12 +271,12 @@ if test "x$ADDRESS" != xNONE -a "x$ADDRESS" != x ; then
       fi
     fi
     if test "x$SENDCMD" != x ; then
-        SendOpt='' ; headCMD=`echo $SENDCMD | awk '{print $1}'`
-        if test $headCMD != 'scp' ; then SendOpt='-s MITgcm-test -m 3555000' ; fi
-        #echo " run: $SENDCMD $SendOpt ${SAVDIR}/${DRESULTS}".tar.gz" $ADDRESSES"
+        sendOpt='' ; nb=`echo $SENDCMD | grep -c '\<scp\>'`
+        if [ $nb -eq 0 ] ; then sendOpt='-s MITgcm-test -m 3555000' ; fi
+        #echo " run: $SENDCMD $sendOpt ${SAVDIR}/${DRESULTS}".tar.gz" $ADDRESSES"
         tar -cf  ${SAVDIR}/${DRESULTS}".tar" $DRESULTS > /dev/null 2>&1 \
             && gzip  ${SAVDIR}/${DRESULTS}".tar" \
-            && $SENDCMD $SendOpt ${SAVDIR}/${DRESULTS}".tar.gz" $ADDRESS
+            && $SENDCMD $sendOpt ${SAVDIR}/${DRESULTS}".tar.gz" $ADDRESS
         out=$?
         if test "x$out" != x0 ; then
             echo

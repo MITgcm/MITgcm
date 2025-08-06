@@ -450,7 +450,7 @@ Diagnostics output is available via the diagnostics package (see Section
      KPPghat | 23 |SM  |s/m^2           |Nonlocal transport coefficient
      KPPhbl  |  1 |SM  |m               |KPP boundary layer depth, bulk Ri criterion
      KPPmld  |  1 |SM  |m               |Mixed layer depth, dT=.8degC density criterion
-     KPPfrac |  1 |SM  |                |Short-wave flux fraction penetrating mixing layer
+     KPPfrac |  1 |SM  |                |Short-wave flux fraction heating the mixing layer
 
 
 Reference experiments

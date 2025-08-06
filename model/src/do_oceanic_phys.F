@@ -281,6 +281,17 @@ CEOP
       ENDIF
 #endif /* ALLOW_OFFLINE */
 
+#if ( defined ALLOW_GCHEM && defined SHORTWAVE_HEATING )
+C--   This is the place where the 3D array SWFrac3D would need to be
+C     updated to reflect the current amount of surface radiation
+C     avaiable in each layer. The routine to do this depends very much
+C     on the bio-geo-chemical model used to compute turbidity or
+C     concentration of organic matter in the water column, and has not
+C     yet been written.
+C     IF ( useGCHEM .AND. selectPenetratingSW .GT. 1 )
+C    &     CALL GCHEM_SWFRAC( myTime, myIter, myThid )
+#endif
+
 #ifdef  ALLOW_OBCS
       IF (useOBCS) THEN
 C--   Calculate future values on open boundaries
@@ -592,12 +603,12 @@ C--   apply tidal forcing to open boundaries
 #endif  /* ALLOW_OBCS */
 
 #ifdef ALLOW_AUTODIFF_TAMC
-C--   HPF directive to help TAMC
+C--   HPF directive to help TAF
 CHPF$ INDEPENDENT
 #endif /* ALLOW_AUTODIFF_TAMC */
       DO bj=myByLo(myThid),myByHi(myThid)
 #ifdef ALLOW_AUTODIFF_TAMC
-C--   HPF directive to help TAMC
+C--   HPF directive to help TAF
 CHPF$ INDEPENDENT
 #endif /* ALLOW_AUTODIFF_TAMC */
        DO bi=myBxLo(myThid),myBxHi(myThid)

@@ -32,14 +32,12 @@ C     === Global variables ===
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     === Routine arguments ===
-C     myThid -  Number of this instances of CONFIG_CHECK
+C     myThid   ::  my Thread Id number
       INTEGER myThid
-CEndOfInterface
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
-C     msgBuf :: Informational/error message buffer
+C     msgBuf   :: Informational/error message buffer
+C     errCount :: error counter (inconsitent params and other errors)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER errCount
 CEOP
@@ -450,6 +448,18 @@ C     o Need to use S/R APPLY_FORCING_U,V to get Tidal forcing
       ENDIF
 #endif
 
+#ifndef SHORTWAVE_HEATING
+      IF ( selectPenetratingSW.GT.0 ) THEN
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: selectPenetratingSW>0',
+     &  ' but SHORTWAVE_HEATING code is not compiled.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: Re-compile with:',
+     &   ' "#define SHORTWAVE_HEATING" (CPP_OPTIONS.h)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+#endif
+
 #ifdef ALLOW_BALANCE_FLUXES
       IF ( selectBalanceEmPmR.LT.0 .OR. selectBalanceEmPmR.GT.2 ) THEN
         WRITE(msgBuf,'(2A,I6,A)') 'CONFIG_CHECK: ',
@@ -664,7 +674,7 @@ C--   Free-surface related limitations:
         errCount = errCount + 1
       ENDIF
 
-      IF (rigidLid .AND. exactConserv) THEN
+      IF ( rigidLid .AND. exactConserv ) THEN
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: exactConserv not compatible with'
         CALL PRINT_ERROR( msgBuf, myThid )
@@ -684,7 +694,7 @@ C--   Free-surface related limitations:
         errCount = errCount + 1
       ENDIF
 
-      IF (rigidLid .AND. useRealFreshWaterFlux) THEN
+      IF ( rigidLid .AND. useRealFreshWaterFlux ) THEN
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: useRealFreshWaterFlux not compatible with'
         CALL PRINT_ERROR( msgBuf, myThid )
@@ -694,7 +704,14 @@ C--   Free-surface related limitations:
         errCount = errCount + 1
       ENDIF
 
-      IF (nonlinFreeSurf.NE.0 .AND. .NOT.exactConserv) THEN
+      IF ( implicDiv2DFlow.NE.oneRL .AND. .NOT.exactConserv ) THEN
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: implicDiv2DFlow < 1 ',
+     &   'requires exactConserv= T (+ #define EXACT_CONSERV)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+
+      IF ( nonlinFreeSurf.NE.0 .AND. .NOT.exactConserv ) THEN
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: nonlinFreeSurf cannot be used'
         CALL PRINT_ERROR( msgBuf, myThid )
@@ -704,7 +721,7 @@ C--   Free-surface related limitations:
         errCount = errCount + 1
       ENDIF
 
-      IF (select_rStar.NE.0 .AND. .NOT.exactConserv) THEN
+      IF ( select_rStar.NE.0 .AND. .NOT.exactConserv ) THEN
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: r* Coordinate cannot be used'
         CALL PRINT_ERROR( msgBuf, myThid )
@@ -775,32 +792,19 @@ c     ENDIF
      &                      SQUEEZE_RIGHT, myThid )
       ENDIF
 
-      IF ( useRealFreshWaterFlux .AND. exactConserv
-     &     .AND. implicDiv2DFlow.EQ.0. _d 0
+      IF ( useRealFreshWaterFlux .AND. implicDiv2DFlow.EQ.zeroRL
      &     .AND. startTime.NE.baseTime .AND. usePickupBeforeC54 ) THEN
         WRITE(msgBuf,'(A)')
-     &   'CONFIG_CHECK: RealFreshWaterFlux+implicSurfP=0+exactConserv:'
+     &   'CONFIG_CHECK: usePickupBeforeC54 restart does not work with'
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)')
-     &   'CONFIG_CHECK: restart not implemented in this config'
+     &   'CONFIG_CHECK:  implicDiv2DFlow=0 + useRealFreshWaterFlux'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
 
-      IF ( useRealFreshWaterFlux .AND. .NOT.exactConserv
-     &     .AND. implicDiv2DFlow.NE.1. ) THEN
-        WRITE(msgBuf,'(2A)') '** WARNING ** CONFIG_CHECK: ',
-     &   'RealFreshWater & implicDiv2DFlow < 1'
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-        WRITE(msgBuf,'(2A)') '** WARNING ** works better',
-     &   ' with exactConserv=.T. (+ #define EXACT_CONSERV)'
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-      ENDIF
-
 #ifdef EXACT_CONSERV
-      IF (useRealFreshWaterFlux .AND. .NOT.exactConserv
+      IF ( useRealFreshWaterFlux .AND. .NOT.exactConserv
      &            .AND. buoyancyRelation.EQ.'OCEANICP' ) THEN
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: RealFreshWaterFlux with OCEANICP'
@@ -811,7 +815,7 @@ c     ENDIF
         errCount = errCount + 1
       ENDIF
 #else
-      IF (useRealFreshWaterFlux
+      IF ( useRealFreshWaterFlux
      &            .AND. buoyancyRelation.EQ.'OCEANICP' ) THEN
         WRITE(msgBuf,'(2A)') '** WARNING ** CONFIG_CHECK: ',
      &               'E-P effects on wVel are not included'
@@ -897,13 +901,6 @@ C--   Non-hydrostatic and 3-D solver related limitations:
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
      &   ' implicSurfPress & implicDiv2DFlow) to run nonHydrostatic'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        errCount = errCount + 1
-      ENDIF
-      IF ( nonHydrostatic .AND. .NOT.exactConserv
-     &     .AND. implicDiv2DFlow.NE.1. ) THEN
-        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: Needs exactConserv=T',
-     &               ' for nonHydrostatic with implicDiv2DFlow < 1'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
