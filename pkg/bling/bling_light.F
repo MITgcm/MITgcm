@@ -340,8 +340,8 @@ c  Irradiance in middle of layer k
 #else /* PHYTO_SELF_SHADING */
 C SW radiation attenuated exponentially
 c  Attenuation from one more layer
-           atten = k0_2d(i,j,bi,bj)*drF(k)/2. _d 0*hFacC(i,j,k,bi,bj)
-     &           + k0_2d(i,j,bi,bj)*drF(k-1)/2. _d 0*hFacC(i,j,k-1,bi,bj)
+        atten = k0_2d(i,j,bi,bj)*drF(k)/2. _d 0*hFacC(i,j,k,bi,bj)
+     &        + k0_2d(i,j,bi,bj)*drF(k-1)/2. _d 0*hFacC(i,j,k-1,bi,bj)
            irr_inst(i,j,k) = irr_inst(i,j,k-1)*exp(-atten)
 
 #endif /* PHYTO_SELF_SHADING */
