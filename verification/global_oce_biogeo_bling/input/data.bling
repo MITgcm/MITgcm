@@ -11,4 +11,5 @@
   BLING_silicaFile='sillev1.bin',
   BLING_ironFile='mah_flux_smooth.bin',
   BLING_pCO2=380.5E-6,
+  bling_k0_2dFile='k0_2d.bin',
  &

@@ -71,7 +71,7 @@ C Read in 2d bio related variables
         IF ( bling_k0_2dFile .NE. ' ' ) THEN
            CALL READ_FLD_XY_RL( bling_k0_2dFile, ' ',
      &                          k0_2d, 0, myThid )
-        _EXCH_XY_RL(k0_2d,myThid)
+           _EXCH_XY_RL(k0_2d,myThid)
         ENDIF
         IF ( bling_Pc_2dFile .NE. ' ' ) THEN
            CALL READ_FLD_XY_RL( bling_Pc_2dFile, ' ',
