@@ -71,8 +71,6 @@
 #pickupStrictlyMatch=.FALSE.,
  pChkptFreq   =3110400000.,
  chkptFreq    = 155520000.,
-#tave_lastIter=0.,
-#taveFreq     = 2592000.,
 #dumpFreq     =  864000.,
  monitorFreq  = 15552000.,
  periodicExternalForcing=.TRUE.,

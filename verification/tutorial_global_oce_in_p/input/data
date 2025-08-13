@@ -59,7 +59,6 @@
  abEps     = 0.1,
  pChkptFreq  = 3110400000.,
  dumpFreq    = 3110400000.,
- taveFreq    = 3110400000.,
  monitorFreq =   1.,
  periodicExternalForcing=.TRUE.,
  externForcingPeriod=2592000.,
