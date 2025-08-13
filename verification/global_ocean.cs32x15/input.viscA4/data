@@ -63,7 +63,6 @@
  forcing_In_AB=.FALSE.,
  pickupStrictlyMatch=.FALSE.,
  pChkptFreq  =31104000.,
- taveFreq    =31104000.,
  dumpFreq    =31104000.,
  monitorFreq =86400.,
 #-- just to test: switch off periodic forcing --> constant forcing

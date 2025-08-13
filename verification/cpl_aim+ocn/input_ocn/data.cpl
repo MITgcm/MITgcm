@@ -10,7 +10,6 @@
 #    useImportFice   :: True => use the Imported Seaice fraction (DIC-only)
 #    useImportCO2    :: True => use the Imported atmos. CO2 from coupler
 #    useImportWSpd   :: True => use the Imported surf. Wind speed from coupler
-#    cpl_taveFreq    :: Frequency^-1 for time-Aver. output (s)
  &CPL_OCN_PARAM
 # useImportHFlx  =.FALSE.,
 # useImportFW    =.FALSE.,
@@ -23,6 +22,4 @@
 # useImportFice  =.FALSE.,
 # useImportCO2   =.FALSE.,
 # useImportWSpd  =.FALSE.,
-# cpl_taveFreq=2592000.,
-  cpl_taveFreq=18000.,
  &

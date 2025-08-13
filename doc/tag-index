@@ -1,6 +1,11 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification:
+  - remove all pkg/timeave params from all exp. and no longer compile this
+    pkg in any exp. ; also skip pkg/mnc compilation in 4 fwd test exp ;
+  - switch few remaining exp. to #define EXACT_CONSERV so that no exp is
+    compiled with this option undefined anymore.
 o pkg/profiles:
   - fix "profilesDoNcOutput" feature (writing NetCDF model equivalents) so
     that it can be use with pkg/grdchk. Switch profilesDoNcOutput" to True in
