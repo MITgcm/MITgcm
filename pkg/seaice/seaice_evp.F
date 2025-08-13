@@ -883,23 +883,23 @@ CADJ STORE vIce(:,:,bi,bj) = comlev1_bibj_evp, key=tkey, byte=isbyte
             tmp        = evpStarFac*recip_deltaT
             betaFacP1V = betaFacV + tmp
             betaFacP1U = betaFacU + tmp
-#ifdef SEAICE_EVP_REGULARIZE_DENOMUV
-            denomU = MAX(seaiceMassU(i,j,bi,bj),SEAICE_area_floor
+            IF ( SEAICEuseEVPreg ) THEN
+             denomU = MAX(seaiceMassU(i,j,bi,bj),SEAICE_area_floor
      &           * seaice_rhoIce)*betaFacP1U
      &           + 0.5 _d 0*( DWATN(i,j,bi,bj) + DWATN(i-1,j,bi,bj) )
      &           * COSWAT * MAX(areaW(i,j,bi,bj),SEAICE_area_floor)
-            denomV = MAX(seaiceMassV(i,j,bi,bj),SEAICE_area_floor
+             denomV = MAX(seaiceMassV(i,j,bi,bj),SEAICE_area_floor
      &           * seaice_rhoIce)*betaFacP1V
      &           + 0.5 _d 0*( DWATN(i,j,bi,bj) + DWATN(i,j-1,bi,bj) )
      &           * COSWAT * MAX(areaS(i,j,bi,bj),SEAICE_area_floor)
-#else
-            denomU = seaiceMassU(i,j,bi,bj)*betaFacP1U
+            ELSE
+             denomU = seaiceMassU(i,j,bi,bj)*betaFacP1U
      &           + 0.5 _d 0*( DWATN(i,j,bi,bj) + DWATN(i-1,j,bi,bj) )
      &           * COSWAT * areaW(i,j,bi,bj)
-            denomV = seaiceMassV(i,j,bi,bj)*betaFacP1V
+             denomV = seaiceMassV(i,j,bi,bj)*betaFacP1V
      &           + 0.5 _d 0*( DWATN(i,j,bi,bj) + DWATN(i,j-1,bi,bj) )
      &           * COSWAT * areaS(i,j,bi,bj)
-#endif /* SEAICE_EVP_REGULARIZE_DENOMUV */
+            ENDIF
 #ifdef SEAICE_ALLOW_BOTTOMDRAG
             denomU = denomU + areaW(i,j,bi,bj)
      &           * 0.5 _d 0*( CbotC(i,j,bi,bj) + CbotC(i-1,j,bi,bj) )
