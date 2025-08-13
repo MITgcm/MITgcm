@@ -45,6 +45,9 @@ C  jTr                  :: ptracer number
 #ifdef GCHEM_ALLOW_FFIELDS
       INTEGER intimeP, intime0, intime1
       _RL aWght,bWght
+# ifdef ALLOW_EXF
+      _RL myLocTime
+# endif
 #endif
 #ifdef GCHEM_ADD2TR_TENDENCY
       INTEGER k
@@ -174,17 +177,38 @@ C     if not gchem_useEXF
       IF ( gchem_useEXF ) THEN
 
        IF ( gchem_SiFile .NE. ' ' ) THEN
-        CALL EXF_INIT_FLD (
+C     This would be the exf-way to initialise a forcing field: just use
+C     a constant value. But, because in pkg/bling (and maybe elsewhere)
+C     gchemSi is already used before the first timestep and before
+C     gchem_fields_load is called, gchemSi needs to have the correct
+C     value with respect to the current timestep (nIter0) and myTime
+C     (startTime + deltaTClock*nIter0). Therefore, we do not call
+C     exf_init_fld but exf_set_fld instead.
+c        CALL EXF_INIT_FLD (
+c     &     'gchemSi', gchem_SiFile, gchem_SiMask,
+c     &     gchem_SiPeriod, gchem_inscal_Si, gchem_Si_const,
+c     &     gchemSi, gchemSi0, gchemSi1,
+c#ifdef USE_EXF_INTERPOLATION
+c     &     Si_lon0, Si_lon_inc,
+c     &     Si_lat0, Si_lat_inc,
+c     &     Si_nlon, Si_nlat, xC, yC,
+c     &     Si_interpMethod,
+c#endif
+c     &     mythid )
+        myLocTime = startTime + deltaTClock*nIter0
+        CALL EXF_SET_FLD(
      &     'gchemSi', gchem_SiFile, gchem_SiMask,
-     &     gchem_SiPeriod, gchem_inscal_Si, gchem_Si_const,
+     &     gchem_SiStartTime, gchem_SiPeriod, gchem_SiRepCycle,
+     &     gchem_inscal_Si,
+     &     gchem_Si_exfremo_intercept, gchem_Si_exfremo_slope,
      &     gchemSi, gchemSi0, gchemSi1,
-#ifdef USE_EXF_INTERPOLATION
+# ifdef USE_EXF_INTERPOLATION
      &     Si_lon0, Si_lon_inc,
      &     Si_lat0, Si_lat_inc,
      &     Si_nlon, Si_nlat, xC, yC,
      &     Si_interpMethod,
-#endif
-     &     mythid )
+# endif
+     &     myLocTime, nIter0, mythid )
        ENDIF
 
        IF ( gchem_parFile .NE. ' ' ) THEN
