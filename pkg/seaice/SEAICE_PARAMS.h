@@ -137,7 +137,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
       LOGICAL
      &     SEAICEuseDYNAMICS, SEAICEuseFREEDRIFT, SEAICEuseStrImpCpl,
      &     SEAICEuseEVP, SEAICEuseEVPstar, SEAICEuseEVPrev,
-     &     SEAICEuseEVPpickup,SEAICEuseEVPreg,
+     &     SEAICEuseEVPpickup, SEAICEuseEVPreg,
      &     SEAICEuseMultiTileSolver,
      &     SEAICEuseLSR, SEAICEuseLSRflex, SEAICEuseKrylov,
      &     SEAICEuseJFNK, SEAICEuseIMEX, SEAICEuseBDF2,
@@ -167,7 +167,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
       COMMON /SEAICE_PARM_L/
      &     SEAICEuseDYNAMICS, SEAICEuseFREEDRIFT, SEAICEuseStrImpCpl,
      &     SEAICEuseEVP, SEAICEuseEVPstar, SEAICEuseEVPrev,
-     &     SEAICEuseEVPpickup,SEAICEuseEVPreg,
+     &     SEAICEuseEVPpickup, SEAICEuseEVPreg,
      &     SEAICEuseMultiTileSolver,
      &     SEAICEuseLSR, SEAICEuseLSRflex, SEAICEuseKrylov,
      &     SEAICEuseJFNK, SEAICEuseIMEX, SEAICEuseBDF2,
