@@ -4,12 +4,11 @@
 #endif
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE GCHEM_INIT_VARI(myThid )
+      SUBROUTINE GCHEM_INIT_VARI( myThid )
 
 C !DESCRIPTION:
 C calls subroutines that initialize any time dependent variables
 C for any tracer experiment
-C!! remove exf_init_fld from bling ini forcing
 
 C !USES: ===============================================================
       IMPLICIT NONE
@@ -43,6 +42,7 @@ C  jTr                  :: ptracer number
       INTEGER bi,bj
       INTEGER i,j
 #ifdef GCHEM_ALLOW_FFIELDS
+      INTEGER m
       INTEGER intimeP, intime0, intime1
       _RL aWght,bWght
 # ifdef ALLOW_EXF
@@ -80,23 +80,24 @@ C-- Initialize Geo-Chemistry forcing fields
 C     First call requires that we initialize everything to zero for safety
         GCHEM_ldRec(bi,bj) = 0
 C     set reasonable values fields that need at least something
+        m = 1
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          gchemapCO2 (i,j,bi,bj) = gchem_apco2_const*maskC(i,j,1,bi,bj)
-          gchemWind  (i,j,bi,bj) = gchem_wind_const *maskC(i,j,1,bi,bj)
-          gchemAtmosP(i,j,bi,bj) = gchem_apres_const*maskC(i,j,1,bi,bj)
-          gchemPAR   (i,j,bi,bj) = gchem_par_const  *maskC(i,j,1,bi,bj)
-          gchemFe    (i,j,bi,bj) = gchem_Fe_const   *maskC(i,j,1,bi,bj)
-          gchemSi    (i,j,bi,bj) = gchem_Si_const   *maskC(i,j,1,bi,bj)
-          gchemIce   (i,j,bi,bj) = 0. _d 0          * maskC(i,j,1,bi,bj)
+          gchemapCO2 (i,j,bi,bj) = gchem_apco2_const*maskC(i,j,m,bi,bj)
+          gchemWind  (i,j,bi,bj) = gchem_wind_const *maskC(i,j,m,bi,bj)
+          gchemAtmosP(i,j,bi,bj) = gchem_apres_const*maskC(i,j,m,bi,bj)
+          gchemPAR   (i,j,bi,bj) = gchem_par_const  *maskC(i,j,m,bi,bj)
+          gchemFe    (i,j,bi,bj) = gchem_Fe_const   *maskC(i,j,m,bi,bj)
+          gchemSi    (i,j,bi,bj) = gchem_Si_const   *maskC(i,j,m,bi,bj)
+          gchemIce   (i,j,bi,bj) = gchem_ice_const  *maskC(i,j,m,bi,bj)
          ENDDO
         ENDDO
        ENDDO
       ENDDO
 
       IF ( .NOT. gchem_useEXF ) THEN
-         CALL LEF_ZERO( gchemSi0,myThid )
-         CALL LEF_ZERO( gchemSi1,myThid )
+        CALL LEF_ZERO( gchemSi0,myThid )
+        CALL LEF_ZERO( gchemSi1,myThid )
 
 C--   Now calculate whether it is time to update the forcing arrays
         CALL GET_PERIODIC_INTERVAL(
@@ -125,12 +126,21 @@ C--   Now calculate whether it is time to update the forcing arrays
      &         nIter0,myThid )
         ENDIF
 
+        IF ( gchem_IceFile .NE. ' ' ) THEN
+          CALL READ_REC_XY_RS( gchem_IceFile,gchemIce0,intime0,
+     &         nIter0,myThid )
+          CALL READ_REC_XY_RS( gchem_IceFile,gchemIce1,intime1,
+     &         nIter0,myThid )
+        ENDIF
+
         _EXCH_XY_RS(gchemWind0, myThid )
         _EXCH_XY_RS(gchemWind1, myThid )
         _EXCH_XY_RS(gchemSi0, myThid )
         _EXCH_XY_RS(gchemSi1, myThid )
         _EXCH_XY_RS(gchemFe0, myThid )
         _EXCH_XY_RS(gchemFe1, myThid )
+        _EXCH_XY_RS(gchemIce0, myThid )
+        _EXCH_XY_RS(gchemIce1, myThid )
 
         IF ( gchem_WindFile .NE. ' '  ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
@@ -138,7 +148,7 @@ C--   Now calculate whether it is time to update the forcing arrays
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
              gchemWind(i,j,bi,bj)= bWght*gchemWind0(i,j,bi,bj)
-     &                        + aWght*gchemWind1(i,j,bi,bj)
+     &                           + aWght*gchemWind1(i,j,bi,bj)
             ENDDO
            ENDDO
           ENDDO
@@ -151,7 +161,7 @@ C--   Now calculate whether it is time to update the forcing arrays
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
              gchemSi(i,j,bi,bj)= bWght*gchemSi0(i,j,bi,bj)
-     &                        + aWght*gchemSi1(i,j,bi,bj)
+     &                         + aWght*gchemSi1(i,j,bi,bj)
             ENDDO
            ENDDO
           ENDDO
@@ -164,12 +174,26 @@ C--   Now calculate whether it is time to update the forcing arrays
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
              gchemFe(i,j,bi,bj)= bWght*gchemFe0(i,j,bi,bj)
-     &                        + aWght*gchemFe1(i,j,bi,bj)
+     &                         + aWght*gchemFe1(i,j,bi,bj)
             ENDDO
            ENDDO
           ENDDO
          ENDDO
         ENDIF
+
+        IF ( gchem_IceFile .NE. ' '  ) THEN
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             gchemIce(i,j,bi,bj)= bWght*gchemIce0(i,j,bi,bj)
+     &                          + aWght*gchemIce1(i,j,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDIF
+
 C     if not gchem_useEXF
       ENDIF
 
@@ -253,6 +277,21 @@ c     &     mythid )
      &     mythid )
        ENDIF
 
+       IF ( gchem_IceFile .NE. ' ' ) THEN
+C     forcing load fields with pkg/exf tools
+        CALL EXF_INIT_FLD(
+     &     'gchemIce', gchem_icefile, gchem_iceMask,
+     &     gchem_icePeriod, gchem_inscal_ice, gchem_ice_const,
+     &     gchemIce, gchemIce0, gchemIce1,
+# ifdef USE_EXF_INTERPOLATION
+     &     ice_lon0, ice_lon_inc,
+     &     ice_lat0, ice_lat_inc,
+     &     ice_nlon, ice_nlat, xC, yC,
+     &     ice_interpMethod,
+# endif
+     &     mythid )
+       ENDIF
+
 C     gchem_useEXF
       ENDIF
 #endif /* ALLOW_EXF */
@@ -261,6 +300,7 @@ C     gchem_useEXF
       _EXCH_XY_RL( gchemPAR, myThid )
       _EXCH_XY_RL( gchemFe, myThid )
       _EXCH_XY_RL( gchemapCO2, myThid )
+      _EXCH_XY_RL( gchemIce, myThid )
 #endif /* GCHEM_ALLOW_FFIELDS */
 
 C--   Initialise other Geo-Chemistry pkg variables:
