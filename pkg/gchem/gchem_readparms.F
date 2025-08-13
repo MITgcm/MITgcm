@@ -70,6 +70,7 @@ C  to test the flag before any corresponding pkg S/R call
      &           gchem_iceFile,
      &           gchem_Si_const, gchem_par_const, gchem_Fe_const,
      &           gchem_apco2_const, gchem_wind_const, gchem_apres_const,
+     &           gchem_ice_const,
      &           tIter0
 
 # ifdef ALLOW_EXF
@@ -102,7 +103,12 @@ C
      &     gchem_apresPeriod, gchem_apresRepCycle, gchem_apresStartTime,
      &     gchem_apresStartDate1, gchem_apresStartDate2,
      &     gchem_apres_exfremo_intercept, gchem_apres_exfremo_slope,
-     &     gchem_apresMask, gchem_inscal_apres
+     &     gchem_apresMask, gchem_inscal_apres,
+C
+     &     gchem_icePeriod, gchem_iceRepCycle, gchem_iceStartTime,
+     &     gchem_iceStartDate1, gchem_iceStartDate2,
+     &     gchem_ice_exfremo_intercept, gchem_ice_exfremo_slope,
+     &     gchem_iceMask, gchem_inscal_apres
 
 #  ifdef USE_EXF_INTERPOLATION
       NAMELIST /GCHEM_INTERP_PARAMS/
@@ -122,7 +128,10 @@ C
      &     wind_lon_inc, wind_lat_inc, wind_interpMethod,
 C
      &     apres_lon0, apres_lat0, apres_nlon, apres_nlat,
-     &     apres_lon_inc, apres_lat_inc, apres_interpMethod
+     &     apres_lon_inc, apres_lat_inc, apres_interpMethod,
+C
+     &     ice_lon0, ice_lat0, ice_nlon, ice_nlat,
+     &     ice_lon_inc, ice_lat_inc, ice_interpMethod
 #  endif
 # endif /* ALLOW_EXF */
 
@@ -178,6 +187,7 @@ C     some predefined forcing fields and constants
       gchem_FeFile    = ' '
       gchem_apco2File = ' '
 C     some sensible defaults
+      gchem_ice_const   =    0.  _d 0
       gchem_Si_const    =    7.6 _d -3
       gchem_par_const   =    0.  _d 0
       gchem_Fe_const    =    0.  _d 0
@@ -259,6 +269,16 @@ C- Open and read the data.gchem file
        gchem_apresMask               = 'c'
        gchem_inscal_apres      = 1. _d 0
 
+       gchem_icePeriod             = 0.0 _d 0
+       gchem_iceRepCycle           = repeatPeriod
+       gchem_iceStartTime          = UNSET_RL
+       gchem_iceStartDate1         = 0
+       gchem_iceStartDate2         = 0
+       gchem_ice_exfremo_intercept = 0.0 _d 0
+       gchem_ice_exfremo_slope     = 0.0 _d 0
+       gchem_iceMask               = 'c'
+       gchem_inscal_ice        = 1. _d 0
+
        READ(UNIT=iUnit, NML=GCHEM_FORCING_PARAMS)
 
 #  ifdef USE_EXF_INTERPOLATION
@@ -303,13 +323,20 @@ C- Open and read the data.gchem file
        apres_lon_inc = inp_dLon
        apres_interpMethod  = 1
 
+       ice_lat0 = inp_lat0
+       ice_nlon = inp_gNx
+       ice_nlat = inp_gNy
+       ice_lon_inc = inp_dLon
+       ice_interpMethod  = 1
+
        DO j=1,MAX_LAT_INC
-        Si_lat_inc(j) = inp_dLat(j)
-        par_lat_inc(j)    = inp_dLat(j)
-        Fe_lat_inc(j)   = inp_dLat(j)
-        apco2_lat_inc(j)  = inp_dLat(j)
-        wind_lat_inc(j)   = inp_dLat(j)
-        apres_lat_inc(j)  = inp_dLat(j)
+        Si_lat_inc(j)    = inp_dLat(j)
+        par_lat_inc(j)   = inp_dLat(j)
+        Fe_lat_inc(j)    = inp_dLat(j)
+        apco2_lat_inc(j) = inp_dLat(j)
+        wind_lat_inc(j)  = inp_dLat(j)
+        apres_lat_inc(j) = inp_dLat(j)
+        ice_lat_inc(j)   = inp_dLat(j)
        ENDDO
 
        READ(UNIT=iUnit, NML=GCHEM_INTERP_PARAMS)
@@ -376,6 +403,12 @@ C- Close the open data file
        IF ( gchem_apresRepCycle.NE.0. ) THEN
         WRITE(msgBuf,'(2A)') 'GCHEM_READPARMS: The use of ',
      &   'useExfYearlyFields AND gchem_apresRepCycle is not implemented'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+       IF ( gchem_iceRepCycle.NE.0. ) THEN
+        WRITE(msgBuf,'(2A)') 'GCHEM_READPARMS: The use of ',
+     &   'useExfYearlyFields AND gchem_iceRepCycle is not implemented'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
