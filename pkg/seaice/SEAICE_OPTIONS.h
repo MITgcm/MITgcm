@@ -129,10 +129,6 @@ C     Many compilers can handle this more efficiently with the help of a flag.
 
 C     Include code to print residual of EVP iteration for debugging/diagnostics
 #  undef ALLOW_SEAICE_EVP_RESIDUAL
-
-C     Add two regularizations in the calculation of denomU/V to
-C     enhance the stability of EVP
-#  undef SEAICE_EVP_REGULARIZE_DENOMUV
 # endif /* SEAICE_ALLOW_EVP */
 
 C     smooth regularization (without max-function) of delta for
