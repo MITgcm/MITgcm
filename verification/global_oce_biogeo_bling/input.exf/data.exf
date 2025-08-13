@@ -5,45 +5,33 @@
  &EXF_NML_01
  readStressOnCgrid = .TRUE.,
  repeatPeriod      = 31104000.,
+# The coldest temperature in 'lev_monthly_temp.bin' is -2.9...degC.
 # avoid clipping of input data to maintain results relative to ../input
  climtempfreeze    = -3.0,
 #
  exf_iprec         = 32,
  exf_yftype        = 'RL',
- exf_debugLev      = 5,
  &
 #
  &EXF_NML_02
  hfluxfile         = 'shi_qnet.bin',
- hfluxstartdate1   = 19920101,
- hfluxstartdate2   = 000000,
  hfluxperiod       = -12.,
 #
  sfluxfile         = 'shi_empmr_year.bin',
- sfluxstartdate1   = 19920101,
- sfluxstartdate2   = 000000,
  sfluxperiod       = -12.,
 #
  ustressfile       = 'tren_taux.bin',
- ustressstartdate1 = 19920101,
- ustressstartdate2 = 000000,
  ustressperiod     = -12.,
 #
  vstressfile       = 'tren_tauy.bin',
- vstressstartdate1 = 19920101,
- vstressstartdate2 = 000000,
  vstressperiod     = -12.,
 #
  climsstfile  = 'lev_monthly_temp.bin',
- climsststartdate1 = 19920101,
- climsststartdate2 = 000000,
  climsstperiod     = -12.,
 # 2 months restoring timescale for temperature
  climsstTauRelax   = 5184000.,
 #
  climsssfile  = 'lev_monthly_salt.bin',
- climsssstartdate1 = 19920101,
- climsssstartdate2 = 000000,
  climsssperiod     = -12.,
 # 3 months restoring timescale for salinity
  climsssTauRelax   = 7776000.,
