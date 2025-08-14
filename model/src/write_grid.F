@@ -200,12 +200,12 @@ c       CALL MNC_CW_RS_W('D',bfname,0,0,'YV',yG,myThid)
         ENDIF
         CALL MNC_CW_RS_W('D',bfname,0,0,'fCori',fCori,myThid)
         CALL MNC_CW_RS_W('D',bfname,0,0,'fCoriG',fCoriG,myThid)
-        CALL MNC_CW_RS_W('D',bfname,0,0,'R_low',R_low,myThid)
-        CALL MNC_CW_RS_W('D',bfname,0,0,'Ro_surf',Ro_surf,myThid)
+        CALL MNC_CW_RS_W('D',bfname,0,0,'rLowC',R_low,myThid)
+        CALL MNC_CW_RS_W('D',bfname,0,0,'rSurfC',Ro_surf,myThid)
         CALL MNC_CW_RS_W('D',bfname,0,0,'Depth',tmpfld,myThid)
-        CALL MNC_CW_RS_W('D',bfname,0,0,'HFacC',HFacC,myThid)
-        CALL MNC_CW_RS_W('D',bfname,0,0,'HFacW',HFacW,myThid)
-        CALL MNC_CW_RS_W('D',bfname,0,0,'HFacS',HFacS,myThid)
+        CALL MNC_CW_RS_W('D',bfname,0,0,'hFacC',hFacC,myThid)
+        CALL MNC_CW_RS_W('D',bfname,0,0,'hFacW',hFacW,myThid)
+        CALL MNC_CW_RS_W('D',bfname,0,0,'hFacS',hFacS,myThid)
 
         _END_MASTER(myThid)
 
