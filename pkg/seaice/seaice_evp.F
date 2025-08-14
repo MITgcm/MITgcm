@@ -883,7 +883,7 @@ CADJ STORE vIce(:,:,bi,bj) = comlev1_bibj_evp, key=tkey, byte=isbyte
             tmp        = evpStarFac*recip_deltaT
             betaFacP1V = betaFacV + tmp
             betaFacP1U = betaFacU + tmp
-            IF ( SEAICEuseEVPreg ) THEN
+            IF ( SEAICEevpRegDenomUV ) THEN
              denomU = MAX(seaiceMassU(i,j,bi,bj),SEAICE_area_floor
      &           * seaice_rhoIce)*betaFacP1U
      &           + 0.5 _d 0*( DWATN(i,j,bi,bj) + DWATN(i-1,j,bi,bj) )
