@@ -22,7 +22,7 @@ C                          one 1/e^2 in equations for sigma2 and sigma12
 C     SEAICEuseEVPpickup :: Set to false in order to start EVP solver with
 C                          non-EVP pickup files.  Default is true.
 C                          Applied only if SEAICEuseEVP=.TRUE.
-C     SEAICEuseEVPreg   :: If true, use two regularizations in the calculation
+C     SEAICEevpRegDenomUV:: If true, use two regularizations in the calculation
 C                          of denomU and denomV to enhance the stability of EVP
 C     SEAICEuseMultiTileSolver :: in LSR, use full domain tri-diagonal solver
 C     SEAICEuseLSR      :: If true, use default Picard solver with Line-
@@ -137,7 +137,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
       LOGICAL
      &     SEAICEuseDYNAMICS, SEAICEuseFREEDRIFT, SEAICEuseStrImpCpl,
      &     SEAICEuseEVP, SEAICEuseEVPstar, SEAICEuseEVPrev,
-     &     SEAICEuseEVPpickup, SEAICEuseEVPreg,
+     &     SEAICEuseEVPpickup, SEAICEevpRegDenomUV,
      &     SEAICEuseMultiTileSolver,
      &     SEAICEuseLSR, SEAICEuseLSRflex, SEAICEuseKrylov,
      &     SEAICEuseJFNK, SEAICEuseIMEX, SEAICEuseBDF2,
@@ -167,7 +167,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
       COMMON /SEAICE_PARM_L/
      &     SEAICEuseDYNAMICS, SEAICEuseFREEDRIFT, SEAICEuseStrImpCpl,
      &     SEAICEuseEVP, SEAICEuseEVPstar, SEAICEuseEVPrev,
-     &     SEAICEuseEVPpickup, SEAICEuseEVPreg,
+     &     SEAICEuseEVPpickup, SEAICEevpRegDenomUV,
      &     SEAICEuseMultiTileSolver,
      &     SEAICEuseLSR, SEAICEuseLSRflex, SEAICEuseKrylov,
      &     SEAICEuseJFNK, SEAICEuseIMEX, SEAICEuseBDF2,
