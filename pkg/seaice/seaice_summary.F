@@ -306,8 +306,8 @@ C--  Seaice-Dynamics parameters
      & 'SEAICEnEVPstarSteps =', ' /* num. of EVP* steps */')
        CALL WRITE_0D_L ( SEAICEuseEVPpickup, INDEX_NONE,
      & 'SEAICEuseEVPpickup=', ' /* start EVP solver with EVP pickup*/')
-       CALL WRITE_0D_L ( SEAICEuseEVPreg, INDEX_NONE,
-     & 'SEAICEuseEVPreg   =', ' /* use regularizations in EVP*/')
+       CALL WRITE_0D_L ( SEAICEevpRegDenomUV, INDEX_NONE,
+     & 'SEAICEevpRegDenomUV   =', ' /* use DenomU/V regularizations*/')
 #endif /* SEAICE_ALLOW_EVP */
       ENDIF
 
