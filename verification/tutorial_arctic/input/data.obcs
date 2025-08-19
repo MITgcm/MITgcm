@@ -1,0 +1,26 @@
+# ***************
+# Open boundaries
+# ***************
+ &OBCS_PARM01
+ OB_Jnorth =   210*192,
+ OB_Ieast  =   192*210,
+ OB_Iwest  =   192*1,
+#
+ useOBCSprescribe=.TRUE.,
+ OBCS_u1_adv_T = 1,
+ OBCS_u1_adv_S = 1,
+#
+ OBNsFile='OBNs_ny',
+ OBNtFile='OBNt_ny',
+ OBNuFile='OBNu_ny',
+ OBNvFile='OBNv_ny',
+ OBEsFile='OBEs_ny',
+ OBEtFile='OBEt_ny',
+ OBEuFile='OBEu_ny',
+ OBEvFile='OBEv_ny',
+ OBWsFile='OBWs_ny',
+ OBWtFile='OBWt_ny',
+ OBWuFile='OBWu_ny',
+ OBWvFile='OBWv_ny',
+#
+ &
