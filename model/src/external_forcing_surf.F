@@ -66,6 +66,9 @@ C     ks     :: index of surface interface layer
 #ifdef CHECK_OVERLAP_FORCING
       _RS fixVal
 #endif
+#ifdef SHORTWAVE_HEATING
+      _RS tmpFac
+#endif
 CEOP
 
       IF ( usingPCoords ) THEN
@@ -74,6 +77,10 @@ CEOP
        ks        = 1
       ENDIF
       recip_Cp = 1. _d 0 / HeatCapacity_Cp
+#ifdef SHORTWAVE_HEATING
+      tmpFac = oneRS
+      IF ( selectPenetratingSW .LE. 0 ) tmpFac = zeroRS
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -126,14 +133,33 @@ c     ENDIF
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef EXACT_CONSERV
-C NB: synchronous time step: PmEpR lag 1 time step behind EmPmR
-C     to stay consitent with volume change (=d/dt etaH).
 # ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE PmEpR = comlev1, key = ikey_dynamics,  kind = isbyte
 CADJ STORE EmPmR = comlev1, key = ikey_dynamics,  kind = isbyte
 # endif
+#endif /* EXACT_CONSERV */
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+C--   set surfaceForcingT,S to zero.
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+           surfaceForcingT(i,j,bi,bj) = 0. _d 0
+           surfaceForcingS(i,j,bi,bj) = 0. _d 0
+         ENDDO
+        ENDDO
+c#ifdef ALLOW_EBM
+        IF ( useRealFreshWaterFlux ) THEN
+C--   in case some pkgs put non-zero values over land, clean this up:
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           EmPmR(i,j,bi,bj) = EmPmR(i,j,bi,bj)*maskInC(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDIF
+c#endif /* ALLOW_EBM */
+#ifdef EXACT_CONSERV
+C NB: synchronous time step: PmEpR lags 1 time step behind EmPmR
+C     to stay consistent with volume change (=d/dt etaH).
         IF ( staggerTimeStep ) THEN
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
@@ -141,19 +167,7 @@ CADJ STORE EmPmR = comlev1, key = ikey_dynamics,  kind = isbyte
           ENDDO
          ENDDO
         ENDIF
-       ENDDO
-      ENDDO
 #endif /* EXACT_CONSERV */
-
-C--   set surfaceForcingT,S to zero.
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-           surfaceForcingT(i,j,bi,bj) = 0. _d 0
-           surfaceForcingS(i,j,bi,bj) = 0. _d 0
-         ENDDO
-        ENDDO
        ENDDO
       ENDDO
 
@@ -218,7 +232,7 @@ C     Net heat flux Qnet:
           surfaceForcingT(i,j,bi,bj) = surfaceForcingT(i,j,bi,bj)
      &       - ( Qnet(i,j,bi,bj)
 #ifdef SHORTWAVE_HEATING
-     &          -Qsw(i,j,bi,bj)
+     &          -Qsw(i,j,bi,bj)*tmpFac
 #endif
      &         ) *recip_Cp*mass2rUnit
 C     Net Salt Flux :

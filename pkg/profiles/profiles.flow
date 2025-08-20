@@ -1,9 +1,42 @@
 C----------------------------------------
 C subroutine profiles_readvector
 C----------------------------------------
-CADJ SUBROUTINE  profiles_readvector   INPUT  =   1,2,3,4,6,7,8
-CADJ SUBROUTINE  profiles_readvector   DEPEND  =  1,2,3,4,6,7
-CADJ SUBROUTINE  profiles_readvector   OUTPUT =   5
+CADJ SUBROUTINE  profiles_readvector   INPUT  = 1,2,3,4,  6,7,8
+CADJ SUBROUTINE  profiles_readvector   DEPEND = 1,2,3,4,  6,7
+CADJ SUBROUTINE  profiles_readvector   OUTPUT =         5
 
-CADJ SUBROUTINE  NF_OPEN               INPUT = 
-CADJ SUBROUTINE  NF_CLOSE              INPUT =
+C----------------------------------------
+C subroutine profiles_make_ncfile
+C----------------------------------------
+CADJ SUBROUTINE  profiles_make_ncfile  INPUT  = 1
+CADJ SUBROUTINE  profiles_make_ncfile  DEPEND = 1
+CADJ SUBROUTINE  profiles_make_ncfile  OUTPUT =
+
+C----------------------------------------
+C subroutine active_read_profile
+C----------------------------------------
+CADJ SUBROUTINE active_read_profile FTLNAME = g_active_read_profile
+CADJ SUBROUTINE active_read_profile ADNAME  = adactive_read_profile
+CADJ SUBROUTINE active_read_profile INPUT   = 1,2, 4,5,6,7,8,9,10,11
+CADJ SUBROUTINE active_read_profile OUTPUT  =     3
+CADJ SUBROUTINE active_read_profile ACTIVE  =     3
+CADJ SUBROUTINE active_read_profile DEPEND  = 1,2, 4,5,6,7,8,9,10
+
+C----------------------------------------
+C subroutine active_write_profile
+C----------------------------------------
+CADJ SUBROUTINE active_write_profile FTLNAME = g_active_write_profile
+CADJ SUBROUTINE active_write_profile ADNAME  = adactive_write_profile
+CADJ SUBROUTINE active_write_profile INPUT   = 1,2,3,4,5,6,7,8,9,10
+CADJ SUBROUTINE active_write_profile OUTPUT  =                   10
+CADJ SUBROUTINE active_write_profile ACTIVE  =     3,            10
+CADJ SUBROUTINE active_write_profile DEPEND  = 1,2,  4,5,6,7,8,9
+
+C----------------------------------------
+C NetCDF related functions and routines
+C----------------------------------------
+CADJ SUBROUTINE PROFILES_NF_ERROR   INPUT = 1,2,3,4,5
+CADJ FUNCTION   NF_SYNC             INPUT = 1
+cCADJ SUBROUTINE PROFILES_NC_CLOSE   INPUT = 1
+cCADJ FUNCTION   NF_OPEN             INPUT = 1,2,3
+cCADJ FUNCTION   NF_CLOSE            INPUT = 1

@@ -146,11 +146,17 @@ C-- set global parameter in common block:
       cg2dNorm = myNorm
 C-- Define the solver tolerance in the appropriate Unit :
       cg2dNormaliseRHS = cg2dTargetResWunit.LE.zeroRL
-      IF (cg2dNormaliseRHS) THEN
+      IF ( cg2dNormaliseRHS ) THEN
 C-  when using a normalisation of RHS, tolerance has no unit => no conversion
         cg2dTolerance = cg2dTargetResidual
-      ELSE
+      ELSEIF ( implicDiv2DFlow.GT.zeroRL ) THEN
 C-  convert Target-Residual (in W unit) to cg2d-solver residual unit [m^2/s^2]
+        cg2dTolerance = cg2dNorm * cg2dTargetResWunit
+     &                           * implicDiv2DFlow
+     &                           * globalArea / deltaTMom
+      ELSE
+C-  special case implicDiv2DFlow=0 :
+C   not much to solve anyway, cg2dTolerance does not matter as long as it is > 0
         cg2dTolerance = cg2dNorm * cg2dTargetResWunit
      &                           * globalArea / deltaTMom
       ENDIF

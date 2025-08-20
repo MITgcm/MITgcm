@@ -237,3 +237,12 @@ CADJ STORE GGL90viscArU   = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE GGL90viscArV   = comlev1, key = ikey_dynamics, kind = isbyte
 # endif
 #endif
+
+#ifdef ALLOW_ECCO
+# ifdef ALLOW_SEAICE
+C     This is needed in the freeboard computation of the ecco generic
+C     costfunction.
+CADJ STORE AREA, HEFF     = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE HSNOW          = comlev1, key = ikey_dynamics, kind = isbyte
+# endif
+#endif

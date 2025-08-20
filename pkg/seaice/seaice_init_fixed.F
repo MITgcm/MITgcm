@@ -1,15 +1,20 @@
 #include "SEAICE_OPTIONS.h"
 
-CStartOfInterface
+CBOP
+C !ROUTINE: SEAICE_INIT_FIXED
+
+C !INTERFACE: ==========================================================
       SUBROUTINE SEAICE_INIT_FIXED( myThid )
+C !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE SEAICE_INIT_FIXED
 C     | o Initialization of sea ice model.
 C     *==========================================================*
 C     *==========================================================*
       IMPLICIT NONE
+C \ev
 
-C     === Global variables ===
+C !USES: ===============================================================
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -20,12 +25,12 @@ C     === Global variables ===
 #include "SEAICE.h"
 #include "SEAICE_TRACER.h"
 
-C     === Routine arguments ===
+C !INPUT PARAMETERS: ===================================================
 C     myThid - Thread no. that called this routine.
       INTEGER myThid
 CEndOfInterface
 
-C     === Local variables ===
+C !LOCAL VARIABLES: ====================================================
 #ifdef SEAICE_ITD
 C     msgBuf      :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -40,16 +45,15 @@ C     i,j, bi,bj  :: Loop counters
 #ifdef ALLOW_SITRACER
       INTEGER iTracer
 #endif
-#ifdef SHORTWAVE_HEATING
-cif   Helper variable for determining the fraction of sw radiation
-cif   penetrating the model shallowest layer
-      _RL swfracba(2)
-#endif /* SHORTWAVE_HEATING */
 C     local copy of surface layer thickness in meters
       _RL dzSurf
 #ifdef SEAICE_BGRID_DYNAMICS
       _RL mask_uice
 #endif
+#ifdef SEAICE_ALLOW_SIDEDRAG
+      LOGICAL readCoastLineFields
+#endif
+CEOP
 
       IF ( usingPCoords ) THEN
        kSrf        = Nr
@@ -70,24 +74,6 @@ C     Only Master Thread updates parameter in commom block:
 C     restart parameter
       SEAICEmomStartBDF = 0
       IF ( SEAICEuseBDF2 ) SEAICEmomStartBDF = nIter0
-
-#ifdef SHORTWAVE_HEATING
-       IF ( usingZCoords ) THEN
-        swfracba(1) = rF(1)
-        swfracba(2) = rF(2)
-       ELSE
-C     this is the oceanic pressure coordinate case
-        swfracba(1) = -rF(Nr+1)*recip_rhoConst*recip_gravity
-        swfracba(2) = -rF(Nr)  *recip_rhoConst*recip_gravity
-       ENDIF
-       CALL SWFRAC(
-     I       2, oneRL,
-     U       swfracba,
-     I       oneRL, 0, myThid )
-       SEAICE_SWFrac = swfracba(2)
-#else /* SHORTWAVE_HEATING */
-       SEAICE_SWFrac = 0. _d 0
-#endif /* SHORTWAVE_HEATING */
 
 C--   Set mcPheePiston coeff (if still unset)
        dzSurf = drF(kSrf)
@@ -434,6 +420,62 @@ C--   Choose a proxy level for geostrophic velocity,
 C-    end bi,bj loops
        ENDDO
       ENDDO
+
+#ifdef SEAICE_ALLOW_SIDEDRAG
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=1-OLy+1,sNy+OLy-1
+         DO i=1-OLx+1,sNx+OLx-1
+          coastRoughU(i,j,bi,bj) = ( 3. _d 0
+     &         - SIMaskU(i,j-1,bi,bj)
+     &         - SIMaskU(i,j,bi,bj)
+     &         - SIMaskU(i,j+1,bi,bj)) * SIMaskU(i,j,bi,bj)
+          coastRoughV(i,j,bi,bj) = ( 3. _d 0
+     &         - SIMaskV(i-1,j,bi,bj)
+     &         - SIMaskV(i,j,bi,bj)
+     &         - SIMaskV(i+1,j,bi,bj) ) * SIMaskV(i,j,bi,bj)
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+
+      readCoastLineFields =
+     &     uCoastLineFile .NE. ' ' .OR. vCoastLineFile .NE. ' '
+      IF ( readCoastLineFields ) THEN
+       IF ( uCoastLineFile .NE. ' ' ) THEN
+        CALL READ_FLD_XY_RL( uCoastLineFile,' ',coastRoughU,0,myThid )
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy-1
+           DO i=1-OLx,sNx+OLx
+            coastRoughU(i,j,bi,bj) = coastRoughU(i,j,bi,bj)
+     &           * SIMaskU(i,j,bi,bj) * recip_dxC(i,j,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
+       IF ( vCoastLineFile .NE. ' ' ) THEN
+        CALL READ_FLD_XY_RL( vCoastLineFile,' ',coastRoughV,0,myThid )
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx-1
+            coastRoughV(i,j,bi,bj) = coastRoughV(i,j,bi,bj)
+     &           * SIMaskV(i,j,bi,bj) * recip_dyC(i,j,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
+      ENDIF
+
+      CALL EXCH_UV_XY_RL( coastRoughU, coastRoughV, .FALSE., myThid )
+      CALL WRITE_FLD_XY_RL( 'coastRoughUnormalized',
+     &     ' ', coastRoughU, -1, myThid )
+      CALL WRITE_FLD_XY_RL( 'coastRoughVnormalized',
+     &     ' ', coastRoughV, -1, myThid )
+#endif /* SEAICE_ALLOW_SIDEDRAG */
 
 #ifdef ALLOW_SHELFICE
       IF ( useShelfIce ) THEN

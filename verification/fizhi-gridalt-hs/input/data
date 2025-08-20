@@ -65,8 +65,6 @@
 #dumpFreq=2592000.0,
  dumpFreq=3600.0,
  monitorFreq=1.,
- taveFreq=0.0,
- tave_lastiter=1.,
  &
 
 # Gridding parameters

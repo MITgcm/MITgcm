@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 #
 # This is a shell script to separate an MITgcm mnc output file into
-# one file per multi-dimensional variable. 
+# one file per multi-dimensional variable.
 # The file should be in one directory, where this script is run.
 # The resulting files will be in the same directory.
 
@@ -19,7 +19,7 @@ do
   fi
 
 # Finding all the multidimensional variables
-  varls=$(ncdump -h $somefile | egrep "double|float" | egrep , )
+  varls=$(ncdump -h $somefile | grep -E "double|float" | grep -E , )
   IFS=';'
   vars=
   for somevar in ${varls}

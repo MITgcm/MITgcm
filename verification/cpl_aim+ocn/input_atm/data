@@ -51,7 +51,6 @@
  forcing_In_AB=.FALSE.,
  cAdjFreq=0.,
  pChkptFreq=2592000.,
- taveFreq=2592000.,
  dumpFreq=2592000.,
  monitorFreq=86400.,
  monitorFreq=1.,

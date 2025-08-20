@@ -188,6 +188,20 @@ C     CbobC :: (linear) bottom drag coefficient for basals stress param.
       _RL CbotC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 # endif /* SEAICE_ALLOW_BOTTOMDRAG */
 
+# ifdef SEAICE_ALLOW_SIDEDRAG
+C     coastRoughU/V :: coast line roughness (w/out units) in U and V direction,
+C                      computed from the coastline length at corner points,
+C                      interpolated to U/V points, and scaled by the grid cell
+C                      width
+C     sideDragU/V   :: drag coefficients for lateral drag a parameterisation
+      COMMON/SEAICE_SIDEDRAG/ sideDragU, sideDragV,
+     &     coastRoughU, coastRoughV
+      _RL sideDragU  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL sideDragV  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL coastRoughU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL coastRoughV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+# endif /* SEAICE_ALLOW_SIDEDRAG */
+
 # if ( defined SEAICE_ALLOW_JFNK ||  defined SEAICE_ALLOW_KRYLOV )
 C     diagnostics for the JFNK and Krylov solver
       INTEGER totalNewtonIters
@@ -269,18 +283,6 @@ C                   that is, ice due to precipitation or snow
 C     TICES :: Seaice/snow surface temperature for each category
       COMMON/MULTICATEGORY/TICES
       _RL TICES      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nITD,nSx,nSy)
-
-C     SEAICE_SWFrac :: Fraction of surface Short-Wave radiation reaching
-C                      the bottom of ocean surface level. Currently,
-C                      this is just a function of surface cell
-C                      thickness, and hence a constant parameter
-C                      computed in seaice_init_fixed.F in a given
-C                      simulation, but in the future this variable may
-C                      depend on variable turbidity or chlorphyll
-C                      concentration and can change with space and time.
-      _RL SEAICE_SWFrac
-      COMMON /SEAICE_SW_R/
-     &       SEAICE_SWFrac
 
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***
