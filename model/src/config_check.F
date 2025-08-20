@@ -440,7 +440,7 @@ C     o Need to use S/R APPLY_FORCING_U,V to get Tidal forcing
 #ifndef ALLOW_FRICTION_HEATING
       IF ( addFrictionHeating ) THEN
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: addFrictionHeating=T',
-     &  ' but FRICTIONAL_HEATING code is not compiled.'
+     &   ' but FRICTIONAL_HEATING code is not compiled.'
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: Re-compile with:',
      &   ' "#define ALLOW_FRICTION_HEATING" (CPP_OPTIONS.h)'
@@ -452,7 +452,7 @@ C     o Need to use S/R APPLY_FORCING_U,V to get Tidal forcing
 #ifndef SHORTWAVE_HEATING
       IF ( selectPenetratingSW.GT.0 ) THEN
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: selectPenetratingSW>0',
-     &  ' but SHORTWAVE_HEATING code is not compiled.'
+     &   ' but SHORTWAVE_HEATING code is not compiled.'
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: Re-compile with:',
      &   ' "#define SHORTWAVE_HEATING" (CPP_OPTIONS.h)'
