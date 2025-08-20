@@ -45,7 +45,7 @@ CEOP
 
 C     !LOCAL VARIABLES:
 C     tmpObsNo :: number of obs in the file
-      INTEGER vv, err, varid1, tmpObsNo
+      INTEGER vv, err, varID, tmpObsNo
       INTEGER vec_start,vec_count
       _RL     vec_tmp1(1000),vec_tmp2(1000)
       CHARACTER*(max_len_mbuf) msgbuf
@@ -53,20 +53,20 @@ C     tmpObsNo :: number of obs in the file
       IF ( (irec.LT.obsfit_minind_buff) .OR.
      &     (irec.GT.obsfit_maxind_buff) .OR.
      &     (obsfit_curfile_buff.NE.fNb) ) THEN
-       err = NF_INQ_DIMID(fiddata_obs(fNb),'iOBS', varid1)
+       err = NF_INQ_DIMID( fiddata_obs(fNb),'iOBS', varID )
        CALL OBSFIT_NF_ERROR(
-     &       'READ_OBS: NF_INQ_DIMID fiddata iObs',
-     &       err,myThid )
-       err = NF_INQ_DIMLEN(fiddata_obs(fNb), varid1, tmpObsNo)
+     &      'READ_OBS: NF_INQ_DIMID fiddata iObs',
+     &      err,myThid )
+       err = NF_INQ_DIMLEN( fiddata_obs(fNb), varID, tmpObsNo )
        CALL OBSFIT_NF_ERROR( 'READ_OBS: NF_INQ_DIMLEN tmpObsNo',
-     &       err,myThid )
+     &      err,myThid )
 
-       IF (obsfit_curfile_buff.NE.fNb) THEN
+       IF ( obsfit_curfile_buff.NE.fNb ) THEN
 C No asumption on whether a forward or a backward loop is calling
          obsfit_minind_buff = MAX(1,irec-500+1)
          obsfit_maxind_buff = MIN(tmpObsNo,irec+500)
 
-       ELSEIF (irec.LT.obsfit_minind_buff) THEN
+       ELSEIF ( irec.LT.obsfit_minind_buff ) THEN
 C Implies that a backward loop is calling
          obsfit_minind_buff = MAX(1,irec-999)
          obsfit_maxind_buff = irec
@@ -85,24 +85,24 @@ C Implies that a forward loop is calling
      &    obsfit_minind_buff, obsfit_maxind_buff,
      &    irec, ObsNo(fNb), tmpObsNo
          CALL PRINT_MESSAGE( msgbuf, 
-     &        standardmessageunit, SQUEEZE_RIGHT, myThid)
+     &        standardmessageunit, SQUEEZE_RIGHT, myThid )
        ENDIF
 #endif
 
        vec_start = obsfit_minind_buff
        vec_count = obsfit_maxind_buff-obsfit_minind_buff+1
 
-       err = NF_INQ_VARID( fiddata_obs(fNb), obsfit_nameval, varid1 )
+       err = NF_INQ_VARID( fiddata_obs(fNb), obsfit_nameval, varID )
        CALL OBSFIT_NF_ERROR(
      &      'READ_OBS: NF_INQ_VARID obsfit_nameval',err,myThid )
-       err = NF_GET_VARA_DOUBLE( fiddata_obs(fNb), varid1, vec_start,
+       err = NF_GET_VARA_DOUBLE( fiddata_obs(fNb), varID, vec_start,
      &       vec_count, vec_tmp1 )
        CALL OBSFIT_NF_ERROR(
      &      'READ_OBS: NF_GET_VARA_DOUBLE vec_tmp1',err,myThid )
-       err = NF_INQ_VARID( fiddata_obs(fNb), obsfit_nameuncert, varid1 )
+       err = NF_INQ_VARID( fiddata_obs(fNb), obsfit_nameuncert, varID )
        CALL OBSFIT_NF_ERROR(
      &      'READ_OBS: NF_INQ_VARID obsfit_nameuncert',err,myThid )
-       err = NF_GET_VARA_DOUBLE( fiddata_obs(fNb), varid1, vec_start,
+       err = NF_GET_VARA_DOUBLE( fiddata_obs(fNb), varID, vec_start,
      &       vec_count, vec_tmp2 )
        CALL OBSFIT_NF_ERROR(
      &      'READ_OBS: NF_GET_VARA_DOUBLE vec_tmp2',err,myThid )

@@ -44,7 +44,7 @@ C     !LOCAL VARIABLES:
 C Initialize tiled cost function variables
       DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO num_file=1,NFILESMAX_OBS
+          DO num_file = 1, NFILESMAX_OBS
             obsfit_dummy(num_file,bi,bj) = 0. _d 0
           ENDDO
         ENDDO
@@ -53,7 +53,7 @@ C Initialize tiled cost function variables
 C Initialize global cost function variables
       _BEGIN_MASTER(myThid)
 
-      DO num_file=1,NFILESMAX_OBS
+      DO num_file = 1, NFILESMAX_OBS
         objf_obsfit(num_file) = 0. _d 0
         num_obsfit(num_file) = 0. _d 0
         obsfit_globaldummy(num_file) = 0. _d 0
@@ -66,7 +66,7 @@ C Initialize global cost function variables
         DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
             DO num_file = 1, NFILESMAX_OBS
-              IF (ObsNo(num_file).GT.0) THEN
+              IF ( ObsNo(num_file).GT.0 ) THEN
 C Write data from buffer to .nc file
                 err = NF_SYNC( fidfwd_obs(num_file,bi,bj) )
                 CALL OBSFIT_NF_ERROR(
@@ -74,7 +74,7 @@ C Write data from buffer to .nc file
      &               err,bi,bj,myThid )
 
 # ifdef ALLOW_TANGENTLINEAR_RUN
-                IF (TANGENT_SIMULATION) THEN
+                IF ( TANGENT_SIMULATION ) THEN
                   err = NF_SYNC( fidtan_obs(num_file,bi,bj) )
                   CALL OBSFIT_NF_ERROR(
      &                 'INIT_VARIA: NF_SYNC fidtan_obs',

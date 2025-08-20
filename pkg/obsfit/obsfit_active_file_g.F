@@ -20,7 +20,7 @@ C     !INTERFACE:
      I                                   bi,
      I                                   bj,
      I                                   myThid,
-     I                                   dummy)
+     I                                   dummy )
 
 C     !DESCRIPTION: 
 C     ==================================================================
@@ -61,13 +61,13 @@ CEOP
      &     active_num_file,
      &     active_var, lAdInit,
      &     irec, sample_ind_glob(active_num_file,irec,bi,bj),
-     &     FORWARD_SIMULATION, myOptimIter, bi, bj, myThid)
+     &     FORWARD_SIMULATION, myOptimIter, bi, bj, myThid )
 
       CALL ACTIVE_READ_OBS_TILE_RL( fidtan_obs(active_num_file,bi,bj),
      &     active_num_file,
      &     g_active_var, lAdInit,
      &     irec, sample_ind_glob(active_num_file,irec,bi,bj),
-     &     TANGENT_SIMULATION, myOptimIter, bi, bj, myThid)
+     &     TANGENT_SIMULATION, myOptimIter, bi, bj, myThid )
 
 #endif
 
@@ -131,13 +131,13 @@ CEOP
      &     active_num_file,
      &     active_var,
      &     irec, sample_ind_glob(active_num_file,irec,bi,bj),
-     &     FORWARD_SIMULATION, myOptimIter, bi, bj, myThid)
+     &     FORWARD_SIMULATION, myOptimIter, bi, bj, myThid )
 
       CALL ACTIVE_WRITE_OBS_TILE_RL( fidtan_obs(active_num_file,bi,bj),
      &     active_num_file,
      &     g_active_var, 
      &     irec, sample_ind_glob(active_num_file,irec,bi,bj),
-     &     TANGENT_SIMULATION, myOptimIter, bi, bj, myThid)
+     &     TANGENT_SIMULATION, myOptimIter, bi, bj, myThid )
 
 #endif
 
@@ -199,13 +199,13 @@ CEOP
      &     active_num_file,
      &     active_var,  lAdInit,
      &     irec, obs_ind_glob(active_num_file,irec),
-     &     FORWARD_SIMULATION, myOptimIter, myThid)
+     &     FORWARD_SIMULATION, myOptimIter, myThid )
 
       CALL ACTIVE_READ_OBS_GLOB_RL( fidtanglobal(active_num_file),
      &     active_num_file,
      &     g_active_var, lAdInit,
      &     irec, obs_ind_glob(active_num_file,irec),
-     &     TANGENT_SIMULATION, myOptimIter, myThid)
+     &     TANGENT_SIMULATION, myOptimIter, myThid )
 
 #endif
 
@@ -266,13 +266,13 @@ CEOP
      &     active_num_file,
      &     active_var,
      &     irec, obs_ind_glob(active_num_file,irec),
-     &     FORWARD_SIMULATION, myOptimIter, myThid)
+     &     FORWARD_SIMULATION, myOptimIter, myThid )
 
       CALL ACTIVE_WRITE_OBS_GLOB_RL( fidtanglobal(active_num_file),
      &     active_num_file,
      &     g_active_var,
      &     irec, obs_ind_glob(active_num_file,irec),
-     &     TANGENT_SIMULATION, myOptimIter, myThid)
+     &     TANGENT_SIMULATION, myOptimIter, myThid )
 
 #endif
 

@@ -59,7 +59,7 @@ CEOP
      &     active_num_file,
      &     active_var, lAdInit,
      &     irec, sample_ind_glob(active_num_file,irec,bi,bj),
-     &     FORWARD_SIMULATION, myOptimIter, bi, bj, myThid)
+     &     FORWARD_SIMULATION, myOptimIter, bi, bj, myThid )
 
 #endif
 
@@ -117,7 +117,7 @@ CEOP
      &     active_num_file,
      &     active_var, 
      &     irec, sample_ind_glob(active_num_file,irec,bi,bj),
-     &     FORWARD_SIMULATION, myOptimIter, bi, bj, myThid)
+     &     FORWARD_SIMULATION, myOptimIter, bi, bj, myThid )
 
 #endif
 
@@ -179,7 +179,7 @@ CEOP
      &     active_num_file,
      &     active_var, lAdInit,
      &     irec, obs_ind_glob(active_num_file,irec),
-     &     FORWARD_SIMULATION, myOptimIter, myThid)
+     &     FORWARD_SIMULATION, myOptimIter, myThid )
 
 #endif
 
@@ -236,7 +236,7 @@ CEOP
      &     active_num_file,
      &     active_var, 
      &     irec, obs_ind_glob(active_num_file,irec),
-     &     FORWARD_SIMULATION, myOptimIter, myThid)
+     &     FORWARD_SIMULATION, myOptimIter, myThid )
 
 #endif
 

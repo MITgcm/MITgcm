@@ -79,7 +79,7 @@ C Default values for ObsFit
 C Read ObsFit cost data file
       WRITE( msgBuf,'(A)' ) 'OBSFIT_READPARMS: opening data.obsfit'
       CALL PRINT_MESSAGE( msgBuf, 
-     &     standardMessageUnit, SQUEEZE_RIGHT, 1)
+     &     standardMessageUnit, SQUEEZE_RIGHT, 1 )
 
       CALL OPEN_COPY_DATA_FILE(
      I     'data.obsfit', 'OBSFIT_READPARMS',

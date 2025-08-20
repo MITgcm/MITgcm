@@ -62,10 +62,9 @@ C     !INPUT PARAMETERS:
 C     i/j/k_cur   :: i/j/k - index arrays of model grid points
 C     weights_cur :: weights array for profile data
 C     var_cur     :: current variable name
-C     itr_cur     :: index of current variable
 C     file_cur    :: current filenumber
 C     myTime      :: time counter for this thread
-C     bi,bj       :: Tile indices
+C     bi,bj       :: tile indices
 C     myThid      :: my thread ID number
 #ifdef ALLOW_OBSFIT
       INTEGER  i_cur(NUM_INTERP_PTS_OBS)
@@ -101,15 +100,15 @@ C     !LOCAL VARIABLES:
 C This is where sample types are assigned to model variables
       weighingSUM = 0. _d 0
       DO iq = 1, NUM_INTERP_PTS_OBS
-        IF (var_cur.EQ.1) THEN
+        IF ( var_cur.EQ.1 ) THEN
          tab_coeffs1(iq) = theta(i_cur(iq),j_cur(iq),k_cur(iq),bi,bj)
-        ELSEIF (var_cur.EQ.2) THEN
+        ELSEIF ( var_cur.EQ.2 ) THEN
          tab_coeffs1(iq) = salt(i_cur(iq),j_cur(iq),k_cur(iq),bi,bj)
-        ELSEIF (var_cur.EQ.3) THEN
+        ELSEIF ( var_cur.EQ.3 ) THEN
          tab_coeffs1(iq) = uvel(i_cur(iq),j_cur(iq),k_cur(iq),bi,bj)
-        ELSEIF (var_cur.EQ.4) THEN
+        ELSEIF ( var_cur.EQ.4 ) THEN
          tab_coeffs1(iq) = vvel(i_cur(iq),j_cur(iq),k_cur(iq),bi,bj)
-        ELSEIF (var_cur.EQ.5) THEN
+        ELSEIF ( var_cur.EQ.5 ) THEN
          tab_coeffs1(iq) = etan(i_cur(iq),j_cur(iq),bi,bj)
         ELSE
          tab_coeffs1(iq) = 0. _d 0
@@ -123,8 +122,8 @@ C This is where sample types are assigned to model variables
         modval_cur = 0. _d 0
         mask_cur = 1. _d 0
         DO iq = 1, NUM_INTERP_PTS_OBS
-        modval_cur = modval_cur
-     &   +tab_coeffs1(iq)*weighing_pts(iq)/weighingSUM
+          modval_cur = modval_cur
+     &     +tab_coeffs1(iq)*weighing_pts(iq)/weighingSUM
         ENDDO
       ELSE
         modval_cur = 0. _d 0

@@ -46,14 +46,14 @@ C     !LOCAL VARIABLES:
       INTEGER IL
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-      IF (debugLevel .GE. debLevA .AND. STATUS .NE. NF_NOERR) THEN
+      IF ( debugLevel .GE. debLevA .AND. STATUS .NE. NF_NOERR ) THEN
         IL = ILNBLNK(message)
         IF ( IL .GT. 0 ) THEN
-          WRITE(msgBuf,'(A,A,2I3,1X,A)')
+          WRITE( msgBuf,'(A,A,2I3,1X,A)' )
      &     'NF_MESSAGE: OBSFIT_', message(1:IL),
      &     bi, bj, NF_STRERROR(STATUS)
         ELSE
-          WRITE(msgBuf,'(A,2I3,1X,A)') 'NF_MESSAGE: OBSFIT ',
+          WRITE( msgBuf,'(A,2I3,1X,A)' ) 'NF_MESSAGE: OBSFIT ',
      &     bi, bj, NF_STRERROR(STATUS)
         ENDIF
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -103,14 +103,14 @@ C     !LOCAL VARIABLES:
       INTEGER IL
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-      IF (debugLevel .GE. debLevA .AND. STATUS .NE. NF_NOERR) THEN
+      IF ( debugLevel .GE. debLevA .AND. STATUS .NE. NF_NOERR ) THEN
         IL = ILNBLNK(message)
         IF ( IL .GT. 0 ) THEN
-          WRITE(msgBuf,'(A,A,1X,A)')
+          WRITE( msgBuf,'(A,A,1X,A)' )
      &     'NF_MESSAGE: OBSFIT_', message(1:IL),
      &     NF_STRERROR(STATUS)
         ELSE
-          WRITE(msgBuf,'(A,1X,A)') 'NF_MESSAGE: OBSFIT ',
+          WRITE( msgBuf,'(A,1X,A)' ) 'NF_MESSAGE: OBSFIT ',
      &     NF_STRERROR(STATUS)
         ENDIF
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -143,7 +143,7 @@ C     == Global variables ===
 #endif
 
 C     !INPUT PARAMETERS:
-C     myThid :: my Thread Id number
+C     myThid :: my thread ID number
       INTEGER myThid
 
 C     !OUTPUT PARAMETERS:
@@ -155,7 +155,7 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
 #ifdef ALLOW_OBSFIT
-C     bi,bj :: Tile indices
+C     bi,bj :: tile indices
       INTEGER bi, bj
       INTEGER IL, numFile
       INTEGER STATUS
@@ -173,8 +173,8 @@ C     enire range of tiles
             DO numFile = 1, NFILESMAX_OBS 
               IL = ILNBLNK( obsfitFiles(numFile) )
 
-              IF (IL.NE.0) THEN
-                WRITE(msgBuf,'(A,A,5(1X,I8))')
+              IF ( IL.NE.0 ) THEN
+                WRITE( msgBuf,'(A,A,5(1X,I8))' )
      &           'S/R OBSFIT_NC_CLOSE:',
      &           ' Closing '//obsfitFiles(numFile)(1:IL), numFile,
      &           fiddata_obs(numFile),
@@ -186,7 +186,7 @@ C     enire range of tiles
 C Data file
                 IF ( fiddata_obs(numFile) .GT. 0 ) THEN
                  STATUS = NF_CLOSE( fiddata_obs(numFile) )
-                 WRITE(msgBuf,'(A,I3,I8)')
+                 WRITE( msgBuf,'(A,I3,I8)' )
      &                'NC_CLOSE: NF_CLOSE data unit',
      &                numFile, fiddata_obs(numFile)
                  CALL OBSFIT_NF_ERROR( msgBuf, STATUS,
@@ -196,7 +196,7 @@ C Data file
 C Forward equivalent (.equi) file
                 IF ( fidfwd_obs(numFile,bi,bj) .GT. 0 ) THEN
                  STATUS = NF_CLOSE( fidfwd_obs(numFile,bi,bj) )
-                 WRITE(msgBuf,'(A,I3,I8)')
+                 WRITE( msgBuf,'(A,I3,I8)' )
      &                'NC_CLOSE: NF_CLOSE fwd unit',
      &                numFile, fidfwd_obs(numFile,bi,bj)
                  CALL OBSFIT_NF_ERROR( msgBuf, STATUS,
@@ -206,7 +206,7 @@ C Forward equivalent (.equi) file
 C Adjoint equivalent (.equi) file
                 IF ( fidadj_obs(numFile,bi,bj) .GT. 0 ) THEN
                  STATUS = NF_CLOSE( fidadj_obs(numFile,bi,bj) )
-                 WRITE(msgBuf,'(A,I3,I8)')
+                 WRITE( msgBuf,'(A,I3,I8)' )
      &                'NC_CLOSE: NF_CLOSE adj unit',
      &                numFile, fidadj_obs(numFile,bi,bj)
                  CALL OBSFIT_NF_ERROR( msgBuf, STATUS,
@@ -217,7 +217,7 @@ C Adjoint equivalent (.equi) file
 C Tangent linear equivalent (.equi) file
                 IF ( fidtan_obs(numFile,bi,bj) .GT. 0 ) THEN
                  STATUS = NF_CLOSE( fidtan_obs(numFile,bi,bj) )
-                 WRITE(msgBuf,'(A,I3,I8)')
+                 WRITE( msgBuf,'(A,I3,I8)' )
      &                'NC_CLOSE: NF_CLOSE tlm unit',
      &                numFile, fidtan_obs(numFile,bi,bj)
                  CALL OBSFIT_NF_ERROR( msgBuf, STATUS,

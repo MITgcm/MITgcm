@@ -51,12 +51,12 @@ C     iG,jG        :: global indices
       INTEGER stopObsfit, stopGenericGrid
       INTEGER loopThroughSamples, weighSamples, readDelT
       INTEGER obsIsInRunTime, sampleIsInTile, sampleIsValid
-      INTEGER fid, dimid, varid(2)
-      INTEGER varid0, varid1, varid1a, varid1b, varid1c
-      INTEGER varid2, varid3a, varid3b, varid4, varid5
-      INTEGER varid6, varid7
-      INTEGER varid_intp1, varid_intp2, varid_intp11, varid_intp22
-      INTEGER varid_intp3, varid_intp4, varid_intp5, varid_intp6
+      INTEGER fid, dimid, varID(2)
+      INTEGER varID0, varID1, varID1a, varID1b, varID1c
+      INTEGER varID2, varID3a, varID3b, varID4, varID5
+      INTEGER varID6, varID7
+      INTEGER varID_intp1, varID_intp2, varID_intp11, varID_intp22
+      INTEGER varID_intp3, varID_intp4, varID_intp5, varID_intp6
       INTEGER tmpdate(4), tmpdiff(4)
       INTEGER tmp_type, tmp_type2(1000), type_cur
       INTEGER sample_i, sample_j, sample_k1, sample_k2
@@ -299,19 +299,19 @@ C Time interval (if missing, assume instanteneous):
         ENDIF
                 
 C Read the info for samples:
-        err = NF_INQ_VARID(fid,'sample_type',varID2)
+        err = NF_INQ_VARID( fid,'sample_type',varID2 )
         nerr = err
         CALL OBSFIT_NF_ERROR_GLOBAL(
      &       'INIT_FIXED: NF_INQ_DIMID sample_type',err,myThid )
-        err = NF_INQ_VARID(fid,'sample_lon', varID3a )
+        err = NF_INQ_VARID( fid,'sample_lon', varID3a )
         nerr = err
         CALL OBSFIT_NF_ERROR_GLOBAL(
      &       'INIT_FIXED: NF_INQ_DIMID sample_lon',err,myThid )
-        err = NF_INQ_VARID(fid,'sample_lat', varID3b )
+        err = NF_INQ_VARID( fid,'sample_lat', varID3b )
         nerr = err
         CALL OBSFIT_NF_ERROR_GLOBAL(
      &       'INIT_FIXED: NF_INQ_DIMID sample_lat',err,myThid )
-        err = NF_INQ_VARID(fid,'sample_depth', varID4 )
+        err = NF_INQ_VARID( fid,'sample_depth', varID4 )
         nerr = err
         CALL OBSFIT_NF_ERROR_GLOBAL(
      &       'INIT_FIXED: NF_INQ_DIMID osample_depth',err,myThid )
@@ -381,22 +381,22 @@ C Create global files for obs-equivalent
          JL = ILNBLNK( obsfitDir )
          INQUIRE( file=obsfnameequincglo, exist=exst )
          IF (.NOT.exst) THEN
-          err = NF_CREATE(obsfnameequincglo, NF_CLOBBER,
-     &          fidglobal(num_file))
-          err = NF_DEF_DIM(fidglobal(num_file), 'iOBS', 
-     &          ObsNo(num_file), dimid)
-          err = NF_DEF_VAR(fidglobal(num_file),
-     &          'mod_val',NF_DOUBLE,1,dimid,varID(1))
-          err = NF_PUT_ATT_DOUBLE(fidglobal(num_file),
+          err = NF_CREATE( obsfnameequincglo, NF_CLOBBER,
+     &          fidglobal(num_file) )
+          err = NF_DEF_DIM( fidglobal(num_file), 'iOBS', 
+     &          ObsNo(num_file), dimid )
+          err = NF_DEF_VAR( fidglobal(num_file),
+     &          'mod_val',NF_DOUBLE,1,dimid,varID(1) )
+          err = NF_PUT_ATT_DOUBLE( fidglobal(num_file),
      &          varID(1),'_FillValue',NF_DOUBLE,1, -9999. _d 0 )
-          err = NF_DEF_VAR(fidglobal(num_file),
-     &          'mod_mask',NF_DOUBLE,1,dimid,varID(2))
-          err = NF_PUT_ATT_DOUBLE(fidglobal(num_file),
+          err = NF_DEF_VAR( fidglobal(num_file),
+     &          'mod_mask',NF_DOUBLE,1,dimid,varID(2) )
+          err = NF_PUT_ATT_DOUBLE( fidglobal(num_file),
      &          varID(2),'_FillValue',NF_DOUBLE,1, -9999. _d 0 )
-          err = NF_ENDDEF(fidglobal(num_file))
-          err = NF_CLOSE(fidglobal(num_file))
-          err = NF_OPEN(obsfnameequincglo, NF_WRITE, 
-     &          fidglobal(num_file))
+          err = NF_ENDDEF( fidglobal(num_file) )
+          err = NF_CLOSE( fidglobal(num_file) )
+          err = NF_OPEN( obsfnameequincglo, NF_WRITE, 
+     &          fidglobal(num_file) )
          ELSE
           err = NF_OPEN( obsfnameequincglo, NF_WRITE, 
      &          fidglobal(num_file) )
@@ -568,14 +568,14 @@ C If tmphhmmss is out of range then disregard obs
              diffsecs = -deltaTclock
             ENDIF
 
-            IF (loopThroughSamples.EQ.1) THEN      
+            IF ( loopThroughSamples.EQ.1 ) THEN      
              np_cur = tmpnp(ic)
             ELSE
              np_cur = 1
             ENDIF
 
-            IF (readDelT.EQ.1) THEN      
-             IF (tmpdelT(ic).GT.0. _d 0) THEN      
+            IF ( readDelT.EQ.1 ) THEN      
+             IF ( tmpdelT(ic).GT.0. _d 0 ) THEN      
 C delT>0: time average
               delT_cur = tmpdelT(ic)
               obsfitOperation(num_file) = 1
@@ -599,7 +599,7 @@ C If yes then store obs index position and number of samples:
              obs_ind_glob(num_file,ObsNo_valid) = ic+chunk
 C Number of samples in each valid observation            
              obs_np(num_file,ObsNo_valid) = np_cur
-             IF (np_cur.GT.obs_np_max) obs_np_max = np_cur
+             IF ( np_cur.GT.obs_np_max ) obs_np_max = np_cur
 C Position of first sample            
              obs_sample1_ind(num_file,ObsNo_valid) = sample_cnt
              obs_delT(num_file,ObsNo_valid) = delT_cur
@@ -665,20 +665,20 @@ C If isample is not a dimension, use iobs for size of sampleno
           ENDIF
 
           DO ip = 1, NSAMPLESMAX
-           sample_timeS(num_file,ip,bi,bj) = -999. _d 0
-           sample_timeE(num_file,ip,bi,bj) = -999. _d 0
-           sample_lon(num_file,ip,bi,bj) = -999. _d 0
-           sample_lat(num_file,ip,bi,bj) = -999. _d 0
-           sample_depth(num_file,ip,bi,bj) = -999. _d 0
+           sample_timeS(num_file,ip,bi,bj)  = -999. _d 0
+           sample_timeE(num_file,ip,bi,bj)  = -999. _d 0
+           sample_lon(num_file,ip,bi,bj)    = -999. _d 0
+           sample_lat(num_file,ip,bi,bj)    = -999. _d 0
+           sample_depth(num_file,ip,bi,bj)  = -999. _d 0
            sample_weight(num_file,ip,bi,bj) = 1. _d 0
            DO iq = 1, NUM_INTERP_PTS_OBS
-            sample_interp_i(num_file,ip,iq,bi,bj) = 1
-            sample_interp_j(num_file,ip,iq,bi,bj) = 1
-            sample_interp_k(num_file,ip,iq,bi,bj) = 1
+            sample_interp_i(num_file,ip,iq,bi,bj)    = 1
+            sample_interp_j(num_file,ip,iq,bi,bj)    = 1
+            sample_interp_k(num_file,ip,iq,bi,bj)    = 1
             sample_interp_frac(num_file,ip,iq,bi,bj) = 0. _d 0
            ENDDO
-           sample_interp_xC11(num_file,ip,bi,bj) = -999. _d 0
-           sample_interp_yC11(num_file,ip,bi,bj) = -999. _d 0
+           sample_interp_xC11(num_file,ip,bi,bj)   = -999. _d 0
+           sample_interp_yC11(num_file,ip,bi,bj)   = -999. _d 0
            sample_interp_xCNINJ(num_file,ip,bi,bj) = -999. _d 0
            sample_interp_yCNINJ(num_file,ip,bi,bj) = -999. _d 0
           ENDDO
@@ -686,8 +686,8 @@ C If isample is not a dimension, use iobs for size of sampleno
           sampleNo_tile = 0
           Obsno_div1000 = MAX(0,INT(sampleNo(num_file,bi,bj)/1000))
       
-          ntype_ssh=0
-          ntype_other=0
+          ntype_ssh = 0
+          ntype_other = 0
 
           DO chunkObs = 1, Obsno_div1000+1
            chunk = 1000*(chunkObs-1)
@@ -736,19 +736,19 @@ C and indices
              err = NF_GET_VARA_DOUBLE( fid,varID_intp22,vec_start,
      &             vec_count, tmp_yCNINJ )
              DO iq = 1, iINTERP
-              vec_start2(1)=iq
-              vec_start2(2)=1+chunk
-              vec_count2(1)=1
-              vec_count2(2)=min(1000,
+              vec_start2(1) = iq
+              vec_start2(2) = 1+chunk
+              vec_count2(1) = 1
+              vec_count2(2) = min(1000,
      &        sampleNo(num_file,bi,bj)-chunk)
-              err = NF_GET_VARA_DOUBLE(fid,varID_intp3,vec_start2,
-     &              vec_count2, tmp_frac(1,iq))
-              err = NF_GET_VARA_DOUBLE(fid,varID_intp4,vec_start2,
-     &              vec_count2, tmp_i(1,iq))
-              err = NF_GET_VARA_DOUBLE(fid,varID_intp5,vec_start2,
-     &              vec_count2, tmp_j(1,iq))
-              err = NF_GET_VARA_DOUBLE(fid,varID_intp6,vec_start2,
-     &              vec_count2, tmp_k(1,iq))
+              err = NF_GET_VARA_DOUBLE( fid,varID_intp3,vec_start2,
+     &              vec_count2, tmp_frac(1,iq) )
+              err = NF_GET_VARA_DOUBLE( fid,varID_intp4,vec_start2,
+     &              vec_count2, tmp_i(1,iq) )
+              err = NF_GET_VARA_DOUBLE( fid,varID_intp5,vec_start2,
+     &              vec_count2, tmp_j(1,iq) )
+              err = NF_GET_VARA_DOUBLE( fid,varID_intp6,vec_start2,
+     &              vec_count2, tmp_k(1,iq) )
              ENDDO
             ENDIF
 
@@ -770,7 +770,7 @@ C Loop through this chunk
               
 C Check that sample time is valid
 CAV There may be a more elegant way to do this...     
-              IF (tmp_sample_time(ic+chunk).LT.0. _d 0) THEN
+              IF ( tmp_sample_time(ic+chunk).LT.0. _d 0 ) THEN
                sampleIsValid = 0
               ENDIF
               IF ( tmp_sample_time(ic+chunk).GT.
@@ -821,41 +821,41 @@ C Not in this tile
                ENDIF
  
 C Now determine value of i,j,k south-west-down of data point
-               sample_i=-10
-               sample_j=-10
-               sample_k1=-10
-               sample_k2=-10
-               lon_1=-10
-               lon_2=-10
-               lat_1=-10
-               lat_2=-10
-               depth_1=-10
-               depth_2=-10
+               sample_i = -10
+               sample_j = -10
+               sample_k1 = -10
+               sample_k2 = -10
+               lon_1 = -10
+               lon_2 = -10
+               lat_1 = -10
+               lat_2 = -10
+               depth_1 = -10
+               depth_2 = -10
 
                IF ( sampleIsInTile.EQ.1 ) THEN
        
 C Value of k, below the data point:
 C Case 1: above first depth level
                 IF ( -rC(1).GT.depth_cur ) THEN
-                 sample_k1=1
-                 sample_k2=1
-                 depth_fac=1. _d 0
+                 sample_k1 = 1
+                 sample_k2 = 1
+                 depth_fac = 1. _d 0
                 ENDIF
 C Case 2: below last depth level
                 IF ( -rC(Nr).LE.depth_cur ) THEN
-                 sample_k1=Nr
-                 sample_k2=Nr
-                 depth_fac=1. _d 0
+                 sample_k1 = Nr
+                 sample_k2 = Nr
+                 depth_fac = 1. _d 0
                 ENDIF
 C Case 3: between two depth levels
                 DO kLev = 1, Nr-1
-                 IF ((-rC(kLev).LE.depth_cur).AND.
-     &               (-rC(kLev+1).GT.depth_cur)) THEN
-                  sample_k1=kLev
-                  sample_k2=kLev+1
-                  depth_1=-rC(kLev)
-                  depth_2=-rC(kLev+1)
-                  depth_fac=(depth_cur-depth_1)/(depth_2-depth_1)
+                 IF ( (-rC(kLev).LE.depth_cur).AND.
+     &                (-rC(kLev+1).GT.depth_cur) ) THEN
+                  sample_k1 = kLev
+                  sample_k2 = kLev+1
+                  depth_1 = -rC(kLev)
+                  depth_2 = -rC(kLev+1)
+                  depth_fac = (depth_cur-depth_1)/(depth_2-depth_1)
                  ENDIF
                 ENDDO
         
@@ -864,43 +864,43 @@ C Case 3: between two depth levels
 
                   IF ( type_cur.EQ.3 ) THEN
 C Zonal velocity
-                   lon_tmp1=xG(i,j,bi,bj)
-                   lon_tmp2=xG(i+1,j,bi,bj)
-                   lat_tmp1=yC(i,j,bi,bj)
-                   lat_tmp2=yC(i,j+1,bi,bj)
+                   lon_tmp1 = xG(i,j,bi,bj)
+                   lon_tmp2 = xG(i+1,j,bi,bj)
+                   lat_tmp1 = yC(i,j,bi,bj)
+                   lat_tmp2 = yC(i,j+1,bi,bj)
                   ELSEIF ( type_cur.EQ.4 ) THEN
 c Meridional velocity
-                   lon_tmp1=xC(i,j,bi,bj)
-                   lon_tmp2=xC(i+1,j,bi,bj)
-                   lat_tmp1=yG(i,j,bi,bj)
-                   lat_tmp2=yG(i,j+1,bi,bj)
+                   lon_tmp1 = xC(i,j,bi,bj)
+                   lon_tmp2 = xC(i+1,j,bi,bj)
+                   lat_tmp1 = yG(i,j,bi,bj)
+                   lat_tmp2 = yG(i,j+1,bi,bj)
                   ELSE
-                   lon_tmp1=xC(i,j,bi,bj)
-                   lon_tmp2=xC(i+1,j,bi,bj)
-                   lat_tmp1=yC(i,j,bi,bj)
-                   lat_tmp2=yC(i,j+1,bi,bj)
+                   lon_tmp1 = xC(i,j,bi,bj)
+                   lon_tmp2 = xC(i+1,j,bi,bj)
+                   lat_tmp1 = yC(i,j,bi,bj)
+                   lat_tmp2 = yC(i,j+1,bi,bj)
                   ENDIF
           
 C Value of j, south of the data point:
                   IF ( (lat_tmp1.LE.lat_cur).AND.
      &                 (lat_tmp2.GT.lat_cur) ) THEN
-                   sample_j=j
-                   lat_1=lat_tmp1
-                   lat_2=lat_tmp2
+                   sample_j = j
+                   lat_1 = lat_tmp1
+                   lat_2 = lat_tmp2
                   ENDIF
 
 C Value of i, west of the data point:
                   IF ( xC(i+1,j,bi,bj).LT.xC(1,j,bi,bj) ) THEN
-                   lon_tmp2=lon_tmp2+360
+                   lon_tmp2 = lon_tmp2+360
                   ENDIF
                   IF ( xC(i,j,bi,bj).LT.xC(1,j,bi,bj) ) THEN
-                   lon_tmp1=lon_tmp1+360
+                   lon_tmp1 = lon_tmp1+360
                   ENDIF
                   IF ( (lon_tmp1.LE.lon_cur).AND.
      &                 (lon_tmp2.GT.lon_cur) ) THEN
-                   sample_i=i
-                   lon_1=lon_tmp1
-                   lon_2=lon_tmp2
+                   sample_i = i
+                   lon_1 = lon_tmp1
+                   lon_2 = lon_tmp2
                   ENDIF
 
                  ENDDO !i
@@ -942,8 +942,8 @@ C when time averaging
                 sample_type(num_file,sampleNo_tile,bi,bj)=type_cur
 
 C Store interpolation fractions and indices
-                lon_fac=(lon_cur-lon_1)/(lon_2-lon_1)
-                lat_fac=(lat_cur-lat_1)/(lat_2-lat_1)
+                lon_fac = (lon_cur-lon_1)/(lon_2-lon_1)
+                lat_fac = (lat_cur-lat_1)/(lat_2-lat_1)
                 
                 w(1)=(1-lon_fac)*(1-lat_fac)*(1-depth_fac)
                 sample_interp_i(num_file,sampleNo_tile,1,bi,bj)
@@ -1050,9 +1050,9 @@ C===========================================================
 C Generic grid case
 C===========================================================              
 C Determine whether sample is in current tile domain
-              ELSEIF (sampleIsValid.EQ.1) THEN
+              ELSEIF ( sampleIsValid.EQ.1 ) THEN
 
-               IF (stopGenericGrid.EQ.0) THEN
+               IF ( stopGenericGrid.EQ.0 ) THEN
 
                 IF ( (abs(tmp_xC11(ic) - xC(1,1,bi,bj))
      &               .LT.0.0001 _d 0 ).AND.
@@ -1084,7 +1084,7 @@ C when time averaging
      &             sample_timeS(num_file,sampleNo_tile,bi,bj)
      &             +tmp_sample_delT(ic+chunk)-1
                  ENDIF
-                 IF (weighSamples.EQ.1) THEN
+                 IF ( weighSamples.EQ.1 ) THEN
                   sample_weight(num_file,sampleNo_tile,bi,bj)=
      &             tmp_weight2(ic)
                  ENDIF
@@ -1194,20 +1194,20 @@ C Check that maximum size was not reached:
 C Number of valid samples in the file
           sampleNo(num_file,bi,bj) = sampleNo_tile
        
-          WRITE(msgbuf,'(A,I4,A,I4)')
+          WRITE( msgbuf,'(A,I4,A,I4)' )
      &         '  current tile is bi,bj                      =',
      &         bi,',',bj
           CALL PRINT_MESSAGE(
      &         msgbuf, iUnit, SQUEEZE_RIGHT, myThid )
 
-          WRITE(msgbuf,'(A,I9)')
+          WRITE( msgbuf,'(A,I9)' )
      &         '  # of samples within tile and time period  =',
      &         sampleNo(num_file,bi,bj)
           CALL PRINT_MESSAGE(
      &         msgbuf, iUnit, SQUEEZE_RIGHT, myThid )
 
-          IF (ntype_ssh.GT.0) THEN
-           IF (ntype_other.GT.0) THEN
+          IF ( ntype_ssh.GT.0 ) THEN
+           IF ( ntype_other.GT.0 ) THEN
 CAV add error message
            ELSE
             obs_is_ssh_loc = obs_is_ssh_loc+1
@@ -1218,13 +1218,13 @@ C===========================================================
 C Create files for model counterparts to samples
 C===========================================================
 
-          IF (sampleNo(num_file,bi,bj).GT.0) THEN
+          IF ( sampleNo(num_file,bi,bj).GT.0 ) THEN
            iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
            jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
 
            JL  = ILNBLNK( obsfitDir )
 
-           IF (obsfitDoNcOutput) THEN
+           IF ( obsfitDoNcOutput ) THEN
          
             WRITE( obsfnameequinc,'(3A,I3.3,A,I3.3,A)' )
      &           obsfitDir(1:JL),obsfitFile(1:IL),
@@ -1275,16 +1275,16 @@ C===========================================================
 #endif
             ELSE !obsfitDoNcOutput
 
-             WRITE( obsfnameequinc,'(3A,I3.3,A,I3.3,A)')
+             WRITE( obsfnameequinc,'(3A,I3.3,A,I3.3,A)' )
      &            obsfitDir(1:JL),obsfitFile(1:IL),'.',iG,'.',jG,
      &            '.equi.data'
 #ifdef ALLOW_ADJOINT_RUN
-             WRITE( adobsfnameequinc,'(4A,I3.3,A,I3.3,A)')
+             WRITE( adobsfnameequinc,'(4A,I3.3,A,I3.3,A)' )
      &            obsfitDir(1:JL),'ad',
      &            obsfitFile(1:IL),'.',iG,'.',jG,'.equi.data'
 #endif
 #ifdef ALLOW_TANGENTLINEAR_RUN
-             WRITE( tlobsfnameequinc,'(4A,I3.3,A,I3.3,A)')
+             WRITE( tlobsfnameequinc,'(4A,I3.3,A,I3.3,A)' )
      &            obsfitDir(1:JL),'tl',
      &            obsfitFile(1:IL),'.',iG,'.',jG,'.equi.data'
 #endif
@@ -1360,30 +1360,30 @@ C===========================================================
 
        ELSE !if (IL.NE.0) 
 
-        DO bj=1,nSy
-         DO bi=1,nSx
-          ObsNo(num_file)=0
-          sampleNo(num_file,bi,bj)=0
-          DO ip=1,NOBSMAX_OBS
-           obs_np(num_file,ip)=-999. _d 0
+        DO bj = 1, nSy
+         DO bi = 1, nSx
+          ObsNo(num_file) = 0
+          sampleNo(num_file,bi,bj) = 0
+          DO ip = 1, NOBSMAX_OBS
+           obs_np(num_file,ip) = -999. _d 0
           ENDDO
-          DO ip=1,NSAMPLESMAX
-           sample_timeS(num_file,ip,bi,bj)=-999. _d 0
-           sample_timeE(num_file,ip,bi,bj)=-999. _d 0
-           sample_lon(num_file,ip,bi,bj)=-999. _d 0
-           sample_lat(num_file,ip,bi,bj)=-999. _d 0
-           sample_depth(num_file,ip,bi,bj)=-999. _d 0
-           sample_ind_glob(num_file,ip,bi,bj)=0
+          DO ip = 1, NSAMPLESMAX
+           sample_timeS(num_file,ip,bi,bj)    = -999. _d 0
+           sample_timeE(num_file,ip,bi,bj)    = -999. _d 0
+           sample_lon(num_file,ip,bi,bj)      = -999. _d 0
+           sample_lat(num_file,ip,bi,bj)      = -999. _d 0
+           sample_depth(num_file,ip,bi,bj)    = -999. _d 0
+           sample_ind_glob(num_file,ip,bi,bj) = 0
            DO iq = 1,NUM_INTERP_PTS_OBS
-            sample_interp_i(num_file,ip,iq,bi,bj) = 1
-            sample_interp_j(num_file,ip,iq,bi,bj) = 1
-            sample_interp_k(num_file,ip,iq,bi,bj) = 1
+            sample_interp_i(num_file,ip,iq,bi,bj)    = 1
+            sample_interp_j(num_file,ip,iq,bi,bj)    = 1
+            sample_interp_k(num_file,ip,iq,bi,bj)    = 1
             sample_interp_frac(num_file,ip,iq,bi,bj) = 0. _d 0
            ENDDO
-           sample_interp_xC11(num_file,ip,bi,bj)=-999. _d 0
-           sample_interp_yC11(num_file,ip,bi,bj)=-999. _d 0
-           sample_interp_xCNINJ(num_file,ip,bi,bj)=-999. _d 0
-           sample_interp_yCNINJ(num_file,ip,bi,bj)=-999. _d 0
+           sample_interp_xC11(num_file,ip,bi,bj)   = -999. _d 0
+           sample_interp_yC11(num_file,ip,bi,bj)   = -999. _d 0
+           sample_interp_xCNINJ(num_file,ip,bi,bj) = -999. _d 0
+           sample_interp_yCNINJ(num_file,ip,bi,bj) = -999. _d 0
           ENDDO
          ENDDO !bi
         ENDDO !bj

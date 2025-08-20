@@ -57,7 +57,7 @@ CEOP
      &     active_num_file,
      &     adactive_var, lAdInit,
      &     irec, sample_ind_glob(active_num_file,irec,bi,bj),
-     &     REVERSE_SIMULATION, myIter, bi, bj, myThid)
+     &     REVERSE_SIMULATION, myIter, bi, bj, myThid )
 
 #endif
 
@@ -116,7 +116,7 @@ CEOP
      &     active_num_file,
      &     adactive_var, 
      &     irec, sample_ind_glob(active_num_file,irec,bi,bj),
-     &     REVERSE_SIMULATION, myIter, bi, bj, myThid)
+     &     REVERSE_SIMULATION, myIter, bi, bj, myThid )
 
 #endif
 

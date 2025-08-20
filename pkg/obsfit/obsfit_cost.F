@@ -43,7 +43,7 @@ C     == Global variables ===
 C     !INPUT PARAMETERS:
 C     myTime  :: time counter for this thread
 C     myIter  :: iteration counter for this thread
-C     myThid  :: my thread Id number
+C     myThid  :: my thread ID number
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
@@ -67,7 +67,7 @@ C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_FNAM) obsfitfile
       CHARACTER*(MAX_LEN_FNAM) fnamemisfit
       INTEGER IL, JL, err
-      INTEGER irec, ii, varid
+      INTEGER irec, ii, varID
       INTEGER obs_num, num_valid_samples
       _RL sample_mask_sum
       _RL objf_obsfit_glo
@@ -84,12 +84,12 @@ C     !LOCAL VARIABLES:
       optimcycle = 0
 #endif
 
-      WRITE(msgBuf,'(A)') ' '
+      WRITE( msgBuf,'(A)' ) ' '
       CALL PRINT_MESSAGE( msgBuf,
-     &     standardMessageUnit,SQUEEZE_RIGHT, myThid)
-      WRITE(msgBuf,'(A)') '== obsfit_cost: begin =='
+     &     standardMessageUnit,SQUEEZE_RIGHT, myThid )
+      WRITE( msgBuf,'(A)' ) '== obsfit_cost: begin =='
       CALL PRINT_MESSAGE( msgBuf,
-     &     standardMessageUnit,SQUEEZE_RIGHT, myThid)
+     &     standardMessageUnit,SQUEEZE_RIGHT, myThid )
 
       _BEGIN_MASTER( myThid )
 
@@ -99,7 +99,7 @@ C File maintenance
         DO bj = 1, nSy
           DO bi= 1, nSx
 
-            IF ( (sampleNo(num_file,bi,bj).GT.0).AND.
+            IF ( ( sampleNo(num_file,bi,bj).GT.0 ).AND.
      &           (obsfitDoNcOutput) ) THEN
 C Need to sync the file so that the data is not lost when run finishes
               err = NF_SYNC( fidfwd_obs(num_file,bi,bj) )
@@ -125,10 +125,10 @@ C Open tiled files and read to buffer
 
                 sample_modval = zeroRL
 
-                CALL ACTIVE_READ_OBS_TILE(num_file,
+                CALL ACTIVE_READ_OBS_TILE( num_file,
      &               sample_modval,sample_num,.false.,
      &               optimcycle,bi,bj,myThid,
-     &               obsfit_dummy(num_file,bi,bj))
+     &               obsfit_dummy(num_file,bi,bj) )
 
 C Save model equi (of samples) and masks in buffer
 C Combine all threads here
@@ -144,7 +144,7 @@ C Combine all threads here
         ENDDO !DO bi
 
 C Combine all processes
-        DO ii =1, NSAMPLESMAX
+        DO ii = 1, NSAMPLESMAX
           tmpgs = samples_buff(ii)
           _GLOBAL_SUM_RL(tmpgs, myThid)
           samples_modval_glob(ii) = tmpgs
@@ -171,7 +171,7 @@ C Calculate model equi of each obs by averaging NP samples
      &             *samples_mask_glob(irec)
                   sample_mask_sum = sample_mask_sum 
      &             +samples_mask_glob(irec)
-                  IF (samples_mask_glob(irec) .GT. 0. _d 0) THEN
+                  IF ( samples_mask_glob(irec) .GT. 0. _d 0 ) THEN
                     num_valid_samples = num_valid_samples+1
                   ENDIF
 
@@ -179,7 +179,7 @@ C Calculate model equi of each obs by averaging NP samples
               ENDDO
 
 C Time averaging
-              IF ( obsfitOperation(num_file).eq.1 ) THEN
+              IF ( obsfitOperation(num_file).EQ.1 ) THEN
                 obs_modval = obs_modval/obs_delT(num_file, obs_num)
               ENDIF
 
@@ -200,9 +200,9 @@ c          obs_modmask = zeroRL
 c         ENDIF
 
 C Write to global netcdf file
-              CALL ACTIVE_WRITE_OBS_GLOB(num_file,
+              CALL ACTIVE_WRITE_OBS_GLOB( num_file,
      &             obs_modval,obs_num,optimcycle,myThid,
-     &             obsfit_globaldummy(num_file))
+     &             obsfit_globaldummy(num_file) )
 
             ENDIF !IF (obs_num.LE.ObsNo(num_file))
           ENDDO !DO obs_num
@@ -212,7 +212,7 @@ CADJ &     = tapelev_obsfit, key = num_file, kind = isbyte
 #endif
 
 C Need to sync the file so that the data is not lost when run finishes
-          err = NF_SYNC(fidglobal(num_file))
+          err = NF_SYNC( fidglobal(num_file) )
           CALL OBSFIT_NF_ERROR_GLOBAL(
      &         'OBSFIT_COST: NF_SYNC fidglobal',err,myThid )
           IF ( obs_is_ssh(num_file).GT.0 ) THEN
@@ -231,18 +231,18 @@ C Loop over obs
                 obs_uncert = zeroRL
 
 C Read model equivalent from global file
-                CALL ACTIVE_READ_OBS_GLOB(num_file,
+                CALL ACTIVE_READ_OBS_GLOB( num_file,
      &               obs_modval,obs_num,.FALSE.,optimcycle,myThid,
-     &               obsfit_globaldummy(num_file))
+     &               obsfit_globaldummy(num_file) )
 
 C Read observation and uncertainty
-                CALL OBSFIT_READ_OBS(num_file,1,
+                CALL OBSFIT_READ_OBS( num_file,1,
      &               obs_ind_glob(num_file,obs_num),
-     &               obs_data,myThid)
+     &               obs_data,myThid )
 
-                CALL OBSFIT_READ_OBS(num_file,-1,
+                CALL OBSFIT_READ_OBS( num_file,-1,
      &               obs_ind_glob(num_file,obs_num),
-     &               obs_uncert,myThid)
+     &               obs_uncert,myThid )
 
                 IF ( obs_data.GT.-9999. _d 0 .AND.
      &            obs_modmask.GT.zeroRL ) THEN
@@ -267,13 +267,13 @@ C and write misfits to global file
 
 C Global file for misfits
           IL = ILNBLNK( obsfitfiles(num_file) )
-          WRITE(obsfitfile,'(1a)') obsfitfiles(num_file)(1:IL)
+          WRITE( obsfitfile,'(1A)' ) obsfitfiles(num_file)(1:IL)
           IL = ILNBLNK( obsfitfile )
           JL = ILNBLNK( obsfitDir )
-          WRITE(fnamemisfit,'(3a)')
+          WRITE( fnamemisfit,'(3A)' )
      &     obsfitDir(1:JL),obsfitfile(1:IL),'.misfit.nc'
-          err = NF_OPEN(fnamemisfit,NF_WRITE,fidmisfit(num_file))
-          err = NF_INQ_VARID(fidmisfit(num_file),'misfit',varid)
+          err = NF_OPEN( fnamemisfit,NF_WRITE,fidmisfit(num_file) )
+          err = NF_INQ_VARID( fidmisfit(num_file),'misfit',varID )
           CALL OBSFIT_NF_ERROR_GLOBAL(
      &         'OBSFIT_COST: NF_INQ_VARID misfit',err,myThid )
 C Loop over obs
@@ -285,22 +285,22 @@ C Loop over obs
               obs_uncert = zeroRL
 
 C Read observation and uncertainty
-              CALL OBSFIT_READ_OBS(num_file,1,
+              CALL OBSFIT_READ_OBS( num_file,1,
      &             obs_ind_glob(num_file,obs_num),
-     &             obs_data,myThid)
+     &             obs_data,myThid )
 
-              CALL OBSFIT_READ_OBS(num_file,-1,
+              CALL OBSFIT_READ_OBS( num_file,-1,
      &             obs_ind_glob(num_file,obs_num),
-     &             obs_uncert,myThid)
+     &             obs_uncert,myThid )
 
               IF ( obs_data .EQ. -9999. _d 0 ) THEN
                 obs_uncert = zeroRL
               ENDIF
 
 C Read model equivalent from global file
-              CALL ACTIVE_READ_OBS_GLOB(num_file,
+              CALL ACTIVE_READ_OBS_GLOB( num_file,
      &             obs_modval,obs_num,.FALSE.,optimcycle,myThid,
-     &             obsfit_globaldummy(num_file))
+     &             obsfit_globaldummy(num_file) )
 
               IF ( obs_uncert.GT.zeroRL ) THEN
                 obs_weight = 1. _d 0 / (obs_uncert*obs_uncert)
@@ -310,8 +310,8 @@ C Read model equivalent from global file
                 num_obsfit(num_file)  = num_obsfit(num_file)
      &           + obs_modmask
 C Write misfit to global netcdf file
-                err = NF_PUT_VARA_DOUBLE(fidmisfit(num_file),varid,
-     &                obs_ind_glob(num_file,obs_num),1,misfit)
+                err = NF_PUT_VARA_DOUBLE( fidmisfit(num_file),varID,
+     &                obs_ind_glob(num_file,obs_num),1,misfit )
                 CALL OBSFIT_NF_ERROR_GLOBAL(
      &               'OBSFIT_COST: NF_PUT_VARA_DOUBLE misfit',
      &               err,myThid )
@@ -344,12 +344,12 @@ C Print cost function values
 
       ENDDO
 
-      WRITE(msgBuf,'(A)') '== obsfit_cost: end   =='
+      WRITE( msgBuf,'(A)') '== obsfit_cost: end   =='
       CALL PRINT_MESSAGE( msgBuf,
-     &  standardMessageUnit,SQUEEZE_RIGHT, myThid)
-      WRITE(msgBuf,'(A)') ' '
+     &     standardMessageUnit,SQUEEZE_RIGHT, myThid )
+      WRITE( msgBuf,'(A)' ) ' '
       CALL PRINT_MESSAGE( msgBuf,
-     &  standardMessageUnit,SQUEEZE_RIGHT, myThid)
+     &     standardMessageUnit,SQUEEZE_RIGHT, myThid )
 
 #endif /* ALLOW_OBSFIT */
 

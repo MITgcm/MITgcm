@@ -40,7 +40,7 @@ C !LOCAL VARIABLES:
 
       _BEGIN_MASTER( myThid )
 
-      IF (obsfitDir .NE. ' ') THEN
+      IF ( obsfitDir .NE. ' ' ) THEN
         iL = ILNBLNK( obsfitDir )
 C Append "/", if necessary
         IF ( iL.LT.MAX_LEN_FNAM .AND. obsfitDir(iL:iL).NE.'/' ) THEN
@@ -50,13 +50,13 @@ C Append "/", if necessary
 #ifdef HAVE_SYSTEM
 C Create directory
         iL = ILNBLNK( obsfitDir ) -1
-        WRITE(namBuf,'(2A)') ' mkdir -p ', obsfitDir(1:iL)
+        WRITE( namBuf,'(2A)' ) ' mkdir -p ', obsfitDir(1:iL)
         pIL = 1 + ILNBLNK( namBuf )
-        WRITE(standardMessageUnit,'(3A)')
+        WRITE( standardMessageUnit,'(3A)' )
      &  '==> SYSTEM CALL (from OBSFIT_INI_IO): >',namBuf(1:pIL),'<'
         CALL SYSTEM( namBuf(1:pIL) )
 #else
-        WRITE(msgBuf,'(2A)') '** WARNING ** OBSFIT_INI_IO: cannot ',
+        WRITE( msgBuf,'(2A)' ) '** WARNING ** OBSFIT_INI_IO: cannot ',
      &   'call mkdir -> please create obsfitDir manually'
         CALL PRINT_MESSAGE( msgBuf, 
      &       errorMessageUnit, SQUEEZE_RIGHT, myThid )

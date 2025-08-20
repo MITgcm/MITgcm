@@ -39,7 +39,7 @@ C     == Global variables ===
 
 C     !INPUT PARAMETERS: 
 C     myTime :: time counter for this thread
-C     myThid :: my Thread ID number
+C     myThid :: my thread ID number
       _RL     myTime
       INTEGER myThid
 CEOP
@@ -69,8 +69,8 @@ C     !LOCAL VARIABLES:
           DO k = 1, Nr
             DO j = 1, sNy
               DO i =  1, sNx
-                m_UE(i,j,k,bi,bj)=0. _d 0
-                m_VN(i,j,k,bi,bj)=0. _d 0
+                m_UE(i,j,k,bi,bj) = 0. _d 0
+                m_VN(i,j,k,bi,bj) = 0. _d 0
               ENDDO
             ENDDO
           ENDDO
@@ -88,7 +88,7 @@ C     !LOCAL VARIABLES:
         DO bi = 1, nSx
           DO num_file = 1, NFILESMAX_OBS
             DO sample_num = 1, NSAMPLESMAX
-              IF (sample_num.LE.sampleNo(num_file,bi,bj)) THEN
+              IF ( sample_num.LE.sampleNo(num_file,bi,bj) ) THEN
                 IF ( (sample_timeE(num_file,sample_num,bi,bj).GE.
      &           myTime).AND.
      &           (sample_timeS(num_file,sample_num,bi,bj).LT. 
@@ -112,13 +112,13 @@ C recorded value and add to it
                   IF ( obsfitOperation(num_file).GT.0 ) THEN
                     CALL ACTIVE_READ_OBS_TILE( num_file, saved_modval,
      &                   sample_num,.false.,optimcycle,bi,bj,myThid,
-     &                   obsfit_dummy(num_file,bi,bj))
+     &                   obsfit_dummy(num_file,bi,bj) )
                   ENDIF
 
-                  CALL OBSFIT_SAMPLING(sample_modval,
+                  CALL OBSFIT_SAMPLING( sample_modval,
      &                 sample_i,sample_j,sample_k,sample_frac,
      &                 sample_type(num_file,sample_num,bi,bj),
-     &                 num_file,myTime,bi,bj,myThid)
+     &                 num_file,myTime,bi,bj,myThid )
 
                   sample_modval = sample_modval*
      &             obsfit_facmod(num_file)
@@ -131,9 +131,9 @@ C recorded value and add to it
                   sample_modmask(bi,bj) = sample_modmask(bi,bj)*
      &             sample_weight(num_file,sample_num,bi,bj)
 
-                  CALL ACTIVE_WRITE_OBS_TILE(num_file,sample_modval,
+                  CALL ACTIVE_WRITE_OBS_TILE( num_file,sample_modval,
      &                 sample_num,optimcycle,bi,bj,myThid,
-     &                 obsfit_dummy(num_file,bi,bj))
+     &                 obsfit_dummy(num_file,bi,bj) )
 
                 ENDIF !IF ((sample_time
               ENDIF !IF (sampleNo(num_file,bi,bj).NE.0) 
