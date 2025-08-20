@@ -1,3 +1,4 @@
+#define EXACT_CONSERV
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 #ifdef ALLOW_MOM_COMMON
@@ -290,15 +291,15 @@ C     QGLeith code has not been compiled.
 #endif
 
 #ifndef EXACT_CONSERV
-      IF (exactConserv) THEN
-        WRITE(msgBuf,'(A)')
-     &   'CONFIG_CHECK: #undef EXACT_CONSERV and'
+c     IF ( exactConserv ) THEN
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
+     &   '#undef EXACT_CONSERV not allowed in CPP_OPTIONS.h'
         CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(A)')
-     &   'CONFIG_CHECK: exactConserv is TRUE'
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
+     &   ' since CPP option EXACT_CONSERV has been retired'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
-      ENDIF
+c     ENDIF
 #endif
 
 #ifndef NONLIN_FRSURF
@@ -439,7 +440,7 @@ C     o Need to use S/R APPLY_FORCING_U,V to get Tidal forcing
 #ifndef ALLOW_FRICTION_HEATING
       IF ( addFrictionHeating ) THEN
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: addFrictionHeating=T',
-     &  ' but FRICTIONAL_HEATING code is not compiled.'
+     &   ' but FRICTIONAL_HEATING code is not compiled.'
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: Re-compile with:',
      &   ' "#define ALLOW_FRICTION_HEATING" (CPP_OPTIONS.h)'
@@ -451,7 +452,7 @@ C     o Need to use S/R APPLY_FORCING_U,V to get Tidal forcing
 #ifndef SHORTWAVE_HEATING
       IF ( selectPenetratingSW.GT.0 ) THEN
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: selectPenetratingSW>0',
-     &  ' but SHORTWAVE_HEATING code is not compiled.'
+     &   ' but SHORTWAVE_HEATING code is not compiled.'
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: Re-compile with:',
      &   ' "#define SHORTWAVE_HEATING" (CPP_OPTIONS.h)'
@@ -706,7 +707,7 @@ C--   Free-surface related limitations:
 
       IF ( implicDiv2DFlow.NE.oneRL .AND. .NOT.exactConserv ) THEN
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: implicDiv2DFlow < 1 ',
-     &   'requires exactConserv= T (+ #define EXACT_CONSERV)'
+     &   'requires exactConserv= T'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
@@ -803,7 +804,6 @@ c     ENDIF
         errCount = errCount + 1
       ENDIF
 
-#ifdef EXACT_CONSERV
       IF ( useRealFreshWaterFlux .AND. .NOT.exactConserv
      &            .AND. buoyancyRelation.EQ.'OCEANICP' ) THEN
         WRITE(msgBuf,'(A)')
@@ -814,19 +814,6 @@ c     ENDIF
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
-#else
-      IF ( useRealFreshWaterFlux
-     &            .AND. buoyancyRelation.EQ.'OCEANICP' ) THEN
-        WRITE(msgBuf,'(2A)') '** WARNING ** CONFIG_CHECK: ',
-     &               'E-P effects on wVel are not included'
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-        WRITE(msgBuf,'(2A)') '** WARNING ** CONFIG_CHECK: ',
-     &               '==> use #define EXACT_CONSERV to fix it'
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-      ENDIF
-#endif /* EXACT_CONSERV */
 
       IF ( selectAddFluid.LT.-1 .OR. selectAddFluid.GT.2 ) THEN
         WRITE(msgBuf,'(A,I10,A)') 'CONFIG_CHECK: selectAddFluid=',

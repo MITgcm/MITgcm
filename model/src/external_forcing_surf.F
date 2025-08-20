@@ -132,12 +132,10 @@ c     ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-#ifdef EXACT_CONSERV
-# ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE PmEpR = comlev1, key = ikey_dynamics,  kind = isbyte
 CADJ STORE EmPmR = comlev1, key = ikey_dynamics,  kind = isbyte
-# endif
-#endif /* EXACT_CONSERV */
+#endif
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 C--   set surfaceForcingT,S to zero.
@@ -157,7 +155,6 @@ C--   in case some pkgs put non-zero values over land, clean this up:
          ENDDO
         ENDIF
 c#endif /* ALLOW_EBM */
-#ifdef EXACT_CONSERV
 C NB: synchronous time step: PmEpR lags 1 time step behind EmPmR
 C     to stay consistent with volume change (=d/dt etaH).
         IF ( staggerTimeStep ) THEN
@@ -167,7 +164,6 @@ C     to stay consistent with volume change (=d/dt etaH).
           ENDDO
          ENDDO
         ENDIF
-#endif /* EXACT_CONSERV */
        ENDDO
       ENDDO
 
@@ -215,9 +211,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE EmPmR(:,:,bi,bj) = comlev1_bibj, key=tkey,  kind = isbyte
-#ifdef EXACT_CONSERV
 CADJ STORE PmEpR(:,:,bi,bj) = comlev1_bibj, key=tkey,  kind = isbyte
-#endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Surface Fluxes :
@@ -264,8 +258,7 @@ C--   Fresh-water flux
 C-    Apply mask on Fresh-Water flux (if useRealFreshWaterFlux)
 C     <== removed: maskInC is applied directly in S/R SOLVE_FOR_PRESSURE
 
-#ifdef EXACT_CONSERV
-      IF ( (nonlinFreeSurf.GT.0 .OR. usingPCoords)
+      IF ( ( nonlinFreeSurf.GT.0 .OR. usingPCoords )
      &     .AND. useRealFreshWaterFlux ) THEN
 
 C--   NonLin_FrSurf and RealFreshWaterFlux : PmEpR effectively changes
@@ -296,9 +289,6 @@ C     with this input/output of water is added here to the surface tendency.
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ELSE
-#else /* EXACT_CONSERV */
-      IF (.TRUE.) THEN
-#endif /* EXACT_CONSERV */
 
 C--   EmPmR does not really affect the water column height (for tracer budget)
 C     and is converted to a salt tendency.

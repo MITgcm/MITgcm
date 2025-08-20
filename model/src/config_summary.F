@@ -372,11 +372,17 @@ C-----
      & '  /* minimum partial cell factor (hFac) */')
       CALL WRITE_0D_RL( hFacMinDr, INDEX_NONE, 'hFacMinDr =',
      &  ' /* minimum partial cell thickness ('//rUnits//') */')
+#ifdef EXACT_CONSERV
+      WRITE(msgBuf,'(2A)') '** Warning ** CONFIG_SUMMARY: ',
+     &  'should remove retired EXACT_CONSERV from CPP_OPTIONS.h'
+      CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+#endif
       CALL WRITE_0D_L( exactConserv, INDEX_NONE,
-     & 'exactConserv =',
-     & '  /* Exact Volume Conservation on/off flag */')
+     &  'exactConserv =',
+     &  ' /* Update etaN from continuity Eq on/off flag */')
       CALL WRITE_0D_L( linFSConserveTr, INDEX_NONE,
-     & 'linFSConserveTr =',
+     &  'linFSConserveTr =',
      &  ' /* Tracer correction for Lin Free Surface on/off flag */')
       WRITE(msgBuf,'(2A)') 'nonlinFreeSurf =',
      &  ' /* Non-linear Free Surf. options (-1,0,1,2,3)*/'
