@@ -62,11 +62,11 @@ C Initialize global cost function variables
       _END_MASTER(myThid)
 
 #ifdef ALLOW_GRDCHK
-      IF (obsfitDoNcOutput) THEN
+      IF ( obsfitDoNcOutput ) THEN
         DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
             DO num_file = 1, NFILESMAX_OBS
-              IF ( ObsNo(num_file).GT.0 ) THEN
+              IF ( sampleNo(num_file,bi,bj).GT.0 ) THEN
 C Write data from buffer to .nc file
                 err = NF_SYNC( fidfwd_obs(num_file,bi,bj) )
                 CALL OBSFIT_NF_ERROR(

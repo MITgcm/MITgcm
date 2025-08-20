@@ -44,6 +44,7 @@ C     !FUNCTIONS:
 C     !LOCAL VARIABLES:
 C     i,j,bi,bj    :: loop indices
 C     iG,jG        :: global indices
+      INTEGER i,j,k,l,bi,bj,iG,jG
       INTEGER obs_num, num_file, sampleNo_tile
       INTEGER ic, ip, iq, kLev, iINTERP
       INTEGER chunkObs, chunk
