@@ -805,10 +805,9 @@ Sample locations are used during the model run to extract model data (and save i
 values are combined at the end of the run to calculate the model-equivalent value. Observational values
 are only used at the end of the model run to calculate the cost, i.e., weighted misfits with model-equivalents. 
 
-As noted, each observation can be comprised of a number of samples (NP). Each of those NP samples is assigned a relative
+In many applications, "observations" are not spatially averaged or integrated; in that case, NP = 1 and "samples" and "observations" are effectively the same. A feature of the obsefit package, however, is that it allows each observation to be comprised of a number of samples (NP). Each of those NP samples is assigned a relative
 weight in the average/integral; by default all samples are weighed equally. (Note that the our definition of weights is
-different from the uncertainty-related weights in :filelink:`pkg/profiles`.)  In many applications however, NP=1
-and "samples" and "observations" are effectively the same.
+different from the uncertainty-related weights in :filelink:`pkg/profiles`.)  
 
 .. _obsfit_type: 
 
@@ -825,7 +824,7 @@ zonal and meridional velocities) or the water spiciness (a combination of temper
 
 For sea surface height (SSH) observations, OBSFIT samples the model variable :varlink:`etaN`. Inputs should thus
 be the total dynamic height (SSH relative to the geoid), not SSH anomalies. Because of arbitrary reference 
-values for the dynamic topography, the mean offset between modeled and observed SSH is removed when the cost is calculated. 
+values for the dynamic topography, the mean offset between modeled and observed SSH is removed when the cost is calculated, for each dataset (i.e., each obsfit input file). 
 
 .. _obsfit_time: 
 
@@ -852,7 +851,16 @@ Interpolation
 Sampling is done by interpolating model values from grid points surrounding the
 sample location (up to 8 surrounding grid points are used). For a cartesian or spherical polar grid,
 interpolation factors (not to be confused with weights!) are calculated from the input longitude, latitude, and depth.
-For a curvilinear grid (LLC, etc), interpolation factors are specified in the input file.
+For a curvilinear grid (LLC, etc), interpolation factors are computed offline and included in the input file. OBSPREP is a python-based pre-processing routine to determine these fields using xarray to assemble the input netCDF file. Given the model grid and the observation latitude, longitude, and depth, OBSPREP computes the following fields and adds them to the input file to be read in by OBSFIT:
+
+sample_interp_XC11
+sample_interp_YC11
+sample_interp_XCNINJ
+sample_interp_YCNINJ
+sample_interp_i
+sample_interp_j
+sample_interp_k
+sample_interp_frac
 
 Cost Functions
 ^^^^^^^^^^^^^^
@@ -1000,20 +1008,51 @@ File ``data.obsfit`` must be present in the run folder. Here is an example:
     # *********************
     &OBSFIT_NML
     obsfitDir      = 'OBSFIT',
-    obsfitFiles(1) = 'swot_L3_may2023',
+    obsfitFiles(1) = 'swot_L3',
     mult_obsfit(1) = 1.0,
-    obsfitFiles(2) = 'moorings_calval_may2023',
+    obsfitFiles(2) = 'moorings',
     mult_obsfit(2) = 0.0,
     &
 
 
-In this example there are two input files: swot_L3_may2023.nc and moorings_calval_may2023.nc
-(note that the suffix .nc should not be included). They have multiplier factors that will
+In this example there are two input files: swot_L3.nc and moorings.nc
+(note that the suffix .nc should not be included in data.obsfit). They have multiplier factors that will
 multiply their respective cost in the total cost calculation. For example, the first dataset
 will be counted with a factor=1, and the second dataset will not influence the total cost 
 ince its multiplier is 0. Output files will be written in a folder called "OBSFIT" that
 will be created if it doesn't already exist. 
 
+
+``Example: swot_L3.nc``
+
+::
+
+    netcdf swot_L3.nc {
+    dimensions:
+    iOBS = 1575 ;
+    iSAMPLE = 1575;
+    variables:
+    double obs_val(iOBS) ;
+    double obs_uncert(iOBS) ;
+    double obs_YYYYMMDD(iOBS) ;
+    obs_YYYYMMDD:missing_value = -9999. ;
+    obs_YYYYMMDD:long_name = "year (4 digits), month (2 digits), day (2 digits)" ;
+    double obs_HHMMSS(iOBS) ;
+    obs_HHMMSS:missing_value = -9999. ;
+    obs_HHMMSS:long_name = "hour (2 digits), minute (2 digits), second (2 digits)" ;
+    double sample_lon(iSAMPLE) ;
+    sample_lon:units = "(degree E)" ;
+    sample_lon:missing_value = -9999. ;
+    double sample_lat(iSAMPLE) ;
+    sample_lat:units = "(degree N)" ;
+    sample_lat:missing_value = -9999. ;
+    double sample_depth(iSAMPLE) ;
+    sample_depth:units = "(meters)" ;
+    sample_depth:missing_value = -9999. ;
+    double sample_type(iSAMPLE) ;
+    sample_type:missing_value = -9999. ;
+    sample_type:long_name = "1=T, 2=S, 3=u, 4=v, 5=SSH" ;
+    }
 
 Post-processing
 ^^^^^^^^^^^^^^^
