@@ -19,8 +19,8 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 
 C     !INPUT PARAMETERS:
-C     ioUnit    :: unit number
-C     myThid    :: my Thread Id number
+C     ioUnit :: unit number
+C     myThid :: my thread ID number
       INTEGER ioUnit
       INTEGER myThid
 
@@ -33,37 +33,37 @@ CEOP
 
 C Sweep through a valid range of unit numbers
       ioUnit=-1
-      DO ii=2000,9999
-       IF ( ioUnit.EQ.-1 ) THEN
+      DO ii = 2000, 9999
+        IF ( ioUnit.EQ.-1 ) THEN
 C Skip reserved unit numbers
-        IF (       ii.NE.errorMessageUnit
-     &       .AND. ii.NE.standardMessageUnit
-     &       .AND. ii.NE.scrUnit1   .AND. ii.NE.scrUnit2
-     &       .AND. ii.NE.eeDataUnit .AND. ii.NE.modelDataUnit
-     &     ) THEN
-          INQUIRE(unit=ii,iostat=ios,opened=op)
-          IF ( ios.NE.0 ) THEN
-            WRITE(msgBuf,'(A,I4)')
-     &        ' OBSFIT_FINDUNIT: inquiring unit number =', ii
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                          SQUEEZE_RIGHT, myThid )
-            WRITE(msgBuf,'(A)')
-     &        ' OBSFIT_FINDUNIT: inquire statement failed!'
-            CALL PRINT_ERROR( msgBuf, myThid )
-            CALL ALL_PROC_DIE( myThid )
-            STOP 'ABNORMAL END: S/R OBSFIT_FINDUNIT'
-          ENDIF
-          IF ( .NOT.op ) THEN
-            ioUnit=ii
+          IF ( ii.NE.errorMessageUnit .AND. 
+     &         ii.NE.standardMessageUnit .AND. 
+     &         ii.NE.scrUnit1 .AND. ii.NE.scrUnit2 .AND. 
+     &         ii.NE.eeDataUnit .AND. ii.NE.modelDataUnit ) THEN
+            INQUIRE(unit=ii,iostat=ios,opened=op)
+            IF ( ios.NE.0 ) THEN
+              WRITE(msgBuf,'(A,I4)')
+     &         ' OBSFIT_FINDUNIT: inquiring unit number =', ii
+              CALL PRINT_MESSAGE( msgBuf, 
+     &             standardMessageUnit, SQUEEZE_RIGHT, myThid )
+              WRITE(msgBuf,'(A)')
+     &         ' OBSFIT_FINDUNIT: inquire statement failed!'
+              CALL PRINT_ERROR( msgBuf, myThid )
+              CALL ALL_PROC_DIE( myThid )
+             STOP 'ABNORMAL END: S/R OBSFIT_FINDUNIT'
+            ENDIF
+          
+            IF ( .NOT.op ) THEN
+              ioUnit=ii
+            ENDIF
           ENDIF
         ENDIF
-       ENDIF
-      ENDDO
+        ENDDO !DO ii
 
 C Was there an available unit number
       IF ( ioUnit.EQ.-1 ) THEN
         WRITE(msgBuf,'(A)')
-     &    ' OBSFIT_FINDUNIT: could not find an available unit number!'
+     &   ' OBSFIT_FINDUNIT: no available unit number!'
         CALL PRINT_ERROR( msgBuf, myThid )
         CALL ALL_PROC_DIE( myThid )
         STOP 'ABNORMAL END: S/R OBSFIT_FINDUNIT'

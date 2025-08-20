@@ -51,12 +51,19 @@ C ObsFit integer parameters
       INTEGER fidmisfit(NFILESMAX_OBS)
       INTEGER obs_sample1_ind(NFILESMAX_OBS,NOBSMAX_OBS)
       INTEGER obs_is_ssh(NFILESMAX_OBS)
+#ifndef ALLOW_ECCO
+      _RL m_UE(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nsx,nsy)
+      _RL m_VN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nsx,nsy)
+#endif
 
       COMMON /OBSFIT_I/ obs_ind_glob, obs_np, obsfitOperation,
      & sample_ind_glob, ObsNo, sampleNo,
      & fidfwd_obs, fidadj_obs, fidtan_obs, fiddata_obs, 
      & fidglobal, fidadglobal, fidtanglobal, fidmisfit,
      & obs_sample1_ind, obs_is_ssh
+#ifndef ALLOW_ECCO
+     & , m_UE, m_VN
+#endif
 
 C ObsFit character strings
       CHARACTER*(8)  obsfit_nameval

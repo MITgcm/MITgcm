@@ -40,7 +40,7 @@ C     active_num_file: file number
 C     adactive_var:    array
 C     irec:            record number
 C     myIter:          number of optimization iteration (default: 0)
-C     myThid:          thread number for this instance
+C     myThid:          my thread ID number
 C     lAdInit:         initialisation of corresponding adjoint
 C                      variable and write to active file
       INTEGER active_num_file
@@ -99,7 +99,7 @@ C     active_num_file: file number
 C     adactive_var:    array
 C     irec:            record number
 C     myIter:          number of optimization iteration (default: 0)
-C     myThid:          thread number for this instance
+C     myThid:          my thread ID number
 C     lAdInit:         initialisation of corresponding adjoint
 C                      variable and write to active file
       INTEGER active_num_file
@@ -156,7 +156,7 @@ C     active_num_file: file number
 C     adactive_var:    array
 C     irec:            record number
 C     myIter:          number of optimization iteration (default: 0)
-C     myThid:          thread number for this instance
+C     myThid:          my thread ID number
 C     lAdInit:         initialisation of corresponding adjoint
 C                      variable and write to active file
       INTEGER active_num_file
@@ -213,7 +213,7 @@ C     active_num_file: file number
 C     adactive_var:    array
 C     irec:            record number
 C     myIter:          number of optimization iteration (default: 0)
-C     myThid:          thread number for this instance
+C     myThid:          my thread ID number
 C     lAdInit:         initialisation of corresponding adjoint
 C                      variable and write to active file
       INTEGER active_num_file

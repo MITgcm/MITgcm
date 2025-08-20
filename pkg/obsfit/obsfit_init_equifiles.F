@@ -35,66 +35,100 @@ C     == Global variables ===
 CEOP
 
 C     !INPUT PARAMETERS:
-      INTEGER num_file, fid1, fid2
-      INTEGER bi, bj, myThid, length
-      CHARACTER*(MAX_LEN_FNAM) file2
+C     myThid: my thread ID number
+      INTEGER num_file, length, fid1, fid2
+      CHARACTER*(*) file2
+      INTEGER bi, bj, myThid
 
 #ifdef ALLOW_OBSFIT
 C     !LOCAL VARIABLES:
-      INTEGER dimid,varid(3),varid0,err
-      INTEGER irec
+      INTEGER dimid, varid(3), varid0
+      INTEGER irec, err
       _RL tmp_vec(2)
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       IF (obsfitDoNcOutput) THEN
       
 C Create a netcdf file
-       err = NF_CREATE(file2,NF_CLOBBER,fid2)
-       err = NF_DEF_DIM(fid2,'iSAMPLE',length,dimid)
-       err = NF_DEF_VAR(fid2,'sample_ind_glob',NF_INT,1,dimid,
-     &  varid(1))
-       err = NF_PUT_ATT_INT(fid2,varid(1),'_FillValue',NF_INT,1,-9999)
+        err = NF_CREATE( file2, NF_CLOBBER, fid2 )
+        CALL OBSFIT_NF_ERROR( 'INIT_EQUIFILE: NF_CREATE fid2',
+     &       err,bi,bj,myThid )
+        err = NF_DEF_DIM( fid2, 'iSAMPLE', length, dimid )
+        CALL OBSFIT_NF_ERROR( 'INIT_EQUIFILE: NF_DEF_DIM sample',
+     &       err,bi,bj,myThid )
+        err = NF_DEF_VAR( fid2, 'sample_ind_glob', 
+     &        NF_INT, 1, dimid, varid(1))
+        CALL OBSFIT_NF_ERROR( 'INIT_EQUIFILE: NF_DEF_VAR sample',
+     &       err,bi,bj,myThid )
+        err = NF_PUT_ATT_INT( fid2, varid(1), '_FillValue',
+     &        NF_INT, 1, -9999 )
+        CALL OBSFIT_NF_ERROR( 'INIT_EQUIFILE: NF_PUT_ATT_INT sample',
+     &       err,bi,bj,myThid )
 
-       err = NF_INQ_VARID(fid1,obsfit_nameval,varid0)
-       IF (err.EQ.NF_NOERR) THEN
+        err = NF_INQ_VARID( fid1, obsfit_nameval, varid0 )
+        IF (err.EQ.NF_NOERR) THEN
 
-         err = NF_DEF_VAR(fid2,obsfit_nameequi,
-     &    NF_DOUBLE,1,dimid,varid(2))
-         err = NF_PUT_ATT_DOUBLE(fid2,varid(2),
-     &    '_FillValue',NF_DOUBLE,1,-9999. _d 0)
-         err = NF_DEF_VAR(fid2,obsfit_namemask,
-     &    NF_DOUBLE,1,dimid,varid(3))
-         err = NF_PUT_ATT_DOUBLE(fid2,varid(3),
-     &    '_FillValue',NF_DOUBLE,1,-9999. _d 0)
+          err = NF_DEF_VAR(fid2,obsfit_nameequi,
+     &          NF_DOUBLE,1,dimid,varid(2))
+          CALL OBSFIT_NF_ERROR( 'INIT_EQUIFILE: NF_DEF_VAR val',
+     &         err,bi,bj,myThid )
+          err = NF_PUT_ATT_DOUBLE(fid2,varid(2),
+     &          '_FillValue',NF_DOUBLE,1,-9999. _d 0)
+          CALL OBSFIT_NF_ERROR( 'INIT_EQUIFILE: NF_PUT_ATT_INT val',
+     &         err,bi,bj,myThid )
 
-       ENDIF
+          err = NF_DEF_VAR(fid2,obsfit_namemask,
+     &          NF_DOUBLE,1,dimid,varid(3))
+          CALL OBSFIT_NF_ERROR( 'INIT_EQUIFILE: NF_DEF_VAR mask',
+     &         err,bi,bj,myThid )
+          err = NF_PUT_ATT_DOUBLE(fid2,varid(3),
+     &          '_FillValue',NF_DOUBLE,1,-9999. _d 0)
+          CALL OBSFIT_NF_ERROR( 'INIT_EQUIFILE: NF_PUT_ATT_INT mask',
+     &         err,bi,bj,myThid )
 
-       err=NF_ENDDEF(fid2)
-       err=NF_CLOSE(fid2)
+        ELSE
+            WRITE(msgBuf,'(2A)')
+     &          'S/R OBSFIT_INIT_EQUIFILES: no variable obs_val'
+            CALL PRINT_MESSAGE( msgBuf,
+     &           standardMessageUnit, SQUEEZE_RIGHT, myThid )
+            WRITE(msgBuf,'(2A)')
+     &           'INIT_EQUIFILES: NF_INQ_VARID obs_val'
+            CALL OBSFIT_NF_ERROR( msgBuf, err, bi, bj, myThid )
 
-       err = NF_OPEN(file2,NF_WRITE,fid2)
+        ENDIF
 
-      ELSE
+        err = NF_ENDDEF( fid2 )
+        CALL OBSFIT_NF_ERROR( 'INIT_EQUIFILES: NF_ENDDEF fid2',
+     &       err,bi,bj,myThid )
+        err = NF_CLOSE( fid2 )
+        CALL OBSFIT_NF_ERROR( 'INIT_EQUIFILES: NF_CLOSE fid2',
+     &       err,bi,bj,myThid )
+
+        err = NF_OPEN(file2,NF_WRITE,fid2)
+        CALL OBSFIT_NF_ERROR( 'INIT_EQUIFILES: NF_OPEN'//file2//')',
+     &       err,bi,bj,myThid )
+
+      ELSE !IF (obsfitDoNcOutput)
 
 C Create a binary file
-       OPEN( fid2, file=file2, form ='unformatted', status='unknown',
-     &      access='direct', recl=2*WORDLENGTH*2 )
+        OPEN( fid2, FILE=file2, FORM='unformatted', STATUS='unknown',
+     &   ACCESS='direct', RECL=2*WORDLENGTH*2 )
 
-       DO irec=1,2
-        tmp_vec(irec)=0
-       ENDDO
+        DO irec = 1, 2
+          tmp_vec(irec) = zeroRL
+        ENDDO
 #ifdef _BYTESWAPIO
-       CALL MDS_BYTESWAPR8(2,tmp_vec)
+        CALL MDS_BYTESWAPR8(2,tmp_vec)
 #endif
 
-       DO irec=length,1,-1
-         WRITE(fid2,rec=(irec*2-1)) tmp_vec
-         WRITE(fid2,rec=(irec*2)) tmp_vec
-       ENDDO
+        DO irec = length, 1, -1
+          WRITE( fid2, rec=(irec*2-1) ) tmp_vec
+          WRITE( fid2, rec=(irec*2) ) tmp_vec
+        ENDDO
 
-      ENDIF
+      ENDIF !IF (obsfitDoNcOutput)
 
 #endif
 
       END
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

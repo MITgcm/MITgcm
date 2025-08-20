@@ -22,7 +22,7 @@ C     == Global variables ===
 #include "OBSFIT.h"
 
 C     !INPUT PARAMETERS: 
-C     myThid    :: my Thread Id number
+C     myThid :: my thread ID number
       INTEGER myThid
 
 C     !FUNCTIONS
@@ -40,26 +40,26 @@ C !LOCAL VARIABLES:
 
       _BEGIN_MASTER( myThid )
 
-      IF ( obsfitDir .NE. ' ' ) THEN
-       iL = ILNBLNK( obsfitDir )
+      IF (obsfitDir .NE. ' ') THEN
+        iL = ILNBLNK( obsfitDir )
 C Append "/", if necessary
-       IF ( iL.LT.MAX_LEN_FNAM .AND. obsfitDir(iL:iL).NE.'/' ) THEN
-        namBuf(1:iL) = obsfitDir(1:iL)
-        WRITE(obsfitDir(1:iL+1),'(2A)') namBuf(1:iL),'/'
-       ENDIF
+        IF ( iL.LT.MAX_LEN_FNAM .AND. obsfitDir(iL:iL).NE.'/' ) THEN
+          namBuf(1:iL) = obsfitDir(1:iL)
+          WRITE(obsfitDir(1:iL+1),'(2A)') namBuf(1:iL),'/'
+        ENDIF
 #ifdef HAVE_SYSTEM
 C Create directory
-       iL = ILNBLNK( obsfitDir ) -1
-       WRITE(namBuf,'(2A)') ' mkdir -p ', obsfitDir(1:iL)
-       pIL = 1 + ILNBLNK( namBuf )
-       WRITE(standardMessageUnit,'(3A)')
-     & '==> SYSTEM CALL (from OBSFIT_INI_IO): >',namBuf(1:pIL),'<'
-       CALL SYSTEM( namBuf(1:pIL) )
+        iL = ILNBLNK( obsfitDir ) -1
+        WRITE(namBuf,'(2A)') ' mkdir -p ', obsfitDir(1:iL)
+        pIL = 1 + ILNBLNK( namBuf )
+        WRITE(standardMessageUnit,'(3A)')
+     &  '==> SYSTEM CALL (from OBSFIT_INI_IO): >',namBuf(1:pIL),'<'
+        CALL SYSTEM( namBuf(1:pIL) )
 #else
-       WRITE(msgBuf,'(2A)') '** WARNING ** OBSFIT_INI_IO: cannot ',
-     &       'call mkdir -> please create obsfitDir manually'
-       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)') '** WARNING ** OBSFIT_INI_IO: cannot ',
+     &   'call mkdir -> please create obsfitDir manually'
+        CALL PRINT_MESSAGE( msgBuf, 
+     &       errorMessageUnit, SQUEEZE_RIGHT, myThid )
 #endif
       ENDIF
 
@@ -70,4 +70,3 @@ C Create directory
       RETURN
       END
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
