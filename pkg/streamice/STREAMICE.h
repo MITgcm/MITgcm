@@ -184,7 +184,7 @@ C     -------------------------- INT PARAMS ------------------------------------
 C---+----1--+-+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   COMMON /STREAMICE_PARMS_I/ int valued parameters.
-C     streamice_max_cg_iter             :: max CG iterations
+C     streamice_max_cg_iter             :: max conj gradient iterations
 C     streamice_max_nl_iter             :: max nonlin iterations in
 C                                          vel solve
 C     streamice_maxcgiter_cpl           :: max CG iters, coupled mode
