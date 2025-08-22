@@ -47,7 +47,7 @@ jobs:
        run: |
          . tools/ci/runtr.sh
 
-  tapenade:
+ tapenade:
    runs-on: ubuntu-latest
 
    strategy:
