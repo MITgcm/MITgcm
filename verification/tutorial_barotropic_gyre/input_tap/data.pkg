@@ -1,8 +1,4 @@
 # Packages
  &PACKAGES
-  useEXF         = .FALSE.,
-  useCAL         = .FALSE.,
-  useGMRedi      = .FALSE.,
   useGrdchk      = .TRUE.,
-# useDiagnostics = .FALSE.,
  &
