@@ -2,7 +2,7 @@
 
 #- in order to save disc space, take *.bin files
 #- from this dir:
-fromDir="../../tutorial_global_oce_latlon/input"
+fromDir="../input"
 
 fileList=`( cd $fromDir ; echo *.bin )`
 
