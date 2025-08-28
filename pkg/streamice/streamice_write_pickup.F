@@ -8,7 +8,7 @@ C !INTERFACE: ==========================================================
      &                    suff, myTime, myIter, myThid )
 
 C !DESCRIPTION:
-C     Writes current state of passive tracers to a pickup file
+C     Writes current state of pkg/streamice to a pickup file
 
 C !USES: ===============================================================
       IMPLICIT NONE
