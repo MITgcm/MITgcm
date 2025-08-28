@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/streamice:
+  - for OpenAD, adjust streamice_write_pickup.F to only write the forward
+    components of state arrays to the binary pickups for later use.
 o verification:
   - remove all pkg/timeave params from all exp. and no longer compile this
     pkg in any exp. ; also skip pkg/mnc compilation in 4 fwd test exp ;
