@@ -79,10 +79,8 @@ C--   fill momentum state-var diagnostics:
         CALL DIAGNOSTICS_SCALE_FILL( etaN, oneRL, 2,
      &                              'ETANSQ  ',0, 1,0,1,1,myThid)
 
-#ifdef EXACT_CONSERV
         CALL DIAGNOSTICS_SCALE_FILL( dEtaHdt, oneRL, 2,
      &                              'DETADT2 ',0, 1,0,1,1,myThid)
-#endif
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( use3Dsolver ) THEN
           CALL DIAGNOSTICS_FILL( phi_nh,'PHI_NH  ',0,Nr,0,1,1,myThid )

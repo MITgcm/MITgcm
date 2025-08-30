@@ -7,9 +7,7 @@ CADJ STORE uice  = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE vice  = comlev1, key=ikey_dynamics, kind=isbyte
 
 #ifdef AUTODIFF_SOMETIMES_NEEDED
-# ifdef EXACT_CONSERV
 CADJ STORE pmepr      = comlev1, key = ikey_dynamics
-# endif
 cphCADJ STORE uvel    = comlev1, key=ikey_dynamics, kind=isbyte
 cphCADJ STORE vvel    = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE salt    = comlev1, key=ikey_dynamics, kind=isbyte
