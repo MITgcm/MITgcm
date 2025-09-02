@@ -153,6 +153,7 @@
       WRITE(*,*) "Called not yet defined"
       END
 
+      
       SUBROUTINE STREAMICE_CG_SOLVE_D(cg_uin, cg_uinb, cg_vin, cg_vinb,
      &                                cg_bu, cg_bub, cg_bv, cg_bvb, a_uu
      &                                , a_uub, a_uv, a_uvb, a_vu, a_vub
@@ -294,6 +295,8 @@ C [llh]  where A is (Auu, Auv, Avu, Avv), x is (xu,xv), b is (bu,bv)
       INTEGER iters
       INTEGER myThid
 
+#ifdef ALLOW_STREAMICE
+
 C     !LOCAL VARIABLES
       INTEGER i, j, bi, bj, colx, coly
       INTEGER conv_flag, tmpiter
@@ -316,26 +319,27 @@ C     !LOCAL VARIABLES
 
       CALL PUSHREAL8ARRAY(cg_vin, (snx+2*olx)*(sny+2*oly)*nsx*nsy)
       CALL PUSHREAL8ARRAY(cg_uin, (snx+2*olx)*(sny+2*oly)*nsx*nsy)
-
+#endif
       END
 
 C [llh] Hand-written backward-sweep adjoint code of STREAMICE_CG_SOLVE
 C [llh] Adjoint of solving Ax=b,
 C [llh]  where A is (Auu, Auv, Avu, Avv), x is (xu,xv), b is (bu,bv)
-#ifndef ALLOW_PETSC
+#ifdef ALLOW_PETSC
       SUBROUTINE STREAMICE_CG_SOLVE_BWD(
      &                                cg_uin, cg_uinb, cg_vin, cg_vinb,
      &                                cg_bu, cg_bub, cg_bv, cg_bvb, a_uu
      &                                , a_uub, a_uv, a_uvb, a_vu, a_vub
-     &                                , a_vv, a_vvb, tolerance, iters,
-     &                                maxiter, mythid)
+     &                                , a_vv, a_vvb, tolerance
+     &                                , toleranceb, iters
+     &                                , maxiter, mythid)
 #else              
       SUBROUTINE STREAMICE_CG_SOLVE_BWD(
      &                                cg_uin, cg_uinb, cg_vin, cg_vinb,
      &                                cg_bu, cg_bub, cg_bv, cg_bvb, a_uu
      &                                , a_uub, a_uv, a_uvb, a_vu, a_vub
      &                                , a_vv, a_vvb, tolerance, 
-     &                                toleranceb, iters, maxiter, 
+     &                                iters, maxiter, 
      &                                mythid)
 #endif              
 
@@ -353,7 +357,9 @@ C [llh]  where A is (Auu, Auv, Avu, Avv), x is (xu,xv), b is (bu,bv)
       INTEGER iters
       INTEGER maxIter
       _RL tolerance
+#ifdef ALLOW_PETSC
       _RL toleranceb
+#endif      
       _RL cg_Uin (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL cg_Vin (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL cg_Bu (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -373,10 +379,11 @@ C [llh]  where A is (Auu, Auv, Avu, Avv), x is (xu,xv), b is (bu,bv)
      & A_uvb (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
      & A_vvb (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1)
 
+#ifdef ALLOW_STREAMICE
+
       CALL POPREAL8ARRAY(cg_Uin, (snx+2*olx)*(sny+2*oly)*nsx*nsy)
       CALL POPREAL8ARRAY(cg_Vin, (snx+2*olx)*(sny+2*oly)*nsx*nsy)
 
-#ifdef ALLOW_STREAMICE
 
       CALL ADSTREAMICE_CG_SOLVE(
      U                               cg_Uin,    ! velocities - need to be recalc ed
