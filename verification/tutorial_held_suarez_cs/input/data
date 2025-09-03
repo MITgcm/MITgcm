@@ -49,7 +49,6 @@
  chkptFreq=2592000.,
  dumpFreq=2592000.,
 #monitorFreq=43200.,
- taveFreq=0.,
 #- to run a short test (2.h):
  nTimeSteps=16,
  monitorFreq=1.,

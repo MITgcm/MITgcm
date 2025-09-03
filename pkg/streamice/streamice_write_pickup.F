@@ -8,7 +8,7 @@ C !INTERFACE: ==========================================================
      &                    suff, myTime, myIter, myThid )
 
 C !DESCRIPTION:
-C     Writes current state of passive tracers to a pickup file
+C     Writes current state of pkg/streamice to a pickup file
 
 C !USES: ===============================================================
       IMPLICIT NONE
@@ -71,8 +71,13 @@ C       Firstly, write 3-D fields as consecutive records,
 #ifdef STREAMICE_HYBRID_STRESS
 C     record number < 0 : a hack not to write meta files now:
         j = j + 1
+#ifdef ALLOW_OPENAD
+        CALL WRITE_REC_3D_RL( fn, fp, Nr, visc_streamice_full%v,
+     &                        -j, myIter, myThid )
+#else
         CALL WRITE_REC_3D_RL( fn, fp, Nr, visc_streamice_full,
      &                        -j, myIter, myThid )
+#endif
         IF (j.LE.listDim) wrFldList(j) = 'visc3d  '
 #endif /* STREAMICE_HYBRID_STRESS */
 
@@ -81,8 +86,13 @@ C-    switch to 2-D fields:
 
         j = j + 1
         nj = nj-1
+#ifdef ALLOW_OPENAD
+        CALL WRITE_REC_3D_RL( fn, fp, 1, area_shelf_streamice%v,
+     &                        nj, myIter, myThid )
+#else
         CALL WRITE_REC_3D_RL( fn, fp, 1, area_shelf_streamice,
      &                        nj, myIter, myThid )
+#endif
         IF (j.LE.listDim) wrFldList(j) = 'SI_area '
 
         j = j + 1
@@ -93,45 +103,80 @@ C-    switch to 2-D fields:
 
         j = j + 1
         nj = nj-1
+#ifdef ALLOW_OPENAD
+        CALL WRITE_REC_3D_RL( fn, fp, 1, U_streamice%v,
+     &                        nj, myIter, myThid )
+#else
         CALL WRITE_REC_3D_RL( fn, fp, 1, U_streamice,
      &                        nj, myIter, myThid )
+#endif
         IF (j.LE.listDim) wrFldList(j) = 'SI_uvel '
 
         j = j + 1
         nj = nj-1
+#ifdef ALLOW_OPENAD
+        CALL WRITE_REC_3D_RL( fn, fp, 1, V_streamice%v,
+     &                        nj, myIter, myThid )
+#else
         CALL WRITE_REC_3D_RL( fn, fp, 1, V_streamice,
      &                        nj, myIter, myThid )
+#endif
         IF (j.LE.listDim) wrFldList(j) = 'SI_vvel '
 
         j = j + 1
         nj = nj-1
+#ifdef ALLOW_OPENAD
+        CALL WRITE_REC_3D_RL( fn, fp, 1, H_streamice%v,
+     &                        nj, myIter, myThid )
+#else
         CALL WRITE_REC_3D_RL( fn, fp, 1, H_streamice,
      &                        nj, myIter, myThid )
+#endif
         IF (j.LE.listDim) wrFldList(j) = 'SI_thick'
 
         j = j + 1
         nj = nj-1
+#ifdef ALLOW_OPENAD
+        CALL WRITE_REC_3D_RL( fn, fp, 1, tau_beta_eff_streamice%v,
+     &                        nj, myIter, myThid )
+#else
         CALL WRITE_REC_3D_RL( fn, fp, 1, tau_beta_eff_streamice,
      &                        nj, myIter, myThid )
+#endif
         IF (j.LE.listDim) wrFldList(j) = 'SI_betaF'
 
         j = j + 1
         nj = nj-1
+#ifdef ALLOW_OPENAD
+        CALL WRITE_REC_3D_RL( fn, fp, 1, visc_streamice%v,
+     &                        nj, myIter, myThid )
+#else
         CALL WRITE_REC_3D_RL( fn, fp, 1, visc_streamice,
      &                        nj, myIter, myThid )
+#endif
         IF (j.LE.listDim) wrFldList(j) = 'SI_visc '
 
 #ifdef STREAMICE_HYBRID_STRESS
         j = j + 1
         nj = nj-1
+#ifdef ALLOW_OPENAD
+        CALL WRITE_REC_3D_RL( fn, fp, 1, streamice_taubx%v,
+     &                        nj, myIter, myThid )
+#else
         CALL WRITE_REC_3D_RL( fn, fp, 1, streamice_taubx,
      &                        nj, myIter, myThid )
+#endif
         IF (j.LE.listDim) wrFldList(j) = 'SI_taubx'
 
         j = j + 1
         nj = nj-1
+#ifdef ALLOW_OPENAD
+        CALL WRITE_REC_3D_RL( fn, fp, 1, streamice_tauby%v,
+     &                        nj, myIter, myThid )
+#else
         CALL WRITE_REC_3D_RL( fn, fp, 1, streamice_tauby,
      &                        nj, myIter, myThid )
+#endif
         IF (j.LE.listDim) wrFldList(j) = 'SI_tauby'
 #endif
 
