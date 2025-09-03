@@ -51,6 +51,9 @@
 #ifdef ALLOW_PROFILES
 # include "PROFILES_OPTIONS.h"
 #endif
+#ifdef ALLOW_OBSFIT
+# include "OBSFIT_OPTIONS.h"
+#endif
 #ifdef ALLOW_RBCS
 # include "RBCS_OPTIONS.h"
 #endif
@@ -201,6 +204,10 @@ C-- keep tamc.h here without ALLOW_AUTODIFF_TAMC for ALLOW_TAMC_CHECKPOINTING
 #   include "PROFILES_SIZE.h"
 #   include "profiles.h"
 #  endif
+#  ifdef ALLOW_OBSFIT
+#   include "OBSFIT_SIZE.h"
+#   include "OBSFIT.h"
+#  endif
 #  ifdef ALLOW_ECCO
 #   include "ecco_cost.h"
 #  endif
@@ -311,6 +318,14 @@ CADJ INIT tapelev_ini_bibj_k = USER
 # ifdef ALLOW_GENTIM2D_CONTROL
 c--   exclusive tape for variables with suffix "_dummy"
 CADJ INIT dummytape          = COMMON, 1
+# endif
+c--   initialise storage for cost function
+# ifdef ALLOW_OBSFIT
+#  ifdef ALLOW_DIVIDED_ADJOINT
+CADJ INIT tapelev_obsfit = USER
+#  else
+CADJ INIT tapelev_obsfit = COMMON, NFILESMAX_OBS
+#  endif
 # endif
 
 c--   Initialize storage for the outermost loop.
@@ -681,6 +696,23 @@ c--     Accumulate in-situ time averages of theta, salt, and SSH.
       ENDIF
 #endif /* ALLOW_PROFILES */
 
+#ifdef ALLOW_OBSFIT
+      IF (useOBSFIT) THEN
+#ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('obsfit_inloop',myThid)
+#endif
+c--     Accumulate in-situ time averages of theta, salt, and SSH.
+#ifdef ALLOW_AUTODIFF
+C--   Reset the model iteration counter and the model time.
+        myIter = nIter0 + (iloop-1)
+        myTime = startTime + deltaTClock*(iloop-1)
+#endif
+        CALL TIMER_START('OBSFIT_INLOOP      [MAIN_DO_LOOP]', myThid)
+        CALL OBSFIT_INLOOP( myTime, myThid )
+        CALL TIMER_STOP ('OBSFIT_INLOOP      [MAIN_DO_LOOP]', myThid)
+      ENDIF
+#endif
+
       CALL TIMER_START('MAIN_DO_LOOP        [THE_MAIN_LOOP]', myThid)
       CALL MAIN_DO_LOOP( iloop, myTime, myIter, myThid )
       CALL TIMER_STOP ('MAIN_DO_LOOP        [THE_MAIN_LOOP]', myThid)
@@ -736,6 +768,17 @@ c--   Compute all profiles cost function contributions.
         CALL PROFILES_COST( myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_PROFILES */
+
+#ifdef ALLOW_OBSFIT
+      IF (useOBSFIT) THEN
+c--   Accumulate in-situ time averages of temperature, salinity, SSH.
+        CALL TIMER_START('OBSFIT_INLOOP      [THE_MAIN_LOOP]', myThid)
+        CALL OBSFIT_INLOOP( endtime, myThid )
+        CALL TIMER_STOP ('OBSFIT_INLOOP      [THE_MAIN_LOOP]', myThid)
+c--   Compute all obsfit cost function contributions.
+        CALL OBSFIT_COST( myIter, myTime, myThid )
+      ENDIF
+#endif
 
 #ifdef ALLOW_ECCO
       IF ( useECCO ) then
