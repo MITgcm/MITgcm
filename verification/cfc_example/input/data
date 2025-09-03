@@ -49,7 +49,6 @@
  pChkptFreq=3110400000.,
  chkptFreq= 3110400000.,
  dumpFreq=  31104000.,
- taveFreq=  31104000.,
  monitorFreq= 1.,
  tauThetaClimRelax = 5184000.,
  tauSaltClimRelax =  7776000.,
