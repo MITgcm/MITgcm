@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools/mpack-1.6:
+  - fix compilation for recent version of gcc, to pass the compiler test in
+    "configure" and md5 compilation with v15 (comply with C23 standard).
 o pkg/streamice:
   - for OpenAD, adjust streamice_write_pickup.F to only write the forward
     components of state arrays to the binary pickups for later use.
