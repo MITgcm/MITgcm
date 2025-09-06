@@ -29,30 +29,31 @@ C     === Global variables ===
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
-C     myTime - Current time of simulation ( s )
-C     myIter - Iteration number
-C     myThid - Number of this instance of the routine
+C     myTime :: Current time of simulation ( s )
+C     myIter :: Current iteration number in simulation
+C     myThid :: my Thread Id number
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
-CEOP
 
 #ifdef ALLOW_LAND
-
 C     !FUNCTIONS:
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
+      CHARACTER*(10) suff
+#ifdef ALLOW_LAND_TAVE
       INTEGER bi, bj, k
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+#endif
+#if ( defined ALLOW_LAND_TAVE || defined ALLOW_MNC )
       CHARACTER*(MAX_LEN_FNAM) fn
-      CHARACTER*(10) suff
+#endif
 #ifdef ALLOW_MNC
       CHARACTER*(1) pf
 #endif
+CEOP
 
 #ifdef ALLOW_AIM
       IF ( land_monFreq.NE.0. ) THEN

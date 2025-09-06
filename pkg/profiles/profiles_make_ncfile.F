@@ -33,14 +33,14 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
       INTEGER kLev, kProf, k
-      INTEGER num_file,num_var,prof_num
-      INTEGER bi,bj,iG,jG
-      INTEGER err,dimId,irec,fid1,fid2
-      INTEGER dimId1,dimId2,vecid(2)
-      INTEGER varId0,varId1(NVARMAX*2),varId2(NVARMAX*2)
-      INTEGER length,Zlength,optimcycle
-      INTEGER IL,JL
-      INTEGER vec_start(2),vec_count(2)
+      INTEGER num_file, num_var, prof_num
+      INTEGER bi, bj
+      INTEGER err, dimId, irec, fid1, fid2
+      INTEGER dimId1, dimId2, vecid(2)
+      INTEGER varId0, varId1(NVARMAX*2), varId2(NVARMAX*2)
+      INTEGER length, Zlength, optimcycle
+      INTEGER IL, JL
+      INTEGER vec_start(2), vec_count(2)
       _RL tmpgs
       _RL prof_mask1D(NLEVELMAX)
       _RL prof_traj1D(NLEVELMAX)
