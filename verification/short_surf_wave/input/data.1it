@@ -26,9 +26,7 @@
  tempStepping=.FALSE.,
  hFacMin=0.2,
  readBinaryPrec=64,
-#writeBinaryPrec=64,
  globalFiles=.TRUE.,
-#debugLevel = 3,
  plotLevel = 0,
  &
 
@@ -57,8 +55,6 @@
  dumpFreq=5.0,
  monitorFreq=0.2,
  monitorSelect=1,
-#dumpFreq=0.055,
-#diagFreq=0.06,
  monitorFreq=0.005,
  &
 
