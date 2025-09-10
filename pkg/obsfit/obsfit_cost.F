@@ -79,6 +79,8 @@ C     !LOCAL VARIABLES:
       _RL tmpgs
       INTEGER nobsmean
       _RL offset, mod_mean, obs_mean, misfit
+      _RL spval
+      PARAMETER ( spval = -9999. _d 0 )
 
 #ifndef ALLOW_CTRL
       optimcycle = 0
@@ -90,6 +92,11 @@ C     !LOCAL VARIABLES:
       WRITE( msgBuf,'(A)' ) '== obsfit_cost: begin =='
       CALL PRINT_MESSAGE( msgBuf,
      &     standardMessageUnit,SQUEEZE_RIGHT, myThid )
+
+c--   initialise local storage
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ INIT tapelev_obsfit = COMMON, NFILESMAX_OBS
+#endif
 
       _BEGIN_MASTER( myThid )
 
@@ -125,10 +132,12 @@ C Open tiled files and read to buffer
 
                 sample_modval = zeroRL
 
-                CALL ACTIVE_READ_OBS_TILE( num_file,
-     &               sample_modval,sample_num,.false.,
-     &               optimcycle,bi,bj,myThid,
-     &               obsfit_dummy(num_file,bi,bj) )
+                CALL ACTIVE_READ_OBS_TILE(
+     I               num_file,
+     O               sample_modval,
+     I               sample_num,.false.,
+     I               optimcycle,bi,bj,myThid,
+     I               obsfit_dummy(num_file,bi,bj) )
 
 C Save model equi (of samples) and masks in buffer
 C Combine all threads here
@@ -153,6 +162,13 @@ C Combine all processes
           samples_mask_glob(ii) = tmpgs
         ENDDO
 
+#ifdef ALLOW_AUTODIFF_TAMC
+C     Not really necessary, but cheap (for small NFILESMAX_OBS)
+C     and avoids some hidden recomputations.
+CADJ STORE samples_modval_glob, samples_mask_glob
+CADJ &     = tapelev_obsfit, key = num_file, kind = isbyte
+#endif
+
         IF ( myProcId .eq. 0 ) THEN
 
 C Loop over obs
@@ -169,7 +185,7 @@ C Calculate model equi of each obs by averaging NP samples
                   irec = obs_sample1_ind(num_file,obs_num)+sample_num-1
                   obs_modval = obs_modval+samples_modval_glob(irec)
      &             *samples_mask_glob(irec)
-                  sample_mask_sum = sample_mask_sum 
+                  sample_mask_sum = sample_mask_sum
      &             +samples_mask_glob(irec)
                   IF ( samples_mask_glob(irec) .GT. 0. _d 0 ) THEN
                     num_valid_samples = num_valid_samples+1
@@ -190,24 +206,24 @@ C         IF (sample_mask_sum.GT.zeroRL) THEN
                 obs_modval = obs_modval/sample_mask_sum
                 obs_modmask = oneRL
               ELSE
-                obs_modval = -9999. _d 0
+                obs_modval = spval
                 obs_modmask = zeroRL
               ENDIF
 
 C     This does not seem to be necessary
-c         IF (obs_modval.eq.-9999) THEN
+c         IF (obs_modval.eq.spval) THEN
 c          obs_modmask = zeroRL
 c         ENDIF
 
 C Write to global netcdf file
-              CALL ACTIVE_WRITE_OBS_GLOB( num_file,
-     &             obs_modval,obs_num,optimcycle,myThid,
-     &             obsfit_globaldummy(num_file) )
+              CALL ACTIVE_WRITE_OBS_GLOB(
+     I             num_file, obs_modval, obs_num, optimcycle, myThid,
+     I             obsfit_globaldummy(num_file) )
 
             ENDIF !IF (obs_num.LE.ObsNo(num_file))
           ENDDO !DO obs_num
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE obs_modmask, obsfit_globaldummy(num_file)
+CADJ STORE obsfit_globaldummy(num_file)
 CADJ &     = tapelev_obsfit, key = num_file, kind = isbyte
 #endif
 
@@ -231,21 +247,19 @@ C Loop over obs
                 obs_uncert = zeroRL
 
 C Read model equivalent from global file
-                CALL ACTIVE_READ_OBS_GLOB( num_file,
-     &               obs_modval,obs_num,.FALSE.,optimcycle,myThid,
-     &               obsfit_globaldummy(num_file) )
+                CALL ACTIVE_READ_OBS_GLOB(
+     I               num_file,
+     O               obs_modval,
+     I               obs_num, .FALSE., optimcycle, myThid,
+     I               obsfit_globaldummy(num_file) )
 
 C Read observation and uncertainty
                 CALL OBSFIT_READ_OBS( num_file,1,
-     &               obs_ind_glob(num_file,obs_num),
-     &               obs_data,myThid )
+     I               obs_ind_glob(num_file,obs_num),
+     O               obs_data,
+     I               myThid )
 
-                CALL OBSFIT_READ_OBS( num_file,-1,
-     &               obs_ind_glob(num_file,obs_num),
-     &               obs_uncert,myThid )
-
-                IF ( obs_data.GT.-9999. _d 0 .AND.
-     &            obs_modmask.GT.zeroRL ) THEN
+                IF ( obs_data.GT.spval .AND. obs_modval.GT.spval ) THEN
                   obs_mean = obs_mean + obs_data
                   mod_mean = mod_mean + obs_modval
                   nobsmean = nobsmean + 1
@@ -293,15 +307,18 @@ C Read observation and uncertainty
      &             obs_ind_glob(num_file,obs_num),
      &             obs_uncert,myThid )
 
-              IF ( obs_data .EQ. -9999. _d 0 ) THEN
-                obs_uncert = zeroRL
-              ENDIF
+              IF ( obs_data .EQ. spval ) obs_uncert = zeroRL
 
 C Read model equivalent from global file
               CALL ACTIVE_READ_OBS_GLOB( num_file,
      &             obs_modval,obs_num,.FALSE.,optimcycle,myThid,
      &             obsfit_globaldummy(num_file) )
 
+#ifdef ALLOW_AUTODIFF_TAMC
+C     this helps TAF to understand the meaning of obs_modmask
+              obs_modmask = zeroRL
+              IF ( obs_modval.GT.spval ) obs_modmask = oneRL
+#endif
               IF ( obs_uncert.GT.zeroRL ) THEN
                 obs_weight = 1. _d 0 / (obs_uncert*obs_uncert)
                 misfit = obs_modval-obs_data-offset
@@ -335,10 +352,10 @@ C Print cost function values
         num_obsfit_glo = num_obsfit(num_file)
 
         WRITE( msgBuf,'(A,I2,A,E20.13,1X,D12.5)' )
-     &       ' CAV obsfit_cost(',num_file,') = ', 
+     &       ' CAV obsfit_cost(',num_file,') = ',
      &       objf_obsfit_glo, num_obsfit_glo
 
-        IF ( num_obsfit_glo .GT. 0. ) 
+        IF ( num_obsfit_glo .GT. 0. )
      &    CALL PRINT_MESSAGE( msgBuf,
      &         standardMessageUnit,SQUEEZE_RIGHT, myThid )
 
