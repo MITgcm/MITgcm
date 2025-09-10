@@ -258,11 +258,7 @@ C-    Calculate contribution from mass distribution anomaly (i.e., free-surface)
          IF ( exactConserv ) THEN
           DO j=1,sNy
            DO i=1,sNx
-#ifdef EXACT_CONSERV
             tmpFld(i,j) = etaHnm1(i,j,bi,bj)
-#else
-            tmpFld(i,j) = 0.
-#endif
            ENDDO
           ENDDO
          ELSE

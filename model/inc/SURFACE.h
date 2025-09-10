@@ -35,15 +35,14 @@ C     SsurfCor :: Salinity Linear-Free-Surface correction term [g/kg.r_Unit/s]
       _RL TsurfCor
       _RL SsurfCor
 
-#ifdef EXACT_CONSERV
+C--   COMMON /ETA_UPDATES/ variables related to Eta updates (with exactConserv)
 C     etaHnm1 :: surface r-anomaly, etaH, at previous time level
 C     dEtaHdt :: time derivative of total column height [r_unit/s = w unit]
 C     PmEpR   :: keep the fresh water input (=-EmPmR) of the previous time step
-      COMMON /EXACT_ETA_LOCAL/ etaHnm1, dEtaHdt, PmEpR
+      COMMON /ETA_UPDATES/ etaHnm1, dEtaHdt, PmEpR
       _RL etaHnm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL dEtaHdt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  PmEpR (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif
+      _RL PmEpR  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #ifdef NONLIN_FRSURF
 C--   COMMON /SURF_CHANGE/ transient variables used for Non-Lin Free-Surf

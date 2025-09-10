@@ -10,10 +10,8 @@ CADJ STORE saltFlux  = comlev1, key = ikey_dynamics, kind = isbyte
 #ifdef ATMOSPHERIC_LOADING
 CADJ STORE sIceLoad  = comlev1, key = ikey_dynamics, kind = isbyte
 #endif
-#ifdef EXACT_CONSERV
 CADJ STORE PmEpR     = comlev1, key = ikey_dynamics,  kind = isbyte
 CADJ STORE dEtaHdt   = comlev1, key = ikey_dynamics,  kind = isbyte
-#endif
 CADJ STORE wVel      = comlev1, key = ikey_dynamics, kind = isbyte
 
 #ifdef ALLOW_ADAMSBASHFORTH_3

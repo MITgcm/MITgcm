@@ -222,22 +222,20 @@ c         CALL READ_REC_3D_RL( fn, fp, Nr, gS,   11, myIter,myThid )
           nj = 8
 #endif /*  ALLOW_ADAMSBASHFORTH_3 */
           CALL READ_REC_3D_RL( fn,fp,1, etaN, nj*Nr+1, myIter,myThid )
-#ifdef EXACT_CONSERV
           IF ( exactConserv ) THEN
            CALL READ_REC_3D_RL(fn,fp,1,dEtaHdt,nj*Nr+2,myIter,myThid )
           ENDIF
           IF ( nonlinFreeSurf.GT.0 ) THEN
            CALL READ_REC_3D_RL(fn,fp,1, etaH, nj*Nr+3, myIter,myThid )
           ENDIF
-#endif
         ENDIF
 
         IF ( storePhiHyd4Phys ) THEN
           WRITE(fn,'(A,A10)') 'pickup_ph.',suff
           CALL READ_REC_3D_RL( fn, fp, Nr, totPhiHyd,1,myIter,myThid )
-         ENDIF
+        ENDIF
 #ifdef ALLOW_NONHYDROSTATIC
-         IF ( use3Dsolver ) THEN
+        IF ( use3Dsolver ) THEN
           WRITE(fn,'(A,A10)') 'pickup_nh.',suff
           CALL READ_REC_3D_RL( fn, fp, Nr, phi_nh,  1, myIter,myThid )
 #ifdef ALLOW_ADAMSBASHFORTH_3
@@ -455,7 +453,6 @@ C---    read 2-D fields, starting with Eta:
      &                                     nj, fp, 1 , myIter, myThid )
         ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
-#ifdef EXACT_CONSERV
         IF ( exactConserv ) THEN
           CALL READ_MFLDS_3D_RL( 'dEtaHdt ', dEtaHdt,
      &                                     nj, fp, 1 , myIter, myThid )
@@ -464,7 +461,6 @@ C---    read 2-D fields, starting with Eta:
           CALL READ_MFLDS_3D_RL( 'EtaH    ', etaH,
      &                                     nj, fp, 1 , myIter, myThid )
         ENDIF
-#endif /* EXACT_CONSERV */
 C--    end: new way to read pickup file
        ENDIF
 
@@ -515,14 +511,12 @@ C#ifdef NONLIN_FRSURF
 C        IF ( nonlinFreeSurf.GE.0 .AND. usePickupBeforeC54 )
 C     &    CALL MNC_CW_RL_R('D',fn,0,0,'EtaH', etaH, myThid)
 C#endif
-#ifdef EXACT_CONSERV
         IF (exactConserv) THEN
           CALL MNC_CW_RL_R('D',fn,0,0,'dEtaHdt',dEtaHdt,myThid)
         ENDIF
         IF (nonlinFreeSurf .GT. 0) THEN
           CALL MNC_CW_RL_R('D',fn,0,0,'EtaH', etaH, myThid)
         ENDIF
-#endif
 #ifdef ALLOW_NONHYDROSTATIC
         IF (use3Dsolver) THEN
           CALL MNC_CW_RL_R('D',fn,0,0,'phi_nh', phi_nh, myThid)
@@ -531,7 +525,7 @@ c         CALL MNC_CW_RL_R('D',fn,0,0,'gW', gW, myThid)
           CALL MNC_CW_RL_R('D',fn,0,0,'gWnm1', gwNm1, myThid)
 #endif
         ENDIF
-#endif
+#endif /*  ALLOW_NONHYDROSTATIC */
         IF ( storePhiHyd4Phys ) THEN
           CALL MNC_CW_RL_R('D',fn,0,0,'phiHyd',totPhiHyd,myThid)
         ENDIF
@@ -565,9 +559,7 @@ C     Fill in edge regions
 #endif /* ALLOW_ADAMSBASHFORTH_3 */
       CALL EXCH_XY_RL( etaN, myThid )
       CALL EXCH_XY_RL( etaH, myThid )
-#ifdef EXACT_CONSERV
       CALL EXCH_XY_RL( detaHdt, myThid )
-#endif
 
       IF ( storePhiHyd4Phys )
      &  CALL EXCH_3D_RL( totPhiHyd, Nr, myThid )
