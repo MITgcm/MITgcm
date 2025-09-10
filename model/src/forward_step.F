@@ -311,6 +311,7 @@ C     == Global variables ==
 # endif
 # ifdef ALLOW_GCHEM
 #  include "GCHEM_SIZE.h"
+#  include "GCHEM_VARS.h"
 #  include "GCHEM_FIELDS.h"
 # endif
 # ifdef ALLOW_CFC
