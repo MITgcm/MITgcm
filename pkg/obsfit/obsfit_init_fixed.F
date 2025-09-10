@@ -44,6 +44,7 @@ C     !FUNCTIONS:
 C     !LOCAL VARIABLES:
 C     i,j,bi,bj    :: loop indices
 C     iG,jG        :: global indices
+C     diffsecs     :: absolute time
       INTEGER i,j,k,l,bi,bj,iG,jG
       INTEGER obs_num, num_file, sampleNo_tile
       INTEGER ic, ip, iq, kLev, iINTERP
@@ -770,12 +771,11 @@ C Loop through this chunk
               sampleIsInTile = 1
               
 C Check that sample time is valid
-CAV There may be a more elegant way to do this...     
               IF ( tmp_sample_time(ic+chunk).LT.0. _d 0 ) THEN
                sampleIsValid = 0
               ENDIF
-              IF ( tmp_sample_time(ic+chunk).GT.
-     &             modelend-modelstart ) THEN
+              IF ( (tmp_sample_time(ic+chunk).GT.modelend) .OR.
+     &             (tmp_sample_time(ic+chunk).LT.modelstart) ) THEN
                sampleIsValid = 0
               ENDIF
 
