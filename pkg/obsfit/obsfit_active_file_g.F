@@ -154,6 +154,8 @@ C     !INTERFACE:
      I                                   active_num_file,
      O                                   active_var,
      I                                   g_active_var,
+     O                                   active_mask,
+     I                                   g_active_mask,
      I                                   irec,
      I                                   lAdInit,
      I                                   myOptimIter,
@@ -179,6 +181,7 @@ C     == Global variables ===
 C     !INPUT PARAMETERS:
 C     active_num_file: file number
 C     active_var:      array
+C     active_mask:     array mask
 C     irec:            record number
 C     myOptimIter:     number of optimization iteration (default: 0)
 C     myThid:          my thread ID number
@@ -186,6 +189,8 @@ C     lAdInit:         initialisation of corresponding adjoint
 C                      variable and write to active file
       _RL     active_var
       _RL     g_active_var
+      _RL     active_mask
+      _RL     g_active_mask
       INTEGER irec, active_num_file
       INTEGER myOptimIter
       INTEGER myThid
@@ -197,13 +202,13 @@ CEOP
 
       CALL ACTIVE_READ_OBS_GLOB_RL( fidglobal(active_num_file),
      &     active_num_file,
-     &     active_var,  lAdInit,
+     &     active_var, active_mask, lAdInit,
      &     irec, obs_ind_glob(active_num_file,irec),
      &     FORWARD_SIMULATION, myOptimIter, myThid )
 
       CALL ACTIVE_READ_OBS_GLOB_RL( fidtanglobal(active_num_file),
      &     active_num_file,
-     &     g_active_var, lAdInit,
+     &     g_active_var, active_mask, lAdInit,
      &     irec, obs_ind_glob(active_num_file,irec),
      &     TANGENT_SIMULATION, myOptimIter, myThid )
 
@@ -222,6 +227,8 @@ C     !INTERFACE:
      I                                    active_num_file,
      I                                    active_var,
      I                                    g_active_var,
+     I                                    active_mask,
+     I                                    g_active_mask,
      I                                    irec,
      I                                    myOptimIter,
      I                                    myThid,
@@ -247,12 +254,15 @@ C     == Global variables ===
 C !INPUT PARAMETERS:
 C     active_num_file: file number
 C     active_var:      array
+C     active_mask:     array mask
 C     irec:            record number
 C     myOptimIter:     number of optimization iteration (default: 0)
 C     myThid:          my thread ID number
       INTEGER active_num_file
       _RL     active_var
       _RL     g_active_var
+      _RL     active_mask
+      _RL     g_active_mask
       INTEGER irec
       INTEGER myOptimIter
       INTEGER myThid
@@ -264,13 +274,13 @@ CEOP
 
       CALL ACTIVE_WRITE_OBS_GLOB_RL( fidglobal(active_num_file),
      &     active_num_file,
-     &     active_var,
+     &     active_var, active_mask,
      &     irec, obs_ind_glob(active_num_file,irec),
      &     FORWARD_SIMULATION, myOptimIter, myThid )
 
       CALL ACTIVE_WRITE_OBS_GLOB_RL( fidtanglobal(active_num_file),
      &     active_num_file,
-     &     g_active_var,
+     &     g_active_var, g_active_mask,
      &     irec, obs_ind_glob(active_num_file,irec),
      &     TANGENT_SIMULATION, myOptimIter, myThid )
 

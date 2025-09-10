@@ -25,13 +25,12 @@ C ObsFit real parameters
       _RL sample_depth(NFILESMAX_OBS,NSAMPLESMAX,nsx,nsy)
       _RL sample_weight(NFILESMAX_OBS,NSAMPLESMAX,nsx,nsy)
       _RL sample_modmask(nsx,nsy)
-      _RL obs_modmask
       _RL obs_delT(NFILESMAX_OBS,NOBSMAX_OBS)
 
       COMMON /OBSFIT_R/ sample_type, sample_timeS, 
      & sample_timeE, sample_lon, sample_lat,
      & sample_depth, sample_weight, sample_modmask,
-     & obs_modmask, obs_delT
+     & obs_delT
 
 C ObsFit integer parameters
       INTEGER sample_type(NFILESMAX_OBS,NSAMPLESMAX,nsx,nsy)

@@ -131,6 +131,7 @@ C     !INTERFACE:
       SUBROUTINE ADACTIVE_READ_OBS_GLOB(
      I                                   active_num_file,
      I                                   adactive_var,
+     I                                   adactive_mask,
      I                                   irec,
      I                                   lAdInit,
      I                                   myIter,
@@ -154,6 +155,7 @@ C     == Global variables ===
 C     !INPUT PARAMETERS:
 C     active_num_file: file number
 C     adactive_var:    array
+C     adactive_mask:   array mask
 C     irec:            record number
 C     myIter:          number of optimization iteration (default: 0)
 C     myThid:          my thread ID number
@@ -161,6 +163,7 @@ C     lAdInit:         initialisation of corresponding adjoint
 C                      variable and write to active file
       INTEGER active_num_file
       _RL     adactive_var
+      _RL     adactive_mask
       INTEGER irec
       INTEGER myIter
       INTEGER myThid
@@ -171,7 +174,7 @@ CEOP
 
       CALL ACTIVE_READ_OBS_GLOB_RL( fidadglobal(active_num_file),
      &     active_num_file,
-     &     adactive_var, lAdInit,
+     &     adactive_var, adactive_mask, lAdInit,
      &     irec, obs_ind_glob(active_num_file,irec),
      &     REVERSE_SIMULATION, myIter, myThid )
 
@@ -188,6 +191,7 @@ C     !INTERFACE:
       SUBROUTINE ADACTIVE_WRITE_OBS_GLOB(
      I                                    active_num_file,
      I                                    adactive_var,
+     I                                    adactive_mask,
      I                                    irec,
      I                                    myIter,
      I                                    myThid,
@@ -211,6 +215,7 @@ C     == Global variables ===
 C     !INPUT PARAMETERS:
 C     active_num_file: file number
 C     adactive_var:    array
+C     adactive_mask:   array mask
 C     irec:            record number
 C     myIter:          number of optimization iteration (default: 0)
 C     myThid:          my thread ID number
@@ -218,6 +223,7 @@ C     lAdInit:         initialisation of corresponding adjoint
 C                      variable and write to active file
       INTEGER active_num_file
       _RL     adactive_var
+      _RL     adactive_mask
       INTEGER irec
       INTEGER myIter
       INTEGER myThid
@@ -228,7 +234,7 @@ CEOP
 
       CALL ACTIVE_WRITE_OBS_GLOB_RL( fidadglobal(active_num_file),
      &     active_num_file,
-     &     adactive_var,
+     &     adactive_var, adactive_mask,
      &     irec, obs_ind_glob(active_num_file,irec),
      &     REVERSE_SIMULATION, myIter,myThid )
 

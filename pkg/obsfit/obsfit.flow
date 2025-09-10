@@ -30,20 +30,20 @@ C subroutine active_read_obs_glob
 C----------------------------------------
 CADJ SUBROUTINE active_read_obs_glob FTLNAME = g_active_read_obs_glob
 CADJ SUBROUTINE active_read_obs_glob ADNAME  = adactive_read_obs_glob
-CADJ SUBROUTINE active_read_obs_glob INPUT   = 1, 3,4,5,6,7
-CADJ SUBROUTINE active_read_obs_glob OUTPUT  =   2
-CADJ SUBROUTINE active_read_obs_glob ACTIVE  =   2
-CADJ SUBROUTINE active_read_obs_glob DEPEND  = 1, 3,4,5,6
+CADJ SUBROUTINE active_read_obs_glob INPUT   = 1,   4,5,6,7,8
+CADJ SUBROUTINE active_read_obs_glob OUTPUT  =   2,3
+CADJ SUBROUTINE active_read_obs_glob ACTIVE  =   2,3
+CADJ SUBROUTINE active_read_obs_glob DEPEND  = 1,   4,5,6,7
 
 C----------------------------------------
 C subroutine active_write_obs_glob
 C----------------------------------------
 CADJ SUBROUTINE active_write_obs_glob FTLNAME = g_active_write_obs_glob
 CADJ SUBROUTINE active_write_obs_glob ADNAME  = adactive_write_obs_glob
-CADJ SUBROUTINE active_write_obs_glob INPUT   = 1,2,3,4,5,6
-CADJ SUBROUTINE active_write_obs_glob OUTPUT  =           6
-CADJ SUBROUTINE active_write_obs_glob ACTIVE  =   2,      6
-CADJ SUBROUTINE active_write_obs_glob DEPEND  = 1,  3,4,5
+CADJ SUBROUTINE active_write_obs_glob INPUT   = 1,2,  4,5,6,7
+CADJ SUBROUTINE active_write_obs_glob OUTPUT  =             7
+CADJ SUBROUTINE active_write_obs_glob ACTIVE  =   2,3,      7
+CADJ SUBROUTINE active_write_obs_glob DEPEND  = 1,    4,5,6
 
 C----------------------------------------
 C NetCDF related functions and routines

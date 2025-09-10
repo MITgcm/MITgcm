@@ -58,7 +58,7 @@ C     !LOCAL VARIABLES:
       INTEGER num_file,sample_num
       INTEGER bi,bj
       _RL sample_modval
-      _RL obs_modval
+      _RL obs_modval, obs_modmask
       _RL obs_data, obs_uncert, obs_weight
 #ifndef ALLOW_CTRL
       INTEGER optimcycle
@@ -93,7 +93,7 @@ C     !LOCAL VARIABLES:
       CALL PRINT_MESSAGE( msgBuf,
      &     standardMessageUnit,SQUEEZE_RIGHT, myThid )
 
-c--   initialise local storage
+C Initialise local storage
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ INIT tapelev_obsfit = COMMON, NFILESMAX_OBS
 #endif
@@ -200,9 +200,7 @@ C Time averaging
               ENDIF
 
 C Spatial averaging
-              IF ( num_valid_samples.GT.0 ) THEN
-C     I would argue that it makes more sense to do this:
-C         IF (sample_mask_sum.GT.zeroRL) THEN
+              IF (sample_mask_sum.GT.zeroRL) THEN
                 obs_modval = obs_modval/sample_mask_sum
                 obs_modmask = oneRL
               ELSE
@@ -210,15 +208,10 @@ C         IF (sample_mask_sum.GT.zeroRL) THEN
                 obs_modmask = zeroRL
               ENDIF
 
-C     This does not seem to be necessary
-c         IF (obs_modval.eq.spval) THEN
-c          obs_modmask = zeroRL
-c         ENDIF
-
 C Write to global netcdf file
               CALL ACTIVE_WRITE_OBS_GLOB(
-     I             num_file, obs_modval, obs_num, optimcycle, myThid,
-     I             obsfit_globaldummy(num_file) )
+     I             num_file, obs_modval, obs_modmask, obs_num, 
+     I             optimcycle, myThid, obsfit_globaldummy(num_file) )
 
             ENDIF !IF (obs_num.LE.ObsNo(num_file))
           ENDDO !DO obs_num
@@ -249,7 +242,7 @@ C Loop over obs
 C Read model equivalent from global file
                 CALL ACTIVE_READ_OBS_GLOB(
      I               num_file,
-     O               obs_modval,
+     O               obs_modval, obs_modmask,
      I               obs_num, .FALSE., optimcycle, myThid,
      I               obsfit_globaldummy(num_file) )
 
@@ -310,12 +303,14 @@ C Read observation and uncertainty
               IF ( obs_data .EQ. spval ) obs_uncert = zeroRL
 
 C Read model equivalent from global file
-              CALL ACTIVE_READ_OBS_GLOB( num_file,
-     &             obs_modval,obs_num,.FALSE.,optimcycle,myThid,
-     &             obsfit_globaldummy(num_file) )
+              CALL ACTIVE_READ_OBS_GLOB( 
+     I             num_file,
+     O             obs_modval,obs_modmask,
+     I             obs_num,.FALSE.,optimcycle,myThid,
+     I             obsfit_globaldummy(num_file) )
 
 #ifdef ALLOW_AUTODIFF_TAMC
-C     this helps TAF to understand the meaning of obs_modmask
+C This helps TAF understand the meaning of obs_modmask
               obs_modmask = zeroRL
               IF ( obs_modval.GT.spval ) obs_modmask = oneRL
 #endif

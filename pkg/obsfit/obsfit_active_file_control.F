@@ -392,6 +392,7 @@ C     !INTERFACE:
      I                                  fid,
      I                                  active_num_file,
      O                                  active_var,
+     O                                  active_mask,
      I                                  lAdInit,
      I                                  irec,
      I                                  irecglob,
@@ -424,6 +425,7 @@ C     !INPUT PARAMETERS:
       INTEGER  myOptimIter
       INTEGER  myThid
       _RL      active_var
+      _RL      active_mask
       logical  lAdInit
 
 CEOP
@@ -453,7 +455,7 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
         err = NF_INQ_VARID( fid, obsfit_namemask, varID2 )
         err = NF_GET_VARA_DOUBLE( fid, varID2, vec_start, vec_count,
-     &   obs_modmask )
+     &   active_mask )
 
         _END_MASTER( myThid )
 
@@ -525,6 +527,7 @@ C     !INTERFACE:
      I                                     fid,
      I                                     active_num_file,
      I                                     active_var,
+     I                                     active_mask,
      I                                     irec,
      I                                     irecglob,
      I                                     theSimulationMode,
@@ -556,6 +559,7 @@ C     !INPUT PARAMETERS:
       INTEGER  myOptimIter
       INTEGER  myThid
       _RL      active_var
+      _RL      active_mask
 CEOP
 
 #ifdef ALLOW_OBSFIT
@@ -583,7 +587,7 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
        err = NF_INQ_VARID( fid, obsfit_namemask, varID2 )
        err = NF_PUT_VARA_DOUBLE( fid, varID2, vec_start, vec_count,
-     &       obs_modmask )
+     &       active_mask )
 
        _END_MASTER( myThid )
 
