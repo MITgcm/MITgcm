@@ -13,15 +13,19 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GCHEM.h"
+#ifdef ALLOW_EXF
+# include "GCHEM_EXF.h"
+# include "EXF_PARAM.h"
+#endif
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
       INTEGER myThid
 CEOP
 
-#ifdef ALLOW_GCHEM
-
 C     !LOCAL VARIABLES:
+C     errCount  :: error counter
+      INTEGER errCount
 
 C jmc: simpler to put MASTER thread directive within individual S/R :
 C      that leave the choice, for each S/R, to do either single (master)
@@ -70,7 +74,70 @@ C     Define diagnostics Names :
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
-#endif /* ALLOW_GCHEM */
+#ifdef ALLOW_EXF
+
+      IF ( gchem_useEXF ) THEN
+C-- from bling:
+c      apco2mask = 'c'
+c      IF ( useSEAICE ) THEN
+c       apco2mask = ' '
+c      ENDIF
+
+       _BEGIN_MASTER( myThid )
+       errCount = 0
+
+       IF ( gchem_SiFile .NE. ' ' ) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START silica',myThid)
+# endif
+        CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                          'gchem', 'SurfSi', gchem_SiPeriod,
+     I                          gchem_SiStartDate1, gchem_SiStartDate2,
+     U                          gchem_SiStartTime, errCount,
+     I                          myThid )
+       ENDIF
+
+       IF ( gchem_parFile .NE. ' ' ) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START PAR',myThid)
+# endif
+        CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                         'gchem', 'PAR', gchem_parPeriod,
+     I                         gchem_parStartDate1, gchem_parStartDate2,
+     U                         gchem_parStartTime, errCount,
+     I                         myThid )
+       ENDIF
+
+       IF ( gchem_FeFile .NE. ' ' ) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START iron',myThid)
+# endif
+        CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                         'gchem', 'iron', gchem_FePeriod,
+     I                         gchem_FeStartDate1, gchem_FeStartDate2,
+     U                         gchem_FeStartTime, errCount,
+     I                         myThid )
+       ENDIF
+
+       IF ( gchem_apco2File .NE. ' ' ) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START pCO2',myThid)
+# endif
+        CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                         'gchem', 'apCO2', gchem_apco2Period,
+     I                         gchem_apco2StartDate1, 
+     I                         gchem_apco2StartDate2,
+     U                         gchem_apco2StartTime, errCount,
+     I                         myThid )
+       ENDIF
+
+       _END_MASTER( myThid )
+
+C     endif gchem_useEXF
+      ENDIF
+
+      _BARRIER
+#endif /* ALLOW_EXF */
 
       RETURN
       END
