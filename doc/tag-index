@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/short_surf_wave:
+  - fix Non-Hydrostatic pressure initialization issue with implicSurfPress=1/2
+    by re-starting (nIter0=1) from pickup generated with implicSurfPress=1.
 o tools/mpack-1.6:
   - fix compilation for recent version of gcc, to pass the compiler test in
     "configure" and md5 compilation with v15 (comply with C23 standard).
