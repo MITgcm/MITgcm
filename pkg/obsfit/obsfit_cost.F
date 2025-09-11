@@ -292,13 +292,15 @@ C Loop over obs
               obs_uncert = zeroRL
 
 C Read observation and uncertainty
-              CALL OBSFIT_READ_OBS( num_file,1,
-     &             obs_ind_glob(num_file,obs_num),
-     &             obs_data,myThid )
+              CALL OBSFIT_READ_OBS(
+     I             num_file, 1, obs_ind_glob(num_file,obs_num),
+     O             obs_data,
+     I             myThid )
 
-              CALL OBSFIT_READ_OBS( num_file,-1,
-     &             obs_ind_glob(num_file,obs_num),
-     &             obs_uncert,myThid )
+              CALL OBSFIT_READ_OBS(
+     I             num_file, -1, obs_ind_glob(num_file,obs_num),
+     O             obs_uncert,
+     I             myThid )
 
               IF ( obs_data .EQ. spval ) obs_uncert = zeroRL
 
