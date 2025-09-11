@@ -65,7 +65,7 @@ C     == local variables ==
       integer fldstartdate(4)
       _RL     fldperiod
 
-c     integer startrec
+      integer startrec
 
       integer year0
       integer year1
@@ -127,11 +127,30 @@ C     fldperiod .ne. 0
 C--   Determine the current date.
        call cal_GetDate( myIter, myTime, mydate, myThid )
 
+#ifdef ALLOW_CTRL_DEBUG
+      write(*,'(A,I10,1x,E12.5,4(1x,I9),3(1x,E12.5))')
+     & 'ctrl_get_gen_recAA: my[Iter,Time,date]: ',
+     & myIter, myTime, mydate(1),mydate(2),mydate(3),mydate(4),
+     & modelstart,startTime,fldperiod
+#endif
 C     Determine first record:
-c      call cal_TimePassed( fldstartdate, modelstartdate,
-c    &                      difftime, myThid )
-c      call cal_ToSeconds ( difftime, fldsecs, myThid )
-c      startrec = int((modelstart - fldsecs)/fldperiod) + 1
+      call cal_TimePassed( fldstartdate, modelstartdate,
+     &                      difftime, myThid )
+      call cal_ToSeconds ( difftime, fldsecs, myThid )
+      startrec = int((modelstart + startTime - fldsecs)/
+     &                fldperiod) + 1
+
+#ifdef ALLOW_CTRL_DEBUG
+      write(*,'(A,8(1x,I9))')
+     & 'ctrl_get_gen_recAB: [model,fld]startdate '
+     &,modelstartdate(1),modelstartdate(2),modelstartdate(3),
+     & modelstartdate(4),fldstartdate(1),fldstartdate(2),
+     & fldstartdate(3),fldstartdate(4)
+
+      write(*,'(A,4(1x,I9),1x,E12.5,1x,I8)')
+     & 'ctrl_get_gen_recAC: difftime, fldsecs: ',difftime(1),
+     &difftime(2),difftime(3),difftime(4),fldsecs,startrec
+#endif
 
 C     Determine the flux record just before mycurrentdate.
        call cal_TimePassed( fldstartdate, mydate, difftime,
@@ -139,6 +158,12 @@ C     Determine the flux record just before mycurrentdate.
        call cal_ToSeconds( difftime, fldsecs, myThid )
        fldsecs  = int((fldsecs+0.5)/fldperiod)*fldperiod
        fldcount = int((fldsecs+0.5)/fldperiod) + 1
+
+#ifdef ALLOW_CTRL_DEBUG
+      write(*,'(A,4(1x,I9),1x,E12.5,1x,I8)')
+     & 'ctrl_get_gen_recAD: difftime, fld[secs,count]: ',difftime(1),
+     &difftime(2),difftime(3),difftime(4),fldsecs,fldcount
+#endif
 
 C     Set switches for reading new records.
        first = ((myTime - modelstart) .lt. 0.5*modelstep)
@@ -162,13 +187,28 @@ C     Set switches for reading new records.
         endif
        endif
 
-       count0 = fldcount
-       count1 = fldcount + 1
+c      count0 = fldcount
+c      count1 = fldcount + 1
+       count0 = fldcount - startrec + 1
+       count1 = fldcount - startrec + 2
+
+#ifdef ALLOW_CTRL_DEBUG
+      write(*,'(A,8(1x,I9),1x,E12.5,1x,I8)') 'ctrl_get_gen_recAE: ',
+     & previousdate(1),previousdate(1),previousdate(1),
+     & previousdate(4),difftime(1),difftime(2),difftime(3),difftime(4)
+     &,prevfldsecs,prevfldcount,count0,count1
+#endif
 
        call cal_TimeInterval( fldsecs, 'secs', difftime, myThid )
        call cal_AddTime( fldstartdate, difftime, flddate, myThid )
        call cal_TimePassed( flddate, mydate, difftime, myThid )
        call cal_ToSeconds( difftime, fldsecs, myThid )
+
+#ifdef ALLOW_CTRL_DEBUG
+      write(*,'(A,8(1x,I9),1x,E12.5)') 'ctrl_get_gen_recAF: ',
+     & flddate(1),flddate(2),flddate(3),flddate(4),
+     & difftime(1),difftime(2),difftime(3),difftime(4),fldsecs
+#endif
 
 C     Weight belonging to irec for linear interpolation purposes.
 C     Note: The weight as chosen here is 1. - fac of the "old"
