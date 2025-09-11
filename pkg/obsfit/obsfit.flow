@@ -40,7 +40,7 @@ C subroutine active_write_obs_glob
 C----------------------------------------
 CADJ SUBROUTINE active_write_obs_glob FTLNAME = g_active_write_obs_glob
 CADJ SUBROUTINE active_write_obs_glob ADNAME  = adactive_write_obs_glob
-CADJ SUBROUTINE active_write_obs_glob INPUT   = 1,2,  4,5,6,7
+CADJ SUBROUTINE active_write_obs_glob INPUT   = 1,2,3,4,5,6,7
 CADJ SUBROUTINE active_write_obs_glob OUTPUT  =             7
 CADJ SUBROUTINE active_write_obs_glob ACTIVE  =   2,3,      7
 CADJ SUBROUTINE active_write_obs_glob DEPEND  = 1,    4,5,6
@@ -56,4 +56,3 @@ CADJ FUNCTION   NF_SYNC                INPUT = 1
 CADJ FUNCTION   NF_STRERROR            INPUT = 1
 CADJ FUNCTION   NF_INQ_VARID           INPUT = 1,2,3
 CADJ FUNCTION   NF_PUT_VARA_DOUBLE     INPUT = 1,2,3,5,4
-

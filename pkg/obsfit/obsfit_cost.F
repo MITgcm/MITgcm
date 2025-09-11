@@ -210,7 +210,7 @@ C Spatial averaging
 
 C Write to global netcdf file
               CALL ACTIVE_WRITE_OBS_GLOB(
-     I             num_file, obs_modval, obs_modmask, obs_num, 
+     I             num_file, obs_modval, obs_modmask, obs_num,
      I             optimcycle, myThid, obsfit_globaldummy(num_file) )
 
             ENDIF !IF (obs_num.LE.ObsNo(num_file))
@@ -303,17 +303,12 @@ C Read observation and uncertainty
               IF ( obs_data .EQ. spval ) obs_uncert = zeroRL
 
 C Read model equivalent from global file
-              CALL ACTIVE_READ_OBS_GLOB( 
+              CALL ACTIVE_READ_OBS_GLOB(
      I             num_file,
      O             obs_modval,obs_modmask,
      I             obs_num,.FALSE.,optimcycle,myThid,
      I             obsfit_globaldummy(num_file) )
 
-#ifdef ALLOW_AUTODIFF_TAMC
-C This helps TAF understand the meaning of obs_modmask
-              obs_modmask = zeroRL
-              IF ( obs_modval.GT.spval ) obs_modmask = oneRL
-#endif
               IF ( obs_uncert.GT.zeroRL ) THEN
                 obs_weight = 1. _d 0 / (obs_uncert*obs_uncert)
                 misfit = obs_modval-obs_data-offset

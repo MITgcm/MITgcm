@@ -2,19 +2,16 @@
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
-#ifdef ALLOW_AUTODIFF
-# include "AUTODIFF_OPTIONS.h"
-#endif
 
 CBOP
 C     !ROUTINE: OBSFIT_INLOOP
 
-C     !INTERFACE: 
+C     !INTERFACE:
       SUBROUTINE OBSFIT_INLOOP( myTime, myThid )
 
 C     !DESCRIPTION:
 C     ==================================================================
-C     | Computes and writes model counterparts for ObsFit data  
+C     | Computes and writes model counterparts for ObsFit data
 C     ==================================================================
 
 C     !USES:
@@ -37,7 +34,7 @@ C     == Global variables ===
 # include "netcdf.inc"
 #endif
 
-C     !INPUT PARAMETERS: 
+C     !INPUT PARAMETERS:
 C     myTime :: time counter for this thread
 C     myThid :: my thread ID number
       _RL     myTime
@@ -91,14 +88,14 @@ C     !LOCAL VARIABLES:
               IF ( sample_num.LE.sampleNo(num_file,bi,bj) ) THEN
                 IF ( (sample_timeE(num_file,sample_num,bi,bj).GE.
      &           myTime).AND.
-     &           (sample_timeS(num_file,sample_num,bi,bj).LT. 
+     &           (sample_timeS(num_file,sample_num,bi,bj).LT.
      &           (myTime+deltaTclock)) ) THEN
                   DO iq = 1, NUM_INTERP_PTS_OBS
-                    sample_i(iq) = 
+                    sample_i(iq) =
      &               sample_interp_i(num_file,sample_num,iq,bi,bj)
-                    sample_j(iq) = 
+                    sample_j(iq) =
      &               sample_interp_j(num_file,sample_num,iq,bi,bj)
-                    sample_k(iq) = 
+                    sample_k(iq) =
      &               sample_interp_k(num_file,sample_num,iq,bi,bj)
                     sample_frac(iq) = sample_interp_frac
      &               (num_file,sample_num,iq,bi,bj)
@@ -107,7 +104,7 @@ C     !LOCAL VARIABLES:
                   sample_modval = 0
                   saved_modval = 0
 
-C If averaging or integrating in time, read previously 
+C If averaging or integrating in time, read previously
 C recorded value and add to it
                   IF ( obsfitOperation(num_file).GT.0 ) THEN
                     CALL ACTIVE_READ_OBS_TILE( num_file, saved_modval,
@@ -136,10 +133,10 @@ C recorded value and add to it
      &                 obsfit_dummy(num_file,bi,bj) )
 
                 ENDIF !IF ((sample_time
-              ENDIF !IF (sampleNo(num_file,bi,bj).NE.0) 
+              ENDIF !IF (sampleNo(num_file,bi,bj).NE.0)
             ENDDO !DO sample_num
           ENDDO !DO num_file
-      
+
         ENDDO
       ENDDO
 
