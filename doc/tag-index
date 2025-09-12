@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint69g (2025/09/12)
 o verification/short_surf_wave:
   - fix Non-Hydrostatic pressure initialization issue with implicSurfPress=1/2
     by re-starting (nIter0=1) from pickup generated with implicSurfPress=1.
