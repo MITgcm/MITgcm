@@ -12,7 +12,7 @@ C     !ROUTINE: ADACTIVE_READ_OBS_TILE
 C     !INTERFACE:
       SUBROUTINE ADACTIVE_READ_OBS_TILE(
      I                                   active_num_file,
-     I                                   adactive_var,
+     O                                   adactive_var,
      I                                   irec,
      I                                   lAdInit,
      I                                   myIter,
@@ -52,12 +52,11 @@ C                      variable and write to active file
 CEOP
 
 #ifdef ALLOW_OBSFIT
-
-      CALL ACTIVE_READ_OBS_TILE_RL( fidadj_obs(active_num_file,bi,bj),
-     &     active_num_file,
-     &     adactive_var, lAdInit,
-     &     irec, sample_ind_glob(active_num_file,irec,bi,bj),
-     &     REVERSE_SIMULATION, myIter, bi, bj, myThid )
+      CALL ACTIVE_READ_OBS_TILE_RL( 
+     I     fidadj_obs(active_num_file,bi,bj), active_num_file,
+     O     adactive_var, 
+     I     lAdInit, irec, sample_ind_glob(active_num_file,irec,bi,bj),
+     I     REVERSE_SIMULATION, myIter, bi, bj, myThid )
 
 #endif
 
@@ -112,11 +111,11 @@ CEOP
 
 #ifdef ALLOW_OBSFIT
 
-      CALL ACTIVE_WRITE_OBS_TILE_RL( fidadj_obs(active_num_file,bi,bj),
-     &     active_num_file,
-     &     adactive_var, 
-     &     irec, sample_ind_glob(active_num_file,irec,bi,bj),
-     &     REVERSE_SIMULATION, myIter, bi, bj, myThid )
+      CALL ACTIVE_WRITE_OBS_TILE_RL( 
+     I     fidadj_obs(active_num_file,bi,bj), 
+     I     active_num_file, adactive_var, 
+     I     irec, sample_ind_glob(active_num_file,irec,bi,bj),
+     I     REVERSE_SIMULATION, myIter, bi, bj, myThid )
 
 #endif
 
@@ -130,8 +129,8 @@ C     !ROUTINE: ADACTIVE_READ_OBS_GLOB
 C     !INTERFACE:
       SUBROUTINE ADACTIVE_READ_OBS_GLOB(
      I                                   active_num_file,
-     I                                   adactive_var,
-     I                                   adactive_mask,
+     O                                   adactive_var,
+     O                                   adactive_mask,
      I                                   irec,
      I                                   lAdInit,
      I                                   myIter,
@@ -172,11 +171,11 @@ CEOP
 
 #ifdef ALLOW_OBSFIT
 
-      CALL ACTIVE_READ_OBS_GLOB_RL( fidadglobal(active_num_file),
-     &     active_num_file,
-     &     adactive_var, adactive_mask, lAdInit,
-     &     irec, obs_ind_glob(active_num_file,irec),
-     &     REVERSE_SIMULATION, myIter, myThid )
+      CALL ACTIVE_READ_OBS_GLOB_RL( 
+     I     fidadglobal(active_num_file), active_num_file,
+     O     adactive_var, adactive_mask, 
+     I     lAdInit, irec, obs_ind_glob(active_num_file,irec),
+     I     REVERSE_SIMULATION, myIter, myThid )
 
 #endif
 
@@ -231,12 +230,11 @@ C                      variable and write to active file
 CEOP
 
 #ifdef ALLOW_OBSFIT
-
-      CALL ACTIVE_WRITE_OBS_GLOB_RL( fidadglobal(active_num_file),
-     &     active_num_file,
-     &     adactive_var, adactive_mask,
-     &     irec, obs_ind_glob(active_num_file,irec),
-     &     REVERSE_SIMULATION, myIter,myThid )
+      CALL ACTIVE_WRITE_OBS_GLOB_RL( 
+     I     fidadglobal(active_num_file), active_num_file,
+     I     adactive_var, adactive_mask,
+     I     irec, obs_ind_glob(active_num_file,irec),
+     I     REVERSE_SIMULATION, myIter,myThid )
 
 #endif
 

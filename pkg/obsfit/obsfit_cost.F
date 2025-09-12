@@ -187,7 +187,7 @@ C Calculate model equi of each obs by averaging NP samples
      &             *samples_mask_glob(irec)
                   sample_mask_sum = sample_mask_sum
      &             +samples_mask_glob(irec)
-                  IF ( samples_mask_glob(irec) .GT. 0. _d 0 ) THEN
+                  IF ( samples_mask_glob(irec).GT.zeroRL ) THEN
                     num_valid_samples = num_valid_samples+1
                   ENDIF
 
@@ -247,8 +247,8 @@ C Read model equivalent from global file
      I               obsfit_globaldummy(num_file) )
 
 C Read observation and uncertainty
-                CALL OBSFIT_READ_OBS( num_file,1,
-     I               obs_ind_glob(num_file,obs_num),
+                CALL OBSFIT_READ_OBS( 
+     I               num_file,1,obs_ind_glob(num_file,obs_num),
      O               obs_data,
      I               myThid )
 
@@ -347,7 +347,7 @@ C Print cost function values
      &       ' CAV obsfit_cost(',num_file,') = ',
      &       objf_obsfit_glo, num_obsfit_glo
 
-        IF ( num_obsfit_glo .GT. 0. )
+        IF ( num_obsfit_glo.GT.zeroRL )
      &    CALL PRINT_MESSAGE( msgBuf,
      &         standardMessageUnit,SQUEEZE_RIGHT, myThid )
 

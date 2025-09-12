@@ -56,6 +56,7 @@ C     !LOCAL VARIABLES:
 # ifndef ALLOW_ECCO
       INTEGER i,j,k
 # endif
+
 # ifndef ALLOW_CTRL
       optimcycle = 0
 # endif
@@ -107,15 +108,18 @@ C     !LOCAL VARIABLES:
 C If averaging or integrating in time, read previously
 C recorded value and add to it
                   IF ( obsfitOperation(num_file).GT.0 ) THEN
-                    CALL ACTIVE_READ_OBS_TILE( num_file, saved_modval,
-     &                   sample_num,.false.,optimcycle,bi,bj,myThid,
-     &                   obsfit_dummy(num_file,bi,bj) )
+                    CALL ACTIVE_READ_OBS_TILE(
+     I                   num_file,
+     O                   saved_modval,
+     I                   sample_num,.false.,optimcycle,bi,bj,myThid,
+     I                   obsfit_dummy(num_file,bi,bj) )
                   ENDIF
 
-                  CALL OBSFIT_SAMPLING( sample_modval,
-     &                 sample_i,sample_j,sample_k,sample_frac,
-     &                 sample_type(num_file,sample_num,bi,bj),
-     &                 num_file,myTime,bi,bj,myThid )
+                  CALL OBSFIT_SAMPLING(
+     O                 sample_modval,
+     I                 sample_i,sample_j,sample_k,sample_frac,
+     I                 sample_type(num_file,sample_num,bi,bj),
+     I                 num_file,myTime,bi,bj,myThid )
 
                   sample_modval = sample_modval*
      &             obsfit_facmod(num_file)
@@ -128,9 +132,10 @@ C recorded value and add to it
                   sample_modmask(bi,bj) = sample_modmask(bi,bj)*
      &             sample_weight(num_file,sample_num,bi,bj)
 
-                  CALL ACTIVE_WRITE_OBS_TILE( num_file,sample_modval,
-     &                 sample_num,optimcycle,bi,bj,myThid,
-     &                 obsfit_dummy(num_file,bi,bj) )
+                  CALL ACTIVE_WRITE_OBS_TILE(
+     I                 num_file,sample_modval,
+     I                 sample_num,optimcycle,bi,bj,myThid,
+     I                 obsfit_dummy(num_file,bi,bj) )
 
                 ENDIF !IF ((sample_time
               ENDIF !IF (sampleNo(num_file,bi,bj).NE.0)

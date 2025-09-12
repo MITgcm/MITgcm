@@ -23,13 +23,13 @@ C     ioUnit :: unit number
 C     myThid :: my thread ID number
       INTEGER ioUnit
       INTEGER myThid
+CEOP
 
 C     !LOCAL VARIABLES:
       INTEGER ii
       LOGICAL op
       INTEGER ios
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-CEOP
 
 C Sweep through a valid range of unit numbers
       ioUnit=-1

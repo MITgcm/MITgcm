@@ -32,13 +32,13 @@ C     == Global variables ===
 # include "OBSFIT.h"
 # include "netcdf.inc"
 #endif
-CEOP
 
 C     !INPUT PARAMETERS:
 C     myThid: my thread ID number
       INTEGER num_file, length, fid1, fid2
       CHARACTER*(*) file2
       INTEGER bi, bj, myThid
+CEOP
 
 #ifdef ALLOW_OBSFIT
 C     !LOCAL VARIABLES:

@@ -58,6 +58,7 @@ C     !INPUT PARAMETERS:
       INTEGER  bi, bj, myThid
 C     !IOUTPUT PARAMETERS:
       _RL      active_var
+CEOP
 
 #ifdef ALLOW_OBSFIT
 C     !LOCAL VARIABLES:
@@ -66,7 +67,6 @@ C     !LOCAL VARIABLES:
       INTEGER  ivar, i
       _RL      active_data_t
       _RL      vec_tmp(2)
-CEOP
 
        IF ( obsfitDoNcOutput ) THEN
 

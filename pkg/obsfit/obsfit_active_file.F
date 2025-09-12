@@ -55,11 +55,11 @@ CEOP
 
 #ifdef ALLOW_OBSFIT
 
-      CALL ACTIVE_READ_OBS_TILE_RL( fidfwd_obs(active_num_file,bi,bj),
-     &     active_num_file,
-     &     active_var, lAdInit,
-     &     irec, sample_ind_glob(active_num_file,irec,bi,bj),
-     &     FORWARD_SIMULATION, myOptimIter, bi, bj, myThid )
+      CALL ACTIVE_READ_OBS_TILE_RL( 
+     I     fidfwd_obs(active_num_file,bi,bj), active_num_file,
+     O     active_var, 
+     I     lAdInit, irec, sample_ind_glob(active_num_file,irec,bi,bj),
+     I     FORWARD_SIMULATION, myOptimIter, bi, bj, myThid )
 
 #endif
 
@@ -113,11 +113,11 @@ CEOP
 
 #ifdef ALLOW_OBSFIT
 
-      CALL ACTIVE_WRITE_OBS_TILE_RL( fidfwd_obs(active_num_file,bi,bj),
-     &     active_num_file,
-     &     active_var, 
-     &     irec, sample_ind_glob(active_num_file,irec,bi,bj),
-     &     FORWARD_SIMULATION, myOptimIter, bi, bj, myThid )
+      CALL ACTIVE_WRITE_OBS_TILE_RL( 
+     I     fidfwd_obs(active_num_file,bi,bj),
+     I     active_num_file, active_var, 
+     I     irec, sample_ind_glob(active_num_file,irec,bi,bj),
+     I     FORWARD_SIMULATION, myOptimIter, bi, bj, myThid )
 
 #endif
 
@@ -176,13 +176,11 @@ C                      variable and write to active file
 CEOP
 
 #ifdef ALLOW_OBSFIT
-
       CALL ACTIVE_READ_OBS_GLOB_RL( 
-     &     fidglobal(active_num_file),
-     &     active_num_file,
-     &     active_var, active_mask, lAdInit,
-     &     irec, obs_ind_glob(active_num_file,irec),
-     &     FORWARD_SIMULATION, myOptimIter, myThid )
+     I     fidglobal(active_num_file), active_num_file,
+     O     active_var, active_mask, 
+     I     lAdInit, irec, obs_ind_glob(active_num_file,irec),
+     I     FORWARD_SIMULATION, myOptimIter, myThid )
 
 #endif
 
@@ -236,13 +234,11 @@ C     myThid:          my thread ID number
 CEOP
 
 #ifdef ALLOW_OBSFIT
-
       CALL ACTIVE_WRITE_OBS_GLOB_RL( 
-     &     fidglobal(active_num_file),
-     &     active_num_file,
-     &     active_var, active_mask,
-     &     irec, obs_ind_glob(active_num_file,irec),
-     &     FORWARD_SIMULATION, myOptimIter, myThid )
+     I     fidglobal(active_num_file), active_num_file,
+     I     active_var, active_mask,
+     I     irec, obs_ind_glob(active_num_file,irec),
+     I     FORWARD_SIMULATION, myOptimIter, myThid )
 
 #endif
 

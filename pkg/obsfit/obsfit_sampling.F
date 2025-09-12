@@ -88,8 +88,8 @@ C     !FUNCTIONS:
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
 
-C     !LOCAL VARIABLES:
 #ifdef ALLOW_OBSFIT
+C     !LOCAL VARIABLES:
       INTEGER  iq, kcur
       _RL      tab_coeffs1(NUM_INTERP_PTS_OBS)
       _RL      tab_coeffs3(NUM_INTERP_PTS_OBS)
@@ -118,7 +118,7 @@ C This is where sample types are assigned to model variables
         weighingSUM = weighingSUM+weighing_pts(iq)
       ENDDO
 
-      IF ( weighingSUM.GT.0 ) THEN
+      IF ( weighingSUM.GT.zeroRL ) THEN
         modval_cur = 0. _d 0
         mask_cur = 1. _d 0
         DO iq = 1, NUM_INTERP_PTS_OBS

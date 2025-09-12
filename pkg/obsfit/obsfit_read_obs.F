@@ -5,10 +5,10 @@ C     !ROUTINE: OBSFIT_READ_OBS
 
 C     !INTERFACE:
       SUBROUTINE OBSFIT_READ_OBS(
-     O                            fNb, 
+     I                            fNb, 
      I                            vNb, 
      I                            irec,
-     I                            vec_loc,
+     O                            vec_loc,
      I                            myThid )
 
 C     !DESCRIPTION:
@@ -42,7 +42,6 @@ C     vec_loc  ::
 CEOP
 
 #ifdef ALLOW_OBSFIT
-
 C     !LOCAL VARIABLES:
 C     tmpObsNo :: number of obs in the file
       INTEGER vv, err, varID, tmpObsNo
