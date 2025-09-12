@@ -3726,19 +3726,17 @@ AD_CLEAN = *_b.f *_d.f *.f~ *.msg *.msg~ f95_test_mods.f90
 
 f95_test_mods.f90: \$(TAPENADE_SUPPORT_F90_SRC_FILES)
 	cat \$^ > \$@
-#
+
 AD_FILES_ADJ=\$(AD_FILES:.$FS=_b.f)
 AD_FILES_TLM=\$(AD_FILES:.$FS=_d.f)
-#
-.PHONY: TAP_TLM_FILES
-TAP_TLM_FILES: \$(AD_FILES) f95_test_mods.f90
-	touch \$(AD_FILES_TLM)
-	\$(TAPENADECMD) -d -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
-#
-.PHONY: TAP_ADJ_FILES
-TAP_ADJ_FILES: \$(AD_FILES) f95_test_mods.f90
-	touch \$(AD_FILES_ADJ)
+
+adj_tap_all.f: \$(AD_FILES) f95_test_mods.f90
 	\$(TAPENADECMD) -b -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
+	cat \$(AD_FILES_ADJ) > adj_tap_all.f 2> /dev/null || true
+
+tlm_tap_all.f: \$(AD_FILES) f95_test_mods.f90
+	\$(TAPENADECMD) -d -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
+	cat \$(AD_FILES_TLM) > tlm_tap_all.f 2> /dev/null || true
 
 tap_adj: ad_exe_target
 ad_exe_target:
@@ -3756,13 +3754,15 @@ tlm_exe_target:
 	@-rm -f ad_config.template
 	\$(MAKE) -f \$(MAKEFILE) \$(EXE_TLM)
 
-\$(EXE_ADJ): \$(SPECIAL_FILES) \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES) \$(OBJFILES) \$(TAP_SUPPORT_OBJFILES) \$(EMBEDDED_FILES) TAP_ADJ_FILES
+\$(EXE_ADJ): \$(SPECIAL_FILES) \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES) \$(OBJFILES) \$(TAP_SUPPORT_OBJFILES) \$(EMBEDDED_FILES) adj_tap_all.f
+	\$(MAKE) -f \$(MAKEFILE) adj_tap_all.o
 	@echo Creating \$@ ...
-	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) \$(AD_FILES_ADJ) \$(TAP_SUPPORT_OBJFILES:${TAPTOOLS}/ADFirstAidKit/%=%) \$(LIBS)
+	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) adj_tap_all.o \$(TAP_SUPPORT_OBJFILES:${TAPTOOLS}/ADFirstAidKit/%=%) \$(LIBS)
 
-\$(EXE_TLM): \$(SPECIAL_FILES) \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES) \$(OBJFILES) \$(TAP_SUPPORT_OBJFILES) \$(EMBEDDED_FILES) TAP_TLM_FILES
+\$(EXE_TLM): \$(SPECIAL_FILES) \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES) \$(OBJFILES) \$(TAP_SUPPORT_OBJFILES) \$(EMBEDDED_FILES) tlm_tap_all.f
+	\$(MAKE) -f \$(MAKEFILE) tlm_tap_all.o
 	@echo Creating \$@ ...
-	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) \$(AD_FILES_TLM) \$(TAP_SUPPORT_OBJFILES:${TAPTOOLS}/ADFirstAidKit/%=%) \$(LIBS)
+	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) tlm_tap_all.o \$(TAP_SUPPORT_OBJFILES:${TAPTOOLS}/ADFirstAidKit/%=%) \$(LIBS)
 
 # ============ end TAPENADE specific section ==============
 
