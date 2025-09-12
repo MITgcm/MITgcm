@@ -222,8 +222,8 @@ CADJ &     = tapelev_obsfit, key = num_file, kind = isbyte
 
 C Need to sync the file so that the data is not lost when run finishes
           err = NF_SYNC( fidglobal(num_file) )
-          CALL OBSFIT_NF_ERROR_GLOBAL(
-     &         'OBSFIT_COST: NF_SYNC fidglobal',err,myThid )
+          CALL OBSFIT_NF_ERROR(
+     &         'OBSFIT_COST: NF_SYNC fidglobal',err,0,0,myThid )
           IF ( obs_is_ssh(num_file).GT.0 ) THEN
 C Read data to calculate the mean offset between model and obs
             offset   = zeroRL
@@ -281,8 +281,8 @@ C Global file for misfits
      &     obsfitDir(1:JL),obsfitfile(1:IL),'.misfit.nc'
           err = NF_OPEN( fnamemisfit,NF_WRITE,fidmisfit(num_file) )
           err = NF_INQ_VARID( fidmisfit(num_file),'misfit',varID )
-          CALL OBSFIT_NF_ERROR_GLOBAL(
-     &         'OBSFIT_COST: NF_INQ_VARID misfit',err,myThid )
+          CALL OBSFIT_NF_ERROR(
+     &         'OBSFIT_COST: NF_INQ_VARID misfit',err,0,0,myThid )
 C Loop over obs
           DO obs_num = 1, NOBSMAX_OBS
             IF ( obs_num.LE.ObsNo(num_file) ) THEN
@@ -321,9 +321,9 @@ C Read model equivalent from global file
 C Write misfit to global netcdf file
                 err = NF_PUT_VARA_DOUBLE( fidmisfit(num_file),varID,
      &                obs_ind_glob(num_file,obs_num),1,misfit )
-                CALL OBSFIT_NF_ERROR_GLOBAL(
+                CALL OBSFIT_NF_ERROR(
      &               'OBSFIT_COST: NF_PUT_VARA_DOUBLE misfit',
-     &               err,myThid )
+     &               err,0,0,myThid )
               ENDIF
 
             ENDIF !IF (obs_num.LE.ObsNo(num_file))

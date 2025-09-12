@@ -49,7 +49,6 @@ C----------------------------------------
 C NetCDF related functions and routines
 C----------------------------------------
 CADJ SUBROUTINE OBSFIT_NF_ERROR        INPUT = 1,2,3,4,5
-CADJ SUBROUTINE OBSFIT_NF_ERROR_GLOBAL INPUT = 1,2,3
 CADJ FUNCTION   NF_OPEN                INPUT = 1,2,3
 CADJ FUNCTION   NF_CLOSE               INPUT = 1
 CADJ FUNCTION   NF_SYNC                INPUT = 1

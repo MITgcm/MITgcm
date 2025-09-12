@@ -49,69 +49,23 @@ C     !LOCAL VARIABLES:
       IF ( debugLevel .GE. debLevA .AND. STATUS .NE. NF_NOERR ) THEN
         IL = ILNBLNK(message)
         IF ( IL .GT. 0 ) THEN
-          WRITE( msgBuf,'(A,A,2I3,1X,A)' )
-     &     'NF_MESSAGE: OBSFIT_', message(1:IL),
-     &     bi, bj, NF_STRERROR(STATUS)
+          IF ( (bi.GT.0).AND.(bj.GT.0) ) THEN
+            WRITE( msgBuf,'(A,A,2I3,1X,A)' )
+     &       'NF_MESSAGE: OBSFIT_', message(1:IL),
+     &       bi, bj, NF_STRERROR(STATUS)
+          ELSE
+             WRITE( msgBuf,'(A,A,A,1X,A)' )
+     &       'NF_MESSAGE: OBSFIT_', message(1:IL),
+     &       'global_equi_file',NF_STRERROR(STATUS)
+          ENDIF
         ELSE
-          WRITE( msgBuf,'(A,2I3,1X,A)' ) 'NF_MESSAGE: OBSFIT ',
-     &     bi, bj, NF_STRERROR(STATUS)
-        ENDIF
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &       SQUEEZE_RIGHT,myThid )
-      ENDIF
-#endif /* ALLOW_OBSFIT */
-
-      RETURN
-      END
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
-C !ROUTINE: OBSFIT_NF_ERROR_GLOBAL
-
-C !INTERFACE:
-      SUBROUTINE OBSFIT_NF_ERROR_GLOBAL( message, STATUS, myThid )
-
-C     !DESCRIPTION:
-C     Print NetCDF error message
-           
-C     !USES:
-      IMPLICIT NONE
-C     == Global variables ===
-#ifdef ALLOW_OBSFIT
-# include "SIZE.h"
-# include "EEPARAMS.h"
-# include "PARAMS.h"
-# include "netcdf.inc"
-#endif
-
-C     !INPUT PARAMETERS:
-C     message   :: optional message
-C     STATUS    :: NetCDF error status
-C     myThid    :: my thread ID number
-      CHARACTER*(*) message
-      INTEGER STATUS, myThid
-
-C     !OUTPUT PARAMETERS:
-CEOP
-
-C     !FUNCTIONS:
-      INTEGER ILNBLNK
-      EXTERNAL ILNBLNK
-
-C     !LOCAL VARIABLES:
-#ifdef ALLOW_OBSFIT
-      INTEGER IL
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
-
-      IF ( debugLevel .GE. debLevA .AND. STATUS .NE. NF_NOERR ) THEN
-        IL = ILNBLNK(message)
-        IF ( IL .GT. 0 ) THEN
-          WRITE( msgBuf,'(A,A,1X,A)' )
-     &     'NF_MESSAGE: OBSFIT_', message(1:IL),
-     &     NF_STRERROR(STATUS)
-        ELSE
-          WRITE( msgBuf,'(A,1X,A)' ) 'NF_MESSAGE: OBSFIT ',
-     &     NF_STRERROR(STATUS)
+          IF ( (bi.GT.0).AND.(bj.GT.0) ) THEN
+            WRITE( msgBuf,'(A,2I3,1X,A)' ) 'NF_MESSAGE: OBSFIT ',
+     &       bi, bj, NF_STRERROR(STATUS)
+          ELSE
+            WRITE( msgBuf,'(A,A,1X,A)' ) 'NF_MESSAGE: OBSFIT ',
+     &       'global_equi_file',NF_STRERROR(STATUS)
+          ENDIF
         ENDIF
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &       SQUEEZE_RIGHT,myThid )

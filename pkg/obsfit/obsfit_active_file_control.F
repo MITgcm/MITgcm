@@ -1,10 +1,17 @@
 #include "OBSFIT_OPTIONS.h"
-C--  File obsfit_active_file_control.F:
-C--   Contents
-C--   o active_read_obs_tile_rl
-C--   o active_write_obs_tile_rl
-C--   o active_read_obs_glob_rl
-C--   o active_write_obs_glob_rl
+C     obsfit_active_file_control.F:  Routines that handle the I/O of
+C                                    active variables for adjoint
+C                                    calculations
+C
+C     Routines
+C     o  active_read_obs_tile_rl  - Read an active record from tiled file
+C                                   fwd-mode only: including a mask
+C     o  active_write_obs_tile_rl - Write an active record to tiled file
+C                                   fwd-mode only: including a mask
+C     o  active_read_obs_glob_rl  - Read an active record from global file
+C                                   fwd-mode only: including a mask
+C     o  active_write_obs_glob_rl - Write an active record to global file.
+C                                   fwd-mode only: including a mask
 
 CBOP
 C     !ROUTINE: ACTIVE_READ_OBS_TILE_RL
@@ -44,14 +51,13 @@ C     == Global variables ===
 C     !INPUT PARAMETERS:
       INTEGER  fid
       INTEGER  active_num_file
-      INTEGER  irec, irecglob
+      LOGICAL  lAdInit
+      INTEGER  irec, irecglob, jrec
       INTEGER  theSimulationMode
       INTEGER  myOptimIter
       INTEGER  bi, bj, myThid
+C     !IOUTPUT PARAMETERS:
       _RL      active_var
-      logical  lAdInit
-
-CEOP
 
 #ifdef ALLOW_OBSFIT
 C     !LOCAL VARIABLES:
@@ -60,6 +66,23 @@ C     !LOCAL VARIABLES:
       INTEGER  ivar, i
       _RL      active_data_t
       _RL      vec_tmp(2)
+CEOP
+
+       IF ( obsfitDoNcOutput ) THEN
+
+        vec_start = irec
+        vec_count = 1
+
+        err = NF_INQ_VARID( fid, obsfit_nameequi, varID1 )
+        CALL OBSFIT_NF_ERROR(
+     &       'ACTIVE_READ: NF_INQ_VARID obsfit_nameequi',
+     &       err,bi,bj,myThid )
+
+       ELSE
+
+        jrec = (irec-1)*2
+       
+       ENDIF
 
 C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
@@ -70,28 +93,34 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
        _BEGIN_MASTER( myThid )
 
        IF ( obsfitDoNcOutput ) THEN
-      
-        vec_start = irec
-        vec_count = 1
 
-        err = NF_INQ_VARID( fid, obsfit_nameequi, varID1 )
         err = NF_GET_VARA_DOUBLE( fid, varID1, vec_start, vec_count,
      &        active_var )
-
+        CALL OBSFIT_NF_ERROR(
+     &         'ACTIVE_READ: NF_GET_VARA_DOUBLE active_var',
+     &         err,bi,bj,myThid )
+        
         err = NF_INQ_VARID( fid, obsfit_namemask, varID2 )
+        CALL OBSFIT_NF_ERROR(
+     &         'ACTIVE_READ: NF_INQ_VARID obsfit_namemask',
+     &         err,bi,bj,myThid )
+
         err = NF_GET_VARA_DOUBLE( fid, varID2, vec_start, vec_count,
      &        sample_modmask(bi,bj) )
+        CALL OBSFIT_NF_ERROR(
+     &         'ACTIVE_READ: NF_GET_VARA_DOUBLE sample_modmask',
+     &         err,bi,bj,myThid )
 
        ELSE
 
-        READ( fid,rec = (irec-1)*2+1 )vec_tmp
+        READ( fid, rec=jrec+1 ) vec_tmp
 #ifdef _BYTESWAPIO
-        CALL MDS_BYTESWAPR8(2,vec_tmp)
+        CALL MDS_BYTESWAPR8( 2, vec_tmp )
 #endif
         active_var = vec_tmp(1)
-        READ( fid,rec=(irec-1)*2+2 )vec_tmp
+        READ( fid, rec=jrec+2 ) vec_tmp
 #ifdef _BYTESWAPIO
-        CALL MDS_BYTESWAPR8( 2,vec_tmp )
+        CALL MDS_BYTESWAPR8( 2, vec_tmp )
 #endif
         sample_modmask(bi,bj) = vec_tmp(1)
 
@@ -111,31 +140,30 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
        IF ( obsfitDoNcOutput) THEN
 
-        vec_start = irec
-        vec_count = 1
-
-        err = NF_INQ_VARID( fid, obsfit_nameequi, varID1 )
         err = NF_GET_VARA_DOUBLE( fid, varID1, vec_start, vec_count,
      &        active_data_t )
+        CALL OBSFIT_NF_ERROR(
+     &         'ACTIVE_READ: NF_GET_VARA_DOUBLE AD active_data_t',
+     &         err,bi,bj,myThid )
 
 C Add active_var from appropriate location to data
         active_data_t = active_data_t + active_var
-C Store the result on disk
-        vec_start = irec
-        vec_count = 1
 
-        err = NF_INQ_VARID( fid, obsfit_nameequi, varID1 )
+C Store the result on disk
         err = NF_PUT_VARA_DOUBLE( fid, varID1, vec_start, vec_count,
      &        active_data_t )
+        CALL OBSFIT_NF_ERROR(
+     &         'ACTIVE_READ: NF_PUT_VARA_DOUBLE AD active_data_t',
+     &         err,bi,bj,myThid )
 
 C Set active_var to zero
         active_var = 0. _d 0
 
        ELSE
 
-        READ( fid,rec=(irec-1)*2+1 )vec_tmp
+        READ( fid, rec=jrec+1 ) vec_tmp
 #ifdef _BYTESWAPIO
-        CALL MDS_BYTESWAPR8( 2,vec_tmp )
+        CALL MDS_BYTESWAPR8( 2, vec_tmp )
 #endif
         active_data_t = vec_tmp(1)
 
@@ -145,9 +173,9 @@ C Add active_var from appropriate location to data
 C Store the result on disk
         vec_tmp(1) = active_data_t
 #ifdef _BYTESWAPIO
-        CALL MDS_BYTESWAPR8( 2,vec_tmp )
+        CALL MDS_BYTESWAPR8( 2, vec_tmp )
 #endif
-        WRITE( fid,rec = (irec-1)*2+1 )vec_tmp
+        WRITE( fid, rec=jrec+1 ) vec_tmp
 
 C Set active_var to zero
         active_var = 0. _d 0
@@ -168,18 +196,16 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
        IF ( obsfitDoNcOutput ) THEN
 
-        vec_start = irec
-        vec_count = 1
-
-        err = NF_INQ_VARID( fid, obsfit_nameequi, varID1 )
         err = NF_GET_VARA_DOUBLE( fid, varID1, vec_start, vec_count,
      &        active_var )
-
+        CALL OBSFIT_NF_ERROR(
+     &         'ACTIVE_READ: NF_GET_VARA_DOUBLE TL active_var',
+     &         err,bi,bj,myThid )
        ELSE
 
-        READ( fid,rec=(irec-1)*2+1 )vec_tmp
+        READ( fid, rec=jrec+1 ) vec_tmp
 #ifdef _BYTESWAPIO
-        CALL MDS_BYTESWAPR8( 2,vec_tmp )
+        CALL MDS_BYTESWAPR8( 2, vec_tmp )
 #endif
         active_var = vec_tmp(1)
 
@@ -233,12 +259,11 @@ C     == Global variables ===
 C     !INPUT PARAMETERS:
       INTEGER  fid
       INTEGER  active_num_file
-      INTEGER  irec, irecglob
+      INTEGER  irec, irecglob, jrec
       INTEGER  theSimulationMode
       INTEGER  myOptimIter
       INTEGER  bi, bj, myThid
       _RL      active_var
-CEOP
 
 #ifdef ALLOW_OBSFIT
 C     !LOCAL VARIABLES:
@@ -247,6 +272,22 @@ C     !LOCAL VARIABLES:
       INTEGER  ivar, i
       _RL      active_data_t
       _RL      vec_tmp(2)
+CEOP
+
+      IF ( obsfitDoNcOutput ) THEN
+
+        vec_start = irec
+        vec_count = 1
+
+        err = NF_INQ_VARID( fid, obsfit_nameequi, varID1 )
+        CALL OBSFIT_NF_ERROR(
+     &       'ACTIVE_WRITE: NF_INQ_VARID obsfit_nameequi',
+     &       err,bi,bj,myThid )
+      ELSE
+
+        jrec = (irec-1)*2
+      
+      ENDIF
 
 C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
@@ -258,34 +299,45 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
        IF ( obsfitDoNcOutput ) THEN
 
-        vec_start = irec
-        vec_count = 1
-
-        err = NF_INQ_VARID( fid, obsfit_nameequi, varID1 )
         err = NF_PUT_VARA_DOUBLE( fid, varID1, vec_start, vec_count,
      &        active_var )
+        CALL OBSFIT_NF_ERROR(
+     &       'ACTIVE_WRITE: NF_PUT_VARA_DOUBLE active_var',
+     &       err,bi,bj,myThid )
 
         err = NF_INQ_VARID( fid, obsfit_namemask, varID2 )
+        CALL OBSFIT_NF_ERROR(
+     &         'ACTIVE_WRITE: NF_INQ_VARID obsfit_namemask',
+     &         err,bi,bj,myThid )
         err = NF_PUT_VARA_DOUBLE( fid, varID2, vec_start, vec_count,
      &        sample_modmask(bi,bj) )
+        CALL OBSFIT_NF_ERROR(
+     &         'ACTIVE_WRITE: NF_PUT_VARA_DOUBLE sample_modmask',
+     &         err,bi,bj,myThid )
 
-        err = NF_INQ_VARID( fid,'sample_ind_glob', varID3 )
+        err = NF_INQ_VARID( fid, 'sample_ind_glob', varID3 )
+        CALL OBSFIT_NF_ERROR(
+     &         'ACTIVE_WRITE: NF_INQ_VARID sample_ind_glob',
+     &         err,bi,bj,myThid )
         err = NF_PUT_VAR1_INT( fid, varID3, vec_start, irecglob )
+        CALL OBSFIT_NF_ERROR(
+     &         'ACTIVE_WRITE: NF_PUT_VAR1_INT irecglob',
+     &         err,bi,bj,myThid )
 
        ELSE
 
         vec_tmp(1) = active_var
         vec_tmp(2) = irecglob
 #ifdef _BYTESWAPIO
-        CALL MDS_BYTESWAPR8( 2,vec_tmp )
+        CALL MDS_BYTESWAPR8( 2, vec_tmp )
 #endif
-        WRITE( fid,rec=(irec-1)*2+1 )vec_tmp
+        WRITE( fid, rec= jrec+1 ) vec_tmp
         vec_tmp(1) = sample_modmask(bi,bj)
         vec_tmp(2) = irecglob
 #ifdef _BYTESWAPIO
-        CALL MDS_BYTESWAPR8( 2,vec_tmp )
+        CALL MDS_BYTESWAPR8( 2, vec_tmp )
 #endif
-        WRITE( fid,rec=(irec-1)*2+2 )vec_tmp
+        WRITE( fid, rec= jrec+2 ) vec_tmp
 
        ENDIF
 
@@ -303,28 +355,27 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
        IF ( obsfitDoNcOutput ) THEN
 
-        vec_start = irec
-        vec_count = 1
-        err = NF_INQ_VARID( fid, obsfit_nameequi, varID1 )
         err = NF_GET_VARA_DOUBLE( fid, varID1, vec_start, vec_count,
      &        active_data_t )
+        CALL OBSFIT_NF_ERROR(
+     &       'ACTIVE_WRITE: NF_GET_VARA_DOUBLE active_data_t',
+     &       err,bi,bj,myThid )
 
 C     Add active_var to data.
         active_var = active_var + active_data_t
         active_data_t = 0. _d 0
 
-        vec_start = irec
-        vec_count = 1
-
-        err = NF_INQ_VARID( fid, obsfit_nameequi, varID1 )
         err = NF_PUT_VARA_DOUBLE(fid, varID1, vec_start, vec_count,
      &        active_data_t )
+        CALL OBSFIT_NF_ERROR(
+     &         'ACTIVE_WRITE: NF_PUT_VARA_DOUBLE active_data_t',
+     &         err,bi,bj,myThid )
 
        ELSE
 
-        READ( fid,rec=(irec-1)*2+1 )vec_tmp
+        READ( fid, rec=jrec+1 ) vec_tmp
 #ifdef _BYTESWAPIO
-        CALL MDS_BYTESWAPR8( 2,vec_tmp )
+        CALL MDS_BYTESWAPR8( 2, vec_tmp )
 #endif
         active_data_t = vec_tmp(1)
 
@@ -335,9 +386,9 @@ C Add active_var from appropriate location to data.
 C Store the result on disk.
         vec_tmp(1) = active_data_t
 #ifdef _BYTESWAPIO
-        CALL MDS_BYTESWAPR8( 2,vec_tmp )
+        CALL MDS_BYTESWAPR8( 2, vec_tmp )
 #endif
-        WRITE( fid,rec=(irec-1)*2+1 )vec_tmp
+        WRITE( fid, rec=jrec+1 ) vec_tmp
 
        ENDIF
 
@@ -355,21 +406,19 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
        IF ( obsfitDoNcOutput ) THEN
 
-        vec_start = irec
-        vec_count = 1
-
-        err = NF_INQ_VARID( fid, obsfit_nameequi, varID1 )
         err = NF_PUT_VARA_DOUBLE(fid, varID1, vec_start, vec_count,
      &        active_var )
-
+          CALL OBSFIT_NF_ERROR(
+     &         'ACTIVE_WRITE: NF_PUT_VARA_DOUBLE TL active_var',
+     &         err,bi,bj,myThid )
        ELSE
 
         vec_tmp(1) = active_var
         vec_tmp(2) = irecglob
 #ifdef _BYTESWAPIO
-        CALL MDS_BYTESWAPR8( 2,vec_tmp )
+        CALL MDS_BYTESWAPR8( 2, vec_tmp )
 #endif
-        WRITE( fid,rec=(irec-1)*2+1 )vec_tmp
+        WRITE( fid, rec=jrec+1 ) vec_tmp
 
        ENDIF
 
@@ -428,8 +477,6 @@ C     !INPUT PARAMETERS:
       _RL      active_mask
       logical  lAdInit
 
-CEOP
-
 #ifdef ALLOW_OBSFIT
 C     !LOCAL VARIABLES:
       INTEGER  err, varID1, varID2
@@ -437,6 +484,10 @@ C     !LOCAL VARIABLES:
       INTEGER  ivar, i
       _RL      active_data_t
       _RL      vec_tmp(2)
+CEOP
+
+      vec_start = irecglob
+      vec_count = 1
 
 C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
@@ -446,9 +497,6 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
        _BEGIN_MASTER( myThid )
       
-        vec_start = irecglob
-        vec_count = 1
-
         err = NF_INQ_VARID( fid, obsfit_nameequi, varID1 )
         err = NF_GET_VARA_DOUBLE( fid, varID1, vec_start, vec_count,
      &   active_var )
@@ -469,9 +517,6 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
        _BEGIN_MASTER( myThid )
 
-       vec_start = irecglob
-       vec_count = 1
-
        err = NF_INQ_VARID( fid, obsfit_nameequi, varID1 )
        err = NF_GET_VARA_DOUBLE( fid, varID1, vec_start, vec_count,
      &       active_data_t )
@@ -479,8 +524,9 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 C Add active_var from appropriate location to data
        active_data_t = active_data_t + active_var
 C Store the result on disk.
-       vec_start = irec
-       vec_count = 1
+CAV !!!!!!
+ccc       vec_start = irec
+ccc       vec_count = 1
 
        err = NF_INQ_VARID( fid, obsfit_nameequi, varID1 )
        err = NF_PUT_VARA_DOUBLE( fid, varID1, vec_start, vec_count,
@@ -500,9 +546,6 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
       IF ( theSimulationMode .EQ. TANGENT_SIMULATION ) THEN
 
        _BEGIN_MASTER( myThid )
-
-       vec_start = irecglob
-       vec_count = 1
 
        err = NF_INQ_VARID( fid, obsfit_nameequi, varID1 )
        err = NF_GET_VARA_DOUBLE( fid, varID1, vec_start, vec_count,
@@ -560,7 +603,6 @@ C     !INPUT PARAMETERS:
       INTEGER  myThid
       _RL      active_var
       _RL      active_mask
-CEOP
 
 #ifdef ALLOW_OBSFIT
 C     !LOCAL VARIABLES:
@@ -569,6 +611,10 @@ C     !LOCAL VARIABLES:
       INTEGER  ivar, i
       _RL      active_data_t
       _RL      vec_tmp(2)
+CEOP
+
+      vec_start = irecglob
+      vec_count = 1
 
 C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
@@ -577,9 +623,6 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
       IF ( theSimulationMode .EQ. FORWARD_SIMULATION ) THEN
 
        _BEGIN_MASTER( myThid )
-
-       vec_start = irecglob
-       vec_count = 1
 
        err = NF_INQ_VARID( fid, obsfit_nameequi, varID1 )
        err = NF_PUT_VARA_DOUBLE( fid, varID1, vec_start, vec_count,
@@ -601,8 +644,8 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
        _BEGIN_MASTER( myThid )
 
-       vec_start = irec
-       vec_count = 1
+cav       vec_start = irec
+cav       vec_count = 1
        err = NF_INQ_VARID( fid, obsfit_nameequi, varID1 )
        err = NF_GET_VARA_DOUBLE( fid, varID1, vec_start, vec_count,
      &       active_data_t )
@@ -611,8 +654,8 @@ C Add active_var to data.
        active_var = active_var + active_data_t
        active_data_t = 0. _d 0
 
-       vec_start = irecglob
-       vec_count = 1
+cav       vec_start = irecglob
+cav       vec_count = 1
 
        err = NF_INQ_VARID( fid, obsfit_nameequi, varID1 )
        err = NF_PUT_VARA_DOUBLE( fid, varID1, vec_start, vec_count,
@@ -629,9 +672,6 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
       IF ( theSimulationMode .EQ. TANGENT_SIMULATION ) THEN
 
        _BEGIN_MASTER( myThid )
-
-       vec_start = irecglob
-       vec_count = 1
 
        err = NF_INQ_VARID( fid, obsfit_nameequi, varID1 )
        err = NF_PUT_VARA_DOUBLE( fid, varID1, vec_start, vec_count,

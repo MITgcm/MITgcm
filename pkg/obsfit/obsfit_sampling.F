@@ -130,6 +130,14 @@ C This is where sample types are assigned to model variables
         mask_cur = 0. _d 0
       ENDIF
 
+#ifdef ALLOW_AUTODIFF_TAMC
+C     This is necessary, because TAF does not recognise sample_modmask
+C     as active and does not include it in the TL-version of this
+C     routine leading to sample_modmask=0 and also to
+C     objf_obsfit_tl=0.
+C$TAF INCOMPLETE sample_modmask
+#endif
+
       modval_cur_out = modval_cur
       sample_modmask(bi,bj) = mask_cur
 

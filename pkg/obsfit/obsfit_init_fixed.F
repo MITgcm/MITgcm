@@ -202,18 +202,18 @@ C===========================================================
 
         WRITE( fnamedatanc,'(2A)' ) obsfitFile(1:IL),'.nc'
         err = NF_OPEN( fnamedatanc, NF_NOWRITE, fiddata_obs(num_file) )
-        CALL OBSFIT_NF_ERROR_GLOBAL(
-     &       'INIT_FIXED: NF_OPEN fiddata',err,myThid )
+        CALL OBSFIT_NF_ERROR(
+     &       'INIT_FIXED: NF_OPEN fiddata',err,0,0,myThid )
 
 C Read number of observations and available dimensions:
         fid = fiddata_obs(num_file)
 
         err = NF_INQ_DIMID( fid,'iOBS', dimid )
-        CALL OBSFIT_NF_ERROR_GLOBAL(
-     &       'INIT_FIXED: NF_INQ_DIMID iOBS',err,myThid )
+        CALL OBSFIT_NF_ERROR(
+     &       'INIT_FIXED: NF_INQ_DIMID iOBS',err,0,0,myThid )
         err = NF_INQ_DIMLEN( fid, dimid, obsNo(num_file) )
-        CALL OBSFIT_NF_ERROR_GLOBAL(
-     &       'INIT_FIXED: NF_INQ_DIMLEN ObsNo',err,myThid )
+        CALL OBSFIT_NF_ERROR(
+     &       'INIT_FIXED: NF_INQ_DIMLEN ObsNo',err,0,0,myThid )
 
         WRITE(msgbuf,'(A,I9)')
      &       '  # of observations in file                   =',
@@ -225,14 +225,14 @@ C Read number of interpolation points (generic grid only):
         IF (err.EQ.NF_NOERR) THEN
           
          err = NF_INQ_DIMLEN( fid, dimid, iINTERP )
-         CALL OBSFIT_NF_ERROR_GLOBAL(
-     &        'INIT_FIXED: NF_INQ_DIMID iINTERP',err,myThid )
+         CALL OBSFIT_NF_ERROR(
+     &        'INIT_FIXED: NF_INQ_DIMID iINTERP',err,0,0,myThid )
 
         ELSE 
 
          IF ( debugLevel .GE. debLevA ) THEN
-          CALL OBSFIT_NF_ERROR_GLOBAL(
-     &         'INIT_FIXED: NF_INQ_DIMID iINTERP',err,myThid )
+          CALL OBSFIT_NF_ERROR(
+     &         'INIT_FIXED: NF_INQ_DIMID iINTERP',err,0,0,myThid )
           WRITE( msgBuf,'(3A,I3)' )
      &         'S/R OBSFIT_INIT_FIXED: ',
      &         'no iINTERP dim in data file using iINTERP ',
@@ -265,20 +265,20 @@ C Read number of samples (if missing, assume it's 1):
 C Read the info for observations:
         err = NF_INQ_VARID( fid, 'obs_YYYYMMDD', varID1a )
         nerr = err
-        CALL OBSFIT_NF_ERROR_GLOBAL(
-     &       'INIT_FIXED: NF_INQ_DIMID obs_YYYYMMDD',err,myThid )
+        CALL OBSFIT_NF_ERROR(
+     &       'INIT_FIXED: NF_INQ_DIMID obs_YYYYMMDD',err,0,0,myThid )
         err = NF_INQ_VARID( fid, 'obs_HHMMSS', varID1b )
         nerr = nerr + err
-        CALL OBSFIT_NF_ERROR_GLOBAL(
-     &       'INIT_FIXED: NF_INQ_DIMID obs_HHMMSS',err,myThid )
+        CALL OBSFIT_NF_ERROR(
+     &       'INIT_FIXED: NF_INQ_DIMID obs_HHMMSS',err,0,0,myThid )
         err = NF_INQ_VARID( fid, 'obs_val', varID6 )
         nerr = err
-        CALL OBSFIT_NF_ERROR_GLOBAL(
-     &       'INIT_FIXED: NF_INQ_DIMID obs_val',err,myThid )
+        CALL OBSFIT_NF_ERROR(
+     &       'INIT_FIXED: NF_INQ_DIMID obs_val',err,0,0,myThid )
         err = NF_INQ_VARID( fid, 'obs_uncert', varID7 )
         nerr = err
-        CALL OBSFIT_NF_ERROR_GLOBAL(
-     &       'INIT_FIXED: NF_INQ_DIMID obs_uncert',err,myThid )
+        CALL OBSFIT_NF_ERROR(
+     &       'INIT_FIXED: NF_INQ_DIMID obs_uncert',err,0,0,myThid )
 
         IF (err.NE.NF_NOERR) THEN
          IL  = ILNBLNK( obsfitFile )
@@ -303,20 +303,20 @@ C Time interval (if missing, assume instanteneous):
 C Read the info for samples:
         err = NF_INQ_VARID( fid,'sample_type',varID2 )
         nerr = err
-        CALL OBSFIT_NF_ERROR_GLOBAL(
-     &       'INIT_FIXED: NF_INQ_DIMID sample_type',err,myThid )
+        CALL OBSFIT_NF_ERROR(
+     &       'INIT_FIXED: NF_INQ_DIMID sample_type',err,0,0,myThid )
         err = NF_INQ_VARID( fid,'sample_lon', varID3a )
         nerr = err
-        CALL OBSFIT_NF_ERROR_GLOBAL(
-     &       'INIT_FIXED: NF_INQ_DIMID sample_lon',err,myThid )
+        CALL OBSFIT_NF_ERROR(
+     &       'INIT_FIXED: NF_INQ_DIMID sample_lon',err,0,0,myThid )
         err = NF_INQ_VARID( fid,'sample_lat', varID3b )
         nerr = err
-        CALL OBSFIT_NF_ERROR_GLOBAL(
-     &       'INIT_FIXED: NF_INQ_DIMID sample_lat',err,myThid )
+        CALL OBSFIT_NF_ERROR(
+     &       'INIT_FIXED: NF_INQ_DIMID sample_lat',err,0,0,myThid )
         err = NF_INQ_VARID( fid,'sample_depth', varID4 )
         nerr = err
-        CALL OBSFIT_NF_ERROR_GLOBAL(
-     &       'INIT_FIXED: NF_INQ_DIMID osample_depth',err,myThid )
+        CALL OBSFIT_NF_ERROR(
+     &       'INIT_FIXED: NF_INQ_DIMID sample_depth',err,0,0,myThid )
 
         IF (err.NE.NF_NOERR) THEN
          IL  = ILNBLNK( obsfitFile )

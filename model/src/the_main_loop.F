@@ -689,9 +689,9 @@ c--     Accumulate in-situ time averages of theta, salt, and SSH.
 #endif /* ALLOW_PROFILES */
 
 #ifdef ALLOW_OBSFIT
-      IF (useOBSFIT) THEN
+      IF ( useOBSFIT ) THEN
 #ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('obsfit_inloop',myThid)
+        IF (debugMode) CALL DEBUG_CALL('OBSFIT_INLOOP',myThid)
 #endif
 c--     Accumulate in-situ time averages of theta, salt, and SSH.
 #ifdef ALLOW_AUTODIFF
@@ -703,7 +703,7 @@ C--   Reset the model iteration counter and the model time.
         CALL OBSFIT_INLOOP( myTime, myThid )
         CALL TIMER_STOP ('OBSFIT_INLOOP      [MAIN_DO_LOOP]', myThid)
       ENDIF
-#endif
+#endif /* ALLOW_OBSFIT */
 
       CALL TIMER_START('MAIN_DO_LOOP        [THE_MAIN_LOOP]', myThid)
       CALL MAIN_DO_LOOP( iloop, myTime, myIter, myThid )
@@ -770,7 +770,7 @@ c--   Accumulate in-situ time averages of temperature, salinity, SSH.
 c--   Compute all obsfit cost function contributions.
         CALL OBSFIT_COST( myIter, myTime, myThid )
       ENDIF
-#endif
+#endif /* ALLOW_OBSFIT */
 
 #ifdef ALLOW_ECCO
       IF ( useECCO ) then
