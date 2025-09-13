@@ -5,10 +5,10 @@
 (PID.TID 0000.0001) // ======================================================
 (PID.TID 0000.0001) // execution environment starting up...
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) // MITgcmUV version:  checkpoint69c
-(PID.TID 0000.0001) // Build user:        averdy
-(PID.TID 0000.0001) // Build host:        lani
-(PID.TID 0000.0001) // Build date:        Wed May 21 11:54:37 AM PDT 2025
+(PID.TID 0000.0001) // MITgcmUV version:  checkpoint69g
+(PID.TID 0000.0001) // Build user:        jm_c
+(PID.TID 0000.0001) // Build host:        villon
+(PID.TID 0000.0001) // Build date:        Sat Sep 13 10:54:17 EDT 2025
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Execution Environment parameter file "eedata"
@@ -967,8 +967,10 @@
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) obsfit file #  1 is obsfit_t
 (PID.TID 0000.0001)   # of observations in file                   =     1575
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_INIT_FIXED: NF_INQ_DIMID iINTERPglobal_equi_file NetCDF: Invalid dimension ID or name
+(PID.TID 0000.0001) S/R OBSFIT_INIT_FIXED: no iINTERP dim in data file using iINTERP = NUM_INTERP_POINTS =  8
 (PID.TID 0000.0001)   # of interpolation points                   =        8
-(PID.TID 0000.0001)       input obsfit file does not have NP (num. samples);      assume NP=1 for all obs
+(PID.TID 0000.0001)       input obsfit file does not have NP       (num. samples); assume NP=1 for all obs
 (PID.TID 0000.0001)       input obsfit file does not have time interval;      assume observations are instantaneous
 (PID.TID 0000.0001)       input obsfit file does not have sample weight;      assume all samples are weighed evenly
 (PID.TID 0000.0001)   # of obs with erroneous HHMMSS values =        0
@@ -1103,24 +1105,24 @@
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) ------------------------------------------------------------
 (PID.TID 0000.0001) DIAGNOSTICS_SET_LEVELS: done
-(PID.TID 0000.0001)  Total Nb of available Diagnostics: ndiagt=   437
+(PID.TID 0000.0001)  Total Nb of available Diagnostics: ndiagt=   440
 (PID.TID 0000.0001)  write list of available Diagnostics to file: available_diagnostics.log
-(PID.TID 0000.0001) SETDIAG: Allocate 15 x  1 Levels for Diagnostic #   236 TRAC01
-(PID.TID 0000.0001) SETDIAG: Allocate 15 x  1 Levels for Diagnostic #   251 TRAC02
-(PID.TID 0000.0001) SETDIAG: Allocate 15 x  1 Levels for Diagnostic #   266 TRAC03
-(PID.TID 0000.0001) SETDIAG: Allocate 15 x  1 Levels for Diagnostic #   281 TRAC04
-(PID.TID 0000.0001) SETDIAG: Allocate 15 x  1 Levels for Diagnostic #   296 TRAC05
-(PID.TID 0000.0001) SETDIAG: Allocate 15 x  1 Levels for Diagnostic #   311 TRAC06
-(PID.TID 0000.0001) SETDIAG: Allocate 15 x  1 Levels for Diagnostic #   326 TRAC07
-(PID.TID 0000.0001) SETDIAG: Allocate 15 x  1 Levels for Diagnostic #   341 TRAC08
-(PID.TID 0000.0001) SETDIAG: Allocate 15 x  1 Levels for Diagnostic #   250 ADJptr01
-(PID.TID 0000.0001) SETDIAG: Allocate 15 x  1 Levels for Diagnostic #   265 ADJptr02
-(PID.TID 0000.0001) SETDIAG: Allocate 15 x  1 Levels for Diagnostic #   280 ADJptr03
-(PID.TID 0000.0001) SETDIAG: Allocate 15 x  1 Levels for Diagnostic #   295 ADJptr04
-(PID.TID 0000.0001) SETDIAG: Allocate 15 x  1 Levels for Diagnostic #   310 ADJptr05
-(PID.TID 0000.0001) SETDIAG: Allocate 15 x  1 Levels for Diagnostic #   325 ADJptr06
-(PID.TID 0000.0001) SETDIAG: Allocate 15 x  1 Levels for Diagnostic #   340 ADJptr07
-(PID.TID 0000.0001) SETDIAG: Allocate 15 x  1 Levels for Diagnostic #   355 ADJptr08
+(PID.TID 0000.0001) SETDIAG: Allocate 15 x  1 Levels for Diagnostic #   239 TRAC01
+(PID.TID 0000.0001) SETDIAG: Allocate 15 x  1 Levels for Diagnostic #   254 TRAC02
+(PID.TID 0000.0001) SETDIAG: Allocate 15 x  1 Levels for Diagnostic #   269 TRAC03
+(PID.TID 0000.0001) SETDIAG: Allocate 15 x  1 Levels for Diagnostic #   284 TRAC04
+(PID.TID 0000.0001) SETDIAG: Allocate 15 x  1 Levels for Diagnostic #   299 TRAC05
+(PID.TID 0000.0001) SETDIAG: Allocate 15 x  1 Levels for Diagnostic #   314 TRAC06
+(PID.TID 0000.0001) SETDIAG: Allocate 15 x  1 Levels for Diagnostic #   329 TRAC07
+(PID.TID 0000.0001) SETDIAG: Allocate 15 x  1 Levels for Diagnostic #   344 TRAC08
+(PID.TID 0000.0001) SETDIAG: Allocate 15 x  1 Levels for Diagnostic #   253 ADJptr01
+(PID.TID 0000.0001) SETDIAG: Allocate 15 x  1 Levels for Diagnostic #   268 ADJptr02
+(PID.TID 0000.0001) SETDIAG: Allocate 15 x  1 Levels for Diagnostic #   283 ADJptr03
+(PID.TID 0000.0001) SETDIAG: Allocate 15 x  1 Levels for Diagnostic #   298 ADJptr04
+(PID.TID 0000.0001) SETDIAG: Allocate 15 x  1 Levels for Diagnostic #   313 ADJptr05
+(PID.TID 0000.0001) SETDIAG: Allocate 15 x  1 Levels for Diagnostic #   328 ADJptr06
+(PID.TID 0000.0001) SETDIAG: Allocate 15 x  1 Levels for Diagnostic #   343 ADJptr07
+(PID.TID 0000.0001) SETDIAG: Allocate 15 x  1 Levels for Diagnostic #   358 ADJptr08
 (PID.TID 0000.0001)   space allocated for all diagnostics:     240 levels
 (PID.TID 0000.0001) DIAGNOSTICS_SET_POINTERS: Set levels for Outp.Stream: blingTracDiag
 (PID.TID 0000.0001)  Levels:       1.   2.   3.   4.   5.   6.   7.   8.   9.  10.  11.  12.  13.  14.  15.
@@ -1452,18 +1454,15 @@
 (PID.TID 0000.0001)                       0
 (PID.TID 0000.0001)     0= Expl. ; 1= Impl. on provis. Vel ; 2= Fully Impl (with surf.P)
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) selectMetricTerms= /* Metric-Terms on/off flag (=0/1) */
+(PID.TID 0000.0001) selectMetricTerms= /* Scheme selector for Horizontal Metric Terms */
 (PID.TID 0000.0001)                       1
+(PID.TID 0000.0001)    = 0 : Off (ignore Spherical/Cylindrical Metric Terms)
+(PID.TID 0000.0001)    = 1 : original discretization
+(PID.TID 0000.0001)    = 2 : using (Spherical) grid-spacing
+(PID.TID 0000.0001)    = 3 : as 2 but gU-Metric inside Advection
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) useNHMTerms = /* Non-Hydrostatic Metric-Terms on/off */
 (PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) selectCoriMap = /* Coriolis Map options (0,1,2,3)*/
-(PID.TID 0000.0001)                       2
-(PID.TID 0000.0001)     0= f-Plane ; 1= Beta-Plane ; 2= Spherical ; 3= read from file
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) select3dCoriScheme= /* 3-D Coriolis on/off flag (=0/1) */
-(PID.TID 0000.0001)                       0
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) useCoriolis =  /* Coriolis on/off flag */
 (PID.TID 0000.0001)                   T
@@ -1471,12 +1470,23 @@
 (PID.TID 0000.0001) useCDscheme =  /* CD scheme on/off flag */
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) selectCoriMap = /* Coriolis Map options (0,1,2,3)*/
+(PID.TID 0000.0001)                       2
+(PID.TID 0000.0001)     0= f-Plane ; 1= Beta-Plane ; 2= Spherical ; 3= read from file
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) select3dCoriScheme= /* Scheme selector for 3-D Coriolis-Term */
+(PID.TID 0000.0001)                       0
+(PID.TID 0000.0001)    = 0 : Off (ignore 3-D Coriolis Terms in Omega.Cos(Lat) )
+(PID.TID 0000.0001)    = 1 : original discretization ; = 2 : using averaged Transport
+(PID.TID 0000.0001)    = 3 : same as 2 with hFac in gW_Cor
+(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) selectCoriScheme= /* Scheme selector for Coriolis-Term */
 (PID.TID 0000.0001)                       0
 (PID.TID 0000.0001)    = 0 : original discretization (simple averaging, no hFac)
 (PID.TID 0000.0001)    = 1 : Wet-point averaging (Jamar & Ozer 1986)
 (PID.TID 0000.0001)    = 2 : energy conserving scheme (no hFac weight)
 (PID.TID 0000.0001)    = 3 : energy conserving scheme using Wet-point averaging
+(PID.TID 0000.0001)    = 4 : hFac weighted average (Angular Mom. conserving)
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) momForcing =  /* Momentum forcing on/off flag */
 (PID.TID 0000.0001)                   T
@@ -1516,6 +1526,9 @@
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) tempForcing  =  /* Temperature forcing on/off flag */
 (PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) selectPenetratingSW = /* short wave penetration selector */
+(PID.TID 0000.0001)                       1
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) doThetaClimRelax = /* apply SST relaxation on/off flag */
 (PID.TID 0000.0001)                   T
@@ -1603,7 +1616,7 @@
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) printResidualFreq = /* Freq. for printing CG residual */
-(PID.TID 0000.0001)                       0
+(PID.TID 0000.0001)                      -1
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) //
 (PID.TID 0000.0001) // Time stepping paramters ( PARM03 in namelist )
@@ -3334,7 +3347,13 @@
 (PID.TID 0000.0001) %CHECKPOINT         4 ckptA
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) == obsfit_cost: begin ==
-(PID.TID 0000.0001)  obsfit_cost( 1)=  0.15761D+05 0.24000D+02
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_SYNC fidglobalglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_INQ_VARID misfitglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_SYNC fidglobalglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_INQ_VARID misfitglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_SYNC fidglobalglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_INQ_VARID misfitglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001)  CAV obsfit_cost( 1) =  0.1576114792104E+05  0.24000D+02
 (PID.TID 0000.0001) == obsfit_cost: end   ==
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  --> f_obsfit = 0.157611479210415D+05 1
@@ -3841,10 +3860,16 @@ grad-res -------------------------------
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) == obsfit_cost: begin ==
-(PID.TID 0000.0001)  obsfit_cost( 1)=  0.15761D+05 0.24000D+02
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_SYNC fidglobalglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_INQ_VARID misfitglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_SYNC fidglobalglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_INQ_VARID misfitglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_SYNC fidglobalglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_INQ_VARID misfitglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001)  CAV obsfit_cost( 1) =  0.1576114792095E+05  0.24000D+02
 (PID.TID 0000.0001) == obsfit_cost: end   ==
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  --> f_obsfit = 0.157611479210415D+05 1
+(PID.TID 0000.0001)  --> f_obsfit = 0.157611479209463D+05 1
 (PID.TID 0000.0001)  --> f_gencost = 0.837877395025334D-02 1
 (PID.TID 0000.0001)  --> f_genarr3d = 0.999999949475751D-10 1
 (PID.TID 0000.0001)  --> f_genarr3d = 0.000000000000000D+00 2
@@ -3854,12 +3879,12 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  --> f_genarr3d = 0.000000000000000D+00 6
 (PID.TID 0000.0001)  --> f_genarr3d = 0.000000000000000D+00 7
 (PID.TID 0000.0001)  --> f_genarr3d = 0.000000000000000D+00 8
-(PID.TID 0000.0001)  --> fc               = 0.157611479210416D+05
+(PID.TID 0000.0001)  --> fc               = 0.157611479209464D+05
 (PID.TID 0000.0001) Not writing cost function info to costfunction0000
 (PID.TID 0000.0001)   early fc =  0.000000000000000D+00
 (PID.TID 0000.0001)   local fc =  0.999999949475751D-10
-(PID.TID 0000.0001)  global fc =  0.157611479210416D+05
-(PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  =  1.57611479210416E+04
+(PID.TID 0000.0001)  global fc =  0.157611479209464D+05
+(PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  =  1.57611479209464E+04
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
@@ -3878,10 +3903,16 @@ grad-res -------------------------------
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) == obsfit_cost: begin ==
-(PID.TID 0000.0001)  obsfit_cost( 1)=  0.15761D+05 0.24000D+02
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_SYNC fidglobalglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_INQ_VARID misfitglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_SYNC fidglobalglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_INQ_VARID misfitglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_SYNC fidglobalglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_INQ_VARID misfitglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001)  CAV obsfit_cost( 1) =  0.1576114792114E+05  0.24000D+02
 (PID.TID 0000.0001) == obsfit_cost: end   ==
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  --> f_obsfit = 0.157611479210415D+05 1
+(PID.TID 0000.0001)  --> f_obsfit = 0.157611479211368D+05 1
 (PID.TID 0000.0001)  --> f_gencost = 0.837872551897835D-02 1
 (PID.TID 0000.0001)  --> f_genarr3d = 0.999999949475751D-10 1
 (PID.TID 0000.0001)  --> f_genarr3d = 0.000000000000000D+00 2
@@ -3891,18 +3922,18 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  --> f_genarr3d = 0.000000000000000D+00 6
 (PID.TID 0000.0001)  --> f_genarr3d = 0.000000000000000D+00 7
 (PID.TID 0000.0001)  --> f_genarr3d = 0.000000000000000D+00 8
-(PID.TID 0000.0001)  --> fc               = 0.157611479210416D+05
+(PID.TID 0000.0001)  --> fc               = 0.157611479211369D+05
 (PID.TID 0000.0001) Not writing cost function info to costfunction0000
 (PID.TID 0000.0001)   early fc =  0.000000000000000D+00
 (PID.TID 0000.0001)   local fc =  0.999999949475751D-10
-(PID.TID 0000.0001)  global fc =  0.157611479210416D+05
-(PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus =  1.57611479210416E+04
+(PID.TID 0000.0001)  global fc =  0.157611479211369D+05
+(PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus =  1.57611479211369E+04
 grad-res -------------------------------
- grad-res     0    1   34   10    1    2    1    1   1.57611479210E+04  1.57611479210E+04  1.57611479210E+04
- grad-res     0    1    1  257    0    2    1    1  -9.52309370041E-03  0.00000000000E+00  1.00000000000E+00
+ grad-res     0    1   34   10    1    2    1    1   1.57611479210E+04  1.57611479209E+04  1.57611479211E+04
+ grad-res     0    1    1  257    0    2    1    1  -9.52309370041E-03 -9.52295522438E-03  1.45410755863E-05
 (PID.TID 0000.0001)  ADM  ref_cost_function      =  1.57611479210415E+04
 (PID.TID 0000.0001)  ADM  adjoint_gradient       = -9.52309370040894E-03
-(PID.TID 0000.0001)  ADM  finite-diff_grad       =  0.00000000000000E+00
+(PID.TID 0000.0001)  ADM  finite-diff_grad       = -9.52295522438362E-03
 (PID.TID 0000.0001) ====== End of gradient-check number   1 (ierr=  0) =======
 (PID.TID 0000.0001) ====== Starts gradient-check number   2 (=ichknum) =======
  ph-test icomp, ncvarcomp, ichknum          258       55673           2
@@ -3927,10 +3958,16 @@ grad-res -------------------------------
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) == obsfit_cost: begin ==
-(PID.TID 0000.0001)  obsfit_cost( 1)=  0.15761D+05 0.24000D+02
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_SYNC fidglobalglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_INQ_VARID misfitglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_SYNC fidglobalglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_INQ_VARID misfitglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_SYNC fidglobalglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_INQ_VARID misfitglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001)  CAV obsfit_cost( 1) =  0.1576114718269E+05  0.24000D+02
 (PID.TID 0000.0001) == obsfit_cost: end   ==
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  --> f_obsfit = 0.157611479210415D+05 1
+(PID.TID 0000.0001)  --> f_obsfit = 0.157611471826944D+05 1
 (PID.TID 0000.0001)  --> f_gencost = 0.837877538509492D-02 1
 (PID.TID 0000.0001)  --> f_genarr3d = 0.999999949475751D-10 1
 (PID.TID 0000.0001)  --> f_genarr3d = 0.000000000000000D+00 2
@@ -3940,12 +3977,12 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  --> f_genarr3d = 0.000000000000000D+00 6
 (PID.TID 0000.0001)  --> f_genarr3d = 0.000000000000000D+00 7
 (PID.TID 0000.0001)  --> f_genarr3d = 0.000000000000000D+00 8
-(PID.TID 0000.0001)  --> fc               = 0.157611479210416D+05
+(PID.TID 0000.0001)  --> fc               = 0.157611471826945D+05
 (PID.TID 0000.0001) Not writing cost function info to costfunction0000
 (PID.TID 0000.0001)   early fc =  0.000000000000000D+00
 (PID.TID 0000.0001)   local fc =  0.999999949475751D-10
-(PID.TID 0000.0001)  global fc =  0.157611479210416D+05
-(PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  =  1.57611479210416E+04
+(PID.TID 0000.0001)  global fc =  0.157611471826945D+05
+(PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  =  1.57611471826945E+04
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
@@ -3964,10 +4001,16 @@ grad-res -------------------------------
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) == obsfit_cost: begin ==
-(PID.TID 0000.0001)  obsfit_cost( 1)=  0.15761D+05 0.24000D+02
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_SYNC fidglobalglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_INQ_VARID misfitglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_SYNC fidglobalglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_INQ_VARID misfitglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_SYNC fidglobalglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_INQ_VARID misfitglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001)  CAV obsfit_cost( 1) =  0.1576114865940E+05  0.24000D+02
 (PID.TID 0000.0001) == obsfit_cost: end   ==
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  --> f_obsfit = 0.157611479210415D+05 1
+(PID.TID 0000.0001)  --> f_obsfit = 0.157611486593971D+05 1
 (PID.TID 0000.0001)  --> f_gencost = 0.837872408413677D-02 1
 (PID.TID 0000.0001)  --> f_genarr3d = 0.999999949475751D-10 1
 (PID.TID 0000.0001)  --> f_genarr3d = 0.000000000000000D+00 2
@@ -3977,18 +4020,18 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  --> f_genarr3d = 0.000000000000000D+00 6
 (PID.TID 0000.0001)  --> f_genarr3d = 0.000000000000000D+00 7
 (PID.TID 0000.0001)  --> f_genarr3d = 0.000000000000000D+00 8
-(PID.TID 0000.0001)  --> fc               = 0.157611479210416D+05
+(PID.TID 0000.0001)  --> fc               = 0.157611486593972D+05
 (PID.TID 0000.0001) Not writing cost function info to costfunction0000
 (PID.TID 0000.0001)   early fc =  0.000000000000000D+00
 (PID.TID 0000.0001)   local fc =  0.999999949475751D-10
-(PID.TID 0000.0001)  global fc =  0.157611479210416D+05
-(PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus =  1.57611479210416E+04
+(PID.TID 0000.0001)  global fc =  0.157611486593972D+05
+(PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus =  1.57611486593972E+04
 grad-res -------------------------------
- grad-res     0    2   35   10    1    2    1    1   1.57611479210E+04  1.57611479210E+04  1.57611479210E+04
- grad-res     0    2    2  258    0    2    1    1  -7.38351364136E+01  0.00000000000E+00  1.00000000000E+00
+ grad-res     0    2   35   10    1    2    1    1   1.57611479210E+04  1.57611471827E+04  1.57611486594E+04
+ grad-res     0    2    2  258    0    2    1    1  -7.38351364136E+01 -7.38351332984E+01  4.21907203618E-08
 (PID.TID 0000.0001)  ADM  ref_cost_function      =  1.57611479210415E+04
 (PID.TID 0000.0001)  ADM  adjoint_gradient       = -7.38351364135742E+01
-(PID.TID 0000.0001)  ADM  finite-diff_grad       =  0.00000000000000E+00
+(PID.TID 0000.0001)  ADM  finite-diff_grad       = -7.38351332984166E+01
 (PID.TID 0000.0001) ====== End of gradient-check number   2 (ierr=  0) =======
 (PID.TID 0000.0001) ====== Starts gradient-check number   3 (=ichknum) =======
  ph-test icomp, ncvarcomp, ichknum          259       55673           3
@@ -4013,10 +4056,16 @@ grad-res -------------------------------
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) == obsfit_cost: begin ==
-(PID.TID 0000.0001)  obsfit_cost( 1)=  0.15761D+05 0.24000D+02
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_SYNC fidglobalglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_INQ_VARID misfitglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_SYNC fidglobalglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_INQ_VARID misfitglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_SYNC fidglobalglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_INQ_VARID misfitglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001)  CAV obsfit_cost( 1) =  0.1576114508395E+05  0.24000D+02
 (PID.TID 0000.0001) == obsfit_cost: end   ==
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  --> f_obsfit = 0.157611479210415D+05 1
+(PID.TID 0000.0001)  --> f_obsfit = 0.157611450839471D+05 1
 (PID.TID 0000.0001)  --> f_gencost = 0.837877773909458D-02 1
 (PID.TID 0000.0001)  --> f_genarr3d = 0.999999949475751D-10 1
 (PID.TID 0000.0001)  --> f_genarr3d = 0.000000000000000D+00 2
@@ -4026,12 +4075,12 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  --> f_genarr3d = 0.000000000000000D+00 6
 (PID.TID 0000.0001)  --> f_genarr3d = 0.000000000000000D+00 7
 (PID.TID 0000.0001)  --> f_genarr3d = 0.000000000000000D+00 8
-(PID.TID 0000.0001)  --> fc               = 0.157611479210416D+05
+(PID.TID 0000.0001)  --> fc               = 0.157611450839472D+05
 (PID.TID 0000.0001) Not writing cost function info to costfunction0000
 (PID.TID 0000.0001)   early fc =  0.000000000000000D+00
 (PID.TID 0000.0001)   local fc =  0.999999949475751D-10
-(PID.TID 0000.0001)  global fc =  0.157611479210416D+05
-(PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  =  1.57611479210416E+04
+(PID.TID 0000.0001)  global fc =  0.157611450839472D+05
+(PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  =  1.57611450839472E+04
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
@@ -4050,10 +4099,16 @@ grad-res -------------------------------
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) == obsfit_cost: begin ==
-(PID.TID 0000.0001)  obsfit_cost( 1)=  0.15761D+05 0.24000D+02
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_SYNC fidglobalglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_INQ_VARID misfitglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_SYNC fidglobalglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_INQ_VARID misfitglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_SYNC fidglobalglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_INQ_VARID misfitglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001)  CAV obsfit_cost( 1) =  0.1576115075826E+05  0.24000D+02
 (PID.TID 0000.0001) == obsfit_cost: end   ==
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  --> f_obsfit = 0.157611479210415D+05 1
+(PID.TID 0000.0001)  --> f_obsfit = 0.157611507582607D+05 1
 (PID.TID 0000.0001)  --> f_gencost = 0.837872173013711D-02 1
 (PID.TID 0000.0001)  --> f_genarr3d = 0.999999949475751D-10 1
 (PID.TID 0000.0001)  --> f_genarr3d = 0.000000000000000D+00 2
@@ -4063,18 +4118,18 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  --> f_genarr3d = 0.000000000000000D+00 6
 (PID.TID 0000.0001)  --> f_genarr3d = 0.000000000000000D+00 7
 (PID.TID 0000.0001)  --> f_genarr3d = 0.000000000000000D+00 8
-(PID.TID 0000.0001)  --> fc               = 0.157611479210416D+05
+(PID.TID 0000.0001)  --> fc               = 0.157611507582608D+05
 (PID.TID 0000.0001) Not writing cost function info to costfunction0000
 (PID.TID 0000.0001)   early fc =  0.000000000000000D+00
 (PID.TID 0000.0001)   local fc =  0.999999949475751D-10
-(PID.TID 0000.0001)  global fc =  0.157611479210416D+05
-(PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus =  1.57611479210416E+04
+(PID.TID 0000.0001)  global fc =  0.157611507582608D+05
+(PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus =  1.57611507582608E+04
 grad-res -------------------------------
- grad-res     0    3   36   10    1    2    1    1   1.57611479210E+04  1.57611479210E+04  1.57611479210E+04
- grad-res     0    3    3  259    0    2    1    1  -2.83715698242E+02  0.00000000000E+00  1.00000000000E+00
+ grad-res     0    3   36   10    1    2    1    1   1.57611479210E+04  1.57611450839E+04  1.57611507583E+04
+ grad-res     0    3    3  259    0    2    1    1  -2.83715698242E+02 -2.83715683236E+02  5.28929003929E-08
 (PID.TID 0000.0001)  ADM  ref_cost_function      =  1.57611479210415E+04
 (PID.TID 0000.0001)  ADM  adjoint_gradient       = -2.83715698242188E+02
-(PID.TID 0000.0001)  ADM  finite-diff_grad       =  0.00000000000000E+00
+(PID.TID 0000.0001)  ADM  finite-diff_grad       = -2.83715683235641E+02
 (PID.TID 0000.0001) ====== End of gradient-check number   3 (ierr=  0) =======
 (PID.TID 0000.0001) ====== Starts gradient-check number   4 (=ichknum) =======
  ph-test icomp, ncvarcomp, ichknum          260       55673           4
@@ -4099,10 +4154,16 @@ grad-res -------------------------------
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) == obsfit_cost: begin ==
-(PID.TID 0000.0001)  obsfit_cost( 1)=  0.15761D+05 0.24000D+02
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_SYNC fidglobalglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_INQ_VARID misfitglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_SYNC fidglobalglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_INQ_VARID misfitglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_SYNC fidglobalglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_INQ_VARID misfitglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001)  CAV obsfit_cost( 1) =  0.1576114792062E+05  0.24000D+02
 (PID.TID 0000.0001) == obsfit_cost: end   ==
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  --> f_obsfit = 0.157611479210415D+05 1
+(PID.TID 0000.0001)  --> f_obsfit = 0.157611479206164D+05 1
 (PID.TID 0000.0001)  --> f_gencost = 0.837878078067224D-02 1
 (PID.TID 0000.0001)  --> f_genarr3d = 0.999999949475751D-10 1
 (PID.TID 0000.0001)  --> f_genarr3d = 0.000000000000000D+00 2
@@ -4112,12 +4173,12 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  --> f_genarr3d = 0.000000000000000D+00 6
 (PID.TID 0000.0001)  --> f_genarr3d = 0.000000000000000D+00 7
 (PID.TID 0000.0001)  --> f_genarr3d = 0.000000000000000D+00 8
-(PID.TID 0000.0001)  --> fc               = 0.157611479210416D+05
+(PID.TID 0000.0001)  --> fc               = 0.157611479206165D+05
 (PID.TID 0000.0001) Not writing cost function info to costfunction0000
 (PID.TID 0000.0001)   early fc =  0.000000000000000D+00
 (PID.TID 0000.0001)   local fc =  0.999999949475751D-10
-(PID.TID 0000.0001)  global fc =  0.157611479210416D+05
-(PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  =  1.57611479210416E+04
+(PID.TID 0000.0001)  global fc =  0.157611479206165D+05
+(PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  =  1.57611479206165E+04
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
@@ -4136,10 +4197,16 @@ grad-res -------------------------------
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) == obsfit_cost: begin ==
-(PID.TID 0000.0001)  obsfit_cost( 1)=  0.15761D+05 0.24000D+02
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_SYNC fidglobalglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_INQ_VARID misfitglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_SYNC fidglobalglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_INQ_VARID misfitglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_SYNC fidglobalglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001) NF_MESSAGE: OBSFIT_OBSFIT_COST: NF_INQ_VARID misfitglobal_equi_file NetCDF: Not a valid ID
+(PID.TID 0000.0001)  CAV obsfit_cost( 1) =  0.1576114792147E+05  0.24000D+02
 (PID.TID 0000.0001) == obsfit_cost: end   ==
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  --> f_obsfit = 0.157611479210415D+05 1
+(PID.TID 0000.0001)  --> f_obsfit = 0.157611479214667D+05 1
 (PID.TID 0000.0001)  --> f_gencost = 0.837871904403745D-02 1
 (PID.TID 0000.0001)  --> f_genarr3d = 0.999999949475751D-10 1
 (PID.TID 0000.0001)  --> f_genarr3d = 0.000000000000000D+00 2
@@ -4149,18 +4216,18 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  --> f_genarr3d = 0.000000000000000D+00 6
 (PID.TID 0000.0001)  --> f_genarr3d = 0.000000000000000D+00 7
 (PID.TID 0000.0001)  --> f_genarr3d = 0.000000000000000D+00 8
-(PID.TID 0000.0001)  --> fc               = 0.157611479210416D+05
+(PID.TID 0000.0001)  --> fc               = 0.157611479214668D+05
 (PID.TID 0000.0001) Not writing cost function info to costfunction0000
 (PID.TID 0000.0001)   early fc =  0.000000000000000D+00
 (PID.TID 0000.0001)   local fc =  0.999999949475751D-10
-(PID.TID 0000.0001)  global fc =  0.157611479210416D+05
-(PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus =  1.57611479210416E+04
+(PID.TID 0000.0001)  global fc =  0.157611479214668D+05
+(PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus =  1.57611479214668E+04
 grad-res -------------------------------
- grad-res     0    4   37   10    1    2    1    1   1.57611479210E+04  1.57611479210E+04  1.57611479210E+04
- grad-res     0    4    4  260    0    2    1    1  -4.25119176507E-02  0.00000000000E+00  1.00000000000E+00
+ grad-res     0    4   37   10    1    2    1    1   1.57611479210E+04  1.57611479206E+04  1.57611479215E+04
+ grad-res     0    4    4  260    0    2    1    1  -4.25119176507E-02 -4.25115104008E-02  9.57966429405E-06
 (PID.TID 0000.0001)  ADM  ref_cost_function      =  1.57611479210415E+04
 (PID.TID 0000.0001)  ADM  adjoint_gradient       = -4.25119176506996E-02
-(PID.TID 0000.0001)  ADM  finite-diff_grad       =  0.00000000000000E+00
+(PID.TID 0000.0001)  ADM  finite-diff_grad       = -4.25115104008000E-02
 (PID.TID 0000.0001) ====== End of gradient-check number   4 (ierr=  0) =======
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
@@ -4174,241 +4241,241 @@ grad-res -------------------------------
 (PID.TID 0000.0001) grdchk output h.g:  Id     FC1-FC2/(2*EPS)      ADJ GRAD(FC)         1-FDGRD/ADGRD
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   1    34    10     1    2    1   0.000000000E+00 -1.000000000E-05
-(PID.TID 0000.0001) grdchk output (c):   1  1.5761147921042E+04  1.5761147921042E+04  1.5761147921042E+04
-(PID.TID 0000.0001) grdchk output (g):   1     0.0000000000000E+00 -9.5230937004089E-03  1.0000000000000E+00
+(PID.TID 0000.0001) grdchk output (c):   1  1.5761147921042E+04  1.5761147920946E+04  1.5761147921137E+04
+(PID.TID 0000.0001) grdchk output (g):   1    -9.5229552243836E-03 -9.5230937004089E-03  1.4541075586294E-05
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   2    35    10     1    2    1   0.000000000E+00 -1.000000000E-05
-(PID.TID 0000.0001) grdchk output (c):   2  1.5761147921042E+04  1.5761147921042E+04  1.5761147921042E+04
-(PID.TID 0000.0001) grdchk output (g):   2     0.0000000000000E+00 -7.3835136413574E+01  1.0000000000000E+00
+(PID.TID 0000.0001) grdchk output (c):   2  1.5761147921042E+04  1.5761147182695E+04  1.5761148659397E+04
+(PID.TID 0000.0001) grdchk output (g):   2    -7.3835133298417E+01 -7.3835136413574E+01  4.2190720361823E-08
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   3    36    10     1    2    1   0.000000000E+00 -1.000000000E-05
-(PID.TID 0000.0001) grdchk output (c):   3  1.5761147921042E+04  1.5761147921042E+04  1.5761147921042E+04
-(PID.TID 0000.0001) grdchk output (g):   3     0.0000000000000E+00 -2.8371569824219E+02  1.0000000000000E+00
+(PID.TID 0000.0001) grdchk output (c):   3  1.5761147921042E+04  1.5761145083947E+04  1.5761150758261E+04
+(PID.TID 0000.0001) grdchk output (g):   3    -2.8371568323564E+02 -2.8371569824219E+02  5.2892900392898E-08
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   4    37    10     1    2    1   0.000000000E+00 -1.000000000E-05
-(PID.TID 0000.0001) grdchk output (c):   4  1.5761147921042E+04  1.5761147921042E+04  1.5761147921042E+04
-(PID.TID 0000.0001) grdchk output (g):   4     0.0000000000000E+00 -4.2511917650700E-02  1.0000000000000E+00
+(PID.TID 0000.0001) grdchk output (c):   4  1.5761147921042E+04  1.5761147920617E+04  1.5761147921467E+04
+(PID.TID 0000.0001) grdchk output (g):   4    -4.2511510400800E-02 -4.2511917650700E-02  9.5796642940460E-06
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) grdchk  summary  :  RMS of    4 ratios =  1.0000000000000E+00
+(PID.TID 0000.0001) grdchk  summary  :  RMS of    4 ratios =  8.7065697164373E-06
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Gradient check results  >>> END <<<
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   114.50876580178738
-(PID.TID 0000.0001)         System time:   9.7939342833124101
-(PID.TID 0000.0001)     Wall clock time:   126.64053511619568
+(PID.TID 0000.0001)           User time:   177.83080519316718
+(PID.TID 0000.0001)         System time:   1.0759390592575073
+(PID.TID 0000.0001)     Wall clock time:   178.94149494171143
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   1.0934140007011592
-(PID.TID 0000.0001)         System time:   1.0494309710338712
-(PID.TID 0000.0001)     Wall clock time:   2.6056740283966064
+(PID.TID 0000.0001)           User time:   1.3557550027035177
+(PID.TID 0000.0001)         System time:  0.49899798631668091
+(PID.TID 0000.0001)     Wall clock time:   1.8589580059051514
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "ADTHE_MAIN_LOOP          [ADJOINT RUN]":
-(PID.TID 0000.0001)           User time:   47.911973714828491
-(PID.TID 0000.0001)         System time:   8.2501020431518555
-(PID.TID 0000.0001)     Wall clock time:   57.667747020721436
+(PID.TID 0000.0001)           User time:   77.202072381973267
+(PID.TID 0000.0001)         System time:  0.50085699558258057
+(PID.TID 0000.0001)     Wall clock time:   77.733808040618896
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "FORWARD_STEP        [MAIN_DO_LOOP]":
-(PID.TID 0000.0001)           User time:   73.058689355850220
-(PID.TID 0000.0001)         System time:   1.3501718044281006
-(PID.TID 0000.0001)     Wall clock time:   75.218229293823242
+(PID.TID 0000.0001)           User time:   110.74075579643250
+(PID.TID 0000.0001)         System time:   5.2371919155120850E-002
+(PID.TID 0000.0001)     Wall clock time:   110.80783033370972
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "DO_STATEVARS_DIAGS  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   2.4118900299072266E-002
-(PID.TID 0000.0001)         System time:   2.6742219924926758E-003
-(PID.TID 0000.0001)     Wall clock time:   3.2581806182861328E-002
+(PID.TID 0000.0001)           User time:   3.7394285202026367E-002
+(PID.TID 0000.0001)         System time:   1.6099214553833008E-004
+(PID.TID 0000.0001)     Wall clock time:   3.7590742111206055E-002
 (PID.TID 0000.0001)          No. starts:           8
 (PID.TID 0000.0001)           No. stops:           8
 (PID.TID 0000.0001)   Seconds in section "LOAD_FIELDS_DRIVER  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   9.2501282691955566E-002
-(PID.TID 0000.0001)         System time:   1.5358448028564453E-002
-(PID.TID 0000.0001)     Wall clock time:  0.38179278373718262
+(PID.TID 0000.0001)           User time:  0.12171816825866699
+(PID.TID 0000.0001)         System time:   4.1230916976928711E-003
+(PID.TID 0000.0001)     Wall clock time:  0.12590479850769043
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "EXTERNAL_FLDS_LOAD [LOAD_FLDS_DRIVER]":
-(PID.TID 0000.0001)           User time:   6.6107273101806641E-002
-(PID.TID 0000.0001)         System time:   4.1190385818481445E-003
-(PID.TID 0000.0001)     Wall clock time:  0.15803551673889160
+(PID.TID 0000.0001)           User time:   7.8792810440063477E-002
+(PID.TID 0000.0001)         System time:   4.1481256484985352E-003
+(PID.TID 0000.0001)     Wall clock time:   8.2916975021362305E-002
 (PID.TID 0000.0001)          No. starts:          44
 (PID.TID 0000.0001)           No. stops:          44
 (PID.TID 0000.0001)   Seconds in section "CTRL_MAP_FORCING  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   8.6699485778808594E-002
-(PID.TID 0000.0001)         System time:   7.5544118881225586E-003
-(PID.TID 0000.0001)     Wall clock time:   9.4731330871582031E-002
+(PID.TID 0000.0001)           User time:  0.11356019973754883
+(PID.TID 0000.0001)         System time:   2.5987625122070312E-005
+(PID.TID 0000.0001)     Wall clock time:  0.11360359191894531
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "DO_ATMOSPHERIC_PHYS [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   2.3206472396850586E-002
-(PID.TID 0000.0001)         System time:   1.2748241424560547E-003
-(PID.TID 0000.0001)     Wall clock time:   2.4603843688964844E-002
+(PID.TID 0000.0001)           User time:   2.9864311218261719E-002
+(PID.TID 0000.0001)         System time:   7.8678131103515625E-006
+(PID.TID 0000.0001)     Wall clock time:   2.9920816421508789E-002
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "DO_OCEANIC_PHYS     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   3.1374976634979248
-(PID.TID 0000.0001)         System time:   4.3155193328857422E-002
-(PID.TID 0000.0001)     Wall clock time:   3.2245440483093262
+(PID.TID 0000.0001)           User time:   4.1053583621978760
+(PID.TID 0000.0001)         System time:   3.8788914680480957E-003
+(PID.TID 0000.0001)     Wall clock time:   4.1103017330169678
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   40.748660087585449
-(PID.TID 0000.0001)         System time:  0.22725737094879150
-(PID.TID 0000.0001)     Wall clock time:   41.287305355072021
+(PID.TID 0000.0001)           User time:   56.207444190979004
+(PID.TID 0000.0001)         System time:   1.1669218540191650E-002
+(PID.TID 0000.0001)     Wall clock time:   56.227837562561035
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "DYNAMICS            [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   9.0915777683258057
-(PID.TID 0000.0001)         System time:  0.12878167629241943
-(PID.TID 0000.0001)     Wall clock time:   9.2743594646453857
+(PID.TID 0000.0001)           User time:   12.351518154144287
+(PID.TID 0000.0001)         System time:   3.8979649543762207E-003
+(PID.TID 0000.0001)     Wall clock time:   12.357008457183838
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "SOLVE_FOR_PRESSURE  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   1.2812027931213379
-(PID.TID 0000.0001)         System time:   1.0093569755554199E-002
-(PID.TID 0000.0001)     Wall clock time:   1.2969231605529785
+(PID.TID 0000.0001)           User time:   1.8800997734069824
+(PID.TID 0000.0001)         System time:   1.2993812561035156E-005
+(PID.TID 0000.0001)     Wall clock time:   1.8805739879608154
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "MOM_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.25833940505981445
-(PID.TID 0000.0001)         System time:   9.9277496337890625E-004
-(PID.TID 0000.0001)     Wall clock time:  0.26051783561706543
+(PID.TID 0000.0001)           User time:  0.31377840042114258
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  0.31386804580688477
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "INTEGR_CONTINUITY   [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.26997590065002441
-(PID.TID 0000.0001)         System time:   7.9870223999023438E-005
-(PID.TID 0000.0001)     Wall clock time:  0.27134823799133301
+(PID.TID 0000.0001)           User time:  0.33915710449218750
+(PID.TID 0000.0001)         System time:   1.3887882232666016E-005
+(PID.TID 0000.0001)     Wall clock time:  0.33924794197082520
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "TRC_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   1.5854835510253906E-004
-(PID.TID 0000.0001)         System time:   2.0861625671386719E-005
-(PID.TID 0000.0001)     Wall clock time:   1.6617774963378906E-004
+(PID.TID 0000.0001)           User time:   1.8405914306640625E-004
+(PID.TID 0000.0001)         System time:   1.0132789611816406E-006
+(PID.TID 0000.0001)     Wall clock time:   2.0670890808105469E-004
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "GCHEM_FORCING_SEP  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   6.6153385639190674
-(PID.TID 0000.0001)         System time:  0.88225007057189941
-(PID.TID 0000.0001)     Wall clock time:   7.5473172664642334
+(PID.TID 0000.0001)           User time:   12.200853824615479
+(PID.TID 0000.0001)         System time:   1.2398898601531982E-002
+(PID.TID 0000.0001)     Wall clock time:   12.214875221252441
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.79221749305725098
-(PID.TID 0000.0001)         System time:   2.2315979003906250E-004
-(PID.TID 0000.0001)     Wall clock time:  0.79606866836547852
+(PID.TID 0000.0001)           User time:  0.84371519088745117
+(PID.TID 0000.0001)         System time:   9.0062618255615234E-005
+(PID.TID 0000.0001)     Wall clock time:  0.84398674964904785
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "MONITOR             [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   4.9017906188964844E-002
-(PID.TID 0000.0001)         System time:   5.7220458984375000E-006
-(PID.TID 0000.0001)     Wall clock time:   4.9190998077392578E-002
+(PID.TID 0000.0001)           User time:   7.5905799865722656E-002
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:   7.5869083404541016E-002
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "COST_TILE           [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   1.4114379882812500E-004
-(PID.TID 0000.0001)         System time:   4.7683715820312500E-006
-(PID.TID 0000.0001)     Wall clock time:   1.4638900756835938E-004
+(PID.TID 0000.0001)           User time:   9.5844268798828125E-005
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:   1.7452239990234375E-004
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   7.4315071105957031E-002
-(PID.TID 0000.0001)         System time:   7.9827308654785156E-003
-(PID.TID 0000.0001)     Wall clock time:   8.2576990127563477E-002
+(PID.TID 0000.0001)           User time:  0.12153339385986328
+(PID.TID 0000.0001)         System time:   3.9570331573486328E-003
+(PID.TID 0000.0001)     Wall clock time:  0.12537360191345215
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "PTRACERS_RESET      [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   1.5258789062500000E-004
-(PID.TID 0000.0001)         System time:   6.9141387939453125E-006
-(PID.TID 0000.0001)     Wall clock time:   1.7189979553222656E-004
+(PID.TID 0000.0001)           User time:   1.9884109497070312E-004
+(PID.TID 0000.0001)         System time:   1.0132789611816406E-006
+(PID.TID 0000.0001)     Wall clock time:   2.0313262939453125E-004
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "DO_WRITE_PICKUP     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   7.2835922241210938E-002
-(PID.TID 0000.0001)         System time:   8.1892013549804688E-003
-(PID.TID 0000.0001)     Wall clock time:   8.1367015838623047E-002
+(PID.TID 0000.0001)           User time:  0.12000226974487305
+(PID.TID 0000.0001)         System time:   1.1972963809967041E-002
+(PID.TID 0000.0001)     Wall clock time:  0.13195276260375977
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "COST_GENCOST_ALL    [ECCO SPIN-DOWN]":
-(PID.TID 0000.0001)           User time:  0.12696456909179688
-(PID.TID 0000.0001)         System time:  0.50508165359497070
-(PID.TID 0000.0001)     Wall clock time:  0.64497590065002441
+(PID.TID 0000.0001)           User time:  0.14421176910400391
+(PID.TID 0000.0001)         System time:   2.0265579223632812E-006
+(PID.TID 0000.0001)     Wall clock time:  0.14422631263732910
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001)   Seconds in section "CTRL_COST_DRIVER [ECCO SPIN-DOWN]":
-(PID.TID 0000.0001)           User time:  0.38407802581787109
-(PID.TID 0000.0001)         System time:  0.11830806732177734
-(PID.TID 0000.0001)     Wall clock time:  0.50482225418090820
+(PID.TID 0000.0001)           User time:  0.47943973541259766
+(PID.TID 0000.0001)         System time:   1.5985131263732910E-002
+(PID.TID 0000.0001)     Wall clock time:  0.49545478820800781
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001)   Seconds in section "I/O (WRITE)        [ADJOINT LOOP]":
-(PID.TID 0000.0001)           User time:   2.7862548828125000E-002
-(PID.TID 0000.0001)         System time:   3.8117408752441406E-002
-(PID.TID 0000.0001)     Wall clock time:   7.5736999511718750E-002
+(PID.TID 0000.0001)           User time:   4.0298461914062500E-002
+(PID.TID 0000.0001)         System time:   4.0040016174316406E-003
+(PID.TID 0000.0001)     Wall clock time:   4.4301271438598633E-002
 (PID.TID 0000.0001)          No. starts:           4
 (PID.TID 0000.0001)           No. stops:           4
 (PID.TID 0000.0001)   Seconds in section "GRDCHK_MAIN         [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   65.503345489501953
-(PID.TID 0000.0001)         System time:  0.49437427520751953
-(PID.TID 0000.0001)     Wall clock time:   66.367076873779297
+(PID.TID 0000.0001)           User time:   99.272926330566406
+(PID.TID 0000.0001)         System time:   7.6082050800323486E-002
+(PID.TID 0000.0001)     Wall clock time:   99.348701953887939
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   4.7820816040039062
-(PID.TID 0000.0001)         System time:  0.24813556671142578
-(PID.TID 0000.0001)     Wall clock time:   5.0929634571075439
+(PID.TID 0000.0001)           User time:   8.1420288085937500
+(PID.TID 0000.0001)         System time:   4.7951221466064453E-002
+(PID.TID 0000.0001)     Wall clock time:   8.1899070739746094
 (PID.TID 0000.0001)          No. starts:           8
 (PID.TID 0000.0001)           No. stops:           8
 (PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   60.621356964111328
-(PID.TID 0000.0001)         System time:   3.4139633178710938E-002
-(PID.TID 0000.0001)     Wall clock time:   60.948511362075806
+(PID.TID 0000.0001)           User time:   90.994689941406250
+(PID.TID 0000.0001)         System time:   2.0151913166046143E-002
+(PID.TID 0000.0001)     Wall clock time:   91.014582395553589
 (PID.TID 0000.0001)          No. starts:           8
 (PID.TID 0000.0001)           No. stops:           8
 (PID.TID 0000.0001)   Seconds in section "COST_AVERAGESFIELDS [MAIN_DO_LOOP]":
-(PID.TID 0000.0001)           User time:  0.43394470214843750
-(PID.TID 0000.0001)         System time:   2.0503997802734375E-004
-(PID.TID 0000.0001)     Wall clock time:  0.43610572814941406
+(PID.TID 0000.0001)           User time:  0.76426696777343750
+(PID.TID 0000.0001)         System time:   1.4066696166992188E-005
+(PID.TID 0000.0001)     Wall clock time:  0.76435232162475586
 (PID.TID 0000.0001)          No. starts:          32
 (PID.TID 0000.0001)           No. stops:          32
 (PID.TID 0000.0001)   Seconds in section "OBSFIT_INLOOP      [MAIN_DO_LOOP]":
-(PID.TID 0000.0001)           User time:  0.46327972412109375
-(PID.TID 0000.0001)         System time:   6.1130523681640625E-004
-(PID.TID 0000.0001)     Wall clock time:  0.46589636802673340
+(PID.TID 0000.0001)           User time:  0.53405761718750000
+(PID.TID 0000.0001)         System time:   3.2782554626464844E-005
+(PID.TID 0000.0001)     Wall clock time:  0.53407382965087891
 (PID.TID 0000.0001)          No. starts:          32
 (PID.TID 0000.0001)           No. stops:          32
 (PID.TID 0000.0001)   Seconds in section "MAIN_DO_LOOP        [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   58.389049530029297
-(PID.TID 0000.0001)         System time:   1.3377189636230469E-002
-(PID.TID 0000.0001)     Wall clock time:   58.685042619705200
+(PID.TID 0000.0001)           User time:   87.945091247558594
+(PID.TID 0000.0001)         System time:   4.1128993034362793E-003
+(PID.TID 0000.0001)     Wall clock time:   87.948873281478882
 (PID.TID 0000.0001)          No. starts:          32
 (PID.TID 0000.0001)           No. stops:          32
 (PID.TID 0000.0001)   Seconds in section "COST_AVERAGESFIELDS [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  0.10867309570312500
-(PID.TID 0000.0001)         System time:   2.4166107177734375E-003
-(PID.TID 0000.0001)     Wall clock time:  0.11160993576049805
+(PID.TID 0000.0001)           User time:  0.19445037841796875
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  0.19446110725402832
 (PID.TID 0000.0001)          No. starts:           8
 (PID.TID 0000.0001)           No. stops:           8
 (PID.TID 0000.0001)   Seconds in section "OBSFIT_INLOOP      [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  0.11603546142578125
-(PID.TID 0000.0001)         System time:   1.1825561523437500E-004
-(PID.TID 0000.0001)     Wall clock time:  0.11670708656311035
+(PID.TID 0000.0001)           User time:  0.13320159912109375
+(PID.TID 0000.0001)         System time:   6.0796737670898438E-006
+(PID.TID 0000.0001)     Wall clock time:  0.13323998451232910
 (PID.TID 0000.0001)          No. starts:           8
 (PID.TID 0000.0001)           No. stops:           8
 (PID.TID 0000.0001)   Seconds in section "ECCO_COST_DRIVER   [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  0.45512390136718750
-(PID.TID 0000.0001)         System time:   1.4299392700195312E-002
-(PID.TID 0000.0001)     Wall clock time:  0.47175598144531250
+(PID.TID 0000.0001)           User time:  0.54376220703125000
+(PID.TID 0000.0001)         System time:   1.5980124473571777E-002
+(PID.TID 0000.0001)     Wall clock time:  0.55972599983215332
 (PID.TID 0000.0001)          No. starts:           8
 (PID.TID 0000.0001)           No. stops:           8
 (PID.TID 0000.0001)   Seconds in section "COST_FINAL         [ADJOINT SPIN-DOWN]":
-(PID.TID 0000.0001)           User time:   9.7656250000000000E-004
-(PID.TID 0000.0001)         System time:   6.1988830566406250E-005
-(PID.TID 0000.0001)     Wall clock time:   1.0511875152587891E-003
+(PID.TID 0000.0001)           User time:   1.5258789062500000E-003
+(PID.TID 0000.0001)         System time:   5.0067901611328125E-006
+(PID.TID 0000.0001)     Wall clock time:   1.5273094177246094E-003
 (PID.TID 0000.0001)          No. starts:           8
 (PID.TID 0000.0001)           No. stops:           8
 (PID.TID 0000.0001) // ======================================================
@@ -4459,9 +4526,9 @@ grad-res -------------------------------
 (PID.TID 0000.0001) //          Total. Y spins =              0
 (PID.TID 0000.0001) //            Avg. Y spins =       0.00E+00
 (PID.TID 0000.0001) // o Thread number: 000001
-(PID.TID 0000.0001) //            No. barriers =       76231048
+(PID.TID 0000.0001) //            No. barriers =       67087988
 (PID.TID 0000.0001) //      Max. barrier spins =              1
 (PID.TID 0000.0001) //      Min. barrier spins =              1
-(PID.TID 0000.0001) //     Total barrier spins =       76231048
+(PID.TID 0000.0001) //     Total barrier spins =       67087988
 (PID.TID 0000.0001) //      Avg. barrier spins =       1.00E+00
 PROGRAM MAIN: Execution ended Normally
