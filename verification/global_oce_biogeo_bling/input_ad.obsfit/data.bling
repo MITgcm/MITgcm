@@ -1,0 +1,14 @@
+# BLING parameters 
+ &ABIOTIC_PARMS
+ &
+
+ &BIOTIC_PARMS
+ &
+
+ &BLING_FORCING
+  BLING_windFile='tren_speed.bin',
+  BLING_iceFile='fice.bin',
+  BLING_silicaFile='sillev1.bin',
+  BLING_ironFile='mah_flux_smooth.bin',
+  BLING_pCO2=380.5E-6,
+ &
