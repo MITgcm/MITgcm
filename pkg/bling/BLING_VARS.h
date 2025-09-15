@@ -151,12 +151,10 @@ C      Schmidt number coefficients
 C ==========================================================
 C   Bling inputs (specified in data.bling)
 C
-C   bling_k0_2dFile : Path to a file containing a 2D spatial field of
-C                     light attenuation coefficient (k0_2d, in m^-1).
-C                     This coefficient regulates underwater light
-C                     availability in the BLING model.
-C                     If not specified, a constant default value of
-C                     k0 = 0.04 m^-1 is applied for entire domain.
+C  bling_k0_2dFile :: File containing a 2D spatial field of light attenuation
+C        coefficient (k0_2d, in m^-1). This coefficient regulates underwater
+C        light availability in the BLING model. If not specified, a constant
+C        value k0 (default= 0.04 m^-1) is applied for entire domain.
 C ==========================================================
 
        COMMON /BLING_INPUTS/
