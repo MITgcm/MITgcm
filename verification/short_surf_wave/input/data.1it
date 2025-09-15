@@ -19,14 +19,14 @@
  implicitFreeSurface=.TRUE.,
  exactConserv=.TRUE.
  implicDiv2DFlow=0.5,
- implicSurfPress=0.5,
+#implicSurfPress=0.5,
  nonHydrostatic=.TRUE.,
  selectNHfreeSurf=1,
  saltStepping=.FALSE.,
  tempStepping=.FALSE.,
  hFacMin=0.2,
  readBinaryPrec=64,
-#globalFiles=.TRUE.,
+ globalFiles=.TRUE.,
  plotLevel = 0,
  &
 
@@ -43,9 +43,9 @@
 
 # Time stepping parameters
  &PARM03
- nIter0=1,
+ nIter0=0,
 #endTime=20.,
- nTimeSteps=11,
+ nTimeSteps=1,
  deltaT=5.e-3,
  alph_AB=0.5,
  beta_AB=0.281105,
