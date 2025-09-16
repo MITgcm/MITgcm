@@ -19,6 +19,18 @@ Usage: "$0" [OPTIONS]
     -tap | --tap
           Generate a Makefile for a Tapenade build
 
+    -taparg ARG | --taparg ARG | -taparg=ARGS | --taparg=ARGS
+          Here, "ARG" or "ARGS" specifies a list of cmd line arguments
+          passed to the tapenade tool
+
+    -tapgcc ARG | --tapgcc ARG | -tapgcc=ARGS | --tapgcc=ARGS
+          Here, "ARG" or "ARGS" specifies a list of compile flags
+          passed to the C compiler for select Tapenade ADFirstAidKit files
+
+    -tapthread | --tapthread 
+          Uses the -lpthread linking option when compiling the executable
+          Intended to be used with tapenade
+
     -oad | --oad
 	  Generate a Makefile for an OpenAD built
 
@@ -1561,6 +1573,19 @@ for ac_option in "$@" ; do
 	-tap | --tap)
 	    TAPENADE="true" ; ALWAYS_USE_F90=1 ;;
 
+        -taparg | --taparg)
+            ac_prev=TAPARG ;;
+        -taparg=* | --taparg)
+            TAPARG=$ac_optarg ;;
+
+	-tapthread | --tapthread)
+	    TAPFFLAG=-lpthread ;;
+
+	-tapgcc | --tapgcc)
+	    ac_prev=TAPGCC ;;
+        -tapgcc=* | --tapgcc)
+            TAPGCC=$ac_optarg ;;
+
 	-oad | --oad)
 	    OPENAD="true" ; ALWAYS_USE_F90=1 ;;
 	-oadsingularity | --oadsingularity | -oadsngl | --oadsngl)
@@ -2086,6 +2111,11 @@ if test ! "x$GSL" = x ; then
       INCLUDES="$INCLUDES $GSLINC"
       LIBS="$LIBS $GSLLIB"
 fi
+if test ! "x$TAPENADE" = x ; then
+      echo "  Turning on pthread with use of tapenade"
+      echo "  Enables asynchronous offloading of stack"
+      LIBS="$LIBS $TAPFFLAG"
+fi	
 #- if USE_EXTENDED_SRC is set, add EXTENDED_SRC_FLAG to FFLAGS :
 if test ! "x$USE_EXTENDED_SRC" = x ; then
       FFLAGS="$FFLAGS $EXTENDED_SRC_FLAG"
@@ -2877,6 +2907,10 @@ fi
 rm -f $TMP.links/foo
 
 if test "x$TAPENADE" != x ; then
+    XTRATAPFILE=
+    if [[ "$PACKAGES" =~ streamice ]]; then 
+     XTRATAPFILE=" streamice_cg_solve.f"
+    fi
     TAP_DONT_TRANSFORM="/dev/null"
     TAPTOOLS="$TOOLSDIR/TAP_support"
     TAPTOOLSMK='$(TOOLSDIR)/TAP_support'
@@ -3247,7 +3281,8 @@ if test "x$TAPENADE" != x ; then
 cat >>$MAKEFILE <<EOF
 TAPENADE_SUPPORT_C_SRC_FILES = \
 ${TAPTOOLS}/ADFirstAidKit/adStack.c \
-${TAPTOOLS}/ADFirstAidKit/adBinomial.c
+${TAPTOOLS}/ADFirstAidKit/adBinomial.c \
+${TAPTOOLS}/ADFirstAidKit/adFixedPoint.c
 EOF
 echo 'TAP_SUPPORT_OBJFILES = $(TAPENADE_SUPPORT_C_SRC_FILES:.c=.o)' >> $MAKEFILE
 fi
@@ -3403,6 +3438,8 @@ CPPCMD = cat \$< | ${CPP} \$(DEFINES) \$(INCLUDES) | ${S64}
 .f$FS90.o:
 	cp \$< \$(basename  \$<).$FS90
 	\$(F90C) \$(F90FLAGS) \$(F90OPTIM) -c \$(F90FIXEDFORMAT) \$(basename  \$<).$FS90
+adStack.o: adStack.c
+	\$(CC) \$(CFLAGS) \$(DEFINES) \$(INCLUDES) \$(TAPGCC) -c $<
 .c.o:
 	\$(CC) \$(CFLAGS) \$(DEFINES) \$(INCLUDES) -c \$<
 
@@ -3736,9 +3773,9 @@ TAP_TLM_FILES: \$(AD_FILES) f95_test_mods.f90
 	\$(TAPENADECMD) -d -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
 #
 .PHONY: TAP_ADJ_FILES
-TAP_ADJ_FILES: \$(AD_FILES) f95_test_mods.f90
+TAP_ADJ_FILES: \$(AD_FILES) f95_test_mods.f90 ${XTRATAPFILE}
 	touch \$(AD_FILES_ADJ)
-	\$(TAPENADECMD) -b -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
+	\$(TAPENADECMD) ${TAPARG} -b -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90  ${XTRATAPFILE}
 
 tap_adj: ad_exe_target
 ad_exe_target:
