@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/bling:
+  - allows to specify a 2D field of light attenuation coefficient (k0_2d) from
+    file "bling_k0_2dFile".
+
 checkpoint69g (2025/09/12)
 o verification/short_surf_wave:
   - fix Non-Hydrostatic pressure initialization issue with implicSurfPress=1/2
