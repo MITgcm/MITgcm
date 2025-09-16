@@ -30,11 +30,10 @@ c #include "AIM2DYN.h"
 #include "com_forcing.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
-C     bi,bj  :: Tile index
+C     bi, bj :: Tile index
 C     myTime :: Current time of simulation ( s )
 C     myIter :: Current iteration number in simulation
-C     myThid :: Number of this instance of the routine
+C     myThid :: my Thread Id number
       INTEGER bi, bj
       _RL     myTime
       INTEGER myIter, myThid
@@ -50,10 +49,12 @@ C     !FUNCTIONS:
 #endif
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
-      INTEGER I,J,K, I2,Katm
-      _RL DDTT
+      INTEGER J
       CHARACTER*(10) suff
+#ifdef ALLOW_AIM_TAVE
+      INTEGER i, k, I2, Katm
+      _RL DDTT
+#endif
 #ifdef ALLOW_DIAGNOSTICS
       _RL tmpVar(NGP)
 #endif
@@ -313,9 +314,9 @@ C--   cloud-top pressure: multiplied by cloud fraction before averaging:
 
         DDTT = deltaTClock
 
-        DO J=1,sNy
-         DO I=1,sNx
-          I2 = I+(J-1)*sNx
+        DO j=1,sNy
+         DO i=1,sNx
+          I2 = i+(j-1)*sNx
           TSRtave(i,j,bi,bj)    = TSRtave(i,j,bi,bj)
      &                          + TSR(I2,myThid)*DDTT
           OLRtave(i,j,bi,bj)    = OLRtave(i,j,bi,bj)

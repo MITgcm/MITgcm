@@ -51,9 +51,9 @@ C     !FUNCTIONS:
       EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
-      INTEGER kLev, kC, kCMax, kProf
-      INTEGER num_file,num_var,prof_num
-      INTEGER bi,bj
+      INTEGER kLev, kProf
+      INTEGER num_file, num_var, prof_num
+      INTEGER bi, bj
       INTEGER err
       _RL prof_traj1D(NLEVELMAX), prof_traj1D_mean(NLEVELMAX)
       _RL prof_data1D(NLEVELMAX), prof_weights1D(NLEVELMAX)
@@ -62,6 +62,7 @@ C     !LOCAL VARIABLES:
       INTEGER optimcycle
 #endif
 #ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
+      INTEGER kC, kCMax
       INTEGER iL
 #endif
 CEOP
