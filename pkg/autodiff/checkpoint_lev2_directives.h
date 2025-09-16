@@ -65,8 +65,6 @@ CADJ STORE totphihyd     = tapelev2, key = ilev_2
 c
 #endif /* AUTODIFF_USE_STORE_RESTORE */
 
-cphCADJ STORE hDivFlow   = tapelev2, key = ilev_2
-
 #ifdef NONLIN_FRSURF
 CADJ STORE hfac_surfc    = tapelev2, key = ilev_2
 CADJ STORE hfac_surfs    = tapelev2, key = ilev_2
