@@ -11,8 +11,8 @@
  iceMaskMin = 0.05,
  hiMax      = 10.,
  hsMax      = 10.,
- dhSnowLin  = 0.1, 
- fracEnFreez= 0.4, 
+ dhSnowLin  = 0.1,
+ fracEnFreez= 0.4,
  hNewIceMax = 1.,
 #albIceMax  = 0.7,
 #albIceMin  = 0.7,
@@ -33,7 +33,6 @@
  thSIceAdvScheme=77,
 #thSIce_diffK   =800.,
  stressReduction=0.,
-#thSIce_taveFreq=2592000.,
 #thSIce_diagFreq=2592000.,
 #thSIce_monFreq =2592000.,
  &
