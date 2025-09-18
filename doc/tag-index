@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o model, pkgs:
+  - remove code within "#ifndef EXACT_CONSERV / #endif" bracket and remove
+    completely CPP option EXACT_CONSERV.
 o pkg/bling:
   - allows to specify a 2D field of light attenuation coefficient (k0_2d) from
     file "bling_k0_2dFile".
