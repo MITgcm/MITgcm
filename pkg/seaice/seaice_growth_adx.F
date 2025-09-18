@@ -79,7 +79,6 @@ C     i,j,bi,bj :: Loop counters
       INTEGER i, j, bi, bj
 C     number of surface interface layer, and second interface layer
       INTEGER kSurface, kSrfS
-      INTEGER kSurface
 C     IT :: ice thickness category index (MULTICATEGORIES and ITD code)
       INTEGER IT
 C     msgBuf      :: Informational/error message buffer
