@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - fix compilation of seaice_growth_adx.F (left from PR #750).
 o model, pkgs:
   - remove code within "#ifndef EXACT_CONSERV / #endif" bracket and remove
     completely CPP option EXACT_CONSERV.
