@@ -1,0 +1,15 @@
+#! /usr/bin/env bash
+
+sfx=$1
+shift
+
+for ff in $*
+do
+  xx=`echo $ff | sed "s/\.f\$/${sfx}/"`
+  #echo " $ff --> $xx"
+  if test -f $xx ; then
+     cat $ff >> $xx
+  else
+     cp -p $ff $xx
+  fi
+done
