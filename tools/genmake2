@@ -3089,6 +3089,32 @@ for d in $alldirs ; do
       fi
     fi
 done
+if test "x$TAPENADE" != x ; then
+    #-- For tapenade, link few files from "dd" below:
+    deplist=''
+    dd="$ROOTDIR/tools/TAP_support/ADFirstAidKit"
+    ddmk='$(ROOTDIR)'"/tools/TAP_support/ADFirstAidKit"
+    sfiles='adStack.c adBinomial.c adStack.h adComplex.h adBinomial.h'
+    for sf in $sfiles ; do
+	if test ! -r "$TMP.links/$sf" ; then
+	    touch $TMP.links/$sf
+	    deplist="$deplist $sf"
+	    extn=`echo $sf | $AWK -F. '{print $NF}'`
+            if test $extn = 'c' ; then
+		echo    " \\"  >> $TMP.csrclist
+		printf " $sf" >> $TMP.csrclist
+	    fi
+            if test $extn = 'h' ; then
+		echo    " \\"  >> $TMP.hsrclist
+		printf " $sf" >> $TMP.hsrclist
+	    fi
+	fi
+    done
+    echo "" >> $TMP.srclinks
+    echo "#  These files are linked from $ddmk ( aka $dd )" >> $TMP.srclinks
+    echo "$deplist :" >> $TMP.srclinks
+    printf "\tif [ ! -L \$@ ]; then \$(LN) %s/\$@ \$@; fi\n" $ddmk >> $TMP.srclinks
+fi
 rm -rf $TMP.links
 echo "" >> $TMP.F77srclist
 echo "" >> $TMP.F90srclist
@@ -3242,15 +3268,6 @@ echo >> $MAKEFILE
 echo 'F77_PP_SRC_FILES = $(F77_SRC_FILES:.F=.'$FS')'     >> $MAKEFILE
 echo 'F90_PP_SRC_FILES = $(F90_SRC_FILES:.F90=.'$FS90')' >> $MAKEFILE
 echo 'OBJFILES= $(F90_SRC_FILES:.F90=.o) $(F77_SRC_FILES:.F=.o) $(C_SRC_FILES:.c=.o)' >> $MAKEFILE
-
-if test "x$TAPENADE" != x ; then
-cat >>$MAKEFILE <<EOF
-TAPENADE_SUPPORT_C_SRC_FILES = \
-${TAPTOOLS}/ADFirstAidKit/adStack.c \
-${TAPTOOLS}/ADFirstAidKit/adBinomial.c
-EOF
-echo 'TAP_SUPPORT_OBJFILES = $(TAPENADE_SUPPORT_C_SRC_FILES:.c=.o)' >> $MAKEFILE
-fi
 
 echo >> $MAKEFILE
 echo '.SUFFIXES:' >> $MAKEFILE
@@ -3762,15 +3779,15 @@ tlm_tap_all.f: \$(AD_FILES) f95_test_mods.f90
 	\$(TAPENADECMD) -d -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
 	cat \$(AD_FILES_TLM) > tlm_tap_all.f 2> /dev/null || true
 
-\$(EXE_ADJ): \$(SPECIAL_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES) \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(OBJFILES) \$(TAP_SUPPORT_OBJFILES) \$(EMBEDDED_FILES) adj_tap_all.f
+\$(EXE_ADJ): \$(SPECIAL_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES) \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(OBJFILES) \$(EMBEDDED_FILES) adj_tap_all.f
 	\$(MAKE) -f \$(MAKEFILE) adj_tap_all.o
 	@echo Creating \$@ ...
-	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) adj_tap_all.o \$(TAP_SUPPORT_OBJFILES:${TAPTOOLS}/ADFirstAidKit/%=%) \$(LIBS)
+	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) adj_tap_all.o \$(LIBS)
 
-\$(EXE_TLM): \$(SPECIAL_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES) \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(OBJFILES) \$(TAP_SUPPORT_OBJFILES) \$(EMBEDDED_FILES) tlm_tap_all.f
+\$(EXE_TLM): \$(SPECIAL_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES) \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(OBJFILES) \$(EMBEDDED_FILES) tlm_tap_all.f
 	\$(MAKE) -f \$(MAKEFILE) tlm_tap_all.o
 	@echo Creating \$@ ...
-	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) tlm_tap_all.o \$(TAP_SUPPORT_OBJFILES:${TAPTOOLS}/ADFirstAidKit/%=%) \$(LIBS)
+	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) tlm_tap_all.o \$(LIBS)
 
 EOF
 else
@@ -3791,15 +3808,15 @@ tlm_tap_all.f: \$(AD_FILES) f95_test_mods.f90
 	@$BASH\$(TOOLSDIR)/TAP_support/append_fwd_src _d.f \$(AD_FILES)
 	touch tlm_tap_all.f
 
-\$(EXE_ADJ): \$(SPECIAL_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES) \$(TAP_SUPPORT_OBJFILES) \$(EMBEDDED_FILES) adj_tap_all.f
+\$(EXE_ADJ): \$(SPECIAL_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES) \$(EMBEDDED_FILES) adj_tap_all.f
 	\$(MAKE) -f \$(MAKEFILE) \$(AD_FILES_ADJ:.f=.o)
 	@echo Creating \$@ ...
-	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(AD_FILES_ADJ:.f=.o) \$(TAP_SUPPORT_OBJFILES:${TAPTOOLS}/ADFirstAidKit/%=%) \$(LIBS)
+	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(AD_FILES_ADJ:.f=.o) \$(LIBS)
 
-\$(EXE_TLM): \$(SPECIAL_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES) \$(TAP_SUPPORT_OBJFILES) \$(EMBEDDED_FILES) tlm_tap_all.f
+\$(EXE_TLM): \$(SPECIAL_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES) \$(EMBEDDED_FILES) tlm_tap_all.f
 	\$(MAKE) -f \$(MAKEFILE) \$(AD_FILES_TLM:.f=.o)
 	@echo Creating \$@ ...
-	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(AD_FILES_TLM:.f=.o) \$(TAP_SUPPORT_OBJFILES:${TAPTOOLS}/ADFirstAidKit/%=%) \$(LIBS)
+	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(AD_FILES_TLM:.f=.o) \$(LIBS)
 
 EOF
 fi
