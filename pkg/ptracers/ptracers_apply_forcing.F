@@ -20,6 +20,7 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "DYNVARS.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
 #include "PTRACERS_FIELDS.h"
@@ -52,6 +53,7 @@ C  i,j            :: loop indices
       INTEGER i,j
 C     number of surface interface layer
       INTEGER kSurface
+      INTEGER kmld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 CEOP
 
       IF ( fluidIsAir ) THEN
@@ -77,6 +79,19 @@ C     because it is needed by KPP_TRANSPORT_PTR.
       ENDIF
 #endif /* ALLOW_GCHEM */
 
+C get index of MLD for resetting 
+       DO j=0,sNy+1
+        DO i=0,sNx+1
+         kmld(i,j) = 0
+
+         IF ( maskC(i,j,k,bi,bj).NE.0. _d 0 
+     &               .AND. abs(RF(1+kmld(i,j))) 
+     &               .LT.hMixLayer(i,j,bi,bj) 
+     &               ) 
+     &               kmld(i,j)=kmld(i,j)+1
+        ENDDO
+       ENDDO
+
       IF ( k .EQ. kSurface ) THEN
 c      DO j=jMin,jMax
 c       DO i=iMin,iMax
@@ -97,6 +112,22 @@ c       DO i=iMin,iMax
          ENDIF
         ENDDO
        ENDDO
+C Internal ocean sources and sinks of ptracers       
+      ELSEIF ( k .NE. kSurface .AND. 
+     &                     PTRACERS_preformedAgeTracer(iTracer)) THEN
+          DO j=0,sNy+1
+            DO i=0,sNx+1
+              IF (PTRACERS_preformedUseMLD(iTracer)) THEN
+                IF ( k .GE. kmld(i,j) ) THEN
+                    gPtracer(i,j) = gPtracer(i,j)
+     &                          + 1. _d 0 * maskC(i,j,k,bi,bj)
+                ENDIF
+              ELSE
+                  gPtracer(i,j) = gPtracer(i,j)
+     &                          + 1. _d 0 * maskC(i,j,k,bi,bj)
+              ENDIF
+            ENDDO
+          ENDDO
       ENDIF
 
       IF (PTRACERS_linFSConserve(iTracer)) THEN

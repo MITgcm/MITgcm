@@ -78,7 +78,13 @@ C     tauTr1ClimRelax :: old parameter (will be removed 1 day)
      &     PTRACERS_snapshot_mnc,
      &     PTRACERS_monitor_mnc,
      &     PTRACERS_pickup_write_mnc,
-     &     PTRACERS_pickup_read_mnc
+     &     PTRACERS_pickup_read_mnc,
+     &     PTRACERS_isPreformed,
+     &     PTRACERS_preformedUseMLD,
+     &     PTRACERS_tauRelaxPreformed,
+     &     PTRACERS_preformedAgeTracer,
+     &     PTRACERS_preformedMate,
+     &     PTRACERS_preformedFixedValue
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -134,6 +140,13 @@ C     Set defaults values for parameters in PTRACERS.h
           PTRACERS_long_names(iTracer)(ic:ic) = ' '
           PTRACERS_units(iTracer)(ic:ic) = ' '
         ENDDO
+        PTRACERS_isPreformed(iTracer)         = .FALSE.
+        PTRACERS_preformedUseMLD(iTracer)     = .FALSE.
+        PTRACERS_tauRelaxPreformed(iTracer)   = 1. _d 0
+        PTRACERS_preformedMate(iTracer)       = UNSET_I
+        PTRACERS_preformedFixedValue(iTracer) = UNSET_RL
+        PTRACERS_preformedAgeTracer(iTracer)  = .FALSE.
+
       ENDDO
       PTRACERS_doAB_onGpTr      = doAB_onGtGs
       PTRACERS_addSrelax2EmP    = .FALSE.
