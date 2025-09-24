@@ -277,6 +277,16 @@ c    I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+      diagName  = 'VSHEARSQ'
+      diagTitle = 'Square of Vertical Shear'
+     &          //' (horiz. velocity vertical gradient)'
+      diagUnits = '1/s^2           '
+      IF ( .NOT.usingZCoords )
+     &  diagUnits = DIAGS_MK_UNITS( '(m/s/'//rUnit2c//')^2', myThid )
+      diagCode  = 'SM P    LR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
       diagName  = 'UE_VEL_C'
       diagTitle = 'Eastward Velocity (m/s) (cell center)'
       diagUnits = 'm/s             '
@@ -631,7 +641,8 @@ c     diagTitle = 'Square of ocean bottom pressure / top. geo-Potential'
 
 C--   surface fluxes:
       diagName  = 'oceTAUX '
-      diagTitle = 'zonal surface wind stress, >0 increases uVel'
+      diagTitle = 'zonal surface wind stress'
+     &          //' (+=down), >0 increases uVel'
       diagUnits = 'N/m^2           '
       diagCode  = 'UU      U1      '
       diagMate  = diagNum + 2
@@ -639,7 +650,8 @@ C--   surface fluxes:
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
       diagName  = 'oceTAUY '
-      diagTitle = 'meridional surf. wind stress, >0 increases vVel'
+      diagTitle = 'meridional surf. wind stress'
+     &          //' (+=down), >0 increases vVel'
       diagUnits = 'N/m^2           '
       diagCode  = 'VV      U1      '
       diagMate  = diagNum
@@ -693,7 +705,8 @@ C--   surface fluxes:
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'oceFreez'
-      diagTitle = 'heating from freezing of sea-water (allowFreezing=T)'
+      diagTitle = 'implied heating from increasing Temp'
+     &          //' up to freezing point (allowFreezing=T)'
       diagUnits = 'W/m^2           '
       diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -730,16 +743,16 @@ C--   surface fluxes:
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'TFLUX   '
-      diagTitle = 'total heat flux (match heat-content variations),'
-     &          //' >0 increases theta'
+      diagTitle = 'total heat flux (match heat-content variations,'
+     &          //' +=down), >0 increases theta'
       diagUnits = 'W/m^2           '
       diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'SFLUX   '
-      diagTitle = 'total salt flux (match salt-content variations),'
-     &          //' >0 increases salt'
+      diagTitle = 'total salt flux (match salt-content variations,'
+     &          //' +=down), >0 increases salt'
       diagUnits = 'g/m^2/s         '
       diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
