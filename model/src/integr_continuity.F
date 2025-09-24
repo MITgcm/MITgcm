@@ -64,11 +64,9 @@ C     hDivFlow :: Div. Barotropic Flow [wVel units, m/s]
       _RL vTrans(1:sNx+1,1:sNy+1)
       _RL hConv3d(1:sNx,1:sNy,Nr)
       _RL locFac
-#ifdef EXACT_CONSERV
       INTEGER ks
       _RL hDivFlow(1:sNx,1:sNy)
       _RL facEmP
-#endif /* EXACT_CONSERV */
 #if (defined NONLIN_FRSURF) && !(defined DISABLE_RSTAR_CODE)
       _RL rStarDhDt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 # if (defined ALLOW_AUTODIFF_TAMC) && (defined ALLOW_DEPTH_CONTROL)
@@ -80,10 +78,8 @@ C     tkey :: tape key (tile dependent)
 #endif
 CEOP
 
-#ifdef EXACT_CONSERV
        facEmP = 0.
        IF ( fluidIsWater.AND.useRealFreshWaterFlux ) facEmP=mass2rUnit
-#endif /* EXACT_CONSERV */
 
 C--   Start bi,bj loops
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -91,14 +87,12 @@ C--   Start bi,bj loops
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-#ifdef EXACT_CONSERV
 C-    Initialise
         DO j=1,sNy
          DO i=1,sNx
            hDivFlow(i,j) = 0. _d 0
          ENDDO
         ENDDO
-#endif /* EXACT_CONSERV */
 
 C--   Compute the Convergence of horizontal Flow :
         DO k=1,Nr
@@ -145,7 +139,6 @@ C-    horizontal transport convergence [in wVel units]
 #endif
          ENDIF
 
-#ifdef EXACT_CONSERV
          IF ( exactConserv ) THEN
 C--   Compute the Divergence of The Barotropic Flow :
           DO j=1,sNy
@@ -155,7 +148,6 @@ C--   Compute the Divergence of The Barotropic Flow :
            ENDDO
           ENDDO
          ENDIF
-#endif /* EXACT_CONSERV */
 
 #ifdef PRESERVE_C69C_OUTPUT
          DO j=1,sNy
@@ -168,7 +160,9 @@ C--   Compute the Divergence of The Barotropic Flow :
 C-    End DO k=1,Nr
         ENDDO
 
-#ifdef EXACT_CONSERV
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C--   Compute dEtaHdt from the Divergence of the Barotropic Flow:
         IF ( exactConserv ) THEN
 
 #ifdef PRESERVE_C69C_OUTPUT
@@ -179,12 +173,9 @@ C-    End DO k=1,Nr
          ENDDO
 #endif
 
-C------------------------------------
-C note: deep-model not implemented for P-coordinate + realFreshWaterFlux ;
-C       anelastic: always assumes that rhoFacF(1) = 1
          IF ( myIter.EQ.nIter0 .AND. myIter.NE.0
      &      .AND. fluidIsWater .AND. useRealFreshWaterFlux ) THEN
-
+C-    special restart case:
 C     needs previous time-step value of E-P-R, that has not been loaded
 C     and was not in old pickup-file ; try to use etaN & etaH instead.
           IF ( usePickupBeforeC54 ) THEN
@@ -203,7 +194,9 @@ C     and was not in old pickup-file ; try to use etaN & etaH instead.
             PmEpR(i,j,bi,bj) = PmEpR(i,j,bi,bj)*rUnit2mass
            ENDDO
           ENDDO
+
          ELSEIF ( myIter.EQ.nIter0 ) THEN
+C-    simple restart case:
           DO j=1,sNy
            DO i=1,sNx
             ks = kSurfC(i,j,bi,bj)
@@ -211,7 +204,9 @@ C     and was not in old pickup-file ; try to use etaN & etaH instead.
             dEtaHdt(i,j,bi,bj) = -hDivFlow(i,j)*recip_deepFac2F(ks)
            ENDDO
           ENDDO
+
          ELSE
+C-    general case:
 C--    Needs to get valid PmEpR (for T,S forcing) also in overlap regions
 C       (e.g., if using KPP) => set over full index range
           DO j=1-OLy,sNy+OLy
@@ -219,6 +214,8 @@ C       (e.g., if using KPP) => set over full index range
             PmEpR(i,j,bi,bj) = -EmPmR(i,j,bi,bj)
            ENDDO
           ENDDO
+C note: deep-model not implemented for P-coordinate + realFreshWaterFlux ;
+C       anelastic: always assumes that rhoFacF(1) = 1
           DO j=1,sNy
            DO i=1,sNx
             ks = kSurfC(i,j,bi,bj)
@@ -227,7 +224,6 @@ C       (e.g., if using KPP) => set over full index range
            ENDDO
           ENDDO
          ENDIF
-C------------------------------------
 
 #ifdef ALLOW_OBCS
 C--    reset dEtaHdt to zero outside the OB interior region
@@ -240,7 +236,7 @@ C--    reset dEtaHdt to zero outside the OB interior region
          ENDIF
 #endif /* ALLOW_OBCS */
 
-C-- end if exactConserv block
+C-- end if exactConserv block (compute dEtaHdt)
         ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -266,8 +262,6 @@ C         except for deep-factor and rho factor.
 CADJ STORE rStarDhDt = comlev1_bibj, key = tkey, kind = isbyte
 #  endif
 # endif /* NONLIN_FRSURF and ndef DISABLE_RSTAR_CODE */
-
-#endif /* EXACT_CONSERV */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -300,7 +294,6 @@ C--   End bi,bj loops
        ENDDO
       ENDDO
 
-#ifdef EXACT_CONSERV
 C--   Update etaH (from etaN and dEtaHdt):
       IF ( exactConserv ) THEN
 c       IF ( useRealFreshWaterFlux .AND. myIter.EQ.nIter0 )
@@ -311,7 +304,6 @@ c    &    _EXCH_XY_RL( PmEpR, myThid )
 #endif
         CALL UPDATE_ETAH( myTime, myIter, myThid )
       ENDIF
-#endif /* EXACT_CONSERV */
 
 #ifdef ALLOW_AUTODIFF_MONITOR
 C     In reverse, print adjoint variable for etaN

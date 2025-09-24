@@ -646,10 +646,8 @@ C--     Step forward fields and calculate time tendency terms.
 # ifdef ALLOW_KPP
 CADJ STORE uVel, vVel = comlev1, key = ikey_dynamics, kind = isbyte
 # endif /* ALLOW_KPP */
-# ifdef EXACT_CONSERV
 CADJ STORE EmPmR      = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE PmEpR      = comlev1, key = ikey_dynamics, kind = isbyte
-# endif
 # ifdef ALLOW_OBCS
 CADJ STORE salt       = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE totphihyd  = comlev1, key = ikey_dynamics, kind = isbyte

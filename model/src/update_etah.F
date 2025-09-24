@@ -32,7 +32,6 @@ C     myThid  :: my Thread Id number
       INTEGER myIter
       INTEGER myThid
 
-#ifdef EXACT_CONSERV
 C     !LOCAL VARIABLES:
 C     i,j,bi,bj  :: Loop counters
       INTEGER i,j,bi,bj
@@ -116,8 +115,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       IF ( useOBCS.AND.nonlinFreeSurf.GT.0 )
      &    CALL EXCH_XY_RL( etaH, myThid )
-
-#endif /* EXACT_CONSERV */
 
       RETURN
       END
