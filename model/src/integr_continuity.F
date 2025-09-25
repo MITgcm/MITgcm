@@ -61,18 +61,12 @@ C     uTrans   :: Volume transports ( uVel.xA )
 C     vTrans   :: Volume transports ( vVel.yA )
 C     hDivFlow :: Div. Barotropic Flow [transport unit m3/s]
       INTEGER k,bi,bj
-#ifdef EXACT_CONSERV
       INTEGER i, j
       INTEGER ks
       _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL hDivFlow(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL facEmP, facMass
-#else /* EXACT_CONSERV */
-# ifdef ALLOW_OBCS
-      INTEGER i, j
-# endif
-#endif /* EXACT_CONSERV */
 #ifndef ALLOW_ADDFLUID
       _RL addMass(1)
 #endif /* ndef ALLOW_ADDFLUID */
@@ -93,7 +87,6 @@ C--   Start bi,bj loops
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-#ifdef EXACT_CONSERV
       IF ( exactConserv ) THEN
 
        facEmP = 0.
@@ -269,8 +262,6 @@ CADJ STORE rStarDhDt = comlev1_bibj, key = tkey, kind = isbyte
 #  endif
 # endif /* NONLIN_FRSURF */
 
-#endif /* EXACT_CONSERV */
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       DO k=Nr,1,-1
@@ -282,7 +273,6 @@ C--    Integrate continuity vertically for vertical velocity
      O                       wVel,
      I                       myIter, myThid )
 
-#ifdef EXACT_CONSERV
        IF ( k.EQ.Nr .AND. myIter.NE.0 .AND. usingPCoords
      &      .AND. fluidIsWater .AND. useRealFreshWaterFlux ) THEN
 
@@ -294,7 +284,6 @@ C--    Integrate continuity vertically for vertical velocity
          ENDDO
 
        ENDIF
-#endif /* EXACT_CONSERV */
 
 #ifdef ALLOW_OBCS
 C--    reset W to zero outside the OB interior region
@@ -332,7 +321,6 @@ C     In reverse, print adjoint variable for etaN
       IF ( implicitIntGravWave .OR. myIter.EQ.nIter0 )
      &    _EXCH_XYZ_RL( wVel , myThid )
 
-#ifdef EXACT_CONSERV
 C--   Update etaH (from etaN and dEtaHdt):
       IF ( exactConserv ) THEN
 c       IF ( useRealFreshWaterFlux .AND. myIter.EQ.nIter0 )
@@ -351,8 +339,6 @@ c    &    _EXCH_XY_RL( PmEpR, myThid )
       ENDIF
 # endif /* DISABLE_SIGMA_CODE */
 #endif /* NONLIN_FRSURF */
-
-#endif /* EXACT_CONSERV */
 
       RETURN
       END
