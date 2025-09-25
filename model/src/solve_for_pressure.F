@@ -350,10 +350,8 @@ C     skip the solving and put the (known) solution directly in cg2d_x
          IF ( solveForDeltaP ) THEN
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-#ifdef EXACT_CONSERV
             cg2d_x(i,j,bi,bj) = Bo_surf(i,j,bi,bj)*dEtaHdt(i,j,bi,bj)
      &                                            *deltaTFreeSurf
-#endif /* EXACT_CONSERV */
            ENDDO
           ENDDO
          ELSE

@@ -162,7 +162,6 @@ C-  endif - rigid-lid / Free-Surf.
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-#ifdef EXACT_CONSERV
        IF ( k.EQ.Nr .AND. myIter.NE.0 .AND. usingPCoords
      &      .AND. fluidIsWater .AND. useRealFreshWaterFlux ) THEN
          DO j=1,sNy
@@ -172,7 +171,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
           ENDDO
          ENDDO
        ENDIF
-#endif /* EXACT_CONSERV */
 
 C-    End DO k=Nr,1,-1
       ENDDO

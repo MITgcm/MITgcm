@@ -65,7 +65,7 @@ C     rec_dTfs :: freeSurfFac divided by ( detalTFreeSurf x implicDiv2DFlow )
 #ifndef PRESERVE_C69C_OUTPUT
       _RL locFac, rec_dTfs
 #endif
-#if ( defined ALLOW_NONHYDROSTATIC && defined EXACT_CONSERV )
+#ifdef ALLOW_NONHYDROSTATIC
       _RL rec_dT2, locGamma
 #endif
 #ifdef ALLOW_ADDFLUID
@@ -336,10 +336,7 @@ C--   Add source term arising from w=d/dt (p_s + p_nh)
           ENDIF
          ENDDO
         ENDDO
-#endif /* ALLOW_NONHYDROSTATIC */
 C--   Add source term arising from w=d/dt (p_s)
-#ifdef EXACT_CONSERV
-# ifdef ALLOW_NONHYDROSTATIC
 #ifdef PRESERVE_C69C_OUTPUT
       ELSEIF ( selectNHfreeSurf.GE.1 ) THEN
 #else
@@ -410,9 +407,9 @@ C--   Add source term arising from w=d/dt (p_s)
          ENDDO
         ENDIF
       ELSEIF ( solveForDeltaP ) THEN
-# else /* ALLOW_NONHYDROSTATIC */
+#else /* ALLOW_NONHYDROSTATIC */
       IF ( solveForDeltaP ) THEN
-# endif /* ALLOW_NONHYDROSTATIC */
+#endif /* ALLOW_NONHYDROSTATIC */
         IF ( implicDiv2DFlow.NE.oneRL ) THEN
          tmpFac = freeSurfFac*( oneRL/implicDiv2DFlow - oneRL )
          DO j=1,sNy
@@ -438,11 +435,6 @@ C--   Add source term arising from w=d/dt (p_s)
          ENDDO
         ENDDO
       ELSE
-#else /* EXACT_CONSERV */
-# ifdef ALLOW_NONHYDROSTATIC
-      ELSE
-# endif
-#endif /* EXACT_CONSERV */
         DO j=1,sNy
          DO i=1,sNx
            ks = kSurfC(i,j,bi,bj)
@@ -456,9 +448,7 @@ C--   Add source term arising from w=d/dt (p_s)
 #endif
          ENDDO
         ENDDO
-#if ( defined EXACT_CONSERV || defined ALLOW_NONHYDROSTATIC )
       ENDIF
-#endif
 
       RETURN
       END
