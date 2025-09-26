@@ -454,7 +454,7 @@ C---  Continue with standard packages (with standard usePKG flag)
 #endif
 
 #ifndef ALLOW_OBSFIT
-      IF (useOBSFIT) CALL PACKAGES_ERROR_MSG('OBSFIT',' ',myThid)
+      IF ( useOBSFIT ) CALL PACKAGES_ERROR_MSG( 'OBSFIT', ' ', myThid )
 #endif
 
 #ifdef ALLOW_GRDCHK

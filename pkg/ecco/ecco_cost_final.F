@@ -65,13 +65,13 @@ c     == local variables ==
 
 #ifndef ALLOW_PROFILES
       INTEGER NFILESPROFMAX
-      parameter (NFILESPROFMAX=1)
+      PARAMETER ( NFILESPROFMAX=1 )
       INTEGER NVARMAX
-      parameter (NVARMAX=1)
+      PARAMETER ( NVARMAX=1 )
 #endif
 #ifndef ALLOW_OBSFIT
-      integer NFILESMAX_OBS
-      parameter (NFILESMAX_OBS=1)
+      INTEGER NFILESMAX_OBS
+      PARAMETER ( NFILESMAX_OBS=1 )
 #endif
 
 #ifndef ALLOW_COST
@@ -111,7 +111,7 @@ c the adjoint, pkg/autodiff most likely require cost though.
       _RL no_profiles_mean(NVARMAX)
 #endif
 #ifdef ALLOW_OBSFIT
-      integer num_file_obs
+      INTEGER num_file_obs
       _RL no_obsfit(NFILESMAX_OBS)
 #endif
 #ifdef ALLOW_GENTIM2D_CONTROL
@@ -153,10 +153,9 @@ c     == end of interface ==
       ENDDO
 #endif
 #ifdef ALLOW_OBSFIT
-      do num_file_obs=1,NFILESMAX_OBS
-        f_obsfit(num_file_obs)= 
-     &          objf_obsfit(num_file_obs)
-      enddo
+      DO num_file_obs=1,NFILESMAX_OBS
+       f_obsfit(num_file_obs) = objf_obsfit(num_file_obs)
+      ENDDO
 #endif
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       DO num_var=1,NGENCOST
@@ -197,10 +196,9 @@ c     == end of interface ==
       ENDDO
 #endif
 #ifdef ALLOW_OBSFIT
-      do num_file_obs=1,NFILESMAX_OBS
-        no_obsfit(num_file_obs)= 
-     &           num_obsfit(num_file_obs)
-      enddo
+      DO num_file_obs=1,NFILESMAX_OBS
+       no_obsfit(num_file_obs) = num_obsfit(num_file_obs)
+      ENDDO
 #endif
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       DO num_var=1,NGENCOST
@@ -506,17 +504,16 @@ c--   Do global summation for each part of the cost function
       ENDIF
 #endif
 #ifdef ALLOW_OBSFIT
-      if (useOBSFIT) then
-      do num_file_obs=1,NFILESMAX_OBS
-        if ( no_obsfit(num_file_obs).GT.zeroRL ) then
-         write(msgBuf,'(A,D22.15,i2.0)')
-     &     ' --> f_obsfit =',f_obsfit(num_file_obs),
-     &      num_file_obs
-         call print_message( msgBuf, standardmessageunit,
-     &                       SQUEEZE_RIGHT , mythid)
-        endif
-      enddo
-      endif
+      IF ( useOBSFIT ) THEN
+       DO num_file_obs=1,NFILESMAX_OBS
+        IF ( no_obsfit(num_file_obs).GT.zeroRL ) THEN
+         WRITE(msgBuf,'(A,D22.15,i2.0)')
+     &     ' --> f_obsfit =', f_obsfit(num_file_obs), num_file_obs
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+        ENDIF
+       ENDDO
+      ENDIF
 #endif
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       DO num_var=1,NGENCOST
@@ -571,11 +568,11 @@ cgf this sum is now done in cost_final if allow_cost
 #endif
 
 #ifdef ALLOW_OBSFIT
-      do num_file_obs=1,NFILESMAX_OBS
+      DO num_file_obs=1,NFILESMAX_OBS
         glofc = glofc
      &          +  mult_obsfit(num_file_obs)
      &            *objf_obsfit(num_file_obs)
-      enddo
+      ENDDO
 #endif
 
       locfc=locfc+glofc
@@ -643,19 +640,19 @@ C     only master thread of master CPU open and write to file
         ENDIF
 #endif
 #ifdef ALLOW_OBSFIT
-      if (useOBSFIT) then
-      do num_file_obs=1,NFILESMAX_OBS
-        if ( no_obsfit(num_file_obs).GT.zeroRL ) then
-         IL  = ILNBLNK( obsfitfiles(num_file_obs) )
-         IL  = max (IL,30)
-         write(ifc,'(4A,2D22.15)')
-     &    obsfitfiles(num_file_obs)(1:IL),' ',
-     &    obsfit_nameval, ' = ',
-     &    f_obsfit(num_file_obs),
-     &    no_obsfit(num_file_obs)
-        endif
-      enddo
-      endif
+        IF ( useOBSFIT ) THEN
+         DO num_file_obs=1,NFILESMAX_OBS
+          IF ( no_obsfit(num_file_obs).GT.zeroRL ) THEN
+           IL  = ILNBLNK( obsfitfiles(num_file_obs) )
+           IL  = max (IL,30)
+           WRITE(ifc,'(4A,2D22.15)')
+     &      obsfitfiles(num_file_obs)(1:IL),' ',
+     &      obsfit_nameval, ' = ',
+     &      f_obsfit(num_file_obs),
+     &      no_obsfit(num_file_obs)
+          ENDIF
+         ENDDO
+        ENDIF
 #endif
 #ifdef ALLOW_GENCOST_CONTRIBUTION
         DO num_var=1,NGENCOST
@@ -712,7 +709,7 @@ C     only master thread of master CPU open and write to file
         ENDDO
 #endif
 
-        close(ifc)
+        CLOSE(ifc)
 C     Do not ever write this cost function again to cfname
         eccoWriteCostFunction = .FALSE.
 
@@ -723,6 +720,7 @@ C     Do not ever write this cost function again to cfname
      &                      SQUEEZE_RIGHT, myThid )
 C     eccoWriteCostFunction
        ENDIF
+
 C     MASTER_CPU_THREAD
       ENDIF
 
