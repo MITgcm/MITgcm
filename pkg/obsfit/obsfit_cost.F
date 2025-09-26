@@ -10,7 +10,7 @@ CBOP
 C     !ROUTINE: OBSFIT_COST
 
 C     !INTERFACE:
-      SUBROUTINE OBSFIT_COST( myIter, myTime, myThid )
+      SUBROUTINE OBSFIT_COST( myTime, myIter, myThid )
 
 C     !DESCRIPTION:
 C     ==================================================================
@@ -41,8 +41,8 @@ C     == Global variables ===
 #endif
 
 C     !INPUT PARAMETERS:
-C     myTime  :: time counter for this thread
-C     myIter  :: iteration counter for this thread
+C     myTime  :: Current time in simulation
+C     myIter  :: Current iteration number in simulation
 C     myThid  :: my thread ID number
       _RL     myTime
       INTEGER myIter
@@ -169,7 +169,7 @@ CADJ STORE samples_modval_glob, samples_mask_glob
 CADJ &     = tapelev_obsfit, key = num_file, kind = isbyte
 #endif
 
-        IF ( myProcId .eq. 0 ) THEN
+        IF ( myProcId .EQ. 0 ) THEN
 
 C Loop over obs
           DO obs_num = 1, NOBSMAX_OBS
@@ -247,7 +247,7 @@ C Read model equivalent from global file
      I               obsfit_globaldummy(num_file) )
 
 C Read observation and uncertainty
-                CALL OBSFIT_READ_OBS( 
+                CALL OBSFIT_READ_OBS(
      I               num_file,1,obs_ind_glob(num_file,obs_num),
      O               obs_data,
      I               myThid )

@@ -665,7 +665,7 @@ C--   Reset the model iteration counter and the model time.
 #endif /* ALLOW_AUTODIFF */
 
 #ifdef ALLOW_ECCO
-      IF ( useECCO ) then
+      IF ( useECCO ) THEN
 # ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('COST_AVERAGESFIELDS',myThid)
 # endif
@@ -694,13 +694,8 @@ c--     Accumulate in-situ time averages of theta, salt, and SSH.
         IF (debugMode) CALL DEBUG_CALL('OBSFIT_INLOOP',myThid)
 #endif
 c--     Accumulate in-situ time averages of theta, salt, and SSH.
-#ifdef ALLOW_AUTODIFF
-C--   Reset the model iteration counter and the model time.
-        myIter = nIter0 + (iloop-1)
-        myTime = startTime + deltaTClock*(iloop-1)
-#endif
         CALL TIMER_START('OBSFIT_INLOOP      [MAIN_DO_LOOP]', myThid)
-        CALL OBSFIT_INLOOP( myTime, myThid )
+        CALL OBSFIT_INLOOP( myTime, myIter, myThid )
         CALL TIMER_STOP ('OBSFIT_INLOOP      [MAIN_DO_LOOP]', myThid)
       ENDIF
 #endif /* ALLOW_OBSFIT */
@@ -762,18 +757,18 @@ c--   Compute all profiles cost function contributions.
 #endif /* ALLOW_PROFILES */
 
 #ifdef ALLOW_OBSFIT
-      IF (useOBSFIT) THEN
+      IF ( useOBSFIT ) THEN
 c--   Accumulate in-situ time averages of temperature, salinity, SSH.
         CALL TIMER_START('OBSFIT_INLOOP      [THE_MAIN_LOOP]', myThid)
-        CALL OBSFIT_INLOOP( endtime, myThid )
+        CALL OBSFIT_INLOOP( endtime, myIter, myThid )
         CALL TIMER_STOP ('OBSFIT_INLOOP      [THE_MAIN_LOOP]', myThid)
 c--   Compute all obsfit cost function contributions.
-        CALL OBSFIT_COST( myIter, myTime, myThid )
+        CALL OBSFIT_COST( myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_OBSFIT */
 
 #ifdef ALLOW_ECCO
-      IF ( useECCO ) then
+      IF ( useECCO ) THEN
 c--   Compute all ecco cost function contributions.
         CALL TIMER_START('ECCO_COST_DRIVER   [THE_MAIN_LOOP]', myThid)
         CALL ECCO_COST_DRIVER ( endTime, myIter, myThid )

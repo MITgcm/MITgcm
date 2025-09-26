@@ -7,7 +7,7 @@ CBOP
 C     !ROUTINE: OBSFIT_INLOOP
 
 C     !INTERFACE:
-      SUBROUTINE OBSFIT_INLOOP( myTime, myThid )
+      SUBROUTINE OBSFIT_INLOOP( myTime, myIter, myThid )
 
 C     !DESCRIPTION:
 C     ==================================================================
@@ -35,9 +35,11 @@ C     == Global variables ===
 #endif
 
 C     !INPUT PARAMETERS:
-C     myTime :: time counter for this thread
+C     myTime :: Current time in simulation
+C     myIter :: Current iteration number in simulation
 C     myThid :: my thread ID number
       _RL     myTime
+      INTEGER myIter
       INTEGER myThid
 CEOP
 
@@ -56,6 +58,8 @@ C     !LOCAL VARIABLES:
 # ifndef ALLOW_ECCO
       INTEGER i,j,k
 # endif
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 # ifndef ALLOW_CTRL
       optimcycle = 0
@@ -90,7 +94,7 @@ C     !LOCAL VARIABLES:
                 IF ( (sample_timeE(num_file,sample_num,bi,bj).GE.
      &           myTime).AND.
      &           (sample_timeS(num_file,sample_num,bi,bj).LT.
-     &           (myTime+deltaTclock)) ) THEN
+     &           (myTime+deltaTClock)) ) THEN
                   DO iq = 1, NUM_INTERP_PTS_OBS
                     sample_i(iq) =
      &               sample_interp_i(num_file,sample_num,iq,bi,bj)
@@ -111,22 +115,22 @@ C recorded value and add to it
                     CALL ACTIVE_READ_OBS_TILE(
      I                   num_file,
      O                   saved_modval,
-     I                   sample_num,.false.,optimcycle,bi,bj,myThid,
+     I                   sample_num,.FALSE.,optimcycle,bi,bj,myThid,
      I                   obsfit_dummy(num_file,bi,bj) )
                   ENDIF
 
                   CALL OBSFIT_SAMPLING(
      O                 sample_modval,
-     I                 sample_i,sample_j,sample_k,sample_frac,
+     I                 sample_i, sample_j, sample_k, sample_frac,
      I                 sample_type(num_file,sample_num,bi,bj),
-     I                 num_file,myTime,bi,bj,myThid )
+     I                 num_file, bi, bj, myTime, myIter, myThid )
 
                   sample_modval = sample_modval*
      &             obsfit_facmod(num_file)
 
                   IF ( obsfitOperation(num_file).GT.0 ) THEN
                     sample_modval = saved_modval
-     &               +sample_modval*deltaTclock
+     &               +sample_modval*deltaTClock
                   ENDIF
 
                   sample_modmask(bi,bj) = sample_modmask(bi,bj)*
@@ -151,5 +155,3 @@ C recorded value and add to it
 
       RETURN
       END
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
