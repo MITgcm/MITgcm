@@ -13,8 +13,8 @@ CEOP
 C     NFILESMAX_OBS      :: maximum number of input files
 C     NOBSMAX_OBS        :: maximum number of obs per file per tile
 C     NSAMPLESMAX        :: maximum number of samples per file per tile
-C     NSAMP_PER_OBS_MAX  :: maximum number of samples per observation 
-C     NUM_INTERP_PTS_OBS :: number of points used in interpolation for 
+C     NSAMP_PER_OBS_MAX  :: maximum number of samples per observation
+C     NUM_INTERP_PTS_OBS :: number of points used in interpolation for
 C                           model sampling
 
       INTEGER NFILESMAX_OBS

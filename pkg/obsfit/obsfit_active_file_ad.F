@@ -25,7 +25,7 @@ C     ==================================================================
 C     | Adjoint of active_read_obs_tile
 C     ==================================================================
 
-C     !USES: 
+C     !USES:
       IMPLICIT NONE
 C     == Global variables ===
 #include "EEPARAMS.h"
@@ -52,9 +52,9 @@ C                      variable and write to active file
 CEOP
 
 #ifdef ALLOW_OBSFIT
-      CALL ACTIVE_READ_OBS_TILE_RL( 
+      CALL ACTIVE_READ_OBS_TILE_RL(
      I     fidadj_obs(active_num_file,bi,bj), active_num_file,
-     O     adactive_var, 
+     O     adactive_var,
      I     lAdInit, irec, sample_ind_glob(active_num_file,irec,bi,bj),
      I     REVERSE_SIMULATION, myIter, bi, bj, myThid )
 
@@ -83,7 +83,7 @@ C     ==================================================================
 C     | Adjoint of active_write_obs_tile
 C     ==================================================================
 
-C     !USES: 
+C     !USES:
       IMPLICIT NONE
 C     == Global variables ===
 #include "EEPARAMS.h"
@@ -111,9 +111,9 @@ CEOP
 
 #ifdef ALLOW_OBSFIT
 
-      CALL ACTIVE_WRITE_OBS_TILE_RL( 
-     I     fidadj_obs(active_num_file,bi,bj), 
-     I     active_num_file, adactive_var, 
+      CALL ACTIVE_WRITE_OBS_TILE_RL(
+     I     fidadj_obs(active_num_file,bi,bj),
+     I     active_num_file, adactive_var,
      I     irec, sample_ind_glob(active_num_file,irec,bi,bj),
      I     REVERSE_SIMULATION, myIter, bi, bj, myThid )
 
@@ -141,7 +141,7 @@ C     ==================================================================
 C     | Adjoint of active_read_obs_glob
 C     ==================================================================
 
-C     !USES: 
+C     !USES:
       IMPLICIT NONE
 C     == Global variables ===
 #include "EEPARAMS.h"
@@ -171,9 +171,9 @@ CEOP
 
 #ifdef ALLOW_OBSFIT
 
-      CALL ACTIVE_READ_OBS_GLOB_RL( 
+      CALL ACTIVE_READ_OBS_GLOB_RL(
      I     fidadglobal(active_num_file), active_num_file,
-     O     adactive_var, adactive_mask, 
+     O     adactive_var, adactive_mask,
      I     lAdInit, irec, obs_ind_glob(active_num_file,irec),
      I     REVERSE_SIMULATION, myIter, myThid )
 
@@ -201,7 +201,7 @@ C     ==================================================================
 C     | Adjoint of active_write_obs_glob
 C     ==================================================================
 
-C     !USES: 
+C     !USES:
       IMPLICIT NONE
 C     == Global variables ===
 #include "EEPARAMS.h"
@@ -230,7 +230,7 @@ C                      variable and write to active file
 CEOP
 
 #ifdef ALLOW_OBSFIT
-      CALL ACTIVE_WRITE_OBS_GLOB_RL( 
+      CALL ACTIVE_WRITE_OBS_GLOB_RL(
      I     fidadglobal(active_num_file), active_num_file,
      I     adactive_var, adactive_mask,
      I     irec, obs_ind_glob(active_num_file,irec),

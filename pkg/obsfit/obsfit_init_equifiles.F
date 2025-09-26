@@ -3,8 +3,8 @@
 CBOP
 C     !ROUTINE: OBSFIT_INIT_EQUIFILES
 
-C     !INTERFACE: 
-      SUBROUTINE OBSFIT_INIT_EQUIFILES( 
+C     !INTERFACE:
+      SUBROUTINE OBSFIT_INIT_EQUIFILES(
      I                                  num_file,
      I                                  fid1,
      I                                  file2,
@@ -16,8 +16,8 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     ==================================================================
-C     | Initialization of model counterparts files             
-C     | for ObsFit observations 
+C     | Initialization of model counterparts files
+C     | for ObsFit observations
 C     ==================================================================
 
 C !USES:
@@ -48,7 +48,7 @@ C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       IF (obsfitDoNcOutput) THEN
-      
+
 C Create a netcdf file
         err = NF_CREATE( file2, NF_CLOBBER, fid2 )
         CALL OBSFIT_NF_ERROR( 'INIT_EQUIFILE: NF_CREATE fid2',
@@ -56,7 +56,7 @@ C Create a netcdf file
         err = NF_DEF_DIM( fid2, 'iSAMPLE', length, dimid )
         CALL OBSFIT_NF_ERROR( 'INIT_EQUIFILE: NF_DEF_DIM sample',
      &       err,bi,bj,myThid )
-        err = NF_DEF_VAR( fid2, 'sample_ind_glob', 
+        err = NF_DEF_VAR( fid2, 'sample_ind_glob',
      &        NF_INT, 1, dimid, varID(1) )
         CALL OBSFIT_NF_ERROR( 'INIT_EQUIFILE: NF_DEF_VAR sample',
      &       err,bi,bj,myThid )

@@ -75,10 +75,10 @@ C Default values for ObsFit
       ELSE
         obsfitDoGenGrid = .false.
       ENDIF
-      
+
 C Read ObsFit cost data file
       WRITE( msgBuf,'(A)' ) 'OBSFIT_READPARMS: opening data.obsfit'
-      CALL PRINT_MESSAGE( msgBuf, 
+      CALL PRINT_MESSAGE( msgBuf,
      &     standardMessageUnit, SQUEEZE_RIGHT, 1 )
 
       CALL OPEN_COPY_DATA_FILE(
@@ -104,7 +104,7 @@ C Read ObsFit cost data file
         IF ( obsfitFiles(num_file) .NE. ' ' ) THEN
           IL  = ILNBLNK( obsfitFiles(num_file) )
           fname = obsfitFiles(num_file)(1:IL)//'.nc'
-          INQUIRE( file=fname, exist=exst ) 
+          INQUIRE( file=fname, exist=exst )
           IF (.NOT.exst) THEN
 C Warn user as we override obsfitFiles
             WRITE( msgBuf,'(3A)' )

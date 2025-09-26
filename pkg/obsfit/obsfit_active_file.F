@@ -20,13 +20,13 @@ C     !INTERFACE:
      I                               bj,
      I                               myThid,
      I                               dummy )
-C     !DESCRIPTION: 
+C     !DESCRIPTION:
 C     ==================================================================
-C     | Read an active record ("sample-equivalent") from an ObsFit 
-C     | .equi. tiled file (can be netcdf or binary)  
+C     | Read an active record ("sample-equivalent") from an ObsFit
+C     | .equi. tiled file (can be netcdf or binary)
 C     ==================================================================
 
-C     !USES: 
+C     !USES:
       IMPLICIT NONE
 C     == Global variables ===
 #include "EEPARAMS.h"
@@ -55,9 +55,9 @@ CEOP
 
 #ifdef ALLOW_OBSFIT
 
-      CALL ACTIVE_READ_OBS_TILE_RL( 
+      CALL ACTIVE_READ_OBS_TILE_RL(
      I     fidfwd_obs(active_num_file,bi,bj), active_num_file,
-     O     active_var, 
+     O     active_var,
      I     lAdInit, irec, sample_ind_glob(active_num_file,irec,bi,bj),
      I     FORWARD_SIMULATION, myOptimIter, bi, bj, myThid )
 
@@ -82,7 +82,7 @@ C     !INTERFACE:
      I                           myThid,
      I                           dummy )
 
-C     !DESCRIPTION: 
+C     !DESCRIPTION:
 C     ==================================================================
 C     | Write to a file a sampled value during the model run
 C     ==================================================================
@@ -113,9 +113,9 @@ CEOP
 
 #ifdef ALLOW_OBSFIT
 
-      CALL ACTIVE_WRITE_OBS_TILE_RL( 
+      CALL ACTIVE_WRITE_OBS_TILE_RL(
      I     fidfwd_obs(active_num_file,bi,bj),
-     I     active_num_file, active_var, 
+     I     active_num_file, active_var,
      I     irec, sample_ind_glob(active_num_file,irec,bi,bj),
      I     FORWARD_SIMULATION, myOptimIter, bi, bj, myThid )
 
@@ -140,7 +140,7 @@ C     !INTERFACE:
      I                               myThid,
      I                               dummy )
 
-C     !DESCRIPTION: 
+C     !DESCRIPTION:
 C     ==================================================================
 C     | Read an active record ("observation-equivalent") from a
 C     | global file
@@ -176,9 +176,9 @@ C                      variable and write to active file
 CEOP
 
 #ifdef ALLOW_OBSFIT
-      CALL ACTIVE_READ_OBS_GLOB_RL( 
+      CALL ACTIVE_READ_OBS_GLOB_RL(
      I     fidglobal(active_num_file), active_num_file,
-     O     active_var, active_mask, 
+     O     active_var, active_mask,
      I     lAdInit, irec, obs_ind_glob(active_num_file,irec),
      I     FORWARD_SIMULATION, myOptimIter, myThid )
 
@@ -202,7 +202,7 @@ C     !INTERFACE:
      I                           myThid,
      I                           dummy )
 
-C     !DESCRIPTION: 
+C     !DESCRIPTION:
 C     ==================================================================
 C     | Write to a global file a model counterpart to an observation
 C     ==================================================================
@@ -234,7 +234,7 @@ C     myThid:          my thread ID number
 CEOP
 
 #ifdef ALLOW_OBSFIT
-      CALL ACTIVE_WRITE_OBS_GLOB_RL( 
+      CALL ACTIVE_WRITE_OBS_GLOB_RL(
      I     fidglobal(active_num_file), active_num_file,
      I     active_var, active_mask,
      I     irec, obs_ind_glob(active_num_file,irec),

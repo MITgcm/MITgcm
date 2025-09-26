@@ -5,15 +5,15 @@ C     !ROUTINE: OBSFIT_READ_OBS
 
 C     !INTERFACE:
       SUBROUTINE OBSFIT_READ_OBS(
-     I                            fNb, 
-     I                            vNb, 
+     I                            fNb,
+     I                            vNb,
      I                            irec,
      O                            vec_loc,
      I                            myThid )
 
 C     !DESCRIPTION:
 C     ==================================================================
-C     | Reads an observation and its uncertainty from a netcdf ObsFit 
+C     | Reads an observation and its uncertainty from a netcdf ObsFit
 C     | input file
 C     ==================================================================
 
@@ -32,10 +32,10 @@ C     == Global variables ===
 #endif
 
 C     !INPUT PARAMETERS:
-C     fNb, vNb :: 
+C     fNb, vNb ::
 C     irec     :: sample record number
 C     myThid   :: my thread ID number
-C     vec_loc  :: 
+C     vec_loc  ::
       INTEGER fNb, vNb
       INTEGER irec, myThid
       _RL     vec_loc
@@ -74,7 +74,7 @@ C Implies that a backward loop is calling
 C Implies that a forward loop is calling
          obsfit_minind_buff = irec
          obsfit_maxind_buff = MIN(tmpObsNo,irec+999)
-       
+
        ENDIF !IF (obsfit_curfile_buff.NE.fNb)
 
 #ifdef ALLOW_DEBUG
@@ -83,8 +83,8 @@ C Implies that a forward loop is calling
      &    'buffer readobsfile ',
      &    obsfit_minind_buff, obsfit_maxind_buff,
      &    irec, ObsNo(fNb), tmpObsNo
-         CALL PRINT_MESSAGE( msgbuf, 
-     &        standardmessageunit, SQUEEZE_RIGHT, myThid )
+         CALL PRINT_MESSAGE( msgbuf,
+     &        standardMessageUnit, SQUEEZE_RIGHT, myThid )
        ENDIF
 #endif
 

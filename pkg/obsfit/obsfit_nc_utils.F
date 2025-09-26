@@ -124,7 +124,7 @@ C     Since this is only done by the master thread, we loop over the
 C     enire range of tiles
         DO bj = 1, nSy
           DO bi = 1, nSx
-            DO numFile = 1, NFILESMAX_OBS 
+            DO numFile = 1, NFILESMAX_OBS
               IL = ILNBLNK( obsfitFiles(numFile) )
 
               IF ( IL.NE.0 ) THEN

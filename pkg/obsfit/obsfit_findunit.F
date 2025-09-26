@@ -3,7 +3,7 @@
 CBOP
 C     !ROUTINE: OBSFIT_FINDUNIT
 
-C     !INTERFACE: 
+C     !INTERFACE:
       SUBROUTINE OBSFIT_FINDUNIT( ioUnit, myThid )
 
 C     !DESCRIPTION:
@@ -36,15 +36,15 @@ C Sweep through a valid range of unit numbers
       DO ii = 2000, 9999
         IF ( ioUnit.EQ.-1 ) THEN
 C Skip reserved unit numbers
-          IF ( ii.NE.errorMessageUnit .AND. 
-     &         ii.NE.standardMessageUnit .AND. 
-     &         ii.NE.scrUnit1 .AND. ii.NE.scrUnit2 .AND. 
+          IF ( ii.NE.errorMessageUnit .AND.
+     &         ii.NE.standardMessageUnit .AND.
+     &         ii.NE.scrUnit1 .AND. ii.NE.scrUnit2 .AND.
      &         ii.NE.eeDataUnit .AND. ii.NE.modelDataUnit ) THEN
             INQUIRE(unit=ii,iostat=ios,opened=op)
             IF ( ios.NE.0 ) THEN
               WRITE(msgBuf,'(A,I4)')
      &         ' OBSFIT_FINDUNIT: inquiring unit number =', ii
-              CALL PRINT_MESSAGE( msgBuf, 
+              CALL PRINT_MESSAGE( msgBuf,
      &             standardMessageUnit, SQUEEZE_RIGHT, myThid )
               WRITE(msgBuf,'(A)')
      &         ' OBSFIT_FINDUNIT: inquire statement failed!'
@@ -52,7 +52,7 @@ C Skip reserved unit numbers
               CALL ALL_PROC_DIE( myThid )
              STOP 'ABNORMAL END: S/R OBSFIT_FINDUNIT'
             ENDIF
-          
+
             IF ( .NOT.op ) THEN
               ioUnit=ii
             ENDIF

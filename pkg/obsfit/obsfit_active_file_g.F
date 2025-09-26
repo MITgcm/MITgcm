@@ -22,13 +22,13 @@ C     !INTERFACE:
      I                                   myThid,
      I                                   dummy )
 
-C     !DESCRIPTION: 
+C     !DESCRIPTION:
 C     ==================================================================
 C     | Read an active record from an ObsFit .equi. tiled file
 C     | for tangent linear calculations
 C     ==================================================================
 
-C     !USES: 
+C     !USES:
       IMPLICIT NONE
 C     == Global variables ===
 #include "EEPARAMS.h"
@@ -56,15 +56,15 @@ C                      variable and write to active file
 CEOP
 
 #ifdef ALLOW_OBSFIT
-      CALL ACTIVE_READ_OBS_TILE_RL( 
+      CALL ACTIVE_READ_OBS_TILE_RL(
      I     fidfwd_obs(active_num_file,bi,bj), active_num_file,
-     O     active_var, 
+     O     active_var,
      I     lAdInit, irec, sample_ind_glob(active_num_file,irec,bi,bj),
      I     FORWARD_SIMULATION, myOptimIter, bi, bj, myThid )
 
-      CALL ACTIVE_READ_OBS_TILE_RL( 
+      CALL ACTIVE_READ_OBS_TILE_RL(
      I     fidtan_obs(active_num_file,bi,bj), active_num_file,
-     O     g_active_var, 
+     O     g_active_var,
      I     lAdInit, irec, sample_ind_glob(active_num_file,irec,bi,bj),
      I     TANGENT_SIMULATION, myOptimIter, bi, bj, myThid )
 
@@ -72,7 +72,6 @@ CEOP
 
       RETURN
       END
-
 
 C     ==================================================================
 
@@ -92,13 +91,13 @@ C     !INTERFACE:
      I                                    dummy,
      I                                    g_dummy )
 
-C     !DESCRIPTION: 
+C     !DESCRIPTION:
 C     ==================================================================
 C     | Write an active record to an ObsFit .equi. tiled file
 C     | for tangent linear calculations
 C     ==================================================================
 
-C     !USES: 
+C     !USES:
       IMPLICIT NONE
 C     == Global variables ===
 #include "EEPARAMS.h"
@@ -126,14 +125,14 @@ CEOP
 
 #ifdef ALLOW_OBSFIT
       CALL ACTIVE_WRITE_OBS_TILE_RL(
-     I     fidfwd_obs(active_num_file,bi,bj), 
+     I     fidfwd_obs(active_num_file,bi,bj),
      I     active_num_file, active_var,
      I     irec, sample_ind_glob(active_num_file,irec,bi,bj),
      I     FORWARD_SIMULATION, myOptimIter, bi, bj, myThid )
 
-      CALL ACTIVE_WRITE_OBS_TILE_RL( 
+      CALL ACTIVE_WRITE_OBS_TILE_RL(
      I     fidtan_obs(active_num_file,bi,bj),
-     I     active_num_file, g_active_var, 
+     I     active_num_file, g_active_var,
      I     irec, sample_ind_glob(active_num_file,irec,bi,bj),
      I     TANGENT_SIMULATION, myOptimIter, bi, bj, myThid )
 
@@ -160,13 +159,13 @@ C     !INTERFACE:
      I                                   myThid,
      I                                   dummy )
 
-C     !DESCRIPTION: 
+C     !DESCRIPTION:
 C     ==================================================================
 C     | Read an active record from an ObsFit .equi. global file
 C     | for tangent linear calculations
 C     ==================================================================
 
-C     !USES: 
+C     !USES:
       IMPLICIT NONE
 C     == Global variables ===
 #include "EEPARAMS.h"
@@ -198,15 +197,15 @@ CEOP
 
 #ifdef ALLOW_OBSFIT
 
-      CALL ACTIVE_READ_OBS_GLOB_RL( 
+      CALL ACTIVE_READ_OBS_GLOB_RL(
      I     fidglobal(active_num_file), active_num_file,
-     O     active_var, active_mask, 
+     O     active_var, active_mask,
      I     lAdInit, irec, obs_ind_glob(active_num_file,irec),
      I     FORWARD_SIMULATION, myOptimIter, myThid )
 
       CALL ACTIVE_READ_OBS_GLOB_RL(
      I     fidtanglobal(active_num_file), active_num_file,
-     O     g_active_var, active_mask, 
+     O     g_active_var, active_mask,
      I     lAdInit, irec, obs_ind_glob(active_num_file,irec),
      I     TANGENT_SIMULATION, myOptimIter, myThid )
 
@@ -233,13 +232,13 @@ C     !INTERFACE:
      I                                    dummy,
      I                                    g_dummy )
 
-C     !DESCRIPTION: 
+C     !DESCRIPTION:
 C     ==================================================================
 C     | Write an active record to an ObsFit .equi. global file
 C     | for tangent linear calculations
 C     ==================================================================
 
-C     !USES: 
+C     !USES:
       IMPLICIT NONE
 C     == Global variables ===
 #include "EEPARAMS.h"
