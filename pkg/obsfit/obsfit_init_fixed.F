@@ -54,23 +54,22 @@ C     diffsecs     :: absolute time
       INTEGER loopThroughSamples, weighSamples, readDelT
       INTEGER obsIsInRunTime, sampleIsInTile, sampleIsValid
       INTEGER fid, dimid, varID(2)
-      INTEGER varID0, varID1, varID1a, varID1b, varID1c
+      INTEGER varID0, varID1a, varID1b, varID1c
       INTEGER varID2, varID3a, varID3b, varID4, varID5
       INTEGER varID6, varID7
       INTEGER varID_intp1, varID_intp2, varID_intp11, varID_intp22
       INTEGER varID_intp3, varID_intp4, varID_intp5, varID_intp6
       INTEGER tmpdate(4), tmpdiff(4)
-      INTEGER tmp_type, tmp_type2(1000), type_cur
+      INTEGER tmp_type2(1000), type_cur
       INTEGER sample_i, sample_j, sample_k1, sample_k2
-      INTEGER np_cur, np_valid
-      INTEGER ObsNo_valid, ObsNo_div1000, sampleno_div1000
-      INTEGER sample_cnt, sample_valid_cnt, ns
-      INTEGER hh, obsNo_hh, obs_np_max, ii
+      INTEGER np_cur
+      INTEGER ObsNo_valid, ObsNo_div1000
+      INTEGER sample_cnt
+      INTEGER hh, obsNo_hh, obs_np_max
       INTEGER ntype_ssh,ntype_other, obs_is_ssh_loc
       INTEGER vec_start, vec_count
       INTEGER vec_start2(2), vec_count2(2)
-      INTEGER vec_start3, vec_count3
-      INTEGER IL, JL, KL, err, nerr
+      INTEGER IL, JL, err, nerr
       _RL tmpyymmdd(1000),tmphhmmss(1000),diffsecs
       _RL yymmddMin,yymmddMax
       _RL hhmmssMin,hhmmssMax
@@ -92,7 +91,7 @@ C     diffsecs     :: absolute time
       _RL tmp_frac(1000,NUM_INTERP_PTS_OBS),tmp_sum_fracs
       _RL tmp_xC11(1000),tmp_yC11(1000)
       _RL tmp_xCNINJ(1000),tmp_yCNINJ(1000)
-      _RL xy_buffer_r8(0:sNx+1,0:sNy+1)
+c     _RL xy_buffer_r8(0:sNx+1,0:sNy+1)
       CHARACTER*(MAX_LEN_FNAM) obsfitfile, fnamedatanc
       CHARACTER*(MAX_LEN_FNAM) obsfnameequinc, obsfnameequincglo
       CHARACTER*(MAX_LEN_FNAM) fnamemisfit
@@ -779,10 +778,10 @@ C Check that sample time is valid
                sampleIsValid = 0
               ENDIF
 
-              type_cur=tmp_type2(ic)
-              lon_cur=tmp_lon2(ic)
-              lat_cur=tmp_lat2(ic)
-              depth_cur=tmp_depth2(ic)
+              type_cur = tmp_type2(ic)
+              lon_cur = tmp_lon2(ic)
+              lat_cur = tmp_lat2(ic)
+              depth_cur = tmp_depth2(ic)
               
 C Keep track of which variables in the file
               IF ( type_cur.EQ.5 ) THEN

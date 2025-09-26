@@ -34,8 +34,6 @@ CEOP
 
 C     !LOCAL VARIABLES:
       INTEGER bi,bj
-      INTEGER itlo,ithi
-      INTEGER jtlo,jthi
       INTEGER num_file
 #ifdef ALLOW_GRDCHK
       INTEGER err

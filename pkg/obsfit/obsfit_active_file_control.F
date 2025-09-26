@@ -30,13 +30,13 @@ C     !INTERFACE:
      I                                    bj,
      I                                    myThid )
 
-C     !DESCRIPTION: 
+C     !DESCRIPTION:
 C     ==================================================================
 C     | Read an active record from an ObsFit .equi. tiled file
-C     | (can be netcdf or binary)  
+C     | (can be netcdf or binary)
 C     ==================================================================
 
-C     !USES: 
+C     !USES:
       IMPLICIT NONE
 C     == Global variables ===
 #include "EEPARAMS.h"
@@ -64,7 +64,6 @@ CEOP
 C     !LOCAL VARIABLES:
       INTEGER  err, varID1, varID2
       INTEGER  vec_start, vec_count
-      INTEGER  ivar, i
       _RL      active_data_t
       _RL      vec_tmp(2)
 
@@ -81,7 +80,7 @@ C     !LOCAL VARIABLES:
        ELSE
 
         jrec = (irec-1)*2
-       
+
        ENDIF
 
 C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
@@ -99,7 +98,7 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
         CALL OBSFIT_NF_ERROR(
      &         'ACTIVE_READ: NF_GET_VARA_DOUBLE active_var',
      &         err,bi,bj,myThid )
-        
+
         err = NF_INQ_VARID( fid, obsfit_namemask, varID2 )
         CALL OBSFIT_NF_ERROR(
      &         'ACTIVE_READ: NF_INQ_VARID obsfit_namemask',
@@ -238,13 +237,13 @@ C     !INTERFACE:
      I                                 bj,
      I                                 myThid )
 
-C     !DESCRIPTION: 
+C     !DESCRIPTION:
 C     ==================================================================
 C     | Write an active record to an ObsFit .equi. tiled file
-C     | (can be netcdf or binary)  
+C     | (can be netcdf or binary)
 C     ==================================================================
 
-C     !USES: 
+C     !USES:
       IMPLICIT NONE
 C     == Global variables ===
 #include "EEPARAMS.h"
@@ -269,7 +268,6 @@ C     !INPUT PARAMETERS:
 C     !LOCAL VARIABLES:
       INTEGER  err, varID1, varID2, varID3
       INTEGER  vec_start, vec_count
-      INTEGER  ivar, i
       _RL      active_data_t
       _RL      vec_tmp(2)
 CEOP
@@ -286,7 +284,7 @@ CEOP
       ELSE
 
         jrec = (irec-1)*2
-      
+
       ENDIF
 
 C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
@@ -449,12 +447,12 @@ C     !INTERFACE:
      I                                  myOptimIter,
      I                                  myThid )
 
-C     !DESCRIPTION: 
+C     !DESCRIPTION:
 C     ==================================================================
 C     | Read an active record from an ObsFit .equi. global file
 C     ==================================================================
 
-C     !USES: 
+C     !USES:
       IMPLICIT NONE
 C     == Global variables ===
 #include "EEPARAMS.h"
@@ -481,9 +479,7 @@ C     !INPUT PARAMETERS:
 C     !LOCAL VARIABLES:
       INTEGER  err, varID1, varID2
       INTEGER  vec_start, vec_count
-      INTEGER  ivar, i
       _RL      active_data_t
-      _RL      vec_tmp(2)
 CEOP
 
       vec_start = irecglob
@@ -496,7 +492,7 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
       IF ( theSimulationMode .EQ. FORWARD_SIMULATION ) THEN
 
        _BEGIN_MASTER( myThid )
-      
+
         err = NF_INQ_VARID( fid, obsfit_nameequi, varID1 )
         err = NF_GET_VARA_DOUBLE( fid, varID1, vec_start, vec_count,
      &   active_var )
@@ -577,12 +573,12 @@ C     !INTERFACE:
      I                                     myOptimIter,
      I                                     myThid )
 
-C     !DESCRIPTION: 
+C     !DESCRIPTION:
 C     ==================================================================
 C     | Write an active record to an ObsFit .equi. global file
 C     ==================================================================
 
-C     !USES: 
+C     !USES:
       IMPLICIT NONE
 C     == Global variables ===
 #include "EEPARAMS.h"
@@ -608,9 +604,7 @@ C     !INPUT PARAMETERS:
 C     !LOCAL VARIABLES:
       INTEGER  err, varID1, varID2
       INTEGER  vec_start, vec_count
-      INTEGER  ivar, i
       _RL      active_data_t
-      _RL      vec_tmp(2)
 CEOP
 
       vec_start = irecglob
