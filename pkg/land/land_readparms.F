@@ -36,9 +36,13 @@ C     !LOCAL VARIABLES:
 C     msgBuf     :: Informational/error message buffer
 C     iUnit      :: Work variable for IO unit number
 C     k          :: loop counter
+C     land_taveFreq :: retired; Frequency^-1 for time-Aver. output (s)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit, k
       _RL tmpvar
+C-    retired parameters:
+c     _RL land_taveFreq
+c     LOGICAL land_timeave_mnc
 CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -54,7 +58,6 @@ C     land_grT_iniFile  :: File containing initial ground Temp.
 C     land_grW_iniFile  :: File containing initial ground Water.
 C     land_snow_iniFile :: File containing initial snow thickness.
 C     land_deltaT    :: land model time-step
-C     land_taveFreq  :: Frequency^-1 for time-Aver. output (s)
 C     land_diagFreq  :: Frequency^-1 for diagnostic output (s)
 C     land_monFreq   :: Frequency^-1 for monitor    output (s)
 C     land_dzF       :: layer thickness
@@ -119,18 +122,15 @@ C-    Set default value:
       land_grT_iniFile = ' '
       land_grW_iniFile = ' '
       land_snow_iniFile= ' '
-      land_deltaT   = deltaTclock
-      land_taveFreq = taveFreq
+      land_deltaT   = deltaTClock
       land_diagFreq = dumpFreq
       land_monFreq = monitorFreq
 #ifdef ALLOW_MNC
-      land_timeave_mnc       = timeave_mnc .AND. useMNC
       land_snapshot_mnc      = snapshot_mnc .AND. useMNC
       land_mon_mnc           = monitor_mnc .AND. useMNC
       land_pickup_write_mnc  = pickup_write_mnc .AND. useMNC
       land_pickup_read_mnc   = pickup_read_mnc .AND. useMNC
 #else
-      land_timeave_mnc       = .FALSE.
       land_snapshot_mnc      = .FALSE.
       land_mon_mnc           = .FALSE.
       land_pickup_write_mnc  = .FALSE.
@@ -162,6 +162,10 @@ C-    layer thickness:
        land_rec_dzC(k) = -1.
       ENDDO
 
+C-    retired parms default:
+      land_timeave_mnc = .FALSE.
+      land_taveFreq = UNSET_RL
+
       WRITE(msgBuf,'(A)') ' LAND_READPARMS: opening data.land'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      I                    SQUEEZE_RIGHT, myThid )
@@ -190,6 +194,33 @@ C--   Close the open data file
 #endif /* SINGLE_DISK_IO */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C--   Check for retired parameters:
+      IF ( land_taveFreq .NE. UNSET_RL ) THEN
+        WRITE(msgBuf,'(2A)') 'LAND_READPARMS: ',
+     &    '"land_taveFreq" is no longer allowed in file "data.land"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'LAND_READPARMS: ',
+     &    ' since "pkg/timeave" has been removed.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+c       errCount = errCount + 1
+        STOP 'ABNORMAL END: S/R LAND_READPARMS'
+      ELSE
+C-    for now, just reset to zero (i.e., not used):
+        land_taveFreq = 0.
+      ENDIF
+      IF ( land_timeave_mnc ) THEN
+        WRITE(msgBuf,'(2A)') 'LAND_READPARMS: "land_timeave_mnc"',
+     &    ' is no longer allowed in file "data.land"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'LAND_READPARMS: ',
+     &    ' since "pkg/timeave" has been removed.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+c       errCount = errCount + 1
+        STOP 'ABNORMAL END: S/R LAND_READPARMS'
+      ENDIF
+      land_timeave_mdsio = .FALSE.
+
 C--   Derive other parameters:
 
       land_impl_grT = land_calc_grT .AND. land_impl_grT
@@ -207,14 +238,11 @@ C--   Derive other parameters:
       ENDIF
 
 #ifdef ALLOW_MNC
-      land_timeave_mnc      = useMNC .AND. land_timeave_mnc
       land_snapshot_mnc     = useMNC .AND. land_snapshot_mnc
       land_mon_mnc          = useMNC .AND. land_mon_mnc
       land_pickup_write_mnc = useMNC .AND. land_pickup_write_mnc
       land_pickup_read_mnc  = useMNC .AND. land_pickup_read_mnc
 
-      land_timeave_mdsio      = (.NOT.land_timeave_mnc)
-     &                      .OR. outputTypesInclusive
       land_snapshot_mdsio     = (.NOT.land_snapshot_mnc)
      &                      .OR. outputTypesInclusive
       land_mon_stdio          = (.NOT.land_mon_mnc)
@@ -222,12 +250,10 @@ C--   Derive other parameters:
       land_pickup_write_mdsio = (.NOT.land_pickup_write_mnc)
      &                      .OR. outputTypesInclusive
 #else
-      land_timeave_mnc        = .FALSE.
       land_snapshot_mnc       = .FALSE.
       land_mon_mnc            = .FALSE.
       land_pickup_write_mnc   = .FALSE.
       land_pickup_read_mnc    = .FALSE.
-      land_timeave_mdsio      = .TRUE.
       land_snapshot_mdsio     = .TRUE.
       land_mon_stdio          = .TRUE.
       land_pickup_write_mdsio = .TRUE.

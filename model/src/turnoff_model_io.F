@@ -59,7 +59,6 @@ C     averaged fields in reverse checkpointing loops
       monitorFreq  = 0.
       dumpFreq     = 0.
       diagFreq     = 0.
-      taveFreq     = 0.
       chkPtFreq    = 0.
       pChkPtFreq   = 0.
       dumpInitAndLast = .FALSE.

@@ -37,6 +37,8 @@ C     !LOCAL VARIABLES:
       INTEGER i, nl, ku
       CHARACTER*(MAX_LEN_MBUF) data_file
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+C--   retired parameters:
+c     LOGICAL timeave_mnc
 
       NAMELIST /MNC_01/
      &     mnc_use_indir, mnc_use_outdir, mnc_outdir_date,
@@ -138,6 +140,18 @@ C     Set the file name
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
      &     SQUEEZE_RIGHT,myThid)
 
+C--   Check for retired parameters:
+      IF ( .NOT.timeave_mnc ) THEN
+        WRITE(msgBuf,'(2A)') 'MNC_READPARMS: "timeave_mnc"',
+     &    ' is no longer allowed in file "data.mnc"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'MNC_READPARMS: ',
+     &    ' since "pkg/timeave" has been removed.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+c       errCount = errCount + 1
+      ENDIF
+      timeave_mnc =  .FALSE.
+
 C     Pickups must always be read in an EXCLUSIVE fashion
       IF (pickup_read_mnc)  pickup_read_mdsio = .FALSE.
 
@@ -152,8 +166,6 @@ C     outputTypesInclusive defaults to .FALSE., the logic here is
 C     simple:
       IF ( (.NOT. outputTypesInclusive)
      &     .AND. pickup_write_mnc ) pickup_write_mdsio = .FALSE.
-      IF ( (.NOT. outputTypesInclusive)
-     &     .AND. timeave_mnc ) timeave_mdsio = .FALSE.
       IF ( (.NOT. outputTypesInclusive)
      &     .AND. snapshot_mnc ) snapshot_mdsio = .FALSE.
       IF ( (.NOT. outputTypesInclusive)
@@ -211,7 +223,7 @@ C     !DESCRIPTION:
 C     Create the output (sub--)directory for the MNC output files.
 
 C     !USES:
-      implicit none
+      IMPLICIT NONE
 #include "MNC_COMMON.h"
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -224,8 +236,8 @@ CEOP
 
 C     !LOCAL VARIABLES:
       integer i,j,k, ntot, npathd, idate
-      character*(MNC_MAX_PATH) pathd
-      character*(100) cenc
+      CHARACTER*(MNC_MAX_PATH) pathd
+      CHARACTER*(100) cenc
       integer ienc(MNC_MAX_PATH)
       integer ncenc
 

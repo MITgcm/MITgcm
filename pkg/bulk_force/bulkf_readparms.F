@@ -28,6 +28,8 @@ C     msgBuf     :: Informational/error message buffer
 C     iUnit      :: Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
+C--   retired parameters:
+c     _RL blk_taveFreq
 
 C--   Bulk Formula parameter
       NAMELIST /BULKF_CONST/
@@ -73,11 +75,6 @@ C     print a (weak) warning if data.blk is found
       ENDIF
 
       _BEGIN_MASTER(myThid)
-
-      CALL OPEN_COPY_DATA_FILE(
-     I                          'data.blk', 'BULKF_READPARMS',
-     O                          iUnit,
-     I                          myThid )
 
 C--   Default values
 C-    Physical constant :
@@ -126,7 +123,6 @@ C-    bulk-forcing parameters:
       blk_nIter = 5
       calcWindStress = zonalWindFile .EQ. ' '
      &           .AND. meridWindFile .EQ. ' '
-      blk_taveFreq = taveFreq
 
 C-    Input data files names :
       AirTempFile=' '
@@ -143,6 +139,14 @@ C-    Input data files names :
       CloudFile=' '
       SnowFile=' '
       airPotTempFile=' '
+
+C-    retired params default:
+      blk_taveFreq = UNSET_RL
+
+      CALL OPEN_COPY_DATA_FILE(
+     I                          'data.blk', 'BULKF_READPARMS',
+     O                          iUnit,
+     I                          myThid )
 
 C--   Read parameters from open data file
       WRITE(msgBuf,'(A)')' BULKF_READPARMS: starts to read BULKF_CONST'
@@ -182,6 +186,22 @@ C--   Close the open data file
       CLOSE(iUnit,STATUS='DELETE')
 #endif /* SINGLE_DISK_IO */
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C--   Check for retired parameters:
+      IF ( blk_taveFreq .NE. UNSET_RL ) THEN
+        WRITE(msgBuf,'(2A)') 'BULKF_READPARMS: "blk_taveFreq"',
+     &    ' is no longer allowed in file "data.blk"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'BULKF_READPARMS: ',
+     &    ' since "pkg/timeave" has been removed.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+c       errCount = errCount + 1
+        STOP 'ABNORMAL END: S/R BULKF_READPARMS'
+      ELSE
+C-    for now, just reset to zero (i.e., not used):
+        blk_taveFreq = 0.
+      ENDIF
+
 C-  check that CPP option is "defined" when running-flag parameter is on:
 #ifndef ALLOW_FORMULA_AIM
       IF ( useFluxFormula_AIM ) THEN
@@ -191,7 +211,7 @@ C-  check that CPP option is "defined" when running-flag parameter is on:
         WRITE(msgBuf,'(2A)') ' BULKF_READPARMS: => recompile with',
      &   ' #define ALLOW_FORMULA_AIM in BULK_FORCE_OPTIONS.h'
         CALL PRINT_ERROR( msgBuf , myThid)
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+        STOP 'ABNORMAL END: S/R BULKF_READPARMS'
       ENDIF
 #endif
 
@@ -251,7 +271,6 @@ c     WRITE(iUnit,*) 'BlkF: Rvap     =',Rvap
       WRITE(iUnit,*) 'BlkF: useQnetch       =', useQnetch
       WRITE(iUnit,*) 'BlkF: useEmPch        =', useEmPch
       WRITE(iUnit,*) 'BlkF: blk_nIter   =',blk_nIter
-      WRITE(iUnit,*) 'BlkF: blk_taveFreq=', blk_taveFreq
       IF (iUnit.EQ.88) CLOSE(iUnit)
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
