@@ -230,9 +230,6 @@ C     it is important that this file is included after SEAICE_SIZE.h
 #  include "KPP.h"
 c#  include "KPP_PARAMS.h"
 # endif
-# ifdef ALLOW_TIMEAVE
-#  include "TIMEAVE_STATV.h"
-# endif
 # ifdef ALLOW_EXF
 #  include "EXF_PARAM.h"
 #  include "EXF_INTERP_PARAM.h"

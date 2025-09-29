@@ -575,16 +575,6 @@ C--   Initialise GRIDALT parameters - the alternative grid
       ENDIF
 #endif
 
-#ifdef ALLOW_TIMEAVE
-C     IF (useTIMEAVE) THEN
-      IF ( taveFreq.GT.0. ) THEN
-# ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('TIMEAVE_INIT_FIXED',myThid)
-# endif
-        CALL TIMEAVE_INIT_FIXED( myThid )
-      ENDIF
-#endif
-
 #ifdef ALLOW_REGRID
       IF ( useREGRID ) THEN
 # ifdef ALLOW_DEBUG

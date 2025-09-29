@@ -126,13 +126,6 @@ C     Write model state to binary file
         CALL WRITE_STATE( myTime, myIter, myThid )
       ENDIF
 
-#ifdef ALLOW_TIMEAVE
-C     Do time averages
-      IF (taveFreq.GT.0. .AND. myIter.NE.nIter0 ) THEN
-        CALL TIMEAVE_STATV_WRITE( myTime, myIter, myThid )
-      ENDIF
-#endif
-
 #ifdef ALLOW_FIZHI
       IF ( useFIZHI )
      &     CALL FIZHI_WRITE_STATE( myTime, myIter, myThid )
