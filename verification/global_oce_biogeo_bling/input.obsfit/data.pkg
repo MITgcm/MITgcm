@@ -1,9 +1,0 @@
-# Packages
- &PACKAGES
- useGMREDI      = .TRUE.,
- usePTRACERS    = .TRUE.,
- useGCHEM       = .TRUE.,
- useOBSFIT      = .TRUE.,
- useDIAGNOSTICS = .TRUE.,
- &
-  
