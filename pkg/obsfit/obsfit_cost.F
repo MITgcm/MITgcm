@@ -344,7 +344,7 @@ C Print cost function values
         num_obsfit_glo = num_obsfit(num_file)
 
         WRITE( msgBuf,'(A,I2,A,E20.13,1X,D12.5)' )
-     &       ' CAV obsfit_cost(',num_file,') = ',
+     &       'obsfit_cost(',num_file,') = ',
      &       objf_obsfit_glo, num_obsfit_glo
 
         IF ( num_obsfit_glo.GT.zeroRL )

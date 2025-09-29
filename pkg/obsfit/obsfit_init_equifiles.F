@@ -61,28 +61,28 @@ C Create a netcdf file
         CALL OBSFIT_NF_ERROR( 'INIT_EQUIFILE: NF_DEF_VAR sample',
      &       err,bi,bj,myThid )
         err = NF_PUT_ATT_INT( fid2, varID(1), '_FillValue',
-     &        NF_INT, 1, -9999 )
+     &        NF_INT, 1, 0 )
         CALL OBSFIT_NF_ERROR( 'INIT_EQUIFILE: NF_PUT_ATT_INT sample',
      &       err,bi,bj,myThid )
 
         err = NF_INQ_VARID( fid1, obsfit_nameval, varID0 )
         IF (err.EQ.NF_NOERR) THEN
 
-          err = NF_DEF_VAR( fid2,obsfit_nameequi,
-     &          NF_DOUBLE,1,dimid,varID(2) )
+          err = NF_DEF_VAR( fid2, obsfit_nameequi,
+     &          NF_DOUBLE, 1, dimid, varID(2) )
           CALL OBSFIT_NF_ERROR( 'INIT_EQUIFILE: NF_DEF_VAR val',
      &         err,bi,bj,myThid )
           err = NF_PUT_ATT_DOUBLE( fid2,varID(2),
-     &          '_FillValue',NF_DOUBLE,1,-9999. _d 0 )
+     &          '_FillValue', NF_DOUBLE, 1, 0. _d 0 )
           CALL OBSFIT_NF_ERROR( 'INIT_EQUIFILE: NF_PUT_ATT_INT val',
      &         err,bi,bj,myThid )
 
-          err = NF_DEF_VAR( fid2,obsfit_namemask,
-     &          NF_DOUBLE,1,dimid,varID(3) )
+          err = NF_DEF_VAR( fid2, obsfit_namemask,
+     &          NF_DOUBLE, 1, dimid, varID(3) )
           CALL OBSFIT_NF_ERROR( 'INIT_EQUIFILE: NF_DEF_VAR mask',
      &         err,bi,bj,myThid )
-          err = NF_PUT_ATT_DOUBLE( fid2,varID(3),
-     &          '_FillValue',NF_DOUBLE,1,-9999. _d 0 )
+          err = NF_PUT_ATT_DOUBLE( fid2, varID(3),
+     &          '_FillValue', NF_DOUBLE, 1, 0. _d 0 )
           CALL OBSFIT_NF_ERROR( 'INIT_EQUIFILE: NF_PUT_ATT_INT mask',
      &         err,bi,bj,myThid )
 
