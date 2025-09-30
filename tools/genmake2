@@ -3089,32 +3089,6 @@ for d in $alldirs ; do
       fi
     fi
 done
-if test "x$TAPENADE" != x ; then
-    #-- For tapenade, link few files from "dd" below:
-    deplist=''
-    dd="$ROOTDIR/tools/TAP_support/ADFirstAidKit"
-    ddmk='$(ROOTDIR)'"/tools/TAP_support/ADFirstAidKit"
-    sfiles='adStack.c adBinomial.c adStack.h adComplex.h adBinomial.h'
-    for sf in $sfiles ; do
-	if test ! -r "$TMP.links/$sf" ; then
-	    touch $TMP.links/$sf
-	    deplist="$deplist $sf"
-	    extn=`echo $sf | $AWK -F. '{print $NF}'`
-            if test $extn = 'c' ; then
-		echo    " \\"  >> $TMP.csrclist
-		printf " $sf" >> $TMP.csrclist
-	    fi
-            if test $extn = 'h' ; then
-		echo    " \\"  >> $TMP.hsrclist
-		printf " $sf" >> $TMP.hsrclist
-	    fi
-	fi
-    done
-    echo "" >> $TMP.srclinks
-    echo "#  These files are linked from $ddmk ( aka $dd )" >> $TMP.srclinks
-    echo "$deplist :" >> $TMP.srclinks
-    printf "\tif [ ! -L \$@ ]; then \$(LN) %s/\$@ \$@; fi\n" $ddmk >> $TMP.srclinks
-fi
 rm -rf $TMP.links
 echo "" >> $TMP.F77srclist
 echo "" >> $TMP.F90srclist
