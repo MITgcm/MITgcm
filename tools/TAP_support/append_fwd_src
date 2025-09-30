@@ -1,5 +1,17 @@
 #! /usr/bin/env bash
 
+#- Script to be used with Tapenade in Makefile generated with genmake2 option "-ncad":
+#  Usage:
+#  > append_fwd_src tap_sfx FILE_LIST
+#  with:
+#   tap_sfx   :: suffix of Tapenade generated src code, either "_b.f" (adj) or "_d.f" (tlm)
+#   FILE_LIST :: list of MITgcm src code to differentiate, i.e., $(AD_FILES)
+#
+#  for all files in FILE_LIST, will either:
+#    a) append the file to corresponding Tapenade differentiated code with suffix "tap_sfx"
+#       if it exists ; or
+#    b) just copy to corresponding file with suffix "tap_sfx"
+
 sfx=$1
 shift
 
