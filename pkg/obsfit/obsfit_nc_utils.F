@@ -117,43 +117,43 @@ C     bi,bj :: tile indices
 
       _BEGIN_MASTER( myThid )
 
-            DO num_file = 1, NFILESMAX_OBS
-              IL = ILNBLNK( obsfitFiles(num_file) )
+      DO num_file = 1, NFILESMAX_OBS
+        IL = ILNBLNK( obsfitFiles(num_file) )
 
-              IF ( IL.NE.0 ) THEN
-                WRITE( msgBuf,'(A,A,5(1X,I8))' )
-     &           'S/R OBSFIT_NC_CLOSE:',
-     &           ' Closing '//obsfitFiles(num_file)(1:IL), num_file,
-     &           fiddata_obs(num_file)
-                CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &               SQUEEZE_RIGHT,myThid )
+        IF ( IL.NE.0 ) THEN
+          WRITE( msgBuf,'(A,A,5(1X,I8))' )
+     &         'S/R OBSFIT_NC_CLOSE:',
+     &         ' Closing '//obsfitFiles(num_file)(1:IL), num_file,
+     &         fiddata_obs(num_file)
+           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &          SQUEEZE_RIGHT,myThid )
 C Data file
-                IF ( fiddata_obs(num_file) .GT. 0 ) THEN
-                 STATUS = NF_CLOSE( fiddata_obs(num_file) )
-                 WRITE( msgBuf,'(A,I3,I8)' )
-     &                'NC_CLOSE: NF_CLOSE data unit',
-     &                num_file, fiddata_obs(num_file)
-                 CALL OBSFIT_NF_ERROR( msgBuf, STATUS,
-     &                0, 0, myThid )
-                ENDIF
+          IF ( fiddata_obs(num_file) .GT. 0 ) THEN
+            STATUS = NF_CLOSE( fiddata_obs(num_file) )
+            WRITE( msgBuf,'(A,I3,I8)' )
+     &           'NC_CLOSE: NF_CLOSE data unit',
+     &           num_file, fiddata_obs(num_file)
+            CALL OBSFIT_NF_ERROR( msgBuf, STATUS,
+     &           0, 0, myThid )
+          ENDIF
 
 C Global equi file
-                IF ( fidglobal(num_file) .GT. 0 ) THEN
-                 STATUS = NF_CLOSE( fidglobal(num_file) )
-                 WRITE( msgBuf,'(A,I3,I8)' )
-     &                'NC_CLOSE: NF_CLOSE global equi unit',
-     &                num_file, fidglobal(num_file)
-                 CALL OBSFIT_NF_ERROR( msgBuf, STATUS,
-     &                0, 0, myThid )
-                ENDIF
+          IF ( fidglobal(num_file) .GT. 0 ) THEN
+            STATUS = NF_CLOSE( fidglobal(num_file) )
+            WRITE( msgBuf,'(A,I3,I8)' )
+     &           'NC_CLOSE: NF_CLOSE global equi unit',
+     &           num_file, fidglobal(num_file)
+            CALL OBSFIT_NF_ERROR( msgBuf, STATUS,
+     &           0, 0, myThid )
+          ENDIF
 
-      IF (obsfitDoNcOutput) THEN
-c       DO bj = myByLo(myThid), myByHi(myThid)
-c         DO bi = myBxLo(myThid), myBxHi(myThid)
-C     Since this is only done by the master thread, we loop over the
-C     enire range of tiles
-        DO bj = 1, nSy
-          DO bi = 1, nSx
+          IF (obsfitDoNcOutput) THEN
+c            DO bj = myByLo(myThid), myByHi(myThid)
+c               DO bi = myBxLo(myThid), myBxHi(myThid)
+C Since this is only done by the master thread, we loop over the
+C entire range of tiles
+            DO bj = 1, nSy
+              DO bi = 1, nSx
                 WRITE( msgBuf,'(A,A,5(1X,I8))' )
      &           'S/R OBSFIT_NC_CLOSE:',
      &           ' Closing '//obsfitFiles(num_file)(1:IL), num_file,
@@ -195,11 +195,11 @@ C Tangent linear equivalent (.equi) file
                 ENDIF
 #endif
 
+              ENDDO
             ENDDO
-          ENDDO
           ENDIF
-         ENDIF
-         ENDDO
+        ENDIF
+      ENDDO
 
       _END_MASTER( myThid )
 #endif /* ALLOW_OBSFIT */
