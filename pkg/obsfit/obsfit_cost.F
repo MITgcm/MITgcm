@@ -110,7 +110,7 @@ C File maintenance
      &           (obsfitDoNcOutput) ) THEN
 C Need to sync the file so that the data is not lost when run finishes
               err = NF_SYNC( fidfwd_obs(num_file,bi,bj) )
-              CALL OBSFIT_NF_ERROR( 'OBSFIT_COST: NF_SYNC fidfwd_obs',
+              CALL OBSFIT_NF_ERROR( 'COST: NF_SYNC fidfwd_obs',
      &             err,bi,bj,myThid )
             ENDIF
 
@@ -221,9 +221,11 @@ CADJ &     = tapelev_obsfit, key = num_file, kind = isbyte
 #endif
 
 C Need to sync the file so that the data is not lost when run finishes
-          err = NF_SYNC( fidglobal(num_file) )
-          CALL OBSFIT_NF_ERROR(
-     &         'OBSFIT_COST: NF_SYNC fidglobal',err,0,0,myThid )
+          IF ( ObsNo(num_file).GT.0 ) THEN
+            err = NF_SYNC( fidglobal(num_file) )
+            CALL OBSFIT_NF_ERROR(
+     &           'COST: NF_SYNC fidglobal',err,0,0,myThid )
+          ENDIF
           IF ( obs_is_ssh(num_file).GT.0 ) THEN
 C Read data to calculate the mean offset between model and obs
             offset   = zeroRL
@@ -273,16 +275,18 @@ C Read data to calculate the cost
 C and write misfits to global file
 
 C Global file for misfits
-          IL = ILNBLNK( obsfitfiles(num_file) )
-          WRITE( obsfitfile,'(1A)' ) obsfitfiles(num_file)(1:IL)
-          IL = ILNBLNK( obsfitfile )
-          JL = ILNBLNK( obsfitDir )
-          WRITE( fnamemisfit,'(3A)' )
-     &     obsfitDir(1:JL),obsfitfile(1:IL),'.misfit.nc'
-          err = NF_OPEN( fnamemisfit,NF_WRITE,fidmisfit(num_file) )
-          err = NF_INQ_VARID( fidmisfit(num_file),'misfit',varID )
-          CALL OBSFIT_NF_ERROR(
-     &         'OBSFIT_COST: NF_INQ_VARID misfit',err,0,0,myThid )
+          IF (ObsNo(num_file).GT.0) THEN
+            IL = ILNBLNK( obsfitfiles(num_file) )
+            WRITE( obsfitfile,'(1A)' ) obsfitfiles(num_file)(1:IL)
+            IL = ILNBLNK( obsfitfile )
+            JL = ILNBLNK( obsfitDir )
+            WRITE( fnamemisfit,'(3A)' )
+     &       obsfitDir(1:JL),obsfitfile(1:IL),'.misfit.nc'
+            err = NF_OPEN( fnamemisfit,NF_WRITE,fidmisfit(num_file) )
+            err = NF_INQ_VARID( fidmisfit(num_file),'misfit',varID )
+            CALL OBSFIT_NF_ERROR(
+     &           'COST: NF_INQ_VARID misfit',err,0,0,myThid )
+          ENDIF
 C Loop over obs
           DO obs_num = 1, NOBSMAX_OBS
             IF ( obs_num.LE.ObsNo(num_file) ) THEN
@@ -322,17 +326,14 @@ C Write misfit to global netcdf file
                 err = NF_PUT_VARA_DOUBLE( fidmisfit(num_file),varID,
      &                obs_ind_glob(num_file,obs_num),1,misfit )
                 CALL OBSFIT_NF_ERROR(
-     &               'OBSFIT_COST: NF_PUT_VARA_DOUBLE misfit',
+     &               'COST: NF_PUT_VARA_DOUBLE misfit',
      &               err,0,0,myThid )
               ENDIF
 
             ENDIF !IF (obs_num.LE.ObsNo(num_file))
           ENDDO !DO obs_num
 
-          err = NF_CLOSE( fidmisfit(num_file) )
-
         ENDIF !IF myprocid = 0
-
       ENDDO !DO num_file
 
       _END_MASTER( myThid )

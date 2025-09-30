@@ -222,16 +222,10 @@ C Read number of observations and available dimensions:
 C Read number of interpolation points (generic grid only):
         err = NF_INQ_DIMID(fid,'iINTERP', dimid)
         IF (err.EQ.NF_NOERR) THEN
-          
          err = NF_INQ_DIMLEN( fid, dimid, iINTERP )
-         CALL OBSFIT_NF_ERROR(
-     &        'INIT_FIXED: NF_INQ_DIMID iINTERP',err,0,0,myThid )
-
         ELSE 
 
          IF ( debugLevel .GE. debLevA ) THEN
-          CALL OBSFIT_NF_ERROR(
-     &         'INIT_FIXED: NF_INQ_DIMID iINTERP',err,0,0,myThid )
           WRITE( msgBuf,'(3A,I3)' )
      &         'S/R OBSFIT_INIT_FIXED: ',
      &         'no iINTERP dim in data file using iINTERP ',
@@ -271,15 +265,15 @@ C Read the info for observations:
         CALL OBSFIT_NF_ERROR(
      &       'INIT_FIXED: NF_INQ_DIMID obs_HHMMSS',err,0,0,myThid )
         err = NF_INQ_VARID( fid, 'obs_val', varID6 )
-        nerr = err
+        nerr = nerr + err
         CALL OBSFIT_NF_ERROR(
      &       'INIT_FIXED: NF_INQ_DIMID obs_val',err,0,0,myThid )
         err = NF_INQ_VARID( fid, 'obs_uncert', varID7 )
-        nerr = err
+        nerr = nerr + err
         CALL OBSFIT_NF_ERROR(
      &       'INIT_FIXED: NF_INQ_DIMID obs_uncert',err,0,0,myThid )
 
-        IF (err.NE.NF_NOERR) THEN
+        IF (nerr.NE.NF_NOERR) THEN
          IL  = ILNBLNK( obsfitFile )
          WRITE( msgBuf,'(3A)' )
      &        'OBSFIT_INIT_FIXED: file ', obsfitFile(1:IL),
@@ -387,11 +381,11 @@ C Create global files for obs-equivalent
           err = NF_DEF_DIM( fidglobal(num_file), 'iOBS', 
      &          ObsNo(num_file), dimid )
           err = NF_DEF_VAR( fidglobal(num_file),
-     &          'mod_val',NF_DOUBLE,1,dimid,varID(1) )
+     &          obsfit_nameequi,NF_DOUBLE,1,dimid,varID(1) )
           err = NF_PUT_ATT_DOUBLE( fidglobal(num_file),
      &          varID(1),'_FillValue',NF_DOUBLE,1, -9999. _d 0 )
           err = NF_DEF_VAR( fidglobal(num_file),
-     &          'mod_mask',NF_DOUBLE,1,dimid,varID(2) )
+     &          obsfit_namemask,NF_DOUBLE,1,dimid,varID(2) )
           err = NF_PUT_ATT_DOUBLE( fidglobal(num_file),
      &          varID(2),'_FillValue',NF_DOUBLE,1, -9999. _d 0 )
           err = NF_ENDDEF( fidglobal(num_file) )
@@ -401,7 +395,17 @@ C Create global files for obs-equivalent
          ELSE
           err = NF_OPEN( obsfnameequincglo, NF_WRITE, 
      &          fidglobal(num_file) )
+          err = NF_INQ_VARID( fidglobal(num_file), obsfit_namemask, 
+     &          varID(2) )
+ 
          ENDIF
+C Initiliaze mask values to 0
+         DO obs_num = 1, ObsNo(num_file)
+          err = NF_PUT_VARA_DOUBLE( fidglobal(num_file), varID(2),
+     &          obs_num, 1, 0. _d 0 )
+          CALL OBSFIT_NF_ERROR(
+     &         'INIT_FIXED: NF_PUT_VARA_DOUBLE zero',err,0,0,myThid )
+         ENDDO
 
 #ifdef ALLOW_ADJOINT_RUN
          INQUIRE( file=adobsfnameequincglo, exist=exst )
@@ -414,9 +418,9 @@ C Create global files for obs-equivalent
      &          'mod_val',NF_DOUBLE,1,dimid,varID(1) )
           err = NF_PUT_ATT_DOUBLE( fidadglobal(num_file),
      &          varID(1),'_FillValue', NF_DOUBLE,1, 0. _d 0 )
-          err = NF_DEF_VAR( fidglobal(num_file),
+          err = NF_DEF_VAR( fidadglobal(num_file),
      &          'mod_mask',NF_DOUBLE, 1,dimid,varID(2) )
-          err = NF_PUT_ATT_DOUBLE( fidglobal(num_file),
+          err = NF_PUT_ATT_DOUBLE( fidadglobal(num_file),
      &          varID(2),'_FillValue',NF_DOUBLE,1, 0. _d 0 )
           err = NF_ENDDEF( fidadglobal(num_file) )
           err = NF_CLOSE( fidadglobal(num_file) )
@@ -438,9 +442,9 @@ C Create global files for obs-equivalent
      &          'mod_val',NF_DOUBLE,1,dimid,varID(1) )
           err = NF_PUT_ATT_DOUBLE( fidtanglobal(num_file),
      &          varID(1),'_FillValue',NF_DOUBLE,1, 0. _d 0 )
-          err = NF_DEF_VAR( fidglobal(num_file),
+          err = NF_DEF_VAR( fidtanglobal(num_file),
      &          'mod_mask',NF_DOUBLE,1,dimid,varID(2))
-          err = NF_PUT_ATT_DOUBLE( fidglobal(num_file),
+          err = NF_PUT_ATT_DOUBLE( fidtanglobal(num_file),
      &          varID(2),'_FillValue',NF_DOUBLE,1, 0. _d 0 )
           err = NF_ENDDEF( fidtanglobal(num_file) )
           err = NF_CLOSE( fidtanglobal(num_file) )

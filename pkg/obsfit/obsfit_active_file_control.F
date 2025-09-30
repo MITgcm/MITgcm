@@ -412,7 +412,7 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
        ELSE
 
         vec_tmp(1) = active_var
-        vec_tmp(2) = irecglob
+        vec_tmp(2) = irec
 #ifdef _BYTESWAPIO
         CALL MDS_BYTESWAPR8( 2, vec_tmp )
 #endif
@@ -520,10 +520,6 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 C Add active_var from appropriate location to data
        active_data_t = active_data_t + active_var
 C Store the result on disk.
-CAV !!!!!!
-ccc       vec_start = irec
-ccc       vec_count = 1
-
        err = NF_INQ_VARID( fid, obsfit_nameequi, varID1 )
        err = NF_PUT_VARA_DOUBLE( fid, varID1, vec_start, vec_count,
      &       active_data_t )

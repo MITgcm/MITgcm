@@ -80,7 +80,7 @@ C Write data from buffer to .nc file
                 ENDIF
 # endif /* ALLOW_TANGENTLINEAR_RUN */
 
-              ENDIF !IF (ObsfNo)
+              ENDIF !IF (sampleNo)
             ENDDO !DO num_file
           ENDDO !DO bi
         ENDDO! DO bj
