@@ -358,7 +358,7 @@ C Variables names for equi files
         obsfit_nameuncert = 'obs_uncert'
 
 C Create global files for obs-equivalent
-        IF ( myProcId .eq. 0 ) THEN
+        IF ( myProcId .EQ. 0 ) THEN
 
          WRITE( obsfnameequincglo,'(3A)' )
      &        obsfitDir(1:JL),obsfitFile(1:IL),'.equi.nc'

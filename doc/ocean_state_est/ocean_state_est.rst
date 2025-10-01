@@ -770,11 +770,11 @@ Given an observational dataset, OBSFIT samples the model during the run at the t
 calculates the cost (sum of weighted misfits), and produces a model-equivalent output file that is directly
 comparable to an input file containing observational data.
 It is designed to accommodate datasets that are sparse, irregular, or non-local.
-OBSFIT performs grid-independent model-data comparisons, meaning that observations do not have to be on the same
-grid as the model or constrained to a fixed set of depth levels. This increases the efficiency of data
+OBSFIT works in "observations space", meaning that the model is interpolated to the observations locations, not the other way around. Hence observations do not have to be interpolated or constrained to a fixed set of depth levels, and model-data comparisons are independent of the model grid. 
+This increases the efficiency of data
 assimilation for many datasets and allows compatibility with multi-grid state estimation. OBSFIT offers the
 capability of assimilating high-resolution altimetry data (e.g., `SWOT <https://swot.jpl.nasa.gov>`_), 
-high-frequency radar (HRF), and averaged data such as tomography or SST.
+high-frequency radar (HRF), and spatially/temporally averaged data such as tomography or SST products.
 
 Description
 ~~~~~~~~~~~
@@ -796,16 +796,14 @@ One feature of this package is that it allows measured observations to be averag
 (or alternatively, integrated values in space and/or time via optional parameter choices, see :ref:`below <obsfit_time>`).
 Samples, defined as instantaneous model data values
 at specific locations (which may or may not coincide with model gridpoints), are aggregated and
-interpolated for comparison with observations. Hence, in OBSFIT, sampled points are referred to as *samples*
-and the averaged/integrated values as *observations*. 
-For example, consider observations of integrated sound speed along the acoustic ray path:
+interpolated for comparison with observations. Hence, in OBSFIT, sampled points are referred to as *samples*, the averaged/integrated values as *model-equivalents*, and the measured values as *observations*. The cost function is evaluated from the misfit between *model-equivalents* and *observations*. 
+As an example, consider observations of integrated sound speed along the acoustic ray path:
 in such case, one specifies multiple locations at which to sample the model, as we require model
 data at multiple locations to calculate the model-equivalent of a single observation. 
 Sample locations are used during the model run to extract model data (and save it to file). Then, sampled
-values are combined at the end of the run to calculate the model-equivalent value. Observational values
-are only used at the end of the model run to calculate the cost, i.e., weighted misfits with model-equivalents. 
+values are combined at the end of the run to calculate the model-equivalent values to the observations.
 
-In many applications, "observations" are not spatially averaged or integrated; in that case, NP = 1 and "samples" and "observations" are effectively the same. A feature of the obsefit package, however, is that it allows each observation to be comprised of a number of samples (NP). Each of those NP samples is assigned a relative
+In many applications, *observations* are not spatially averaged or integrated; in that case, NP = 1 and *samples* and *observations* are effectively the same. A feature of the obsefit package, however, is that it allows each observation to be comprised of a number of samples (NP). Each of those NP samples is assigned a relative
 weight in the average/integral; by default all samples are weighed equally. (Note that the our definition of weights is
 different from the uncertainty-related weights in :filelink:`pkg/profiles`.)  
 
@@ -851,16 +849,7 @@ Interpolation
 Sampling is done by interpolating model values from grid points surrounding the
 sample location (up to 8 surrounding grid points are used). For a cartesian or spherical polar grid,
 interpolation factors (not to be confused with weights!) are calculated from the input longitude, latitude, and depth.
-For a curvilinear grid (LLC, etc), interpolation factors are computed offline and included in the input file. OBSPREP is a python-based pre-processing routine to determine these fields using xarray to assemble the input netCDF file. Given the model grid and the observation latitude, longitude, and depth, OBSPREP computes the following fields and adds them to the input file to be read in by OBSFIT:
-
-sample_interp_XC11
-sample_interp_YC11
-sample_interp_XCNINJ
-sample_interp_YCNINJ
-sample_interp_i
-sample_interp_j
-sample_interp_k
-sample_interp_frac
+For a curvilinear grid (LLC, etc), interpolation factors are computed offline and included in the input file (see below). 
 
 Cost Functions
 ^^^^^^^^^^^^^^
@@ -945,7 +934,7 @@ If the grid is not longitude/latitude, i.e. for a generic grid case, additional 
 
 See make_obsfit_example.m for a simple matlab example with a longitude-latitude grid. 
 A python toolbox, ObsPrep, for formatting ungridded datasets into objects readable by pkg/obsfit using xarray 
-is under development: https://github.com/ECCO-Hackweek/EH24-processors-llc/tree/main?tab=readme-ov-file. 
+is under development: https://github.com/ECCO-Hackweek/EH24-processors-llc/tree/main?tab=readme-ov-file. The application computes the required *sample_interp* fields.
 
 In the simplest case, the number of samples per observation is 1; then obs_np = 1 (by default), sample_weight = 1 (by default), and sample_{type/lon/lat/depth} give the variable type/longitude/latitude/depth of the observation. If there are {N} observations, each field listed above is a vector of size {1xN}.
 
@@ -1019,7 +1008,7 @@ In this example there are two input files: swot_L3.nc and moorings.nc
 (note that the suffix .nc should not be included in data.obsfit). They have multiplier factors that will
 multiply their respective cost in the total cost calculation. For example, the first dataset
 will be counted with a factor=1, and the second dataset will not influence the total cost 
-ince its multiplier is 0. Output files will be written in a folder called "OBSFIT" that
+since its multiplier is 0. Output files will be written in a folder called "OBSFIT" that
 will be created if it doesn't already exist. 
 
 
@@ -1067,7 +1056,9 @@ A simple way to plot the observed values and model-equivalent values in matlab c
 
 ::
 
+    load swot_L3.nc
     figure; scatter(sample_lon, sample_lat, 30, obs_val);
+    load swot_L3.equi.nc
     figure; scatter(sample_lon, sample_lat, 30, mod_val);
 
 Experiments and tutorials that use OBSFIT
