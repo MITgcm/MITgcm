@@ -54,6 +54,7 @@ C--   Initialise global variables
           phi_DOM_2d(i,j,bi,bj)     = phi_DOM
           phi_sm_2d(i,j,bi,bj)      = phi_sm
           phi_lg_2d(i,j,bi,bj)      = phi_lg
+          k0_2d(i,j,bi,bj)          = k0
           Pc_0_2d(i,j,bi,bj)        = Pc_0
           k_Fe_2d(i,j,bi,bj)        = k_Fe
 #ifndef USE_BLING_V1
@@ -67,6 +68,11 @@ C--   Initialise global variables
       ENDDO
 
 C Read in 2d bio related variables
+        IF ( bling_k0_2dFile .NE. ' ' ) THEN
+           CALL READ_FLD_XY_RL( bling_k0_2dFile, ' ',
+     &                          k0_2d, 0, myThid )
+           _EXCH_XY_RL(k0_2d,myThid)
+        ENDIF
         IF ( bling_Pc_2dFile .NE. ' ' ) THEN
            CALL READ_FLD_XY_RL( bling_Pc_2dFile, ' ',
      &                          Pc_0_2d, 0, myThid )

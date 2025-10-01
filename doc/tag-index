@@ -1,6 +1,37 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - fix compilation of seaice_growth_adx.F (left from PR #750).
+o model, pkgs:
+  - remove code within "#ifndef EXACT_CONSERV / #endif" bracket and remove
+    completely CPP option EXACT_CONSERV.
+o pkg/bling:
+  - allows to specify a 2D field of light attenuation coefficient (k0_2d) from
+    file "bling_k0_2dFile".
+
+checkpoint69g (2025/09/12)
+o verification/short_surf_wave:
+  - fix Non-Hydrostatic pressure initialization issue with implicSurfPress=1/2
+    by re-starting (nIter0=1) from pickup generated with implicSurfPress=1.
+o tools/mpack-1.6:
+  - fix compilation for recent version of gcc, to pass the compiler test in
+    "configure" and md5 compilation with v15 (comply with C23 standard).
+o pkg/streamice:
+  - for OpenAD, adjust streamice_write_pickup.F to only write the forward
+    components of state arrays to the binary pickups for later use.
+o verification:
+  - remove all pkg/timeave params from all exp. and no longer compile this
+    pkg in any exp. ; also skip pkg/mnc compilation in 4 fwd test exp ;
+  - switch few remaining exp. to #define EXACT_CONSERV so that no exp is
+    compiled with this option undefined anymore.
+o pkg/profiles:
+  - fix "profilesDoNcOutput" feature (writing NetCDF model equivalents) so
+    that it can be use with pkg/grdchk. Switch profilesDoNcOutput" to True in
+    adjoint test exp.  global_oce_biogeo_bling (both in TAF & Tapenade test).
+  - improve code readability, rename cost_profiles.F to profiles_cost.F
+    and fix obvious multi-threading issues.
+
 checkpoint69f (2025/07/10)
 o model/src, pkg/kpp:
   - store shortwave penetration fraction in 3D field SWFrac3D and add run-time

@@ -29,7 +29,8 @@
  &PROFILES_NML
 # profilesDir = 'PROF',
  profilesfiles(1) = 'sample_prof',
- prof_make_nc = .true.,
+ prof_make_nc = .TRUE.,
+ profilesDoNcOutput = .TRUE.,
 # has T, S, and pH constraints.
 # The default mult_profiles = 1,
 # here we turn off the cost contribution of T and S.

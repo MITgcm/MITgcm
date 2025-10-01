@@ -59,7 +59,6 @@
  chkptFreq =0.,
  dumpFreq  =31104000.,
  monitorFreq=432000.,
- taveFreq=0.,
  monitorFreq=1.,
  &
 
