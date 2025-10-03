@@ -1084,6 +1084,7 @@ C-- Logical flags for selecting packages
       LOGICAL useSTIC
       LOGICAL useStreamIce
       LOGICAL useICEFRONT
+      LOGICAL useICEBERG
       LOGICAL useThSIce
       LOGICAL useLand
       LOGICAL useATM2d
@@ -1111,6 +1112,6 @@ C-- Logical flags for selecting packages
      &        useATM2d, useAIM, useAtm_Phys, useFizhi, useGridAlt,
      &        useDiagnostics, useREGRID, useLayers, useMNC,
      &        useRunClock, useEMBED_FILES,
-     &        useMYPACKAGE
+     &        useMYPACKAGE, useICEBERG
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

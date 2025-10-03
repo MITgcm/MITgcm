@@ -24,6 +24,12 @@ C !USES: ===============================================================
 #include "PTRACERS_PARAMS.h"
 #include "PTRACERS_FIELDS.h"
 
+#ifdef ALLOW_ICEBERG
+#include "ICEBERG_SIZE.h"
+#include "ICEBERG_OPTIONS.h"
+#include "ICEBERG.h"
+#endif /* ALLOW_ICEBERG */
+
 C !INPUT PARAMETERS: ===================================================
 C  gPtracer             :: the tendency array
 C  surfForcPtr          :: surface forcing term
@@ -119,6 +125,19 @@ c       DO i=iMin,iMax
      I                 myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_RBCS */
+
+#ifdef ALLOW_ICEBERG
+      IF( brg_useInputPtracers.EQ.1 ) THEN
+       DO j=1,sNy
+        DO i=1,sNx
+            gPtracer(i,j) = gPtracer(i,j)
+     &        + brg_ptr_addMass3D(I,J,k,bi,bj,iTracer)*mass2rUnit
+     &          *recip_rA(i,j,bi,bj)
+     &          *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
+        ENDDO
+       ENDDO
+      ENDIF
+#endif /* ALLOW_ICEBERG */
 
 #endif /* ALLOW_PTRACERS */
 

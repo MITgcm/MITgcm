@@ -480,6 +480,15 @@ C--   Initialise fixed array for Float pkg
       ENDIF
 #endif /* ALLOW_ICEFRONT */
 
+#ifdef ALLOW_ICEBERG
+      IF (useICEBERG) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('ICEBERG_INIT_FIXED',myThid)
+# endif
+        CALL ICEBERG_INIT_FIXED( myThid )
+      ENDIF
+#endif /* ALLOW_ICEBERG */
+
 #ifdef ALLOW_FRAZIL
       IF (useFRAZIL) THEN
 # ifdef ALLOW_DEBUG

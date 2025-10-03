@@ -289,6 +289,11 @@ C--   if useICEFRONT=T, set ICEFRONT parameters; otherwise just return
       CALL ICEFRONT_READPARMS( myThid )
 #endif
 
+#ifdef ALLOW_ICEBERG
+C--   Initialise ICEBERG parameters 
+      IF (useICEBERG) CALL ICEBERG_READPARMS ( myThid )
+#endif
+
 #ifdef ALLOW_SEAICE
 C--   if useSEAICE=T, set SEAICE parameters; otherwise just return
       CALL SEAICE_READPARMS( myThid )

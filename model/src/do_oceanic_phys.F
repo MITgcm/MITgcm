@@ -547,6 +547,18 @@ C     ice-front ocean interface
       ENDIF
 #endif /* ALLOW_ICEFRONT */
 
+#ifdef ALLOW_ICEBERG
+      IF ( useICEBERG .AND. fluidIsWater ) THEN
+C     compute temperature and (virtual) salt flux at the
+C     ice-front ocean interface
+       CALL TIMER_START('ICEBERG_THERMODYNAMICS [DO_OCEANIC_PHYS]',
+     &       myThid)
+       CALL ICEBERG_THERMODYNAMICS( myTime, myIter, myThid )
+       CALL TIMER_STOP( 'ICEBERG_THERMODYNAMICS [DO_OCEANIC_PHYS]',
+     &      myThid)
+      ENDIF
+#endif /* ALLOW_ICEBERG */
+
 #ifdef ALLOW_SALT_PLUME
       IF ( useSALT_PLUME ) THEN
 Catn: exchanging saltPlumeFlux:

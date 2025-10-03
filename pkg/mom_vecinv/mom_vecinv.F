@@ -548,6 +548,27 @@ CADJ STORE cDrag(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
 #endif /* ALLOW_MOM_TEND_EXTRA_DIAGS && ALLOW_DIAGNOSTICS */
        ENDIF
 #endif /* ALLOW_SHELFICE */
+#ifdef ALLOW_ICEBERG
+       IF ( useICEBERG .AND. selectImplicitDrag.EQ.0 ) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE KE(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
+#endif
+        CALL ICEBERG_U_DRAG_COEFF( bi, bj, k, .TRUE.,
+     I                  uFld, vFld, kappaRU, KE,
+     O                  cDrag,
+     I                  myIter, myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE cDrag(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
+#endif
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+           gUdiss(i,j) = gUdiss(i,j)
+     &                 - cDrag(i,j)*uFld(i,j)
+     &                 *_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
+         ENDDO
+        ENDDO
+       ENDIF
+#endif /* ALLOW_ICEBERG */
 
 C---  Other dissipation terms in Meridional momentum equation
 
@@ -658,6 +679,27 @@ CADJ STORE cDrag(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
 #endif /* ALLOW_MOM_TEND_EXTRA_DIAGS && ALLOW_DIAGNOSTICS */
        ENDIF
 #endif /* ALLOW_SHELFICE */
+#ifdef ALLOW_ICEBERG
+       IF ( useIceberg .AND. selectImplicitDrag.EQ.0 ) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE KE(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
+#endif
+        CALL ICEBERG_V_DRAG_COEFF( bi, bj, k, .TRUE.,
+     I                  uFld, vFld, kappaRV, KE,
+     O                  cDrag,
+     I                  myIter, myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE cDrag(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
+#endif
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+           gvDiss(i,j) = gvDiss(i,j)
+     &                 - cDrag(i,j)*vFld(i,j)
+     &                 *_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
+         ENDDO
+        ENDDO
+       ENDIF
+#endif /* ALLOW_ICEBERG */
 
 C--   if (momViscosity) end of block.
       ENDIF
