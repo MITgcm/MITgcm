@@ -24,12 +24,6 @@ C !USES: ===============================================================
 #include "PTRACERS_PARAMS.h"
 #include "PTRACERS_FIELDS.h"
 
-C #ifdef ALLOW_ICEBERG
-C #include "ICEBERG_SIZE.h"
-C #include "ICEBERG_OPTIONS.h"
-C #include "ICEBERG.h"
-C #endif /* ALLOW_ICEBERG */
-
 C !INPUT PARAMETERS: ===================================================
 C  gPtracer             :: the tendency array
 C  surfForcPtr          :: surface forcing term
