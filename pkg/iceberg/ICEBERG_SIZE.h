@@ -6,7 +6,7 @@ C    !DESCRIPTION: ICEBERG Array Dimension
 C    ---------------------------- 
 C    | Defines the size of ICEBERG dimension arrays
 C    ---------------------------- 
-C    maxBerg   :: maximum total number of bergs per cell
+C    brg_MaxBergCt   :: maximum total number of bergs per cell
 C
 CEOP 
       INTEGER, parameter :: brg_MaxBergCt = 500

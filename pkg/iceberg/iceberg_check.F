@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/iceberg/iceberg_check.F,v 1.6 2013/11/10 02:58:34 yunx Exp $
-C $Name: checkpoint65m $
 #include "ICEBERG_OPTIONS.h"
 
       SUBROUTINE ICEBERG_CHECK( myThid )
@@ -28,7 +26,7 @@ C     myThid -  Number of this instance of ICEBERG_CHECK
 #ifdef ALLOW_ICEBERG
 
 C     === Local variables ===
-C     msgBuf      - Informational/error meesage buffer
+C     msgBuf      - Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       _BEGIN_MASTER(myThid)
@@ -45,7 +43,7 @@ C     So far, ICEBERG works only with oceanic z-coordinates
          STOP 'ABNORMAL END: S/R ICEBERG_CHECK'
       ENDIF
 
-C     Only implimented so far with explicit drag
+C     Only implemented so far with explicit drag
       IF ( selectImplicitDrag .NE. 0 ) THEN
          WRITE(msgBuf,'(A)')
      &      'ICEBERG works only with selectImplicitDrag = 0'
@@ -53,30 +51,15 @@ C     Only implimented so far with explicit drag
          STOP 'ABNORMAL END: S/R ICEBERG_CHECK'
       ENDIF
 
-C     So far, ICEBERG is not compatible with nonlinear surface, 
-C     specifically the blocking effect is incompatible
-#ifdef NONLIN_FRSURF    
-C      WRITE(msgBuf,'(A)')
-C     &  'ICEBERG works only with #undef NONLIN_FRSURF in CPP_OPTIONS'
-C         CALL PRINT_ERROR( msgBuf, myThid )
-C         STOP 'ABNORMAL END: S/R ICEBERG_CHECK'
-#endif 
+C     If trying to use ptracers, ptracers has to be loaded too
+      IF ( brg_useInputPtracers .EQ. 1 .AND. (.NOT. usePTRACERS)) THEN
+         WRITE(msgBuf,'(A)')
+     &      'PTRACERS must be enabled for brg_useInputPtracers = 1'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R ICEBERG_CHECK'
+      ENDIF
      
-
-
-CML#ifdef ALLOW_NONHYDROSTATIC
-CML      IF ( nonHydrostatic ) THEN
-CML         WRITE(msgBuf,'(A)')
-CML     &      'Currently ICEBERG and nonHydrostatic cannot be turned'
-CML         CALL PRINT_ERROR( msgBuf , 1)
-CML         WRITE(msgBuf,'(A)') 'on at the same time'
-CML         CALL PRINT_ERROR( msgBuf , 1)
-CML         STOP 'ABNORMAL END: S/R ICEBERG_CHECK'
-CML      ENDIF
-CML#endif /* ALLOW_NONHYDROSTATIC */
-
       _END_MASTER(myThid)
-
 #endif /* ALLOW_ICEBERG */
 
       RETURN

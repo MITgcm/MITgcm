@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/iceberg/ICEBERG_OPTIONS.h,v 1.7 2013/11/10 02:58:34 yunx Exp $
-C $Name: checkpoint65m $
-
 C     *==========================================================*
 C     | ICEBERG_OPTIONS.h
 C     | o CPP options file for ICEBERG package.

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/iceberg/ICEBERG.h,v 1.20 2015/04/22 21:33:58 bdavison Exp $
-C $Name: checkpoint65m $
-
 #ifdef ALLOW_ICEBERG
 
 CBOP
@@ -9,13 +6,13 @@ C !ROUTINE: ICEBERG.h
 C !DESCRIPTION: \bv
 C     *==========================================================*
 C     | ICEBERG.h
-C     | o Basic header thermodnynamic iceberg ice package.
+C     | o Basic header thermodynamic and mechanical iceberg ice package.
 C     |   Contains all ICEBERG field declarations.
 C     |   Original Package developed by Ben Davision et al. 2020
 C     |   https://doi.org/10.1038/s41467-020-19805-7
 C     |   Extended to include drag Paul Summers et al. 2025
 C     |   https://doi.org/10.5194/egusphere-2025-1555
-C     |   Last major upate October 2025
+C     |   Last major update October 2025
 C     |   paul.summers@tufts.edu for any questions
 C     *==========================================================*
 
@@ -72,12 +69,10 @@ C     brg_FwFlux3D                 :: upward fresh water flux (virt. salt flux) 
 C     brg_MeltRate3D               :: Melt rate (m/d)
 C     brg_TendT3D                  :: Temperature tendency (Kelvin/s)
 C     brg_TendS3D                  :: Salinity tendency (psu/s)
-#ifdef ALLOW_DIAGNOSTICS
 C     brg_DragU                    :: iceberg stress (for diagnostics), Zonal comp. 
 C                                    Units are N/m^2 ;   > 0 increase top uVel
 C     brg_DragV                    :: iceberg stress (for diagnostics), Merid. comp. 
 C                                    Units are N/m^2 ;   > 0 increase top vVel
-#endif /* ALLOW_DIAGNOSTICS */
 C==============================================================================
 C \ev
 CEOP

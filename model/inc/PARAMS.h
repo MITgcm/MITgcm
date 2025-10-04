@@ -1108,10 +1108,10 @@ C-- Logical flags for selecting packages
      &        useSBO, useFLT, useAUTODIFF,
      &        usePTRACERS, useGCHEM, useRBCS, useOffLine, useMATRIX,
      &        useFRAZIL, useSEAICE, useSALT_PLUME, useShelfIce, useSTIC,
-     &        useStreamIce, useICEFRONT, useThSIce, useLand,
+     &        useStreamIce, useICEFRONT, useICEBERG, useThSIce, useLand,
      &        useATM2d, useAIM, useAtm_Phys, useFizhi, useGridAlt,
      &        useDiagnostics, useREGRID, useLayers, useMNC,
      &        useRunClock, useEMBED_FILES,
-     &        useMYPACKAGE, useICEBERG
+     &        useMYPACKAGE
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

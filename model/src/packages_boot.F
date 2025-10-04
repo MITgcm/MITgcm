@@ -81,6 +81,7 @@ C     data.pkg namelists
      &          useSTIC,
      &          useStreamIce,
      &          useICEFRONT,
+     &          useICEBERG,
      &          useThSIce,
      &          useLand,
      &          useATM2d,
@@ -94,8 +95,8 @@ C     data.pkg namelists
      &          useMNC,
      &          useRunClock,
      &          useEMBED_FILES,
-     &          useMYPACKAGE,
-     &          useICEBERG
+     &          useMYPACKAGE
+ 
 
       _BEGIN_MASTER(myThid)
 
@@ -147,6 +148,7 @@ c     useGAD          =.FALSE.
       useSTIC         =.FALSE.
       useStreamIce    =.FALSE.
       useICEFRONT     =.FALSE.
+      useICEBERG      =.FALSE.
       useThSIce       =.FALSE.
       useLand         =.FALSE.
       useATM2d        =.FALSE.
@@ -161,7 +163,6 @@ c     useGAD          =.FALSE.
       useRunClock     =.FALSE.
       useEMBED_FILES  =.FALSE.
       useMYPACKAGE    =.FALSE.
-      useICEBERG      =.FALSE.
 
 C-    Adjust default to account for pkgs without run-time On/Off switch
 #ifdef ALLOW_AUTODIFF

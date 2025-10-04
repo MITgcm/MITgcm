@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/iceberg/iceberg_thermodynamics.F,v 1.10 2013/11/10 02:58:34 yunx Exp $
-C $Name: checkpoint65m $
-
 #include "ICEBERG_OPTIONS.h"
 
 CBOP

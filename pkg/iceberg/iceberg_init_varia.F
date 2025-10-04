@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/iceberg/iceberg_init_varia.F,v 1.14 2015/01/20 14:54:36 dgoldberg Exp $
-C $Name: checkpoint65m $
-
 #include "ICEBERG_OPTIONS.h"
 
 CBOP

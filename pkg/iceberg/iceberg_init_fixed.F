@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/iceberg/iceberg_init_fixed.F,v 1.5 2011/12/28 20:45:05 jmc Exp $
-C $Name: checkpoint65m $
-
 #include "ICEBERG_OPTIONS.h"
 
       SUBROUTINE ICEBERG_INIT_FIXED( myThid )

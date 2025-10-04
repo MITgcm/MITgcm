@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/iceberg/iceberg_readparms.F,v 1.12 2014/05/27 23:41:27 jmc Exp $
-C $Name: checkpoint65m $
-
 #include "ICEBERG_OPTIONS.h"
 
 CBOP
