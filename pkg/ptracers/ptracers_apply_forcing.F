@@ -133,18 +133,6 @@ c       DO i=iMin,iMax
      I                   k, bi, bj, iTracer, myTime, 0, myThid )
 #endif /* ALLOW_ICEBERG */
 
-C #ifdef ALLOW_ICEBERG
-C       IF( useICEBERG .AND. brg_useInputPtracers.EQ.1 ) THEN
-C        DO j=1,sNy
-C         DO i=1,sNx
-C             gPtracer(i,j) = gPtracer(i,j)
-C      &        + brg_ptr_addMass3D(I,J,k,bi,bj,iTracer)*mass2rUnit
-C      &          *recip_rA(i,j,bi,bj)
-C      &          *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
-C         ENDDO
-C        ENDDO
-C       ENDIF
-C #endif /* ALLOW_ICEBERG */
 
 #endif /* ALLOW_PTRACERS */
 
