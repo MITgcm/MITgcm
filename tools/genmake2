@@ -3245,7 +3245,7 @@ echo 'OBJFILES= $(F90_SRC_FILES:.F90=.o) $(F77_SRC_FILES:.F=.o) $(C_SRC_FILES:.c
 
 echo >> $MAKEFILE
 echo '.SUFFIXES:' >> $MAKEFILE
-echo '.SUFFIXES: .o .'$FS' .p .F .c .f'$FS90' .'$FS90' .FF90 .F90 .flow' >> $MAKEFILE
+echo '.SUFFIXES: .o .f .'$FS' .p .F .c .f'$FS90' .'$FS90' .FF90 .F90 .flow' >> $MAKEFILE
 
 cat >>$MAKEFILE <<EOF
 
@@ -3382,6 +3382,8 @@ CPPCMD = cat \$< | ${CPP} \$(DEFINES) \$(INCLUDES) | ${S64}
 .F.$FS:
 	\$(CPPCMD)  > \$@
 .$FS.o:
+	\$(FC) \$(FFLAGS) \$(FOPTIM) -c \$<
+.f.o:
 	\$(FC) \$(FFLAGS) \$(FOPTIM) -c \$<
 .F.o:
 	\$(FC) \$(FFLAGS) \$(FOPTIM) -c \$<
@@ -3697,8 +3699,7 @@ for i in $AD_FILES ; do
   toBeIgnored=`grep "^$i\>" ${TAP_DONT_TRANSFORM}`
   if test -z "$toBeIgnored" ; then
     echo   " \\" >> $MAKEFILE
-   #printf " $i" | sed "s/\.F/.$FS/" >> $MAKEFILE
-    printf " $i" | sed "s/\.F/.f/" >> $MAKEFILE
+    printf " $i" | sed "s/\.F/.$FS/" >> $MAKEFILE
   fi
 done
 echo >> $MAKEFILE
@@ -3715,13 +3716,14 @@ TAPENADECMD = ${TAPENADECMD}
 
 TAPENADE_SUPPORT_F90_SRC_FILES = \
 ${TAPTOOLS}/diffsizes.F90
-AD_CLEAN = *_b.f *_d.f *.f~ *.msg *.msg~ f95_test_mods.f90
-
-f95_test_mods.f90: \$(TAPENADE_SUPPORT_F90_SRC_FILES)
-	cat \$^ > \$@
 
 AD_FILES_ADJ=\$(AD_FILES:.$FS=_b.f)
 AD_FILES_TLM=\$(AD_FILES:.$FS=_d.f)
+
+AD_CLEAN = \$(AD_FILES_ADJ) \$(AD_FILES_TLM) *.f~ *.msg *.msg~ f95_test_mods.f90
+
+f95_test_mods.f90: \$(TAPENADE_SUPPORT_F90_SRC_FILES)
+	cat \$^ > \$@
 
 tap_adj: ad_exe_target
 ad_exe_target:

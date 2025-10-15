@@ -14,14 +14,20 @@
 
 sfx=$1
 shift
+# back out the platform specific suffix based on the first entry of FILE_LIST
+fn=$1
+sf=$(echo ".${fn##*.}")
+# this version returns an empty $sf instead of causing an error
+# sf=$([[ "$fn" = *.* ]] && echo ".${fn##*.}" || echo '')
 
 for ff in $*
 do
-  xx=`echo $ff | sed "s/\.f\$/${sfx}/"`
-  #echo " $ff --> $xx"
+  xx=`echo $ff | sed "s/${sf}$/${sfx}/"`
   if test -f $xx ; then
+     echo " cat $ff >> $xx"
      cat $ff >> $xx
   else
+     echo " cp -p $ff $xx"
      cp -p $ff $xx
   fi
 done
