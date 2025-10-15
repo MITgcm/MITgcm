@@ -281,7 +281,16 @@ cph)
                IF ( icomptest.EQ.icomp-1 ) THEN
                  icomptest = icomptest
                ELSE
-                 icomptest = icomptest + nwettile(bi,bj,k,iobcs)
+CESCO start icomptest at the point before the first i/j/k 1/1/new layer
+                 icomptest = 0
+                 DO kk = 1, k
+                   icomptest = icomptest + nwettile(bi,bj,kk,iobcs)
+                 ENDDO
+CESCO next two lines prevent Seg Fault when k increments
+C                 itmp = 1
+C                 jtmp = 1
+CESCO        print *, 'ph-grd _loc: option 2 icomp, icomptest, ijtmp',
+CESCO     &       icomp, icomptest, itmp, jtmp, itilepos, jtilepos
                ENDIF
 cph(
 cph-print               print *, 'ph-grd after loop icomptest, icomploc, k ',
