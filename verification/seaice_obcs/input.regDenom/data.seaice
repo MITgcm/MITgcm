@@ -1,0 +1,27 @@
+# SEAICE parameters
+ &SEAICE_PARM01
+#- seaice dynamics params:
+# turn on aEVP with some sensible parameters
+ SEAICEaEVPcoeff     = 0.5,
+ SEAICEnEVPstarSteps = 500,
+# test regularisation of EVP (helps especially for high resolution)
+ SEAICEevpRegDenomUV = .TRUE.,
+#- seaice state & transport params:
+ SEAICEadvScheme    = 7,
+# add small diffKh to test diffusion with multi-dim advect.
+ SEAICEdiffKhArea   = 20.,
+ SEAICE_saltFrac    = 0.3,
+#- seaice thermodyn params:
+#SEAICE_multDim     = 7, # this is the default
+#- constant seawater freezing point:
+ SEAICE_tempFrz0    = -1.96,
+ SEAICE_dTempFrz_dS = 0.,
+# use the new standard way of specifying ocean-ice turb. flux coeff:
+# defaults:
+# SEAICE_mcPheePiston= MCPHEE_TAPER_FAC*STANTON_NUMBER*USTAR_BASE=8.75e4
+# and SEAICE_frazilFrac = 1.
+ SEAICE_mcPheePiston= 0.00004,
+ SEAICE_frazilFrac  = 0.3,
+#- seaice I/O params:
+ SEAICEwriteState   = .TRUE.,
+ &
