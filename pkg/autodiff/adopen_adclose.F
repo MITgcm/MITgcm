@@ -2,7 +2,7 @@
 
 c     ==================================================================
 c
-c     adopen_adclose.F: Routines to handle the I/O of the TAMC generated
+c     adopen_adclose.F: Routines to handle the I/O of the TAF generated
 c                       code. All files are direct access files.
 c     Routines:
 c
@@ -40,12 +40,9 @@ c     myiter -  integer
 c                 On entry, myiter is the current iteration step during
 c                           the integration.
 c
-c     For further details on this see the TAMC Users Manual, Appendix B,
-c     User defined Storage Subroutines.
-c
-c     TAMC does not provide the two leading arguments mythid and myiter
+c     TAF does not provide the two leading arguments mythid and myiter
 c     when compiling the MITgcmUV code. Instead the is a sed script avail-
-c     able that does change the TAMC-generated adjoint code.
+c     able that does change the TAF-generated adjoint code.
 c
 c     Only the master thread is allowed to write data and only gobal
 c     model arrays are allowed to be written be the subsequent routines.
@@ -76,10 +73,10 @@ C     !DESCRIPTION: \bv
 c     ==================================================================
 c     SUBROUTINE adopen
 c     ==================================================================
-c     o Dummy routine expected to be available by TAMC I/O.
+c     o Dummy routine expected to be available by TAF I/O.
 c     This routine is simply a dummy routine expected to be available by
-c     the Tangent Linear and Adjoint Model Compiler(TAMC). Files are
-c     opened and closed by the routines that are called by *adread* and
+c     the Transformation of Algorithm in Fortran (TAF). Files are opened
+c     and closed by the routines that are called by *adread* and
 c     *adwrite*.
 c     started: Christian Eckert eckert@mit.edu 30-Jun-1999
 c     ==================================================================
@@ -144,10 +141,10 @@ C     !DESCRIPTION: \bv
 c     ==================================================================
 c     SUBROUTINE adclose
 c     ==================================================================
-c     o Dummy routine expected to be available by TAMC I/O.
+c     o Dummy routine expected to be available by TAF I/O.
 c     This routine is simply a dummy routine expected to be available by
-c     the Tangent Linear and Adjoint Model Compiler(TAMC). Files are
-c     opened and closed by the routines that are called by *adread* and
+c     the Transformation of Algorithm in Fortran (TAF). Files are opened
+c     and closed by the routines that are called by *adread* and
 c     *adwrite*.
 c     started: Christian Eckert eckert@mit.edu 30-Jun-1999
 c     ==================================================================

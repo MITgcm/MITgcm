@@ -75,7 +75,6 @@ C--   By default, initialize etaNm1 with etaN :
       ENDDO
 #endif
 
-#ifdef EXACT_CONSERV
 C--   By default, initialize etaH with etaN :
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -88,7 +87,6 @@ C--   By default, initialize etaH with etaN :
         ENDDO
        ENDDO
       ENDDO
-#endif /* EXACT_CONSERV */
 
 #ifdef ALLOW_SHELFICE
       IF ( useShelfIce .AND. usingZCoords ) THEN

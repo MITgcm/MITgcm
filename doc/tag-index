@@ -1,6 +1,143 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - fix compilation of seaice_growth_adx.F (left from PR #750).
+o model, pkgs:
+  - remove code within "#ifndef EXACT_CONSERV / #endif" bracket and remove
+    completely CPP option EXACT_CONSERV.
+o pkg/bling:
+  - allows to specify a 2D field of light attenuation coefficient (k0_2d) from
+    file "bling_k0_2dFile".
+
+checkpoint69g (2025/09/12)
+o verification/short_surf_wave:
+  - fix Non-Hydrostatic pressure initialization issue with implicSurfPress=1/2
+    by re-starting (nIter0=1) from pickup generated with implicSurfPress=1.
+o tools/mpack-1.6:
+  - fix compilation for recent version of gcc, to pass the compiler test in
+    "configure" and md5 compilation with v15 (comply with C23 standard).
+o pkg/streamice:
+  - for OpenAD, adjust streamice_write_pickup.F to only write the forward
+    components of state arrays to the binary pickups for later use.
+o verification:
+  - remove all pkg/timeave params from all exp. and no longer compile this
+    pkg in any exp. ; also skip pkg/mnc compilation in 4 fwd test exp ;
+  - switch few remaining exp. to #define EXACT_CONSERV so that no exp is
+    compiled with this option undefined anymore.
+o pkg/profiles:
+  - fix "profilesDoNcOutput" feature (writing NetCDF model equivalents) so
+    that it can be use with pkg/grdchk. Switch profilesDoNcOutput" to True in
+    adjoint test exp.  global_oce_biogeo_bling (both in TAF & Tapenade test).
+  - improve code readability, rename cost_profiles.F to profiles_cost.F
+    and fix obvious multi-threading issues.
+
+checkpoint69f (2025/07/10)
+o model/src, pkg/kpp:
+  - store shortwave penetration fraction in 3D field SWFrac3D and add run-time
+    params "selectPenetratingSW" to chose between different short-wave heating
+    options (only =1 currently implemented);
+  - remove local (buggy) solution in pkg/seaice ;
+  - add runtime-flag "KPPuseSWfrac3D", set to F by default, because this code
+    can only approximately replace the original pkg/kpp-code ;
+  - update TAF directives in pkg/kpp (mostly related to the code changes);
+  - fix "global_ocean.cs32x15" exp bug in "in_p" and "seaice" tests, update FWD,
+    ADM & TLM ref. output ; set KPPuseSWfrac3D to True in "1D_ocean_ice_column"
+    (both FWD & ADM) test exp. with updated ref. output.
+o pkg/streamice:
+  - fix "new_partial" initialisation in streamice_adv_front.f (helps Tapenade)
+o pkg/bling, pkg/dic:
+  - additional store directives to avoid hidden recomputations.
+o pkg/longstep:
+  - add remaining GM-Redi matrix coefficients (extra-diagonal & diagonal terms)
+    and Bolus transport stream function for time-averaging in longstep pkg and
+    use saved values in longstep time-stepping.
+o pkg/seaice:
+  - fix 3 output formats to allow to run with gfortran v.15
+  - also add "deep_anelastic.vecinv" to multi-threaded tests.
+o pkg/mom_{common,fluxform,vecinv}:
+  - mom_fluxform, new option, selectCoriScheme=4: use hFac averaged transport in
+    Coriolis term so that column integral of tendency match Coriolis time
+    column integral U,V.
+  - mom_vecinv, new option, selectVortScheme=4: by-pass division by hFacZ and
+    instead apply recip_hFacW/S on final tendency. Note: this fixes Angular-Mom
+    (AM) conservation but breaks vorticity tendency matching advection of vort.
+  - new 3-d Coriolis option, select3dCoriScheme=2,3: Alternative discretization
+    using averaged transport; =3 (vs 2), an other alternative discretization of
+    vertical momentum tendency gW.
+  - deep-model, put gU,gV NH-metric terms inside vertical advection, to exactly
+    conserves AM (+ simplify & speed up by skipping NH metric-terms gU,gV
+    calculation). Add CPP option "MOM_USE_OLD_DEEP_VERT_ADV" (in
+    MOM_COMMON_OPTIONS.h) to recover the explicit NH metric-term calculation.
+  - mom_fluxform, new spherical Metric-terms option, selectMetricTerms=2,3: More
+    accurate discretization similar to manual eq. 2.102 & 2.103 but centered at
+    grid-cell corner; Also option (selectMetricTerms=3) to skip the gU spherical
+    metric term by advecting uVel*dxC (simpler, faster and exactly conserve AM).
+  - add diagnostics for Metric-Terms.
+  - verification exp. "deep_anelastic", new secondary "vecinv" test + also
+    update primary test ref output.
+
+checkpoint69e (2025/05/01)
+o pkg/atm_ocn_coupler:
+  - update local copy of setdir.c and CPP_EEOPTIONS.h (were left behind);
+  - improve "run_cpl_test" step 1 (pass options to genmake2) and step 2.
+o tools/genmake2:
+  - use specific "ad_config.template{0,1,2}" in different stages of TAF
+    AD/TL built to avoid race condition issue with "make -jN".
+o model/src:
+  - no "addMass" contribution to initial (iter=0) vertical velocity ;
+  - with selectAddFluid=1, fix missing implDiv2DFlow factor in "addMass"
+    contribution to solver RHS ;
+  - add a STOP if implDiv2DFlow < 1 with exactConserv=F, (was not right with
+    useRealFreshWaterFlux=T or selectAddFluid=1) and remove untested pieces
+    of code dealing with this case ;
+  - when using cg2d/cg3dTargetResWunit, add missing implDiv2DFlow factor to
+    solver tolerance setting (cg2d/cg3dTolerance) ;
+  - upgrade "global_ocean.cs32x15.viscA4" exp. to test selectAddFluid=1
+    with implDiv2DFlow=1/2 ; also update "short_surf_wave" exp. output.
+o tools/genmake2:
+  - with Tapenade, remove list NON_AD_F77_SRC_FILES from Makefile (not used),
+    remove processing of "dontCompile", "keepOriginal" and "cb2mFiles" lists ;
+  - otherwise, in Makefile, move NON_AD_F77_SRC_FILES and NON_AD_F90_SRC_FILES
+    lists after AD_FILES and AD_F90FILES ;
+  - simplify (remove intermediate targets) and improve the "-ncad" Makefile
+    to ends cleanly when "staf" command fails.
+o utils:
+  - improve gluemnc description (usage, dependencies, and example).
+o tools:
+  - replace (obsolete) "egrep" with "grep -E" (or without "-E" if not needed).
+o verification:
+  - After merging (5 fwd tests + 2 AD) few exp. into new host-exp. (PR #830),
+    move input dir and ref. output from merged exp. to replace sym-link in new
+    host exp. and remove remaining files/dir (code, build, run) in merged-exp;
+  - Add or update README.md in new host-exp and update list of exp. in the docs.
+o pkg/rbcs:
+  - fix error/warning cases and messages.
+o pkg/autodiff:
+  - alternative way (printResidualFreq >=0) to get CG2D output from cg2d_mad.F
+  - remove 2 unused CPP options.
+o tools, autodiff and others:
+  - remove TAMC features, untested, unused and probably broken.
+
+checkpoint69d (2025/03/01)
+o tools:
+  - changes to genmake2 to allow TAF to process F90 files with modules, for now
+    only with "-ncad" option;
+  - re-order list of src files sent to TAF (needed with current version of TAF);
+  - add new scrip "f90mkdepend_taf" to add dependencies form TAF generated src
+    code (Adjoint and Tang.Lin) in a file included into Makefile.
+  - more logical and consistent ordering in Makefile target, *.F90 first then
+    *.F77, *.c and *.h
+  - add 2 new variables TAF_F77_FLAGS and TAF_F90_FLAGS (set from genmake_local
+    or adjoint-optfile) to go into the TAF command.
+o model/src and forcing:
+  - for TEOS10, add new S/R to convert model surface Conservative Temperature
+    to in-situ Temperature (SST) and compute and store model SST in new model
+    field (in FFIELDS.h) "gcmSST", just a copy of model Pot.Temp with other EOS.
+  - use model SST to compute surface forcing over open ocean in pkg/exf and
+    pkg/bulk_force ; for now, leave ice/seaice freezing/melting unchanged.
+  - switch test exp. global_ocean.cs32x15.in_p to use TEOS10 + update lab_sea
+    Tapenade ref. output (affected @ machine truncation level).
 o tools:
   - remove old backward compatibility feature, so that env.var ROOTDIR is no
     longer recognized by genamke2 ;

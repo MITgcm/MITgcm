@@ -65,16 +65,14 @@ C     *================================================================*
 C     | SUBROUTINE the_main_loop
 C     | o Run the ocean model and evaluate the specified cost function.
 C     *================================================================*
-C     |
-C     | THE_MAIN_LOOP is the toplevel routine for the Tangent Linear and
-C     | Adjoint Model Compiler (TAMC).
-C     | For this purpose the initialization
-C     | of the model was split into two parts. Those parameters that do
-C     | not depend on a specific model run are set in INITIALISE_FIXED,
-C     | whereas those that do depend on the specific realization are
-C     | initialized in INITIALISE_VARIA.
-C     | This routine is to be used in conjuction with the MITgcmuv
-C     | checkpoint 37.
+C     | THE_MAIN_LOOP is the toplevel routine for the Transformation of
+C     | Algorithm in Fortran (TAF).
+C     | For this purpose the initialization of the model was split into
+C     | two parts. Variables that are kept independent of control
+C     | parameters (e.g. horizontal grid dxC, etc.) are set in
+C     | INITIALISE_FIXED, whereas variables that can (potentially) be
+C     | modified by control parameters (e.g. initial temperature and
+C     | salinity) are initialized in INITIALISE_VARIA.
 C     *================================================================*
 C     \ev
 
@@ -662,7 +660,7 @@ C--   Reset the model iteration counter and the model time.
 #ifdef ALLOW_ECCO
       IF ( useECCO ) then
 # ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('cost_averagesfields',myThid)
+        IF (debugMode) CALL DEBUG_CALL('COST_AVERAGESFIELDS',myThid)
 # endif
 c--   Accumulate time averages of temperature, salinity
         CALL TIMER_START('COST_AVERAGESFIELDS [MAIN_DO_LOOP]',myThid)
@@ -672,21 +670,16 @@ c--   Accumulate time averages of temperature, salinity
 #endif /* ALLOW_ECCO */
 
 #ifdef ALLOW_PROFILES
-      IF (usePROFILES) THEN
+      IF ( usePROFILES ) THEN
 #ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('profiles_inloop',myThid)
+        IF (debugMode) CALL DEBUG_CALL('PROFILES_INLOOP',myThid)
 #endif
 c--     Accumulate in-situ time averages of theta, salt, and SSH.
-#ifdef ALLOW_AUTODIFF
-C--   Reset the model iteration counter and the model time.
-        myIter = nIter0 + (iloop-1)
-        myTime = startTime + deltaTClock*(iloop-1)
-#endif
         CALL TIMER_START('PROFILES_INLOOP    [MAIN_DO_LOOP]', myThid)
         CALL PROFILES_INLOOP( myTime, myThid )
         CALL TIMER_STOP ('PROFILES_INLOOP    [MAIN_DO_LOOP]', myThid)
       ENDIF
-#endif
+#endif /* ALLOW_PROFILES */
 
       CALL TIMER_START('MAIN_DO_LOOP        [THE_MAIN_LOOP]', myThid)
       CALL MAIN_DO_LOOP( iloop, myTime, myIter, myThid )
@@ -734,15 +727,15 @@ c--     Accumulate time averages of temperature, salinity
 #endif /* ALLOW_ECCO */
 
 #ifdef ALLOW_PROFILES
-      IF (usePROFILES) THEN
+      IF ( usePROFILES ) THEN
 c--   Accumulate in-situ time averages of temperature, salinity, SSH.
         CALL TIMER_START('PROFILES_INLOOP    [THE_MAIN_LOOP]', myThid)
         CALL PROFILES_INLOOP( endtime, myThid )
         CALL TIMER_STOP ('PROFILES_INLOOP    [THE_MAIN_LOOP]', myThid)
 c--   Compute all profiles cost function contributions.
-        CALL COST_PROFILES( myIter, myTime, myThid )
+        CALL PROFILES_COST( myTime, myIter, myThid )
       ENDIF
-#endif
+#endif /* ALLOW_PROFILES */
 
 #ifdef ALLOW_ECCO
       IF ( useECCO ) then

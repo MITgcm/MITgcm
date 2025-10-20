@@ -111,6 +111,13 @@ C     EfluxP - p-component of Eliassen-Palm flux vector
       _RS  pLoad    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  sIceLoad (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
+C     gcmSST :: model in-situ Sea Surface Temperature (SST); corresponds to
+C               surface-level model variable "theta", except if using TEOS-10 ;
+C               in that case a conversion from model Conservative Temperature
+C               "theta" is applied. Note: not defined under an ice-shelf
+      COMMON /FFIELDS_INSITU_TEMP/ gcmSST
+      _RL  gcmSST(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
 #ifdef ALLOW_ADDFLUID
       COMMON /FFIELDS_ADD_FLUID/ addMass
       _RL addMass(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -134,16 +141,16 @@ C                       to global-mean surf. flux imbalance ; no-units
       _RS weight2BalanceFlx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
-C- jmc: commented out until corresponding (ghost-like) code apparition
-C     dQdT  :: Thermal relaxation coefficient in W/m^2/degrees
-C              Southwest C-grid tracer point
-c     COMMON /FFIELDS_dQdT/ dQdT
-c     _RS  dQdT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-c#ifdef ALLOW_EP_FLUX
-c     COMMON /FFIELDS_eflux/ EfluxY,EfluxP
-c     _RL  EfluxY (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-c     _RL  EfluxP (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-c#endif
+#ifdef SHORTWAVE_HEATING
+C     SWFrac3D :: fraction of solar short-wave flux penetrating the vertical
+C                 cell interfaces (no units), function of depth of cell
+C                 interface, potentially turbidity, cholorphyll concentration,
+C                 or other biogeochemical material;
+C                 the vertical dimension is Nr+1, because this makes it easier
+C                 to maintain the symmetry w.r.t. z vs. p-coordinates.
+      COMMON /FFIELDS_SWFRAC/ SWFrac3D
+      _RS  SWFrac3D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
+#endif
 
 #ifdef ALLOW_EDDYPSI
 C     uEulerMean  :: The Eulerian mean Zonal  velocity (residual less bolus velocity)
