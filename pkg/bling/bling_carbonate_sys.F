@@ -1,4 +1,7 @@
 #include "BLING_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
       SUBROUTINE BLING_CARBONATE_SYS(
@@ -24,6 +27,9 @@ C     == GLobal variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "BLING_VARS.h"
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+#endif
 
 C     == Routine arguments ==
 C     PTR_DIC              :: dissolved inorganic carbon
@@ -70,6 +76,12 @@ C     CO3iterMax        :: total number of iterations
 
 c      INTEGER CO3iter
 c      INTEGER CO3iterMax
+#ifdef ALLOW_AUTODIFF_TAMC
+C     tkey :: tape key (tile dependent)
+C     kkey :: tape key (level and tile dependent)
+C     ikey :: tape key (position, level, and tile dependent)
+      INTEGER tkey, kkey, ikey
+#endif
 CEOP
 
 C  Since pH is now a 3D field and is solved for at every time step
@@ -79,9 +91,15 @@ c      CO3iterMax = 1
 C determine carbonate ion concentration through full domain
 C determine calcite saturation state
 
+#ifdef ALLOW_AUTODIFF_TAMC
+      tkey = bi + (bj - 1)*nSx + (ikey_dynamics - 1)*nSx*nSy
+#endif
 C$TAF LOOP = parallel
        DO k=1,Nr
 
+#ifdef ALLOW_AUTODIFF_TAMC
+        kkey = k + (tkey - 1)*Nr
+#endif
         DO j=jMin,jMax
          DO i=iMin,iMax
           locTemp(i,j) = theta(i,j,k,bi,bj)
@@ -128,6 +146,9 @@ C$TAF LOOP = parallel
 
           IF ( hFacC(i,j,k,bi,bj) .GT. 0. _d 0) THEN
 
+#ifdef ALLOW_AUTODIFF_TAMC
+           ikey = i + (j - 1)*sNx + (kkey - 1)*sNx*sNy
+#endif
 #ifdef CARBONCHEM_SOLVESAPHE
            calcium = cat(i,j,bi,bj)
 #else
@@ -205,7 +226,9 @@ c           ENDDO
 #ifdef CARBONCHEM_SOLVESAPHE
            ENDIF
 #endif /* CARBONCHEM_SOLVESAPHE */
-
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ store carbonate = comlev1_bibj_ijk, key = ikey, kind = isbyte
+#endif
            pH(i,j,k,bi,bj) = pHlocal
 
 C  Calculate calcium carbonate (calcite and aragonite)

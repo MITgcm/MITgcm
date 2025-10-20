@@ -2,6 +2,57 @@
     ==============================
 
 o pkg/seaice:
+  - fix compilation of seaice_growth_adx.F (left from PR #750).
+o model, pkgs:
+  - remove code within "#ifndef EXACT_CONSERV / #endif" bracket and remove
+    completely CPP option EXACT_CONSERV.
+o pkg/bling:
+  - allows to specify a 2D field of light attenuation coefficient (k0_2d) from
+    file "bling_k0_2dFile".
+
+checkpoint69g (2025/09/12)
+o verification/short_surf_wave:
+  - fix Non-Hydrostatic pressure initialization issue with implicSurfPress=1/2
+    by re-starting (nIter0=1) from pickup generated with implicSurfPress=1.
+o tools/mpack-1.6:
+  - fix compilation for recent version of gcc, to pass the compiler test in
+    "configure" and md5 compilation with v15 (comply with C23 standard).
+o pkg/streamice:
+  - for OpenAD, adjust streamice_write_pickup.F to only write the forward
+    components of state arrays to the binary pickups for later use.
+o verification:
+  - remove all pkg/timeave params from all exp. and no longer compile this
+    pkg in any exp. ; also skip pkg/mnc compilation in 4 fwd test exp ;
+  - switch few remaining exp. to #define EXACT_CONSERV so that no exp is
+    compiled with this option undefined anymore.
+o pkg/profiles:
+  - fix "profilesDoNcOutput" feature (writing NetCDF model equivalents) so
+    that it can be use with pkg/grdchk. Switch profilesDoNcOutput" to True in
+    adjoint test exp.  global_oce_biogeo_bling (both in TAF & Tapenade test).
+  - improve code readability, rename cost_profiles.F to profiles_cost.F
+    and fix obvious multi-threading issues.
+
+checkpoint69f (2025/07/10)
+o model/src, pkg/kpp:
+  - store shortwave penetration fraction in 3D field SWFrac3D and add run-time
+    params "selectPenetratingSW" to chose between different short-wave heating
+    options (only =1 currently implemented);
+  - remove local (buggy) solution in pkg/seaice ;
+  - add runtime-flag "KPPuseSWfrac3D", set to F by default, because this code
+    can only approximately replace the original pkg/kpp-code ;
+  - update TAF directives in pkg/kpp (mostly related to the code changes);
+  - fix "global_ocean.cs32x15" exp bug in "in_p" and "seaice" tests, update FWD,
+    ADM & TLM ref. output ; set KPPuseSWfrac3D to True in "1D_ocean_ice_column"
+    (both FWD & ADM) test exp. with updated ref. output.
+o pkg/streamice:
+  - fix "new_partial" initialisation in streamice_adv_front.f (helps Tapenade)
+o pkg/bling, pkg/dic:
+  - additional store directives to avoid hidden recomputations.
+o pkg/longstep:
+  - add remaining GM-Redi matrix coefficients (extra-diagonal & diagonal terms)
+    and Bolus transport stream function for time-averaging in longstep pkg and
+    use saved values in longstep time-stepping.
+o pkg/seaice:
   - fix 3 output formats to allow to run with gfortran v.15
   - also add "deep_anelastic.vecinv" to multi-threaded tests.
 o pkg/mom_{common,fluxform,vecinv}:
