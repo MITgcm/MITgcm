@@ -1,0 +1,22 @@
+#
+#
+# *********************
+# ECCO controlvariables
+# *********************
+ &CTRL_NML
+ ctrlUseGen=.TRUE.,
+ &
+#
+# *********************
+# names for ctrl_pack/unpack
+# *********************
+ &CTRL_PACKNAMES
+ &
+#
+# *********************
+# names for CTRL_GENARR, CTRL_GENTIM
+# *********************
+ &CTRL_NML_GENARR
+ xx_genarr3d_weight(1) = 'wunit.data',
+ xx_genarr3d_file(1)='xx_theta',
+ &

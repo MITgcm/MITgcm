@@ -1,0 +1,15 @@
+
+# *******************
+# ECCO gradient check
+# *******************
+ &GRDCHK_NML
+ grdchk_eps       = 1.d-4,
+ iGloPos          = 31,
+ jGloPos          = 7,
+ kGloPos          = 1,
+ iGloTile         = 2,
+ jgloTile         = 2,
+ nstep            = 300,
+ nend             = 901,
+ grdchkvarname    = "xx_theta",
+ &
