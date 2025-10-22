@@ -95,8 +95,6 @@ C       |-- STATE_SUMMARY
 C       |
 C       |-- MONITOR
 C       |
-C       |-- DO_STATEVARS_TAVE
-C       |
 C       |-- DO_THE_MODEL_IO
 
 C     !USES:

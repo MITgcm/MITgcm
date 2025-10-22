@@ -31,7 +31,7 @@ C  msgBuf               :: message buffer
       INTEGER iUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 C--   retired parameters:
-c     _RL KLtaveFreq
+      _RL KLtaveFreq
 CEOP
 
       NAMELIST /KL10_PARM01/
@@ -95,9 +95,6 @@ C--   Check for retired parameters:
         CALL PRINT_ERROR( msgBuf, myThid )
 c       errCount = errCount + 1
         STOP 'ABNORMAL END: S/R KL10_READPARMS'
-      ELSE
-C-    for now, just reset to zero (i.e., not used):
-        KLtaveFreq = 0.
       ENDIF
 
 C Now set-up any remaining parameters that result from the input parameters

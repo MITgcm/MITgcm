@@ -146,7 +146,6 @@ c**************************************
 # endif
 # ifdef ALLOW_GMREDI
 #  include "GMREDI.h"
-#  include "GMREDI_TAVE.h"
 # endif
 # include "FFIELDS.h"
 # include "DYNVARS.h"

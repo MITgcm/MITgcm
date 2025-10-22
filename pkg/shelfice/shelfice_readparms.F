@@ -37,8 +37,8 @@ C  msgBuf               :: message buffer
       INTEGER iUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 C-    retired parameters:
-c     _RL SHELFICE_taveFreq
-c     LOGICAL SHELFICE_timeave_mnc
+      _RL SHELFICE_taveFreq
+      LOGICAL SHELFICE_tave_mnc
 CEOP
 
       NAMELIST /SHELFICE_PARM01/
@@ -187,9 +187,6 @@ C--   Check for retired parameters:
         CALL PRINT_ERROR( msgBuf, myThid )
 c       errCount = errCount + 1
         STOP 'ABNORMAL END: S/R SHELFICE_READPARMS'
-      ELSE
-C-    for now, just reset to zero (i.e., not used):
-        SHELFICE_taveFreq = 0.
       ENDIF
       IF ( SHELFICE_tave_mnc ) THEN
         WRITE(msgBuf,'(2A)') 'SHELFICE_READPARMS: "SHELFICE_tave_mnc"',
@@ -201,7 +198,6 @@ C-    for now, just reset to zero (i.e., not used):
 c       errCount = errCount + 1
         STOP 'ABNORMAL END: S/R SHELFICE_READPARMS'
       ENDIF
-      SHELFICE_tave_mdsio = .FALSE.
 
 C Now set-up any remaining parameters that result from the input parameters
       IF ( SHELFICEsaltTransCoeff .EQ. UNSET_RL )

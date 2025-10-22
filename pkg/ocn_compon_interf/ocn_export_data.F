@@ -67,14 +67,6 @@ C     Sequential coupling: Send data to coupling layer
 
       ENDIF
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-      IF ( cpl_taveFreq.GT.0. _d 0 ) THEN
-C--   note: will move this "if" inside OCN_CPL_DIAGS when other diags
-C           than time-ave are computed within OCN_CPL_DIAGS.
-        CALL OCN_CPL_DIAGS( myTime, myIter, myThid )
-      ENDIF
-
 #endif /* COMPONENT_MODULE */
 
       RETURN

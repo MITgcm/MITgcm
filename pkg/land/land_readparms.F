@@ -41,8 +41,8 @@ C     land_taveFreq :: retired; Frequency^-1 for time-Aver. output (s)
       INTEGER iUnit, k
       _RL tmpvar
 C-    retired parameters:
-c     _RL land_taveFreq
-c     LOGICAL land_timeave_mnc
+      _RL land_taveFreq
+      LOGICAL land_timeave_mnc
 CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -205,9 +205,6 @@ C--   Check for retired parameters:
         CALL PRINT_ERROR( msgBuf, myThid )
 c       errCount = errCount + 1
         STOP 'ABNORMAL END: S/R LAND_READPARMS'
-      ELSE
-C-    for now, just reset to zero (i.e., not used):
-        land_taveFreq = 0.
       ENDIF
       IF ( land_timeave_mnc ) THEN
         WRITE(msgBuf,'(2A)') 'LAND_READPARMS: "land_timeave_mnc"',
@@ -219,7 +216,6 @@ C-    for now, just reset to zero (i.e., not used):
 c       errCount = errCount + 1
         STOP 'ABNORMAL END: S/R LAND_READPARMS'
       ENDIF
-      land_timeave_mdsio = .FALSE.
 
 C--   Derive other parameters:
 

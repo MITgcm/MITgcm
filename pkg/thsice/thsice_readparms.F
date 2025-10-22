@@ -44,8 +44,8 @@ C     iUnit     :: Work variable for IO unit number
       CHARACTER*(20) fmtR, fmtI, fmtL, fmtC
       INTEGER iUnit
 C-    retired parameters:
-c     _RL thSIce_taveFreq
-c     LOGICAL thSIce_timeave_mnc
+      _RL thSIce_taveFreq
+      LOGICAL thSIce_tave_mnc
 
 C--   Th-Sea-ICE parameter
       NAMELIST /THSICE_CONST/
@@ -231,9 +231,6 @@ C--   Check for retired parameters:
         CALL PRINT_ERROR( msgBuf, myThid )
 c       errCount = errCount + 1
         STOP 'ABNORMAL END: S/R THSICE_READPARMS'
-      ELSE
-C-    for now, just reset to zero (i.e., not used):
-        thSIce_taveFreq = 0.
       ENDIF
       IF ( thSIce_tave_mnc ) THEN
         WRITE(msgBuf,'(2A)') 'THSICE_READPARMS: "thSIce_tave_mnc"',
@@ -245,7 +242,6 @@ C-    for now, just reset to zero (i.e., not used):
 c       errCount = errCount + 1
         STOP 'ABNORMAL END: S/R THSICE_READPARMS'
       ENDIF
-      thSIce_tave_mdsio = .FALSE.
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-    neutral default:

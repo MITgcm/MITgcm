@@ -50,8 +50,8 @@ C     cpl_earlyExpImpCall :: retired; always call coupler early in call sequence
 C     cpl_timeave_mnc :: retired;
 C     cpl_taveFreq    :: retired; Frequency^-1 for time-Aver. output (s)
       LOGICAL cpl_earlyExpImpCall
-c     LOGICAL cpl_timeave_mnc
-c     _RL cpl_taveFreq
+      LOGICAL cpl_timeave_mnc
+      _RL cpl_taveFreq
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -145,9 +145,6 @@ C--   Check for retired parameters:
      &    ' since "pkg/timeave" has been removed.'
         CALL PRINT_ERROR( msgBuf, myThid )
         cplErrorCount = cplErrorCount + 1
-      ELSE
-C-    for now, just reset to zero (i.e., not used):
-        cpl_taveFreq = 0.
       ENDIF
       IF ( cpl_timeave_mnc ) THEN
         WRITE(msgBuf,'(2A)') 'CPL_READPARMS: "cpl_timeave_mnc"',
@@ -158,7 +155,6 @@ C-    for now, just reset to zero (i.e., not used):
         CALL PRINT_ERROR( msgBuf, myThid )
         cplErrorCount = cplErrorCount + 1
       ENDIF
-      cpl_timeave_mdsio  = .FALSE.
 
 C--   Check parameters and model configuration
 
@@ -206,19 +202,6 @@ C--   Check parameters and model configuration
         cplErrorCount = cplErrorCount + 1
       ENDIF
 #endif /* ndef ALLOW_DIC */
-
-C-    If cpl_taveFreq is positive, then must compile the timeave pkg code
-#ifndef ALLOW_TIMEAVE
-      IF (cpl_taveFreq.GT.0.) THEN
-        WRITE(msgBuf,'(A)')
-     &  'CPL_READPARMS: cpl_taveFreq > 0 but not compiled pkg/timeave'
-        CALL PRINT_ERROR( msgBuf, myThid)
-        WRITE(msgBuf,'(A)')
-     &  'Re-compile with pkg "timeave" in packages.conf'
-        CALL PRINT_ERROR( msgBuf, myThid)
-        cplErrorCount = cplErrorCount + 1
-      ENDIF
-#endif /* ndef ALLOW_TIMEAVE */
 
 #ifndef ATMOSPHERIC_LOADING
       iUnit = errorMessageUnit

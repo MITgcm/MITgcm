@@ -33,7 +33,7 @@ C     nRetired   :: Count number of "retired" parameters found in namelist.
       INTEGER nRetired
       LOGICAL KPPmixingMaps
       INTEGER num_v_smooth_BV, num_z_smooth_sh, num_m_smooth_sh
-c     _RL kpp_taveFreq
+      _RL kpp_taveFreq
 
 C--   KPP vertical mixing parameters
       NAMELIST /KPP_PARM01/
@@ -224,9 +224,6 @@ C     print message and stop when retired parameters were found in namelist
      &    ' since "pkg/timeave" has been removed.'
         CALL PRINT_ERROR( msgBuf, myThid )
         nRetired = nRetired + 1
-      ELSE
-C-    for now, just reset to zero (i.e., not used):
-        kpp_taveFreq = 0.
       ENDIF
 
       IF ( nRetired .GT. 0 ) THEN

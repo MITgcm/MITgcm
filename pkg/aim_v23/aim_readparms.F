@@ -1,3 +1,4 @@
+#undef ALLOW_AIM_TAVE
 #include "AIM_OPTIONS.h"
 
 CBOP
@@ -61,8 +62,8 @@ C     atmpCO2init    :: Atmospheric pCO2 initial value of well-mixed atm. box
       _RL atmpCO2init
 C-    retired parameters:
 C     aim_taveFreq :: retired; Frequency^-1 for time-average output (s)
-c     _RL aim_taveFreq
-c     LOGICAL aim_timeave_mnc
+      _RL aim_taveFreq
+      LOGICAL aim_timeave_mnc
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -328,9 +329,6 @@ C-    Retired params:
      &    ' since "pkg/timeave" has been removed.'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
-      ELSE
-C-    for now, just reset to zero (i.e., not used):
-        aim_taveFreq = 0.
       ENDIF
       IF ( aim_timeave_mnc ) THEN
         WRITE(msgBuf,'(2A)') 'AIM_READPARMS: "aim_timeave_mnc"',
@@ -341,7 +339,15 @@ C-    for now, just reset to zero (i.e., not used):
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
-      aim_timeave_mdsio = .FALSE.
+#ifdef ALLOW_AIM_TAVE
+        WRITE(msgBuf,'(2A)') 'AIM_READPARMS: :'
+     &    '#define ALLOW_AIM_TAVE not allowed in AIM_OPTIONS.h'
+        CALL PRINT_ERROR( msgBuf, myThid)
+        WRITE(msgBuf,'(2A)') 'AIM_READPARMS: :'
+     &    ' since "pkg/timeave" has been removed.'
+        CALL PRINT_ERROR( msgBuf, myThid)
+        errCount = errCount + 1
+#endif /* ALLOW_AIM_TAVE */
 
 C-    Consistency check:
       IF ( aim_select_pCO2.LT.0 .OR. aim_select_pCO2.GT.3 ) THEN
@@ -392,19 +398,6 @@ C-    If aim_clrSkyDiag is set, then must compile the Clear-Sky Diagnostic code
         errCount = errCount + 1
       ENDIF
 #endif
-
-C-    If aim_taveFreq is positive, then must compile the aim-diagnostics code
-#ifndef ALLOW_AIM_TAVE
-      IF (aim_taveFreq.GT.0.) THEN
-        WRITE(msgBuf,'(A)')
-     &  'AIM_READPARMS: aim_taveFreq > 0 but ALLOW_AIM_TAVE undefined'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(2A)')
-     &  'Re-compile with: #define ALLOW_AIM_TAVE (AIM_OPTIONS.h)'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        errCount = errCount + 1
-      ENDIF
-#endif /* ALLOW_AIM_TAVE */
 
 #ifdef ALLOW_MNC
       aim_snapshot_mnc       = useMNC .AND. aim_snapshot_mnc
@@ -502,8 +495,6 @@ C-
        CALL WRITE_0D_L( aim_clrSkyDiag, INDEX_NONE,
      &                 'aim_clrSkyDiag =',
      &  ' /* do clear-sky radiation diagnostics */')
-       CALL WRITE_0D_RL( aim_taveFreq, INDEX_NONE,'aim_taveFreq =',
-     &  '   /* Frequency^-1 for time-Aver. output (s) */')
        CALL WRITE_0D_RL( aim_diagFreq, INDEX_NONE,'aim_diagFreq =',
      &  '   /* Frequency^-1 for diagnostic output (s) */')
        CALL WRITE_0D_RL( aim_tendFreq, INDEX_NONE,'aim_tendFreq =',

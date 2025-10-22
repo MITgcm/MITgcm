@@ -38,7 +38,7 @@ C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_MBUF) data_file
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 C--   retired parameters:
-c     LOGICAL timeave_mnc
+      LOGICAL timeave_mnc
 
       NAMELIST /MNC_01/
      &     mnc_use_indir, mnc_use_outdir, mnc_outdir_date,
@@ -149,8 +149,8 @@ C--   Check for retired parameters:
      &    ' since "pkg/timeave" has been removed.'
         CALL PRINT_ERROR( msgBuf, myThid )
 c       errCount = errCount + 1
+        STOP 'ABNORMAL END: S/R MNC_READPARMS'
       ENDIF
-      timeave_mnc =  .FALSE.
 
 C     Pickups must always be read in an EXCLUSIVE fashion
       IF (pickup_read_mnc)  pickup_read_mdsio = .FALSE.

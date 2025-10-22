@@ -29,7 +29,7 @@ C     iUnit      :: Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
 C--   retired parameters:
-c     _RL blk_taveFreq
+      _RL blk_taveFreq
 
 C--   Bulk Formula parameter
       NAMELIST /BULKF_CONST/
@@ -197,9 +197,6 @@ C--   Check for retired parameters:
         CALL PRINT_ERROR( msgBuf, myThid )
 c       errCount = errCount + 1
         STOP 'ABNORMAL END: S/R BULKF_READPARMS'
-      ELSE
-C-    for now, just reset to zero (i.e., not used):
-        blk_taveFreq = 0.
       ENDIF
 
 C-  check that CPP option is "defined" when running-flag parameter is on:

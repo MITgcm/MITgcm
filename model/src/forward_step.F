@@ -218,8 +218,6 @@ C       |-- STEP_FIZHI_CORR
 C       |
 C       |-- FLT_MAIN
 C       |
-C       |-- DO_STATEVARS_TAVE
-C       |
 C       |-- NEST_PARENT_IO_2
 C       |-- NEST_CHILD_TRANSP
 C       |
@@ -385,9 +383,6 @@ C     == Global variables ==
 c# ifdef ALLOW_KPP
 c#  include "KPP_PARAMS.h"
 c# endif
-# ifdef ALLOW_GMREDI
-#  include "GMREDI_TAVE.h"
-# endif
 # ifdef ALLOW_MOM_FLUXFORM
 #  include "MOM_FLUXFORM.h"
 # endif

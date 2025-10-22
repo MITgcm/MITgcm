@@ -105,8 +105,8 @@ C     former ALLOW_SEAICE_COST_SMR_AREA related flags
       _RL SEAICE_clamp_salt
       _RL SEAICE_clamp_theta
 #endif /* ALLOW_COST */
-c     _RL SEAICE_taveFreq
-c     LOGICAL SEAICE_tave_mnc
+      _RL SEAICE_taveFreq
+      LOGICAL SEAICE_tave_mnc
 
 C--   SEAICE parameters
       NAMELIST /SEAICE_PARM01/
@@ -1352,9 +1352,6 @@ C-    Retired parameters
      &    ' since "pkg/timeave" has been removed.'
         CALL PRINT_ERROR( msgBuf, myThid )
         nRetired = nRetired + 1
-      ELSE
-C-    for now, just reset to zero (i.e., not used):
-        SEAICE_taveFreq = 0.
       ENDIF
       IF ( SEAICE_tave_mnc ) THEN
         WRITE(msgBuf,'(2A)') 'SEAICE_READPARMS: "SEAICE_tave_mnc"',
@@ -1365,7 +1362,6 @@ C-    for now, just reset to zero (i.e., not used):
         CALL PRINT_ERROR( msgBuf, myThid )
         nRetired = nRetired + 1
       ENDIF
-      SEAICE_tave_mdsio = .FALSE.
 
       IF ( nRetired .GT. 0 ) THEN
        WRITE(msgBuf,'(2A)') 'S/R SEAICE_READPARMS: ',

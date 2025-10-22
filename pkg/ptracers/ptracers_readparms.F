@@ -45,8 +45,8 @@ C     tauTr1ClimRelax :: old parameter (will be removed 1 day)
 C--   retired parameters:
 C     PTRACERS_taveFreq :: Frequency with which time-averaged PTRACERS
 C                          are written to post-processing files.
-c     _RL PTRACERS_taveFreq
-c     LOGICAL PTRACERS_timeave_mnc
+      _RL PTRACERS_taveFreq
+      LOGICAL PTRACERS_timeave_mnc
 
       NAMELIST /PTRACERS_PARM01/
      &     tauTr1ClimRelax,
@@ -196,9 +196,6 @@ C--   Check for retired parameters:
      &    ' since "pkg/timeave" has been removed.'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
-      ELSE
-C-    for now, just reset to zero (i.e., not used):
-        PTRACERS_taveFreq = 0.
       ENDIF
       IF ( PTRACERS_timeave_mnc ) THEN
         WRITE(msgBuf,'(3A)') 'PTRACERS_READPARMS: ',
@@ -210,7 +207,6 @@ C-    for now, just reset to zero (i.e., not used):
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
-      PTRACERS_timeave_mdsio = .FALSE.
 
 C     Tracer 1 climatology relaxation time scale (<- but the code is gone !)
       IF ( tauTr1ClimRelax .NE. 0. ) THEN

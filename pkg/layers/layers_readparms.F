@@ -32,7 +32,7 @@ C      layers_G :: boundaries of tracer layers
       _RL layers_G(Nlayers+1)
 
 C-    retired parameters:
-c     _RL layers_taveFreq
+      _RL layers_taveFreq
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -155,9 +155,6 @@ C--   Check for retired parameters:
      &    ' since "pkg/timeave" has been removed.'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
-      ELSE
-C-    for now, just reset to zero (i.e., not used):
-        layers_taveFreq = 0.
       ENDIF
 
 C--   Set layers_num according to layers_name:
