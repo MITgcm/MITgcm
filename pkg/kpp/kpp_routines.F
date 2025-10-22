@@ -268,26 +268,37 @@ c !!!NOTE!!! In shallow (2-level) regions and for shallow mixed layers
 c (< 1 level), diffusivity blmc can become negative.  The max-s below
 c are a hack until this problem is properly diagnosed and fixed.
 c-----------------------------------------------------------------------
-      DO k = 1, Nr
-         DO i = 1, imt
-            IF (k .LT. kbl(i)) THEN
 #ifdef ALLOW_SHELFICE
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ INCOMPLETE blmc
+# endif
+      DO md = 1, mdiff
+       DO k = 1, Nr
+        DO i = 1, imt
+CADJ INCOMPLETE blmc
+         IF (k .LT. kbl(i)) THEN
 C     when there is shelfice on top (msk(i)=0), reset the boundary layer
 C     mixing coefficients blmc to pure Ri-number based mixing
-               blmc(i,k,1) = MAX ( blmc(i,k,1)*msk(i),
-     &              diffus(i,k,1) )
-               blmc(i,k,2) = MAX ( blmc(i,k,2)*msk(i),
-     &              diffus(i,k,2) )
-               blmc(i,k,3) = MAX ( blmc(i,k,3)*msk(i),
-     &              diffus(i,k,3) )
-#endif /* not ALLOW_SHELFICE */
-               diffus(i,k,1) = MAX ( blmc(i,k,1), viscArNr(1) )
-               diffus(i,k,2) = MAX ( blmc(i,k,2), diffusKzS(i,Nr) )
-               diffus(i,k,3) = MAX ( blmc(i,k,3), diffusKzT(i,Nr) )
-            ELSE
-               ghat(i,k) = 0. _d 0
-            ENDIF
-         ENDDO
+          blmc(i,k,md) = MAX ( blmc(i,k,md)*msk(i), diffus(i,k,md) )
+         ENDIF
+        ENDDO
+       ENDDO
+      ENDDO
+# ifdef ALLOW_AUTODIFF_TAMC
+cCADJ INCOMPLETE blmc
+CADJ STORE blmc = comlev1_kpp, key=ikey, kind=isbyte
+# endif
+#endif
+      DO k = 1, Nr
+       DO i = 1, imt
+        IF (k .LT. kbl(i)) THEN
+         diffus(i,k,1) = MAX ( blmc(i,k,1), viscArNr(1) )
+         diffus(i,k,2) = MAX ( blmc(i,k,2), diffusKzS(i,Nr) )
+         diffus(i,k,3) = MAX ( blmc(i,k,3), diffusKzT(i,Nr) )
+        ELSE
+         ghat(i,k) = 0. _d 0
+        ENDIF
+       ENDDO
       ENDDO
 
 #endif /* ALLOW_KPP */
