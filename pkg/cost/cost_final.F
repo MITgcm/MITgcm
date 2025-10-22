@@ -69,6 +69,17 @@ c     == end of interface ==
       IF (useThSIce) CALL THSICE_COST_FINAL (myThid)
 #endif
 
+#ifdef ALLOW_CTRL
+      IF (useCTRL) THEN
+# ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('ctrl_cost_driver',myThid)
+# endif
+       CALL TIMER_START('CTRL_COST_DRIVER [COST_FINAL]', myThid)
+       CALL CTRL_COST_DRIVER( myThid )
+       CALL TIMER_STOP ('CTRL_COST_DRIVER [COST_FINAL]', myThid)
+      ENDIF
+#endif /* ALLOW_CTRL */
+
 #ifdef ALLOW_ECCO
       IF (useECCO) CALL ECCO_COST_FINAL (myThid)
 #endif

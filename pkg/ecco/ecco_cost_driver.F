@@ -51,16 +51,5 @@ c--   Compute user defined cost function contributions (elaborate)
       call cost_gencost_all( myIter, myTime, myThid )
       call timer_stop ('cost_gencost_all    [ECCO SPIN-DOWN]', myThid)
 
-#ifdef ALLOW_CTRL
-      IF (useCTRL) THEN
-# ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('ctrl_cost_driver',myThid)
-# endif
-       call timer_start('ctrl_cost_driver [ECCO SPIN-DOWN]', myThid)
-       call ctrl_cost_driver( myThid )
-       call timer_stop ('ctrl_cost_driver [ECCO SPIN-DOWN]', myThid)
-      ENDIF
-#endif /* ALLOW_CTRL */
-
       RETURN
       END
