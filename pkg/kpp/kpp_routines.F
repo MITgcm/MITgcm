@@ -272,20 +272,18 @@ c-----------------------------------------------------------------------
 # ifdef ALLOW_AUTODIFF_TAMC
 CADJ INCOMPLETE blmc
 # endif
-      DO md = 1, mdiff
-       DO k = 1, Nr
-        DO i = 1, imt
-CADJ INCOMPLETE blmc
-         IF (k .LT. kbl(i)) THEN
+      DO k = 1, Nr
+       DO i = 1, imt
+        IF (k .LT. kbl(i)) THEN
+         DO md = 1, mdiff
 C     when there is shelfice on top (msk(i)=0), reset the boundary layer
 C     mixing coefficients blmc to pure Ri-number based mixing
           blmc(i,k,md) = MAX ( blmc(i,k,md)*msk(i), diffus(i,k,md) )
-         ENDIF
-        ENDDO
+         ENDDO
+        ENDIF
        ENDDO
       ENDDO
 # ifdef ALLOW_AUTODIFF_TAMC
-cCADJ INCOMPLETE blmc
 CADJ STORE blmc = comlev1_kpp, key=ikey, kind=isbyte
 # endif
 #endif

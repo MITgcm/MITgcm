@@ -10,8 +10,6 @@ CADJ STORE shelficeForcingT = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE shelficeForcingS = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE cMeanSHIforT     = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE cMeanSHIforS     = comlev1, key=ikey_dynamics, kind=isbyte
-c#endif /* ALLOW_SHELFICE */
-c#ifdef ALLOW_STEEP_ICECAVITY
 CADJ STORE shelficeFreshWaterFlux
 CADJ &                      = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE shelficeLoadAnomaly
