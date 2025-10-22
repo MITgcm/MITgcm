@@ -286,18 +286,11 @@ CESCO start icomptest at the point before the first i/j/k 1/1/new layer
                  DO kk = 1, k
                    icomptest = icomptest + nwettile(bi,bj,kk,iobcs)
                  ENDDO
-CESCO next two lines prevent Seg Fault when k increments
-C                 itmp = 1
-C                 jtmp = 1
-CESCO        print *, 'ph-grd _loc: option 2 icomp, icomptest, ijtmp',
-CESCO     &       icomp, icomptest, itmp, jtmp, itilepos, jtilepos
                ENDIF
-cph(
-cph-print               print *, 'ph-grd after loop icomptest, icomploc, k ',
-cph-print     &              icomptest, icomploc, k
-cph)
+
                iwrk      = 1
                jwrk      = 1
+
              ENDIF
 
 C--   End of loop over k
