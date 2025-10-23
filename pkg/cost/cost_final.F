@@ -98,18 +98,16 @@ c     == end of interface ==
       IF (useThSIce) CALL THSICE_COST_FINAL (myThid)
 #endif
 
-#ifdef ALLOW_ECCO
-      IF (useECCO) CALL ECCO_COST_FINAL (myThid)
-#else
-
+#ifndef ALLOW_ECCO
 # ifdef ALLOW_CTRL
       IF (useCTRL) THEN
 #  ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('ctrl_cost_driver',myThid)
+       IF (debugMode) CALL DEBUG_CALL('CTRL_COST_DRIVER',myThid)
 #  endif
        CALL TIMER_START('CTRL_COST_DRIVER [COST_FINAL]', myThid)
        CALL CTRL_COST_DRIVER( myThid )
        CALL TIMER_STOP ('CTRL_COST_DRIVER [COST_FINAL]', myThid)
+C     Initialise cost function variables zo zero
 #  ifdef ALLOW_GENTIM2D_CONTROL
        DO num_var=1,maxCtrlTim2D
         f_gentim2d(num_var)= 0. _d 0
@@ -127,9 +125,13 @@ c     == end of interface ==
         f_genarr3d(num_var)= 0. _d 0
         no_genarr3d(num_var)= 0. _d 0
        ENDDO
-      ENDIF
 #  endif
+      ENDIF
 # endif /* ALLOW_CTRL */
+#endif /* ndef ALLOW_ECCO */
+
+#ifdef ALLOW_ECCO
+      IF (useECCO) CALL ECCO_COST_FINAL (myThid)
 #endif /* ALLOW_ECCO */
 
 #ifdef ALLOW_COST_STATE_FINAL
