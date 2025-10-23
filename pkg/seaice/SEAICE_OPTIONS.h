@@ -85,7 +85,7 @@ C     the thermodynamics component of the code. Note that, if needed,
 C     sea-ice dynamics can be turned off at runtime (SEAICEuseDYNAMICS=F).
 
 C--   Historically, the seaice model was discretized on a B-Grid. This
-C     discretization should still work but it is not longer actively
+C     discretization should still work but it is no longer actively
 C     tested and supported. Define this flag to compile it. It cannot be
 C     defined together with SEAICE_CGRID
 #undef SEAICE_BGRID_DYNAMICS
@@ -99,6 +99,14 @@ C--   Options for the C-grid version only:
 
 C     enable advection of sea ice momentum
 # undef SEAICE_ALLOW_MOM_ADVECTION
+
+C     Use parameterisation of grounding ice for a better representation
+C     of fastice in shallow seas
+# undef SEAICE_ALLOW_BOTTOMDRAG
+
+C     Use parameterisation of explicit lateral drag for a better
+C     representation of fastice along coast lines and islands
+# undef SEAICE_ALLOW_SIDEDRAG
 
 C     enable JFNK code by defining the following flag
 # define SEAICE_ALLOW_JFNK
@@ -179,18 +187,10 @@ C     This flag is also required for an actual adjoint of seaice_lsr;
 C     increases memory requirements a lot.
 # undef SEAICE_LSR_ADJOINT_ITER
 
-C     Use parameterisation of grounding ice for a better representation
-C     of fastice in shallow seas
-# undef SEAICE_ALLOW_BOTTOMDRAG
-
 C     Allow using the flexible LSR solver, where the number of non-linear
 C     iteration depends on the residual. Good for when a non-linear
 C     convergence criterion must be satified
 # undef SEAICE_ALLOW_LSR_FLEX
-
-C     Use parameterisation of explicit lateral drag for a better
-C     representation of fastice along coast lines and islands
-# undef SEAICE_ALLOW_SIDEDRAG
 
 #endif /* SEAICE_CGRID */
 
