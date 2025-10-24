@@ -1,0 +1,9 @@
+# BBL runtime parameters
+ &BBL_PARM01
+ bbl_wvel      = 1.D-5
+ bbl_hvel      = 1.D0
+ bbl_initEta   = 20.D0
+ bbl_thetaFile = ' '
+ bbl_saltFile  = ' '
+ bbl_etaFile   = ' '
+ &
