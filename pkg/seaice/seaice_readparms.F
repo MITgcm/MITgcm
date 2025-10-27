@@ -136,6 +136,7 @@ C--   SEAICE parameters
      & SEAICE_evpDampC, SEAICEnEVPstarSteps,
      & SEAICE_evpAlpha, SEAICE_evpBeta,
      & SEAICEaEVPcoeff, SEAICEaEVPcStar, SEAICEaEVPalphaMin,
+     & SEAICE_evpAreaReg,
      & SEAICE_zetaMin, SEAICE_zetaMaxFac, SEAICEusePicardAsPrecon,
      & SEAICEuseLSRflex, SEAICEuseKrylov, SEAICEuseJFNK,
      & SEAICEnonLinIterMax, SEAICElinearIterMax, SEAICEnonLinTol,
@@ -189,7 +190,7 @@ C--   SEAICE parameters
      & MAX_HEFF, MIN_ATEMP, MIN_LWDOWN, MAX_TICE, MIN_TICE,
      & SEAICE_EPS, SEAICE_EPS_SQ,
      & SEAICEwriteState, SEAICEuseEVPpickup,
-     & SEAICEuseEVPstar, SEAICEuseEVPrev, SEAICE_evpAreaReg
+     & SEAICEuseEVPstar, SEAICEuseEVPrev,
      & SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq,
      & SEAICE_tave_mnc, SEAICE_dump_mnc, SEAICE_mon_mnc,
 #ifdef SEAICE_ITD
