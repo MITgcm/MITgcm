@@ -883,15 +883,15 @@ CADJ STORE vIce(:,:,bi,bj) = comlev1_bibj_evp, key=tkey, byte=isbyte
             tmp        = evpStarFac*recip_deltaT
             betaFacP1V = betaFacV + tmp
             betaFacP1U = betaFacU + tmp
-            IF ( SEAICEevpRegDenomUV ) THEN
-             denomU = MAX(seaiceMassU(i,j,bi,bj),SEAICE_area_floor
+            IF ( SEAICE_evpAreaReg .GT. 0. _d 0 ) THEN
+             denomU = MAX(seaiceMassU(i,j,bi,bj),SEAICE_evpAreaReg
      &           * seaice_rhoIce)*betaFacP1U
      &           + 0.5 _d 0*( DWATN(i,j,bi,bj) + DWATN(i-1,j,bi,bj) )
-     &           * COSWAT * MAX(areaW(i,j,bi,bj),SEAICE_area_floor)
-             denomV = MAX(seaiceMassV(i,j,bi,bj),SEAICE_area_floor
+     &           * COSWAT * MAX(areaW(i,j,bi,bj),SEAICE_evpAreaReg)
+             denomV = MAX(seaiceMassV(i,j,bi,bj),SEAICE_evpAreaReg
      &           * seaice_rhoIce)*betaFacP1V
      &           + 0.5 _d 0*( DWATN(i,j,bi,bj) + DWATN(i,j-1,bi,bj) )
-     &           * COSWAT * MAX(areaS(i,j,bi,bj),SEAICE_area_floor)
+     &           * COSWAT * MAX(areaS(i,j,bi,bj),SEAICE_evpAreaReg)
             ELSE
              denomU = seaiceMassU(i,j,bi,bj)*betaFacP1U
      &           + 0.5 _d 0*( DWATN(i,j,bi,bj) + DWATN(i-1,j,bi,bj) )
