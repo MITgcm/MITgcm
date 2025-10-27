@@ -22,8 +22,6 @@ C                          one 1/e^2 in equations for sigma2 and sigma12
 C     SEAICEuseEVPpickup :: Set to false in order to start EVP solver with
 C                          non-EVP pickup files.  Default is true.
 C                          Applied only if SEAICEuseEVP=.TRUE.
-C     SEAICEevpRegDenomUV:: If true, use two regularizations in the calculation
-C                          of denomU and denomV to enhance the stability of EVP
 C     SEAICEuseMultiTileSolver :: in LSR, use full domain tri-diagonal solver
 C     SEAICEuseLSR      :: If true, use default Picard solver with Line-
 C                          Successive(-over)-Relaxation, can also be true
@@ -137,7 +135,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
       LOGICAL
      &     SEAICEuseDYNAMICS, SEAICEuseFREEDRIFT, SEAICEuseStrImpCpl,
      &     SEAICEuseEVP, SEAICEuseEVPstar, SEAICEuseEVPrev,
-     &     SEAICEuseEVPpickup, SEAICEevpRegDenomUV,
+     &     SEAICEuseEVPpickup, 
      &     SEAICEuseMultiTileSolver,
      &     SEAICEuseLSR, SEAICEuseLSRflex, SEAICEuseKrylov,
      &     SEAICEuseJFNK, SEAICEuseIMEX, SEAICEuseBDF2,
@@ -167,7 +165,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
       COMMON /SEAICE_PARM_L/
      &     SEAICEuseDYNAMICS, SEAICEuseFREEDRIFT, SEAICEuseStrImpCpl,
      &     SEAICEuseEVP, SEAICEuseEVPstar, SEAICEuseEVPrev,
-     &     SEAICEuseEVPpickup, SEAICEevpRegDenomUV,
+     &     SEAICEuseEVPpickup, 
      &     SEAICEuseMultiTileSolver,
      &     SEAICEuseLSR, SEAICEuseLSRflex, SEAICEuseKrylov,
      &     SEAICEuseJFNK, SEAICEuseIMEX, SEAICEuseBDF2,
@@ -374,6 +372,9 @@ C     SEAICEaEVPcStar    :: multiple of stabilty factor: alpha*beta=cstar*gamma
 C     SEAICEaEVPalphaMin :: lower limit of alpha and beta, regularisation
 C                           to prevent singularities of system matrix,
 C                           e.g. when ice concentration is too low.
+C     SEAICE_evpAreaReg  :: Specifies a minimun ice fraction for the purposes of 
+C                           regularizations in the calculation of denomU/V, 
+C                           to enhance the stability of EVP (default 1e-5)
 C     SEAICEnonLinTol    :: non-linear tolerance parameter for implicit solvers
 C     JFNKgamma_lin_min/max :: tolerance parameters for linear JFNK solver
 C     JFNKres_t          :: tolerance parameter for FGMRES residual
@@ -562,7 +563,7 @@ C
       _RL SEAICE_evpAlpha, SEAICE_evpBeta
       _RL SEAICE_evpDampC, SEAICE_zetaMin, SEAICE_zetaMaxFac
       _RL SEAICEaEVPcoeff, SEAICEaEVPcStar, SEAICEaEVPalphaMin
-      _RL SEAICEpresH0
+      _RL SEAICE_evpAreaReg, SEAICEpresH0
       _RL SEAICEdiffKhArea, SEAICEdiffKhHeff, SEAICEdiffKhSnow
       _RL SEAICEdiffKhSalt
       _RL SEAICE_tauAreaObsRelax
@@ -578,7 +579,7 @@ C
      &    SEAICE_evpAlpha, SEAICE_evpBeta,
      &    SEAICEaEVPcoeff, SEAICEaEVPcStar, SEAICEaEVPalphaMin,
      &    SEAICE_evpDampC, SEAICE_zetaMin, SEAICE_zetaMaxFac,
-     &    SEAICEpresH0,
+     &    SEAICE_evpAreaReg, SEAICEpresH0,
      &    SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq,
      &    SEAICE_initialHEFF,
      &    SEAICE_rhoAir, SEAICE_rhoIce, SEAICE_rhoSnow, ICE2WATR,
