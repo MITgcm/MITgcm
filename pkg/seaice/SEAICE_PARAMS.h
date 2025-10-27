@@ -372,9 +372,10 @@ C     SEAICEaEVPcStar    :: multiple of stabilty factor: alpha*beta=cstar*gamma
 C     SEAICEaEVPalphaMin :: lower limit of alpha and beta, regularisation
 C                           to prevent singularities of system matrix,
 C                           e.g. when ice concentration is too low.
-C     SEAICE_evpAreaReg  :: Specifies a minimun ice fraction for the purposes of 
-C                           regularizations in the calculation of denomU/V, 
-C                           to enhance the stability of EVP (default 1e-5)
+C     SEAICE_evpAreaReg  :: Specifies a minimun ice fraction for the purposes
+C                           of regularizations in the calculation of denomU/V,
+C                           to enhance the stability of EVP; off by default,
+C                           turn on with a sensible value, e.g. 1e-5
 C     SEAICEnonLinTol    :: non-linear tolerance parameter for implicit solvers
 C     JFNKgamma_lin_min/max :: tolerance parameters for linear JFNK solver
 C     JFNKres_t          :: tolerance parameter for FGMRES residual
