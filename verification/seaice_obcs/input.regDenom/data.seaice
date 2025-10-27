@@ -5,7 +5,7 @@
  SEAICEaEVPcoeff     = 0.5,
  SEAICEnEVPstarSteps = 500,
 # test regularisation of EVP (helps especially for high resolution)
- SEAICEevpRegDenomUV = .TRUE.,
+ SEAICE_evpAreaReg = 0.00001,
 #- seaice state & transport params:
  SEAICEadvScheme    = 7,
 # add small diffKh to test diffusion with multi-dim advect.
