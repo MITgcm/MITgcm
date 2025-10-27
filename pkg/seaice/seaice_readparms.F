@@ -189,7 +189,7 @@ C--   SEAICE parameters
      & MAX_HEFF, MIN_ATEMP, MIN_LWDOWN, MAX_TICE, MIN_TICE,
      & SEAICE_EPS, SEAICE_EPS_SQ,
      & SEAICEwriteState, SEAICEuseEVPpickup,
-     & SEAICEuseEVPstar, SEAICEuseEVPrev, SEAICEevpRegDenomUV,
+     & SEAICEuseEVPstar, SEAICEuseEVPrev, SEAICE_evpAreaReg
      & SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq,
      & SEAICE_tave_mnc, SEAICE_dump_mnc, SEAICE_mon_mnc,
 #ifdef SEAICE_ITD
@@ -254,7 +254,6 @@ C--   set default sea ice parameters
       SEAICEuseEVPpickup = .TRUE.
       SEAICEuseEVPstar   = .TRUE.
       SEAICEuseEVPrev    = .TRUE.
-      SEAICEevpRegDenomUV    = .FALSE.
       SEAICErestoreUnderIce = .FALSE.
       SEAICE_growMeltByConv = .FALSE.
       SEAICE_salinityTracer = .FALSE.
@@ -374,6 +373,7 @@ C     Hunke, JCP, 2001 use 615 kg/m^2 for this, but does not recommend using it
       SEAICEaEVPcoeff    = UNSET_RL
       SEAICEaEVPcStar    = UNSET_RL
       SEAICEaEVPalphaMin = UNSET_RL
+      SEAICE_evpAreaReg  = UNSET_RL
       SEAICE_initialHEFF = ZERO
 #ifdef SEAICE_ITD
 C     Coefficients used to calculate sea ice thickness category limits
@@ -820,6 +820,7 @@ C     undefined here, so that we know if something funny is going on.
         SEAICE_evpAlpha     = UNSET_RL
         SEAICE_evpBeta      = UNSET_RL
        ENDIF
+       IF (SEAICE_evpAreaReg .EQ.UNSET_RL) SEAICE_evpAreaReg=0.00001 _d 0
 C     Check if all parameters are set.
       ENDIF
 #endif /* SEAICE_ALLOW_EVP */
