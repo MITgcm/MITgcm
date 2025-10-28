@@ -7,5 +7,5 @@
  mult_test    = 1.,
 # only compute depth cost function,
 # but do not add it the global cost function
- mult_depth   = 0.,
+#mult_depth   = 0.,
  &

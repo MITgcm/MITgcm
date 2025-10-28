@@ -166,7 +166,12 @@ cgf : to compile previous line user is expected to provide cost_temp.F
 #endif
 
 #ifdef ALLOW_COST_DEPTH
+C     This makes no longer sense and should be removed. If defined
+C     together with ALLOW_CTRL, this will cause recomputation warnings
+C     and wrong gradient (not clear why).
+# ifndef ALLOW_CTRL
       CALL COST_DEPTH( myThid )
+# endif
 #endif
 
       WRITE(msgBuf,'(A,D22.15)') '  early fc = ', fc

@@ -35,7 +35,7 @@ C       >>> Cost function contributions
 
 #define ALLOW_COST_TEST
 #undef ALLOW_COST_TSQUARED
-#define ALLOW_COST_DEPTH
+#undef ALLOW_COST_DEPTH
 #undef ALLOW_COST_TRACER
 
 C   List these options here:
