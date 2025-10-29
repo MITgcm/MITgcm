@@ -1,6 +1,11 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint69h (2025/10/23)
+o pkg/ctrl:
+  - account for shift in record number between original xx_gentim2d_file full
+    time-series and "effective" sub-set version ; this was previously missing.
+    Also enable some debug print from ctrl_get_gen_rec.F (if debugLevel >= 3).
 o pkg/seaice:
   - fix compilation of seaice_growth_adx.F (left from PR #750).
 o model, pkgs:
