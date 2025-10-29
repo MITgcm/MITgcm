@@ -296,7 +296,7 @@ C     CALL MNC_CW_RS_W('R','state',0,0,'xV',xC, myThid)
 C     CALL MNC_CW_RS_W('R','state',0,0,'yV',yG, myThid)
 C     CALL MNC_CW_RS_W('R','state',0,0,'xG',xG, myThid)
 C     CALL MNC_CW_RS_W('R','state',0,0,'yG',yG, myThid)
-C     CALL MNC_CW_RS_W('R','state',0,0,'RC',rC, myThid)
+C     CALL MNC_CW_RS_W('R','state',0,0,'rC',rC, myThid)
 C     CALL MNC_CW_RS_W('R','state',0,0,'rF',rF, myThid)
 
 C     Define variables used in mom_vecinv
