@@ -30,13 +30,8 @@ c     == global variables ==
 # include "ECCO_SIZE.h"
 # include "ECCO.h"
 #endif
-#ifdef ALLOW_CTRL
-# include "CTRL_SIZE.h"
-# include "CTRL.h"
-# include "CTRL_GENARR.h"
-# ifdef ALLOW_OBCS
-#  include "CTRL_OBCS.h"
-# endif /* ALLOW_OBCS */
+#if (defined ALLOW_CTRL && defined ALLOW_OBCS)
+# include "CTRL_OBCS.h"
 #endif
 #ifdef ALLOW_PROFILES
 # include "PROFILES_SIZE.h"
@@ -74,39 +69,19 @@ c the adjoint, pkg/autodiff most likely require cost though.
       _RL locfc
 
       _RL f_gencost(NGENCOST)
+      _RL no_gencost(NGENCOST)
 #if (defined ALLOW_CTRL && defined ALLOW_OBCS)
       _RL f_obcsn, f_obcss, f_obcsw, f_obcse, f_ageos
+      _RL no_obcsn, no_obcss, no_obcsw, no_obcse, no_ageos
 #endif
 #ifdef ALLOW_PROFILES
       _RL f_profiles(NFILESPROFMAX,NVARMAX)
       _RL f_profiles_mean(NVARMAX)
-#endif
-#ifdef ALLOW_GENTIM2D_CONTROL
-      _RL f_gentim2d(maxCtrlTim2D)
-#endif
-#ifdef ALLOW_GENARR2D_CONTROL
-      _RL f_genarr2d(maxCtrlArr2D)
-#endif
-#ifdef ALLOW_GENARR3D_CONTROL
-      _RL f_genarr3d(maxCtrlArr3D)
-#endif
-      _RL no_gencost(NGENCOST)
-#if (defined ALLOW_CTRL && defined ALLOW_OBCS)
-      _RL no_obcsn, no_obcss, no_obcsw, no_obcse, no_ageos
-#endif
-#ifdef ALLOW_PROFILES
-      INTEGER num_file
       _RL no_profiles(NFILESPROFMAX,NVARMAX)
       _RL no_profiles_mean(NVARMAX)
 #endif
-#ifdef ALLOW_GENTIM2D_CONTROL
-      _RL no_gentim2d(maxCtrlTim2D)
-#endif
-#ifdef ALLOW_GENARR2D_CONTROL
-      _RL no_genarr2d(maxCtrlArr2D)
-#endif
-#ifdef ALLOW_GENARR3D_CONTROL
-      _RL no_genarr3d(maxCtrlArr3D)
+#ifdef ALLOW_PROFILES
+      INTEGER num_file
 #endif
 
       CHARACTER*20 cfname
@@ -121,78 +96,31 @@ c     == end of interface ==
       locfc = 0. _d 0
 
 #if (defined ALLOW_CTRL && defined ALLOW_OBCS)
-      f_obcsn   = 0. _d 0
-      f_obcss   = 0. _d 0
-      f_obcsw   = 0. _d 0
-      f_obcse   = 0. _d 0
-      f_ageos   = 0. _d 0
+      f_obcsn  = 0. _d 0
+      f_obcss  = 0. _d 0
+      f_obcsw  = 0. _d 0
+      f_obcse  = 0. _d 0
+      f_ageos  = 0. _d 0
+      no_obcsn = 0. _d 0
+      no_obcss = 0. _d 0
+      no_obcsw = 0. _d 0
+      no_obcse = 0. _d 0
+      no_ageos = 0. _d 0
 #endif
 #ifdef ALLOW_PROFILES
-      DO num_file=1,NFILESPROFMAX
-       DO num_var=1,NVARMAX
-        f_profiles(num_file,num_var)= 0. _d 0
-       ENDDO
-      ENDDO
       DO num_var=1,NVARMAX
-       f_profiles_mean(num_var)= 0. _d 0
-      ENDDO
-#endif
-#ifdef ALLOW_GENCOST_CONTRIBUTION
-      DO num_var=1,NGENCOST
-       f_gencost(num_var)= 0. _d 0
-      ENDDO
-#endif
-#ifdef ALLOW_GENTIM2D_CONTROL
-      DO num_var=1,maxCtrlTim2D
-       f_gentim2d(num_var)= 0. _d 0
-      ENDDO
-#endif
-#ifdef ALLOW_GENARR2D_CONTROL
-      DO num_var=1,maxCtrlArr2D
-       f_genarr2d(num_var)= 0. _d 0
-      ENDDO
-#endif
-#ifdef ALLOW_GENARR3D_CONTROL
-      DO num_var=1,maxCtrlArr3D
-       f_genarr3d(num_var)= 0. _d 0
-      ENDDO
-#endif
-
-#if (defined ALLOW_CTRL && defined ALLOW_OBCS)
-      no_obcsn   = 0. _d 0
-      no_obcss   = 0. _d 0
-      no_obcsw   = 0. _d 0
-      no_obcse   = 0. _d 0
-      no_ageos   = 0. _d 0
-#endif
-#ifdef ALLOW_PROFILES
-      DO num_file=1,NFILESPROFMAX
-       DO num_var=1,NVARMAX
+       DO num_file=1,NFILESPROFMAX
+        f_profiles(num_file,num_var)= 0. _d 0
         no_profiles(num_file,num_var)= 0. _d 0
        ENDDO
-      ENDDO
-      DO num_var=1,NVARMAX
+       f_profiles_mean(num_var)= 0. _d 0
        no_profiles_mean(num_var)= 0. _d 0
       ENDDO
 #endif
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       DO num_var=1,NGENCOST
+       f_gencost(num_var) = 0. _d 0
        no_gencost(num_var)= 0. _d 0
-      ENDDO
-#endif
-#ifdef ALLOW_GENTIM2D_CONTROL
-      DO num_var=1,maxCtrlTim2D
-       no_gentim2d(num_var)= 0. _d 0
-      ENDDO
-#endif
-#ifdef ALLOW_GENARR2D_CONTROL
-      DO num_var=1,maxCtrlArr2D
-       no_genarr2d(num_var)= 0. _d 0
-      ENDDO
-#endif
-#ifdef ALLOW_GENARR3D_CONTROL
-      DO num_var=1,maxCtrlArr3D
-       no_genarr3d(num_var)= 0. _d 0
       ENDDO
 #endif
 
@@ -209,19 +137,37 @@ c--   Sum up all contributions.
 # ifdef OBCS_AGEOS_COST_CONTRIBUTION
      &         + mult_ageos   * objf_ageos(bi,bj)
 # endif
+        f_obcsn  = f_obcsn + objf_obcsn(bi,bj)
+        f_obcss  = f_obcss + objf_obcss(bi,bj)
+        f_obcsw  = f_obcsw + objf_obcsw(bi,bj)
+        f_obcse  = f_obcse + objf_obcse(bi,bj)
+        no_obcsn = no_obcsn + num_obcsn(bi,bj)
+        no_obcss = no_obcss + num_obcss(bi,bj)
+        no_obcse = no_obcse + num_obcse(bi,bj)
+        no_obcsw = no_obcsw + num_obcsw(bi,bj)
+# ifdef OBCS_AGEOS_COST_CONTRIBUTION
+        f_ageos  = f_ageos + objf_ageos(bi,bj)
+        no_ageos = no_ageos + num_ageos(bi,bj)
+# endif
 #endif
 #ifdef ALLOW_PROFILES
-        DO num_file=1,NFILESPROFMAX
-         DO num_var=1,NVARMAX
+        DO num_var=1,NVARMAX
+         DO num_file=1,NFILESPROFMAX
           tile_fc(bi,bj) = tile_fc(bi,bj)
      &            + mult_profiles(num_file,num_var)
      &            *objf_profiles(num_file,num_var,bi,bj)
+          f_profiles(num_file,num_var)=f_profiles(num_file,num_var)
+     &            +objf_profiles(num_file,num_var,bi,bj)
+          no_profiles(num_file,num_var)=no_profiles(num_file,num_var)
+     &            +num_profiles(num_file,num_var,bi,bj)
          ENDDO
-        ENDDO
-        DO num_var=1,NVARMAX
          tile_fc(bi,bj) = tile_fc(bi,bj)
      &           + mult_profiles_mean(num_var)
      &           *objf_profiles_mean(num_var,bi,bj)
+         f_profiles_mean(num_var)=f_profiles_mean(num_var)
+     &           +objf_profiles_mean(num_var,bi,bj)
+         no_profiles_mean(num_var)=no_profiles_mean(num_var)
+     &           +num_profiles_mean(num_var,bi,bj)
         ENDDO
 #endif
 #ifdef ALLOW_GENCOST_CONTRIBUTION
@@ -229,119 +175,10 @@ c--   Sum up all contributions.
          tile_fc(bi,bj) = tile_fc(bi,bj)
      &            + mult_gencost(num_var)
      &            *objf_gencost(bi,bj,num_var)
-        ENDDO
-#endif
-#ifdef ALLOW_GENTIM2D_CONTROL
-        DO num_var=1,maxCtrlTim2D
-         tile_fc(bi,bj) = tile_fc(bi,bj)
-     &            + mult_gentim2d(num_var)
-     &            *objf_gentim2d(bi,bj,num_var)
-        ENDDO
-#endif
-#ifdef ALLOW_GENARR2D_CONTROL
-        DO num_var=1,maxCtrlArr2D
-         tile_fc(bi,bj) = tile_fc(bi,bj)
-     &            + mult_genarr2d(num_var)
-     &            *objf_genarr2d(bi,bj,num_var)
-        ENDDO
-#endif
-#ifdef ALLOW_GENARR3D_CONTROL
-        DO num_var=1,maxCtrlArr3D
-         tile_fc(bi,bj) = tile_fc(bi,bj)
-     &            + mult_genarr3d(num_var)
-     &            *objf_genarr3d(bi,bj,num_var)
-        ENDDO
-#endif
-
-#if (defined ALLOW_CTRL && defined ALLOW_OBCS)
-        f_obcsn  = f_obcsn + objf_obcsn(bi,bj)
-        f_obcss  = f_obcss + objf_obcss(bi,bj)
-        f_obcsw  = f_obcsw + objf_obcsw(bi,bj)
-        f_obcse  = f_obcse + objf_obcse(bi,bj)
-# ifdef OBCS_AGEOS_COST_CONTRIBUTION
-        f_ageos  = f_ageos + objf_ageos(bi,bj)
-# endif
-#endif
-#ifdef ALLOW_PROFILES
-        DO num_file=1,NFILESPROFMAX
-         DO num_var=1,NVARMAX
-          f_profiles(num_file,num_var)=f_profiles(num_file,num_var)
-     &            +objf_profiles(num_file,num_var,bi,bj)
-         ENDDO
-        ENDDO
-        DO num_var=1,NVARMAX
-         f_profiles_mean(num_var)=f_profiles_mean(num_var)
-     &           +objf_profiles_mean(num_var,bi,bj)
-        ENDDO
-#endif
-#ifdef ALLOW_GENCOST_CONTRIBUTION
-        DO num_var=1,NGENCOST
          f_gencost(num_var)=f_gencost(num_var)
      &            +objf_gencost(bi,bj,num_var)
-        ENDDO
-#endif
-#ifdef ALLOW_GENTIM2D_CONTROL
-        DO num_var=1,maxCtrlTim2D
-         f_gentim2d(num_var) = f_gentim2d(num_var)
-     &            +objf_gentim2d(bi,bj,num_var)
-        ENDDO
-#endif
-#ifdef ALLOW_GENARR2D_CONTROL
-        DO num_var=1,maxCtrlArr2D
-         f_genarr2d(num_var) = f_genarr2d(num_var)
-     &            +objf_genarr2d(bi,bj,num_var)
-        ENDDO
-#endif
-#ifdef ALLOW_GENARR3D_CONTROL
-        DO num_var=1,maxCtrlArr3D
-         f_genarr3d(num_var) = f_genarr3d(num_var)
-     &            +objf_genarr3d(bi,bj,num_var)
-        ENDDO
-#endif
-
-#if (defined ALLOW_CTRL && defined ALLOW_OBCS)
-        no_obcsn = no_obcsn + num_obcsn(bi,bj)
-        no_obcss = no_obcss + num_obcss(bi,bj)
-        no_obcse = no_obcse + num_obcse(bi,bj)
-        no_obcsw = no_obcsw + num_obcsw(bi,bj)
-# ifdef OBCS_AGEOS_COST_CONTRIBUTION
-        no_ageos = no_ageos + num_ageos(bi,bj)
-# endif
-#endif
-#ifdef ALLOW_PROFILES
-        DO num_file=1,NFILESPROFMAX
-         DO num_var=1,NVARMAX
-          no_profiles(num_file,num_var)=no_profiles(num_file,num_var)
-     &            +num_profiles(num_file,num_var,bi,bj)
-         ENDDO
-        ENDDO
-        DO num_var=1,NVARMAX
-         no_profiles_mean(num_var)=no_profiles_mean(num_var)
-     &           +num_profiles_mean(num_var,bi,bj)
-        ENDDO
-#endif
-#ifdef ALLOW_GENCOST_CONTRIBUTION
-        DO num_var=1,NGENCOST
          no_gencost(num_var)=no_gencost(num_var)
      &            +num_gencost(bi,bj,num_var)
-        ENDDO
-#endif
-#ifdef ALLOW_GENTIM2D_CONTROL
-        DO num_var=1,maxCtrlTim2D
-         no_gentim2d(num_var) = no_gentim2d(num_var)
-     &            +num_gentim2d(bi,bj,num_var)
-        ENDDO
-#endif
-#ifdef ALLOW_GENARR2D_CONTROL
-        DO num_var=1,maxCtrlArr2D
-         no_genarr2d(num_var) = no_genarr2d(num_var)
-     &            +num_genarr2d(bi,bj,num_var)
-        ENDDO
-#endif
-#ifdef ALLOW_GENARR3D_CONTROL
-        DO num_var=1,maxCtrlArr3D
-         no_genarr3d(num_var) = no_genarr3d(num_var)
-     &            +num_genarr3d(bi,bj,num_var)
         ENDDO
 #endif
 
@@ -365,81 +202,33 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_RL( f_obcss , myThid )
       _GLOBAL_SUM_RL( f_obcsw , myThid )
       _GLOBAL_SUM_RL( f_obcse , myThid )
-# ifdef OBCS_AGEOS_COST_CONTRIBUTION
-      _GLOBAL_SUM_RL( f_ageos , myThid )
-# endif
-#endif
-#ifdef ALLOW_PROFILES
-      DO num_file=1,NFILESPROFMAX
-       DO num_var=1,NVARMAX
-        _GLOBAL_SUM_RL(f_profiles(num_file,num_var), myThid )
-       ENDDO
-      ENDDO
-      DO num_var=1,NVARMAX
-       _GLOBAL_SUM_RL(f_profiles_mean(num_var), myThid )
-      ENDDO
-#endif
-#ifdef ALLOW_GENCOST_CONTRIBUTION
-      DO num_var=1,NGENCOST
-       _GLOBAL_SUM_RL(f_gencost(num_var), myThid )
-      ENDDO
-#endif
-#ifdef ALLOW_GENTIM2D_CONTROL
-      DO num_var=1,maxCtrlTim2D
-       _GLOBAL_SUM_RL(f_gentim2d(num_var), myThid )
-      ENDDO
-#endif
-#ifdef ALLOW_GENARR2D_CONTROL
-      DO num_var=1,maxCtrlArr2D
-       _GLOBAL_SUM_RL(f_genarr2d(num_var), myThid )
-      ENDDO
-#endif
-#ifdef ALLOW_GENARR3D_CONTROL
-      DO num_var=1,maxCtrlArr3D
-       _GLOBAL_SUM_RL(f_genarr3d(num_var), myThid )
-      ENDDO
-#endif
-
-#if (defined ALLOW_CTRL && defined ALLOW_OBCS)
       _GLOBAL_SUM_RL( no_obcsn , myThid )
       _GLOBAL_SUM_RL( no_obcss , myThid )
       _GLOBAL_SUM_RL( no_obcsw , myThid )
       _GLOBAL_SUM_RL( no_obcse , myThid )
 # ifdef OBCS_AGEOS_COST_CONTRIBUTION
+      _GLOBAL_SUM_RL( f_ageos , myThid )
       _GLOBAL_SUM_RL( no_ageos , myThid )
 # endif
 #endif
 #ifdef ALLOW_PROFILES
-      DO num_file=1,NFILESPROFMAX
-       DO num_var=1,NVARMAX
+      DO num_var=1,NVARMAX
+       DO num_file=1,NFILESPROFMAX
+        _GLOBAL_SUM_RL(f_profiles(num_file,num_var), myThid )
         _GLOBAL_SUM_RL(no_profiles(num_file,num_var), myThid )
        ENDDO
-      ENDDO
-      DO num_var=1,NVARMAX
+       _GLOBAL_SUM_RL(f_profiles_mean(num_var), myThid )
        _GLOBAL_SUM_RL(no_profiles_mean(num_var), myThid )
       ENDDO
 #endif
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       DO num_var=1,NGENCOST
+       _GLOBAL_SUM_RL(f_gencost(num_var), myThid )
        _GLOBAL_SUM_RL(no_gencost(num_var), myThid )
       ENDDO
 #endif
-#ifdef ALLOW_GENTIM2D_CONTROL
-      DO num_var=1,maxCtrlTim2D
-       _GLOBAL_SUM_RL(no_gentim2d(num_var), myThid )
-      ENDDO
-#endif
-#ifdef ALLOW_GENARR2D_CONTROL
-      DO num_var=1,maxCtrlArr2D
-       _GLOBAL_SUM_RL(no_genarr2d(num_var), myThid )
-      ENDDO
-#endif
-#ifdef ALLOW_GENARR3D_CONTROL
-      DO num_var=1,maxCtrlArr3D
-       _GLOBAL_SUM_RL(no_genarr3d(num_var), myThid )
-      ENDDO
-#endif
 
+C     start printing to STDOUT
 #if (defined ALLOW_CTRL && defined ALLOW_OBCS)
       WRITE(standardMessageUnit,'(A,D22.15)')
      &     ' --> f_obcsn   =',f_obcsn
@@ -489,39 +278,6 @@ c--   Do global summation for each part of the cost function
        ENDIF
       ENDDO
 #endif
-#ifdef ALLOW_GENTIM2D_CONTROL
-      DO num_var=1,maxCtrlTim2D
-       IF (no_gentim2d(num_var).GT.0. _d 0) THEN
-        WRITE(msgBuf,'(A,D22.15,i2.0)')
-     &     ' --> f_gentim2d =',f_gentim2d(num_var),
-     &      num_var
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-       ENDIF
-      ENDDO
-#endif
-#ifdef ALLOW_GENARR2D_CONTROL
-      DO num_var=1,maxCtrlArr2D
-       IF (no_genarr2d(num_var).GT.0. _d 0) THEN
-        WRITE(msgBuf,'(A,D22.15,i2.0)')
-     &     ' --> f_genarr2d =',f_genarr2d(num_var),
-     &      num_var
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-       ENDIF
-      ENDDO
-#endif
-#ifdef ALLOW_GENARR3D_CONTROL
-      DO num_var=1,maxCtrlArr3D
-       IF (no_genarr3d(num_var).GT.0. _d 0) THEN
-        WRITE(msgBuf,'(A,D22.15,i2.0)')
-     &     ' --> f_genarr3d =',f_genarr3d(num_var),
-     &      num_var
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-       ENDIF
-      ENDDO
-#endif
 
 c--   Each process has calculated the global part for itself.
 
@@ -555,17 +311,12 @@ C     only master thread of master CPU open and write to file
 #endif
      &       'fc =', locfc, 0.
 #if (defined ALLOW_CTRL && defined ALLOW_OBCS)
-        WRITE(ifc,'(A,2D22.15)')
-     &       'f_obcsn =', f_obcsn, no_obcsn
-        WRITE(ifc,'(A,2D22.15)')
-     &       'f_obcss =', f_obcss, no_obcss
-        WRITE(ifc,'(A,2D22.15)')
-     &       'f_obcsw =', f_obcsw, no_obcsw
-        WRITE(ifc,'(A,2D22.15)')
-     &       'f_obcse =', f_obcse, no_obcse
+        WRITE(ifc,'(A,2D22.15)') 'f_obcsn =', f_obcsn, no_obcsn
+        WRITE(ifc,'(A,2D22.15)') 'f_obcss =', f_obcss, no_obcss
+        WRITE(ifc,'(A,2D22.15)') 'f_obcsw =', f_obcsw, no_obcsw
+        WRITE(ifc,'(A,2D22.15)') 'f_obcse =', f_obcse, no_obcse
 # ifdef OBCS_AGEOS_COST_CONTRIBUTION
-        WRITE(ifc,'(A,2D22.15)')
-     &       'f_ageos =', f_ageos, no_ageos
+        WRITE(ifc,'(A,2D22.15)') 'f_ageos =', f_ageos, no_ageos
 # endif
 #endif
 #ifdef ALLOW_PROFILES
@@ -603,48 +354,6 @@ C     only master thread of master CPU open and write to file
      &    gencost_name(num_var)(1:IL),' (gencost ', num_var, ') = ',
      &    f_gencost(num_var),
      &    no_gencost(num_var)
-         ENDIF
-        ENDDO
-#endif
-
-#ifdef ALLOW_GENTIM2D_CONTROL
-        DO num_var=1,maxCtrlTim2D
-         IF (no_gentim2d(num_var).GT.0. _d 0) THEN
-          IL  = ILNBLNK( xx_gentim2d_file(num_var) )
-          IL  = max (IL,15)
-          WRITE(ifc,'(2A,i2.0,A,2D22.15)')
-     &    xx_gentim2d_file(num_var)(1:IL),
-     &    ' (gentim2d ', num_var, ') = ',
-     &    f_gentim2d(num_var),
-     &    no_gentim2d(num_var)
-         ENDIF
-        ENDDO
-#endif
-
-#ifdef ALLOW_GENARR2D_CONTROL
-        DO num_var=1,maxCtrlArr2D
-         IF (no_genarr2d(num_var).GT.0. _d 0) THEN
-          IL  = ILNBLNK( xx_genarr2d_file(num_var) )
-          IL  = max (IL,15)
-          WRITE(ifc,'(2A,i2.0,A,2D22.15)')
-     &    xx_genarr2d_file(num_var)(1:IL),
-     &    ' (genarr2d ', num_var, ') = ',
-     &    f_genarr2d(num_var),
-     &    no_genarr2d(num_var)
-         ENDIF
-        ENDDO
-#endif
-
-#ifdef ALLOW_GENARR3D_CONTROL
-        DO num_var=1,maxCtrlArr3D
-         IF (no_genarr3d(num_var).GT.0. _d 0) THEN
-          IL  = ILNBLNK( xx_genarr3d_file(num_var) )
-          IL  = max (IL,15)
-          WRITE(ifc,'(2A,i2.0,A,2D22.15)')
-     &    xx_genarr3d_file(num_var)(1:IL),
-     &    ' (genarr3d ', num_var, ') = ',
-     &    f_genarr3d(num_var),
-     &    no_genarr3d(num_var)
          ENDIF
         ENDDO
 #endif
