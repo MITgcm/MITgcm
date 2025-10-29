@@ -82,41 +82,63 @@ end
 
 else
 %- load NetCDF grid files :
-%S=rdmnc([rDir,'grid.*.nc']);
  S=rdmnc(fullfile(rDir,'grid.*.nc'));
  if ncdf > 1, TimeT1=clock; end
 
 %--
- xC=S.XC;
- yC=S.YC;
- xG=S.XG(1:end-1,1:end-1);
- yG=S.YG(1:end-1,1:end-1);
- rC=S.RC';
- rF=S.RF';
+ if isfield(S,'XC'), % old MNC grid names <c69h
+  xC=S.XC;
+  yC=S.YC;
+  xG=S.XG(1:end-1,1:end-1);
+  yG=S.YG(1:end-1,1:end-1);
+  rC=S.RC';
+  rF=S.RF';
+  rAc=S.rA;
+  if isfield(S,'AngleCS') & isfield(S,'AngleSN'),
+    csAngle=S.AngleCS;
+    snAngle=S.AngleSN;
+  else
+    fprintf(' no grid orientation (Cos & Sin) in grid file ');
+    csAngle= ones(size(rAc));
+    snAngle=zeros(size(rAc));
+    fprintf(' => set COS=1,SIN=0\n');
+  end
+  hFacC=S.HFacC;
+  hFacW=S.HFacW(1:end-1,:,:);
+  hFacS=S.HFacS(:,1:end-1,:);
+ else % current MNC grid names >=c69h
+  xC=S.xC;
+  yC=S.yC;
+  xG=S.xG(1:end-1,1:end-1);
+  yG=S.yG(1:end-1,1:end-1);
+  rC=S.rC';
+  rF=S.rF';
+  rAc=S.rAc;
+  if isfield(S,'angleCS') & isfield(S,'angleSN'),
+    csAngle=S.angleCS;
+    snAngle=S.angleSN;
+  else
+    fprintf(' no grid orientation (Cos & Sin) in grid file ');
+    csAngle= ones(size(rAc));
+    snAngle=zeros(size(rAc));
+    fprintf(' => set COS=1,SIN=0\n');
+  end
+  hFacC=S.hFacC;
+  hFacW=S.hFacW(1:end-1,:,:);
+  hFacS=S.hFacS(:,1:end-1,:);
+ end
  dXc=S.dxC(1:end-1,:);
  dYc=S.dyC(:,1:end-1);
  dXg=S.dxG(:,1:end-1);
  dYg=S.dyG(1:end-1,:);
  dRc=S.drC';
  dRf=S.drF';
- rAc=S.rA;
  rAw=S.rAw(1:end-1,:);
  rAs=S.rAs(:,1:end-1);
  rAz=S.rAz(1:end-1,1:end-1);
- if isfield(S,'AngleCS') & isfield(S,'AngleSN'),
-   csAngle=S.AngleCS;
-   snAngle=S.AngleSN;
- else
-   fprintf(' no grid orientation (Cos & Sin) in grid file ');
-   csAngle= ones(size(rAc));
-   snAngle=zeros(size(rAc));
-   fprintf(' => set COS=1,SIN=0\n');
- end
- hFacC=S.HFacC;
- hFacW=S.HFacW(1:end-1,:,:);
- hFacS=S.HFacS(:,1:end-1,:);
  depth=S.Depth;
  dims = size(hFacC);
+
 end
 
 if ncdf > 1, fprintf(' (took %6.4f s)\n',etime(TimeT1,TimeT0)); end
