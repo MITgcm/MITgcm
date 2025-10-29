@@ -3772,14 +3772,14 @@ adj_tap_all.$FS: \$(AD_FILES) f95_test_mods.f90
 	@-rm -f \$(AD_FILES_ADJ)
 	\$(TAPENADECMD) -b -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
 	ls -l the_main_loop_b.f
-	@$BASH\$(TOOLSDIR)/TAP_support/append_fwd_src $FS _b \$(AD_FILES)
+	@$BASH\$(TOOLSDIR)/TAP_support/append_fwd_src _b $FS \$(AD_FILES)
 	touch adj_tap_all.$FS
 
 tlm_tap_all.$FS: \$(AD_FILES) f95_test_mods.f90
 	@-rm -f \$(AD_FILES_TLM)
 	\$(TAPENADECMD) -d -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
 	ls -l the_main_loop_d.f
-	@$BASH\$(TOOLSDIR)/TAP_support/append_fwd_src $FS _d \$(AD_FILES)
+	@$BASH\$(TOOLSDIR)/TAP_support/append_fwd_src _d $FS \$(AD_FILES)
 	touch tlm_tap_all.$FS
 
 \$(EXE_ADJ): \$(SPECIAL_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES) \$(EMBEDDED_FILES) adj_tap_all.$FS

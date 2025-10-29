@@ -2,10 +2,10 @@
 
 #- Script to be used with Tapenade in Makefile generated with genmake2 option "-ncad":
 #  Usage:
-#  > append_fwd_src  FS  tap_sfx  FILE_LIST
+#  > append_fwd_src  tap_sfx  FS  FILE_LIST
 #  with:
-#   FS        :: (fixed-format) Fortran suffix to be used on this platform
 #   tap_sfx   :: suffix of Tapenade generated src code, either "_b" (adj) or "_d" (tlm)
+#   FS        :: (fixed-format) Fortran suffix to be used on this platform
 #   FILE_LIST :: list of MITgcm src code to differentiate, i.e., $(AD_FILES)
 #
 #  for all files in FILE_LIST :
@@ -13,8 +13,8 @@
 #    a) if Tapenade file exist, append original file to it (and rename to "${tap_sfx}.$FS")
 #    b) if not, just copy original file to corresponding file with suffix "${tap_sfx}.$FS"
 
-FS=$1
-sfx=$2
+sfx=$1
+FS=$2
 shift ; shift
 
 if test $FS = f ; then
