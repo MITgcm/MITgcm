@@ -3245,7 +3245,7 @@ echo 'OBJFILES= $(F90_SRC_FILES:.F90=.o) $(F77_SRC_FILES:.F=.o) $(C_SRC_FILES:.c
 
 echo >> $MAKEFILE
 echo '.SUFFIXES:' >> $MAKEFILE
-echo '.SUFFIXES: .o .f .'$FS' .p .F .c .f'$FS90' .'$FS90' .FF90 .F90 .flow' >> $MAKEFILE
+echo '.SUFFIXES: .o .'$FS' .p .F .c .f'$FS90' .'$FS90' .FF90 .F90 .flow' >> $MAKEFILE
 
 cat >>$MAKEFILE <<EOF
 
@@ -3382,8 +3382,6 @@ CPPCMD = cat \$< | ${CPP} \$(DEFINES) \$(INCLUDES) | ${S64}
 .F.$FS:
 	\$(CPPCMD)  > \$@
 .$FS.o:
-	\$(FC) \$(FFLAGS) \$(FOPTIM) -c \$<
-.f.o:
 	\$(FC) \$(FFLAGS) \$(FOPTIM) -c \$<
 .F.o:
 	\$(FC) \$(FFLAGS) \$(FOPTIM) -c \$<
@@ -3717,13 +3715,13 @@ TAPENADECMD = ${TAPENADECMD}
 TAPENADE_SUPPORT_F90_SRC_FILES = \
 ${TAPTOOLS}/diffsizes.F90
 
+f95_test_mods.f90: \$(TAPENADE_SUPPORT_F90_SRC_FILES)
+	cat \$^ > \$@
+
 AD_FILES_ADJ=\$(AD_FILES:.$FS=_b.f)
 AD_FILES_TLM=\$(AD_FILES:.$FS=_d.f)
 
 AD_CLEAN = \$(AD_FILES_ADJ) \$(AD_FILES_TLM) *.f~ *.msg *.msg~ f95_test_mods.f90
-
-f95_test_mods.f90: \$(TAPENADE_SUPPORT_F90_SRC_FILES)
-	cat \$^ > \$@
 
 tap_adj: ad_exe_target
 ad_exe_target:
@@ -3774,14 +3772,14 @@ adj_tap_all.$FS: \$(AD_FILES) f95_test_mods.f90
 	@-rm -f \$(AD_FILES_ADJ)
 	\$(TAPENADECMD) -b -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
 	ls -l the_main_loop_b.f
-	@$BASH\$(TOOLSDIR)/TAP_support/append_fwd_src _b.f \$(AD_FILES)
+	@$BASH\$(TOOLSDIR)/TAP_support/append_fwd_src $FS _b \$(AD_FILES)
 	touch adj_tap_all.$FS
 
 tlm_tap_all.$FS: \$(AD_FILES) f95_test_mods.f90
 	@-rm -f \$(AD_FILES_TLM)
 	\$(TAPENADECMD) -d -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
 	ls -l the_main_loop_d.f
-	@$BASH\$(TOOLSDIR)/TAP_support/append_fwd_src _d.f \$(AD_FILES)
+	@$BASH\$(TOOLSDIR)/TAP_support/append_fwd_src $FS _d \$(AD_FILES)
 	touch tlm_tap_all.$FS
 
 \$(EXE_ADJ): \$(SPECIAL_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES) \$(EMBEDDED_FILES) adj_tap_all.$FS
