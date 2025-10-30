@@ -104,14 +104,13 @@ cgf : to compile previous line user is expected to provide cost_hflux.F
 cgf : to compile previous line user is expected to provide cost_temp.F
 #endif
 
-#ifdef ALLOW_COST_DEPTH
+c#ifdef ALLOW_COST_DEPTH
 C     This makes no longer sense and should be removed. If defined
 C     together with ALLOW_CTRL, this will cause recomputation warnings
-C     and wrong gradients (not clear why).
-# ifndef ALLOW_CTRL
-      CALL COST_DEPTH( myThid )
-# endif
-#endif
+C     and wrong gradients because the cost function contribution is
+C     computed twice (once in ctrl_cost_driver, and once here).
+c     CALL COST_DEPTH( myThid )
+c#endif
 
       WRITE(msgBuf,'(A,D22.15)') '  early fc = ', fc
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
