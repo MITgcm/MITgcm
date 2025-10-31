@@ -25,7 +25,7 @@ ICEBERG configuration
 As with all MITgcm packages, :filelink:`pkg/iceberg` can be turned on or off at compile
 time:
 
--  using the ``packages.conf`` file by adding ```` to it,
+-  using the ``packages.conf`` file by adding ``iceberg`` to it,
 
 -  or using :filelink:`genmake2 <tools/genmake2>` adding ``-enable=iceberg`` or ``disable=iceberg`` switches
 
@@ -151,7 +151,7 @@ Geometry Files
 ^^^^^^^^^^^^^^
 The geometry of icebergs is computed outside of MITgcm, and so it is important the user correctly prepare the ICEBERGxxFiles appropriately.
 Scipts for the generation of these files can be found within Summers et al. (2025) :cite:`summers:25` in python and 
-Davison et al. (2020) :cite:`davison:01` in MATLAB. 
+Davison et al. (2020) :cite:`davison:20` in MATLAB. 
 
 
 Three-equations thermodynamics
@@ -159,7 +159,7 @@ Three-equations thermodynamics
 
 The :filelink:`/pkg/iceberg` package solves for ice meltrates using the Three-equations melt parameterization, following Jenkins et
 al. (2001) :cite:`jenkins:01` and summarized in detail in :numref:`shelfice_diagnostics`. The thermodynamic component of 
-:filelink:`/pkg/iceberg` is outlined in Davison et al. (2020) :cite:`davison:01`
+:filelink:`/pkg/iceberg` is outlined in Davison et al. (2020) :cite:`davison:20`
 
 To acount for the relalitve speed of icebergs drifting in a current, cells with ICEBERGdriftFile = 1 will calculate the melt velocity
 used in the melt parameterization relative to the drifting velocity of each iceberg, determined as the average ocean velocity across 
