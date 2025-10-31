@@ -1,7 +1,7 @@
 .. _sub_phys_pkg_iceberg:
 
 ICEBERG Package
-----------------
+---------------
 
 Authors: Paul Thomas Summers, Benjamin Joseph Davison
 
@@ -20,7 +20,7 @@ in :numref:`iceberg_subroutines`. Available diagnostics output is listed in
 .. _iceberg_config:
 
 ICEBERG configuration
-~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
  
 As with all MITgcm packages, :filelink:`pkg/iceberg` can be turned on or off at compile
 time:
@@ -48,10 +48,24 @@ via CPP preprocessor flags. These options are set in :filelink:`ICEBERG_OPTIONS.
    | :varlink:`ALLOW_PER_BERG_DIAG`               | #undef  | Enables per iceberg diagnostic files, like older versions of ICEBERG                                                  |
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
 
+The maximum number of icebergs per cell is a compile time size that must be set appropriately in :filelink:`/pkg/iceberg/ICEBERG_SIZE.h`.
+ The default of 500 is a reasonable starting point, but may need adjustment depending on your grid and average iceberg sizes. 
+
+   .. tabularcolumns:: |\Y{.32}|\Y{.1}|\Y{.570}|
+
+.. table:: Compile-time variables
+   :name: tab_phys_pkg_iceberg_compilevars
+
+   +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+   | CPP Flag Name                                 | Default | Description                                                                                                          |
+   +===============================================+=========+======================================================================================================================+
+   | :varlink:`brg_MaxBergCt`                      | 500     | Maximum number of icebergs that can be placed in any one cell.                                                       |
+   +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+
 .. _iceberg_runtime:
 
 ICEBERG run-time parameters
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 :filelink:`pkg/iceberg` is switched on/off at run time by setting :varlink:`useICEBERG` to ``.TRUE.`` in file ``data.pkg``.
 Run-time parameters are set in file ``data.iceberg`` (read in :filelink:`pkg/iceberg/iceberg_readparms.F`),as listed below.
@@ -125,13 +139,20 @@ The data files specifying iceberg dimensions are in meters, all values should be
    +----------------------------------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
 
 ICEBERG description
-~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
 
 Ice mélange and icebergs have been shown to impact fjord circulation, heat and freshwater fluxes, and the submarine melting of glacier
  termini. When icebergs are larger than grid cells, small-scale models can resolve large icebergs using :filelink:`pkg/shelfice`, but 
  for coarser grids and smaller icebergs, is it useful to account the effects of icebergs smaller than grid scale. Here, we have built 
  the :filelink:`/pkg/iceberg` package to implement a novel, scalable parameterization to incorporate the impact of iceberg melt and
  drag for icebergs below the grid scale.
+
+Geometry Files
+^^^^^^^^^^^^^^
+The geometry of icebergs is computed outside of MITgcm, and so it is important the user correctly prepare the ICEBERGxxFiles appropriately.
+Scipts for the generation of these files can be found within Summers et al. (2025) :cite:`summers:25` in python and 
+Davison et al. (2020) :cite:`davison:01` in MATLAB. 
+
 
 Three-equations thermodynamics
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -145,9 +166,9 @@ used in the melt parameterization relative to the drifting velocity of each iceb
 the depth of the iceberg. Though this effect accounts for iceberg drift on iceberg melt rates, the physical dimensions and locations of 
 the icebergs do not change. The icebergs themselves do not experience melt or drifting. 
 
-Sub-graid parameterization of drag
+Sub-grid parameterization of drag
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-The mechanical component of :filelink:`/pkg/iceberg` is outlined in Summers et al. (2025) :cite:`summers:01`
+The mechanical component of :filelink:`/pkg/iceberg` is outlined in Summers et al. (2025) :cite:`summers:25`
 
 To attempt to realistically capture the body drag effect of icebergs we use ocean velocity and ice volume fraction to compute a net 
 blocking and drag effect that impacts the ocean momentum. Icebergs themselves do not change size or location via influence from 
@@ -207,7 +228,7 @@ but note that :filelink:`/pkg/iceberg` routines are also called when solving the
 .. _iceberg_diagnostics:
 
 ICEBERG diagnostics
-~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
 
 Diagnostics output is available via the diagnostics package (see
 :numref:`outp_pack`). Available output fields are summarized as follows:
@@ -228,6 +249,6 @@ Diagnostics output is available via the diagnostics package (see
 
 
 Experiments and tutorials that use iceberg
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 See the verification experiment TBD
