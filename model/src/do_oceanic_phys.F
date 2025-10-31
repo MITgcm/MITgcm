@@ -110,8 +110,6 @@ C       |-- MY82_CALC
 C       |
 C       |-- GGL90_CALC
 C       |
-C       |-- TIMEAVE_SURF_FLUX
-C       |
 C       |-- GMREDI_CALC_TENSOR
 C       |-- GMREDI_CALC_TENSOR_DUMMY
 C       |

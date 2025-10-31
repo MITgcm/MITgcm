@@ -12,7 +12,7 @@ C !INTERFACE:
 C     !DESCRIPTION:
 C     *==========================================================*
 C     | SUBROUTINE SEAICE_OUTPUT
-C     | o Do SEAICE output and TimeAve averaging and output.
+C     | o Do SEAICE output (including Monitor and OBCS output)
 C     *==========================================================*
 
 C     !USES:
@@ -32,7 +32,6 @@ C     === Global variables ===
 #endif
 
 C     !INPUT PARAMETERS:
-C     == Routine arguments ==
 C     myTime :: my time in simulation ( s )
 C     myIter :: my Iteration number
 C     myThid :: my Thread Id number
@@ -45,9 +44,6 @@ C     !FUNCTIONS:
       EXTERNAL DIFFERENT_MULTIPLE
 
 C     !LOCAL VARIABLES:
-C     == Local variables in common block :
-
-C     == Local variables ==
       CHARACTER*(10) suff
 #ifdef ALLOW_SITRACER
       CHARACTER*(13) pref

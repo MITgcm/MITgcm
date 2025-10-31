@@ -12,11 +12,6 @@ C     | o Initialisation routine for arrays that are used to
 C     |   buffer data that interfaces to the coupling layer.
 C     | - Oceanic version -
 C     *==========================================================*
-C     | For now this routine sets these arrays to the right
-C     | state for an initial start-up. Eventually it should
-C     | include some way to load this data from non-volatile
-C     | external storage if they are needed during a restart.
-C     *==========================================================*
 C     \ev
 
 C     !USES:
@@ -32,13 +27,12 @@ C     == Global variables ==
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid :: my Thread Id Number
       INTEGER myThid
-CEOP
 
 #ifdef COMPONENT_MODULE
-
 C     !LOCAL VARIABLES:
 C     i,j,bi,bj :: Loop counters
       INTEGER i,j,bi,bj
+CEOP
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)

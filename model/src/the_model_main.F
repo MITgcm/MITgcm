@@ -178,7 +178,6 @@ C    | | |-MONITOR          :: Monitor state (see pkg/monitor)
 C    | | |
 C    | | |-DO_THE_MODEL_IO  :: Controlling routine for IO
 C    | | | |-WRITE_STATE    ::  Write model state variables.
-C    | | | |-TIMEAVE_STATV_WRITE :: Write Time averaged output (see pkg/timeave)
 C    | | | |-FIZHI_WRITE_STATE :: Write Fizhi pkg output (see pkg/fizhi)
 C    | | | |-LAND_OUTPUT       :: Write Land pkg output (see pkg/land)
 C    | | | |-OBCS_OUTPUT       :: Write OBCS pkg output (see pkg/obcs)

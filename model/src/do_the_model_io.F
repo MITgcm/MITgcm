@@ -28,8 +28,6 @@ C     DO_THE_MODEL_IO
 C       |
 C       |-- WRITE_STATE
 C       |
-C       |-- TIMEAVE_STATV_WRITE
-C       |
 C       |-- FIZHI_WRITE_STATE
 C       |
 C       |-- LAND_OUTPUT

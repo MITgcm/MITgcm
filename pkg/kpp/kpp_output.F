@@ -75,6 +75,7 @@ C     !FUNCTIONS:
 #endif
 
 C     !LOCAL VARIABLES:
+C     variable in local common block:
 C     kpp_drctrec  :: next record to dump for KPP files
       INTEGER kpp_drctrec
       COMMON / KPP_RECORDNUM1 / kpp_drctrec
@@ -99,7 +100,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IF ( .TRUE. ) THEN
 #endif
 
-C     Initialize record numbers in KPP_TAVE
+C     Initialize record numbers
       IF ( myIter.EQ.nIter0 ) THEN
         _BEGIN_MASTER( myThid )
         kpp_drctrec = 1

@@ -106,8 +106,6 @@ C       |-- FIZHI_INIT_FIXED
 C       |
 C       |-- GRIDALT_INITIALISE
 C       |
-C       |-- TIMEAVE_INIT_FIXED
-C       |
 C       |-- REGRID_INIT_FIXED
 C       |
 C       |-- LAYERS_INIT_FIXED

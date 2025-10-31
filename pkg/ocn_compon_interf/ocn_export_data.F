@@ -13,8 +13,6 @@ C     | SUBROUTINE OCN_EXPORT_DATA
 C     | o Routine for controlling
 C     |   - export of ocean coupling data to coupler layer
 C     |     but only if using Sequential coupling.
-C     |   - diagnostics of coupling fields (timeave pkg only),
-C     |     whether Synchronous or Sequential coupling.
 C     *==========================================================*
 C     | This version talks to the MIT Coupler. It uses the MIT
 C     | Coupler "checkpoint1" library calls.

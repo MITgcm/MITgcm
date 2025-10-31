@@ -8,7 +8,7 @@ C     !INTERFACE:
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | S/R  THSICE_AVE
-C     | o save values for timeaveraging
+C     | o fill some thsice diagnostics
 C     *==========================================================*
 C     \ev
 
@@ -24,7 +24,6 @@ C     == Global variables ==
 #include "THSICE_VARS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine Arguments ==
 C     frwAtm  :: net fresh-water flux (E-P) to the atmosphere [kg/m2/s]
 C     flxAtm  :: net heat flux from the atmosphere (+=down) [W/m2]
 C     bi,bj   :: tile indices
@@ -40,9 +39,11 @@ c     _RL flxAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 CEOP
 
 #ifdef ALLOW_THSICE
-C     == Local variables ==
+C     !FUNCTIONS:
 c     LOGICAL  DIFFERENT_MULTIPLE
 c     EXTERNAL DIFFERENT_MULTIPLE
+
+C     !LOCAL VARIABLES:
 c     INTEGER wrtIter
 
 c     IF ( DIFFERENT_MULTIPLE(thSIce_diagFreq,
