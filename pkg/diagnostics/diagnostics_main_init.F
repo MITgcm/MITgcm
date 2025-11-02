@@ -705,7 +705,7 @@ C--   surface fluxes:
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'oceFreez'
-      diagTitle = 'implied heating from increasing Temp'
+      diagTitle = 'implied heating from increasing theta'
      &          //' up to freezing point (allowFreezing=T)'
       diagUnits = 'W/m^2           '
       diagCode  = 'SM      U1      '
@@ -743,7 +743,7 @@ C--   surface fluxes:
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'TFLUX   '
-      diagTitle = 'total heat flux (match heat-content variations,'
+      diagTitle = 'total heat flux (matches heat-content variations,'
      &          //' +=down), >0 increases theta'
       diagUnits = 'W/m^2           '
       diagCode  = 'SM      U1      '
@@ -751,7 +751,7 @@ C--   surface fluxes:
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'SFLUX   '
-      diagTitle = 'total salt flux (match salt-content variations,'
+      diagTitle = 'total salt flux (matches salt-content variations,'
      &          //' +=down), >0 increases salt'
       diagUnits = 'g/m^2/s         '
       diagCode  = 'SM      U1      '
