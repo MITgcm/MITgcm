@@ -74,13 +74,15 @@ The data files specifying iceberg dimensions are in meters, all values should be
 
 .. tabularcolumns:: |\Y{.275}|\Y{.28}|\Y{.455}|
 
-.. table:: Run-time parameters and default values; parameters are across namelist groups ``ICEBERG_PARM01``,``ICEBERG_PARM02``
+.. table:: Run-time parameters and default values; parameters are across namelist groups ``ICEBERG_PARM01, ICEBERG_PARM02``
    :name: tab_phys_pkg_iceberg_runtimeparms
    :class: longtable
 
    +----------------------------------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | Parameter                              | Default                                    | Description                                                                                             |
    +========================================+============================================+=========================================================================================================+
+   | ``ICEBERG_PARM01``                     |                                            |                                                                                                         |
+   +----------------------------------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`ICEBERGmaskFile`             | :kbd:`' '`                                 | File containing iceberg mask and flag for orientation                                                   |
    +----------------------------------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`ICEBERGmeltFile`             | :kbd:`' '`                                 | File containing XY mask of where to calculate iceberg melt (1 = melt, 0 no melt)                        |
@@ -125,13 +127,15 @@ The data files specifying iceberg dimensions are in meters, all values should be
    +----------------------------------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`brg_L`                       | 334000.0E+00                               | Latent heat of fusion (J /kg)                                                                           |
    +----------------------------------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
-   | :varlink:`brg_Cd`                      | 2.5E-3                                     | Select form of quadratic drag coefficient (non-dim.)                                                    |
+   | :varlink:`brg_Cd`                      | 2.5E-3                                     | Quadratic skin drag coefficient for melt calculation                                                    |
    +----------------------------------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
-   | :varlink:`brg_DragForm`                | 2.5E-3                                     | Quadratic skin drag coefficient for melt calculation                                                    |
+   | :varlink:`brg_DragForm`                | 2.5E-3                                     | Form drag coefficient across icebergs                                                                   |
    +----------------------------------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`brg_SelectDrag`              | 3                                          | Select how drag is computed from velocity (1:n = 2, 2:n = 2, 3: n = 1 + .75*hFacC, 4: 1 + .75*(hFacC)**3|
    +----------------------------------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`brg_SelectFill`              | 3                                          | Select how frontal area scales with hFacC (1:linear, 2:quad, 3:quartic)                                 |
+   +----------------------------------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
+   | ``ICEBERG_PARM02``                     |                                            |                                                                                                         |
    +----------------------------------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`brg_ptracerMaskFile`         | :kbd:`' '`                                 | File containing mask for ptracer number to be correspond to iceberg freshwater production               |
    +----------------------------------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
@@ -141,17 +145,11 @@ The data files specifying iceberg dimensions are in meters, all values should be
 ICEBERG description
 ~~~~~~~~~~~~~~~~~~~
 
-Ice mélange and icebergs have been shown to impact fjord circulation, heat and freshwater fluxes, and the submarine melting of glacier
- termini. When icebergs are larger than grid cells, small-scale models can resolve large icebergs using :filelink:`pkg/shelfice`, but 
- for coarser grids and smaller icebergs, is it useful to account the effects of icebergs smaller than grid scale. Here, we have built 
- the :filelink:`/pkg/iceberg` package to implement a novel, scalable parameterization to incorporate the impact of iceberg melt and
- drag for icebergs below the grid scale.
+Ice mélange and icebergs have been shown to impact fjord circulation, heat and freshwater fluxes, and the submarine melting of glacier termini. When icebergs are larger than grid cells, small-scale models can resolve large icebergs using :filelink:`pkg/shelfice`, but for coarser grids and smaller icebergs, is it useful to account the effects of icebergs smaller than grid scale. Here, we have built the :filelink:`/pkg/iceberg` package to implement a novel, scalable parameterization to incorporate the impact of iceberg melt and drag for icebergs below the grid scale.
 
 Geometry Files
 ^^^^^^^^^^^^^^
-The geometry of icebergs is computed outside of MITgcm, and so it is important the user correctly prepare the ICEBERGxxFiles appropriately.
-Scipts for the generation of these files can be found within Summers et al. (2025) :cite:`summers:25` in python and 
-Davison et al. (2020) :cite:`davison:20` in MATLAB. 
+The geometry of icebergs is computed outside of MITgcm, and so it is important the user correctly prepare the ICEBERGxxFiles appropriately. Scripts for the generation of these files can be found within Summers et al. (2025) :cite:`summers:25` in python and Davison et al. (2020) :cite:`davison:20` in MATLAB. Both these references also have guidance on how to create iceberg size distributions using a power law distribution, motivated by observations of icebergs in Greenland.
 
 
 Three-equations thermodynamics
@@ -161,26 +159,60 @@ The :filelink:`/pkg/iceberg` package solves for ice meltrates using the Three-eq
 al. (2001) :cite:`jenkins:01` and summarized in detail in :numref:`shelfice_diagnostics`. The thermodynamic component of 
 :filelink:`/pkg/iceberg` is outlined in Davison et al. (2020) :cite:`davison:20`
 
-To acount for the relalitve speed of icebergs drifting in a current, cells with ICEBERGdriftFile = 1 will calculate the melt velocity
+The thermodynamic model loops over every iceberg, in every X,Y grid location where the :varlink:`ICEBERGmaskFile` :math:`\neq 0`, and :varlink:`ICEBERGmeltFile` :math:`= 1`. For each iceberg, meltrates are calculated at each depth level based on ambient ocean conditions using the 3 equation melt parameterization. This meltrate is then multiplied by the surface area of that iceberg at that depth level (including sides and bottom melt of the iceberg) to get total freshwater flux per iceberg. This total freshwater flux is then summed over all icebergs within the X,Y grid location for each depth level. This value of total freshwater production is then divided by iceberg surface area to get the average iceberg meltrate. The total freshwater production is divided by latent heat to solve for heat flux. 
+
+To account for the relative speed of icebergs drifting in a current, cells with :varlink:`ICEBERGdriftFile` :math:`= 0` will calculate the melt velocity
 used in the melt parameterization relative to the drifting velocity of each iceberg, determined as the average ocean velocity across 
-the depth of the iceberg. Though this effect accounts for iceberg drift on iceberg melt rates, the physical dimensions and locations of 
-the icebergs do not change. The icebergs themselves do not experience melt or drifting. 
+the depth of the iceberg. 
+
+.. math::
+  u_{\rm drift} = \frac{\sum_{i \leq k} (u_{i} d_{i})}{\sum_{i \leq k} (d_{i})}
+  :label: driftVelocity
+
+where :math:`i` sums over depth levels from the surface to :math:`k`, the depth level of the iceberg. Though this effect accounts for iceberg drift on iceberg melt rates, the physical dimensions and locations of the icebergs do not change. The icebergs themselves do not experience melt or drifting. In practice, icebergs typically drift relatively close to their ocean currents, and so with this option enabled meltrates often falls into the regime where melt velocities are set by the ambient melt parameterization with melt velocity = :varlink:`brg_uMin`. 
 
 Sub-grid parameterization of drag
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-The mechanical component of :filelink:`/pkg/iceberg` is outlined in Summers et al. (2025) :cite:`summers:25`
+The drag component of :filelink:`/pkg/iceberg` is outlined in Summers et al. (2025) :cite:`summers:25`
 
-To attempt to realistically capture the body drag effect of icebergs we use ocean velocity and ice volume fraction to compute a net 
-blocking and drag effect that impacts the ocean momentum. Icebergs themselves do not change size or location via influence from 
-ocean currents. This drag calculation assumes icebergs are stationary compared to the model reference frame (U,V = 0). This drag
-effect will only be calculated for regions where the ICEBERGbarrierFile = 1. The intended use case of this feature is for icebergs 
-within a rigid ice melange, or grounded icebergs. 
+To attempt to realistically capture the body drag effect of icebergs we use ocean velocity and ice volume fraction to compute a net blocking and drag effect that impacts the ocean momentum. This only done in cells where the mask defined in :varlink:`ICEBERGbarrierFile` = 1. This drag parameterization relies on ice volume fraction, defined as
+
+.. math::
+  \varphi = \frac{1}{\Delta x \Delta y \Delta z} \sum_{i} W_{i} \times L_{i} \times H_{i}
+  :label: iceVolumeFraction
+
+where the sum is over all icebergs :math:`i` within a grid cell, with widths :math:`W_{i}` and lengths :math:`L_{i}`, and :math:`H_{i}` is depth the iceberg extends into the cell centered at depth :math:`z`. This is loaded as :math:`1 - \rm openFrac` from :varlink:`ICEBERGopenFracFile`. Ice volume faction :math:`\varphi(z)` is then used to calculate drag using
+
+.. math::
+  \tau_{d} = \rho\, C_{bd} u^{\alpha(\varphi)}\Delta z\,\beta(\varphi) 
+  :label: icebergDrag
+
+Where :math:`\rho` is water density, :math:`C_{bd}` is the body drag parameter (:varlink:`brg_DragForm`), :math:`u` is the ocean speed, and :math:`\Delta z` is the vertical thickness of the cell. :math:`\alpha,\beta` are user adjustable with :varlink:`brg_SelectDrag` and :varlink:`brg_SelectFill`. 
+
+.. math::
+   \alpha(\varphi) = \left\{ 
+   \begin{array}{cc}
+   1 & \text{Linear} \\
+   2 & \text{Quadratic} \\
+   1 + .75*(1 - \varphi) & \text{Hybrid (default).} \\
+  \end{array}
+  \right.
+
+.. math::
+   \beta(\varphi) = \left\{ 
+   \begin{array}{cc}
+   \varphi & \text{Linear} \\
+   -(\varphi-1)^2 + 1 & \text{Quadratic} \\
+   -(\varphi-1)^4 + 1 & \text{Quartic (default).} \\
+   \end{array}
+   \right.
+
+Icebergs themselves do not change size or location via influence from ocean currents. This drag calculation assumes icebergs are stationary compared to the model reference frame (U,V = 0). This drag effect will only be calculated for regions where the ICEBERGbarrierFile = 1. The intended use case of this feature is for icebergs 
+within a rigid ice mélange, or grounded icebergs. 
 
 Remark
 ^^^^^^
-It is mechanically possible to enable iceberg drift for melt rates and enable iceberg drag as if the icebergs are locked in place for
- the same regions of icebergs, but this represents an unphysical set of conditions. This optionality is left open for the user to have
- the most control, but it noted that non-physical combinations of input parameters will not throw explicit errors or warnings. 
+It is technically possible to enable iceberg drift for melt rates and enable iceberg drag as if the icebergs are locked in place for the same regions of icebergs, but this represents a nonphysical set of conditions. This option is left open for the user to have the most control, but we note that non-physical combinations of input parameters will not throw explicit errors or warnings. 
 
 .. _iceberg_subroutines:
 
@@ -230,8 +262,7 @@ but note that :filelink:`/pkg/iceberg` routines are also called when solving the
 ICEBERG diagnostics
 ~~~~~~~~~~~~~~~~~~~
 
-Diagnostics output is available via the diagnostics package (see
-:numref:`outp_pack`). Available output fields are summarized as follows:
+Diagnostics output is available via the diagnostics package (see :numref:`outp_pack`). ``BRGhFacC`` is created to track iceberg volume if it changes over time. Iceberg volume currently does not evolve within MITgcm, but for schemes coupled with MITgcm this may change over time. Thus, this is made available as diagnostic here. Available output fields are summarized as follows:
 
 
 ::

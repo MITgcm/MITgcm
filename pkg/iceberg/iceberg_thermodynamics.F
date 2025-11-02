@@ -537,9 +537,10 @@ C    Convert freshwater (m^3 s^-1) to melt rate (m d^-1)
 C     Convert melt rate (m d^-1) to freshwater (kg m^-2 s^-1)
        fw_cell = -brg_MeltRate3D(I,J,K,bi,bj)/94.22
        
-C     Heat required to melt this much ice (W m^-2 meters of berg, not model)
-       brg_HeatFlux3D(I,J,K,bi,bj) = -fw_cell*333.55E+3
-
+C     Heat required to melt this much ice (W m^-2 meters of berg, not MITgcm domain)
+C     Latent heat shouldn't shouldn't be hard coded
+       brg_HeatFlux3D(I,J,K,bi,bj) = -fw_cell*brg_L
+       
 C     Compute tendencies
       tendT_berg = -brg_HeatFlux3D(I,J,K,bi,bj)*eps5
       tendS_berg = fw_cell*mass2rUnit
