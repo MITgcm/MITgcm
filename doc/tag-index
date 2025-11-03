@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/diagnostics:
+  - add diagnostic "VSHEARSQ" for the square of vertical shear.
+
 checkpoint69h (2025/10/23)
 o pkg/ctrl:
   - account for shift in record number between original xx_gentim2d_file full
