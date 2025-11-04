@@ -53,7 +53,6 @@
  tracForcingOutAB=1,
  pChkptFreq  =1728000.,
 #chkptFreq   =311040000.,
- taveFreq    =1244160000.,
  dumpFreq    =622080000.,
  monitorFreq =31104000.,
  periodicExternalForcing=.TRUE.,

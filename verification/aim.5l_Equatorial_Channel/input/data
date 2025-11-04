@@ -46,7 +46,6 @@
  tracForcingOutAB=1,
  chkptFreq=0.,
  dumpFreq=2592000.,
- taveFreq=2592000.,
 #monitorFreq=86400.,
  monitorFreq=1.,
  &
