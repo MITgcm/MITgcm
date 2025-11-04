@@ -49,6 +49,19 @@ c     == local variables ==
 
 c     == end of interface ==
 
+      WRITE(msgBuf,'(A)')
+     &  '// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)') '// Start of S/R COST_FINAL'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)')
+     &  '// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
+
+
 #ifdef ALLOW_SEAICE
       IF (useSEAICE) CALL SEAICE_COST_FINAL( myThid )
 #endif
@@ -206,6 +219,18 @@ cph-- quickly for testing
       WRITE(msgBuf,'(A,D22.15)') ' global fc = ', fc
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
+
+      WRITE(msgBuf,'(A)')
+     &  '// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)') '// End of S/R COST_FINAL'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)')
+     &  '// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
 
 c--   to avoid re-write of output in reverse checkpointing loops,
 c--   switch off output flag :

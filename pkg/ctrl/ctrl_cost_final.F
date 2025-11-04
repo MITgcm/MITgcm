@@ -171,7 +171,7 @@ C     Initialise cost function variables zo zero
       ENDDO
 # endif
 
-C     write contributions to ecco costfunction file
+C     write contributions to costfunction file
 
 C--   Each process has calculated the global part for itself.
       IF ( MASTER_CPU_THREAD(myThid) ) THEN
