@@ -31,11 +31,11 @@ C     nchklev_1 :: length of inner loop (=size of storage in memory)
 C     nchklev_2 :: length of second loop (stored on disk)
 C     nchklev_3 :: length of outer loop of 3-level checkpointing
       INTEGER    nchklev_1
-      PARAMETER( nchklev_1 =   6 )
+      PARAMETER( nchklev_1 =   3 )
       INTEGER    nchklev_2
       PARAMETER( nchklev_2 = 120 )
       INTEGER    nchklev_3
-      PARAMETER( nchklev_3 =   3 )
+      PARAMETER( nchklev_3 = 150 )
 #ifdef AUTODIFF_4_LEVEL_CHECKPOINT
 C     nchklev_4 :: length of outer loop of 4-level checkpointing
       INTEGER    nchklev_4
