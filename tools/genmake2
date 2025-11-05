@@ -22,12 +22,10 @@ Usage: "$0" [OPTIONS]
     -taparg ARG | --taparg ARG | -taparg=ARGS | --taparg=ARGS
           Here, "ARG" or "ARGS" specifies a list of cmd line arguments
           passed to the tapenade tool
-
     -tapgcc ARG | --tapgcc ARG | -tapgcc=ARGS | --tapgcc=ARGS
           Here, "ARG" or "ARGS" specifies a list of compile flags
           passed to the C compiler for select Tapenade ADFirstAidKit files
-
-    -tapthread | --tapthread 
+    -tapthread | --tapthread
           Uses the -lpthread linking option when compiling the executable
           Intended to be used with tapenade
 
@@ -1573,18 +1571,18 @@ for ac_option in "$@" ; do
 	-tap | --tap)
 	    TAPENADE="true" ; ALWAYS_USE_F90=1 ;;
 
-        -taparg | --taparg)
-            ac_prev=TAPARG ;;
-        -taparg=* | --taparg)
-            TAPARG=$ac_optarg ;;
+	-taparg | --taparg)
+	    ac_prev=TAPARG ;;
+	-taparg=* | --taparg)
+	    TAPARG=$ac_optarg ;;
 
 	-tapthread | --tapthread)
 	    TAPFFLAG=-lpthread ;;
 
 	-tapgcc | --tapgcc)
 	    ac_prev=TAPGCC ;;
-        -tapgcc=* | --tapgcc)
-            TAPGCC=$ac_optarg ;;
+	-tapgcc=* | --tapgcc)
+	    TAPGCC=$ac_optarg ;;
 
 	-oad | --oad)
 	    OPENAD="true" ; ALWAYS_USE_F90=1 ;;
@@ -2908,7 +2906,7 @@ rm -f $TMP.links/foo
 
 if test "x$TAPENADE" != x ; then
     XTRATAPFILE=
-    if [[ "$PACKAGES" =~ streamice ]]; then 
+    if [[ "$PACKAGES" =~ streamice ]]; then
      XTRATAPFILE=" streamice_cg_solve.f"
     fi
     TAP_DONT_TRANSFORM="/dev/null"
