@@ -185,7 +185,8 @@ C--   Each process has calculated the global part for itself.
         WRITE(cfname,'(A,I4.4)') 'costfunction_ctrl',optimcycle
         OPEN(unit=ifc,file=cfname)
        ENDIF
-       WRITE(msgBuf,'(A,A)') 'Writing cost function info to ', cfname
+       WRITE(msgBuf,'(A,A)')
+     &      'Writing generic ctrl cost function info to ', cfname
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
 
