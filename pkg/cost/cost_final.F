@@ -78,12 +78,15 @@ c     == end of interface ==
       IF (useThSIce) CALL THSICE_COST_FINAL (myThid)
 #endif
 
-#ifdef ALLOW_CTRL
-      IF (useCTRL) CALL CTRL_COST_FINAL( myThid )
-#endif
-
+C     It is important to do the ecco part first, because it creates a
+C     file costfunctionXXXX that will be reopened again by the ctrl and
+C     obcs contributions if available.
 #ifdef ALLOW_ECCO
       IF (useECCO) CALL ECCO_COST_FINAL (myThid)
+#endif
+
+#ifdef ALLOW_CTRL
+      IF (useCTRL) CALL CTRL_COST_FINAL( myThid )
 #endif
 
 #ifdef ALLOW_COST_STATE_FINAL

@@ -58,6 +58,7 @@ C     !LOCAL VARIABLES:
       INTEGER ifc
       CHARACTER*22 cfname
       INTEGER IL
+      LOGICAL cfexist
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
@@ -174,13 +175,19 @@ C     Initialise cost function variables zo zero
 C     write contributions to costfunction file
 
 C--   Each process has calculated the global part for itself.
-      IF ( MASTER_CPU_THREAD(myThid) ) THEN
-       WRITE(cfname,'(A,i4.4)') 'costfunction_ctrl',optimcycle
-       WRITE(msgBuf,'(A,A)')
-     &           'Writing cost function info to ', cfname
+      IF ( MASTER_CPU_THREAD(myThid) .AND. ctrlWriteCostFunction ) THEN
+       cfexist = .FALSE.
+       WRITE(cfname,'(A,I4.4)') 'costfunction',optimcycle
+       INQUIRE(FILE=cfname(1:16), EXIST=cfexist )
+       IF ( cfexist ) THEN
+        OPEN(unit=ifc,file=cfname(1:16),ACCESS='append',STATUS='old')
+       ELSE
+        WRITE(cfname,'(A,I4.4)') 'costfunction_ctrl',optimcycle
+        OPEN(unit=ifc,file=cfname)
+       ENDIF
+       WRITE(msgBuf,'(A,A)') 'Writing cost function info to ', cfname
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
-       OPEN(unit=ifc,file=cfname)
 
 # ifdef ALLOW_GENTIM2D_CONTROL
        DO num_var=1,maxCtrlTim2D
@@ -224,6 +231,9 @@ C--   Each process has calculated the global part for itself.
        ENDDO
 # endif
        CLOSE(ifc)
+C     Do it only once per run, otherwise grdchk will overwrite or append
+C     files in an uncontrolled way.
+       ctrlWriteCostFunction = .FALSE.
       ENDIF
 
 #endif /* ALLOW_COST */

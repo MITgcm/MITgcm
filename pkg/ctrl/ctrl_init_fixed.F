@@ -77,6 +77,9 @@ CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+C--   The first time around we want to write the cost function to a file
+      ctrlWriteCostFunction = .TRUE.
+
 C--     Set default values.
       DO ivar = 1,maxcvars
        ncvarindex(ivar) = -1
