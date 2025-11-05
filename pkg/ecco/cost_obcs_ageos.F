@@ -3,6 +3,8 @@
 # include "CTRL_OPTIONS.h"
 #endif
 
+C     This routine is not called from anywhere and likely not maintained
+
       subroutine cost_obcs_ageos( myiter, mytime, mythid )
 
 c     ==================================================================

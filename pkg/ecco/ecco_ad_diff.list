@@ -19,11 +19,6 @@ cost_gencal.f
 cost_genread.f
 cost_sla_read.f
 cost_sla_read_yd.f
-cost_obcs.f
-cost_obcsn.f
-cost_obcss.f
-cost_obcsw.f
-cost_obcse.f
 cost_obcs_ageos.f
 cost_obcsvol.f
 ecco_cost_driver.f

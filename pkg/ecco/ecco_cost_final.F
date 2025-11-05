@@ -30,9 +30,6 @@ c     == global variables ==
 # include "ECCO_SIZE.h"
 # include "ECCO.h"
 #endif
-#if (defined ALLOW_CTRL && defined ALLOW_OBCS)
-# include "CTRL_OBCS.h"
-#endif
 #ifdef ALLOW_PROFILES
 # include "PROFILES_SIZE.h"
 # include "profiles.h"
@@ -70,10 +67,6 @@ c the adjoint, pkg/autodiff most likely require cost though.
 
       _RL f_gencost(NGENCOST)
       _RL no_gencost(NGENCOST)
-#if (defined ALLOW_CTRL && defined ALLOW_OBCS)
-      _RL f_obcsn, f_obcss, f_obcsw, f_obcse, f_ageos
-      _RL no_obcsn, no_obcss, no_obcsw, no_obcse, no_ageos
-#endif
 #ifdef ALLOW_PROFILES
       _RL f_profiles(NFILESPROFMAX,NVARMAX)
       _RL f_profiles_mean(NVARMAX)
@@ -95,18 +88,6 @@ c     == end of interface ==
 
       locfc = 0. _d 0
 
-#if (defined ALLOW_CTRL && defined ALLOW_OBCS)
-      f_obcsn  = 0. _d 0
-      f_obcss  = 0. _d 0
-      f_obcsw  = 0. _d 0
-      f_obcse  = 0. _d 0
-      f_ageos  = 0. _d 0
-      no_obcsn = 0. _d 0
-      no_obcss = 0. _d 0
-      no_obcsw = 0. _d 0
-      no_obcse = 0. _d 0
-      no_ageos = 0. _d 0
-#endif
 #ifdef ALLOW_PROFILES
       DO num_var=1,NVARMAX
        DO num_file=1,NFILESPROFMAX
@@ -128,28 +109,6 @@ c--   Sum up all contributions.
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
-#if (defined ALLOW_CTRL && defined ALLOW_OBCS)
-        tile_fc(bi,bj) = tile_fc(bi,bj)
-     &         + mult_obcsn   * objf_obcsn(bi,bj)
-     &         + mult_obcss   * objf_obcss(bi,bj)
-     &         + mult_obcsw   * objf_obcsw(bi,bj)
-     &         + mult_obcse   * objf_obcse(bi,bj)
-# ifdef OBCS_AGEOS_COST_CONTRIBUTION
-     &         + mult_ageos   * objf_ageos(bi,bj)
-# endif
-        f_obcsn  = f_obcsn + objf_obcsn(bi,bj)
-        f_obcss  = f_obcss + objf_obcss(bi,bj)
-        f_obcsw  = f_obcsw + objf_obcsw(bi,bj)
-        f_obcse  = f_obcse + objf_obcse(bi,bj)
-        no_obcsn = no_obcsn + num_obcsn(bi,bj)
-        no_obcss = no_obcss + num_obcss(bi,bj)
-        no_obcse = no_obcse + num_obcse(bi,bj)
-        no_obcsw = no_obcsw + num_obcsw(bi,bj)
-# ifdef OBCS_AGEOS_COST_CONTRIBUTION
-        f_ageos  = f_ageos + objf_ageos(bi,bj)
-        no_ageos = no_ageos + num_ageos(bi,bj)
-# endif
-#endif
 #ifdef ALLOW_PROFILES
         DO num_var=1,NVARMAX
          DO num_file=1,NFILESPROFMAX
@@ -197,20 +156,6 @@ c--   Do global summation.
 #endif
 
 c--   Do global summation for each part of the cost function
-#if (defined ALLOW_CTRL && defined ALLOW_OBCS)
-      _GLOBAL_SUM_RL( f_obcsn , myThid )
-      _GLOBAL_SUM_RL( f_obcss , myThid )
-      _GLOBAL_SUM_RL( f_obcsw , myThid )
-      _GLOBAL_SUM_RL( f_obcse , myThid )
-      _GLOBAL_SUM_RL( no_obcsn , myThid )
-      _GLOBAL_SUM_RL( no_obcss , myThid )
-      _GLOBAL_SUM_RL( no_obcsw , myThid )
-      _GLOBAL_SUM_RL( no_obcse , myThid )
-# ifdef OBCS_AGEOS_COST_CONTRIBUTION
-      _GLOBAL_SUM_RL( f_ageos , myThid )
-      _GLOBAL_SUM_RL( no_ageos , myThid )
-# endif
-#endif
 #ifdef ALLOW_PROFILES
       DO num_var=1,NVARMAX
        DO num_file=1,NFILESPROFMAX
@@ -229,20 +174,6 @@ c--   Do global summation for each part of the cost function
 #endif
 
 C     start printing to STDOUT
-#if (defined ALLOW_CTRL && defined ALLOW_OBCS)
-      WRITE(standardMessageUnit,'(A,D22.15)')
-     &     ' --> f_obcsn   =',f_obcsn
-      WRITE(standardMessageUnit,'(A,D22.15)')
-     &     ' --> f_obcss   =',f_obcss
-      WRITE(standardMessageUnit,'(A,D22.15)')
-     &     ' --> f_obcsw   =',f_obcsw
-      WRITE(standardMessageUnit,'(A,D22.15)')
-     &     ' --> f_obcse   =',f_obcse
-# ifdef OBCS_AGEOS_COST_CONTRIBUTION
-      WRITE(standardMessageUnit,'(A,D22.15)')
-     &     ' --> f_ageos   =',f_ageos
-# endif
-#endif
 #ifdef ALLOW_PROFILES
       IF (usePROFILES) THEN
        DO num_file=1,NFILESPROFMAX
@@ -270,9 +201,10 @@ C     start printing to STDOUT
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       DO num_var=1,NGENCOST
        IF (no_gencost(num_var).GT.0) THEN
-        WRITE(msgBuf,'(A,D22.15,i2.0)')
-     &     ' --> f_gencost =',f_gencost(num_var),
-     &      num_var
+        IL  = ILNBLNK( gencost_name(num_var) )
+        WRITE(msgBuf,'(A,D22.15,i2.0,3A)')
+     &     ' --> f_gencost  =',f_gencost(num_var),
+     &     num_var, ' (', gencost_name(num_var)(1:IL), ')'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
        ENDIF
@@ -292,7 +224,7 @@ C     only master thread of master CPU open and write to file
       IF ( MASTER_CPU_THREAD(myThid) ) THEN
 
        WRITE(msgBuf,'(A,D22.15)')
-     &           ' --> fc               =', locfc
+     &           ' --> fc         =', locfc
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
 
@@ -310,15 +242,6 @@ C     only master thread of master CPU open and write to file
         WRITE(ifc,'(A,2D22.15)')
 #endif
      &       'fc =', locfc, 0.
-#if (defined ALLOW_CTRL && defined ALLOW_OBCS)
-        WRITE(ifc,'(A,2D22.15)') 'f_obcsn =', f_obcsn, no_obcsn
-        WRITE(ifc,'(A,2D22.15)') 'f_obcss =', f_obcss, no_obcss
-        WRITE(ifc,'(A,2D22.15)') 'f_obcsw =', f_obcsw, no_obcsw
-        WRITE(ifc,'(A,2D22.15)') 'f_obcse =', f_obcse, no_obcse
-# ifdef OBCS_AGEOS_COST_CONTRIBUTION
-        WRITE(ifc,'(A,2D22.15)') 'f_ageos =', f_ageos, no_ageos
-# endif
-#endif
 #ifdef ALLOW_PROFILES
         IF (usePROFILES) THEN
          DO num_file=1,NFILESPROFMAX

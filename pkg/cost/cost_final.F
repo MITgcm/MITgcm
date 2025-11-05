@@ -89,6 +89,10 @@ C     obcs contributions if available.
       IF (useCTRL) CALL CTRL_COST_FINAL( myThid )
 #endif
 
+#ifdef ALLOW_OBCS
+      IF (useOBCS) CALL OBCS_COST_FINAL( myThid )
+#endif
+
 #ifdef ALLOW_COST_STATE_FINAL
       CALL COST_STATE_FINAL (myThid)
 cgf : effectively using this in adjoint requires the
