@@ -9,9 +9,7 @@ C     performance because expensive parts of the model are not
 C     recomputed (e.g. seaice).
 C
 CADJ STORE EmPmR          = comlev1, key = ikey_dynamics, kind = isbyte
-#ifdef EXACT_CONSERV
 CADJ STORE PmEpR          = comlev1, key = ikey_dynamics, kind = isbyte
-#endif
 CADJ STORE qsw            = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE surfaceForcingU= comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE surfaceForcingV= comlev1, key = ikey_dynamics, kind = isbyte

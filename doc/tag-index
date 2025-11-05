@@ -1,6 +1,27 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/diagnostics:
+  - add diagnostic "VSHEARSQ" for the square of vertical shear.
+
+checkpoint69h (2025/10/23)
+o pkg/ctrl:
+  - account for shift in record number between original xx_gentim2d_file full
+    time-series and "effective" sub-set version ; this was previously missing.
+    Also enable some debug print from ctrl_get_gen_rec.F (if debugLevel >= 3).
+o pkg/seaice:
+  - fix compilation of seaice_growth_adx.F (left from PR #750).
+o model, pkgs:
+  - remove code within "#ifndef EXACT_CONSERV / #endif" bracket and remove
+    completely CPP option EXACT_CONSERV.
+o pkg/bling:
+  - allows to specify a 2D field of light attenuation coefficient (k0_2d) from
+    file "bling_k0_2dFile".
+
+checkpoint69g (2025/09/12)
+o verification/short_surf_wave:
+  - fix Non-Hydrostatic pressure initialization issue with implicSurfPress=1/2
+    by re-starting (nIter0=1) from pickup generated with implicSurfPress=1.
 o tools/mpack-1.6:
   - fix compilation for recent version of gcc, to pass the compiler test in
     "configure" and md5 compilation with v15 (comply with C23 standard).
