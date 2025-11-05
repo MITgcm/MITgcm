@@ -1,0 +1,21 @@
+# ========================== 
+# | DIAGNOSTICS parameters | 
+# ========================== 
+
+# Diagnostics package choices
+ &DIAGNOSTICS_LIST
+ diag_mnc=.FALSE.,
+ fields(1:5,1)='THETA','SALT','UVEL','WVEL','VVEL',
+ fileName(1)='dynDiag',
+ frequency(1)=3600,
+ timePhase(1)=0.00000000e+00,
+ fields(1:6,2)='BRGfwFlx','BRGhtFlx','BRGmltRt','BRG_TauX','BRG_TauY','BRGhFacC',
+ fileName(2)='BRGFlx',
+ frequency(2)=3600,
+ timePhase(2)=0.00000000e+00,
+ &
+
+# Statistics package choices
+ &DIAG_STATIS_PARMS
+ &
+
