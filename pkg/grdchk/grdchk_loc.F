@@ -281,7 +281,7 @@ cph)
                IF ( icomptest.EQ.icomp-1 ) THEN
                  icomptest = icomptest
                ELSE
-CESCO start icomptest at the point before the first i/j/k 1/1/new layer
+C Start icomptest on next vertical layer 
                  icomptest = 0
                  DO kk = 1, k
                    icomptest = icomptest + nwettile(bi,bj,kk,iobcs)
