@@ -2906,9 +2906,9 @@ rm -f $TMP.links/foo
 
 if test "x$TAPENADE" != x ; then
     XTRATAPFILE=
-    if [[ "$PACKAGES" =~ streamice ]]; then
-     XTRATAPFILE=" streamice_cg_solve.f"
-    fi
+    #if [[ "$PACKAGES" =~ streamice ]]; then
+    # XTRATAPFILE=" streamice_cg_solve.f"
+    #fi
     TAP_DONT_TRANSFORM="/dev/null"
     TAPTOOLS="$TOOLSDIR/TAP_support"
     TAPTOOLSMK='$(TOOLSDIR)/TAP_support'
