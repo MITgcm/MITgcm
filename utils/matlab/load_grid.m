@@ -27,11 +27,13 @@ else
  ncdf= varargin{2};
  ktyp=floor(ncdf/10); ncdf=rem(ncdf,10);
 end
+% kinp: = 0 : binary file ; = 1 : old MNC file ; = 2 : new MNC file
 
 if ncdf > 1, TimeT0=clock; end
 
 if rem(ncdf,2) == 0,
 %- load MDSIO grid files :
+ kinp=0;
 if ktyp < 2,
  xC=rdmds(fullfile(rDir,'XC'));
  yC=rdmds(fullfile(rDir,'YC'));
@@ -86,7 +88,8 @@ else
  if ncdf > 1, TimeT1=clock; end
 
 %--
- if isfield(S,'XC'), % old MNC grid names <c69h
+ if isfield(S,'XC'),
+  kinp=1; % old MNC grid names until c69h
   xC=S.XC;
   yC=S.YC;
   xG=S.XG(1:end-1,1:end-1);
@@ -106,7 +109,8 @@ else
   hFacC=S.HFacC;
   hFacW=S.HFacW(1:end-1,:,:);
   hFacS=S.HFacS(:,1:end-1,:);
- else % current MNC grid names >=c69h
+ else
+  kinp=2; % current MNC grid names >=c69h
   xC=S.xC;
   yC=S.yC;
   xG=S.xG(1:end-1,1:end-1);
@@ -141,7 +145,7 @@ else
 
 end
 
-if ncdf > 1, fprintf(' (took %6.4f s)\n',etime(TimeT1,TimeT0)); end
+if ncdf > 1, fprintf(' (took %6.4f s)',etime(TimeT1,TimeT0)); end
 
 if length(dims) == 1, dims(2)=1; end
 if length(dims) == 2, dims(3)=1; end
@@ -152,10 +156,12 @@ if rem(ncdf,2) == 1 | ktyp ~= 2,
 %- yAxis
     ny=dims(2);
     yAxC=yC(1,:)';
-    if rem(ncdf,2) == 0,
+    if kinp == 0,
       yAxV=[yG(1,:) 2*yC(1,end)-yG(1,end)]';
-    else
+    elseif kinp == 1,
       yAxV=S.YG(1,:)';
+    else
+      yAxV=S.yG(1,:)';
     end
   else
     ny=varargin{3};
@@ -167,10 +173,12 @@ if rem(ncdf,2) == 1 | ktyp ~= 2,
   %- xAxis
     nx=dims(1);
     xAxC=xC(:,1);
-    if rem(ncdf,2) == 0,
+    if kinp == 0,
       xAxU=[xG(:,1)' 2*xC(end,1)-xG(end,1)]';
+    elseif kinp == 1,
+      xAxU=S.XG(:,1);
     else
-        xAxU=S.XG(:,1);
+      xAxU=S.xG(:,1);
     end
   else
     nx=varargin{4};
