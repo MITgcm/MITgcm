@@ -9,7 +9,7 @@
  kGloPos          = 1,
  iGloTile         = 2,
  jgloTile         = 2,
- nstep            = 300,
- nend             = 901,
+ nstep            = 450,
+ nend             = 1600,
  grdchkvarname    = "xx_theta",
  &
