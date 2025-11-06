@@ -135,7 +135,6 @@ C--   Default values GM/Redi
 
 C--   Default values GM/Redi I/O control
 c     GM_dumpFreq         = -1.
-c     GM_taveFreq         = -1.
 
 C--   Default values BVP
       GM_UseBVP           = .FALSE.

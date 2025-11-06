@@ -17,8 +17,9 @@ C     ==================================================================
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: ACTIVE_READ_PROFILE_RL
-C     !INTERFACE:
+C !ROUTINE: ACTIVE_READ_PROFILE_RL
+
+C !INTERFACE:
       SUBROUTINE ACTIVE_READ_PROFILE_RL(
      I                                fid,
      I                                active_num_file,
@@ -36,14 +37,13 @@ C     !INTERFACE:
      &                              )
 
 C     !DESCRIPTION:
-C
 C     Read an active 1D record from file. In forward-mode
 C     (theSimulationMode = FORWARD_SIMULATION) also read a mask from
 C     file.
 
 C     !USES:
       IMPLICIT NONE
-
+C     == Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
@@ -54,6 +54,7 @@ C     !USES:
 #endif
 
 C     !INPUT PARAMETERS:
+C     myThid :: my thread ID number
       INTEGER fid
       INTEGER active_num_file, nactive_var, active_varnum
       LOGICAL lAdInit
@@ -63,24 +64,33 @@ C     !INPUT PARAMETERS:
       INTEGER bi, bj, myThid
 C     !OUTPUT PARAMETERS:
       _RL     active_var(nactive_var)
+CEOP
 
 #ifdef ALLOW_PROFILES
 C     !LOCAL VARIABLES:
-      INTEGER err, varId , vec_start(2), vec_count(2)
+      INTEGER err, varId, maskId, vec_start(2), vec_count(2)
       INTEGER i, ivar, jrec
       _RL     active_data_t(nactive_var)
       REAL*8  vec_tmp(nactive_var+1)
-CEOP
 
       IF (profilesDoNcOutput) THEN
-       vec_start(1)=1
-       vec_start(2)=irec
-       vec_count(1)=nactive_var
-       vec_count(2)=1
+        vec_start(1)=1
+        vec_start(2)=irec
+        vec_count(1)=nactive_var
+        vec_count(2)=1
+
+C ESCO: Put a single NF_INQ_VARID for prof_names
+        err = NF_INQ_VARID( fid,
+     &        prof_names(active_num_file,active_varnum), varId )
+        CALL PROFILES_NF_ERROR(
+     &       'ACTIVE_READ: NF_INQ_VARID prof_names',
+     &       err,bi,bj,myThid )
+
       ELSE
-       jrec = 2 * ( (irec-1)*prof_num_var_tot(active_num_file,bi,bj)
-     &      + prof_num_var_cur(active_num_file,active_varnum,bi,bj)
-     &      -1 )
+        jrec = 2 * ( (irec-1)*prof_num_var_tot(active_num_file,bi,bj)
+     &       + prof_num_var_cur(active_num_file,active_varnum,bi,bj)
+     &       -1 )
+
       ENDIF
 
 C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
@@ -89,40 +99,48 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
       IF (theSimulationMode .EQ. FORWARD_SIMULATION) THEN
 
-       _BEGIN_MASTER( myThid )
+        _BEGIN_MASTER( myThid )
 
-       IF (profilesDoNcOutput) THEN
+        IF (profilesDoNcOutput) THEN
+          err = NF_GET_VARA_DOUBLE( fid, varId, vec_start, vec_count,
+     &          active_var )
+          CALL PROFILES_NF_ERROR(
+     &         'ACTIVE_READ: NF_GET_VARA_DOUBLE active_var',
+     &         err,bi,bj,myThid )
 
-        err = NF_INQ_VARID(fid,
-     &       prof_names(active_num_file,active_varnum), varId )
-        err = NF_GET_VARA_DOUBLE(fid, varId , vec_start, vec_count,
-     &       active_var)
+          err = NF_INQ_VARID( fid,
+     &          prof_namesmask(active_num_file,active_varnum),
+     &          maskId )
+          CALL PROFILES_NF_ERROR(
+     &         'ACTIVE_READ: NF_INQ_VARID prof_namesmask',
+     &         err,bi,bj,myThid )
+          err = NF_GET_VARA_DOUBLE( fid, maskId, vec_start, vec_count,
+     &          prof_mask1D_cur(1,bi,bj) )
+          CALL PROFILES_NF_ERROR(
+     &         'ACTIVE_READ: NF_GET_VARA_DOUBLE prof_mask1D_cur',
+     &         err,bi,bj,myThid )
 
-        err = NF_INQ_VARID(fid,prof_namesmask(active_num_file,
-     &       active_varnum), varId)
-        err = NF_GET_VARA_DOUBLE(fid, varId , vec_start, vec_count,
-     &       prof_mask1D_cur(1,bi,bj))
+        ELSE
 
-       ELSE
+          READ(fid,rec=jrec+1) vec_tmp
+# ifdef _BYTESWAPIO
+          CALL MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
+# endif
+          DO ivar=1,nactive_var
+            active_var(ivar)=vec_tmp(ivar)
+          ENDDO
 
-        READ(fid,rec=jrec+1) vec_tmp
-#ifdef _BYTESWAPIO
-        call MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
-#endif
-        DO ivar=1,nactive_var
-         active_var(ivar)=vec_tmp(ivar)
-        ENDDO
-        READ(fid,rec=jrec+2) vec_tmp
-#ifdef _BYTESWAPIO
-        CALL MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
-#endif
-        DO ivar=1,nactive_var
-         prof_mask1D_cur(ivar,bi,bj)=vec_tmp(ivar)
-        ENDDO
+          READ(fid,rec=jrec+2) vec_tmp
+# ifdef _BYTESWAPIO
+          CALL MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
+# endif
+          DO ivar=1,nactive_var
+            prof_mask1D_cur(ivar,bi,bj)=vec_tmp(ivar)
+          ENDDO
 
-       ENDIF
+        ENDIF
 
-       _END_MASTER( myThid )
+        _END_MASTER( myThid )
 
       ENDIF
 
@@ -132,63 +150,64 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
       IF (theSimulationMode .EQ. REVERSE_SIMULATION) THEN
 
-       _BEGIN_MASTER( myThid )
+        _BEGIN_MASTER( myThid )
 
-       IF (profilesDoNcOutput) THEN
-
-        err = NF_INQ_VARID(fid,
-     &       prof_names(active_num_file,active_varnum), varId )
-        err = NF_GET_VARA_DOUBLE(fid, varId , vec_start, vec_count,
-     &       active_data_t)
-
-C     Add active_var from appropriate location to data.
-        DO i = 1,nactive_var
-         active_data_t(i) = active_data_t(i) + active_var(i)
-        ENDDO
-C     Store the result on disk.
-
-        err = NF_INQ_VARID(fid,
-     &       prof_names(active_num_file,active_varnum), varId )
-        err = NF_PUT_VARA_DOUBLE(fid, varId , vec_start, vec_count,
-     &       active_data_t)
-
-C     Set active_var to zero.
-        DO i = 1,nactive_var
-         active_var(i) = 0. _d 0
-        ENDDO
-
-       ELSE
-
-        READ(fid,rec=jrec+1) vec_tmp
-#ifdef _BYTESWAPIO
-        call MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
-#endif
-        DO ivar=1,nactive_var
-         active_data_t(ivar)=vec_tmp(ivar)
-        ENDDO
+        IF (profilesDoNcOutput) THEN
+          err = NF_GET_VARA_DOUBLE( fid, varId, vec_start, vec_count,
+     &          active_data_t )
+          CALL PROFILES_NF_ERROR(
+     &         'ACTIVE_READ: NF_GET_VARA_DOUBLE AD active_data_t',
+     &         err,bi,bj,myThid )
 
 C     Add active_var from appropriate location to data.
-        DO i = 1,nactive_var
-         active_data_t(i) = active_data_t(i) + active_var(i)
-        ENDDO
-
+          DO i = 1,nactive_var
+            active_data_t(i) = active_data_t(i) + active_var(i)
+          ENDDO
 C     Store the result on disk.
-        DO ivar=1,nactive_var
-         vec_tmp(ivar)=active_data_t(ivar)
-        ENDDO
-#ifdef _BYTESWAPIO
-        CALL MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
-#endif
-        WRITE(fid,rec=jrec+1) vec_tmp
+
+          err = NF_PUT_VARA_DOUBLE(fid, varId, vec_start, vec_count,
+     &          active_data_t )
+          CALL PROFILES_NF_ERROR(
+     &         'ACTIVE_READ: NF_PUT_VARA_DOUBLE AD active_data_t',
+     &         err,bi,bj,myThid )
 
 C     Set active_var to zero.
-        DO i = 1,nactive_var
-         active_var(i) = 0. _d 0
-        ENDDO
+          DO i = 1,nactive_var
+            active_var(i) = 0. _d 0
+          ENDDO
 
-       ENDIF
+        ELSE
 
-       _END_MASTER( myThid )
+          READ(fid,rec=jrec+1) vec_tmp
+# ifdef _BYTESWAPIO
+          CALL MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
+# endif
+          DO ivar=1,nactive_var
+            active_data_t(ivar)=vec_tmp(ivar)
+          ENDDO
+
+C     Add active_var from appropriate location to data.
+          DO i = 1,nactive_var
+            active_data_t(i) = active_data_t(i) + active_var(i)
+          ENDDO
+
+C     Store the result on disk.
+          DO ivar=1,nactive_var
+            vec_tmp(ivar)=active_data_t(ivar)
+          ENDDO
+#ifdef _BYTESWAPIO
+          CALL MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
+#endif
+          WRITE(fid,rec=jrec+1) vec_tmp
+
+C     Set active_var to zero.
+          DO i = 1,nactive_var
+            active_var(i) = 0. _d 0
+          ENDDO
+
+        ENDIF
+
+        _END_MASTER( myThid )
 
       ENDIF
 
@@ -198,28 +217,28 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
       IF (theSimulationMode .EQ. TANGENT_SIMULATION) THEN
 
-       _BEGIN_MASTER( myThid )
+        _BEGIN_MASTER( myThid )
 
-       IF (profilesDoNcOutput) THEN
+        IF (profilesDoNcOutput) THEN
+          err = NF_GET_VARA_DOUBLE( fid, varId, vec_start, vec_count,
+     &          active_var )
+          CALL PROFILES_NF_ERROR(
+     &         'ACTIVE_READ: NF_GET_VARA_DOUBLE TL active_var',
+     &         err,bi,bj,myThid )
 
-        err = NF_INQ_VARID(fid,
-     &       prof_names(active_num_file,active_varnum), varId )
-        err = NF_GET_VARA_DOUBLE(fid, varId , vec_start, vec_count,
-     &       active_var)
+        ELSE
 
-       ELSE
+          READ(fid,rec=jrec+1) vec_tmp
+# ifdef _BYTESWAPIO
+          CALL MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
+# endif
+          DO ivar=1,nactive_var
+            active_var(ivar)=vec_tmp(ivar)
+          ENDDO
 
-        READ(fid,rec=jrec+1) vec_tmp
-#ifdef _BYTESWAPIO
-        CALL MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
-#endif
-        DO ivar=1,nactive_var
-         active_var(ivar)=vec_tmp(ivar)
-        ENDDO
+        ENDIF
 
-       ENDIF
-
-       _END_MASTER( myThid )
+        _END_MASTER( myThid )
 
       ENDIF
 
@@ -230,8 +249,9 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: ACTIVE_WRITE_PROFILE_RL
-C     !INTERFACE:
+C !ROUTINE: ACTIVE_WRITE_PROFILE_RL
+
+C !INTERFACE:
       SUBROUTINE ACTIVE_WRITE_PROFILE_RL(
      I                                 fid,
      I                                 active_num_file,
@@ -248,12 +268,12 @@ C     !INTERFACE:
      &                               )
 
 C     !DESCRIPTION:
-C
 C     Write an active 1D record to file. In forward-mode
 C     (theSimulationMode = FORWARD_SIMULATION) also write a mask to file.
 
 C     !USES:
       IMPLICIT NONE
+C     == Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
@@ -264,6 +284,7 @@ C     !USES:
 #endif
 
 C     !INPUT PARAMETERS:
+C     myThid :: my thread ID number
       INTEGER fid
       INTEGER active_num_file, nactive_var, active_varnum
       INTEGER irec, irecglob
@@ -272,24 +293,33 @@ C     !INPUT PARAMETERS:
       INTEGER bi,bj,myThid
       _RL     active_var(nactive_var)
 C     !OUTPUT PARAMETERS:
+CEOP
 
 #ifdef ALLOW_PROFILES
 C     !LOCAL VARIABLES:
-      INTEGER err, varId , vec_start(2), vec_count(2)
+      INTEGER err, varId, maskId, vec_start(2), vec_count(2)
       INTEGER i, ivar, jrec
       _RL     active_data_t(nactive_var)
-      real*8 vec_tmp(nactive_var+1)
-CEOP
+      real*8  vec_tmp(nactive_var+1)
 
       IF (profilesDoNcOutput) THEN
-       vec_start(1)=1
-       vec_start(2)=irec
-       vec_count(1)=nactive_var
-       vec_count(2)=1
+        vec_start(1)=1
+        vec_start(2)=irec
+        vec_count(1)=nactive_var
+        vec_count(2)=1
+
+C ESCO: Put a single NF_INQ_VARID for prof_names
+        err = NF_INQ_VARID( fid,
+     &        prof_names(active_num_file,active_varnum), varId )
+        CALL PROFILES_NF_ERROR(
+     &       'ACTIVE_WRITE: NF_INQ_VARID prof_names',
+     &       err,bi,bj,myThid )
+
       ELSE
-       jrec = 2 * ( (irec-1)*prof_num_var_tot(active_num_file,bi,bj)
-     &      + prof_num_var_cur(active_num_file,active_varnum,bi,bj)
-     &      -1 )
+        jrec = 2 * ( (irec-1)*prof_num_var_tot(active_num_file,bi,bj)
+     &       + prof_num_var_cur(active_num_file,active_varnum,bi,bj)
+     &       -1 )
+
       ENDIF
 
 C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
@@ -298,46 +328,58 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
       IF (theSimulationMode .EQ. FORWARD_SIMULATION) THEN
 
-       _BEGIN_MASTER( myThid )
+        _BEGIN_MASTER( myThid )
 
-       IF (profilesDoNcOutput) THEN
+        IF (profilesDoNcOutput) THEN
+          err = NF_PUT_VARA_DOUBLE( fid, varId, vec_start, vec_count,
+     &          active_var )
+          CALL PROFILES_NF_ERROR(
+     &         'ACTIVE_WRITE: NF_PUT_VARA_DOUBLE active_var',
+     &         err,bi,bj,myThid )
 
-        err = NF_INQ_VARID(fid,
-     &       prof_names(active_num_file,active_varnum), varId )
-        err = NF_PUT_VARA_DOUBLE(fid, varId , vec_start, vec_count,
-     &       active_var)
+          err = NF_INQ_VARID( fid,
+     &          prof_namesmask(active_num_file,active_varnum),
+     &          maskId )
+          CALL PROFILES_NF_ERROR(
+     &         'ACTIVE_WRITE: NF_INQ_VARID prof_namesmask',
+     &         err,bi,bj,myThid )
+          err = NF_PUT_VARA_DOUBLE(fid, maskId, vec_start, vec_count,
+     &          prof_mask1D_cur(1,bi,bj) )
+          CALL PROFILES_NF_ERROR(
+     &         'ACTIVE_WRITE: NF_PUT_VARA_DOUBLE prof_mask1D_cur',
+     &         err,bi,bj,myThid )
 
-        err = NF_INQ_VARID(fid,prof_namesmask(active_num_file,
-     &       active_varnum), varId )
-        err = NF_PUT_VARA_DOUBLE(fid, varId , vec_start, vec_count,
-     &       prof_mask1D_cur(1,bi,bj))
+          err = NF_INQ_VARID( fid, 'prof_ind_glob', maskId )
+          CALL PROFILES_NF_ERROR(
+     &         'ACTIVE_WRITE: NF_INQ_VARID prof_ind_glob',
+     &         err,bi,bj,myThid )
+          err = NF_PUT_VAR1_INT( fid, maskId, vec_start(2), irecglob )
+          CALL PROFILES_NF_ERROR(
+     &         'ACTIVE_WRITE: NF_PUT_VAR1_INT irecglob',
+     &         err,bi,bj,myThid )
 
-        err = NF_INQ_VARID(fid,'prof_ind_glob', varId )
-        err = NF_PUT_VAR1_INT(fid, varId , vec_start(2),
-     &       irecglob)
+        ELSE
 
-       ELSE
+          DO ivar=1,nactive_var
+            vec_tmp(ivar)=active_var(ivar)
+          ENDDO
+          vec_tmp(nactive_var+1)=irecglob
+# ifdef _BYTESWAPIO
+          CALL MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
+# endif
+          WRITE(fid,rec=jrec+1) vec_tmp
+          DO ivar=1,nactive_var
+            vec_tmp(ivar)=prof_mask1D_cur(ivar,bi,bj)
+          ENDDO
+          vec_tmp(nactive_var+1)=irecglob
+# ifdef _BYTESWAPIO
+          CALL MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
+# endif
+          WRITE(fid,rec=jrec+2) vec_tmp
 
-        DO ivar=1,nactive_var
-         vec_tmp(ivar)=active_var(ivar)
-        ENDDO
-        vec_tmp(nactive_var+1)=irecglob
-#ifdef _BYTESWAPIO
-        CALL MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
-#endif
-        WRITE(fid,rec=jrec+1) vec_tmp
-        DO ivar=1,nactive_var
-         vec_tmp(ivar)=prof_mask1D_cur(ivar,bi,bj)
-        ENDDO
-        vec_tmp(nactive_var+1)=irecglob
-#ifdef _BYTESWAPIO
-        CALL MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
-#endif
-        WRITE(fid,rec=jrec+2) vec_tmp
+        ENDIF
 
-       ENDIF
-
-       _END_MASTER( myThid )
+        _END_MASTER( myThid )
 
       ENDIF
 
@@ -347,54 +389,55 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
       IF (theSimulationMode .EQ. REVERSE_SIMULATION) THEN
 
-       _BEGIN_MASTER( myThid )
+        _BEGIN_MASTER( myThid )
 
-       IF (profilesDoNcOutput) THEN
-
-        err = NF_INQ_VARID(fid,
-     &       prof_names(active_num_file,active_varnum), varId )
-        err = NF_GET_VARA_DOUBLE(fid, varId , vec_start, vec_count,
-     &       active_data_t)
+        IF (profilesDoNcOutput) THEN
+          err = NF_GET_VARA_DOUBLE( fid, varId, vec_start, vec_count,
+     &          active_data_t )
+          CALL PROFILES_NF_ERROR(
+     &         'ACTIVE_WRITE: NF_GET_VARA_DOUBLE AD active_data_t',
+     &         err,bi,bj,myThid )
 
 C     Add active_var to data.
-        DO i = 1,nactive_var
-         active_var(i) = active_var(i) + active_data_t(i)
-         active_data_t(i) = 0. _d 0
-        ENDDO
+          DO i = 1,nactive_var
+            active_var(i) = active_var(i) + active_data_t(i)
+            active_data_t(i) = 0. _d 0
+          ENDDO
 
-        err = NF_INQ_VARID(fid,
-     &       prof_names(active_num_file,active_varnum), varId )
-        err = NF_PUT_VARA_DOUBLE(fid, varId , vec_start, vec_count,
-     &       active_data_t)
+          err = NF_PUT_VARA_DOUBLE( fid, varId, vec_start, vec_count,
+     &          active_data_t )
+          CALL PROFILES_NF_ERROR(
+     &         'ACTIVE_WRITE: NF_PUT_VARA_DOUBLE AD active_data_t',
+     &         err,bi,bj,myThid )
 
-       ELSE
+        ELSE
 
-        READ(fid,rec=jrec+1) vec_tmp
-#ifdef _BYTESWAPIO
-        CALL MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
-#endif
-        DO ivar=1,nactive_var
-         active_data_t(ivar)=vec_tmp(ivar)
-        ENDDO
+          READ(fid,rec=jrec+1) vec_tmp
+# ifdef _BYTESWAPIO
+          CALL MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
+# endif
+          DO ivar=1,nactive_var
+            active_data_t(ivar)=vec_tmp(ivar)
+          ENDDO
 
-C       Add active_var from appropriate location to data.
-        DO i = 1,nactive_var
-         active_var(i) = active_var(i) + active_data_t(i)
-         active_data_t(i) = 0. _d 0
-        ENDDO
+C         Add active_var from appropriate location to data.
+          DO i = 1,nactive_var
+            active_var(i) = active_var(i) + active_data_t(i)
+            active_data_t(i) = 0. _d 0
+          ENDDO
 
-C       Store the result on disk.
-        DO ivar=1,nactive_var
-         vec_tmp(ivar)=active_data_t(ivar)
-        ENDDO
-#ifdef _BYTESWAPIO
-        CALL MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
-#endif
-        WRITE(fid,rec=jrec+1) vec_tmp
+C         Store the result on disk.
+          DO ivar=1,nactive_var
+            vec_tmp(ivar)=active_data_t(ivar)
+          ENDDO
+# ifdef _BYTESWAPIO
+          CALL MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
+# endif
+          WRITE(fid,rec=jrec+1) vec_tmp
 
-       ENDIF
+        ENDIF
 
-       _END_MASTER( myThid )
+        _END_MASTER( myThid )
 
       ENDIF
 
@@ -404,29 +447,29 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
       IF (theSimulationMode .EQ. TANGENT_SIMULATION) THEN
 
-       _BEGIN_MASTER( myThid )
+        _BEGIN_MASTER( myThid )
 
-       IF (profilesDoNcOutput) THEN
+        IF (profilesDoNcOutput) THEN
+          err = NF_PUT_VARA_DOUBLE( fid, varId, vec_start, vec_count,
+     &          active_var )
+          CALL PROFILES_NF_ERROR(
+     &         'ACTIVE_WRITE: NF_PUT_VARA_DOUBLE TL active_var',
+     &         err,bi,bj,myThid )
 
-        err = NF_INQ_VARID(fid,
-     &       prof_names(active_num_file,active_varnum), varId )
-        err = NF_PUT_VARA_DOUBLE(fid, varId , vec_start, vec_count,
-     &       active_var)
+        ELSE
 
-       ELSE
+          DO ivar=1,nactive_var
+            vec_tmp(ivar)=active_var(ivar)
+          ENDDO
+          vec_tmp(nactive_var+1)=irecglob
+# ifdef _BYTESWAPIO
+          CALL MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
+# endif
+          WRITE(fid,rec=jrec+1) vec_tmp
 
-        DO ivar=1,nactive_var
-         vec_tmp(ivar)=active_var(ivar)
-        ENDDO
-        vec_tmp(nactive_var+1)=irecglob
-#ifdef _BYTESWAPIO
-        CALL MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
-#endif
-        WRITE(fid,rec=jrec+1) vec_tmp
+        ENDIF
 
-       ENDIF
-
-       _END_MASTER( myThid )
+        _END_MASTER( myThid )
 
       ENDIF
 

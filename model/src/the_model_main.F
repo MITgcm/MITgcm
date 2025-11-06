@@ -176,15 +176,9 @@ C    | | |-STATE_SUMMARY    :: Summarise model prognostic variables.
 C    | | |
 C    | | |-MONITOR          :: Monitor state (see pkg/monitor)
 C    | | |
-C    | | |-DO_STATEVARS_TAVE :: Time averaging package ( see pkg/timeave ).
-C    | | |  |-TIMEAVE_STATVARS :: Accumulate main model state variables
-C    | | |  |-PTRACERS_TIMEAVE :: Accumulate passive tracers variables
-C    | | |
 C    | | |-DO_THE_MODEL_IO  :: Controlling routine for IO
 C    | | | |-WRITE_STATE    ::  Write model state variables.
-C    | | | |-TIMEAVE_STATV_WRITE :: Write Time averaged output (see pkg/timeave)
 C    | | | |-FIZHI_WRITE_STATE :: Write Fizhi pkg output (see pkg/fizhi)
-C    | | | |-AIM_WRITE_TAVE    :: Write AIM  pkg output (see pkg/aim_v23)
 C    | | | |-LAND_OUTPUT       :: Write Land pkg output (see pkg/land)
 C    | | | |-OBCS_OUTPUT       :: Write OBCS pkg output (see pkg/obcs)
 C    | | | |-GMREDI_OUTPUT     :: Write GM-Redi pkg output (see pkg/gmredi)
@@ -198,15 +192,11 @@ C    | | | |-SBO_CALC          :: Compute SBO diagnostics (see pkg/sbo)
 C    | | | |-SBO_OUTPUT        :: Write SBO  pkg output   (see pkg/sbo)
 C    | | | |-SEAICE_OUTPUT     :: Write SeaIce pkg output (see pkg/seaice)
 C    | | | |-SHELFICE_OUTPUT   :: Write ShelfIce pkg output (see pkg/shelfice)
-C    | | | |-BULKF_OUTPUT      :: Write Bulk-Force output (see pkg/bulK_force)
 C    | | | |-THSICE_OUTPUT     :: Write ThSIce pkg output (see pkg/thsice)
 C    | | | |-PTRACERS_OUTPUT   :: Write pTracers pkg output (see pkg/ptracers)
 C    | | | |-MATRIX_OUTPUT     :: Write Matrix pkg output (see pkg/matrix)
 C    | | | |-GCHEM_OUTPUT      :: Write Geochemistry pkg output (see pkg/gchem)
-C    | | | |-CPL_OUTPUT        :: Write Coupler-Interface output (see
-C    | | | |                   :: pkg/atm_compon_interf, pkg/ocn_compon_interf)
 C    | | | |-LAYERS_CALC       :: Calculate layers diagnostics (see pkg/layers)
-C    | | | |-LAYERS_OUTPUT     :: Write Layers pkg output (see pkg/layers)
 C    | | | |-DIAGNOSTICS_WRITE :: Write pkg/diagnostics output
 C    | | |
 C====|>| ****************************
@@ -446,8 +436,6 @@ C/\  | | |-GRIDALT_UPDATE    :: ( see pkg/gridalt )
 C/\  | | |-STEP_FIZHI_CORR   :: ( see pkg/fizhi )
 C/\  | | |
 C/\  | | |-FLT_MAIN          :: Step forward Floats (see pkg/flt)
-C/\  | | |
-C/\  | | |-DO_STATEVARS_TAVE :: Time averaging package (see above)
 C/\  | | |
 C/\  | | |-NEST_PARENT_IO_2  :: Nesting interface
 C/\  | | |-NEST_CHILD_TRANSP :: Nesting interface
@@ -775,6 +763,13 @@ C       Close all open NetCDF files
         _END_MASTER( myThid )
       ENDIF
 #endif
+
+#ifdef ALLOW_PROFILES
+      IF ( usePROFILES ) THEN
+C       Close all open NetCDF files
+        CALL PROFILES_NC_CLOSE( myThid )
+      ENDIF
+#endif /* ALLOW_PROFILES */
 
 C--   This timer encompasses the whole code
       CALL TIMER_STOP ('ALL                    [THE_MODEL_MAIN]',myThid)

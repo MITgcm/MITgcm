@@ -37,7 +37,6 @@ C     == Global data ==
 
 #include "AIM_PARAMS.h"
 #include "AIM2DYN.h"
-#include "AIM_TAVE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     gU_arr    :: the tendency array
@@ -58,7 +57,7 @@ CEOP
 
 #ifdef ALLOW_AIM
 C     == Local variables in common block ==
-#if ( defined ALLOW_AIM_TAVE ) || ( defined ALLOW_DIAGNOSTICS )
+#ifdef ALLOW_DIAGNOSTICS
 C     aim_uStress :: surface stress applied to zonal wind
       COMMON /LOCAL_AIM_TENDENCY_APPLY_U/ aim_uStress,aim_KEuStr
       _RL aim_uStress(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -73,7 +72,7 @@ C     i,j  :: Loop counters
       _RL aim_dKE(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
 
-#if ( defined ALLOW_AIM_TAVE ) || ( defined ALLOW_DIAGNOSTICS )
+#ifdef ALLOW_DIAGNOSTICS
       IF ( myTime.EQ.startTime .AND. k.EQ.1 ) THEN
 C-    Initialise diagnostic array aim_uStress
        DO j=1-OLy,sNy+OLy
@@ -110,7 +109,7 @@ C        is not supposed to be applied in stratosphere
           gU_arr(i,j) = gU_arr(i,j)
      &                + uStr_tmp*gravity*recip_drF(k)
      &                * recip_hFacW(i,j,k,bi,bj)
-#if ( defined ALLOW_AIM_TAVE ) || ( defined ALLOW_DIAGNOSTICS )
+#ifdef ALLOW_DIAGNOSTICS
           aim_uStress(i,j,bi,bj) = uStr_tmp
 #endif
 #if ( defined ALLOW_FRICTION_HEATING ) || ( defined ALLOW_DIAGNOSTICS )
@@ -133,7 +132,7 @@ C        is not supposed to be applied in stratosphere
           gU_arr(i,j) = gU_arr(i,j)
      &                + uStr_tmp*gravity*recip_drF(k)
      &                * recip_hFacW(i,j,k,bi,bj)
-#if ( defined ALLOW_AIM_TAVE ) || ( defined ALLOW_DIAGNOSTICS )
+#ifdef ALLOW_DIAGNOSTICS
           aim_uStress(i,j,bi,bj) = uStr_tmp
 #endif
 #if ( defined ALLOW_FRICTION_HEATING ) || ( defined ALLOW_DIAGNOSTICS )
@@ -159,12 +158,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         ENDDO
       ENDIF
 #endif /* ALLOW_FRICTION_HEATING */
-#ifdef ALLOW_AIM_TAVE
-      IF ( aim_taveFreq.NE.0 .AND. k.EQ.Nr ) THEN
-        CALL TIMEAVE_CUMULATE( USTRtave, aim_uStress, 1,
-     &                         deltaTClock, bi, bj, myThid )
-      ENDIF
-#endif
 #ifdef ALLOW_DIAGNOSTICS
       IF ( usediagnostics ) THEN
        IF ( k.EQ.1 ) THEN
@@ -225,7 +218,6 @@ C     == Global data ==
 
 #include "AIM_PARAMS.h"
 #include "AIM2DYN.h"
-#include "AIM_TAVE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     gV_arr    :: the tendency array
@@ -246,7 +238,7 @@ CEOP
 
 #ifdef ALLOW_AIM
 C     == Local variables in common block ==
-#if ( defined ALLOW_AIM_TAVE ) || ( defined ALLOW_DIAGNOSTICS )
+#ifdef ALLOW_DIAGNOSTICS
 C     aim_vStress :: surface stress applied to meridional wind
       COMMON /LOCAL_AIM_TENDENCY_APPLY_V/ aim_vStress,aim_KEvStr
       _RL aim_vStress(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -261,7 +253,7 @@ C     i,j  :: Loop counters
       _RL aim_dKE(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
 
-#if ( defined ALLOW_AIM_TAVE ) || ( defined ALLOW_DIAGNOSTICS )
+#ifdef ALLOW_DIAGNOSTICS
       IF ( myTime.EQ.startTime .AND. k.EQ.1 ) THEN
 C-    Initialise diagnostic array aim_uStress
        DO j=1-OLy,sNy+OLy
@@ -298,7 +290,7 @@ C        is not supposed to be applied in the stratosphere
           gV_arr(i,j) = gV_arr(i,j)
      &                + vStr_tmp*gravity*recip_drF(k)
      &                * recip_hFacS(i,j,k,bi,bj)
-#if ( defined ALLOW_AIM_TAVE ) || ( defined ALLOW_DIAGNOSTICS )
+#ifdef ALLOW_DIAGNOSTICS
           aim_vStress(i,j,bi,bj) = vStr_tmp
 #endif
 #if ( defined ALLOW_FRICTION_HEATING ) || ( defined ALLOW_DIAGNOSTICS )
@@ -321,7 +313,7 @@ C        is not supposed to be applied in the stratosphere
           gV_arr(i,j) = gV_arr(i,j)
      &                + vStr_tmp*gravity*recip_drF(k)
      &                * recip_hFacS(i,j,k,bi,bj)
-#if ( defined ALLOW_AIM_TAVE ) || ( defined ALLOW_DIAGNOSTICS )
+#ifdef ALLOW_DIAGNOSTICS
           aim_vStress(i,j,bi,bj) = vStr_tmp
 #endif
 #if ( defined ALLOW_FRICTION_HEATING ) || ( defined ALLOW_DIAGNOSTICS )
@@ -347,12 +339,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         ENDDO
       ENDIF
 #endif /* ALLOW_FRICTION_HEATING */
-#ifdef ALLOW_AIM_TAVE
-      IF ( aim_taveFreq.NE.0 .AND. k.EQ.Nr ) THEN
-        CALL TIMEAVE_CUMULATE( VSTRtave, aim_vStress, 1,
-     &                         deltaTClock, bi, bj, myThid )
-      ENDIF
-#endif
 #ifdef ALLOW_DIAGNOSTICS
       IF ( usediagnostics ) THEN
        IF ( k.EQ.1 ) THEN

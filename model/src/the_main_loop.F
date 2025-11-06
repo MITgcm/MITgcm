@@ -224,14 +224,10 @@ C     it is important that this file is included after SEAICE_SIZE.h
 #ifdef ALLOW_TAPENADE
 # ifdef ALLOW_GMREDI
 #  include "GMREDI.h"
-#  include "GMREDI_TAVE.h"
 # endif
 # ifdef ALLOW_KPP
 #  include "KPP.h"
 c#  include "KPP_PARAMS.h"
-# endif
-# ifdef ALLOW_TIMEAVE
-#  include "TIMEAVE_STATV.h"
 # endif
 # ifdef ALLOW_EXF
 #  include "EXF_PARAM.h"
@@ -660,7 +656,7 @@ C--   Reset the model iteration counter and the model time.
 #ifdef ALLOW_ECCO
       IF ( useECCO ) then
 # ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('cost_averagesfields',myThid)
+        IF (debugMode) CALL DEBUG_CALL('COST_AVERAGESFIELDS',myThid)
 # endif
 c--   Accumulate time averages of temperature, salinity
         CALL TIMER_START('COST_AVERAGESFIELDS [MAIN_DO_LOOP]',myThid)
@@ -670,21 +666,16 @@ c--   Accumulate time averages of temperature, salinity
 #endif /* ALLOW_ECCO */
 
 #ifdef ALLOW_PROFILES
-      IF (usePROFILES) THEN
+      IF ( usePROFILES ) THEN
 #ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('profiles_inloop',myThid)
+        IF (debugMode) CALL DEBUG_CALL('PROFILES_INLOOP',myThid)
 #endif
 c--     Accumulate in-situ time averages of theta, salt, and SSH.
-#ifdef ALLOW_AUTODIFF
-C--   Reset the model iteration counter and the model time.
-        myIter = nIter0 + (iloop-1)
-        myTime = startTime + deltaTClock*(iloop-1)
-#endif
         CALL TIMER_START('PROFILES_INLOOP    [MAIN_DO_LOOP]', myThid)
         CALL PROFILES_INLOOP( myTime, myThid )
         CALL TIMER_STOP ('PROFILES_INLOOP    [MAIN_DO_LOOP]', myThid)
       ENDIF
-#endif
+#endif /* ALLOW_PROFILES */
 
       CALL TIMER_START('MAIN_DO_LOOP        [THE_MAIN_LOOP]', myThid)
       CALL MAIN_DO_LOOP( iloop, myTime, myIter, myThid )
@@ -732,15 +723,15 @@ c--     Accumulate time averages of temperature, salinity
 #endif /* ALLOW_ECCO */
 
 #ifdef ALLOW_PROFILES
-      IF (usePROFILES) THEN
+      IF ( usePROFILES ) THEN
 c--   Accumulate in-situ time averages of temperature, salinity, SSH.
         CALL TIMER_START('PROFILES_INLOOP    [THE_MAIN_LOOP]', myThid)
         CALL PROFILES_INLOOP( endtime, myThid )
         CALL TIMER_STOP ('PROFILES_INLOOP    [THE_MAIN_LOOP]', myThid)
 c--   Compute all profiles cost function contributions.
-        CALL COST_PROFILES( myIter, myTime, myThid )
+        CALL PROFILES_COST( myTime, myIter, myThid )
       ENDIF
-#endif
+#endif /* ALLOW_PROFILES */
 
 #ifdef ALLOW_ECCO
       IF ( useECCO ) then

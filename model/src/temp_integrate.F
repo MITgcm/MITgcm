@@ -62,9 +62,6 @@ C     == GLobal variables ==
 # include "GAD.h"
 # include "GAD_SOM_VARS.h"
 #endif
-#ifdef ALLOW_TIMEAVE
-# include "TIMEAVE_STATV.h"
-#endif
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 #endif
@@ -142,9 +139,6 @@ C   useVariableK :: T when vertical diffusion is not constant
       INTEGER iterNb
 #ifdef ALLOW_ADAMSBASHFORTH_3
       INTEGER m2
-#endif
-#ifdef ALLOW_TIMEAVE
-      LOGICAL useVariableK
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
 C     tkey :: tape key (tile dependent)
@@ -527,17 +521,6 @@ CADJ STORE recip_hFac(:,:,:)  = comlev1_bibj, key = tkey, kind = isbyte
      U         gT_loc,
      I         myThid )
       ENDIF
-
-#ifdef ALLOW_TIMEAVE
-      useVariableK = useKPP .OR. usePP81 .OR. useKL10 .OR. useMY82
-     &       .OR. useGGL90 .OR. useGMRedi .OR. ivdc_kappa.NE.0.
-      IF ( taveFreq.GT.0. .AND. useVariableK
-     &                    .AND.implicitDiffusion ) THEN
-        CALL TIMEAVE_CUMUL_DIF_1T( TdiffRtave,
-     I                        gT_loc, kappaRk,
-     I                        Nr, 3, deltaTClock, bi, bj, myThid )
-      ENDIF
-#endif /* ALLOW_TIMEAVE */
 
       IF ( AdamsBashforth_T ) THEN
 C-    Save current tracer field (for AB on tracer) and then update tracer
