@@ -121,8 +121,6 @@ C--
      &  'KPPwriteState =', ' /* write KPP fields to file */')
       CALL WRITE_0D_RL( kpp_dumpFreq, INDEX_NONE, ' kpp_dumpFreq =',
      &  ' /* dump freq of KPP output */')
-      CALL WRITE_0D_RL( kpp_taveFreq, INDEX_NONE, ' kpp_taveFreq =',
-     &  ' /* time-averaging freq of KPP output */')
 
 C--  Check parameters:
 
