@@ -23,7 +23,6 @@ C     === Global variables ===
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
 #include "SEAICE_TRACER.h"
-#include "SEAICE_TAVE.h"
 #ifdef OBCS_UVICE_OLD
 # include "OBCS_GRID.h"
 #endif
@@ -164,24 +163,6 @@ C        variables (as done above) without condition on useSEAICE.
 C        Therefore, in this case, the "If useSEAICE" is added back here:
       IF ( useSEAICE ) THEN
 #endif
-
-#ifdef ALLOW_TIMEAVE
-C     Initialize averages to zero
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        CALL TIMEAVE_RESET( FUtave   , 1, bi, bj, myThid )
-        CALL TIMEAVE_RESET( FVtave   , 1, bi, bj, myThid )
-        CALL TIMEAVE_RESET( EmPmRtave, 1, bi, bj, myThid )
-        CALL TIMEAVE_RESET( QNETtave , 1, bi, bj, myThid )
-        CALL TIMEAVE_RESET( QSWtave  , 1, bi, bj, myThid )
-        CALL TIMEAVE_RESET( UICEtave , 1, bi, bj, myThid )
-        CALL TIMEAVE_RESET( VICEtave , 1, bi, bj, myThid )
-        CALL TIMEAVE_RESET( HEFFtave , 1, bi, bj, myThid )
-        CALL TIMEAVE_RESET( AREAtave , 1, bi, bj, myThid )
-        SEAICE_timeAve(bi,bj) = ZERO
-       ENDDO
-      ENDDO
-#endif /* ALLOW_TIMEAVE */
 
 C--   Initialize (variable) grid info. As long as we allow masking of
 C--   velocities outside of ice covered areas (in seaice_dynsolver)

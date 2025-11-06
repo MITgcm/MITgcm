@@ -31,7 +31,6 @@ C     zgrid (0:Nr+1) :: vertical levels of tracers (<=0)                (m)
 C     hwide (0:Nr+1) :: layer thicknesses          (>=0)                (m)
 C     kpp_freq       :: Re-computation frequency for KPP parameters     (s)
 C     kpp_dumpFreq   :: KPP dump frequency.                             (s)
-C     kpp_taveFreq   :: KPP time-averaging frequency.                   (s)
 
       INTEGER nzmax ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy,     nSx, nSy )
 c     _RL pMask     ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr, nSx, nSy )
@@ -39,13 +38,12 @@ c     _RL pMask     ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr, nSx, nSy )
       _RL hwide     ( 0:Nr+1 )
       _RL kpp_freq
       _RL kpp_dumpFreq
-      _RL kpp_taveFreq
 
       COMMON /kpp_i/  nzmax
 
       COMMON /kpp_r1/ zgrid, hwide
 
-      COMMON /kpp_r2/ kpp_freq, kpp_dumpFreq, kpp_taveFreq
+      COMMON /kpp_r2/ kpp_freq, kpp_dumpFreq
 
 C-----------------------------------------------------------------------
 C

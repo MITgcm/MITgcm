@@ -494,15 +494,6 @@ subroutine do_write_pickup:
   ReadThenWritten:    (0,0,0,0)
 
 
-subroutine do_statevars_tave:
-  external:
-  shape: (param 1,param 2,param 3)
-  type: (none(),none(),none())
-  NotReadNotWritten:  (0,0,0)
-  ReadNotWritten:     (1,1,1)
-  NotReadThenWritten: (0,0,0)
-  ReadThenWritten:    (0,0,0)
-
 subroutine write_glvec_rs:
   external:
   shape: (param 1,param 2,param 3,param 4,param 5,param 6)

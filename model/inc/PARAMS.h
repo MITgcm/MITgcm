@@ -426,7 +426,6 @@ C     pickup_write_mdsio :: use mdsio to write pickups
 C     pickup_read_mdsio  :: use mdsio to read  pickups
 C     pickup_write_immed :: echo the pickup immediately (for conversion)
 C     writePickupAtEnd   :: write pickup at the last timestep
-C     timeave_mdsio      :: use mdsio for timeave output
 C     snapshot_mdsio     :: use mdsio for "snapshot" (dumpfreq/diagfreq) output
 C     monitor_stdio      :: use stdio for monitor output
 C     dumpInitAndLast :: dumps model state to files at Initial (nIter0)
@@ -471,7 +470,7 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
      & pickupStrictlyMatch, usePickupBeforeC54, startFromPickupAB2,
      & pickup_read_mdsio, pickup_write_mdsio, pickup_write_immed,
      & writePickupAtEnd,
-     & timeave_mdsio, snapshot_mdsio, monitor_stdio,
+     & snapshot_mdsio, monitor_stdio,
      & outputTypesInclusive, dumpInitAndLast
 
       LOGICAL fluidIsAir
@@ -571,7 +570,7 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
       LOGICAL startFromPickupAB2
       LOGICAL pickup_read_mdsio, pickup_write_mdsio
       LOGICAL pickup_write_immed, writePickupAtEnd
-      LOGICAL timeave_mdsio, snapshot_mdsio, monitor_stdio
+      LOGICAL snapshot_mdsio, monitor_stdio
       LOGICAL outputTypesInclusive
       LOGICAL dumpInitAndLast
 
@@ -787,11 +786,6 @@ C     mtFacMom      :: Metric terms               multiplication factor
 C     cosPower      :: Power of cosine of latitude to multiply viscosity
 C     cAdjFreq      :: Frequency of convective adjustment
 C
-C     taveFreq      :: Frequency with which time-averaged model state
-C                      is written to post-processing files ( s ).
-C     tave_lastIter :: (for state variable only) fraction of the last time
-C                      step (of each taveFreq period) put in the time average.
-C                      (fraction for 1rst iter = 1 - tave_lastIter)
 C     tauThetaClimRelax :: Relaxation to climatology time scale ( s ).
 C     tauSaltClimRelax :: Relaxation to climatology time scale ( s ).
 C     latBandClimRelax :: latitude band where Relaxation to Clim. is applied,
@@ -865,7 +859,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
      & rVel2wUnit, wUnit2rVel, rUnit2z, z2rUnit, mass2rUnit, rUnit2mass,
      & baseTime, startTime, endTime,
      & chkPtFreq, pChkPtFreq, dumpFreq, adjDumpFreq,
-     & diagFreq, taveFreq, tave_lastIter, monitorFreq, adjMonitorFreq,
+     & diagFreq, monitorFreq, adjMonitorFreq,
      & afFacMom, vfFacMom, pfFacMom, cfFacMom, foFacMom, mtFacMom,
      & cosPower, cAdjFreq,
      & tauThetaClimRelax, tauSaltClimRelax, latBandClimRelax,
@@ -988,8 +982,6 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL dumpFreq
       _RL adjDumpFreq
       _RL diagFreq
-      _RL taveFreq
-      _RL tave_lastIter
       _RL monitorFreq
       _RL adjMonitorFreq
       _RL afFacMom
