@@ -31,6 +31,9 @@ C      layers_G :: boundaries of tracer layers
       LOGICAL useBOLUS
       _RL layers_G(Nlayers+1)
 
+C-    retired parameters:
+      _RL layers_taveFreq
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       NAMELIST /LAYERS_PARM01/
@@ -50,10 +53,10 @@ C     print a (weak) warning if data.layers is found
 
       _BEGIN_MASTER(myThid)
       errCount = 0
+      layers_taveFreq = UNSET_RL
 
 C--   Default values for LAYERS
 
-      layers_taveFreq = taveFreq
       layers_diagFreq = dumpFreq
 C     The MNC stuff is not working yet
       layers_MNC = .FALSE.
@@ -139,6 +142,19 @@ C-    Transfert to new params setting:
         CALL PRINT_ERROR( msgBuf, myThid )
         CALL ALL_PROC_DIE( 0 )
         STOP 'ABNORMAL END: S/R LAYERS_READPARMS'
+      ENDIF
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C--   Check for retired parameters:
+      IF ( layers_taveFreq .NE. UNSET_RL ) THEN
+        WRITE(msgBuf,'(2A)') 'LAYERS_READPARMS: "layers_taveFreq"',
+     &    ' is no longer allowed in file "data.layers"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'LAYERS_READPARMS: ',
+     &    ' since "pkg/timeave" has been removed.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
       ENDIF
 
 C--   Set layers_num according to layers_name:
