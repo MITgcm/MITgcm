@@ -182,7 +182,7 @@ cph-print               print *, 'ph-grd irec, bj, bi, k ', irec, bj, bi, k
 cpj)
                DO j = jwrk, ncvarymax(grdchkvarindex)
                 DO i = iwrk, ncvarxmax(grdchkvarindex)
-                 IF (ierr.NE.0 ) THEN
+                 IF ( ierr.NE.0 ) THEN
                   IF ( ncvargrd(grdchkvarindex).EQ.'c' ) THEN
                      IF ( maskC(i,j,k,bi,bj).GT.0. ) THEN
                         icomptest = icomptest + 1
