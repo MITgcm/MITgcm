@@ -26,6 +26,22 @@ _exclude_var = ['assignValue',
                 'shape',
                 'typecode',
                ]
+_KEYMAP = {
+    "xC": "XC",
+    "yC": "YC",
+    "xG": "XG",
+    "yG": "YG",
+    "rC": "RC",
+    "rF": "RF",
+    "rAc": "rA",
+    "angleCS": "AngleCS",
+    "angleSN": "AngleSN",
+    "hFacC": "HFacC",
+    "hFacW": "HFacW",
+    "hFacS": "HFacS",
+    "rLowC": "R_low",
+    "rSurfC": "Ro_surf",
+}
 
 def getattributes(nc, exclude=[]):
     # in order not to rely on implementation, provide fallback
@@ -446,4 +462,19 @@ def rdmnc(fpatt, varnames=None, iters=None, slices=Ellipsis, layout=None):
 
     mnc.close()
     return res
+
+def restore_MNC_keys(d):
+    """
+    Rename keys of dictionary to old MNC keys
+
+    Example usage:
+     import MITgcmutils as mit
+     S = mit.rdmnc('grid.*.nc')
+     S = mit.restore_MNC_keys(S)
+    """
+    for new, old in _KEYMAP.items():
+        if new in d and old not in d:
+            d[old] = d.pop(new)
+
+    return d
 
