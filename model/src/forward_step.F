@@ -218,8 +218,6 @@ C       |-- STEP_FIZHI_CORR
 C       |
 C       |-- FLT_MAIN
 C       |
-C       |-- DO_STATEVARS_TAVE
-C       |
 C       |-- NEST_PARENT_IO_2
 C       |-- NEST_CHILD_TRANSP
 C       |
@@ -385,12 +383,6 @@ C     == Global variables ==
 c# ifdef ALLOW_KPP
 c#  include "KPP_PARAMS.h"
 c# endif
-# ifdef ALLOW_GMREDI
-#  include "GMREDI_TAVE.h"
-# endif
-# ifdef ALLOW_TIMEAVE
-#  include "TIMEAVE_STATV.h"
-# endif
 # ifdef ALLOW_MOM_FLUXFORM
 #  include "MOM_FLUXFORM.h"
 # endif
@@ -1140,13 +1132,6 @@ C--   Calculate float trajectories
         CALL FLT_MAIN( myTime, myIter, myThid )
         CALL TIMER_STOP ('FLOATS            [FORWARD_STEP]',myThid)
       ENDIF
-#endif
-
-#ifdef ALLOW_TIMEAVE
-C--   State-variables time-averaging
-      CALL TIMER_START('DO_STATEVARS_TAVE   [FORWARD_STEP]',myThid)
-      CALL DO_STATEVARS_TAVE( myTime, myIter, myThid )
-      CALL TIMER_STOP ('DO_STATEVARS_TAVE   [FORWARD_STEP]',myThid)
 #endif
 
 #ifdef ALLOW_NEST_PARENT

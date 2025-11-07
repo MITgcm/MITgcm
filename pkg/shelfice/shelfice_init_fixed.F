@@ -55,8 +55,7 @@ C     msgBuf       :: Informational/error message buffer
 
 #ifdef ALLOW_MNC
 C     Initialize MNC variable information for SHELFICE
-      IF ( useMNC .AND. (shelfice_tave_mnc.OR.shelfice_dump_mnc)
-     &    ) THEN
+      IF ( useMNC .AND. shelfice_dump_mnc ) THEN
         CALL SHELFICE_MNC_INIT( myThid )
       ENDIF
 #endif /* ALLOW_MNC */
