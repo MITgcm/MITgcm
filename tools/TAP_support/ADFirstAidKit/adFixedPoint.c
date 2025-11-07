@@ -7,6 +7,9 @@ double prevCumuls[5] = {0.0, 0.0, 0.0, 0.0, 0.0} ;
 int adjIters[5] = {0, 0, 0, 0, 0} ;
 int fpDepth = -1 ;
 
+// this function was written by L Hascoet, since the function name is fixed
+// and the alg is not appropriate for the STREAMICE fixed-point problem, this 
+// is not used but kept for analysis
 /*
 int adFixedPoint_notReduced(double cumul, float reduction) {
   // Dan's method: stop when cumul has reduced by a factor "reduction"
