@@ -47,7 +47,7 @@ c     == end of interface ==
 #ifdef ALLOW_AUTODIFF
 
 #ifdef ALLOW_TAPENADE
-      fcb = 0.0
+      fcb = 1.0
 #endif
 
 #ifdef ALLOW_OPENAD
@@ -55,9 +55,6 @@ c     == end of interface ==
 #else
       if ( myProcId .EQ. 0 ) then
        adfc = 1. _d 0
-#ifdef ALLOW_TAPENADE
-       fcb = 1.0
-#endif
       endif
 #endif
 
