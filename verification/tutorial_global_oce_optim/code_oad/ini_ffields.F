@@ -53,11 +53,14 @@ C-    2-D forcing fields
           phiTide2d       (i,j,bi,bj) = 0. _d 0
           pLoad           (i,j,bi,bj) = 0. _d 0
           sIceLoad        (i,j,bi,bj) = 0. _d 0
+          gcmSST          (i,j,bi,bj) = 0. _d 0
 #ifdef ALLOW_GEOTHERMAL_FLUX
           geothermalFlux  (i,j,bi,bj) = 0. _d 0
 #endif
+C---  Customized code starts -----------------------------------------
 C     Extra mean heat flux field specific to this experiment
           Qnetm (i,j,bi,bj) = 0. _d 0
+C---  Customized code ends -------------------------------------------
 #ifndef EXCLUDE_FFIELDS_LOAD
 C-    Time reccord loaded from file:
           taux0           (i,j,bi,bj) = 0. _d 0

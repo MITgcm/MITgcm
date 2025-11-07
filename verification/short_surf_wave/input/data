@@ -18,32 +18,34 @@
  gravity=10.,
  implicitFreeSurface=.TRUE.,
  exactConserv=.TRUE.
- implicSurfPress=0.5,
  implicDiv2DFlow=0.5,
+ implicSurfPress=0.5,
  nonHydrostatic=.TRUE.,
  selectNHfreeSurf=1,
  saltStepping=.FALSE.,
  tempStepping=.FALSE.,
  hFacMin=0.2,
  readBinaryPrec=64,
- writeBinaryPrec=64,
+#globalFiles=.TRUE.,
+ plotLevel = 0,
  &
 
 # Elliptic solver parameters
  &PARM02
- cg2dMaxIters=100,
- cg3dMaxIters=200,
+ cg2dMaxIters=200,
+ cg3dMaxIters=400,
 #cg2dTargetResidual=1.E-13,
 #cg3dTargetResidual=1.E-11,
- cg2dTargetResWunit=6.0E-14,
+#--
+ cg2dTargetResWunit=1.0E-14,
  cg3dTargetResWunit=1.5E-17,
  &
 
 # Time stepping parameters
  &PARM03
- nIter0=0,
+ nIter0=1,
 #endTime=20.,
- nTimeSteps=12,
+ nTimeSteps=11,
  deltaT=5.e-3,
  alph_AB=0.5,
  beta_AB=0.281105,

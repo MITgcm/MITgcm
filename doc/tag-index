@@ -1,6 +1,49 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg & model:
+  - remove pkg/timeave ; remove all ALLOW_TIMEAVE code ; remove all timeave
+    related parameters from common blocks (in header files) and from src code
+    and disable/retire these params.
+  - also updates model_ad.flow, TAP_support/flow_tap, OAD_support and most
+    */code_oad/cb2mFiles from verification.
+o tools (Tapenade):
+  - implement "-ncad" genmake2 option for Tapenade Makefile (similar to TAF),
+    to append each forward src file to corresponding Tapenade-generated AD file,
+    using new short script "append_fwd_src"; otherwise (default), put all
+    adjoint (or Tang.Lin.) tapenade  fortran files "_b.f" (or "_d.f") into a
+    single "adj/tlm/_tap_all.f" file, to be compiled to get an object file.
+  - simply add symbolic-links within pkg/tapenade/ to the few files from
+    "tools/TAP_support/ADFirstAidKit/" that are needed.
+  - fix for case-insensitive file systems (e.g., on Mac-OS) and update optfile
+    "darwin_arm64_gfortran" to use Tapenade on Mac-OS using with "docker".
+o pkg/diagnostics:
+  - add diagnostic "VSHEARSQ" for the square of vertical shear.
+
+checkpoint69h (2025/10/23)
+o pkg/ctrl:
+  - account for shift in record number between original xx_gentim2d_file full
+    time-series and "effective" sub-set version ; this was previously missing.
+    Also enable some debug print from ctrl_get_gen_rec.F (if debugLevel >= 3).
+o pkg/seaice:
+  - fix compilation of seaice_growth_adx.F (left from PR #750).
+o model, pkgs:
+  - remove code within "#ifndef EXACT_CONSERV / #endif" bracket and remove
+    completely CPP option EXACT_CONSERV.
+o pkg/bling:
+  - allows to specify a 2D field of light attenuation coefficient (k0_2d) from
+    file "bling_k0_2dFile".
+
+checkpoint69g (2025/09/12)
+o verification/short_surf_wave:
+  - fix Non-Hydrostatic pressure initialization issue with implicSurfPress=1/2
+    by re-starting (nIter0=1) from pickup generated with implicSurfPress=1.
+o tools/mpack-1.6:
+  - fix compilation for recent version of gcc, to pass the compiler test in
+    "configure" and md5 compilation with v15 (comply with C23 standard).
+o pkg/streamice:
+  - for OpenAD, adjust streamice_write_pickup.F to only write the forward
+    components of state arrays to the binary pickups for later use.
 o verification:
   - remove all pkg/timeave params from all exp. and no longer compile this
     pkg in any exp. ; also skip pkg/mnc compilation in 4 fwd test exp ;
