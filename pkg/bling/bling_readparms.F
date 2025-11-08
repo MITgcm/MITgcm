@@ -183,6 +183,7 @@ C ==========================================================
      &          bling_psmFile, bling_plgFile, bling_PdiazFile,
      &          bling_forcingPeriod, bling_forcingCycle,
      &          bling_Pc_2dFile, bling_Pc_2d_diazFile,
+     &          bling_k0_2dFile,
      &          bling_alpha_photo2dFile,bling_phi_DOM2dFile,
      &          bling_k_Fe2dFile, bling_k_Fe_diaz2dFile,
      &          bling_gamma_POM2dFile, bling_wsink0_2dFile,
@@ -399,6 +400,7 @@ C     Default values
       bling_pdiazFile        = ' '
       bling_Pc_2dFile        = ' '
       bling_Pc_2d_diazFile   = ' '
+      bling_k0_2dFile        = ' '
       bling_alpha_photo2dFile= ' '
       bling_k_Fe2dFile       = ' '
       bling_k_Fe_diaz2dFile  = ' '

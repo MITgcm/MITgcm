@@ -120,15 +120,9 @@ C-      2D arrays
           StoreDynVars2D(I,J,bi,bj,18) = 0.
           StoreDynVars2D(I,J,bi,bj,19) = 0.
 #endif
-#ifdef EXACT_CONSERV
           StoreDynVars2D(I,J,bi,bj,20) = etaH(I,J,bi,bj)
           StoreDynVars2D(I,J,bi,bj,21) = dEtaHdt(I,J,bi,bj)
           StoreDynVars2D(I,J,bi,bj,22) = PmEpR(I,J,bi,bj)
-#else
-          StoreDynVars2D(I,J,bi,bj,20) = 0.
-          StoreDynVars2D(I,J,bi,bj,21) = 0.
-          StoreDynVars2D(I,J,bi,bj,22) = 0.
-#endif
          ENDDO
         ENDDO
        ENDDO

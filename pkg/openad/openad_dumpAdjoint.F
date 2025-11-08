@@ -38,6 +38,7 @@ c They provide the fields to be stored.
 
 # include "GRID.h"
 # include "DYNVARS.h"
+# include "SURFACE.h"
 # include "FFIELDS.h"
 # include "EOS.h"
 # ifdef ALLOW_GENERIC_ADVDIFF
@@ -49,9 +50,6 @@ c They provide the fields to be stored.
 # ifdef ALLOW_PTRACERS
 #  include "PTRACERS_SIZE.h"
 #  include "PTRACERS_FIELDS.h"
-# endif
-# ifdef EXACT_CONSERV
-#  include "SURFACE.h"
 # endif
 # ifdef ALLOW_OBCS
 #  include "OBCS_PARAMS.h"
@@ -74,7 +72,6 @@ c They provide the fields to be stored.
 # endif
 # ifdef ALLOW_KPP
 #  include "KPP.h"
-#  include "KPP_TAVE.h"
 #  include "KPP_PARAMS.h"
 # endif
 

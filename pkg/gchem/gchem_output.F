@@ -29,13 +29,6 @@ cccccccccccccccccccccc
 c diagnostics        c
 cccccccccccccccccccccc
 
-#ifdef ALLOW_DIC
-#ifdef ALLOW_TIMEAVE
-       IF ( myIter.NE.nIter0 )
-     & CALL DIC_BIOTIC_DIAGS( myTime, myIter, myThid )
-#endif /* ALLOW_TIMEAVE */
-#endif /* ALLOW_DIC */
-
 #ifdef ALLOW_DARWIN
 #ifdef ALLOW_TIMEAVE
       IF ( useDARWIN ) THEN

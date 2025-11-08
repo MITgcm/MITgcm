@@ -116,9 +116,9 @@ CEOP
       CHARACTER*(128) swdownfile
 #endif
 
-c  Remove light under ice
-c  If using Qsw and seaice/thsice, then ice fraction is already
-c  taken into account
+C  Remove light under ice
+C  If using Qsw and seaice/thsice, then ice fraction is already
+C  taken into account
       QSW_underice = .FALSE.
 #ifdef USE_QSW
       IF ( useSEAICE ) QSW_underice = .TRUE.
@@ -148,8 +148,8 @@ c  taken into account
       ENDDO
 
 #ifdef PHYTO_SELF_SHADING
-c  Specify co-efficients for bio-optical model {kChl = k0 +chi[chl]^e}
-c  in red and blue-green fractions (Morel 1988; Foujols et al. 2000)
+C  Specify co-efficients for bio-optical model {kChl = k0 +chi[chl]^e}
+C  in red and blue-green fractions (Morel 1988; Foujols et al. 2000)
       k0_rd  = 0.225 _d 0
       k0_bg  = 0.0232 _d 0
       chi_rd = 0.037 _d 0
@@ -158,8 +158,8 @@ c  in red and blue-green fractions (Morel 1988; Foujols et al. 2000)
       e_bg   = 0.674 _d 0
 #endif
 
-c ---------------------------------------------------------------------
-c  Surface insolation
+C ---------------------------------------------------------------------
+C  Surface insolation
 
 #ifndef ALLOW_EXF
       swdownfile = ' '
@@ -177,9 +177,8 @@ C     all, but for now we just hide from TAF.
 C If no EXF shortwave, calculate from time and latitude
       IF (swdownfile.EQ.' ') THEN
 
-C  From pkg/dic/dic_insol
+C  From pkg/dic/dic_insol (based on paltridge and parson)
 C  find light as function of date and latitude
-C  based on paltridge and parson
 
        solar  = 1360. _d 0   !solar constant
        albedo = 0.6 _d 0     !planetary albedo
@@ -231,7 +230,7 @@ C convert to sfac
 C get time (in h) within the day:
       utcTime = MOD( myTime/3600. _d 0, 24. _d 0 )
 #ifdef ALLOW_CAL
-c mydate is utc time
+C mydate is utc time
       IF ( useCAL ) THEN
        CALL CAL_GETDATE( myIter, myTime, mydate, myThid )
        i = mydate(2)/10000
@@ -242,21 +241,21 @@ c mydate is utc time
       ENDIF
 #endif
 
-c ---------------------------------------------------------------------
-c  instantaneous light, mixed layer averaged light
+C ---------------------------------------------------------------------
+C  instantaneous light, mixed layer averaged light
 
       DO j=jmin,jmax
        DO i=imin,imax
-c  Photosynthetically-available radiations (PAR)
+C  Photosynthetically-available radiations (PAR)
         IF (swdownfile.EQ.' ') THEN
          irr_surf(i,j) = sfac(j)
         ELSE
 #ifdef ALLOW_EXF
-         irr_surf(i,j) = max(epsln,
+         irr_surf(i,j) = MAX(epsln,
      &                 -parfrac*Qsw(i,j,bi,bj)*maskC(i,j,1,bi,bj))
 #endif
         ENDIF
-c  Remove light under ice
+C  Remove light under ice
         IF ( .NOT. QSW_underice ) THEN
          irr_surf(i,j) = irr_surf(i,j)*(1. _d 0 - FIce(i,j,bi,bj))
         ENDIF
@@ -285,13 +284,13 @@ C Top layer
           IF ( maskC(i,j,k,bi,bj).EQ.oneRS ) THEN
 
 #ifdef PHYTO_SELF_SHADING
-c  Use bio-optical model of Manizza et al. (2005) to account for
-c  effect of self-shading on ligt available for phytoplankton
-c  growth. As written this DOES NOT feedback onto the absorption
-c  of shortwave radiation calculated in the physical model, which
-c  is instead calculated in the subroutine swfrac
+C  Use bio-optical model of Manizza et al. (2005) to account for
+C  effect of self-shading on ligt available for phytoplankton
+C  growth. As written this DOES NOT feedback onto the absorption
+C  of shortwave radiation calculated in the physical model, which
+C  is instead calculated in the subroutine swfrac
 
-c  Attenuation coefficient adjusted to chlorophyll in top layer
+C  Attenuation coefficient adjusted to chlorophyll in top layer
 #ifdef ALLOW_AUTODIFF
            IF ( chl(i,j,1,bi,bj) .GT. 0. _d 0 ) THEN
 #endif
@@ -303,17 +302,17 @@ c  Attenuation coefficient adjusted to chlorophyll in top layer
             kChl_bg(i,j,1) = k0_bg
            ENDIF
 #endif
-c  Light attenuation in middle of top layer
+C  Light attenuation in middle of top layer
            atten_rd = kChl_rd(i,j,1)*drF(1)/2. _d 0*hFacC(i,j,1,bi,bj)
            atten_bg = kChl_bg(i,j,1)*drF(1)/2. _d 0*hFacC(i,j,1,bi,bj)
-c  Irradiance in middle of top layer
+C  Irradiance in middle of top layer
            irr_rd(i,j,1) = irr_surf(i,j) * exp(-atten_rd) * 0.5 _d 0
            irr_bg(i,j,1) = irr_surf(i,j) * exp(-atten_bg) * 0.5 _d 0
            irr_inst(i,j,1) = irr_rd(i,j,1) + irr_bg(i,j,1)
 #else /* PHYTO_SELF_SHADING */
 C SW radiation attenuated exponentially
-c  Light attenuation in middle of top layer
-           atten = k0*drF(1)/2. _d 0*hFacC(i,j,1,bi,bj)
+C  Light attenuation in middle of top layer
+           atten = k0_2d(i,j,bi,bj)*halfRL*drF(1)*hFacC(i,j,1,bi,bj)
            irr_inst(i,j,1) = irr_surf(i,j)*exp(-atten)
 
 #endif /* PHYTO_SELF_SHADING */
@@ -338,7 +337,7 @@ CADJ STORE irr_rd(:,:,k-1) = comlev1_bibj_k, key=kkey, kind=isbyte
           IF ( maskC(i,j,k,bi,bj).EQ.oneRS ) THEN
 
 #ifdef PHYTO_SELF_SHADING
-c  Attenuation coefficient adjusted to chlorophyll in kth layer
+C  Attenuation coefficient adjusted to chlorophyll in kth layer
 #ifdef ALLOW_AUTODIFF
            IF ( chl(i,j,k,bi,bj) .GT. 0. _d 0 ) THEN
 #endif
@@ -350,21 +349,21 @@ c  Attenuation coefficient adjusted to chlorophyll in kth layer
             kChl_bg(i,j,k) = k0_bg
            ENDIF
 #endif
-c  Light attenuation from one more layer
+C  Light attenuation from one more layer
            atten_rd = kChl_rd(i,j,k)*drF(k)/2. _d 0*hFacC(i,j,k,bi,bj)
      &        + kChl_rd(i,j,k-1)*drF(k-1)/2. _d 0*hFacC(i,j,k-1,bi,bj)
            atten_bg = kChl_bg(i,j,k)*drF(k)/2. _d 0*hFacC(i,j,k,bi,bj)
      &        + kChl_bg(i,j,k-1)*drF(k-1)/2. _d 0*hFacC(i,j,k-1,bi,bj)
-c  Irradiance in middle of layer k
+C  Irradiance in middle of layer k
            irr_rd(i,j,k) = irr_rd(i,j,k-1)*exp(-atten_rd)
            irr_bg(i,j,k) = irr_bg(i,j,k-1)*exp(-atten_bg)
            irr_inst(i,j,k) = irr_rd(i,j,k) + irr_bg(i,j,k)
 
 #else /* PHYTO_SELF_SHADING */
 C SW radiation attenuated exponentially
-c  Attenuation from one more layer
-           atten = k0*drF(k)/2. _d 0*hFacC(i,j,k,bi,bj)
-     &           + k0*drF(k-1)/2. _d 0*hFacC(i,j,k-1,bi,bj)
+C  Attenuation from one more layer
+           atten = k0_2d(i,j,bi,bj)*halfRL*( drF(k)*hFacC(i,j,k,bi,bj)
+     &                                 + drF(k-1)*hFacC(i,j,k-1,bi,bj) )
            irr_inst(i,j,k) = irr_inst(i,j,k-1)*exp(-atten)
 
 #endif /* PHYTO_SELF_SHADING */
@@ -385,7 +384,7 @@ c           sat_atten = irr_inst(i,j,k)/irr_surf(i,j)
 #ifdef PHYTO_SELF_SHADING
            sat_atten = exp(-2. _d 0 * k0_bg * (-rC(k)))
 #else
-           sat_atten = exp(-2. _d 0 * k0 * (-rC(k)))
+           sat_atten = exp(-2. _d 0 * k0_2d(i,j,bi,bj) * (-rC(k)))
 #endif
            chl_sat_sum(i,j) = chl_sat_sum(i,j)
      &                 + chl(i,j,k,bi,bj)*sat_atten
@@ -393,7 +392,7 @@ c           sat_atten = irr_inst(i,j,k)/irr_surf(i,j)
           ENDIF
 
 #ifdef ML_MEAN_LIGHT
-c  Mean irradiance in the mixed layer
+C  Mean irradiance in the mixed layer
           IF ( (-rF(k+1).LE. mld(i,j)) .AND.
      &         (-rF(k+1).LT.MLmix_max) ) THEN
            SumMLIrr(i,j) = SumMLIrr(i,j)+drF(k)*irr_inst(i,j,k)
@@ -437,7 +436,7 @@ C       for other grid (e.g., cartesian), assumes no difference in time
 
           irr_eff(i,j,k) = irr_inst(i,j,k)
 #ifdef ML_MEAN_LIGHT
-c  Inside mixed layer, effective light is set to mean mixed layer light
+C  Inside mixed layer, effective light is set to mean mixed layer light
           IF ( (-rF(k+1).LE. mld(i,j)) .AND.
      &         (-rF(k+1).LT.MLmix_max) ) THEN
            irr_eff(i,j,k) = irr_mix(i,j)

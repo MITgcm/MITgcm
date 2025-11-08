@@ -18,9 +18,9 @@ C     land_oldPickup :: restart from an old pickup (= before checkpoint 52l_pre)
      &    land_calc_grT, land_calc_grW,
      &    land_impl_grT, land_calc_snow,
      &    land_calc_alb, land_oldPickup,
-     &    land_timeave_mnc, land_snapshot_mnc, land_mon_mnc,
+     &    land_snapshot_mnc, land_mon_mnc,
      &    land_pickup_write_mnc, land_pickup_read_mnc,
-     &    land_timeave_mdsio, land_snapshot_mdsio, land_mon_stdio,
+     &    land_snapshot_mdsio, land_mon_stdio,
      &    land_pickup_write_mdsio
       LOGICAL land_calc_grT
       LOGICAL land_calc_grW
@@ -29,9 +29,9 @@ C     land_oldPickup :: restart from an old pickup (= before checkpoint 52l_pre)
       LOGICAL land_calc_alb
       LOGICAL land_oldPickup
       LOGICAL
-     &    land_timeave_mnc, land_snapshot_mnc, land_mon_mnc,
+     &    land_snapshot_mnc, land_mon_mnc,
      &    land_pickup_write_mnc, land_pickup_read_mnc,
-     &    land_timeave_mdsio, land_snapshot_mdsio, land_mon_stdio,
+     &    land_snapshot_mdsio, land_mon_stdio,
      &    land_pickup_write_mdsio
 
 C--   COMMON /LAND_PAR_C/: Character valued parameters
@@ -46,7 +46,6 @@ C     land_snow_iniFile :: File containing initial snow thickness.
 
 C--   COMMON /LAND_PAR_R/: real-type parameters
 C     land_deltaT     :: land model time-step
-C     land_taveFreq   :: Frequency^-1 for time-Aver. output (s)
 C     land_diagFreq   :: Frequency^-1 for diagnostic output (s)
 C     land_monFreq    :: Frequency^-1 for monitor    output (s)
 C     land_grdLambda  :: Thermal conductivity of the ground (W/m/K)
@@ -58,7 +57,7 @@ C     land_fractRunOff:: fraction of water in excess which run-off (1)
 C     land_rhoSnow    :: density of snow (kg/m3)
 C     land_rhoLiqW    :: density of liquid water (kg/m3)
 C     land_Lfreez     :: Latent heat of freezing (J/kg)
-C     recip_Lfreez    :: reciprol of Latent heat (kg/J)
+C     recip_Lfreez    :: reciprocal of Latent heat (kg/J)
 C     land_hMaxSnow   :: Maximum snow-thickness  (m)
 C     diffKsnow       :: thermal conductivity of snow (W/m/K)
 C     timeSnowAge     :: snow aging time scale   (s)
@@ -70,7 +69,7 @@ C     albOldSnow      :: albedo of old snow (snowAge > 35.d)
 C     hAlbSnow        :: snow thickness for albedo transition: snow/ground
 
       COMMON /LAND_PAR_R/
-     &    land_deltaT, land_taveFreq, land_diagFreq, land_monFreq,
+     &    land_deltaT, land_diagFreq, land_monFreq,
      &    land_grdLambda, land_heatCs, land_CpWater,
      &    land_wTauDiff, land_waterCap, land_fractRunOff,
      &    land_rhoLiqW,
@@ -79,7 +78,7 @@ C     hAlbSnow        :: snow thickness for albedo transition: snow/ground
      &    albColdSnow, albWarmSnow, tempSnowAlbL,
      &    albOldSnow, hAlbSnow
 
-      _RL land_deltaT, land_taveFreq, land_diagFreq, land_monFreq
+      _RL land_deltaT, land_diagFreq, land_monFreq
       _RL land_grdLambda, land_heatCs, land_CpWater
       _RL land_wTauDiff, land_waterCap, land_fractRunOff
       _RL land_rhoLiqW
@@ -90,7 +89,7 @@ C     hAlbSnow        :: snow thickness for albedo transition: snow/ground
 
 C--   COMMON /LAND_GRID_R/: layer dependent parameters
 C     land_dzF        :: layer thickness
-C     land_rec_dzC    :: reciprol vertical spacing (from center to center)
+C     land_rec_dzC    :: reciprocal vertical spacing (from center to center)
       COMMON /LAND_GRID_R/
      &    land_dzF, land_rec_dzC
 

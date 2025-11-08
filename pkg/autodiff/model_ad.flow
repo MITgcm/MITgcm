@@ -34,14 +34,6 @@ CADJ SUBROUTINE DO_STATEVARS_DIAGS  DEPEND = 1,2,3,4
 CADJ SUBROUTINE DO_STATEVARS_DIAGS  REQUIRED
 
 C----------------------------------------
-C subroutine  DO_STATEVARS_TAVE
-C----------------------------------------
-CADJ SUBROUTINE DO_STATEVARS_TAVE  INPUT  = 1,2,3
-CADJ SUBROUTINE DO_STATEVARS_TAVE  OUTPUT =
-CADJ SUBROUTINE DO_STATEVARS_TAVE  DEPEND = 1,2,3
-CADJ SUBROUTINE DO_STATEVARS_TAVE  REQUIRED
-
-C----------------------------------------
 C subroutine  plot_field_xyrs
 C----------------------------------------
 CADJ SUBROUTINE plot_field_xyrs INPUT  = 1,2,3,4

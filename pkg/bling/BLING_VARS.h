@@ -129,6 +129,11 @@ C      Schmidt number coefficients
 
 C ==========================================================
 C   Bling inputs (specified in data.bling)
+C
+C  bling_k0_2dFile :: File containing a 2D spatial field of light attenuation
+C        coefficient (k0_2d, in m^-1). This coefficient regulates underwater
+C        light availability in the BLING model. If not specified, a constant
+C        value k0 (default= 0.04 m^-1) is applied for entire domain.
 C ==========================================================
 
        COMMON /BLING_INPUTS/
@@ -136,6 +141,7 @@ C ==========================================================
      &        bling_forcingPeriod, bling_forcingCycle,
      &        river_conc_po4, river_dom_to_nut,
      &        bling_Pc_2dFile, bling_Pc_2d_diazFile,
+     &        bling_k0_2dFile,
      &        bling_alpha_photo2dFile,bling_phi_DOM2dFile,
      &        bling_k_Fe2dFile, bling_k_Fe_diaz2dFile,
      &        bling_gamma_POM2dFile, bling_wsink0_2dFile,
@@ -152,6 +158,7 @@ C      apco2               :: Atmospheric pCO2 to be read in with exf pkg
       CHARACTER*(MAX_LEN_FNAM) bling_psmFile
       CHARACTER*(MAX_LEN_FNAM) bling_plgFile
       CHARACTER*(MAX_LEN_FNAM) bling_pdiazFile
+      CHARACTER*(MAX_LEN_FNAM) bling_k0_2dFile
       CHARACTER*(MAX_LEN_FNAM) bling_Pc_2dFile
       CHARACTER*(MAX_LEN_FNAM) bling_Pc_2d_diazFile
       CHARACTER*(MAX_LEN_FNAM) bling_alpha_photo2dFile
@@ -186,6 +193,7 @@ C          satellite-equivalent chlorophyll diagnostic (and cost)
      &                     chl,
      &                     chl_sat,
      &                     poc,
+     &                     k0_2d,
      &                     Pc_0_2d,
      &                     k_Fe_2d,
      &                     wsink0_2d,
@@ -294,6 +302,7 @@ C          satellite-equivalent chlorophyll diagnostic (and cost)
       _RL chl(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL chl_sat(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL poc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL k0_2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL Pc_0_2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL k_Fe_2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL wsink0_2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
