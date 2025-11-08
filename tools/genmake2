@@ -3243,15 +3243,6 @@ echo 'F77_PP_SRC_FILES = $(F77_SRC_FILES:.F=.'$FS')'     >> $MAKEFILE
 echo 'F90_PP_SRC_FILES = $(F90_SRC_FILES:.F90=.'$FS90')' >> $MAKEFILE
 echo 'OBJFILES= $(F90_SRC_FILES:.F90=.o) $(F77_SRC_FILES:.F=.o) $(C_SRC_FILES:.c=.o)' >> $MAKEFILE
 
-if test "x$TAPENADE" != x ; then
-cat >>$MAKEFILE <<EOF
-TAPENADE_SUPPORT_C_SRC_FILES = \
-${TAPTOOLS}/ADFirstAidKit/adStack.c \
-${TAPTOOLS}/ADFirstAidKit/adBinomial.c
-EOF
-echo 'TAP_SUPPORT_OBJFILES = $(TAPENADE_SUPPORT_C_SRC_FILES:.c=.o)' >> $MAKEFILE
-fi
-
 echo >> $MAKEFILE
 echo '.SUFFIXES:' >> $MAKEFILE
 echo '.SUFFIXES: .o .'$FS' .p .F .c .f'$FS90' .'$FS90' .FF90 .F90 .flow' >> $MAKEFILE
@@ -3696,24 +3687,25 @@ if test "x$TAPENADE" != x ; then
 
 cat >>$MAKEFILE <<EOF
 # ========== begin TAPENADE specific section ==============
+
 EOF
 
 echo "  Add the source list for AD code generation"
-echo >> $MAKEFILE
 printf "AD_FILES = " >> $MAKEFILE
 AD_FILES=`cat $TMP.adSrcFiles`
 for i in $AD_FILES ; do
   toBeIgnored=`grep "^$i\>" ${TAP_DONT_TRANSFORM}`
   if test -z "$toBeIgnored" ; then
     echo   " \\" >> $MAKEFILE
-   #printf " $i" | sed "s/\.F/.$FS/" >> $MAKEFILE
-    printf " $i" | sed "s/\.F/.f/" >> $MAKEFILE
+    printf " $i" | sed "s/\.F/.$FS/" >> $MAKEFILE
   fi
 done
 echo >> $MAKEFILE
 rm -f $TMP.adSrcFiles $TMP.adF90Files
-#cat $TMP.nonADF77srclist >> $MAKEFILE
+if test $CAT_SRC_FOR_TAF = 0 ; then
+ cat $TMP.nonADF77srclist >> $MAKEFILE
 #cat $TMP.nonADF90srclist >> $MAKEFILE
+fi
 rm -f $TMP.nonADF77srclist $TMP.nonADF90srclist
 
 cat >>$MAKEFILE <<EOF
@@ -3722,23 +3714,14 @@ TAPENADECMD = ${TAPENADECMD}
 
 TAPENADE_SUPPORT_F90_SRC_FILES = \
 ${TAPTOOLS}/diffsizes.F90
-AD_CLEAN = *_b.f *_d.f *.f~ *.msg *.msg~ f95_test_mods.f90
 
 f95_test_mods.f90: \$(TAPENADE_SUPPORT_F90_SRC_FILES)
 	cat \$^ > \$@
-#
+
 AD_FILES_ADJ=\$(AD_FILES:.$FS=_b.f)
 AD_FILES_TLM=\$(AD_FILES:.$FS=_d.f)
-#
-.PHONY: TAP_TLM_FILES
-TAP_TLM_FILES: \$(AD_FILES) f95_test_mods.f90
-	touch \$(AD_FILES_TLM)
-	\$(TAPENADECMD) -d -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
-#
-.PHONY: TAP_ADJ_FILES
-TAP_ADJ_FILES: \$(AD_FILES) f95_test_mods.f90
-	touch \$(AD_FILES_ADJ)
-	\$(TAPENADECMD) -b -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
+
+AD_CLEAN = \$(AD_FILES_ADJ) \$(AD_FILES_TLM) *.f~ *.msg *.msg~ f95_test_mods.f90
 
 tap_adj: ad_exe_target
 ad_exe_target:
@@ -3756,14 +3739,63 @@ tlm_exe_target:
 	@-rm -f ad_config.template
 	\$(MAKE) -f \$(MAKEFILE) \$(EXE_TLM)
 
-\$(EXE_ADJ): \$(SPECIAL_FILES) \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES) \$(OBJFILES) \$(TAP_SUPPORT_OBJFILES) \$(EMBEDDED_FILES) TAP_ADJ_FILES
-	@echo Creating \$@ ...
-	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) \$(AD_FILES_ADJ) \$(TAP_SUPPORT_OBJFILES:${TAPTOOLS}/ADFirstAidKit/%=%) \$(LIBS)
+EOF
 
-\$(EXE_TLM): \$(SPECIAL_FILES) \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES) \$(OBJFILES) \$(TAP_SUPPORT_OBJFILES) \$(EMBEDDED_FILES) TAP_TLM_FILES
-	@echo Creating \$@ ...
-	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) \$(AD_FILES_TLM) \$(TAP_SUPPORT_OBJFILES:${TAPTOOLS}/ADFirstAidKit/%=%) \$(LIBS)
+if test $CAT_SRC_FOR_TAF = 1 ; then
+#-- cat all AD/TL Subroutine files into a single file (-> compile 1 file):
 
+cat >>$MAKEFILE <<EOF
+adj_tap_all.$FS: \$(AD_FILES) f95_test_mods.f90
+	\$(TAPENADECMD) -b -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
+	cat \$(AD_FILES_ADJ) > adj_tap_all.$FS 2> /dev/null || true
+
+tlm_tap_all.$FS: \$(AD_FILES) f95_test_mods.f90
+	\$(TAPENADECMD) -d -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
+	cat \$(AD_FILES_TLM) > tlm_tap_all.$FS 2> /dev/null || true
+
+\$(EXE_ADJ): \$(SPECIAL_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES) \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(OBJFILES) \$(EMBEDDED_FILES) adj_tap_all.$FS
+	\$(MAKE) -f \$(MAKEFILE) adj_tap_all.o
+	@echo Creating \$@ ...
+	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) adj_tap_all.o \$(LIBS)
+
+\$(EXE_TLM): \$(SPECIAL_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES) \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(OBJFILES) \$(EMBEDDED_FILES) tlm_tap_all.$FS
+	\$(MAKE) -f \$(MAKEFILE) tlm_tap_all.o
+	@echo Creating \$@ ...
+	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) tlm_tap_all.o \$(LIBS)
+
+EOF
+else
+#-- append FWD S/R file to AD/TL Subroutine file (-> compile multiple files):
+
+cat >>$MAKEFILE <<EOF
+adj_tap_all.$FS: \$(AD_FILES) f95_test_mods.f90
+	@-rm -f \$(AD_FILES_ADJ)
+	\$(TAPENADECMD) -b -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
+	ls -l the_main_loop_b.f
+	@$BASH\$(TOOLSDIR)/TAP_support/append_fwd_src _b $FS \$(AD_FILES)
+	touch adj_tap_all.$FS
+
+tlm_tap_all.$FS: \$(AD_FILES) f95_test_mods.f90
+	@-rm -f \$(AD_FILES_TLM)
+	\$(TAPENADECMD) -d -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
+	ls -l the_main_loop_d.f
+	@$BASH\$(TOOLSDIR)/TAP_support/append_fwd_src _d $FS \$(AD_FILES)
+	touch tlm_tap_all.$FS
+
+\$(EXE_ADJ): \$(SPECIAL_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES) \$(EMBEDDED_FILES) adj_tap_all.$FS
+	\$(MAKE) -f \$(MAKEFILE) \$(AD_FILES_ADJ:.f=.o)
+	@echo Creating \$@ ...
+	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(AD_FILES_ADJ:.f=.o) \$(LIBS)
+
+\$(EXE_TLM): \$(SPECIAL_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES) \$(EMBEDDED_FILES) tlm_tap_all.$FS
+	\$(MAKE) -f \$(MAKEFILE) \$(AD_FILES_TLM:.f=.o)
+	@echo Creating \$@ ...
+	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(F90_SRC_FILES:.F90=.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(AD_FILES_TLM:.f=.o) \$(LIBS)
+
+EOF
+fi
+
+cat >>$MAKEFILE <<EOF
 # ============ end TAPENADE specific section ==============
 
 EOF
