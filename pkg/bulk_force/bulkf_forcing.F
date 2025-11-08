@@ -45,7 +45,6 @@ C     == global variables ==
 #include "BULKF_PARAMS.h"
 #include "BULKF.h"
 #include "BULKF_INT.h"
-#include "BULKF_TAVE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == routine arguments ==
@@ -258,9 +257,6 @@ c    &                )*rhoConstFresh
             ENDDO
           ENDDO
          ENDIF
-
-         IF ( blk_taveFreq.GT.0. _d 0 )
-     &     CALL BULKF_AVE( bi, bj, myThid )
 
 C--   end bi,bj loops
        ENDDO

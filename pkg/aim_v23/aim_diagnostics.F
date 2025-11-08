@@ -25,16 +25,14 @@ C-- size for MITgcm & Physics package :
 
 #include "AIM_PARAMS.h"
 c #include "AIM2DYN.h"
-#include "AIM_TAVE.h"
 #include "com_physvar.h"
 #include "com_forcing.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
-C     bi,bj  :: Tile index
+C     bi, bj :: Tile index
 C     myTime :: Current time of simulation ( s )
 C     myIter :: Current iteration number in simulation
-C     myThid :: Number of this instance of the routine
+C     myThid :: my Thread Id number
       INTEGER bi, bj
       _RL     myTime
       INTEGER myIter, myThid
@@ -50,9 +48,7 @@ C     !FUNCTIONS:
 #endif
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
-      INTEGER I,J,K, I2,Katm
-      _RL DDTT
+      INTEGER J
       CHARACTER*(10) suff
 #ifdef ALLOW_DIAGNOSTICS
       _RL tmpVar(NGP)
@@ -306,77 +302,6 @@ C--   cloud-top pressure: multiplied by cloud fraction before averaging:
       DO J=1,NGP
         CLTOP(J,myThid)=CLTOP(J,myThid)*CLOUDC(J,myThid)
       ENDDO
-
-#ifdef ALLOW_AIM_TAVE
-
-      IF ( aim_taveFreq.GT.0. ) THEN
-
-        DDTT = deltaTClock
-
-        DO J=1,sNy
-         DO I=1,sNx
-          I2 = I+(J-1)*sNx
-          TSRtave(i,j,bi,bj)    = TSRtave(i,j,bi,bj)
-     &                          + TSR(I2,myThid)*DDTT
-          OLRtave(i,j,bi,bj)    = OLRtave(i,j,bi,bj)
-     &                          + OLR(I2,myThid)*DDTT
-          SSRtave(i,j,bi,bj)    = SSRtave(i,j,bi,bj)
-     &                          + SSR(I2,0,myThid)*DDTT
-          SLRtave(i,j,bi,bj)    = SLRtave(i,j,bi,bj)
-     &                          + SLR(I2,0,myThid)*DDTT
-          SHFtave(i,j,bi,bj)    = SHFtave(i,j,bi,bj)
-     &                          + SHF(I2,0,myThid)*DDTT
-          EVAPtave(i,j,bi,bj)   = EVAPtave(i,j,bi,bj)
-     &                          + EVAP(I2,0,myThid)*DDTT
-          PRECNVtave(i,j,bi,bj) = PRECNVtave(i,j,bi,bj)
-     &                          + PRECNV(I2,myThid)*DDTT
-          PRECLStave(i,j,bi,bj) = PRECLStave(i,j,bi,bj)
-     &                          + PRECLS(I2,myThid)*DDTT
-          CLOUDCtave(i,j,bi,bj) = CLOUDCtave(i,j,bi,bj)
-     &                          + CLOUDC(I2,myThid)*DDTT
-          CLTOPtave(i,j,bi,bj)  = CLTOPtave(i,j,bi,bj)
-     &                          + CLTOP(I2,myThid)*DDTT
-          CBMFtave(i,j,bi,bj)   = CBMFtave(i,j,bi,bj)
-     &                          + CBMF(I2,myThid)*DDTT
-          DRAGtave(i,j,bi,bj)   = DRAGtave(i,j,bi,bj)
-     &                          + DRAG(I2,0,myThid)*DDTT
-          aimV0tave(i,j,bi,bj)  = aimV0tave(i,j,bi,bj)
-     &                          + SPEED0(I2,myThid)*DDTT
-          aimT0tave(i,j,bi,bj)  = aimT0tave(i,j,bi,bj)
-     &                          + T0(I2,myThid)*DDTT
-          aimQ0tave(i,j,bi,bj)  = aimQ0tave(i,j,bi,bj)
-     &                          + Q0(I2,myThid)*DDTT
-          EnFxPrtave(i,j,bi,bj) = EnFxPrtave(i,j,bi,bj)
-     &                          + EnPrec(I2,myThid)
-     &                          *(PRECNV(I2,myThid)+
-     &                            PRECLS(I2,myThid))*DDTT
-          albedotave(i,j,bi,bj) = albedotave(i,j,bi,bj)
-     &                          + alb1(I2,0,myThid)*DDTT
-          dTsurftave(i,j,bi,bj) = dTsurftave(i,j,bi,bj)
-     &                          + dTsurf(I2,1,myThid)*DDTT
-         ENDDO
-        ENDDO
-
-C-      Relative Humidity :
-        DO k=1,Nr
-         Katm = _KD2KA( k )
-         DO j=1,sNy
-          DO i=1,sNx
-           I2 = i+(j-1)*sNx
-           aimRHtave(i,j,k,bi,bj) = aimRHtave(i,j,k,bi,bj)
-     &                            + RH(I2,Katm,myThid)*DDTT
-          ENDDO
-         ENDDO
-        ENDDO
-
-C-    Keep record of how much time has been integrated over
-        aim_timeAve(bi,bj) = aim_timeAve(bi,bj)+DDTT
-
-      ENDIF
-
-#endif /* ALLOW_AIM_TAVE */
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_DIAGNOSTICS
        IF ( useDiagnostics ) THEN

@@ -1791,22 +1791,41 @@ Environment.
 Steps for Mac OS
 ----------------
 
-Tapenade 3.16 distribution does not contain a fortranParser executable for
-MacOS. It uses a docker image from `here
-<https://gitlab.inria.fr/tapenade/tapenade>`__. You need docker on your Mac to
-run the Tapenade distribution with Fortran programs. Details on how to build
-fortranParser is `here
-<https://tapenade.gitlabpages.inria.fr/tapenade/docs/html/src/frontf/README.html?highlight=mac>`__. You
-may also build Tapenade on your Mac from the `gitlab repository
+Tapenade 3.16 distribution does not contain a fortranParser executable
+for MacOS. You need docker on your Mac to run the Tapenade
+distribution with Fortran programs with a docker image from `here
+<https://gitlab.inria.fr/tapenade/tapenade>`__. Details on how to
+build your own fortranParser is `here
+<https://tapenade.gitlabpages.inria.fr/tapenade/docs/html/src/frontf/README.html?highlight=mac>`__.
+You may also build Tapenade on your Mac from the `gitlab repository
 <https://tapenade.gitlabpages.inria.fr/tapenade/docs/html/distrib/README.html>`__.
 
-To use the docker image specify ``TAPENADECMD=tapenadocker`` in your
-build-options or in a ``genmake_local`` file (:numref:`genmake2_desc`).
-Running a docker image also requires absolute paths, e.g., to
-:filelink:`tools/TAP_support/flow_tap <tools/TAP_support/flow_tap>`. At the
-:filelink:`genmake2 <tools/genmake2>` step use the option ``-rootdir`` to
-specify the absolute path to your MITgcm directory (see also
-:numref:`command_line_options`).
+Running a docker image requires absolute paths, e.g., to
+:filelink:`tools/TAP_support/flow_tap <tools/TAP_support/flow_tap>`.
+To make it work,
+
+1. use the option ``-rootdir`` at the :filelink:`genmake2
+   <tools/genmake2>` step, or alternatively export environment
+   variable ``MITGCM_ROOTDIR``, to specify the absolute path to your
+   MITgcm directory (see also :numref:`command_line_options`).
+
+2. bind mount the absolute path in the docker command as a volume by putting
+   ::
+
+      BASEDIR="$(cd "$(dirname "$0")" && cd ../ && pwd)"
+      TAPENADECMD="docker container run --rm -u $(stat -f '%u:%g' ./) \
+                -v \${PWD}:\${PWD} -v ${BASEDIR}:${BASEDIR} -w \${PWD} \
+	        registry.gitlab.inria.fr/tapenade/tapenade"
+
+   in your build-options or in a ``genmake_local`` file
+   (:numref:`genmake2_desc`). ``BASENAME`` should expand to your
+   root directory (check ``TAPENADECMD`` in ``Makefile``).
+
+In order to run :filelink:`./testreport -tap $moreoption
+<verification/testreport>` in :filelink:`verification <verification>`,
+the root directory can be passed to :filelink:`genmake2
+<tools/genmake2>` via ``export MITGCM_ROOTDIR=$BASEDIR`` or setting it
+in your built-options or ``genmake_local`` file.
 
 Steps for Linux
 ---------------

@@ -105,6 +105,8 @@ C     former ALLOW_SEAICE_COST_SMR_AREA related flags
       _RL SEAICE_clamp_salt
       _RL SEAICE_clamp_theta
 #endif /* ALLOW_COST */
+      _RL SEAICE_taveFreq
+      LOGICAL SEAICE_tave_mnc
 
 C--   SEAICE parameters
       NAMELIST /SEAICE_PARM01/
@@ -552,13 +554,10 @@ C     LSR parameters
       SEAICEwriteState  = .FALSE.
       SEAICE_monFreq    = monitorFreq
       SEAICE_dumpFreq   = dumpFreq
-      SEAICE_taveFreq   = taveFreq
 #ifdef ALLOW_MNC
-      SEAICE_tave_mnc = timeave_mnc
       SEAICE_dump_mnc = snapshot_mnc
       SEAICE_mon_mnc  = monitor_mnc
 #else
-      SEAICE_tave_mnc = .FALSE.
       SEAICE_dump_mnc = .FALSE.
       SEAICE_mon_mnc  = .FALSE.
 #endif
@@ -605,6 +604,8 @@ c     MAX_TICE           = 30.     _d 0
       MAX_HEFF           = UNSET_RL
       SEAICEuseAB2       = .FALSE.
       SEAICE_abEps       = UNSET_RL
+      SEAICE_taveFreq    = UNSET_RL
+      SEAICE_tave_mnc    = .FALSE.
 C-    end retired parameters
 
 #ifdef ALLOW_COST
@@ -1345,6 +1346,25 @@ C-    Retired parameters
        CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
 #endif /* ALLOW_COST */
+      IF ( SEAICE_taveFreq .NE. UNSET_RL ) THEN
+        WRITE(msgBuf,'(2A)') 'SEAICE_READPARMS: "SEAICE_taveFreq"',
+     &    ' is no longer allowed in file "data.seaice"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'SEAICE_READPARMS: ',
+     &    ' since "pkg/timeave" has been removed.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        nRetired = nRetired + 1
+      ENDIF
+      IF ( SEAICE_tave_mnc ) THEN
+        WRITE(msgBuf,'(2A)') 'SEAICE_READPARMS: "SEAICE_tave_mnc"',
+     &    ' is no longer allowed in file "data.seaice"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'SEAICE_READPARMS: ',
+     &    ' since "pkg/timeave" has been removed.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        nRetired = nRetired + 1
+      ENDIF
+
       IF ( nRetired .GT. 0 ) THEN
        WRITE(msgBuf,'(2A)') 'S/R SEAICE_READPARMS: ',
      &  'Error reading parameter file "data.seaice"'
@@ -1378,13 +1398,10 @@ C     facOpenGrow/facOpenMelt
       IF (SEAICE_doOpenWaterMelt)   facOpenMelt = 1. _d 0
 
 C-    Set Output type flags :
-      SEAICE_tave_mdsio = .TRUE.
       SEAICE_dump_mdsio = .TRUE.
       SEAICE_mon_stdio  = .TRUE.
 #ifdef ALLOW_MNC
       IF (useMNC) THEN
-        IF ( .NOT.outputTypesInclusive
-     &       .AND. SEAICE_tave_mnc ) SEAICE_tave_mdsio = .FALSE.
         IF ( .NOT.outputTypesInclusive
      &       .AND. SEAICE_dump_mnc ) SEAICE_dump_mdsio = .FALSE.
         IF ( .NOT.outputTypesInclusive

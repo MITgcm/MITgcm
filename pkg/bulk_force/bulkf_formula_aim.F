@@ -138,7 +138,7 @@ c     factWind2 = FWIND0*FWIND0
 c       SPEED0(J)=SQRT(factWind2*Vsurf2(J)+VG2)
 c       DENVV(J)=(PRD*PSA(J)/T0(J))*SPEED0(J)
 C-- assuming input file "WspeedFile" contains the time-average "SPEED0"
-C     from AIM output (aimPhytave: fields # 15 ; aimDiag: WINDS ) :
+C     from AIM output ( aimDiag: WINDS ) :
         DENVV(J)=(PRD*PSA(J)/T0(J))*Vsurf(J)
       ENDDO
 

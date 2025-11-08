@@ -126,10 +126,8 @@ C                          ( default is false )
 C - other (I/O, ...):
 C     SEAICEwriteState  :: If true, write sea ice state to file;
 C                          default is false.
-C     SEAICE_tave_mdsio :: write TimeAverage output using MDSIO
 C     SEAICE_dump_mdsio :: write snap-shot output   using MDSIO
 C     SEAICE_mon_stdio  :: write monitor to std-outp
-C     SEAICE_tave_mnc   :: write TimeAverage output using MNC
 C     SEAICE_dump_mnc   :: write snap-shot output   using MNC
 C     SEAICE_mon_mnc    :: write monitor to netcdf file
       LOGICAL
@@ -160,8 +158,8 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICE_salinityTracer, SEAICE_ageTracer,
      &     SEAICErestoreUnderIce, SEAICE_growMeltByConv,
      &     SEAICEwriteState,
-     &     SEAICE_tave_mdsio, SEAICE_dump_mdsio, SEAICE_mon_stdio,
-     &     SEAICE_tave_mnc,   SEAICE_dump_mnc,   SEAICE_mon_mnc
+     &     SEAICE_dump_mdsio, SEAICE_mon_stdio,
+     &     SEAICE_dump_mnc,   SEAICE_mon_mnc
       COMMON /SEAICE_PARM_L/
      &     SEAICEuseDYNAMICS, SEAICEuseFREEDRIFT, SEAICEuseStrImpCpl,
      &     SEAICEuseEVP, SEAICEuseEVPstar, SEAICEuseEVPrev,
@@ -190,8 +188,8 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICE_salinityTracer, SEAICE_ageTracer,
      &     SEAICErestoreUnderIce, SEAICE_growMeltByConv,
      &     SEAICEwriteState,
-     &     SEAICE_tave_mdsio, SEAICE_dump_mdsio, SEAICE_mon_stdio,
-     &     SEAICE_tave_mnc,   SEAICE_dump_mnc,   SEAICE_mon_mnc
+     &     SEAICE_dump_mdsio, SEAICE_mon_stdio,
+     &     SEAICE_dump_mnc,   SEAICE_mon_mnc
 
 C--   COMMON /SEAICE_PARM_I/ Integer valued parameters of sea ice model.
 C     IMAX_TICE         :: number of iterations for ice surface temp
@@ -390,7 +388,6 @@ C     SEAICE_zetaMin     :: lower bound for viscosity (default = 0)    (N s/m^2)
 C     SEAICEpresH0       :: HEFF threshold for ice strength            (m)
 C     SEAICE_monFreq     :: SEAICE monitor frequency.                   (s)
 C     SEAICE_dumpFreq    :: SEAICE dump frequency.                      (s)
-C     SEAICE_taveFreq    :: SEAICE time-averaging frequency.            (s)
 C     SEAICE_initialHEFF :: initial sea-ice thickness                   (m)
 C     SEAICE_rhoAir      :: density of air                              (kg/m^3)
 C     SEAICE_rhoIce      :: density of sea ice                          (kg/m^3)
@@ -521,7 +518,7 @@ C                        useTEM options, default is one
 C
       _RL SEAICE_deltaTtherm, SEAICE_deltaTdyn, SEAICE_deltaTevp
       _RL SEAICE_LSRrelaxU, SEAICE_LSRrelaxV
-      _RL SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq
+      _RL SEAICE_monFreq, SEAICE_dumpFreq
       _RL SEAICE_initialHEFF
       _RL SEAICE_rhoAir, SEAICE_rhoIce, SEAICE_rhoSnow, ICE2WATR
       _RL SEAICE_cpAir
@@ -581,7 +578,7 @@ C
      &    SEAICEaEVPcoeff, SEAICEaEVPcStar, SEAICEaEVPalphaMin,
      &    SEAICE_evpDampC, SEAICE_zetaMin, SEAICE_zetaMaxFac,
      &    SEAICE_evpAreaReg, SEAICEpresH0,
-     &    SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq,
+     &    SEAICE_monFreq, SEAICE_dumpFreq,
      &    SEAICE_initialHEFF,
      &    SEAICE_rhoAir, SEAICE_rhoIce, SEAICE_rhoSnow, ICE2WATR,
      &    SEAICE_drag, SEAICE_waterDrag, SEAICEdWatMin,

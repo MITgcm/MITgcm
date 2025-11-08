@@ -95,8 +95,6 @@ C       |-- STATE_SUMMARY
 C       |
 C       |-- MONITOR
 C       |
-C       |-- DO_STATEVARS_TAVE
-C       |
 C       |-- DO_THE_MODEL_IO
 
 C     !USES:
@@ -384,14 +382,6 @@ C--   Finally summarise the model state
 C--   Check status of initial state (statistics, cfl, etc...)
       CALL MONITOR( startTime, nIter0, myThid )
 #endif /* ALLOW_MONITOR */
-
-#ifdef ALLOW_TIMEAVE
-#ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('DO_STATEVARS_TAVE',myThid)
-#endif
-C--   Initialise time-average arrays with initial state values
-      CALL DO_STATEVARS_TAVE( startTime, nIter0, myThid )
-#endif
 
 C--   Dump initial state to files
 #ifdef ALLOW_DEBUG

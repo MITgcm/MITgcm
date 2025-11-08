@@ -54,7 +54,11 @@ C     number of surface interface layer
       INTEGER kSurface
 CEOP
 
-      IF ( usingPCoords ) THEN
+      IF ( fluidIsAir ) THEN
+       kSurface = 0
+      ELSEIF ( usingZCoords .AND. useShelfIce ) THEN
+       kSurface = -1
+      ELSEIF ( usingPCoords ) THEN
        kSurface = Nr
       ELSE
        kSurface = 1
@@ -74,33 +78,47 @@ C     because it is needed by KPP_TRANSPORT_PTR.
 #endif /* ALLOW_GCHEM */
 
       IF ( k .EQ. kSurface ) THEN
-        DO j=jMin,jMax
-         DO i=iMin,iMax
+c      DO j=jMin,jMax
+c       DO i=iMin,iMax
+       DO j=0,sNy+1
+        DO i=0,sNx+1
           gPtracer(i,j) = gPtracer(i,j)
      &                  + surfForcPtr(i,j)
      &                   *recip_drF(k)*recip_hFacC(i,j,k,bi,bj)
-         ENDDO
         ENDDO
+       ENDDO
+      ELSEIF ( kSurface.EQ.-1 ) THEN
+       DO j=0,sNy+1
+        DO i=0,sNx+1
+         IF ( kSurfC(i,j,bi,bj).EQ.k ) THEN
+          gPtracer(i,j) = gPtracer(i,j)
+     &                  + surfForcPtr(i,j)
+     &                   *recip_drF(k)*recip_hFacC(i,j,k,bi,bj)
+         ENDIF
+        ENDDO
+       ENDDO
+C---  Customized code starts -----------------------------------------
       ELSE
 C-    Case of age-tracer: in the interior, set aging tendency to one:
-        DO j=jMin,jMax
-         DO i=iMin,iMax
+       DO j=0,sNy+1
+        DO i=0,sNx+1
           gPtracer(i,j) = gPtracer(i,j)
      &                  + 1. _d 0 * maskC(i,j,k,bi,bj)
-         ENDDO
         ENDDO
+       ENDDO
+C---  Customized code ends -------------------------------------------
       ENDIF
 
       IF (PTRACERS_linFSConserve(iTracer)) THEN
-        IF (k .EQ. kSurface) THEN
-          DO j=0,sNy+1
-           DO i=0,sNx+1
+       DO j=0,sNy+1
+        DO i=0,sNx+1
+         IF ( kSurfC(i,j,bi,bj).EQ.k ) THEN
             gPtracer(i,j) = gPtracer(i,j)
      &           +meanSurfCorPTr(iTracer)*recip_drF(k)
      &           *_recip_hFacC(i,j,k,bi,bj)
-           ENDDO
-          ENDDO
-        ENDIF
+         ENDIF
+        ENDDO
+       ENDDO
       ENDIF
 
 #ifdef ALLOW_RBCS

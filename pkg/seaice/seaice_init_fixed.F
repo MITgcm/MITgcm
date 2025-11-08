@@ -62,9 +62,7 @@ CEOP
       ENDIF
 
 C     Initialize MNC variable information for SEAICE
-      IF ( useMNC .AND.
-     &    (seaice_tave_mnc.OR.seaice_dump_mnc.OR.SEAICE_mon_mnc)
-     &   ) THEN
+      IF ( useMNC .AND. ( seaice_dump_mnc .OR. SEAICE_mon_mnc ) ) THEN
         CALL SEAICE_MNC_INIT( myThid )
       ENDIF
 

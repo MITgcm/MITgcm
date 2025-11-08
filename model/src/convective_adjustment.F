@@ -24,9 +24,6 @@ C     == Global data ==
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
-#ifdef ALLOW_TIMEAVE
-#include "TIMEAVE_STATV.h"
-#endif
 #ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -170,13 +167,6 @@ C-          Convectively mix passive tracers across interface k
 
 C--       End DO k=1,Nr
         ENDDO
-
-#ifdef ALLOW_TIMEAVE
-        IF (myIter.NE.nIter0 .AND. taveFreq.GT.0.) THEN
-         CALL TIMEAVE_CUMUL_1T(ConvectCountTave, ConvectCount,
-     I                         Nr, deltaTClock, bi, bj, myThid)
-        ENDIF
-#endif /* ALLOW_TIMEAVE */
 
 #ifdef ALLOW_DIAGNOSTICS
         IF ( myIter.NE.nIter0 .AND. useDiagnostics ) THEN
