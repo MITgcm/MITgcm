@@ -1,6 +1,6 @@
 #include "COST_OPTIONS.h"
 
-      subroutine cost_dependent_init( myThid )
+      SUBROUTINE COST_DEPENDENT_INIT( myThid )
 
 c     ==================================================================
 c     SUBROUTINE cost_dependent_init
@@ -26,16 +26,16 @@ c     == global variables ==
 #endif
 
 c     == routine arguments ==
-      integer myThid
+      INTEGER myThid
 
 c     == local variables ==
 #if ( defined ALLOW_COST_VECTOR || defined  ALLOW_COST_STATE_FINAL )
-      integer i
+      INTEGER i
 #endif
 #ifdef ALLOW_COST_STATE_FINAL
-      integer j, k
+      INTEGER j, k
 #endif
-      integer bi,bj
+      INTEGER bi,bj
 c     == end of interface ==
 
 #ifdef ALLOW_OPENAD
@@ -47,43 +47,40 @@ c     == end of interface ==
 #ifdef ALLOW_AUTODIFF
 
 #ifdef ALLOW_TAPENADE
-      fcb = 0.0
+      fcb = 0. _d 0
+      IF ( myProcId .EQ. 0 ) fcb = 1. _d 0
 #endif
 
 #ifdef ALLOW_OPENAD
       adfc = 1.0
 #else
-      if ( myProcId .EQ. 0 ) then
-       adfc = 1. _d 0
-#ifdef ALLOW_TAPENADE
-       fcb = 1.0
-#endif
-      endif
+      adfc = 0. _d 0
+      IF ( myProcId .EQ. 0 ) adfc = 1. _d 0
 #endif
 
-      do bj = myByLo(myThid), myByHi(myThid)
-       do bi = myBxLo(myThid), myBxHi(myThid)
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
 #ifdef ALLOW_COST_VECTOR
-         do i=1,sNx
+         DO i=1,sNx
           objf_vector(i,bi,bj) = 0. _d 0
           adobjf_vector(i,bi,bj) = 1. _d 0
-         enddo
+         ENDDO
 #endif
 #ifdef ALLOW_COST_STATE_FINAL
-         do k=1,4*Nr+1
-          do j=1,sNy
-           do i=1,sNx
+         DO k=1,4*Nr+1
+          DO j=1,sNy
+           DO i=1,sNx
             objf_state_final(i,j,bi,bj,k) = 0. _d 0
-           enddo
-          enddo
-         enddo
+           ENDDO
+          ENDDO
+         ENDDO
 cph No init. of cost_state_final here,
 cph because we need it in ADM*TLM
 #endif
-       enddo
-      enddo
+       ENDDO
+      ENDDO
 
 #endif /* ALLOW_AUTODIFF */
 
-      return
-      end
+      RETURN
+      END
