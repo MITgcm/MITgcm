@@ -35,7 +35,6 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GMREDI.h"
-#include "GMREDI_TAVE.h"
 #ifdef ALLOW_CTRL
 # include "CTRL_FIELDS.h"
 #endif
@@ -1191,35 +1190,6 @@ C     for backeard compatibility + for trying to generate a simpler adjoint code
        ENDDO
       ENDDO
 #endif /* ndef GM_NON_UNITY_DIAGONAL */
-
-#ifdef ALLOW_TIMEAVE
-C--   Time-average
-      IF ( taveFreq.GT.zeroRL ) THEN
-
-         CALL TIMEAVE_CUMULATE( GM_Kwx_T, Kwx, Nr,
-     &                          deltaTClock, bi, bj, myThid )
-         CALL TIMEAVE_CUMULATE( GM_Kwy_T, Kwy, Nr,
-     &                          deltaTClock, bi, bj, myThid )
-         CALL TIMEAVE_CUMULATE( GM_Kwz_T, Kwz, Nr,
-     &                          deltaTClock, bi, bj, myThid )
-# ifdef GM_VISBECK_VARIABLE_K
-       IF ( GM_Visbeck_alpha.NE.0. ) THEN
-         CALL TIMEAVE_CUMULATE( Visbeck_K_T, VisbeckK, 1,
-     &                          deltaTClock, bi, bj, myThid )
-       ENDIF
-# endif
-# ifdef GM_BOLUS_ADVEC
-       IF ( GM_AdvForm ) THEN
-         CALL TIMEAVE_CUMULATE( GM_PsiXtave, GM_PsiX, Nr,
-     &                          deltaTClock, bi, bj, myThid )
-         CALL TIMEAVE_CUMULATE( GM_PsiYtave, GM_PsiY, Nr,
-     &                          deltaTClock, bi, bj, myThid )
-       ENDIF
-# endif
-       GM_timeAve(bi,bj) = GM_timeAve(bi,bj)+deltaTClock
-
-      ENDIF
-#endif /* ALLOW_TIMEAVE */
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN

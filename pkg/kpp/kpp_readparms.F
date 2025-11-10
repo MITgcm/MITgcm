@@ -33,6 +33,7 @@ C     nRetired   :: Count number of "retired" parameters found in namelist.
       INTEGER nRetired
       LOGICAL KPPmixingMaps
       INTEGER num_v_smooth_BV, num_z_smooth_sh, num_m_smooth_sh
+      _RL kpp_taveFreq
 
 C--   KPP vertical mixing parameters
       NAMELIST /KPP_PARM01/
@@ -79,7 +80,6 @@ C     print a (weak) warning if data.kpp is found
 C--   set default KPP vertical mixing parameters
       kpp_freq               = deltaTClock
       kpp_dumpFreq           = dumpFreq
-      kpp_taveFreq           = taveFreq
       KPPwriteState          = .FALSE.
       KPPuseDoubleDiff       = .FALSE.
       LimitHblStable         = .TRUE.
@@ -152,6 +152,7 @@ C-    Retired parameters: initialised to unlikely value:
       num_v_smooth_BV = UNSET_I
       num_z_smooth_sh = UNSET_I
       num_m_smooth_sh = UNSET_I
+      kpp_taveFreq    = UNSET_RL
 
 C-----------------------------------------------------------------------
 
@@ -189,7 +190,8 @@ c    &                    SQUEEZE_RIGHT, myThid )
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
 
-C--   Print message and stop when retired parameters were found in namelist
+C--   Check for retired parameters:
+C     print message and stop when retired parameters were found in namelist
       IF ( KPPmixingMaps ) THEN
         nRetired = nRetired + 1
         WRITE(msgBuf,'(2A)') 'S/R KPP_READPARMS: "KPPmixingMaps"',
@@ -213,6 +215,15 @@ C--   Print message and stop when retired parameters were found in namelist
         WRITE(msgBuf,'(2A)') 'S/R KPP_READPARMS: "num_m_smooth_sh"',
      &                       ' no longer allowed in file "data.kpp"'
         CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      IF ( kpp_taveFreq .NE. UNSET_RL ) THEN
+        WRITE(msgBuf,'(2A)') 'KPP_READPARMS: "kpp_taveFreq"',
+     &    ' is no longer allowed in file "data.kpp"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'KPP_READPARMS: ',
+     &    ' since "pkg/timeave" has been removed.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        nRetired = nRetired + 1
       ENDIF
 
       IF ( nRetired .GT. 0 ) THEN

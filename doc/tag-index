@@ -1,6 +1,12 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg & model:
+  - remove pkg/timeave ; remove all ALLOW_TIMEAVE code ; remove all timeave
+    related parameters from common blocks (in header files) and from src code
+    and disable/retire these params.
+  - also updates model_ad.flow, TAP_support/flow_tap, OAD_support and most
+    */code_oad/cb2mFiles from verification.
 o tools (Tapenade):
   - implement "-ncad" genmake2 option for Tapenade Makefile (similar to TAF),
     to append each forward src file to corresponding Tapenade-generated AD file,

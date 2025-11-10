@@ -30,7 +30,6 @@ C-- MITgcm
 C-- Sea-Ice package
 #include "THSICE_PARAMS.h"
 #include "THSICE_VARS.h"
-#include "THSICE_TAVE.h"
 
 C-- Physics package
 #ifdef ALLOW_AIM
@@ -138,16 +137,6 @@ C-    Diagnose surf. temp. change
          ENDIF
         ENDDO
        ENDDO
-
-#ifdef ALLOW_TIMEAVE
-C-- average of Ocean Mixed-Layer temp. & salinity
-       IF ( thSIce_taveFreq .GT. 0. _d 0 ) THEN
-        CALL TIMEAVE_CUMULATE( ice_tMxL_Ave, tOceMxL,
-     &                         1, thSIce_deltaT, bi, bj, myThid )
-        CALL TIMEAVE_CUMULATE( ice_sMxL_Ave, sOceMxL,
-     &                         1, thSIce_deltaT, bi, bj, myThid )
-       ENDIF
-#endif /* ALLOW_TIMEAVE */
 
 c-- End of IF ( stepFwd_oceMxL ) THEN
       ENDIF
