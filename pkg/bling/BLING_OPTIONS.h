@@ -44,6 +44,11 @@ C Calculate MLD using a threshold criterion. If undefined,
 C MLD is calculated using the second derivative of rho(z)
 #undef BLING_USE_THRESHOLD_MLD
 
+C Determine PAR from shortwave radiation Qsw;
+C otherwise determined from date and latitude
+C (Do not define if not using pkg/exf)
+#undef USE_QSW
+
 C Light absorption scheme from Manizza et al. (2005),
 C with self shading from phytoplankton
 #undef PHYTO_SELF_SHADING
