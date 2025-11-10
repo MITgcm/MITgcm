@@ -6,13 +6,13 @@ C STREAMICE_FP.h
 #endif
 #ifdef ALLOW_STREAMICE
 
-#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP) ) 
-#    define ALLOW_STREAMICE_FP_ADJ  
-#elif (defined (ALLOW_TAPENADE) && defined (ALLOW_STREAMICE_TAP_FP) ) 
-#    define ALLOW_STREAMICE_FP_ADJ  
+#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP) )
+#    define ALLOW_STREAMICE_FP_ADJ
+#elif (defined (ALLOW_TAPENADE) && defined (ALLOW_STREAMICE_TAP_FP) )
+#    define ALLOW_STREAMICE_FP_ADJ
 #endif
 
-#ifdef ALLOW_STREAMICE_FP_ADJ		
+#ifdef ALLOW_STREAMICE_FP_ADJ
 #ifdef ALLOW_PETSC
       LOGICAL STREAMICE_need2createmat
       LOGICAL STREAMICE_need2destroymat

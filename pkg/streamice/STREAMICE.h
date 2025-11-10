@@ -1013,22 +1013,22 @@ C        velocity initial guess, so they are kept
      & (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL V_streamice_dvals
      & (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif	
+#endif
 
-#if (defined(ALLOW_STREAMICE_OAD_FP) || defined(ALLOW_STREAMICE_TAP_FP)) 
+#if (defined(ALLOW_STREAMICE_OAD_FP) || defined(ALLOW_STREAMICE_TAP_FP))
 #ifdef STREAMICE_HYBRID_STRESS
 
       COMMON /STREAMICE_PHISTAGE_ADARRS_HYBRID/
      & taubx_new_si, tauby_new_si,
      & visc_full_new_si
-#ifdef ALLOW_OPENAD     
+#ifdef ALLOW_OPENAD
      & ,taubx_dvals, tauby_dvals,
      & visc_full_dvals,
-#endif     
+#endif
       _RL taubx_new_si (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL tauby_new_si (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL visc_full_new_si (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-#ifdef ALLOW_OPENAD     
+#ifdef ALLOW_OPENAD
       _RL tauby_dvals (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL taubx_dvals (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL visc_full_dvals (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
