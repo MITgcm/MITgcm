@@ -81,6 +81,7 @@ C     data.pkg namelists
      &          useSTIC,
      &          useStreamIce,
      &          useICEFRONT,
+     &          useICEBERG,
      &          useThSIce,
      &          useLand,
      &          useATM2d,
@@ -95,6 +96,7 @@ C     data.pkg namelists
      &          useRunClock,
      &          useEMBED_FILES,
      &          useMYPACKAGE
+ 
 
       _BEGIN_MASTER(myThid)
 
@@ -146,6 +148,7 @@ c     useGAD          =.FALSE.
       useSTIC         =.FALSE.
       useStreamIce    =.FALSE.
       useICEFRONT     =.FALSE.
+      useICEBERG      =.FALSE.
       useThSIce       =.FALSE.
       useLand         =.FALSE.
       useATM2d        =.FALSE.
