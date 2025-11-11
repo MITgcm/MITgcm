@@ -6,7 +6,7 @@
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP
-      SUBROUTINE STREAMICE_VEL_SOLVE_OPENAD ( myThid, maxNLIter,
+      SUBROUTINE STREAMICE_VEL_SOLVE_FP ( myThid, maxNLIter,
      &                                maxCGiter, myIter )
 C     /============================================================\
 C     | SUBROUTINE                                                 |
