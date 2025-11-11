@@ -25,7 +25,6 @@ C  myThid   :: my Thread Id number
       INTEGER myThid
 CEOP
 
-#ifdef ALLOW_GCHEM
 cccccccccccccccccccccc
 c diagnostics        c
 cccccccccccccccccccccc
@@ -40,8 +39,6 @@ cccccccccccccccccccccc
       ENDIF
 #endif
 #endif
-
-#endif /* ALLOW_GCHEM */
 
       RETURN
       END
