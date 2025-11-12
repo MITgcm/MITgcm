@@ -733,16 +733,12 @@ c--   Compute all profiles cost function contributions.
       ENDIF
 #endif /* ALLOW_PROFILES */
 
-#ifdef ALLOW_ECCO
-      IF ( useECCO ) then
-c--   Compute all ecco cost function contributions.
-        CALL TIMER_START('ECCO_COST_DRIVER   [THE_MAIN_LOOP]', myThid)
-        CALL ECCO_COST_DRIVER ( endTime, myIter, myThid )
-        CALL TIMER_STOP ('ECCO_COST_DRIVER   [THE_MAIN_LOOP]', myThid)
-      ENDIF
-#endif /* ALLOW_ECCO */
-
 #ifdef ALLOW_COST
+c--   Compute all cost function contributions.
+      CALL TIMER_START('COST_DRIVER        [THE_MAIN_LOOP]', myThid)
+      CALL COST_DRIVER ( endTime, myIter, myThid )
+      CALL TIMER_STOP ('COST_DRIVER        [THE_MAIN_LOOP]', myThid)
+
 c--   Sum all cost function contributions.
       CALL TIMER_START('COST_FINAL         [ADJOINT SPIN-DOWN]', myThid)
       CALL COST_FINAL ( myThid )

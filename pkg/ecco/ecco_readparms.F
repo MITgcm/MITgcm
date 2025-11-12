@@ -1,7 +1,4 @@
 #include "ECCO_OPTIONS.h"
-#ifdef ALLOW_CTRL
-# include "CTRL_OPTIONS.h"
-#endif
 
       SUBROUTINE ECCO_READPARMS( myThid )
 
@@ -21,19 +18,11 @@ c     ==================================================================
 c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#include "GRID.h"
 #include "PARAMS.h"
-
 #ifdef ALLOW_ECCO
 # include "ECCO_SIZE.h"
 # include "ECCO.h"
 # include "ecco_local_params.h"
-#endif
-#ifdef ALLOW_CTRL
-# include "CTRL_OBCS.h"
-#endif
-#ifdef ALLOW_CAL
-# include "cal.h"
 #endif
 
 c     == routine arguments ==
@@ -59,7 +48,10 @@ Catn-- retired parameters
       INTEGER nRetired
       CHARACTER*(2) cost_yftype
       CHARACTER*(MAX_LEN_FNAM) topexmeanfile
+      CHARACTER*(MAX_LEN_FNAM) data_errfile
       LOGICAL using_cost_bp, using_cost_scat
+      _RL mult_obcsn, mult_obcss, mult_obcsw, mult_obcse
+      _RL mult_obcsvol, mult_ageos
 
 c     == end of interface ==
 
@@ -141,11 +133,9 @@ c--   Read the namelist input.
      &                   mult_sdrift, mult_tdrift, mult_wdrift,
      &                   mult_temp0, mult_salt0,
      &                   mult_etan0, mult_uvel0, mult_vvel0,
-#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
      &                   mult_obcsn, mult_obcss,
      &                   mult_obcsw, mult_obcse, mult_obcsvol,
      &                   mult_ageos,
-#endif
      &                   mult_curmtr,
      &                   mult_kapgm, mult_kapredi, mult_diffkr,
      &                   mult_edtau, mult_bottomdrag,
@@ -247,7 +237,6 @@ c- set default to false
 #endif
 
 c other run time parameters
-        data_errfile          =    ' '
         tbarfile              =    'tbar'
         sbarfile              =    'sbar'
         sstbarfile            =    'sstbar'
@@ -433,14 +422,6 @@ catn  eccov4 will run without needing to read in these params
         mult_wdrift           =      0. _d 0
         mult_scatx            =      0. _d 0
         mult_scaty            =      0. _d 0
-#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
-        mult_obcsn            =      0. _d 0
-        mult_obcss            =      0. _d 0
-        mult_obcsw            =      0. _d 0
-        mult_obcse            =      0. _d 0
-        mult_obcsvol          =      0. _d 0
-        mult_ageos            =      0. _d 0
-#endif
         mult_curmtr           =      0. _d 0
         mult_kapgm            =      0. _d 0
         mult_kapredi          =      0. _d 0
@@ -495,9 +476,16 @@ catn  eccov4 will run without needing to read in these params
 
 C--   retired parameters
         cost_yftype     =   'RL'
+        data_errfile    =    ' '
         topexmeanfile   =    ' '
         using_cost_bp   = .FALSE.
         using_cost_scat = .FALSE.
+        mult_obcsn      =  0. _d 0
+        mult_obcss      =  0. _d 0
+        mult_obcsw      =  0. _d 0
+        mult_obcse      =  0. _d 0
+        mult_obcsvol    =  0. _d 0
+        mult_ageos      =  0. _d 0
 
 c--     Next, read the data.ecco file.
         WRITE(msgBuf,'(A)') 'ECCO_READPARMS: opening data.ecco'
@@ -518,6 +506,18 @@ c--     Next, read the data.ecco file.
 
 C--   Check parameters:
 C-    retired parameters:
+        IF ( mult_obcsn .NE. 0. _d 0 .OR. mult_obcsn .NE. 0. _d 0 .OR.
+     &       mult_obcsw .NE. 0. _d 0 .OR. mult_obcse .NE. 0. _d 0 .OR.
+     &       mult_obcsvol .NE. 0. _d 0 .OR. mult_ageos .NE. 0. _d 0
+     &       ) THEN
+       WRITE(msgBuf,'(2A)') 'S/R ECCO_READPARMS: "mult_obcs*" and ',
+     &  '"mult_ageos" are no longer allowed in file "data.ecco"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &  'S/R ECCO_READPARMS: set them in data.ctrl instead'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       nRetired = nRetired + 1
+      ENDIF
       IF ( cost_yftype.NE.'RL' ) THEN
        WRITE(msgBuf,'(2A)') 'S/R ECCO_READPARMS: ',
      &  '"cost_yftype" is no longer allowed in file "data.ecco"'
@@ -533,6 +533,17 @@ C-    retired parameters:
       IF ( using_cost_scat ) THEN
        WRITE(msgBuf,'(2A)') 'S/R ECCO_READPARMS: ',
      &  '"using_cost_scat" is no longer allowed in file "data.ecco"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       nRetired = nRetired + 1
+      ENDIF
+      IF ( data_errfile .NE. ' ' ) THEN
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R ECCO_READPARMS: "data_errfile" ',
+     &  'is no longer allowed in file "data.ecco"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R ECCO_READPARMS: set "obcs_data_errfile" ',
+     &  'in "data.ctrl" instead'
        CALL PRINT_ERROR( msgBuf, myThid )
        nRetired = nRetired + 1
       ENDIF

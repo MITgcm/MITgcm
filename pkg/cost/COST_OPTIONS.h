@@ -35,7 +35,8 @@ C       >>> Cost function contributions
 
 #undef ALLOW_COST_TEST
 #undef ALLOW_COST_TSQUARED
-#undef ALLOW_COST_DEPTH
+C     retired:
+c#undef ALLOW_COST_DEPTH
 #undef ALLOW_COST_TRACER
 
 C   List these options here:
