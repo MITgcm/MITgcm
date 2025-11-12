@@ -53,13 +53,6 @@ CEOP
 
       ifc = 30
 
-# ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('OBCS_COST_DRIVER',myThid)
-# endif
-      CALL TIMER_START('OBCS_COST_DRIVER  [OBCS_COST_FINAL]', myThid)
-      CALL OBCS_COST_DRIVER( 0., 0, myThid )
-      CALL TIMER_STOP ('OBCS_COST_DRIVER  [OBCS_COST_FINAL]', myThid)
-
       f_obcsn  = 0. _d 0
       f_obcss  = 0. _d 0
       f_obcsw  = 0. _d 0

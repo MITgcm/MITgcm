@@ -84,13 +84,6 @@ C     Initialise cost function variables zo zero
       ENDDO
 # endif
 
-# ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('CTRL_COST_DRIVER',myThid)
-# endif
-      CALL TIMER_START('CTRL_COST_DRIVER [COST_FINAL]', myThid)
-      CALL CTRL_COST_DRIVER( myThid )
-      CALL TIMER_STOP ('CTRL_COST_DRIVER [COST_FINAL]', myThid)
-
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 # ifdef ALLOW_GENTIM2D_CONTROL

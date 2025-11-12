@@ -21,7 +21,6 @@ cost_sla_read.f
 cost_sla_read_yd.f
 cost_obcs_ageos.f
 cost_obcsvol.f
-ecco_cost_driver.f
 ecco_cost_final.f
 ecco_cost_init_varia.f
 ecco_init_varia.f

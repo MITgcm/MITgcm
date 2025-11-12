@@ -1,17 +1,22 @@
 #include "CTRL_OPTIONS.h"
 
-      subroutine ctrl_cost_driver( myThid )
+CBOP
+C !ROUTINE: CTRL_COST_DRIVER
 
-c     ==================================================================
-c     SUBROUTINE ctrl_cost_driver
-c     ==================================================================
+C !INTERFACE: ==========================================================
+      SUBROUTINE CTRL_COST_DRIVER(
+     I                             myTime, myIter, myThid )
 
-      implicit none
+C !DESCRIPTION:
+C Calculate cost function terms of ctrl variables (Tikhonov
+C regularisation) at the end of the model run, called from
+C S/R COST_DRIVER
 
-c     == global variables ==
-
-#include "EEPARAMS.h"
+C !USES: ===============================================================
+      IMPLICIT NONE
+C     == Global variables ===
 #include "SIZE.h"
+#include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
 
@@ -22,26 +27,29 @@ c     == global variables ==
 # include "CTRL_GENARR.h"
 #endif
 
-c     == routine arguments ==
+C !INPUT PARAMETERS: ===================================================
+C myTime    :: Current time in simulation
+C myIter    :: Current time-step number
+C myThid    :: my Thread Id number
+      _RL     myTime
+      INTEGER myIter, myThid
 
-      integer myThid
-
-c     == local variables ==
+C !OUTPUT PARAMETERS: ==================================================
 
 #ifdef ALLOW_CTRL
-
-      integer ivar
+C !LOCAL VARIABLES: ====================================================
+      INTEGER ivar
 #ifdef ALLOW_GENTIM2D_CONTROL
-      integer startrec
-      integer endrec
+      INTEGER startrec
+      INTEGER endrec
 #endif
 
 #if ( defined ALLOW_GENTIM2D_CONTROL \
    || defined ALLOW_GENARR2D_CONTROL \
    || defined ALLOW_GENARR3D_CONTROL )
-      integer iarr
-      logical dodimensionalcost
-      integer k2
+      INTEGER iarr
+      LOGICAL dodimensionalcost
+      INTEGER k2
 #endif
 #if ( defined ALLOW_GENTIM2D_CONTROL \
    || defined ALLOW_GENARR2D_CONTROL )
@@ -50,8 +58,7 @@ c     == local variables ==
 #ifdef ALLOW_GENARR3D_CONTROL
       _RS mask3D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
-
-c     == end of interface ==
+CEOP
 
 c--   Evaluate the individual cost function contributions.
 
@@ -150,5 +157,5 @@ C --- Get appropriate mask for field
       enddo
 #endif /* ALLOW_CTRL */
 
-      return
-      end
+      RETURN
+      END
