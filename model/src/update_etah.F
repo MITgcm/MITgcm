@@ -24,7 +24,6 @@ C     == Global variables
 #include "SURFACE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
 C     myTime  :: Current time in simulation
 C     myIter  :: Current iteration number
 C     myThid  :: my Thread Id number
@@ -33,10 +32,6 @@ C     myThid  :: my Thread Id number
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
-#ifdef EXACT_CONSERV
-C     Local variables in common block
-
-C     Local variables
 C     i,j,bi,bj  :: Loop counters
       INTEGER i,j,bi,bj
 CEOP
@@ -47,8 +42,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
 C--   before updating etaH, save current etaH field in etaHnm1
-        DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
             etaHnm1(i,j,bi,bj) = etaH(i,j,bi,bj)
           ENDDO
         ENDDO
@@ -57,8 +52,8 @@ C--   Update etaH at the end of the time step :
 C     Incorporate the Explicit part of -Divergence(Barotropic_Flow)
 
         IF (implicDiv2Dflow.EQ. 1. _d 0) THEN
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
             etaH(i,j,bi,bj) = etaN(i,j,bi,bj)
           ENDDO
          ENDDO
@@ -68,7 +63,7 @@ C     Incorporate the Explicit part of -Divergence(Barotropic_Flow)
           DO i=1,sNx
             etaH(i,j,bi,bj) = etaN(i,j,bi,bj)
      &       + (1. - implicDiv2Dflow)*dEtaHdt(i,j,bi,bj)
-     &                               *deltaTfreesurf
+     &                               *deltaTFreeSurf
           ENDDO
          ENDDO
         ENDIF
@@ -96,8 +91,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IF ( implicDiv2Dflow .NE. 1. _d 0 .OR.
      &    ( useOBCS.AND.nonlinFreeSurf.GT.0 ) )
      &    CALL EXCH_XY_RL( etaH, myThid )
-
-#endif /* EXACT_CONSERV */
 
       RETURN
       END

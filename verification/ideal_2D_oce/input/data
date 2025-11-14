@@ -55,7 +55,6 @@
  pickupStrictlyMatch=.FALSE.,
  chkptFreq=0.0,
  pChkptFreq=3110400000.0,
- taveFreq=1555200000.0,
  dumpFreq=1555200000.0,
  diagFreq=1555200000.0,
 #monitorFreq=31104000.0,

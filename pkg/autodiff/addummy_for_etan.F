@@ -17,7 +17,7 @@ C     *==========================================================*
 C     | SUBROUTINE ADDUMMY_FOR_ETAN                              |
 C     *==========================================================*
 C     Extract adjoint variable for sea level height
-C     from TAMC/TAF-generated
+C     from TAF-generated
 C     adjoint common blocks, contained in adcommon.h
 C     and write fields to file;
 C     Make sure common blocks in adcommon.h are up-to-date

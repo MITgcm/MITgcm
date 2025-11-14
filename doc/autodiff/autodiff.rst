@@ -830,24 +830,24 @@ The ``make «MODE»all`` target consists of the following procedures:
 
 #. All routines are compiled and an executable is generated.
 
-The list ``AD_FILES`` and ``.list`` files
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The list ``AD_FILES`` and ``*_ad_diff.list`` files
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Not all routines are presented to the AD tool. Routines typically hidden
 are diagnostics routines which do not influence the cost function, but
 may create artificial flow dependencies such as I/O of active variables.
 
-:filelink:`genmake2 <tools/genmake2>` generates a list (or variable) ``AD_FILES`` which contains all
-routines that are shown to the AD tool. This list is put together from
-all files with suffix ``.list`` that :filelink:`genmake2 <tools/genmake2>` finds in its search
-directories. The list file for the core MITgcm routines is :filelink:`model/src/model_ad_diff.list`
-Note that no wrapper routine is shown to
-TAF. These are either not visible at all to the AD code, or hand-written
-AD code is available (see next section).
+:filelink:`genmake2 <tools/genmake2>` generates a list (or variable) ``AD_FILES``
+that contains all routines that are shown to the AD tool.
+This list is put together from all files with suffix ``_ad_diff.list``
+that :filelink:`genmake2 <tools/genmake2>` finds in its search directories.
+The list file for the core MITgcm routines is :filelink:`model/src/model_ad_diff.list`.
+Note that no wrapper routine is shown to TAF. These are either not visible at
+all to the AD code, or hand-written AD code is available (see next section).
 
 Each package directory contains its package-specific list file
 ``«PKG»_ad_diff.list``. For example, :filelink:`pkg/ptracers` contains the file
-:filelink:`ptracers_ad_diff.list <pkg/ptracers_ad_diff.list>`.
+:filelink:`ptracers_ad_diff.list <pkg/ptracers/ptracers_ad_diff.list>`.
 Thus, enabling a package will automatically
 extend the ``AD_FILES`` list of :filelink:`genmake2 <tools/genmake2>` to incorporate the
 package-specific routines. Note that you will need to regenerate the
@@ -878,14 +878,14 @@ directive tell the AD tool:
 
 The syntax for the flow directives can be found in the AD tool manuals.
 
-:filelink:`genmake2 <tools/genmake2>` generates a list (or variable) ``AD_FLOW_FILES`` which
-contains all files with ``suffix.flow`` that it finds in its search
+:filelink:`genmake2 <tools/genmake2>` generates a list (or variable) ``AD_FLOW_FILES``
+that contains all files with suffix ``.flow`` that it finds in its search
 directories. The flow directives for the core MITgcm routines of
 :filelink:`eesupp/src/` and :filelink:`model/src/` reside in :filelink:`pkg/autodiff/`. This directory also
 contains hand-written adjoint code for the MITgcm WRAPPER (:numref:`wrapper`).
 
 Flow directives for package-specific routines are contained in the
-corresponding package directories in the file ``«PKG»_ad.flow``, e.g.,
+corresponding package directories, generally in a file ``«PKG»_ad.flow``, e.g.,
 ptracers-specific directives are in :filelink:`ptracers_ad.flow <pkg/ptracers/ptracers_ad.flow>`.
 
 Store directives for 3-level checkpointing
@@ -1615,7 +1615,7 @@ divided adjoint and serves as an example of how to configure the code.
 
    ::
 
-      ${ROOTDIR}/tools/genmake2  -mods=../code_ad -nocat4ad [ other options ]
+      ../../../tools/genmake2  -mods=../code_ad -nocat4ad [ other options ]
       make depend
       make adtaf
 
@@ -1750,7 +1750,11 @@ either absolute or relative to the build directory.
 Adjoint code generation using Tapenade
 ======================================
 
-Authors: Shreyas Gaikwad, Sri Hari Krishna Naryanan, Laurent Hascoet, Patrick
+Please refer to Gaikwad et al. (2024) :cite:`gaikwad:24` for more details and a comparative analysis with TAF. Recently, introduction of the profiling capabilities in Tapenade have resulted in substantial insights and speedups for the Tapenade-generated adjoint, see Hascoet et al. (2024) :cite:`hascoet:24`.
+
+Feel free to reach out if you wish to use Tapenade and need help!
+
+Authors: Shreyas Sunil Gaikwad, Sri Hari Krishna Naryanan, Laurent Hascoet, Patrick
 Heimbach
 
 Introduction
@@ -1787,22 +1791,41 @@ Environment.
 Steps for Mac OS
 ----------------
 
-Tapenade 3.16 distribution does not contain a fortranParser executable for
-MacOS. It uses a docker image from `here
-<https://gitlab.inria.fr/tapenade/tapenade>`__. You need docker on your Mac to
-run the Tapenade distribution with Fortran programs. Details on how to build
-fortranParser is `here
-<https://tapenade.gitlabpages.inria.fr/tapenade/docs/html/src/frontf/README.html?highlight=mac>`__. You
-may also build Tapenade on your Mac from the `gitlab repository
+Tapenade 3.16 distribution does not contain a fortranParser executable
+for MacOS. You need docker on your Mac to run the Tapenade
+distribution with Fortran programs with a docker image from `here
+<https://gitlab.inria.fr/tapenade/tapenade>`__. Details on how to
+build your own fortranParser is `here
+<https://tapenade.gitlabpages.inria.fr/tapenade/docs/html/src/frontf/README.html?highlight=mac>`__.
+You may also build Tapenade on your Mac from the `gitlab repository
 <https://tapenade.gitlabpages.inria.fr/tapenade/docs/html/distrib/README.html>`__.
 
-To use the docker image specify ``TAPENADECMD=tapenadocker`` in your
-build-options or in a ``genmake_local`` file (:numref:`genmake2_desc`).
-Running a docker image also requires absolute paths, e.g., to
-:filelink:`tools/TAP_support/flow_tap <tools/TAP_support/flow_tap>`. At the
-:filelink:`genmake2 <tools/genmake2>` step use the option ``-rootdir`` to
-specify the absolute path to your MITgcm directory (see also
-:numref:`command_line_options`).
+Running a docker image requires absolute paths, e.g., to
+:filelink:`tools/TAP_support/flow_tap <tools/TAP_support/flow_tap>`.
+To make it work,
+
+1. use the option ``-rootdir`` at the :filelink:`genmake2
+   <tools/genmake2>` step, or alternatively export environment
+   variable ``MITGCM_ROOTDIR``, to specify the absolute path to your
+   MITgcm directory (see also :numref:`command_line_options`).
+
+2. bind mount the absolute path in the docker command as a volume by putting
+   ::
+
+      BASEDIR="$(cd "$(dirname "$0")" && cd ../ && pwd)"
+      TAPENADECMD="docker container run --rm -u $(stat -f '%u:%g' ./) \
+                -v \${PWD}:\${PWD} -v ${BASEDIR}:${BASEDIR} -w \${PWD} \
+	        registry.gitlab.inria.fr/tapenade/tapenade"
+
+   in your build-options or in a ``genmake_local`` file
+   (:numref:`genmake2_desc`). ``BASENAME`` should expand to your
+   root directory (check ``TAPENADECMD`` in ``Makefile``).
+
+In order to run :filelink:`./testreport -tap $moreoption
+<verification/testreport>` in :filelink:`verification <verification>`,
+the root directory can be passed to :filelink:`genmake2
+<tools/genmake2>` via ``export MITGCM_ROOTDIR=$BASEDIR`` or setting it
+in your built-options or ``genmake_local`` file.
 
 Steps for Linux
 ---------------

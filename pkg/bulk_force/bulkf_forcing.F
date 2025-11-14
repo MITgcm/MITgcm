@@ -45,7 +45,6 @@ C     == global variables ==
 #include "BULKF_PARAMS.h"
 #include "BULKF.h"
 #include "BULKF_INT.h"
-#include "BULKF_TAVE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == routine arguments ==
@@ -68,6 +67,7 @@ C     == Local variables ==
 
 C-    surface level index:
       ks = 1
+      IF ( usingPcoords ) ks = Nr
 
 C-    Compute surface fluxes over ice-free ocean only:
       iceornot = 0
@@ -82,7 +82,7 @@ C-    Compute surface fluxes over ice-free ocean only:
 #ifdef ALLOW_FORMULA_AIM
              IF ( useFluxFormula_AIM ) THEN
                CALL BULKF_FORMULA_AIM(
-     I            theta(i,j,ks,bi,bj), flwdwn(i,j,bi,bj),
+     I            gcmSST(i,j,bi,bj), flwdwn(i,j,bi,bj),
      I            thAir(i,j,bi,bj), Tair(i,j,bi,bj),
      I            Qair(i,j,bi,bj), wspeed(i,j,bi,bj),
      O            SHF, EVPloc, SLRU,
@@ -105,7 +105,7 @@ C-    Convert from g/m2/s to m/s
                CALL BULKF_FORMULA_LANL(
      I            uwind(i,j,bi,bj),vwind(i,j,bi,bj),wspeed(i,j,bi,bj),
      I            Tair(i,j,bi,bj), Qair(i,j,bi,bj),
-     I            cloud(i,j,bi,bj),theta(i,j,ks,bi,bj),
+     I            cloud(i,j,bi,bj), gcmSST(i,j,bi,bj),
      O            flwup(i,j,bi,bj), flh(i,j,bi,bj),
      O            fsh(i,j,bi,bj), df0dT,
      O            ustress(i,j,bi,bj), vstress(i,j,bi,bj),
@@ -121,7 +121,7 @@ C-             Convert from kg/m2/s to m/s
                CALL BULKF_FORMULA_LAY(
      I            uwind(i,j,bi,bj), vwind(i,j,bi,bj),
      I            wspeed(i,j,bi,bj), Tair(i,j,bi,bj),
-     I            Qair(i,j,bi,bj), theta(i,j,ks,bi,bj),
+     I            Qair(i,j,bi,bj), gcmSST(i,j,bi,bj),
      O            flwup(i,j,bi,bj), flh(i,j,bi,bj),
      O            fsh(i,j,bi,bj), df0dT,
      O            ustress(i,j,bi,bj), vstress(i,j,bi,bj),
@@ -257,9 +257,6 @@ c    &                )*rhoConstFresh
             ENDDO
           ENDDO
          ENDIF
-
-         IF ( blk_taveFreq.GT.0. _d 0 )
-     &     CALL BULKF_AVE( bi, bj, myThid )
 
 C--   end bi,bj loops
        ENDDO

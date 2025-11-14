@@ -27,11 +27,12 @@ documentation and/or software.
 
 /* PROTOTYPES should be set to one if and only if the compiler supports
   function argument prototyping.
-The following makes PROTOTYPES default to 0 if it has not already
-  been defined with C compiler flags.
+Previously: was setting PROTOTYPES to 0 if not already defined
+Currently:  set PROTOTYPES to 1 if not already defined so that
+  it also work with gcc v15 (C23 standard).
  */
 #ifndef PROTOTYPES
-#define PROTOTYPES 0
+#define PROTOTYPES 1
 #endif
 
 #include <stdint.h>
