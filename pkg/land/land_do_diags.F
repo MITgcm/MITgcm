@@ -27,7 +27,6 @@ C-- size for MITgcm & Land package :
 #include "PARAMS.h"
 #include "LAND_PARAMS.h"
 #include "LAND_VARS.h"
-#include "LAND_TAVE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -42,40 +41,7 @@ C     myThid   :: Number of this instance of the routine
 CEOP
 
 #ifdef ALLOW_LAND
-
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
-
 C     == Local Variables ==
-
-#ifdef ALLOW_LAND_TAVE
-
-      IF (land_taveFreq.GT.0.) THEN
-
-C--   Sum ground Temp, soil moisture and Run-Off:
-        CALL TIMEAVE_CUMULATE(land_grTtave,land_groundT,land_nLev,
-     &                        land_deltaT, bi, bj, myThid )
-        CALL TIMEAVE_CUMULATE(land_entave, land_enthalp,land_nLev,
-     &                        land_deltaT, bi, bj, myThid )
-        CALL TIMEAVE_CUMULATE(land_grWtave,land_groundW,land_nLev,
-     &                        land_deltaT, bi, bj, myThid )
-        CALL TIMEAVE_CUMULATE(land_sTtave, land_skinT ,1,
-     &                        land_deltaT, bi, bj, myThid )
-        CALL TIMEAVE_CUMULATE(land_hStave, land_hSnow ,1,
-     &                        land_deltaT, bi, bj, myThid )
-        CALL TIMEAVE_CUMULATE(land_sAtave, land_snowAge,1,
-     &                        land_deltaT, bi, bj, myThid )
-        CALL TIMEAVE_CUMULATE(land_ROftave,land_runOff,1,
-     &                        land_deltaT, bi, bj, myThid )
-        CALL TIMEAVE_CUMULATE(land_eROtave,land_enRnOf,1,
-     &                        land_deltaT, bi, bj, myThid )
-
-C-    Keep record of how much time has been integrated over
-        land_timeAve(bi,bj) = land_timeAve(bi,bj)+land_deltaT
-
-      ENDIF
-
-#endif /* ALLOW_LAND_TAVE */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

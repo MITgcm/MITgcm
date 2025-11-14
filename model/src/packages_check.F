@@ -128,7 +128,7 @@ CEOP
 C---  Start with non-standard packages (without or with non standard flag)
 
 #ifndef ALLOW_MNC
-      IF (useMNC) THEN
+      IF ( useMNC ) THEN
         _BEGIN_MASTER(myThid)
         WRITE(msgBuf,'(2A)') '** WARNING **',
      &   ' PACKAGES_CHECK: useMNC is TRUE'
@@ -147,10 +147,10 @@ C---  Start with non-standard packages (without or with non standard flag)
         WRITE(msgBuf,'(2A)')
      &   'PACKAGES_CHECK: cannot step forward Momentum',
      &   ' without pkg/mom_vecinv'
-        CALL PRINT_ERROR( msgBuf , myThid )
+        CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(2A)') 'PACKAGES_CHECK: ',
      &   'Re-compile with pkg "mom_vecinv" in packages.conf'
-        CALL PRINT_ERROR( msgBuf , myThid )
+        CALL PRINT_ERROR( msgBuf, myThid )
         CALL ALL_PROC_DIE( myThid )
         STOP 'ABNORMAL END: S/R PACKAGES_CHECK'
       ENDIF
@@ -160,10 +160,10 @@ C---  Start with non-standard packages (without or with non standard flag)
         WRITE(msgBuf,'(2A)')
      &   'PACKAGES_CHECK: cannot step forward Momentum',
      &   ' without pkg/mom_fluxform'
-        CALL PRINT_ERROR( msgBuf , myThid )
+        CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(2A)') 'PACKAGES_CHECK: ',
      &   'Re-compile with pkg "mom_fluxform" in packages.conf'
-        CALL PRINT_ERROR( msgBuf , myThid )
+        CALL PRINT_ERROR( msgBuf, myThid )
         CALL ALL_PROC_DIE( myThid )
         STOP 'ABNORMAL END: S/R PACKAGES_CHECK'
       ENDIF
@@ -174,10 +174,10 @@ C---  Start with non-standard packages (without or with non standard flag)
         WRITE(msgBuf,'(2A)')
      &  'PACKAGES_CHECK: cannot step forward Temp or Salt',
      &  ' without pkg/generic_advdiff'
-        CALL PRINT_ERROR( msgBuf , myThid )
+        CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(2A)') 'PACKAGES_CHECK: ',
      &  'Re-compile with pkg "generic_advdiff" in packages.conf'
-        CALL PRINT_ERROR( msgBuf , myThid )
+        CALL PRINT_ERROR( msgBuf, myThid )
         CALL ALL_PROC_DIE( myThid )
         STOP 'ABNORMAL END: S/R PACKAGES_CHECK'
       ENDIF
@@ -185,236 +185,239 @@ C---  Start with non-standard packages (without or with non standard flag)
 
 #ifndef ALLOW_MONITOR
 C     If monitorFreq is finite, make sure the pkg/monitor is being compiled
-      IF (monitorFreq.NE.0.) CALL PACKAGES_ERROR_MSG(
+      IF ( monitorFreq.NE.zeroRL ) CALL PACKAGES_ERROR_MSG(
      &                  'MONITOR', 'monitorFreq <> 0', myThid )
 #endif
 
-#ifndef ALLOW_TIMEAVE
-C     If taveFreq is finite, make sure the pkg/timeave is being compiled
-      IF (taveFreq.NE.0.) CALL PACKAGES_ERROR_MSG(
-     &                  'TIMEAVE', 'taveFreq <> 0', myThid )
-#endif
-
 #ifndef ALLOW_CD_CODE
-       IF (useCDscheme) CALL PACKAGES_ERROR_MSG(
+       IF ( useCDscheme ) CALL PACKAGES_ERROR_MSG(
      &                  'CD_CODE', 'useCDscheme=.T.', myThid )
 #endif
 
 C---  Continue with standard packages (with standard usePKG flag)
 
 #ifdef ALLOW_OBCS
-      IF (useOBCS) CALL OBCS_CHECK( myThid )
+      IF ( useOBCS ) CALL OBCS_CHECK( myThid )
 #else
-      IF (useOBCS) CALL PACKAGES_ERROR_MSG('OBCS',' ',myThid)
+      IF ( useOBCS ) CALL PACKAGES_ERROR_MSG( 'OBCS', ' ', myThid )
 #endif
 
 #ifndef ALLOW_SHAP_FILT
-      IF (useSHAP_FILT)
-     &   CALL PACKAGES_ERROR_MSG( 'SHAP_FILT', ' ', myThid )
+      IF ( useSHAP_FILT ) CALL PACKAGES_ERROR_MSG(
+     &                  'SHAP_FILT', ' ', myThid )
 #endif
 
 #ifndef ALLOW_ZONAL_FILT
-      IF (useZONAL_FILT)
+      IF ( useZONAL_FILT )
      &   CALL PACKAGES_ERROR_MSG( 'ZONAL_FILT', ' ', myThid )
 #endif
 
 #ifdef ALLOW_OPPS
-      IF (useOPPS) CALL OPPS_CHECK( myThid )
+      IF ( useOPPS ) CALL OPPS_CHECK( myThid )
 #else
-      IF (useOPPS) CALL PACKAGES_ERROR_MSG('OPPS',' ',myThid)
+      IF ( useOPPS ) CALL PACKAGES_ERROR_MSG( 'OPPS', ' ', myThid )
 #endif
 
 #ifdef ALLOW_PP81
-      IF (usePP81) CALL PP81_CHECK( myThid )
+      IF ( usePP81 ) CALL PP81_CHECK( myThid )
 #else
-      IF (usePP81) CALL PACKAGES_ERROR_MSG('PP81',' ',myThid)
+      IF ( usePP81 ) CALL PACKAGES_ERROR_MSG( 'PP81', ' ', myThid )
 #endif
 
 #ifdef ALLOW_KL10
-      IF (useKL10) CALL KL10_CHECK( myThid )
+      IF ( useKL10 ) CALL KL10_CHECK( myThid )
 #else
-      IF (useKL10) CALL PACKAGES_ERROR_MSG('KL10',' ',myThid)
+      IF ( useKL10 ) CALL PACKAGES_ERROR_MSG( 'KL10', ' ', myThid )
 #endif
 
 #ifdef ALLOW_MY82
-      IF (useMY82) CALL MY82_CHECK( myThid )
+      IF ( useMY82 ) CALL MY82_CHECK( myThid )
 #else
-      IF (useMY82) CALL PACKAGES_ERROR_MSG('MY82',' ',myThid)
+      IF ( useMY82 ) CALL PACKAGES_ERROR_MSG( 'MY82', ' ', myThid )
 #endif
 
 #ifdef ALLOW_GGL90
-      IF (useGGL90) CALL GGL90_CHECK( myThid )
+      IF ( useGGL90 ) CALL GGL90_CHECK( myThid )
 #else
-      IF (useGGL90) CALL PACKAGES_ERROR_MSG('GGL90',' ',myThid)
+      IF ( useGGL90 ) CALL PACKAGES_ERROR_MSG( 'GGL90', ' ', myThid )
 #endif
 
 #ifdef ALLOW_KPP
-      IF (useKPP) CALL KPP_CHECK( myThid )
+      IF ( useKPP ) CALL KPP_CHECK( myThid )
 #else
-      IF (useKPP) CALL PACKAGES_ERROR_MSG('KPP',' ',myThid)
+      IF ( useKPP ) CALL PACKAGES_ERROR_MSG( 'KPP', ' ', myThid )
 #endif
 
 #ifdef ALLOW_GMREDI
-      IF (useGMRedi) CALL GMREDI_CHECK( myThid )
+      IF ( useGMRedi ) CALL GMREDI_CHECK( myThid )
 #else
-      IF (useGMRedi) CALL PACKAGES_ERROR_MSG('GMRedi',' ',myThid)
+      IF ( useGMRedi ) CALL PACKAGES_ERROR_MSG( 'GMRedi', ' ', myThid )
 #endif
 
 #ifdef ALLOW_BBL
-      IF (useBBL) CALL BBL_CHECK( myThid )
+      IF ( useBBL ) CALL BBL_CHECK( myThid )
 #else
-      IF (useBBL) CALL PACKAGES_ERROR_MSG('BBL',' ',myThid)
+      IF ( useBBL ) CALL PACKAGES_ERROR_MSG( 'BBL', ' ', myThid )
 #endif
 
 #ifndef ALLOW_DOWN_SLOPE
-      IF (useDOWN_SLOPE)
-     &            CALL PACKAGES_ERROR_MSG('DOWN_SLOPE',' ',myThid)
+      IF ( useDOWN_SLOPE ) CALL PACKAGES_ERROR_MSG(
+     &                  'DOWN_SLOPE', ' ', myThid )
 #endif
 
 #ifndef ALLOW_CAL
-      IF (useCAL) CALL PACKAGES_ERROR_MSG('CAL',' ',myThid)
+      IF ( useCAL ) CALL PACKAGES_ERROR_MSG( 'CAL', ' ', myThid )
 #endif
 
 #ifdef ALLOW_EXF
-      IF (useEXF) CALL EXF_CHECK( myThid )
+      IF ( useEXF ) CALL EXF_CHECK( myThid )
 #else
-      IF (useEXF) CALL PACKAGES_ERROR_MSG('EXF',' ',myThid)
+      IF ( useEXF ) CALL PACKAGES_ERROR_MSG( 'EXF', ' ', myThid )
 #endif
 
 #ifndef ALLOW_BULK_FORCE
-      IF (useBulkForce) CALL PACKAGES_ERROR_MSG(
+      IF ( useBulkForce ) CALL PACKAGES_ERROR_MSG(
      &                  'BULK_FORCE', 'useBulkForce=.T.', myThid )
 #endif
 
 #ifndef ALLOW_EBM
-      IF (useEBM) CALL PACKAGES_ERROR_MSG('EBM',' ',myThid)
+      IF ( useEBM ) CALL PACKAGES_ERROR_MSG( 'EBM', ' ', myThid )
 #endif
 
 #ifndef ALLOW_CHEAPAML
-      IF (useCheapAML) CALL PACKAGES_ERROR_MSG('CheapAML',' ',myThid)
+      IF ( useCheapAML ) CALL PACKAGES_ERROR_MSG(
+     &                  'CheapAML', ' ', myThid )
 #endif
 
 #ifndef ALLOW_FLT
-      IF (useFLT) CALL PACKAGES_ERROR_MSG('FLT',' ',myThid)
+      IF ( useFLT ) CALL PACKAGES_ERROR_MSG( 'FLT', ' ', myThid )
 #endif
 
 #ifdef ALLOW_LONGSTEP
-      IF (usePTRACERS) CALL LONGSTEP_CHECK( myThid )
+      IF ( usePTRACERS ) CALL LONGSTEP_CHECK( myThid )
 #endif
 
 #ifdef ALLOW_PTRACERS
-      IF (usePTRACERS) CALL PTRACERS_CHECK( myThid )
+      IF ( usePTRACERS ) CALL PTRACERS_CHECK( myThid )
 #else
-      IF (usePTRACERS) CALL PACKAGES_ERROR_MSG('PTRACERS',' ',myThid)
+      IF ( usePTRACERS ) CALL PACKAGES_ERROR_MSG(
+     &                  'PTRACERS', ' ', myThid )
 #endif
 
 #ifdef ALLOW_GCHEM
-      IF (useGCHEM) CALL GCHEM_CHECK( myThid )
+      IF ( useGCHEM ) CALL GCHEM_CHECK( myThid )
 #else
-      IF (useGCHEM) CALL PACKAGES_ERROR_MSG('GCHEM',' ',myThid)
+      IF ( useGCHEM ) CALL PACKAGES_ERROR_MSG( 'GCHEM', ' ', myThid )
 #endif
 
 #ifndef ALLOW_RBCS
-      IF (useRBCS) CALL PACKAGES_ERROR_MSG('RBCS',' ',myThid)
+      IF ( useRBCS ) CALL PACKAGES_ERROR_MSG( 'RBCS', ' ', myThid )
 #endif
 
 #ifdef ALLOW_OFFLINE
-      IF (useOffLine) CALL OFFLINE_CHECK( myThid )
+      IF ( useOffLine ) CALL OFFLINE_CHECK( myThid )
 #else
-      IF (useOffLine) CALL PACKAGES_ERROR_MSG('OffLine',' ',myThid)
+      IF ( useOffLine ) CALL PACKAGES_ERROR_MSG(
+     &                  'OffLine', ' ', myThid )
 #endif
 
 #ifndef ALLOW_MATRIX
-      IF (useMATRIX) CALL PACKAGES_ERROR_MSG('MATRIX',' ',myThid)
+      IF ( useMATRIX ) CALL PACKAGES_ERROR_MSG( 'MATRIX', ' ', myThid )
 #endif
 
 #ifndef ALLOW_FRAZIL
-      IF (useFRAZIL) CALL PACKAGES_ERROR_MSG('FRAZIL',' ',myThid)
+      IF ( useFRAZIL ) CALL PACKAGES_ERROR_MSG( 'FRAZIL', ' ', myThid )
 #endif
 
 #ifdef ALLOW_SEAICE
-      IF (useSEAICE) CALL SEAICE_CHECK( myThid )
+      IF ( useSEAICE ) CALL SEAICE_CHECK( myThid )
 #else
-      IF (useSEAICE) CALL PACKAGES_ERROR_MSG('SEAICE',' ',myThid)
+      IF ( useSEAICE ) CALL PACKAGES_ERROR_MSG( 'SEAICE', ' ', myThid )
 #endif
 
 #ifdef ALLOW_SALT_PLUME
-      IF (useSALT_PLUME)CALL SALT_PLUME_CHECK( myThid )
+      IF ( useSALT_PLUME ) CALL SALT_PLUME_CHECK( myThid )
 #else
-      IF (useSALT_PLUME)CALL PACKAGES_ERROR_MSG('SALT_PLUME',' ',myThid)
+      IF ( useSALT_PLUME ) CALL PACKAGES_ERROR_MSG(
+     &                  'SALT_PLUME', ' ', myThid )
 #endif
 
 #ifdef ALLOW_SHELFICE
-      IF (useShelfIce) CALL SHELFICE_CHECK( myThid )
+      IF ( useShelfIce ) CALL SHELFICE_CHECK( myThid )
 #else
-      IF (useShelfIce) CALL PACKAGES_ERROR_MSG('ShelfIce',' ',myThid)
+      IF ( useShelfIce ) CALL PACKAGES_ERROR_MSG(
+     &                    'ShelfIce', ' ', myThid )
 #endif
 
 #ifdef ALLOW_STEEP_ICECAVITY
-      IF (useSTIC) CALL STIC_CHECK( myThid )
+      IF ( useSTIC ) CALL STIC_CHECK( myThid )
 #else
-      IF (useSTIC) CALL PACKAGES_ERROR_MSG(
-     &                  'STEEP_ICECAVITY','useSTIC=.T.', myThid )
+      IF ( useSTIC ) CALL PACKAGES_ERROR_MSG(
+     &                  'STEEP_ICECAVITY', 'useSTIC=.T.', myThid )
 #endif
 
 #ifdef ALLOW_SMOOTH
-      IF (useSmooth) CALL SMOOTH_CHECK( myThid )
+      IF ( useSmooth ) CALL SMOOTH_CHECK( myThid )
 #else
-      IF (useSmooth) CALL PACKAGES_ERROR_MSG('Smooth',' ',myThid)
+      IF ( useSmooth ) CALL PACKAGES_ERROR_MSG( 'Smooth', ' ', myThid )
 #endif
 
 #ifdef ALLOW_STREAMICE
-      IF (useStreamIce) CALL STREAMICE_CHECK( myThid )
+      IF ( useStreamIce ) CALL STREAMICE_CHECK( myThid )
 #else
-      IF (useStreamIce) CALL PACKAGES_ERROR_MSG('StreamIce',' ',myThid)
+      IF ( useStreamIce ) CALL PACKAGES_ERROR_MSG(
+     &                  'StreamIce', ' ', myThid )
 #endif
 
 #ifdef ALLOW_ICEFRONT
-      IF (useICEFRONT) CALL ICEFRONT_CHECK( myThid )
+      IF ( useICEFRONT ) CALL ICEFRONT_CHECK( myThid )
 #else
-      IF (useICEFRONT) CALL PACKAGES_ERROR_MSG('ICEFRONT',' ',myThid)
+      IF ( useICEFRONT ) CALL PACKAGES_ERROR_MSG(
+     &                  'ICEFRONT', ' ', myThid )
 #endif
 
 #ifdef ALLOW_THSICE
-      IF (useThSIce) CALL THSICE_CHECK( myThid )
+      IF ( useThSIce ) CALL THSICE_CHECK( myThid )
 #else
-      IF (useThSIce) CALL PACKAGES_ERROR_MSG('ThSIce',' ',myThid)
+      IF ( useThSIce ) CALL PACKAGES_ERROR_MSG( 'ThSIce', ' ', myThid )
 #endif
 
 #ifdef ALLOW_LAND
-      IF (useLand) CALL LAND_CHECK( myThid )
+      IF ( useLand ) CALL LAND_CHECK( myThid )
 #else
-      IF (useLand) CALL PACKAGES_ERROR_MSG('Land',' ',myThid)
+      IF ( useLand ) CALL PACKAGES_ERROR_MSG( 'Land', ' ', myThid )
 #endif
 
 #ifndef ALLOW_ATM2D
-      IF (useATM2d) CALL PACKAGES_ERROR_MSG('ATM2d',' ',myThid)
+      IF ( useATM2d ) CALL PACKAGES_ERROR_MSG( 'ATM2d', ' ', myThid )
 #endif
 
 #ifndef ALLOW_AIM
-      IF (useAIM) CALL PACKAGES_ERROR_MSG('AIM',' ',myThid)
+      IF ( useAIM ) CALL PACKAGES_ERROR_MSG( 'AIM', ' ', myThid )
 #endif
 
 #ifdef ALLOW_ATM_PHYS
-      IF (useAtm_Phys) CALL ATM_PHYS_CHECK( myThid )
+      IF ( useAtm_Phys ) CALL ATM_PHYS_CHECK( myThid )
 #else
-      IF (useAtm_Phys) CALL PACKAGES_ERROR_MSG('Atm_Phys',' ',myThid)
+      IF ( useAtm_Phys ) CALL PACKAGES_ERROR_MSG(
+     &                  'Atm_Phys', ' ', myThid )
 #endif
 
 #ifndef ALLOW_FIZHI
-      IF (useFizhi) CALL PACKAGES_ERROR_MSG('Fizhi',' ',myThid)
+      IF ( useFizhi ) CALL PACKAGES_ERROR_MSG( 'Fizhi', ' ', myThid )
 #endif
 
 #ifndef ALLOW_GRIDALT
-      IF (useGridAlt) CALL PACKAGES_ERROR_MSG('GridAlt',' ',myThid)
+      IF ( useGridAlt ) CALL PACKAGES_ERROR_MSG(
+     &                  'GridAlt', ' ', myThid )
 #endif
 
 #ifdef ALLOW_AUTODIFF
-      IF (useAUTODIFF) CALL AUTODIFF_CHECK( myThid )
+      IF ( useAUTODIFF ) CALL AUTODIFF_CHECK( myThid )
 #endif
 
 #ifdef ALLOW_CTRL
-      IF (useCTRL) CALL CTRL_CHECK( myThid )
+      IF ( useCTRL ) CALL CTRL_CHECK( myThid )
 #endif
 
 #ifdef ALLOW_COST
@@ -422,99 +425,102 @@ C---  Continue with standard packages (with standard usePKG flag)
 #endif
 
 #ifdef ALLOW_ECCO
-      IF (useECCO) CALL ECCO_CHECK( myThid )
+      IF ( useECCO ) CALL ECCO_CHECK( myThid )
 #endif
 
 #ifndef ALLOW_SMOOTH
-      IF (useSMOOTH) CALL PACKAGES_ERROR_MSG('SMOOTH',' ',myThid)
+      IF ( useSMOOTH ) CALL PACKAGES_ERROR_MSG( 'SMOOTH', ' ', myThid )
 #endif
 
 #ifndef ALLOW_PROFILES
-      IF (usePROFILES) CALL PACKAGES_ERROR_MSG('PROFILES',' ',myThid)
+      IF ( usePROFILES ) CALL PACKAGES_ERROR_MSG(
+     &                  'PROFILES', ' ', myThid )
 #endif
 
 #ifdef ALLOW_GRDCHK
-      IF (useGrdChk) CALL GRDCHK_CHECK( myThid )
+      IF ( useGrdChk ) CALL GRDCHK_CHECK( myThid )
 #else
-      IF (useGrdChk) CALL PACKAGES_ERROR_MSG('GrdChk',' ',myThid)
+      IF ( useGrdChk ) CALL PACKAGES_ERROR_MSG( 'GrdChk', ' ', myThid )
 #endif
 
 #ifdef ALLOW_SBO
-      IF (useSBO) CALL SBO_CHECK( myThid )
+      IF ( useSBO ) CALL SBO_CHECK( myThid )
 #else
-      IF (useSBO) CALL PACKAGES_ERROR_MSG('SBO',' ',myThid)
+      IF ( useSBO ) CALL PACKAGES_ERROR_MSG( 'SBO', ' ', myThid )
 #endif
 
 #ifdef ALLOW_DIAGNOSTICS
-      IF (useDiagnostics) CALL DIAGNOSTICS_CHECK( myThid )
+      IF ( useDiagnostics ) CALL DIAGNOSTICS_CHECK( myThid )
 #else
-      IF (useDiagnostics)
+      IF ( useDiagnostics )
      &   CALL PACKAGES_ERROR_MSG( 'Diagnostics', ' ', myThid )
 #endif
 
 #ifdef ALLOW_REGRID
-      IF (useREGRID) CALL REGRID_CHECK( myThid )
+      IF ( useREGRID ) CALL REGRID_CHECK( myThid )
 #else
-      IF (useREGRID) CALL PACKAGES_ERROR_MSG('REGRID',' ',myThid)
+      IF ( useREGRID ) CALL PACKAGES_ERROR_MSG( 'REGRID', ' ', myThid )
 #endif
 
 #ifdef ALLOW_LAYERS
       IF ( useLayers ) CALL LAYERS_CHECK( myThid )
 #else
-      IF ( useLayers ) CALL PACKAGES_ERROR_MSG('LAYERS',' ',myThid)
+      IF ( useLayers ) CALL PACKAGES_ERROR_MSG( 'LAYERS', ' ', myThid )
 #endif /* ALLOW_LAYERS */
 
 #ifdef ALLOW_NEST_CHILD
-      IF (useNEST_CHILD) CALL NEST_CHILD_CHECK( myThid )
+      IF ( useNEST_CHILD ) CALL NEST_CHILD_CHECK( myThid )
 #else
-      IF (useNEST_CHILD) CALL PACKAGES_ERROR_MSG(
-     & 'NEST_CHILD',' ',myThid)
+      IF ( useNEST_CHILD ) CALL PACKAGES_ERROR_MSG(
+     &                  'NEST_CHILD', ' ', myThid )
 #endif
 
 #ifdef ALLOW_NEST_PARENT
-      IF (useNEST_PARENT) CALL NEST_PARENT_CHECK( myThid )
+      IF ( useNEST_PARENT ) CALL NEST_PARENT_CHECK( myThid )
 #else
-      IF (useNEST_PARENT) CALL PACKAGES_ERROR_MSG(
-     & 'NEST_PARENT',' ',myThid)
+      IF ( useNEST_PARENT ) CALL PACKAGES_ERROR_MSG(
+     &                  'NEST_PARENT', ' ', myThid )
 #endif
 
 #ifdef ALLOW_OASIS
-      IF (useOASIS) CALL OASIS_CHECK( myThid )
+      IF ( useOASIS ) CALL OASIS_CHECK( myThid )
 #else
-      IF (useOASIS) CALL PACKAGES_ERROR_MSG('OASIS',' ',myThid)
+      IF ( useOASIS ) CALL PACKAGES_ERROR_MSG( 'OASIS', ' ', myThid )
 #endif
 
 #ifdef ALLOW_RUNCLOCK
-      IF (useRunClock) CALL RUNCLOCK_CHECK( myThid )
+      IF ( useRunClock ) CALL RUNCLOCK_CHECK( myThid )
 #else
-      IF (useRunClock) CALL PACKAGES_ERROR_MSG('RunClock',' ',myThid)
+      IF ( useRunClock ) CALL PACKAGES_ERROR_MSG(
+     &                  'RunClock', ' ', myThid )
 #endif
 
 #ifndef ALLOW_EMBED_FILES
-      IF (useEMBED_FILES) CALL PACKAGES_ERROR_MSG(
-     &                                  'EMBED_FILES',' ',myThid)
+      IF ( useEMBED_FILES ) CALL PACKAGES_ERROR_MSG(
+     &                  'EMBED_FILES', ' ', myThid )
 #endif
 
 #ifdef ALLOW_MYPACKAGE
-      IF (useMYPACKAGE) CALL MYPACKAGE_CHECK( myThid )
+      IF ( useMYPACKAGE ) CALL MYPACKAGE_CHECK( myThid )
 #else
-      IF (useMYPACKAGE) CALL PACKAGES_ERROR_MSG('MYPACKAGE',' ',myThid)
+      IF ( useMYPACKAGE ) CALL PACKAGES_ERROR_MSG(
+     &                  'MYPACKAGE', ' ', myThid )
 #endif
 
 #ifdef ALLOW_GENERIC_ADVDIFF
 C-    Check generic AdvDiff setting and related overlap minimum size:
 C     for this reason, called after other ${pkg}_check S/R
-      IF (useGAD) CALL GAD_CHECK( myThid )
+      IF ( useGAD ) CALL GAD_CHECK( myThid )
 #endif
 
 C---  Exclusive packages (which cannot be used together):
       IF ( useEXF .AND. useBulkForce ) THEN
         WRITE(msgBuf,'(2A)') 'PACKAGES_CHECK: ',
      &  'both useEXF and useBulkForce are set'
-        CALL PRINT_ERROR( msgBuf , myThid )
+        CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(2A)') 'PACKAGES_CHECK: ',
      &  ' but cannot be used together => need to select only one.'
-        CALL PRINT_ERROR( msgBuf , myThid )
+        CALL PRINT_ERROR( msgBuf, myThid )
         CALL ALL_PROC_DIE( myThid )
         STOP 'ABNORMAL END: S/R PACKAGES_CHECK'
       ENDIF
@@ -523,10 +529,10 @@ C---  Exclusive packages (which cannot be used together):
       IF ( useDOWN_SLOPE .AND. useBBL ) THEN
         WRITE(msgBuf,'(2A)') 'PACKAGES_CHECK: ',
      &  'both useDOWN_SLOPE and useBBL are set'
-        CALL PRINT_ERROR( msgBuf , myThid )
+        CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(2A)') 'PACKAGES_CHECK: ',
      &  ' but cannot be used together => need to select only one.'
-        CALL PRINT_ERROR( msgBuf , myThid )
+        CALL PRINT_ERROR( msgBuf, myThid )
         CALL ALL_PROC_DIE( myThid )
         STOP 'ABNORMAL END: S/R PACKAGES_CHECK'
       ENDIF

@@ -59,7 +59,6 @@ C     averaged fields in reverse checkpointing loops
       monitorFreq  = 0.
       dumpFreq     = 0.
       diagFreq     = 0.
-      taveFreq     = 0.
       chkPtFreq    = 0.
       pChkPtFreq   = 0.
       dumpInitAndLast = .FALSE.
@@ -72,7 +71,6 @@ C     that the same problem exists when we do not use MNC. A better fix
 C     is to switch off the specific output freq; leave this commented out.
 c     monitor_mnc  = .FALSE.
 c     snapshot_mnc = .FALSE.
-c     timeave_mnc  = .FALSE.
 #endif
 
 #ifdef ALLOW_EXF

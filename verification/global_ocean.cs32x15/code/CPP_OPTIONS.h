@@ -28,7 +28,7 @@ C o Allow to account for heating due to friction (and momentum dissipation)
 
 C o Allow mass source or sink of Fluid in the interior
 C   (3-D generalisation of oceanic real-fresh water flux)
-#undef ALLOW_ADDFLUID
+#define ALLOW_ADDFLUID
 
 C o Include pressure loading code
 #define ATMOSPHERIC_LOADING
@@ -103,10 +103,6 @@ C o Include/exclude Quasi-Hydrostatic Stagger Time-step AdamsBashforth code
 #undef ALLOW_QHYD_STAGGER_TS
 
 C-- Model formulation options:
-
-C o Allow/exclude "Exact Convervation" of fluid in Free-Surface formulation
-C   that ensures that d/dt(eta) is exactly equal to - Div.Transport
-#define EXACT_CONSERV
 
 C o Allow the use of Non-Linear Free-Surface formulation
 C   this implies that grid-cell thickness (hFactors) varies with time
