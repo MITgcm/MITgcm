@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint69i (2025/11/14)
 o pkg/cost:
   - fix multi-proc initialization of Tapenade adjoint cost-function.
 o pkg & model:
