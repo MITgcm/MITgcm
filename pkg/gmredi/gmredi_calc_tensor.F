@@ -594,7 +594,7 @@ CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
      &                 + GM_LeithQG_K(i,j,k,bi,bj) )
      &                *(GM_isoFac_calcK + GM_skewflx)
 #endif
-#if (defined GM_BATES_K3D && !defined GM_BATES_PASSIVE)
+#if ( defined GM_BATES_K3D && !defined GM_BATES_PASSIVE )
      &           + op5*( GM_BatesK3d(i,j,km1,bi,bj)
      &                 + GM_BatesK3d(i,j,k,bi,bj) )
      &                *(GM_isoFac_calcK + GM_skewflx)
@@ -616,7 +616,7 @@ C no GM_GEOM_VARIABLE here because this is the Redi part
      &                           + GM_LeithQG_K(i,j,k,bi,bj) )
      &                                          *GM_isoFac_calcK
 #endif
-#if (defined GM_BATES_K3D && !defined GM_BATES_PASSIVE)
+#if ( defined GM_BATES_K3D && !defined GM_BATES_PASSIVE )
      &                     + op5*( GM_BatesK3d(i,j,km1,bi,bj)
      &                           + GM_BatesK3d(i,j,k,bi,bj) )
      &                                          *GM_isoFac_calcK
@@ -647,7 +647,7 @@ C--   Calculate Stream-Functions used in Advective Form:
      I             myThid )
        ELSE
 # endif
-#ifndef GM_BATES_PASSIVE
+# ifndef GM_BATES_PASSIVE
          IF ( .NOT.GM_useBatesK3d ) THEN
 # endif
 C          If using BatesK3d PsiX and PsiY are calculated in GMREDI_CALC_BATES_K
@@ -674,6 +674,37 @@ C          If using BatesK3d PsiX and PsiY are calculated in GMREDI_CALC_BATES_K
      I              myIter, myThid )
       ENDIF
 #endif /* ndef GM_EXCLUDE_SUBMESO */
+
+#ifdef GM_TRIADS_SCHEME
+C-    Save isoneutral gradient and Redi diffusivity
+      DO k=1,Nr
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         GM_Nm2(i,j,k,bi,bj) = oneRL
+     &       / MAX( gravitySign*sigmaR(i,j,k), GM_Small_Number )
+         GM_isoK3d(i,j,k,bi,bj) =
+# ifdef GM_READ_K3D_REDI
+     &       GM_inpK3dRedi(i,j,k,bi,bj)
+# else
+     &       GM_isopycK*GM_isoFac1d(k)*GM_isoFac2d(i,j,bi,bj)
+# endif
+# ifdef GM_VISBECK_VARIABLE_K
+     &     + VisbeckK(i,j,bi,bj)*GM_isoFac_calcK
+# endif
+# ifdef ALLOW_GM_LEITH_QG
+     &     + GM_LeithQG_K(i,j,k,bi,bj)*GM_isoFac_calcK
+# endif
+# if ( defined GM_BATES_K3D && !defined GM_BATES_PASSIVE )
+     &     +  GM_BatesK3d(i,j,k,bi,bj)*GM_isoFac_calcK
+# endif
+C     For now, just reset tensor:
+         Kwx(i,j,k,bi,bj)  = 0. _d 0
+         Kwy(i,j,k,bi,bj)  = 0. _d 0
+         Kwz(i,j,k,bi,bj)  = 0. _d 0
+        ENDDO
+       ENDDO
+      ENDDO
+#else /* GM_TRIADS_SCHEME */
 
 #if ( defined GM_NON_UNITY_DIAGONAL || defined GM_EXTRA_DIAGONAL )
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -784,7 +815,7 @@ C no GM_GEOM_VARIABLE here because this is the Redi part
      &     + op5*(GM_LeithQG_K(i-1,j,k,bi,bj)+GM_LeithQG_K(i,j,k,bi,bj))
      &          *GM_isoFac_calcK
 #  endif
-#  if (defined GM_BATES_K3D && !defined GM_BATES_PASSIVE)
+#  if ( defined GM_BATES_K3D && !defined GM_BATES_PASSIVE )
      &     + op5*(GM_BatesK3d(i-1,j,k,bi,bj)+GM_BatesK3d(i,j,k,bi,bj))
      &          *GM_isoFac_calcK
 #  endif
@@ -840,7 +871,7 @@ CADJ STORE SlopeX(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
      &           + GM_LeithQG_K(i,j,k,bi,bj) )
      &          *(GM_isoFac_calcK - GM_skewflx)
 #  endif
-#  if (defined GM_BATES_K3D && !defined GM_BATES_PASSIVE)
+#  if ( defined GM_BATES_K3D && !defined GM_BATES_PASSIVE )
      &     + op5*( GM_BatesK3d(i-1,j,k,bi,bj)
      &           + GM_BatesK3d(i,j,k,bi,bj) )
      &          *(GM_isoFac_calcK - GM_skewflx)
@@ -881,7 +912,7 @@ C no GM_GEOM_VARIABLE here because this is the Redi part
      &            + GM_LeithQG_K(i,j,k,bi,bj) )
      &           *GM_isoFac_calcK
 #  endif
-#  if (defined GM_BATES_K3D && !defined GM_BATES_PASSIVE)
+#  if ( defined GM_BATES_K3D && !defined GM_BATES_PASSIVE )
      &      + op5*(GM_BatesK3d(i-1,j,k,bi,bj)+GM_BatesK3d(i,j,k,bi,bj))
      &           *GM_isoFac_calcK
 #  endif
@@ -1026,7 +1057,7 @@ C no GM_GEOM_VARIABLE here because this is the Redi part
      &     + op5*(GM_LeithQG_K(i,j-1,k,bi,bj)+GM_LeithQG_K(i,j,k,bi,bj))
      &          *GM_isoFac_calcK
 #  endif
-#  if (defined GM_BATES_K3D && !defined GM_BATES_PASSIVE)
+#  if ( defined GM_BATES_K3D && !defined GM_BATES_PASSIVE )
      &     + op5*(GM_BatesK3d(i,j-1,k,bi,bj)+GM_BatesK3d(i,j,k,bi,bj))
      &          *GM_isoFac_calcK
 #  endif
@@ -1082,7 +1113,7 @@ CADJ STORE SlopeY(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
      &           + GM_LeithQG_K(i,j,k,bi,bj) )
      &          *(GM_isoFac_calcK - GM_skewflx)
 #  endif
-#  if (defined GM_BATES_K3D && !defined GM_BATES_PASSIVE)
+#  if ( defined GM_BATES_K3D && !defined GM_BATES_PASSIVE )
      &     + op5*( GM_BatesK3d(i,j-1,k,bi,bj)
      &           + GM_BatesK3d(i,j,k,bi,bj) )
      &          *(GM_isoFac_calcK - GM_skewflx)
@@ -1123,7 +1154,7 @@ C no GM_GEOM_VARIABLE here because this is the Redi part
      &            + GM_LeithQG_K(i,j,k,bi,bj) )
      &           *GM_isoFac_calcK
 #  endif
-#  if (defined GM_BATES_K3D && !defined GM_BATES_PASSIVE)
+#  if ( defined GM_BATES_K3D && !defined GM_BATES_PASSIVE )
      &      + op5*(GM_BatesK3d(i,j-1,k,bi,bj)+GM_BatesK3d(i,j,k,bi,bj))
      &           *GM_isoFac_calcK
 #  endif
@@ -1190,6 +1221,7 @@ C     for backeard compatibility + for trying to generate a simpler adjoint code
        ENDDO
       ENDDO
 #endif /* ndef GM_NON_UNITY_DIAGONAL */
+#endif /* GM_TRIADS_SCHEME */
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
