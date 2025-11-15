@@ -63,7 +63,7 @@ C     !INPUT/OUTPUT ARGUMENTS
       LOGICAL adj_CONVERGED
 #endif
 
-#if (defined(ALLOW_STREAMICE_OAD_FP) || defined(ALLOW_STREAMICE_TAP_FP))       
+#ifdef ALLOW_STREAMICE_FP_ADJ
 
 C     LOCAL VARIABLES
 
@@ -77,7 +77,7 @@ C     LOCAL VARIABLES
 #endif
 
       IF (ISINLOOP .ne. 0) THEN
-#ifndef ALLOW_STREAMICE_TAP_FP              
+#ifdef ALLOW_OPENAD
         IF (.NOT. CONVERGED) THEN
 #endif                
           NL_ITER = (NL_ITER + 1)
@@ -152,6 +152,6 @@ C!!!!!!!!!!! end conv check
 #endif        
       ENDIF
 
-#endif /* ALLOW_STREAMICE_OAD_FP) ||(ALLOW_STREAMICE_TAP_FP) */
+#endif /* ALLOW_STREAMICE_FP_ADJ */
       RETURN
       END

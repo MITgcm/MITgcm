@@ -225,7 +225,7 @@ c     &     streamice_n_sub_regularize
 #endif
 c      INTEGER streamice_n_sub_regularize
 
-#if (defined(ALLOW_STREAMICE_OAD_FP) || defined(ALLOW_STREAMICE_TAP_FP))
+#ifdef ALLOW_STREAMICE_FP_ADJ
       COMMON /STREAMICE_PARMS_I_OPENAD/
      &     isinloop0, isinloop1, isinloop2
 
@@ -1005,7 +1005,7 @@ C        velocity initial guess, so they are kept
       INTEGER n_dofs_process (0:nPx*nPy-1)
 #endif
 
-#if (defined (ALLOW_STREAMICE_OAD_FP))
+#if (defined(ALLOW_STREAMICE_FP_ADJ) && defined(ALLOW_OPENAD))
       COMMON /STREAMICE_PHISTAGE_ADARRS/
      &      U_streamice_dvals,
      &      V_streamice_dvals
@@ -1015,7 +1015,7 @@ C        velocity initial guess, so they are kept
      & (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
-#if (defined(ALLOW_STREAMICE_OAD_FP) || defined(ALLOW_STREAMICE_TAP_FP))
+#ifdef ALLOW_STREAMICE_FP_ADJ
 #ifdef STREAMICE_HYBRID_STRESS
 
       COMMON /STREAMICE_PHISTAGE_ADARRS_HYBRID/

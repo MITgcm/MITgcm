@@ -27,7 +27,7 @@ C     !INPUT/OUTPUT ARGUMENTS
       INTEGER myThid
 
 #ifdef ALLOW_STREAMICE
-#if (defined(ALLOW_STREAMICE_TAP_FP) || defined(ALLOW_STREAMICE_OAD_FP))      
+#ifdef ALLOW_STREAMICE_FP_ADJ      
 
       INTEGER conv_flag, i, j, bi, bj, myIter
       Real*8 u_dummy (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

@@ -1,4 +1,4 @@
-#include "STREAMICE_OPTIONS.h"
+include "STREAMICE_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 0
@@ -27,12 +27,6 @@ C     !USES:
 C     myThid ::  my Thread Id number
       INTEGER myThid
 CEOP
-
-#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP) ) 
-#    define ALLOW_STREAMICE_FP_ADJ  
-#elif (defined (ALLOW_TAPENADE) && defined (ALLOW_STREAMICE_TAP_FP) ) 
-#    define ALLOW_STREAMICE_FP_ADJ  
-#endif
 
 #ifdef ALLOW_STREAMICE
 C     !LOCAL VARIABLES:

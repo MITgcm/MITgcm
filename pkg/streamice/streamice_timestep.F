@@ -127,7 +127,8 @@ c NEW DIRECTIVES - DNG
 
       IF (.not.(STREAMICE_vel_ext.OR.STREAMICE_vel_ext_cgrid)) THEN
 
-#if(defined(ALLOW_STREAMICE_OAD_FP) || defined(ALLOW_STREAMICE_TAP_FP))              
+#ifdef ALLOW_STREAMICE_FP_ADJ
+
        CALL STREAMICE_VEL_SOLVE_FP ( myThid,
      &                           streamice_max_nl_iter,
      &                           streamice_max_cg_iter,

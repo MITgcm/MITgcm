@@ -33,7 +33,7 @@ C     !INPUT/OUTPUT ARGUMENTS
 
 C     LOCAL VARIABLES
 
-#if (defined(ALLOW_STREAMICE_OAD_FP) || defined(ALLOW_STREAMICE_TAP_FP))       
+#ifdef ALLOW_STREAMICE_FP_ADJ       
       INTEGER i, j, k, l, bi, bj, loopiter
       INTEGER NL_iter
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -103,19 +103,7 @@ C     LOCAL VARIABLES
 
        endif
 
-#ifdef ALLOW_STREAMICE_OAD_FP         
-#ifndef ALLOW_OPENAD
-      CALL STREAMICE_VEL_PHISTAGE (
-     I                   myThid,
-     I                   maxNLIter,
-     I                   maxCGiter,
-     O                   cgtol,
-     O                   nL_iter,
-     O                   CONVERGED,
-     O                   err_last_change,
-     O                   err_init,
-     I                   isinloop0)
-#else
+#ifdef ALLOW_OPENAD
       CALL STREAMICE_VEL_PHISTAGE (
      I                   myThid,
      I                   maxNLIter,
@@ -128,11 +116,10 @@ C     LOCAL VARIABLES
      O                   err_last_change,
      O                   err_init,
      I                   isinloop0)
-#endif
 #endif      
 
 
-#ifdef ALLOW_STREAMICE_TAP_FP
+#if (defined(ALLOW_STREAMICE_FP_ADJ) && defined(ALLOW_TAPENADE))
 #ifdef STREAMICE_HYBRID_STRESS
 !$AD FP-LOOP "u_streamice,v_streamice,streamice_taubx,streamice_tauby,visc_streamice_full" adj_reduction=1.e-6
 #else
@@ -187,19 +174,7 @@ c      ENDDO
 
       ENDDO
 
-#ifdef ALLOW_STREAMICE_OAD_FP      
-#ifndef ALLOW_OPENAD
-      CALL STREAMICE_VEL_PHISTAGE (
-     I                   myThid,
-     I                   maxNLIter,
-     I                   maxCGiter,
-     O                   cgtol,
-     O                   nL_iter,
-     O                   CONVERGED,
-     O                   err_last_change,
-     O                   err_init,
-     I                   isinloop2)
-#else
+#ifdef ALLOW_OPENAD
       CALL STREAMICE_VEL_PHISTAGE (
      I                   myThid,
      I                   maxNLIter,
@@ -212,7 +187,6 @@ c      ENDDO
      O                   err_last_change,
      O                   err_init,
      I                   isinloop2)
-#endif
 #endif      
 
 C END NL ITER. LOOP

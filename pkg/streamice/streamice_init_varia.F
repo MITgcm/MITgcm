@@ -679,8 +679,7 @@ c     TO AVOID POSSIBLE ADJOINT INSTABILITIES
 c     IT IS WRITTEN OVER IN FIRST TIMESTEP
 
 #if (defined (ALLOW_AUTODIFF))
-#ifndef ALLOW_STREAMICE_OAD_FP
-#ifndef ALLOW_STREAMICE_TAP_FP
+#ifndef ALLOW_STREAMICE_FP_ADJ
 
        CALL STREAMICE_UPD_FFRAC_UNCOUPLED ( myThid )
        CALL STREAMICE_VELMASK_UPD (myThid)
@@ -690,7 +689,6 @@ c     IT IS WRITTEN OVER IN FIRST TIMESTEP
      &                           streamice_max_cg_iter,
      &                           0 )
 
-#endif
 #endif
 #endif       
 
