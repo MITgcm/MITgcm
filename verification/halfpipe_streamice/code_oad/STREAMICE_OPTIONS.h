@@ -30,7 +30,7 @@ C   only one should be defined
 
 C- for OpenAD:
 #define STREAMICE_ALLOW_BGLEN_CONTROL
-#define ALLOW_STREAMICE_OAD_FP
+#define ALLOW_STREAMICE_FP_ADJ
 
 #endif /* ALLOW_STREAMICE */
 #endif /* STREAMICE_OPTIONS_H */

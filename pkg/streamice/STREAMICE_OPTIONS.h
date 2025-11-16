@@ -47,8 +47,8 @@ C-  Undocumented Options:
 #undef ALLOW_STREAMICE_FLUX_CONTROL
 #undef ALLOW_STREAMICE_TC_COST
 
-C-  for OpenAD:
-#undef ALLOW_STREAMICE_OAD_FP
+C-  for OpenAD or Tapenade:
+#undef ALLOW_STREAMICE_FP_ADJ
 
 #endif /* ALLOW_STREAMICE */
 #endif /* STREAMICE_OPTIONS_H */
