@@ -1,4 +1,4 @@
-include "STREAMICE_OPTIONS.h"
+#include "STREAMICE_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 0

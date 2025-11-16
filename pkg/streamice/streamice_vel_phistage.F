@@ -147,7 +147,7 @@ C!!!!!!!!!!! conv check
           ENDDO
 
 C!!!!!!!!!!! end conv check
-#ifndef ALLOW_STREAMICE_TAP_FP   
+#ifdef ALLOW_OPENAD
         ENDIF
 #endif        
       ENDIF
