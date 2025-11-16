@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint69i (2025/11/14)
+o pkg/cost:
+  - fix multi-proc initialization of Tapenade adjoint cost-function.
 o pkg & model:
   - remove pkg/timeave ; remove all ALLOW_TIMEAVE code ; remove all timeave
     related parameters from common blocks (in header files) and from src code
