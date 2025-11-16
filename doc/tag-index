@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - new parameter "SEAICE_evpAreaReg" for regularizations of denomU/V in EVP
+    solver ; tested in exp. seaice_obcs new secondary test "regDenom".
+
 checkpoint69i (2025/11/14)
 o pkg/cost:
   - fix multi-proc initialization of Tapenade adjoint cost-function.
