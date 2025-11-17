@@ -145,16 +145,10 @@ C-    I/O parameters:
      &   'SHELFICEwriteState  =', ' /* do simple standard output */')
        CALL WRITE_0D_L( SHELFICE_dump_mdsio, INDEX_NONE,
      &   'SHELFICE_dump_mdsio =', ' /* use mdsio for snapshots */')
-       CALL WRITE_0D_L( SHELFICE_tave_mdsio, INDEX_NONE,
-     &   'SHELFICE_tave_mdsio =', ' /* use mdsio for time averages */')
        CALL WRITE_0D_L( SHELFICE_dump_mnc, INDEX_NONE,
      &   'SHELFICE_dump_mnc   =', ' /* use netcdf for snapshots */')
-       CALL WRITE_0D_L( SHELFICE_tave_mnc, INDEX_NONE,
-     &   'SHELFICE_tave_mnc   =', ' /* use netcdf for time averages */')
        CALL WRITE_0D_RL( SHELFICE_dumpFreq, INDEX_NONE,
      & 'SHELFICE_dumpFreq =', ' /* analoguous to dumpFreq */')
-       CALL WRITE_0D_RL( SHELFICE_taveFreq, INDEX_NONE,
-     & 'SHELFICE_taveFreq =', ' /* analoguous to taveFreq */')
 
       WRITE(msgBuf,'(A)')
      &     'SHELFICE_CHECK: end of SHELFICE config. summary'

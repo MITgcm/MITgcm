@@ -403,45 +403,6 @@ c find free iron and get rid of insoluble part
 #endif
 #endif
 
-#ifdef ALLOW_TIMEAVE
-C save averages
-       IF ( PTRACERS_taveFreq.GT.0. ) THEN
-        DO k=1,Nr
-         DO j=jMin,jMax
-          DO i=iMin,iMax
-            BIOave(i,j,k,bi,bj)   =BIOave(i,j,k,bi,bj)+
-     &                             BIOac(i,j,k)*deltaTClock
-            CARave(i,j,k,bi,bj)   =CARave(i,j,k,bi,bj)+
-     &                             CAR(i,j,k)*deltaTClock
-            pfluxave(i,j,k,bi,bj) =pfluxave(i,j,k,bi,bj) +
-     &                             pflux(i,j,k)*deltaTClock
-            epfluxave(i,j,k,bi,bj)=epfluxave(i,j,k,bi,bj) +
-     &                             exportflux(i,j,k)*deltaTClock
-            cfluxave(i,j,k,bi,bj) =cfluxave(i,j,k,bi,bj) +
-     &                             cflux(i,j,k)*deltaTClock
-          ENDDO
-         ENDDO
-        ENDDO
-         DO j=jMin,jMax
-          DO i=iMin,iMax
-              SURave(i,j,bi,bj)    =SURave(i,j,bi,bj)+
-     &                              SURC(i,j)*deltaTClock
-#ifdef ALLOW_O2
-              SUROave(i,j,bi,bj)   =SUROave(i,j,bi,bj)+
-     &                              SURO(i,j)*deltaTClock
-#endif
-              pCO2ave(i,j,bi,bj)   =pCO2ave(i,j,bi,bj)+
-     &                              pCO2(i,j,bi,bj)*deltaTClock
-              pHave(i,j,bi,bj)     =pHave(i,j,bi,bj)+
-     &                              pH(i,j,bi,bj)*deltaTClock
-              fluxCO2ave(i,j,bi,bj)=fluxCO2ave(i,j,bi,bj)+
-     &                           fluxCO2(i,j,bi,bj)*deltaTClock
-          ENDDO
-         ENDDO
-         DIC_timeAve(bi,bj) = DIC_timeAve(bi,bj)+deltaTClock
-       ENDIF
-#endif /* ALLOW_TIMEAVE*/
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_DIAGNOSTICS

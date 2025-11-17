@@ -436,10 +436,6 @@ C----- pkgs without standard "usePKG" in "data.pkg":
       locFlag = monitorFreq.GT.0.
       CALL PACKAGES_PRINT_MSG( locFlag, 'MONITOR', 'monitorFreq > 0.' )
 #endif
-#ifdef ALLOW_TIMEAVE
-      locFlag = taveFreq.GT.0.
-      CALL PACKAGES_PRINT_MSG( locFlag,  'TIMEAVE', 'taveFreq > 0.' )
-#endif
 #ifdef ALLOW_DEBUG
       CALL PACKAGES_PRINT_MSG( debugMode, 'DEBUG', 'debugMode' )
 #endif

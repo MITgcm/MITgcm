@@ -109,62 +109,6 @@ CEOP
         CALL MNC_CW_ADD_VATTR_TEXT('si_AREA','description',
      &       'Fractional ice-covered area',myThid)
 
-C       Time averages
-        CALL MNC_CW_ADD_VNAME('si_UICEtave','U_xy_Hn__-__t',3,4,myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('si_UICEtave','units','m/s', myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('si_UICEtave','description',
-     &       'Time-averaged ', myThid)
-
-        CALL MNC_CW_ADD_VNAME('si_VICEtave','V_xy_Hn__-__t',3,4,myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('si_VICEtave','units','m/s', myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('si_VICEtave','description',
-     &       'Time-averaged ', myThid)
-
-        CALL MNC_CW_ADD_VNAME('si_FUtave','U_xy_Hn__-__t',3,4,myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('si_FUtave','units','N/m^2', myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('si_FUtave','description',
-     &       'Time-averaged zonal surface wind stress', myThid)
-
-        CALL MNC_CW_ADD_VNAME('si_FVtave','V_xy_Hn__-__t',3,4,myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('si_FVtave','units','N/m^2',myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('si_FVtave','description',
-     &       'Time-averaged Meridional surface wind stress', myThid)
-
-        CALL MNC_CW_ADD_VNAME(
-     &       'si_EmPmRtave','Cen_xy_Hn__-__t',3,4,myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT(
-     &       'si_EmPmRtave','units','kg/m^2/s',myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('si_EmPmRtave','description',
-     &       'Time-averaged net upward freshwater flux', myThid)
-
-        CALL MNC_CW_ADD_VNAME(
-     &       'si_QNETtave','Cen_xy_Hn__-__t',3,4,myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT(
-     &       'si_QNETtave','units','W/m^2', myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('si_QNETtave','description',
-     &       'Time-averaged net upward surface heat flux', myThid)
-
-        CALL MNC_CW_ADD_VNAME(
-     &       'si_QSWtave','Cen_xy_Hn__-__t',3,4,myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT(
-     &       'si_QSWtave','units','W/m^2',myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('si_QSWtave','description',
-     &       'Time-averaged net upward shortwave radiation',myThid)
-
-        CALL MNC_CW_ADD_VNAME(
-     &       'si_HEFFtave','Cen_xy_Hn__-__t',3,4,myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT(
-     &       'si_HEFFtave','units','m', myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('si_HEFFtave','description',
-     &       'Time-averaged effective ice thickness',myThid)
-
-        CALL MNC_CW_ADD_VNAME(
-     &       'si_AREAtave','Cen_xy_Hn__-__t',3,4,myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT(
-     &       'si_AREAtave','units','m^2/m^2',myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('si_AREAtave','description',
-     &       'Time-averaged fractional ice-covered area',myThid)
-
       ENDIF
 #endif /*  ALLOW_MNC     */
 
