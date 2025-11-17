@@ -110,8 +110,6 @@ C       |-- MY82_CALC
 C       |
 C       |-- GGL90_CALC
 C       |
-C       |-- TIMEAVE_SURF_FLUX
-C       |
 C       |-- GMREDI_CALC_TENSOR
 C       |-- GMREDI_CALC_TENSOR_DUMMY
 C       |
@@ -144,9 +142,6 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
-#ifdef ALLOW_TIMEAVE
-# include "TIMEAVE_STATV.h"
-#endif
 #ifdef ALLOW_OFFLINE
 # include "OFFLINE_SWITCH.h"
 #endif
@@ -1017,16 +1012,6 @@ C--     Compute GGL90 mixing coefficients
           CALL TIMER_STOP ('GGL90_CALC [DO_OCEANIC_PHYS]', myThid)
         ENDIF
 #endif /* ALLOW_GGL90 */
-
-#ifdef ALLOW_TIMEAVE
-        IF ( taveFreq.GT. 0. _d 0 ) THEN
-          CALL TIMEAVE_SURF_FLUX( bi, bj, myTime, myIter, myThid)
-        ENDIF
-        IF ( taveFreq.GT.0. .AND. calcConvect ) THEN
-          CALL TIMEAVE_CUMULATE(ConvectCountTave, IVDConvCount,
-     I                           Nr, deltaTClock, bi, bj, myThid)
-        ENDIF
-#endif /* ALLOW_TIMEAVE */
 
 #ifdef ALLOW_GMREDI
 #ifdef ALLOW_AUTODIFF_TAMC

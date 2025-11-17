@@ -321,7 +321,7 @@ c     IF ( useDiagnotics ) THEN
 #ifdef GM_BATES_K3D
         diagName  = 'GM_BaK  '
         diagTitle = '3D diffusivity'
-        diagUnits = 'm**2/s          '
+        diagUnits = 'm^2/s           '
         diagCode  = 'SM P    MR      '
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -329,7 +329,7 @@ c     IF ( useDiagnotics ) THEN
 
         diagName  = 'GM_KPV  '
         diagTitle = '3D eddy transport diffusivity'
-        diagUnits = 'm**2/s          '
+        diagUnits = 'm^2/s           '
         diagCode  = 'SM P    MR      '
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -337,7 +337,7 @@ c     IF ( useDiagnotics ) THEN
 
         diagName  = 'GM_BaK_T'
         diagTitle = '3D Redi diffusivity'
-        diagUnits = 'm**2/s          '
+        diagUnits = 'm^2/s           '
         diagCode  = 'SM P    MR      '
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -346,7 +346,7 @@ c     IF ( useDiagnotics ) THEN
 # ifdef HAVE_LAPACK
         diagName  = 'GM_A3D'
         diagTitle = '3D lower diagona'
-        diagUnits = '1/m**2          '
+        diagUnits = '1/m^2           '
         diagCode  = 'SM      MR      '
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -354,7 +354,7 @@ c     IF ( useDiagnotics ) THEN
 
         diagName  = 'GM_B3D'
         diagTitle = '3D lower diagona'
-        diagUnits = '1/m**2          '
+        diagUnits = '1/m^2           '
         diagCode  = 'SM      MR      '
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -362,7 +362,7 @@ c     IF ( useDiagnotics ) THEN
 
         diagName  = 'GM_C3D'
         diagTitle = '3D lower diagona'
-        diagUnits = '1/m**2          '
+        diagUnits = '1/m^2           '
         diagCode  = 'SM      MR      '
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -476,7 +476,7 @@ c     IF ( useDiagnotics ) THEN
 
         diagName  = 'GM_Kdqdx'
         diagTitle = 'K*dq/dx'
-        diagUnits = 'm/s*2           '
+        diagUnits = 'm/s^2           '
         diagCode  = 'UU      MR      '
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -484,7 +484,7 @@ c     IF ( useDiagnotics ) THEN
 
         diagName  = 'GM_Kdqdy'
         diagTitle = 'K*dq/dy'
-        diagUnits = 'm/s**2          '
+        diagUnits = 'm/s^2           '
         diagCode  = 'VV      MR      '
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -492,7 +492,7 @@ c     IF ( useDiagnotics ) THEN
 
         diagName  = 'GM_Xix  '
         diagTitle = '-k dq/dx expansion'
-        diagUnits = 'm/s**2          '
+        diagUnits = 'm/s^2           '
         diagCode  = 'UU      MR      '
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -500,7 +500,7 @@ c     IF ( useDiagnotics ) THEN
 
         diagName  = 'GM_Xiy  '
         diagTitle = '-k dq/dy expansion'
-        diagUnits = 'm/s**2          '
+        diagUnits = 'm/s^2           '
         diagCode  = 'VV      MR      '
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -572,7 +572,7 @@ c     IF ( useDiagnotics ) THEN
 
         diagName  = 'GM_M4   '
         diagTitle = 'M**4'
-        diagUnits = '1/s**4          '
+        diagUnits = '1/s^4           '
         diagCode  = 'SM      MR      '
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -580,7 +580,7 @@ c     IF ( useDiagnotics ) THEN
 
         diagName  = 'GM_N2   '
         diagTitle = 'N**2'
-        diagUnits = '1/s**2          '
+        diagUnits = '1/s^2           '
         diagCode  = 'SM      MR      '
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -588,7 +588,7 @@ c     IF ( useDiagnotics ) THEN
 
         diagName  = 'GM_M4_N2'
         diagTitle = 'M**4/N**2'
-        diagUnits = '1/s**2          '
+        diagUnits = '1/s^2           '
         diagCode  = 'SM      MR      '
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -613,7 +613,7 @@ c     IF ( useDiagnotics ) THEN
 # ifdef GM_BATES_PASSIVE
         diagName  = 'GM_PSTAR'
         diagTitle = 'Diagnosed bolus streamfunction: V component'
-        diagUnits = 'm**2/s          '
+        diagUnits = 'm^2/s           '
         diagCode  = 'VV      LR      '
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,

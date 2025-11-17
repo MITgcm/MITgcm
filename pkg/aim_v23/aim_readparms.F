@@ -1,3 +1,4 @@
+#undef ALLOW_AIM_TAVE
 #include "AIM_OPTIONS.h"
 
 CBOP
@@ -49,9 +50,9 @@ CEOP
 C     == Local Variables ==
 C     msgBuf         :: Informational/error message buffer
 C     iUnit          :: Work variable for IO unit number
+C     errCount       :: error counter
 C     aim_fixed_pCO2 :: fixed and uniform pCO2 value for AIM radiation
 C     atmpCO2init    :: Atmospheric pCO2 initial value of well-mixed atm. box
-
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*10 endList
       INTEGER buffI(1)
@@ -59,6 +60,10 @@ C     atmpCO2init    :: Atmospheric pCO2 initial value of well-mixed atm. box
       INTEGER errCount
       _RL aim_fixed_pCO2
       _RL atmpCO2init
+C-    retired parameters:
+C     aim_taveFreq :: retired; Frequency^-1 for time-average output (s)
+      _RL aim_taveFreq
+      LOGICAL aim_timeave_mnc
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -87,7 +92,6 @@ C     aim_select_pCO2 :: select AIM CO2 formulation (= 0,1,2 or 3)
 C     aim_selectOceAlbedo :: Ocean albedo(latitude) scheme (integer)
 C                     :: 0 = constant (default); 1 = Briegleb et al. 1986
 C     aim_clrSkyDiag :: compute clear-sky radiation for diagnostics
-C     aim_taveFreq :: Frequency^-1 for time-average output (s)
 C     aim_diagFreq :: Frequency^-1 for diagnostic output (s)
 C     aim_tendFreq :: Frequency^-1 for tendencies output (s)
       NAMELIST /AIM_PARAMS/
@@ -223,12 +227,10 @@ C--  Set default value for AIM interface code (AIM_PARAMS.h):
       aim_splitSIOsFx = .FALSE.
       aim_clrSkyDiag  = .FALSE.
 #ifdef ALLOW_MNC
-      aim_timeave_mnc       = timeave_mnc .AND. useMNC
       aim_snapshot_mnc      = snapshot_mnc .AND. useMNC
       aim_pickup_write_mnc  = pickup_write_mnc .AND. useMNC
       aim_pickup_read_mnc   = pickup_read_mnc .AND. useMNC
 #else
-      aim_timeave_mnc       = .FALSE.
       aim_snapshot_mnc      = .FALSE.
       aim_pickup_write_mnc  = .FALSE.
       aim_pickup_read_mnc   = .FALSE.
@@ -262,10 +264,13 @@ C        for pCO2 values within [ 100.ppm, 1000.ppm ]
       aim_fixed_pCO2 = UNSET_RL
       atmpCO2init    = UNSET_RL
 C-
-      aim_taveFreq = taveFreq
       aim_diagFreq = dumpFreq
       aim_tendFreq = 0.
       OBLIQ = 23.45 _d 0
+
+C-    retired params default:
+      aim_taveFreq    = UNSET_RL
+      aim_timeave_mnc = .FALSE.
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -315,6 +320,36 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Check parameters and model configuration
       errCount = 0
 
+C-    Retired params:
+      IF ( aim_taveFreq .NE. UNSET_RL ) THEN
+        WRITE(msgBuf,'(2A)') 'AIM_READPARMS: ',
+     &    '"aim_taveFreq" is no longer allowed in file "data.aimphys"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'AIM_READPARMS: ',
+     &    ' since "pkg/timeave" has been removed.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+      IF ( aim_timeave_mnc ) THEN
+        WRITE(msgBuf,'(2A)') 'AIM_READPARMS: "aim_timeave_mnc"',
+     &    ' is no longer allowed in file "data.aimphys"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'AIM_READPARMS: ',
+     &    ' since "pkg/timeave" has been removed.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+#ifdef ALLOW_AIM_TAVE
+        WRITE(msgBuf,'(2A)') 'AIM_READPARMS: :'
+     &    '#define ALLOW_AIM_TAVE not allowed in AIM_OPTIONS.h'
+        CALL PRINT_ERROR( msgBuf, myThid)
+        WRITE(msgBuf,'(2A)') 'AIM_READPARMS: :'
+     &    ' since "pkg/timeave" has been removed.'
+        CALL PRINT_ERROR( msgBuf, myThid)
+        errCount = errCount + 1
+#endif /* ALLOW_AIM_TAVE */
+
+C-    Consistency check:
       IF ( aim_select_pCO2.LT.0 .OR. aim_select_pCO2.GT.3 ) THEN
         WRITE(msgBuf,'(2A)') 'AIM_READPARMS: ',
      &       'Invalid value for "aim_select_pCO2"'
@@ -364,32 +399,15 @@ C-    If aim_clrSkyDiag is set, then must compile the Clear-Sky Diagnostic code
       ENDIF
 #endif
 
-C-    If aim_taveFreq is positive, then must compile the aim-diagnostics code
-#ifndef ALLOW_AIM_TAVE
-      IF (aim_taveFreq.GT.0.) THEN
-        WRITE(msgBuf,'(A)')
-     &  'AIM_READPARMS: aim_taveFreq > 0 but ALLOW_AIM_TAVE undefined'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(2A)')
-     &  'Re-compile with: #define ALLOW_AIM_TAVE (AIM_OPTIONS.h)'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        errCount = errCount + 1
-      ENDIF
-#endif /* ALLOW_AIM_TAVE */
-
 #ifdef ALLOW_MNC
-      aim_timeave_mnc        = useMNC .AND. aim_timeave_mnc
       aim_snapshot_mnc       = useMNC .AND. aim_snapshot_mnc
       aim_pickup_write_mnc   = useMNC .AND. aim_pickup_write_mnc
       aim_pickup_read_mnc    = useMNC .AND. aim_pickup_read_mnc
 #else /* ALLOW_MNC */
-      aim_timeave_mnc        = .FALSE.
       aim_snapshot_mnc       = .FALSE.
       aim_pickup_write_mnc   = .FALSE.
       aim_pickup_read_mnc    = .FALSE.
 #endif /* ALLOW_MNC */
-      aim_timeave_mdsio      = (.NOT. aim_timeave_mnc)
-     &                     .OR. outputTypesInclusive
       aim_snapshot_mdsio     = (.NOT. aim_snapshot_mnc)
      &                     .OR. outputTypesInclusive
       aim_pickup_write_mdsio = (.NOT. aim_pickup_write_mnc)
@@ -477,8 +495,6 @@ C-
        CALL WRITE_0D_L( aim_clrSkyDiag, INDEX_NONE,
      &                 'aim_clrSkyDiag =',
      &  ' /* do clear-sky radiation diagnostics */')
-       CALL WRITE_0D_RL( aim_taveFreq, INDEX_NONE,'aim_taveFreq =',
-     &  '   /* Frequency^-1 for time-Aver. output (s) */')
        CALL WRITE_0D_RL( aim_diagFreq, INDEX_NONE,'aim_diagFreq =',
      &  '   /* Frequency^-1 for diagnostic output (s) */')
        CALL WRITE_0D_RL( aim_tendFreq, INDEX_NONE,'aim_tendFreq =',
