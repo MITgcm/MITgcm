@@ -12,7 +12,7 @@ C
 C
 C     **** Parameters and Result ****
 C
-#if (defined (ALLOW_STREAMICE_OAD_FP)) 
+#if (defined(ALLOW_STREAMICE_FP_ADJ) && defined(ALLOW_OPENAD)) 
 
        err_max = 0. _d 0       
        err_sum = 0. _d 0
