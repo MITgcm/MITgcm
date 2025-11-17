@@ -1,14 +1,14 @@
-
-# *******************
-# ECCO gradient check
-# *******************
+# **************************
+# Gradient Check parameters
+# **************************
  &GRDCHK_NML
  grdchk_eps       = 100.0,
  iGloPos          = 31,
  jGloPos          = 7,
  kGloPos          = 1,
  iGloTile         = 2,
- jgloTile         = 2,
+ jGloTile         = 2,
+#- nstep only counts over wet-points within this tile(iGloTile,jGloTile):
  nstep            = 450,
  nend             = 1600,
  grdchkvarname    = "xx_kapredi",
