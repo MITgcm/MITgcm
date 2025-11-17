@@ -20,7 +20,7 @@
 
       real*8 adj_fp_err_change
 
-#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+#ifdef ALLOW_STREAMICE_FP_ADJ
 
 #ifdef STREAMICE_ALLOW_FRIC_CONTROL
       Real*8 C_basal_dummy_d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
