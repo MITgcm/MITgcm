@@ -14,10 +14,12 @@ C STREAMICE_FP.h
       CHARACTER*(MAX_LEN_FNAM) PETSC_PRECOND_TMP
       CHARACTER*(MAX_LEN_FNAM) PETSC_PRECOND_OAD
 
-      COMMON /STREAMICE_PARM_FP_PETSC/
+      COMMON /STREAMICE_PARM_FP_PETSC_L/
      & STREAMICE_need2createmat,
      & STREAMICE_need2destroymat,
      & STREAMICE_OAD_petsc_reuse,
+
+      COMMON /STREAMICE_PARM_FP_PETSC_C/
      & PETSC_PRECOND_TMP,
      & PETSC_PRECOND_OAD
 #endif
@@ -37,7 +39,11 @@ C STREAMICE_FP.h
      & streamice_nonlin_tol_adjoint_rl
 #ifdef ALLOW_TAPENADE
      & ,refCumuls,
-     & prevCumuls,
+     & prevCumuls
+#endif
+
+#ifdef ALLOW_TAPENADE
+      COMMON /STREAMICE_PARM_FP_I/
      & adjIters,
      & fpDepth
 #endif
