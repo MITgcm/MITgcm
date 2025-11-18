@@ -180,6 +180,7 @@ C     !USES:
       IMPLICIT NONE
 
 C     == global variables ==
+#include "EEPARAMS.h"
 #include "SIZE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -213,7 +214,7 @@ CEOP
       CALL ACTIVE_WRITE_3D_RL(
      &                 fname, active_varb, globalFile,
      &                 useCurrentDir, iRec, myNr,
-     &                 1, myOptimIter, myThid )
+     &                 REVERSE_SIMULATION, myOptimIter, myThid )
       RETURN
       END
 
@@ -245,6 +246,7 @@ C     !USES:
       IMPLICIT NONE
 
 C     == global variables ==
+#include "EEPARAMS.h"
 #include "SIZE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -283,6 +285,122 @@ CEOP
       CALL ACTIVE_WRITE_3D_RL(
      &                 fname, active_varb, globalFile,
      &                 useCurrentDir, iRec, myNr,
-     &                 1, myOptimIter, myThid )
+     &                 REVERSE_SIMULATION, myOptimIter, myThid )
       RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+CBOP
+C     !ROUTINE: ACTIVE_WRITE_XY_FWD
+C     !INTERFACE:
+      subroutine ACTIVE_WRITE_XY_FWD(
+     I                              active_var_file,
+     I                              active_var,
+     I                              iRec,
+     I                              myOptimIter,
+     I                              myThid,
+     I                              dummy
+     &                            )
+
+C     *==========================================================*
+C     | SUBROUTINE ACTIVE_WRITE_XY_FWD
+C     | o Reverse differentiation of ACTIVE_WRITE_XY.
+C     *==========================================================*
+C     | written by Shreyas Gaikwad, Laurent Hascoet in Nov 2022
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     == global variables ==
+#include "SIZE.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     active_var_file:: filename
+C     active_var     :: array
+C     iRec           :: record number
+C     myOptimIter    :: number of optimization iteration (default: 0)
+C     myThid         :: thread number for this instance
+      CHARACTER*(80) active_var_file
+      Real*8     active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER iRec
+      INTEGER myOptimIter
+      INTEGER myThid
+      Real*8     dummy
+
+      CALL active_write_xy(
+     I                 active_var_file,
+     I                 active_var,
+     I                 iRec,
+     I                 myOptimIter,
+     I                 myThid,
+     I                 dummy
+     &                    )
+
+      RETURN
+
+      END      
+
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+CBOP
+C     !ROUTINE: ACTIVE_WRITE_XY_BWD
+C     !INTERFACE:
+      subroutine ACTIVE_WRITE_XY_BWD(
+     I                              active_var_file,
+     I                              active_var,
+     U                              active_varb,
+     I                              iRec,
+     I                              myOptimIter,
+     I                              myThid,
+     I                              dummy,
+     O                              dummyb
+     &                            )
+
+C     *==========================================================*
+C     | SUBROUTINE ACTIVE_WRITE_XY_BWD
+C     | o Reverse differentiation of ACTIVE_WRITE_XY.
+C     *==========================================================*
+C     | written by Shreyas Gaikwad, Laurent Hascoet in Nov 2022
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     == global variables ==
+#include "SIZE.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     active_var_file:: filename
+C     active_var     :: array
+C     active_varb    :: reverse derivative of active_var
+C     iRec           :: record number
+C     myOptimIter    :: number of optimization iteration (default: 0)
+C     myThid         :: thread number for this instance
+      CHARACTER*(80) active_var_file
+      Real*8     active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      Real*8     active_varb(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER iRec
+      INTEGER myOptimIter
+      INTEGER myThid
+      Real*8     dummy
+      Real*8     dummyb
+
+      CALL ACTIVE_WRITE_XY_B(
+     I                              active_var_file,
+     I                              active_var,
+     U                              active_varb,
+     I                              iRec,
+     I                              myOptimIter,
+     I                              myThid,
+     I                              dummy,
+     O                              dummyb
+     &                            )
+
+      RETURN
+
       END
