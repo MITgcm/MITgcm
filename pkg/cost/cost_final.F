@@ -124,14 +124,6 @@ cgf : to compile previous line user is expected to provide cost_hflux.F
 cgf : to compile previous line user is expected to provide cost_temp.F
 #endif
 
-c#ifdef ALLOW_COST_DEPTH
-C     This makes no longer sense and should be removed. If defined
-C     together with ALLOW_CTRL, this will cause recomputation warnings
-C     and wrong gradients because the cost function contribution is
-C     computed twice (once in ctrl_cost_driver, and once here).
-c     CALL COST_DEPTH( myThid )
-c#endif
-
       WRITE(msgBuf,'(A,D22.15)') '  early fc = ', fc
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
@@ -161,10 +153,6 @@ c--   Sum up all contributions.
          WRITE(standardMessageUnit,'(A,D22.15)')
      &         ' --> objf_hflux_tut(bi,bj) = ', objf_hflux_tut(bi,bj)
 #endif
-#ifdef ALLOW_COST_DEPTH
-         WRITE(standardMessageUnit,'(A,D22.15)')
-     &         ' --> objf_depth(bi,bj)     = ', objf_depth(bi,bj)
-#endif
 
          tile_fc(bi,bj) = tile_fc(bi,bj)
 #ifdef ALLOW_COST_TEST
@@ -181,9 +169,6 @@ c--   Sum up all contributions.
 #endif
 #ifdef ALLOW_COST_HFLUXM
      &            + mult_hflux_tut * objf_hflux_tut(bi,bj)
-#endif
-#ifdef ALLOW_COST_DEPTH
-     &            + mult_depth     * objf_depth(bi,bj)
 #endif
 
 #ifdef ALLOW_PROFILES

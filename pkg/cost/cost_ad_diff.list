@@ -6,6 +6,5 @@ cost_tile.f
 cost_test.f
 cost_tracer.f
 cost_atlantic_heat.f
-cost_depth.f
 cost_vector.f
 cost_state_final.f
