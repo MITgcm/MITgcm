@@ -10,7 +10,7 @@ C !INTERFACE: ==========================================================
       SUBROUTINE BLING_LIGHT(
      I           mld,
      U           irr_inst, irr_eff,
-     I           bi, bj, imin, imax, jmin, jmax,
+     I           bi, bj, iMin, iMax, jMin, jMax,
      I           myTime, myIter, myThid)
 
 C !DESCRIPTION:
@@ -37,13 +37,12 @@ C !USES: ===============================================================
 
 C     === Global variables ===
 #include "SIZE.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
 #include "BLING_VARS.h"
 #ifdef USE_QSW
-#include "FFIELDS.h"
+# include "FFIELDS.h"
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -56,7 +55,7 @@ C     jMin,jMax     :: computation domain: 2nd  index range
 C     myTime        :: current time
 C     myIter        :: current timestep
 C     myThid        :: thread Id. number
-      INTEGER bi, bj, imin, imax, jmin, jmax
+      INTEGER bi, bj, iMin, iMax, jMin, jMax
       INTEGER myThid
       INTEGER myIter
       _RL     myTime
@@ -87,11 +86,7 @@ C !LOCAL VARIABLES: ====================================================
       _RL tmp_ML    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
 #ifndef USE_QSW
-      _RL solar, albedo
-      _RL dayfrac, yday, delta
-      _RL lat, sun1, dayhrs
-      _RL cosz, frac, fluxi
-      _RL sfac      (1-OLy:sNy+OLy)
+      _RL sfac      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
 #ifdef PHYTO_SELF_SHADING
       _RL k0_rd, chi_rd, e_rd
@@ -127,6 +122,9 @@ C  taken into account
         SumMLIrr(i,j) = 0. _d 0
         tmp_ML(i,j)   = 0. _d 0
 #endif
+#ifndef USE_QSW
+        sfac(i,j)     = 0. _d 0
+#endif
        ENDDO
       ENDDO
       DO k=1,Nr
@@ -153,94 +151,43 @@ C  in red and blue-green fractions (Morel 1988; Foujols et al. 2000)
 #endif
 
 C ---------------------------------------------------------------------
-C  Surface insolation
-
-#ifndef USE_QSW
-C  From pkg/dic/dic_insol (based on paltridge and parson)
-C  find light as function of date and latitude
-
-      solar  = 1360. _d 0   !solar constant
-      albedo = 0.6 _d 0     !planetary albedo
-
-C     Case where a 2-d output array is needed: for now, stop here.
-      IF ( usingCurvilinearGrid .OR. rotateGrid ) THEN
-       STOP 'ABNORMAL END: S/R INSOL: 2-D output not implemented'
-      ENDIF
-
-C find day (****NOTE for year starting in winter*****)
-C fraction of year
-      dayfrac=mod(myTime,360. _d 0*86400. _d 0)
-     &                 /(360. _d 0*86400. _d 0)
-C convert to radians
-      yday = 2. _d 0*PI*dayfrac
-C cosine zenith angle (paltridge+platt)
-      delta = (0.006918 _d 0
-     &       -(0.399912 _d 0*cos(yday))
-     &       +(0.070257 _d 0*sin(yday))
-     &       -(0.006758 _d 0*cos(2. _d 0*yday))
-     &       +(0.000907 _d 0*sin(2. _d 0*yday))
-     &       -(0.002697 _d 0*cos(3. _d 0*yday))
-     &       +(0.001480 _d 0*sin(3. _d 0*yday)) )
-      DO j=1-OLy,sNy+OLy
-C latitude in radians
-       lat=YC(1,j,1,bj)*deg2rad
-C     latitute in radians, backed out from coriolis parameter
-C     (makes latitude independent of grid)
-       IF ( usingCartesianGrid .OR. usingCylindricalGrid )
-     &      lat = asin( fCori(1,j,1,bj)/(2. _d 0*omega) )
-       sun1 = -sin(delta)/cos(delta) * sin(lat)/cos(lat)
-       IF (sun1.LE.-0.999 _d 0) sun1=-0.999 _d 0
-       IF (sun1.GE. 0.999 _d 0) sun1= 0.999 _d 0
-       dayhrs = abs(acos(sun1))
-C average zenith angle
-       cosz = ( sin(delta)*sin(lat)
-     &        +(cos(delta)*cos(lat)*sin(dayhrs)/dayhrs) )
-       IF (cosz.LE.5. _d -3) cosz= 5. _d -3
-C fraction of daylight in day
-       frac = dayhrs/PI
-C daily average photosynthetically active solar radiation just below surface
-       fluxi = solar*(1. _d 0-albedo)*cosz*frac*parfrac
-
-C convert to sfac
-       sfac(j) = MAX(1. _d -5,fluxi)
-      ENDDO !j
-#endif /* ndef USE_QSW */
-
-C get time (in h) within the day:
-      utcTime = MOD( myTime/3600. _d 0, 24. _d 0 )
-#ifdef ALLOW_CAL
-C mydate is utc time
-      IF ( useCAL ) THEN
-       CALL CAL_GETDATE( myIter, myTime, mydate, myThid )
-       i = mydate(2)/10000
-       j = mydate(2)/100
-       j = MOD(j,100)
-       k = MOD(mydate(2),100)
-       utcTime = i + j/60. _d 0 + k/3600. _d 0
-      ENDIF
-#endif
-
-C ---------------------------------------------------------------------
 C  instantaneous light, mixed layer averaged light
 
-      DO j=jmin,jmax
-       DO i=imin,imax
-C  Photosynthetically-available radiations (PAR)
 #ifdef USE_QSW
-         irr_surf(i,j) = MAX( epsln,
-     &                 -parfrac*Qsw(i,j,bi,bj)*maskC(i,j,1,bi,bj))
-#else
-         irr_surf(i,j) = sfac(j)
-#endif
-C  Remove light under ice
-         IF ( .NOT. QSW_underice ) THEN
-          irr_surf(i,j) = irr_surf(i,j)*(1. _d 0 - FIce(i,j,bi,bj))
-         ENDIF
+C  Convert insolation to photosynthetically-available radiations (PAR)
+      DO j=jMin,jMax
+       DO i=iMin,iMax
+        irr_surf(i,j) = MAX( epsln,
+     &                  -parfrac*Qsw(i,j,bi,bj)*maskInC(i,j,bi,bj))
        ENDDO
       ENDDO
+#else
+C  Find surface insolation (light) as function of date and latitude
+      CALL GCHEM_INSOLATION(
+     O     sfac,
+     I     iMin, iMax, jMin, jMax, bi, bj,
+     I     myTime, myIter, myThid)
+
+C Photosynthetically active solar radiation (PAR) just below surface
+      DO j=jMin,jMax
+       DO i=iMin,iMax
+        irr_surf(i,j) = MAX(1. _d -5,sfac(i,j)*parfrac)
+       ENDDO
+      ENDDO
+#endif /* USE_QSW */
+
+C  Remove light under ice
+      IF ( .NOT. QSW_underice ) THEN
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         irr_surf(i,j) = irr_surf(i,j)*(1. _d 0 - FIce(i,j,bi,bj))
+        ENDDO
+       ENDDO
+      ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
       tkey = bi + (bj - 1)*nSx + (ikey_dynamics - 1)*nSx*nSy
+CADJ STORE irr_surf = comlev1_bibj, key=tkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       DO k=1,Nr
@@ -255,8 +202,8 @@ CADJ STORE tmp_ML = comlev1_bibj_k, key=kkey, kind=isbyte
 C Top layer
        IF ( k.EQ.1) THEN
 
-        DO j=jmin,jmax
-         DO i=imin,imax
+        DO j=jMin,jMax
+         DO i=iMin,iMax
 
           IF ( maskC(i,j,k,bi,bj).EQ.oneRS ) THEN
 
@@ -308,8 +255,8 @@ CADJ STORE irr_rd(:,:,k-1) = comlev1_bibj_k, key=kkey, kind=isbyte
 # endif
 #endif
 
-        DO j=jmin,jmax
-         DO i=imin,imax
+        DO j=jMin,jMax
+         DO i=iMin,iMax
 
           IF ( maskC(i,j,k,bi,bj).EQ.oneRS ) THEN
 
@@ -352,8 +299,8 @@ C  Attenuation from one more layer
        ENDIF /* if k=1 then, else */
 
 C Satellite chl
-       DO j=jmin,jmax
-        DO i=imin,imax
+       DO j=jMin,jMax
+        DO i=iMin,iMax
          IF ( maskC(i,j,k,bi,bj).EQ.oneRS ) THEN
 
           IF ( irr_surf(i,j).GT.zeroRL ) THEN
@@ -386,9 +333,23 @@ C     end first k loop
       ENDDO
 
 C Satellite chlorophyll
+
+C get time (in h) within the day:
+      utcTime = MOD( myTime/3600. _d 0, 24. _d 0 )
+#ifdef ALLOW_CAL
+C mydate is utc time
+      IF ( useCAL ) THEN
+       CALL CAL_GETDATE( myIter, myTime, mydate, myThid )
+       i = mydate(2)/10000
+       j = mydate(2)/100
+       j = MOD(j,100)
+       k = MOD(mydate(2),100)
+       utcTime = i + j/60. _d 0 + k/3600. _d 0
+      ENDIF
+#endif
 C Update diagnostic only if ~13:30 local time, when satellite observes
-      DO j=jmin,jmax
-       DO i=imin,imax
+      DO j=jMin,jMax
+       DO i=iMin,iMax
         IF ( usingSphericalPolarGrid .OR. usingCurvilinearGrid ) THEN
 C       local-time difference (in h) from UTC time (note: 15 = 360/24)
          diffutc = XC(i,j,bi,bj)/15. _d 0
@@ -407,8 +368,8 @@ C       for other grid (e.g., cartesian), assumes no difference in time
       ENDDO
 
       DO k=1,Nr
-       DO j=jmin,jmax
-        DO i=imin,imax
+       DO j=jMin,jMax
+        DO i=iMin,iMax
          IF ( maskC(i,j,k,bi,bj).EQ.oneRS ) THEN
 
           irr_eff(i,j,k) = irr_inst(i,j,k)
