@@ -1,9 +1,6 @@
 C---+----1--+-+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C STREAMICE_FP.h
-#ifdef ALLOW_OPENAD
-#include "STREAMICE_OPTIONS.h"
-#endif
 #ifdef ALLOW_STREAMICE
 
 #ifdef ALLOW_STREAMICE_FP_ADJ
