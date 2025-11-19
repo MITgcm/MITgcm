@@ -1,8 +1,4 @@
 #include "CPP_EEOPTIONS.h"
-#include "TAPENADE_OPTIONS.h"
-#ifdef ALLOW_STREAMICE
-# include "STREAMICE_OPTIONS.h"
-#endif
 
       SUBROUTINE GLOBAL_MAX_R8_B(rhsmax, rhsmaxb, myThid)
       IMPLICIT NONE
