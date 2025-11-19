@@ -5,18 +5,17 @@
       use OAD_tape
       use OAD_rev
 
-     
 !$TEMPLATE_PRAGMA_DECLARATIONS
 
       integer testTape
-      !logical isTape 
+      !logical isTape
       !type(modeType) :: our_orig_mode
 
-#if (defined(ALLOW_STREAMICE_FP_ADJ) && defined(ALLOW_OPENAD)) 
+#if (defined(ALLOW_STREAMICE_FP_ADJ) && defined(ALLOW_OPENAD))
 
       if (our_rev_mode%plain .or. our_rev_mode%tape) then
 !      if (our_rev_mode%plain) then
- 
+
        if (our_rev_mode%tape) then
         testTape=1
         our_rev_mode%plain=.true.
@@ -25,21 +24,20 @@
        else
         testTape=0
        endif
-            
 
-       err_max = 0. _d 0       
+       err_max = 0. _d 0
        err_sum = 0. _d 0
 
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         err_sum_tile(bi,bj) = 0. _d 0  
+         err_sum_tile(bi,bj) = 0. _d 0
         ENDDO
        ENDDO
 
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1-oly,sNy+oly
-           DO i=1-olx,sNx+olx
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
             Au_SI (i,j,bi,bj) = 0. _d 0
             Av_SI (i,j,bi,bj) = 0. _d 0
             u_dummy (i,j,bi,bj) = u_streamice(i,j,bi,bj)%v
@@ -62,8 +60,7 @@
      I    V_dummy,
      I    0, sNx+1, 0, sNy+1 )
 
-
-       IF (streamice_err_norm .LT. 1.0) then 
+       IF (streamice_err_norm .LT. 1.0) then
 
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -99,16 +96,16 @@
            DO i=1,sNx
 
             IF (STREAMICE_umask(i,j,bi,bj).eq.1) THEN
-             err_sum_tile(bi,bj) = err_sum_tile(bi,bj) + 
+             err_sum_tile(bi,bj) = err_sum_tile(bi,bj) +
      &        (ABS (Au_SI(i,j,bi,bj)+0*ubd_SI(i,j,bi,bj)%v -
      &            taudx_SI(i,j,bi,bj)%v)) ** streamice_err_norm
             ENDIF
             IF (STREAMICE_vmask(i,j,bi,bj).eq.1) THEN
-             err_sum_tile(bi,bj) = err_sum_tile(bi,bj) + 
+             err_sum_tile(bi,bj) = err_sum_tile(bi,bj) +
      &        (ABS (Av_SI(i,j,bi,bj)+0*vbd_SI(i,j,bi,bj)%v -
      &            taudy_SI(i,j,bi,bj)%v)) ** streamice_err_norm
             ENDIF
-            
+
            ENDDO
           ENDDO
          ENDDO
@@ -127,7 +124,6 @@
        endif
 
       end if
-
 
 #endif
       end subroutine template

@@ -19,13 +19,12 @@ C     === Global variables ===
 #include "STREAMICE.h"
 #include "STREAMICE_CG.h"
 
-
 C     !INPUT/OUTPUT ARGUMENTS
       _RL err_max
       INTEGER myThid
 
 #ifdef ALLOW_STREAMICE
-#ifdef ALLOW_STREAMICE_FP_ADJ      
+#ifdef ALLOW_STREAMICE_FP_ADJ
       INTEGER conv_flag, i, j, bi, bj
 
       INTEGER ikey_nl
@@ -37,15 +36,13 @@ C     !INPUT/OUTPUT ARGUMENTS
 
        err_max = 0. _d 0
        err_sum = 0. _d 0
-       conj_norm = 0. _d 0 
+       conj_norm = 0. _d 0
 
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         err_sum_tile(bi,bj) = 0. _d 0  
+         err_sum_tile(bi,bj) = 0. _d 0
         ENDDO
        ENDDO
-       
-
 
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)

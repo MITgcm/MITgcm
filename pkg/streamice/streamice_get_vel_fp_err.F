@@ -64,7 +64,7 @@ C     !INPUT/OUTPUT ARGUMENTS
            err_tempv = 0. _d 0
            IF (STREAMICE_umask(i,j,bi,bj).eq.1) THEN
             err_tempu =
-#ifdef ALLOW_STREAMICE_FP_ADJ            
+#ifdef ALLOW_STREAMICE_FP_ADJ
      &       ABS (U_streamice(i,j,bi,bj)-u_new_SI(i,j,bi,bj))
 #else
      &       ABS (U_streamice(i,j,bi,bj)-u_old_SI(i,j,bi,bj))
@@ -72,7 +72,7 @@ C     !INPUT/OUTPUT ARGUMENTS
            ENDIF
            IF (STREAMICE_vmask(i,j,bi,bj).eq.1) THEN
             err_tempv = MAX( err_tempu,
-#ifdef ALLOW_STREAMICE_FP_ADJ            
+#ifdef ALLOW_STREAMICE_FP_ADJ
      &       ABS (V_streamice(i,j,bi,bj)-v_new_SI(i,j,bi,bj)))
 #else
      &       ABS (V_streamice(i,j,bi,bj)-v_old_SI(i,j,bi,bj)))
@@ -94,7 +94,7 @@ C     !INPUT/OUTPUT ARGUMENTS
           DO i=1,sNx
            IF (STREAMICE_umask(i,j,bi,bj).eq.1) THEN
             err_sum_tile(bi,bj) = err_sum_tile(bi,bj) +
-#ifdef ALLOW_STREAMICE_FP_ADJ            
+#ifdef ALLOW_STREAMICE_FP_ADJ
      &       (ABS(U_streamice(i,j,bi,bj)-
      &              u_new_SI(i,j,bi,bj)))**streamice_err_norm
 #else
@@ -104,7 +104,7 @@ C     !INPUT/OUTPUT ARGUMENTS
            ENDIF
            IF (STREAMICE_vmask(i,j,bi,bj).eq.1) THEN
             err_sum_tile(bi,bj) = err_sum_tile(bi,bj) +
-#ifdef ALLOW_STREAMICE_FP_ADJ            
+#ifdef ALLOW_STREAMICE_FP_ADJ
      &       (ABS(v_streamice(i,j,bi,bj)-
      &              v_new_SI(i,j,bi,bj)))**streamice_err_norm
 #else

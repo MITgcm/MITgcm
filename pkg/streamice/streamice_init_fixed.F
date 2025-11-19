@@ -589,7 +589,7 @@ c      _EXCH_XY_RL(STREAMICE_ctrl_mask, myThid )
 
       CALL STREAMICE_INIT_PHI( myThid )
 
-#ifdef ALLOW_STREAMICE_FP_ADJ      
+#ifdef ALLOW_STREAMICE_FP_ADJ
 #ifdef ALLOW_PETSC
       STREAMICE_need2createmat = .true.
       STREAMICE_need2destroymat = .true.
@@ -601,9 +601,9 @@ c      _EXCH_XY_RL(STREAMICE_ctrl_mask, myThid )
         adjIters(i) = 0
       ENDDO
       fpDepth = 0
-#endif      
-      
-#endif      
+#endif
+
+#endif
 
 #endif /* ALLOW_STREAMICE */
 

@@ -39,7 +39,7 @@ C     !INPUT/OUTPUT ARGUMENTS
       INTEGER cg_iters
       _RL max_err
 
-#ifdef ALLOW_STREAMICE_FP_ADJ       
+#ifdef ALLOW_STREAMICE_FP_ADJ
 
 C     LOCAL VARIABLES
 

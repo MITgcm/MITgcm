@@ -144,7 +144,7 @@ c      _RL streamice_bdot_maxmelt
      &     streamice_petsc_pcfactorlevels
 #endif
 
-#ifdef ALLOW_STREAMICE_FP_ADJ      
+#ifdef ALLOW_STREAMICE_FP_ADJ
       NAMELIST /STREAMICE_PARMOAD/
      &     streamice_nonlin_tol_adjoint,
      &     streamice_nonlin_tol_adjoint_rl
@@ -254,7 +254,7 @@ C--   Default values for STREAMICE
       streamice_nonlin_tol = 1e-6
       streamice_nonlin_tol_fp = 1.e-14
       streamice_err_norm = 0.
-#ifdef ALLOW_STREAMICE_FP_ADJ      
+#ifdef ALLOW_STREAMICE_FP_ADJ
       streamice_nonlin_tol_adjoint = 1.e-14
       streamice_nonlin_tol_adjoint_rl = 1.e-14
 #ifdef ALLOW_PETSC

@@ -81,7 +81,7 @@ C     cg_Bu, cg_Bv - driving stress
 #ifdef ALLOW_STREAMICE_FP_ADJ
        LOGICAL create_mat, destroy_mat
 #endif
-#endif      
+#endif
 
 #ifdef ALLOW_STREAMICE
 #ifdef ALLOW_PETSC
@@ -420,12 +420,12 @@ C       call PCGAMGSetReuseProl(pc,PETSC_FALSE,ierr)
 
       CALL TIMER_STOP ('STREAMICE_PETSC_SETUP',myThid)
 #ifdef ALLOW_AUTODIFF
-#ifdef ALLOW_STREAMICE_FP_ADJ      
+#ifdef ALLOW_STREAMICE_FP_ADJ
 #ifdef ALLOW_PETSC
       endif
 #endif
 #endif
-#endif      
+#endif
 
       CALL TIMER_START ('STREAMICE_PETSC_SOLVE',myThid)
 
@@ -464,13 +464,13 @@ C       call PCGAMGSetReuseProl(pc,PETSC_FALSE,ierr)
 #ifdef ALLOW_STREAMICE_FP_ADJ
       if (streamice_need2destroymat) then
 #endif
-#endif              
+#endif
       call KSPDestroy (ksp, ierr)
       call MatDestroy (matrix, ierr)
 #ifdef ALLOW_AUTODIFF
-#ifdef ALLOW_STREAMICE_FP_ADJ      
+#ifdef ALLOW_STREAMICE_FP_ADJ
       endif
-#endif      
+#endif
 #endif
       call VecDestroy (rhs, ierr)
       call VecDestroy (solution, ierr)

@@ -690,8 +690,7 @@ c     IT IS WRITTEN OVER IN FIRST TIMESTEP
      &                           0 )
 
 #endif
-#endif       
-
+#endif
 
       CALL WRITE_FLD_XY_RL ( "C_basal_fric", "",
      & C_basal_friction, 0, myThid )

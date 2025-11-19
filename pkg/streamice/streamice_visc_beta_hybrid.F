@@ -156,7 +156,7 @@ CADJ &     = comlev1_stream_hybrid, key=ikey_1
             ENDIF
 #endif
 
-#ifdef ALLOW_STREAMICE_FP_ADJ            
+#ifdef ALLOW_STREAMICE_FP_ADJ
             visc_full_new_si(i,j,m,bi,bj) =
 #else
             visc_streamice_full(i,j,m,bi,bj) =
@@ -166,7 +166,7 @@ CADJ &     = comlev1_stream_hybrid, key=ikey_1
 
             visc_streamice (i,j,bi,bj) = visc_streamice (i,j,bi,bj) +
      &       H_streamice(i,j,bi,bj) * streamice_delsigma (m) *
-#ifdef ALLOW_STREAMICE_FP_ADJ            
+#ifdef ALLOW_STREAMICE_FP_ADJ
      &       visc_full_new_si(i,j,m,bi,bj)
 #else
      &       visc_streamice_full(i,j,m,bi,bj)
@@ -174,7 +174,7 @@ CADJ &     = comlev1_stream_hybrid, key=ikey_1
 
             omega_temp (m) = omega_temp(m+1) +
      &       streamice_sigma_coord(m) * streamice_delsigma(m) /
-#ifdef ALLOW_STREAMICE_FP_ADJ            
+#ifdef ALLOW_STREAMICE_FP_ADJ
      &       visc_full_new_si(i,j,m,bi,bj)
 #else
      &       visc_streamice_full(i,j,m,bi,bj)

@@ -25,7 +25,7 @@ CBOP
      I                               myThid)
 C     *============================================================*
 C     | SUBROUTINE ADSTREAMICE_CG_SOLVE                            |
-C     | o wrapper for ADSTREAMICE_CG_SOLVE_RECALC                  |              
+C     | o wrapper for ADSTREAMICE_CG_SOLVE_RECALC                  |
 C     *============================================================*
 
 C     !USES:
@@ -83,10 +83,8 @@ C     cg_Bu, cg_Bv - driving stress
      U                               adA_vv,     ! adjoint of matrix coeffs (output)
      I                               tolerance,
      I                               maxiters,
-     I                               recalc_vel, 
+     I                               recalc_vel,
      I                               myThid)
-
-
 
 c       iters = streamice_max_cg_iter
 
@@ -119,8 +117,8 @@ CBOP
      I                               myThid )
 C     *============================================================*
 C     | SUBROUTINE ADSTREAMICE_CG_SOLVE_RECALC                     |
-C     | o called by ADSTREAMICE_CG_SOLVE or directly               |              
-C     | o can enable recalc of velocity if needed                  |              
+C     | o called by ADSTREAMICE_CG_SOLVE or directly               |
+C     | o can enable recalc of velocity if needed                  |
 C     *============================================================*
 
 C     !USES:
@@ -155,7 +153,7 @@ C     cg_Bu, cg_Bv - driving stress
      & adA_vv (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1)
       _RL tolerance
       INTEGER maxiters
-      INTEGER recalc_vel ! 1 = recalculate forward velocity 
+      INTEGER recalc_vel ! 1 = recalculate forward velocity
                          !     before solving adjoint
                          ! 0 = velocity already correct
       INTEGER myThid
@@ -178,7 +176,6 @@ c       iters = streamice_max_cg_iter
       WRITE(msgBuf,'(A)') 'CALLING MANUAL CG ADJOINT'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT , 1)
-
 
       conv_flag = 0
       ad_tolerance = 1.e-14
