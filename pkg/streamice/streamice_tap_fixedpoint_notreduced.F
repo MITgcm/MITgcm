@@ -14,21 +14,19 @@ C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "STREAMICE_FP.h" 
+#include "STREAMICE_FP.h"
 
 C     !INPUT PARAMETERS:
 C     == Routine arguments ==
       _RL CUMUL
       _RL REDUCTION
+#ifdef ALLOW_TAPENADE
       _RL CUMUL_GLOB
       _RL CUMUL_TILE(1:nSx, 1:nSy)
       INTEGER iterate
       INTEGER growth
       INTEGER bi, bj, jtlo, jthi, itlo, ithi
-
-
 CEOP
-#ifdef ALLOW_TAPENADE     
 
       IF (nTx.gt.1 .or. nTy.gt.1) THEN
        STOP 'ADFIXEDPOINT_NOTREDUCED: multithread not available'
@@ -62,7 +60,7 @@ C         Begin 1st iteration of a new adjoint FP loop
             streamice_need2createmat=.true.
             streamice_need2destroymat=.false.
           endif
-#endif          
+#endif
           RETURN
       ELSE
 C         2nd or later iteration
@@ -78,7 +76,7 @@ C             Set reference value
               growth = 0
           ELSE
 C             Compare with reference value
-              IF (cumul .GT. streamice_nonlin_tol_adjoint_rl * 
+              IF (cumul .GT. streamice_nonlin_tol_adjoint_rl *
      &                       refCumuls(fpDepth)) THEN
                   iterate = 1
               ELSE
@@ -104,7 +102,7 @@ C             Compare with reference value
                 streamice_need2createmat=.false.
                 streamice_need2destroymat=.false.
               endif
-#endif          
+#endif
               RETURN
           ELSE
               IF (growth .EQ. 1) THEN
@@ -118,7 +116,7 @@ C             Compare with reference value
                     streamice_need2destroymat=.true.
                     !CALL streamice_petscmatdestroy()
                   endif
-#endif          
+#endif
               ELSE
                   WRITE(*,*) adjIters(fpDepth),
      &                 ' adjoint iterations (reduced ',
@@ -130,7 +128,7 @@ C             Compare with reference value
                     streamice_need2destroymat=.true.
                     !CALL streamice_petscmatdestroy()
                   endif
-#endif          
+#endif
               ENDIF
 
               IF (fpDepth .LT. 0) THEN
@@ -141,7 +139,7 @@ C             Compare with reference value
                     streamice_need2destroymat=.true.
                     !CALL streamice_petscmatdestroy()
                   endif
-#endif          
+#endif
                   RETURN
               ENDIF
               fpDepth = fpDepth - 1
@@ -149,5 +147,5 @@ C             Compare with reference value
               RETURN
           ENDIF
       ENDIF
-#endif
+#endif /* ALLOW_TAPENADE */
       END
