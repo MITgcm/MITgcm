@@ -630,14 +630,6 @@ C      LOGICAL STREAMICE_hybrid_stress
 #endif
      & STREAMICE_apply_firn_correction
 
-!#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP) )
-!#ifdef ALLOW_PETSC
-!      COMMON /STREAMICE_PERSIST_PETSC_L
-!     & STREAMICE_need2createmat, STREAMICE_need2destroymat,
-!     & STREAMICE_OAD_petsc_reuse
-!#endif
-!#endif
-
 C     -------------------------- AND NOW ARRAYS ---------------------------------------------------
 
 C     EXPLANATION OF MASKS
