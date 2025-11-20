@@ -47,13 +47,11 @@ C-  Undocumented Options:
 #undef ALLOW_STREAMICE_FLUX_CONTROL
 #undef ALLOW_STREAMICE_TC_COST
 
-C-  for OpenAD or Tapenade:
-C-  implement the fixed-point problem treatment
-C-  for adjoint computation as described in
-C-  Christianson et al 1994, Opt. Meth. & Software
-C-  in order to reduce size of adjoint tape in memory
-C-  as well as decouple forward and reverse convergence
-C-  criteria
+C-- for OpenAD or Tapenade:
+C   Fixed-Point problem treatment for adjoint computation as described in
+C   Christianson et al 1994, Opt. Meth. & Software ;
+C   this reduce size of adjoint tape in memory as well as decouple forward
+C   and reverse convergence criteria
 #undef ALLOW_STREAMICE_FP_ADJ
 
 #endif /* ALLOW_STREAMICE */
