@@ -54,7 +54,8 @@
  dumpFreq=   311040000.,
  dumpFreq=   864000.,
 #monitorFreq=31104000.,
- monitorFreq=2592000.,
+ monitorFreq    = 86400.,
+ adjMonitorFreq = 86400.,
 # 2 months restoring timescale for temperature
 #tauThetaClimRelax =  5184000.0,
 # 6 months restoring timescale for salinity
