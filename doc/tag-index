@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/grdchk:
+  - fix grdchk location to allow to span several vertical level k ; test this
+    in secondary test exp. "global_ocean.90x40x15.kapredi".
 o pkg/mnc:
   - update grid-variable names in pkg/mnc NetCDF files (mostly matching GRID.h)
     and provide backwards compatibility in MATLab "load_grid.m" and for Python
