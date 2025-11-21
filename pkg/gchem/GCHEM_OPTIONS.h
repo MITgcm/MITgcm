@@ -3,8 +3,6 @@
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
-#ifdef ALLOW_GCHEM
-
 CBOP
 C    !ROUTINE: GCHEM_OPTIONS.h
 C    !INTERFACE:
@@ -12,6 +10,8 @@ C    !INTERFACE:
 C    !DESCRIPTION:
 C options for biogeochemistry package
 CEOP
+
+#ifdef ALLOW_GCHEM
 
 C o Allow separated update of Geo-Chemistry and Advect-Diff
 C    (fractional time-stepping type) for some gchem tracers
@@ -26,6 +26,10 @@ C    tendency to Advect-Diff tendency
 #ifdef ALLOW_SPOIL
 # define GCHEM_ADD2TR_TENDENCY
 #endif
+
+C o read gchem-specific forcing fields to be passed to submodels
+C   undefine to save some memory, also for TAF-AD
+#define GCHEM_ALLOW_FFIELDS
 
 #endif /* ALLOW_GCHEM */
 #endif /* GCHEM_OPTIONS_H */
