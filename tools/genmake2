@@ -19,6 +19,11 @@ Usage: "$0" [OPTIONS]
     -tap | --tap
           Generate a Makefile for a Tapenade build
 
+    -taparg ARG | --taparg ARG | -taparg=ARGS | --taparg=ARGS
+          Here, "ARG" or "ARGS" specifies a list of cmd line arguments
+          passed to the tapenade tool
+
+
     -oad | --oad
 	  Generate a Makefile for an OpenAD built
 
@@ -1560,6 +1565,11 @@ for ac_option in "$@" ; do
 
 	-tap | --tap)
 	    TAPENADE="true" ; ALWAYS_USE_F90=1 ;;
+
+	-taparg | --taparg)
+            ac_prev=TAPARG ;;
+        -taparg=* | --taparg)
+            TAPARG=$ac_optarg ;;
 
 	-oad | --oad)
 	    OPENAD="true" ; ALWAYS_USE_F90=1 ;;
@@ -3746,11 +3756,11 @@ if test $CAT_SRC_FOR_TAF = 1 ; then
 
 cat >>$MAKEFILE <<EOF
 adj_tap_all.$FS: \$(AD_FILES) f95_test_mods.f90
-	\$(TAPENADECMD) -b -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
+	\$(TAPENADECMD) ${TAPARG} -b -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
 	cat \$(AD_FILES_ADJ) > adj_tap_all.$FS 2> /dev/null || true
 
 tlm_tap_all.$FS: \$(AD_FILES) f95_test_mods.f90
-	\$(TAPENADECMD) -d -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
+	\$(TAPENADECMD) ${TAPARG} -d -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
 	cat \$(AD_FILES_TLM) > tlm_tap_all.$FS 2> /dev/null || true
 
 \$(EXE_ADJ): \$(SPECIAL_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES) \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(OBJFILES) \$(EMBEDDED_FILES) adj_tap_all.$FS
@@ -3770,14 +3780,14 @@ else
 cat >>$MAKEFILE <<EOF
 adj_tap_all.$FS: \$(AD_FILES) f95_test_mods.f90
 	@-rm -f \$(AD_FILES_ADJ)
-	\$(TAPENADECMD) -b -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
+	\$(TAPENADECMD) ${TAPARG} -b -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
 	ls -l the_main_loop_b.f
 	@$BASH\$(TOOLSDIR)/TAP_support/append_fwd_src _b $FS \$(AD_FILES)
 	touch adj_tap_all.$FS
 
 tlm_tap_all.$FS: \$(AD_FILES) f95_test_mods.f90
 	@-rm -f \$(AD_FILES_TLM)
-	\$(TAPENADECMD) -d -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
+	\$(TAPENADECMD) ${TAPARG} -d -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
 	ls -l the_main_loop_d.f
 	@$BASH\$(TOOLSDIR)/TAP_support/append_fwd_src _d $FS \$(AD_FILES)
 	touch tlm_tap_all.$FS
