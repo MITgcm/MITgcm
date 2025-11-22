@@ -23,10 +23,6 @@ c     == global variables ==
 #include "PARAMS.h"
 
 #include "cost.h"
-#ifdef ALLOW_CTRL
-# include "CTRL_SIZE.h"
-# include "CTRL.h"
-#endif
 #ifdef ALLOW_DIC
 # include "DIC_COST.h"
 #endif
@@ -53,6 +49,19 @@ c     == local variables ==
 
 c     == end of interface ==
 
+      WRITE(msgBuf,'(A)')
+     &  '// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)') '// Start of S/R COST_FINAL'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)')
+     &  '// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
+
+
 #ifdef ALLOW_SEAICE
       IF (useSEAICE) CALL SEAICE_COST_FINAL( myThid )
 #endif
@@ -69,8 +78,19 @@ c     == end of interface ==
       IF (useThSIce) CALL THSICE_COST_FINAL (myThid)
 #endif
 
+C     It is important to do the ecco part first, because it creates a
+C     file costfunctionXXXX that will be reopened again by the ctrl and
+C     obcs contributions if available.
 #ifdef ALLOW_ECCO
       IF (useECCO) CALL ECCO_COST_FINAL (myThid)
+#endif
+
+#ifdef ALLOW_CTRL
+      IF (useCTRL) CALL CTRL_COST_FINAL( myThid )
+#endif
+
+#ifdef ALLOW_OBCS
+      IF (useOBCS) CALL OBCS_COST_FINAL( myThid )
 #endif
 
 #ifdef ALLOW_COST_STATE_FINAL
@@ -104,10 +124,6 @@ cgf : to compile previous line user is expected to provide cost_hflux.F
 cgf : to compile previous line user is expected to provide cost_temp.F
 #endif
 
-#ifdef ALLOW_COST_DEPTH
-      CALL COST_DEPTH( myThid )
-#endif
-
       WRITE(msgBuf,'(A,D22.15)') '  early fc = ', fc
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
@@ -137,10 +153,6 @@ c--   Sum up all contributions.
          WRITE(standardMessageUnit,'(A,D22.15)')
      &         ' --> objf_hflux_tut(bi,bj) = ', objf_hflux_tut(bi,bj)
 #endif
-#ifdef ALLOW_COST_DEPTH
-         WRITE(standardMessageUnit,'(A,D22.15)')
-     &         ' --> objf_depth(bi,bj)     = ', objf_depth(bi,bj)
-#endif
 
          tile_fc(bi,bj) = tile_fc(bi,bj)
 #ifdef ALLOW_COST_TEST
@@ -157,9 +169,6 @@ c--   Sum up all contributions.
 #endif
 #ifdef ALLOW_COST_HFLUXM
      &            + mult_hflux_tut * objf_hflux_tut(bi,bj)
-#endif
-#ifdef ALLOW_COST_DEPTH
-     &            + mult_depth     * objf_depth(bi,bj)
 #endif
 
 #ifdef ALLOW_PROFILES
@@ -202,6 +211,18 @@ cph-- quickly for testing
       WRITE(msgBuf,'(A,D22.15)') ' global fc = ', fc
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
+
+      WRITE(msgBuf,'(A)')
+     &  '// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)') '// End of S/R COST_FINAL'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)')
+     &  '// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
 
 c--   to avoid re-write of output in reverse checkpointing loops,
 c--   switch off output flag :

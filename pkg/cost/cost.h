@@ -46,9 +46,6 @@ C     tile_fc   :: Final cost function contribution from this tile
      &                objf_tracer,
      &                objf_entropy,
      &                objf_t_misfit,
-#ifdef ALLOW_COST_DEPTH
-     &                objf_depth,
-#endif
      &                objf_eflux
 #ifdef ALLOW_COST_HFLUXM
      &               ,objf_hflux_tut
@@ -61,9 +58,6 @@ C     tile_fc   :: Final cost function contribution from this tile
       _RL  objf_entropy (nSx,nSy)
       _RL  objf_t_misfit (nSx,nSy)
       _RL  objf_eflux (nSx,nSy)
-#ifdef ALLOW_COST_DEPTH
-      _RL  objf_depth (nSx,nSy)
-#endif
 #ifdef ALLOW_COST_HFLUXM
       _RL  objf_hflux_tut (nSx,nSy)
       _RL  objf_temp_tut (nSx,nSy)
@@ -101,9 +95,6 @@ cph      _RL  objf_state_final (snx,sny,nsx,nsy)
      &                    multSalt,
      &                    multUvel,
      &                    multVvel,
-#ifdef ALLOW_COST_DEPTH
-     &           mult_depth,
-#endif
      &                    multEtan
 #ifdef ALLOW_COST_HFLUXM
      &                   ,mult_hflux_tut
@@ -121,9 +112,6 @@ cph      _RL  objf_state_final (snx,sny,nsx,nsy)
       _RL  multUvel
       _RL  multVvel
       _RL  multEtan
-#ifdef ALLOW_COST_DEPTH
-      _RL  mult_depth
-#endif
 #ifdef ALLOW_COST_HFLUXM
       _RL  mult_hflux_tut
       _RL  mult_temp_tut
