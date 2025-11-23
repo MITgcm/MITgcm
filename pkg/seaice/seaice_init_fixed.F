@@ -469,10 +469,14 @@ C-    end bi,bj loops
       ENDIF
 
       CALL EXCH_UV_XY_RL( coastRoughU, coastRoughV, .FALSE., myThid )
-      CALL WRITE_FLD_XY_RL( 'coastRoughUnormalized',
-     &     ' ', coastRoughU, -1, myThid )
-      CALL WRITE_FLD_XY_RL( 'coastRoughVnormalized',
-     &     ' ', coastRoughV, -1, myThid )
+C     Write coastRoughU/V fields only we are actually going to use them
+C     to reduce unnecessary output
+      IF ( SEAICEsideDrag .NE. 0. _d 0 ) THEN
+       CALL WRITE_FLD_XY_RL( 'coastRoughUnormalized',
+     &      ' ', coastRoughU, -1, myThid )
+       CALL WRITE_FLD_XY_RL( 'coastRoughVnormalized',
+     &      ' ', coastRoughV, -1, myThid )
+      ENDIF
 #endif /* SEAICE_ALLOW_SIDEDRAG */
 
 #ifdef ALLOW_SHELFICE
