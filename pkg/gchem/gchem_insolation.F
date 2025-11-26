@@ -7,11 +7,11 @@ C !INTERFACE: ==========================================================
       SUBROUTINE GCHEM_INSOLATION(
      O     solar_radiation,
      I     iMin, iMax, jMin, jMax, bi, bj,
-     I     myTime, myIter, myThid)
+     I     myTime, myIter, myThid )
 
 C !DESCRIPTION:
-C find light as function of date and latitude
-C based on paltridge and parson
+C find daily mean insolation as function of date and latitude
+C based on Paltridge and Parson
 
 C !USES: ===============================================================
       IMPLICIT NONE
@@ -22,7 +22,7 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #ifdef ALLOW_CAL
-#include "cal.h"
+# include "cal.h"
 #endif
 
 C !INPUT PARAMETERS: ===================================================
@@ -33,9 +33,9 @@ C     myTime        :: current time
 C     myIter        :: current timestep
 C     myThid        :: thread Id. number
       INTEGER bi, bj, iMin, iMax, jMin, jMax
-      INTEGER myThid
-      INTEGER myIter
       _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
 
 C !OUPUT PARAMETERS: ===================================================
       _RL     solar_radiation(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
