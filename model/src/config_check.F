@@ -7,6 +7,7 @@
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
+#include "BACKWARD_COMPAT_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: CONFIG_CHECK
@@ -196,6 +197,19 @@ C     QGLeith code has not been compiled.
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
+#endif
+
+#ifdef PRESERVE_C69C_OUTPUT
+      IF ( solveForDeltaP ) THEN
+        WRITE(msgBuf,'(A)')
+     &   'CONFIG_CHECK: cannot use solveForDeltaP= T'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)')
+     &   'CONFIG_CHECK: with PRESERVE_C69C_OUTPUT defined'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+
 #endif
 
 #ifndef INCLUDE_IMPLVERTADV_CODE
@@ -711,6 +725,12 @@ C--   Free-surface related limitations:
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
+      IF ( solveForDeltaP .AND. .NOT.exactConserv ) THEN
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: solveForDeltaP= T ',
+     &   'requires exactConserv= T (+ #define EXACT_CONSERV)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
 
       IF ( nonlinFreeSurf.NE.0 .AND. .NOT.exactConserv ) THEN
         WRITE(msgBuf,'(A)')
@@ -910,7 +930,8 @@ C--   Non-hydrostatic and 3-D solver related limitations:
         errCount = errCount + 1
       ENDIF
 
-      IF ( implicitViscosity .AND. use3Dsolver ) THEN
+      IF ( implicitViscosity .AND. use3Dsolver
+     &                       .AND. .NOT.solveForDeltaP ) THEN
         WRITE(msgBuf,'(2A)') '** WARNING ** CONFIG_CHECK: ',
      &    'Implicit viscosity applies to provisional u,vVel'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
@@ -1054,11 +1075,23 @@ C- jmc: but ultimately, this block can/will be removed.
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
+      IF ( useCDscheme .AND. solveForDeltaP ) THEN
+        WRITE(msgBuf,'(2A)')'CONFIG_CHECK: ',
+     &   'solveForDeltaP not coded (yet) for CD-scheme velocity'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
 
 C--   Time-stepping limitations
       IF ( implicitIntGravWave .AND. staggerTimeStep ) THEN
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: staggerTimeStep',
      &    ' incompatible with implicitIntGravWave'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+      IF ( implicitIntGravWave .AND. solveForDeltaP ) THEN
+        WRITE(msgBuf,'(2A)')'CONFIG_CHECK: ',
+     &   'solveForDeltaP not coded (yet) for implicitIntGravWave'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
@@ -1086,9 +1119,9 @@ C--   Time-stepping limitations
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
-      IF ( selectImplicitDrag.EQ.1 ) THEN
+      IF ( selectImplicitDrag.EQ.1 .AND. .NOT.solveForDeltaP ) THEN
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: selectImplicitDrag=1',
-     &  ' not yet available'
+     &  ' not usable without solveForDeltaP'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
