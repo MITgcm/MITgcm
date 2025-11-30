@@ -73,11 +73,11 @@ C     cg2d_b   :: Right Hand side vector of the 2-D solver equation A.x=b
 #ifdef ALLOW_NONHYDROSTATIC
 C     cg3d_b   :: Right Hand side vector of the 3-D solver equation A.X=B
 C     wSurfP2d :: surface vertical velocity after 2-D solver
-      _RL  cg3d_b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  wSurfP2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL cg3d_b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL wSurfP2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER k
 #else /* ALLOW_NONHYDROSTATIC */
-      _RL     cg3d_b(1), wSurfP2d(1)
+      _RL cg3d_b(1), wSurfP2d(1)
 #endif /* ALLOW_NONHYDROSTATIC */
       LOGICAL oldFreeSurfTerm
       INTEGER i, j, bi, bj
@@ -87,14 +87,15 @@ C     wSurfP2d :: surface vertical velocity after 2-D solver
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_DIAGNOSTICS
       CHARACTER*8 diagName
-      _RL tmpVar (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL psFac
+      _RL tmpVar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif /* ALLOW_DIAGNOSTICS */
 CEOP
 
-        oldFreeSurfTerm = use3Dsolver .AND. .NOT.exactConserv
+      oldFreeSurfTerm = use3Dsolver .AND. .NOT.exactConserv
 #ifndef ALLOW_NONHYDROSTATIC
-        cg3d_x(1) = 0.
-        cg3d_b(1) = 0.
+      cg3d_x(1) = 0.
+      cg3d_b(1) = 0.
 #endif
 
 C deepAtmosphere & useRealFreshWaterFlux: only valid if deepFac2F(ksurf)=1
@@ -302,16 +303,18 @@ C- dump CG2D output at monitorFreq (to reduce size of STD-OUTPUT files) :
 
 #ifdef ALLOW_DIAGNOSTICS
 C--   Fill diagnostics
-       IF ( useDiagnostics .AND. implicSurfPress.NE.oneRL ) THEN
+       IF ( useDiagnostics .AND. ( solveForDeltaP .OR.
+     &                             implicSurfPress.NE.oneRL ) ) THEN
         diagName = 'PHI_SURF'
         IF ( DIAGNOSTICS_IS_ON(diagName,myThid) ) THEN
+         psFac = oneRL
+         IF ( .NOT.solveForDeltaP ) psFac = oneRL - implicSurfPress
          DO bj=myByLo(myThid),myByHi(myThid)
           DO bi=myBxLo(myThid),myBxHi(myThid)
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
              tmpVar(i,j) = implicSurfPress * cg2d_x(i,j,bi,bj)
-     &          + (oneRL - implicSurfPress)* Bo_surf(i,j,bi,bj)
-     &                                     * etaN(i,j,bi,bj)
+     &                   + psFac * Bo_surf(i,j,bi,bj) * etaN(i,j,bi,bj)
             ENDDO
            ENDDO
            CALL DIAGNOSTICS_FILL( tmpVar,diagName,1,1,2,bi,bj,myThid )
@@ -365,7 +368,7 @@ C     skip the solving and put the (known) solution directly in cg2d_x
        ENDDO
 C---  end if implicDiv2DFlow=0 special case
       ENDIF
-#endif
+#endif /* ndef PRESERVE_C69C_OUTPUT */
 
 #ifdef ALLOW_NONHYDROSTATIC
       IF ( use3Dsolver ) THEN
