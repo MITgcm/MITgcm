@@ -18,7 +18,7 @@
 CBOP
 C     !ROUTINE: DYNAMICS
 C     !INTERFACE:
-      SUBROUTINE DYNAMICS(myTime, myIter, myThid)
+      SUBROUTINE DYNAMICS( myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE DYNAMICS
@@ -112,8 +112,8 @@ C     myThid :: Thread number for this instance of the routine.
 
 C     !FUNCTIONS:
 #ifdef ALLOW_DIAGNOSTICS
-c     LOGICAL  DIAGNOSTICS_IS_ON
-c     EXTERNAL DIAGNOSTICS_IS_ON
+      LOGICAL  DIAGNOSTICS_IS_ON
+      EXTERNAL DIAGNOSTICS_IS_ON
 #endif
 
 C     !LOCAL VARIABLES:
@@ -690,16 +690,72 @@ Cml)
        CALL DIAGNOSTICS_SCALE_FILL(phiHydLow,tmpFac,2,
      &                                 'PHIBOTSQ',0, 1,0,1,1,myThid)
 
-       IF ( selectImplicitDrag.EQ.0 .AND.
-     &      (  no_slip_bottom
-     &    .OR. selectBotDragQuadr.GE.0
-     &    .OR. bottomDragLinear.NE.0. ) ) THEN
-        CALL DIAGNOSTICS_FILL_RS( botDragU, 'botTauX ',
-     &                            0, 1, 0, 1, 1, myThid )
-        CALL DIAGNOSTICS_FILL_RS( botDragV, 'botTauY ',
-     &                            0, 1, 0, 1, 1, myThid )
+       IF ( no_slip_bottom .OR.
+     &      selectBotDragQuadr.GE.0 .OR.
+     &      bottomDragLinear.NE.0. ) THEN
+        IF ( selectImplicitDrag.EQ.0  ) THEN
+         CALL DIAGNOSTICS_FILL_RS( botDragU, 'botTauX ',
+     &                             0, 1, 0, 1, 1, myThid )
+         CALL DIAGNOSTICS_FILL_RS( botDragV, 'botTauY ',
+     &                             0, 1, 0, 1, 1, myThid )
+        ELSEIF ( selectImplicitDrag.EQ.1 ) THEN
+         IF ( DIAGNOSTICS_IS_ON( 'botTauX ', myThid ) ) THEN
+          IF ( usingZCoords ) THEN
+C          kLowC = 0 if dry column
+           DO j=jMin,jMax
+            DO i=iMin,iMax
+             k = MAX( 1, MIN( kLowC(i-1,j,bi,bj), kLowC(i,j,bi,bj) ) )
+             botDragU(i,j,bi,bj) = -botDragU(i,j,bi,bj)
+     &                           * gU(i,j,k,bi,bj)
+            ENDDO
+           ENDDO
+          ELSE
+C          kSurfW = Nr+1 if dry column
+           DO j=jMin,jMax
+            DO i=iMin,iMax
+             k = MIN( Nr, kSurfW(i,j,bi,bj) )
+             botDragU(i,j,bi,bj) = -botDragU(i,j,bi,bj)
+     &                           * gU(i,j,k,bi,bj)
+            ENDDO
+           ENDDO
+          ENDIF
+          CALL DIAGNOSTICS_FILL_RS( botDragU, 'botTauX ',
+     &                              0, 1, 1, bi, bj, myThid )
+         ENDIF
+         IF ( DIAGNOSTICS_IS_ON( 'botTauY ', myThid ) ) THEN
+          IF ( usingZCoords ) THEN
+C          kLowC = 0 if dry column
+           DO j=jMin,jMax
+            DO i=iMin,iMax
+             k = MAX( 1, MIN( kLowC(i,j-1,bi,bj), kLowC(i,j,bi,bj) ) )
+             botDragV(i,j,bi,bj) = -botDragV(i,j,bi,bj)
+     &                           * gV(i,j,k,bi,bj)
+            ENDDO
+           ENDDO
+          ELSE
+C          kSurfS = Nr+1 if dry column
+           DO j=jMin,jMax
+            DO i=iMin,iMax
+             k = MIN( Nr, kSurfS(i,j,bi,bj) )
+             botDragV(i,j,bi,bj) = -botDragV(i,j,bi,bj)
+     &                           * gV(i,j,k,bi,bj)
+            ENDDO
+           ENDDO
+          ENDIF
+          CALL DIAGNOSTICS_FILL_RS( botDragV, 'botTauY ',
+     &                              0, 1, 1, bi, bj, myThid )
+         ENDIF
+        ENDIF
        ENDIF
 
+c# ifdef ALLOW_SHELFICE
+c      IF ( useShelfIce .AND. selectImplicitDrag.EQ.1 ) THEN
+c        CALL SHELFICE_DIAGNOSTICS_DRAG(
+c     I                gU(1-OLx,1-OLy,1,bi,bj),
+c     I                gV(1-OLx,1-OLy,1,bi,bj),
+c     I                bi, bj, myIter, myThid )
+c      ENDIF
+c# endif /* ALLOW_SHELFICE */
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
