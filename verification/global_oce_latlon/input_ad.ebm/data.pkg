@@ -1,7 +1,0 @@
-# Packages
- &PACKAGES
- useGMRedi=.TRUE.,
- useEBM=.TRUE.,
- useGrdchk=.TRUE.,
- &
-  
