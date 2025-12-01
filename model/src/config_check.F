@@ -450,7 +450,7 @@ C     o Need to use S/R APPLY_FORCING_U,V to get Tidal forcing
 #endif
 
 #ifdef SHORTWAVE_HEATING
-      IF ( selectPenetratingSW.GT.0 .AND. fluidIsAir ) THEN
+      IF ( fluidIsAir .AND. selectPenetratingSW.GT.0 ) THEN
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK:',
      &   ' Water column short wave heating (selectPenetratingSW>0)'
         CALL PRINT_ERROR( msgBuf, myThid )
