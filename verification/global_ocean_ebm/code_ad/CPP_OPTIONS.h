@@ -18,7 +18,7 @@ C CPP flags controlling particular source code features
 C-- Forcing code options:
 
 C o Shortwave heating as extra term in APPLY_FORCING_T (apply_forcing.F)
-#define SHORTWAVE_HEATING
+#undef SHORTWAVE_HEATING
 
 C o Include/exclude Geothermal Heat Flux at the bottom of the ocean
 #undef ALLOW_GEOTHERMAL_FLUX

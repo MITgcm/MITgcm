@@ -33,8 +33,8 @@ C       >>> Cost function contributions
 #define ALLOW_COST_ATLANTIC_HEAT
 #undef ALLOW_COST_ATLANTIC_HEAT_DOMASS
 
-#define ALLOW_COST_TEST
-#define ALLOW_COST_TSQUARED
+#undef ALLOW_COST_TEST
+#undef ALLOW_COST_TSQUARED
 #undef ALLOW_COST_DEPTH
 #undef ALLOW_COST_TRACER
 
