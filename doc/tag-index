@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - add a STOP if using selectPenetratingSW > 0 in Atmospheric set-up.
 o pkg/streamice & Tapenade:
   - introduce fixed-point treatment of Goldberg et al 2016 (GMD) for streamice
     nonlinear solver using Tapenade FP-LOOP pragma ; used in halfpipe_streamice
