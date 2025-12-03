@@ -1,1 +1,1 @@
-../../global_ocean_ebm/results/output.txt
+../../global_ocean_ebm/results/output.ebm.txt
