@@ -10,8 +10,9 @@ C !INTERFACE: ==========================================================
      I     myTime, myIter, myThid )
 
 C !DESCRIPTION:
-C find daily mean insolation as function of date and latitude
-C based on Paltridge and Parson
+C find daily mean insolation as function of date and latitude based on
+C Paltridge, G. W. and C. M. R. Platt. 1976. Radiative Processes in
+C Meteorology and Climatology. Elsevier Sci. 318 p.
 
 C !USES: ===============================================================
       IMPLICIT NONE
@@ -41,10 +42,6 @@ C !OUPUT PARAMETERS: ===================================================
       _RL     solar_radiation(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 C !FUNCTIONS: ==========================================================
-#ifdef ALLOW_CAL
-      INTEGER  CAL_ISLEAP
-      EXTERNAL CAL_ISLEAP
-#endif
 
 C !LOCAL VARIABLES: ====================================================
       INTEGER i,j
@@ -53,9 +50,6 @@ C !LOCAL VARIABLES: ====================================================
       _RL lat, sun1, dayhrs
       _RL cosz, frac
       _RL yearSec
-#ifdef ALLOW_CAL
-      INTEGER myDate(4)
-#endif
 CEOP
 
 C constants
@@ -65,16 +59,6 @@ C constants
 C find day (****NOTE for year starting in winter*****)
 C fraction of year
       yearSec = 360. _d 0*86400. _d 0
-#ifdef ALLOW_CAL
-      IF ( useCAL ) THEN
-       CALL CAL_GETDATE( myIter, myTime, myDate, myThid )
-       IF ( CAL_ISLEAP(myDate, myThid) .EQ. 2 ) THEN
-        yearSec = nDaysLeap  *86400. _d 0
-       ELSE
-        yearSec = nDaysNoLeap*86400. _d 0
-       ENDIF
-      ENDIF
-#endif
       dayfrac=MOD( myTime,yearSec )/ yearSec
 C convert to radians
       yday = 2. _d 0*PI*dayfrac
@@ -85,7 +69,7 @@ C cosine zenith angle (paltridge+platt)
      &       -(0.006758 _d 0*COS(2. _d 0*yday))
      &       +(0.000907 _d 0*SIN(2. _d 0*yday))
      &       -(0.002697 _d 0*COS(3. _d 0*yday))
-     &       +(0.001480 _d 0    *sin(3. _d 0*yday)) )
+     &       +(0.001480 _d 0*SIN(3. _d 0*yday)) )
 
       DO j = jMin, jMax
        DO i = iMin, iMax
@@ -109,8 +93,8 @@ C fraction of daylight in day
 
         solar_radiation(i,j) = solar*(1. _d 0-albedo)*cosz*frac
 
-       ENDDO !i
-      ENDDO !j
+       ENDDO
+      ENDDO
 
       RETURN
       END
