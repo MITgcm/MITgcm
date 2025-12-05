@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - fix compilation of untested SEAICE_MODIFY_GROWTH_ADJ code.
 o model/src:
   - add a STOP if using selectPenetratingSW > 0 in Atmospheric set-up.
 o pkg/streamice & Tapenade:
