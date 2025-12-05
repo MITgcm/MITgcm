@@ -1,1 +1,0 @@
-../../global_oce_latlon/results/output_adm.ebm.txt
