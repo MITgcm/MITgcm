@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification:
+  - move "global_ocean_ebm" experiment forward tests to "global_oce_latlon" and
+    adjust AD test for merging in global_oce_latlon, as a secondary "ebm" test.
+  - disable test of global_ocean_ebm (to be removed later).
 o pkg/seaice:
   - fix compilation of untested SEAICE_MODIFY_GROWTH_ADJ code.
 o model/src:
