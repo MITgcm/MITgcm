@@ -449,7 +449,17 @@ C     o Need to use S/R APPLY_FORCING_U,V to get Tidal forcing
       ENDIF
 #endif
 
-#ifndef SHORTWAVE_HEATING
+#ifdef SHORTWAVE_HEATING
+      IF ( fluidIsAir .AND. selectPenetratingSW.GT.0 ) THEN
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK:',
+     &   ' Water column short wave heating (selectPenetratingSW>0)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK:',
+     &   '  cannot be used in Atmospheric setup (fluidIsAir=T)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+#else /* SHORTWAVE_HEATING */
       IF ( selectPenetratingSW.GT.0 ) THEN
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: selectPenetratingSW>0',
      &   ' but SHORTWAVE_HEATING code is not compiled.'
@@ -459,7 +469,7 @@ C     o Need to use S/R APPLY_FORCING_U,V to get Tidal forcing
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
-#endif
+#endif /* SHORTWAVE_HEATING */
 
 #ifdef ALLOW_BALANCE_FLUXES
       IF ( selectBalanceEmPmR.LT.0 .OR. selectBalanceEmPmR.GT.2 ) THEN

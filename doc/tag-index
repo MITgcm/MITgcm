@@ -2,6 +2,27 @@
     ==============================
 
 o pkg/seaice:
+  - fix compilation of untested SEAICE_MODIFY_GROWTH_ADJ code.
+o model/src:
+  - add a STOP if using selectPenetratingSW > 0 in Atmospheric set-up.
+o pkg/streamice & Tapenade:
+  - introduce fixed-point treatment of Goldberg et al 2016 (GMD) for streamice
+    nonlinear solver using Tapenade FP-LOOP pragma ; used in halfpipe_streamice
+    exp. (with #define ALLOW_STREAMICE_FP_ADJ) ;
+  - rename: streamice_vel_solve_openad.F --> streamice_vel_solve_fp.F
+    + CPP option  ALLOW_STREAMICE_OAD_FP --> ALLOW_STREAMICE_FP_ADJ
+  - skip differentiation of streamice_cg_solve.F with Tapenade, calling instead
+    adstreamice_cg_solve (update "flow_tap" and stubs_tap_adj.F, add
+    adFixedPoint.c in  ADFirstAidKit/ + links in pkg/tapenade);
+  - for now, disable halfpipe_streamice exp. Tapenade Tang.-Lin test.
+o pkg/grdchk:
+  - fix grdchk location to allow to span several vertical level k ; test this
+    in secondary test exp. "global_ocean.90x40x15.kapredi".
+o pkg/mnc:
+  - update grid-variable names in pkg/mnc NetCDF files (mostly matching GRID.h)
+    and provide backwards compatibility in MATLab "load_grid.m" and for Python
+    MITgcmutils (restore_MNC_keys).
+o pkg/seaice:
   - new parameter "SEAICE_evpAreaReg" for regularizations of denomU/V in EVP
     solver ; tested in exp. seaice_obcs new secondary test "regDenom".
 

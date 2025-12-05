@@ -12,5 +12,6 @@ from . import density as dens
 from . import mds
 
 __all__ = ['nan', 'inf', 'rdmds', 'wrmds', 'iolabel', 'iolabel2num',
-           'readstats', 'rdmnc', 'mnc_files','gen_blanklist', 'hfac',
+           'readstats', 'rdmnc', 'mnc_files', 'restore_MNC_keys', 
+           'gen_blanklist', 'hfac',
            'readbin','tilecmap','writebin','pfromz','cs','llc','dens']
