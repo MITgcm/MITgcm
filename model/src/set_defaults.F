@@ -266,11 +266,7 @@ C--   Set (free)surface-related parameters
       salt_EvPrRn = 0.
       temp_addMass = UNSET_RL
       salt_addMass = UNSET_RL
-#ifdef SHORTWAVE_HEATING
-      selectPenetratingSW = 1
-#else
-      selectPenetratingSW = 0
-#endif
+      selectPenetratingSW = UNSET_I
       selectBalanceEmPmR  = UNSET_I
       balanceQnet         = .FALSE.
       balancePrintMean    = .FALSE.
