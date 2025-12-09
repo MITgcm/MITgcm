@@ -175,6 +175,19 @@ C     Make sure we are not trying to use something that is unavailable
        errCount = errCount + 1
       ENDIF
 #endif
+#ifdef OLD_VISBECK_CALC
+C Was to use old calculation (before 2007/05/24) of Visbeck etal K_GM+Redi
+C (which depends on tapering scheme); got removed late 2025.
+c     IF ( GM_Visbeck_alpha.NE.0. ) THEN
+       WRITE(msgBuf,'(2A)') 'GMREDI_CHECK: ',
+     &   '#define OLD_VISBECK_CALC not allowed in GMREDI_OPTIONS.h'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(2A)') 'GMREDI_CHECK: ',
+     &   ' since OLD_VISBECK_CALC code has been removed'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       errCount = errCount + 1
+c     ENDIF
+#endif
 
 #ifdef GM_GEOM_VARIABLE_K
       IF ( GM_useGEOM ) THEN
