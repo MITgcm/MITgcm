@@ -22,9 +22,7 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#ifdef ALLOW_CAL
-# include "cal.h"
-#endif
+#include "GCHEM.h"
 
 C !INPUT PARAMETERS: ===================================================
 C     bi,bj         :: tile indices
@@ -49,7 +47,6 @@ C !LOCAL VARIABLES: ====================================================
       _RL dayfrac, yday, delta
       _RL lat, sun1, dayhrs
       _RL cosz, frac
-      _RL yearSec
 CEOP
 
 C constants
@@ -58,8 +55,7 @@ C constants
 
 C find day (****NOTE for year starting in winter*****)
 C fraction of year
-      yearSec = 360. _d 0*86400. _d 0
-      dayfrac=MOD( myTime,yearSec )/ yearSec
+      dayfrac=MOD( myTime,gchem_secondsPerYear )/ gchem_secondsPerYear
 C convert to radians
       yday = 2. _d 0*PI*dayfrac
 C cosine zenith angle (paltridge+platt)

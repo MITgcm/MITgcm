@@ -30,17 +30,25 @@ C     === Global variables ===
 # include "PTRACERS_SIZE.h"
 # include "PTRACERS_PARAMS.h"
 #endif
+#ifdef ALLOW_CAL
+# include "cal.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid   :: My Thread Id number
       INTEGER myThid
 
 #ifdef ALLOW_GCHEM
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
 C     !LOCAL VARIABLES:
 C     msgBuf   :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER errCount
       INTEGER nb_tendTr
+      INTEGER IL
 CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -143,6 +151,43 @@ c    &  ' exceeds number of PTRACERS(_numInUse)=', PTRACERS_numInUse
         CALL ALL_PROC_DIE( 0 )
         STOP 'ABNORMAL END: S/R GCHEM_CHECK'
       ENDIF
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C     some consistency checks with a soft warning
+      errCount = 0
+      IF ( .NOT.useCAL .AND.
+     &     gchem_secondsPeryear .NE. externForcingCycle ) THEN
+       WRITE(msgBuf,'(2(A,F12.1))')
+     &      '** Warning ** GCHEM_INIT_FIXED: gchem_secondsPeryear = ',
+     &      gchem_secondsPerYear,
+     &      ' is not consistent with externForcingCycle = ',
+     &      externForcingCycle
+       errCount = errCount + 1
+#ifdef ALLOW_CAL
+      ELSE
+       IF ( usingGregorianCalendar .AND.
+     &      gchem_secondsPeryear .NE. 365.25 _d 0*86400. _d 0 ) THEN
+        errCount = errCount + 1
+       ELSEIF ( .NOT. usingGregorianCalendar .AND.
+     &       gchem_secondsPerYear .NE. nDaysNoLeap*86400. _d 0 ) THEN
+        errCount = errCount + 1
+       ENDIF
+       IF ( errCount .GT. 0 ) THEN
+        IL = ILNBLNK(theCalendar)
+        WRITE(msgBuf,'(A,F12.1,3A)')
+     &       '** Warning ** GCHEM_INIT_FIXED: gchem_secondsPeryear = ',
+     &       gchem_secondsPerYear,
+     &       ' is not consistent with theCalendar = "',
+     &       theCalendar(1:IL),'"'
+       ENDIF
+#endif
+      ENDIF
+      IF ( errCount .GT. 0 ) THEN
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+      ENDIF
+
       _END_MASTER(myThid)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
