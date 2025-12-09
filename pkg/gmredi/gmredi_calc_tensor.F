@@ -94,13 +94,9 @@ C     maskFk    :: 2-D mask for vertical interface k (between level k-1 & k)
 #endif
 
 #ifdef GM_VISBECK_VARIABLE_K
-# ifdef OLD_VISBECK_CALC
-      _RL Ssq(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-# else
       INTEGER ks
       _RL dSigmaH, dSigmaR, Sloc, rTop
 c     _RL M2loc
-# endif
       _RL recipMaxSlope
       _RL deltaH, integrDepth
       _RL N2loc, SNloc
@@ -346,7 +342,6 @@ c        dSigmaDr(i,j)=sigmaR(i,j,k)
        ENDDO
 
 #ifdef GM_VISBECK_VARIABLE_K
-# ifndef OLD_VISBECK_CALC
        IF ( GM_Visbeck_alpha.GT.zeroRL .AND.
      &      -rC(k-1).LT.GM_Visbeck_depth ) THEN
 
@@ -428,7 +423,6 @@ c            M2loc = gravity*recip_rhoConst*dSigmaH
          ENDDO
         ENDDO
        ENDIF
-# endif /* ndef OLD_VISBECK_CALC */
 #endif /* GM_VISBECK_VARIABLE_K */
 C     Z-Coords: change sign of vertical Sigma gradient (always downward)
 C     to match stratification sign (i.e., positive if stratified)
@@ -496,42 +490,6 @@ C     flip sign of extra-diagonal component (see manual sec. 8.4.1.2.4)
           Kwz(i,j,k,bi,bj) = SlopeSqr(i,j)*taperFct(i,j)
         ENDDO
        ENDDO
-
-#ifdef GM_VISBECK_VARIABLE_K
-# ifdef OLD_VISBECK_CALC
-       DO j=1-OLy+1,sNy+OLy-1
-        DO i=1-OLx+1,sNx+OLx-1
-
-C- note (jmc) : moved here since only used in VISBECK_VARIABLE_K
-C           but do not know if *taperFct (or **2 ?) is necessary
-         Ssq(i,j)=SlopeSqr(i,j)*taperFct(i,j)
-
-C--     Depth average of M^2/N^2 * N
-
-C       Calculate terms for mean Richardson number
-C       which is used in the "variable K" parameterisaton.
-C       Distance between interface above layer and the integration depth
-         deltaH=abs(GM_Visbeck_depth)-abs(rF(k))
-C       If positive we limit this to the layer thickness
-         integrDepth = drF(k)
-         deltaH=min(deltaH,integrDepth)
-C       If negative then we are below the integration level
-         deltaH=max(deltaH, 0. _d 0)
-C       Now we convert deltaH to a non-dimensional fraction
-         deltaH=deltaH/GM_Visbeck_depth
-
-         IF ( Ssq(i,j).NE.0. .AND. dSigmaDr(i,j).NE.0. ) THEN
-          N2loc = gravity*recip_rhoConst*dSigmaDr(i,j)
-          SNloc = SQRT(Ssq(i,j)*N2loc )
-          VisbeckK(i,j,bi,bj) = VisbeckK(i,j,bi,bj)
-     &        +deltaH*GM_Visbeck_alpha
-     &               *GM_Visbeck_length*GM_Visbeck_length*SNloc
-         ENDIF
-
-        ENDDO
-       ENDDO
-# endif /* OLD_VISBECK_CALC */
-#endif /* GM_VISBECK_VARIABLE_K */
 
 C-- end 1rst loop on vertical level index k
       ENDDO
