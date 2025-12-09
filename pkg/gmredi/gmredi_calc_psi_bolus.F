@@ -7,9 +7,9 @@
 #endif
 
 CBOP
-C     !ROUTINE: GMREDI_CALC_PSI_B
+C     !ROUTINE: GMREDI_CALC_PSI_BOLUS
 C     !INTERFACE:
-      SUBROUTINE GMREDI_CALC_PSI_B(
+      SUBROUTINE GMREDI_CALC_PSI_BOLUS(
      I             bi, bj, iMin, iMax, jMin, jMax,
      I             sigmaX, sigmaY, sigmaR,
      I             ldd97_LrhoW, ldd97_LrhoS,
@@ -17,7 +17,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE GMREDI_CALC_PSI_B
+C     | SUBROUTINE GMREDI_CALC_PSI_BOLUS
 C     | o Calculate stream-functions for GM bolus velocity
 C     *==========================================================*
 C     \ev

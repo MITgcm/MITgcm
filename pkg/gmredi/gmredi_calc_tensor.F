@@ -647,11 +647,11 @@ C--   Calculate Stream-Functions used in Advective Form:
      I             myThid )
        ELSE
 # endif
-#ifndef GM_BATES_PASSIVE
+# ifndef GM_BATES_PASSIVE
          IF ( .NOT.GM_useBatesK3d ) THEN
 # endif
 C          If using BatesK3d PsiX and PsiY are calculated in GMREDI_CALC_BATES_K
-           CALL GMREDI_CALC_PSI_B(
+           CALL GMREDI_CALC_PSI_BOLUS(
      I              bi, bj, iMin, iMax, jMin, jMax,
      I              sigmaX, sigmaY, sigmaR,
      I              ldd97_LrhoW, ldd97_LrhoS,
