@@ -110,6 +110,14 @@ C       Next, read the calendar data file.
 C     Everyone else must wait for the parameters to be loaded
       _BARRIER
 
+C     Check consistency of the date specifications with the MITgcm
+C     startTime, endTime, and nTimeSteps, then set all the calendar
+C     parameters.
+      CALL CAL_SET(
+     I              startTime, endTime, deltaTclock,
+     I              nIter0, nEndIter, nTimeSteps,
+     I              myThid )
+
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_LEAVE('CAL_READPARMS',myThid)
 #endif

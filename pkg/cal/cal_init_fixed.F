@@ -28,14 +28,6 @@ C     === Local variables ===
       IF (debugMode) CALL DEBUG_ENTER('CAL_INIT_FIXED',myThid)
 #endif
 
-C     Check consistency of the date specifications with the MITgcm
-C     startTime, endTime, and nTimeSteps, then set all the calendar
-C     parameters.
-      CALL CAL_SET(
-     I              startTime, endTime, deltaTclock,
-     I              nIter0, nEndIter, nTimeSteps,
-     I              myThid )
-
       CALL CAL_SUMMARY( myThid )
 
 #ifdef ALLOW_DEBUG
