@@ -366,6 +366,9 @@ c        dSigmaDr(i,j)=sigmaR(i,j,k)
        ENDDO
 
 #ifdef GM_VISBECK_VARIABLE_K
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ INCOMPLETE dSigmaDr
+# endif
        IF ( GM_Visbeck_alpha.GT.zeroRL .AND.
      &      -rC(k-1).LT.GM_Visbeck_depth ) THEN
 
@@ -424,6 +427,13 @@ C        (same stencil and same weights as for dSigmaH calculation)
      &             + dSigmaDy(i,j)*dSigmaDy(i,j)
            IF ( dSigmaH .GT. 0. _d 0 ) THEN
              dSigmaH = SQRT( dSigmaH )
+# ifdef ALLOW_AUTODIFF_TAMC
+C     This gets rid of a TAF-recomputation warning for dSigmaH that is
+C     not associated with any actual recomputations. TAF is probably
+C     just confused by the cascade of if-statements.
+           ENDIF
+           IF ( dSigmaH .GT. 0. _d 0 ) THEN
+# endif
 C-       compute slope, limited by GM_Visbeck_maxSlope:
              IF ( dSigmaR.GT.dSigmaH*recipMaxSlope ) THEN
               Sloc = dSigmaH / dSigmaR
@@ -532,9 +542,13 @@ C-     Limit range that Kappa-GM can take
         ENDDO
        ENDDO
       ENDIF
-# ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=tkey, byte=isbyte
-# endif
+C     If you want to avoid recomputing the above loop, you can uncomment
+C     the following lines; alternatively, storing locK3dRedi/GM below
+C     also reduces the recomputations, but at the cost of increased
+C     memory usage (2 3D-fields), probably not worth it.
+c# ifdef ALLOW_AUTODIFF_TAMC
+cCADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=tkey, byte=isbyte
+c# endif
 #endif /* GM_VISBECK_VARIABLE_K */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -561,6 +575,9 @@ C--   Set local 3D Redi diffusivity and GM Kappa:
         ENDDO
        ENDDO
       ENDDO
+c# ifdef ALLOW_AUTODIFF_TAMC
+cCADJ STORE locK3dRedi = comlev1_bibj, key=tkey, byte=isbyte
+c# endif
 #else /* GM_USE_K3D_REDI */
       locK3dRedi(1) = 0. _d 0
 #endif /* GM_USE_K3D_REDI */
@@ -587,6 +604,9 @@ C--   Set local 3D Redi diffusivity and GM Kappa:
         ENDDO
        ENDDO
       ENDDO
+c# ifdef ALLOW_AUTODIFF_TAMC
+cCADJ STORE locK3dGM = comlev1_bibj, key=tkey, byte=isbyte
+c# endif
 #else /* GM_USE_K3D_GM */
       locK3dGM(1) = 0. _d 0
 #endif /* GM_USE_K3D_GM */
