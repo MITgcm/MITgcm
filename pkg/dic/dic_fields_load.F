@@ -53,7 +53,7 @@ C Access pkg/gchem forcing fields
           silicaSurf(i,j,bi,bj) = gchemSi(i,j,bi,bj)
 #ifndef USE_PLOAD
 C     Atm pressure in Pascals, convert to atm
-          AtmosP(i,j,bi,bj)     = gchemAtmosp(i,j,bi,bj)/Pa2atm
+          AtmosP(i,j,bi,bj)     = gchemAtmosP(i,j,bi,bj)/Pa2atm
 #endif
 #ifdef READ_PAR
           PAR(i,j,bi,bj)        = gchemPAR(i,j,bi,bj)

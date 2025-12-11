@@ -231,7 +231,7 @@ C-     end if-bloc (time to load new fields)
             ENDDO
            ENDDO
           ENDIF
- #endif
+#endif
 
           IF ( gchem_iceFile .NE. ' ' ) THEN
            DO j=1-OLy,sNy+OLy
@@ -459,7 +459,7 @@ C     forcing load fields with pkg/exf tools
        IF ( gchem_chlFile .NE. ' ' ) THEN
 C     forcing load fields with pkg/exf tools
         CALL EXF_SET_FLD(
-     &     'gchemchl', gchem_chlfile, chlmask,
+     &     'gchemChl', gchem_chlfile, chlmask,
      &     chlStartTime, chlperiod, chlRepCycle,
      &     gchem_inscal_chl,
      &     chl_exfremo_intercept, chl_exfremo_slope,
@@ -474,7 +474,7 @@ C     forcing load fields with pkg/exf tools
        ENDIF
 C     endif gchem_useEXF
       ENDIF
-# endif /* ALLOW_EXF */
+#endif /* ALLOW_EXF */
 
 C------------------------------------------------------------
 C If there is no ice file given in data.gchem, try fields from

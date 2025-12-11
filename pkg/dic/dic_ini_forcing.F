@@ -47,8 +47,8 @@ C--   Initialise forcing arrays in common blocks
 C-    Initialise DIC_VARS.h forcing-field arrays from reasonable values in pkg/gchem
          wind      (i,j,bi,bj) = gchemWind(i,j,bi,bj)
          fIce      (i,j,bi,bj) = gchemIce(i,j,bi,bj)
-         AtmosP    (i,j,bi,bj) = gchemAtmosp(i,j,bi,bj)/Pa2atm
-          silicaSurf(i,j,bi,bj) = gchemSi(i,j,bi,bj)
+         AtmosP    (i,j,bi,bj) = gchemAtmosP(i,j,bi,bj)/Pa2atm
+         silicaSurf(i,j,bi,bj) = gchemSi(i,j,bi,bj)
          AtmospCO2 (i,j,bi,bj) = gchemapCO2(i,j,bi,bj)
 #ifdef DIC_BIOTIC
          par       (i,j,bi,bj) = gchemPAR(i,j,bi,bj)
