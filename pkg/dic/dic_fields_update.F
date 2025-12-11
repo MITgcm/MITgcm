@@ -1,5 +1,5 @@
 #include "DIC_OPTIONS.h"
-
+#include "GCHEM_OPTIONS.h"
 CBOP
 C !ROUTINE: DIC_FIELDS_UPDATE
 
@@ -47,9 +47,8 @@ c !LOCAL VARIABLES: ===================================================
 #endif
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
-      IF (  DIC_forcingCycle.GT.0. _d 0 ) THEN
-C     Update forcing fields in pkg/dic common blocks, otherwise this is handled
-C     in pkg/gchem        
+#ifndef GCHEM_ALLOW_FFIELDS
+C     Update forcing fields in pkg/dic common blocks
         IF ( useThSIce ) THEN
 #ifdef ALLOW_THSICE
           DO j=1-OLy,sNy+OLy
@@ -96,8 +95,7 @@ C     in pkg/gchem
          ENDIF
         ENDIF
 #endif /* ALLOW_OCN_COMPON_INTERF */
-      ENDIF
-      
+#endif /* GCHEM_ALLOW_FFIELDS */      
 #endif /* ALLOW_DIC */
       RETURN
       END

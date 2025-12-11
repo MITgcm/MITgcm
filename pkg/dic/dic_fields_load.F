@@ -1,5 +1,5 @@
 #include "DIC_OPTIONS.h"
-
+#include "GCHEM_OPTIONS.h"
 CBOP
 C ROUTINE: DIC_FIELDS_LOAD
 
@@ -41,6 +41,7 @@ c LOCAL VARIABLES: ===================================================
 #endif
 CEOP
 
+#ifdef GCHEM_ALLOW_FFIELDS
 C Access pkg/gchem forcing fields
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -67,7 +68,7 @@ C     Atm pressure in Pascals, convert to atm
         ENDDO
        ENDDO
       ENDDO
-      
+#else /* GCHEM_ALLOW_FFIELDS */
       IF (  DIC_forcingCycle.GT.0. _d 0 ) THEN
 
 C--   Now calculate whether it is time to update the forcing arrays
@@ -310,7 +311,7 @@ C If no surface silicate file but deep (3d) silicate provided, use top level
 
 C endif for DIC_forcingCycle
       ENDIF
-
+#endif /* GCHEM_ALLOW_FFIELDS */
 #endif /* ALLOW_DIC */
       RETURN
       END
