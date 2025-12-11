@@ -84,14 +84,6 @@ C-    Initialization : <= done in S/R gmredi_init
       tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-#ifdef ALLOW_AUTODIFF_TAMC
-# ifdef GM_VISBECK_VARIABLE_K
-CADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=tkey, byte=isbyte
-# endif
-# ifdef GM_GEOM_VARIABLE_K
-CADJ STORE GEOM_K3d(:,:,:,bi,bj) = comlev1_bibj, key=igmkey, byte=isbyte
-# endif
-#endif
       IF (GM_AdvForm) THEN
 C     change sign of vertical Sigma gradient to match stratification sign
        halfSign = halfRL*gravitySign
