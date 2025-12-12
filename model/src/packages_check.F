@@ -189,22 +189,6 @@ C     If monitorFreq is finite, make sure the pkg/monitor is being compiled
      &                  'MONITOR', 'monitorFreq <> 0', myThid )
 #endif
 
-      IF ( taveFreq.NE.zeroRL ) THEN
-#ifdef ALLOW_TIMEAVE
-        WRITE(msgBuf,'(2A)') '** Warning **',
-     &   ' PACKAGES_CHECK: "pkg/timeave" no longer maintained'
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-        WRITE(msgBuf,'(2A)') '** Warning **',
-     &   ' PACKAGES_CHECK: and will be removed in future release'
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-#else
-C     If taveFreq is finite, make sure the pkg/timeave is being compiled
-        CALL PACKAGES_ERROR_MSG( 'TIMEAVE', 'taveFreq <> 0', myThid )
-#endif
-      ENDIF
-
 #ifndef ALLOW_CD_CODE
        IF ( useCDscheme ) CALL PACKAGES_ERROR_MSG(
      &                  'CD_CODE', 'useCDscheme=.T.', myThid )

@@ -24,7 +24,6 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "GMREDI.h"
-#include "GMREDI_TAVE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid ::  my Thread Id number
@@ -143,21 +142,6 @@ C     Initialize 2-D arrays in common blocks :
 #endif
          ENDDO
         ENDDO
-
-#ifdef ALLOW_TIMEAVE
-C     Initialize averages to zero
-        CALL TIMEAVE_RESET(GM_Kwx_T,Nr, bi,bj,myThid)
-        CALL TIMEAVE_RESET(GM_Kwy_T,Nr, bi,bj,myThid)
-        CALL TIMEAVE_RESET(GM_Kwz_T,Nr, bi,bj,myThid)
-        GM_timeAve(bi,bj) = 0. _d 0
-#ifdef GM_VISBECK_VARIABLE_K
-        CALL TIMEAVE_RESET(Visbeck_K_T, 1, bi,bj,myThid)
-#endif
-#ifdef GM_BOLUS_ADVEC
-        CALL TIMEAVE_RESET(GM_PsiXtave,Nr, bi,bj,myThid)
-        CALL TIMEAVE_RESET(GM_PsiYtave,Nr, bi,bj,myThid)
-#endif
-#endif /* ALLOW_TIMEAVE */
 
 C- end bi,bj loops
        ENDDO

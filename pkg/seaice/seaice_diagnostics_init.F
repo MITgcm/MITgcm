@@ -29,14 +29,17 @@ C     === Global variables ===
 #include "SEAICE_TRACER.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     === Routine arguments ===
 C     myThid ::  my Thread Id number
       INTEGER myThid
-CEOP
 
 #ifdef ALLOW_DIAGNOSTICS
+C     !fUNCTIONS:
+      INTEGER     ILNBLNK
+      EXTERNAL    ILNBLNK
+      CHARACTER*4 SEAICE_DIAG_SUFX
+      EXTERNAL    SEAICE_DIAG_SUFX
+
 C     !LOCAL VARIABLES:
-C     === Local variables ===
 C     diagNum   :: diagnostics number in the (long) list of available diag.
 C     diagMate  :: diag. mate number in the (long) list of available diag.
 C     diagName  :: local short name (8c) of a diagnostics
@@ -57,14 +60,11 @@ C     diagTitle :: local string (80c): description of field in diagnostic
       CHARACTER*8   locUnitTr
       CHARACTER*30  locNameTr
 #endif
-      INTEGER       numArea,numAreaPreTh,numHeff,numHeffPreTh
+      INTEGER       numArea, numAreaPreTh, numHeff, numHeffPreTh
       CHARACTER*9   flxUnits
       CHARACTER*15  locName
-      CHARACTER*4 SEAICE_DIAG_SUFX, diagSufx
-      EXTERNAL    SEAICE_DIAG_SUFX
-C     Functions ::
-      INTEGER     ILNBLNK
-      EXTERNAL    ILNBLNK
+      CHARACTER*4   diagSufx
+CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -271,7 +271,7 @@ C-     use name & units from data.seaice :
 
 C=============== momentum, heat and fresh water forcing ============
 
-C     pkg/diagnostics SIfu and oceTAUX, dumpfreq FU, and tavefreq FUtave
+C     pkg/diagnostics SIfu and oceTAUX, and dumpfreq FU
 C     are identical but they differ from pkg/diagnostics EXFtaux, which
 C     is stress before impact of ice.  Also when using exf bulk
 C     formulae, EXFtaux is defined on tracer rather than uvel points.
@@ -283,7 +283,7 @@ c     diagMate  = diagNum + 2
 c     CALL DIAGNOSTICS_ADDTOLIST( diagNum,
 c    I     diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
-C     pkg/diagnostics SIfv and oceTAUY, dumpfreq FV, and tavefreq FVtave
+C     pkg/diagnostics SIfv and oceTAUY, and dumpfreq FV
 C     are identical but they differ from pkg/diagnostics EXFtauy, which
 C     is stress before impact of ice.  Also when using exf bulk
 C     formulae, EXFtauy is defined on tracer rather than vvel points.
@@ -361,7 +361,7 @@ c    I     diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 #endif
 
-C     SIqnet, Qnet, and QNETtave are identical.
+C     SIqnet and Qnet are identical.
 C     With #undef NONLIN_FRSURF SIqnet is identical to -(TFLUX-TRELAX).
 C     Except over land and under sea ice, SIqnet is also identical to
 C     EXFlwnet+EXFswnet-EXFhl-EXFhs.
@@ -372,7 +372,7 @@ C     EXFlwnet+EXFswnet-EXFhl-EXFhs.
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-C     SIqsw, Qsw, and QSWtave are identical.
+C     SIqsw and Qsw are identical.
 C     Except under sea ice, SIqsw is also identical to EXFswnet.
       diagName  = 'SIqsw   '
       diagTitle = 'Ocean surface shortwave radiat., >0 decreases theta'
@@ -433,7 +433,7 @@ C     Except under sea ice, SIqsw is also identical to EXFswnet.
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-C     pkg/diagnostics SIempmr, dumpfreq EmPmR, and tavefreq EmPmRtave
+C     pkg/diagnostics SIempmr and dumpfreq EmPmR
 C     are identical but they differ from pkg/diagnostics EXFempmr, which
 C     is EmPmR before impact of ice.
       diagName  = 'SIempmr '

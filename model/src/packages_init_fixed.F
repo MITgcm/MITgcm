@@ -108,8 +108,6 @@ C       |-- FIZHI_INIT_FIXED
 C       |
 C       |-- GRIDALT_INITIALISE
 C       |
-C       |-- TIMEAVE_INIT_FIXED
-C       |
 C       |-- REGRID_INIT_FIXED
 C       |
 C       |-- LAYERS_INIT_FIXED
@@ -583,16 +581,6 @@ C--   Initialise GRIDALT parameters - the alternative grid
         IF (debugMode) CALL DEBUG_CALL('GRIDALT_INITIALISE',myThid)
 # endif
         CALL GRIDALT_INITIALISE( myThid )
-      ENDIF
-#endif
-
-#ifdef ALLOW_TIMEAVE
-C     IF (useTIMEAVE) THEN
-      IF ( taveFreq.GT.0. ) THEN
-# ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('TIMEAVE_INIT_FIXED',myThid)
-# endif
-        CALL TIMEAVE_INIT_FIXED( myThid )
       ENDIF
 #endif
 

@@ -490,9 +490,9 @@ Cgf no additional dependency through solver, snow, etc.
           absorbedSW(I,J) = 0.3 _d 0 *SWDOWN(I,J,bi,bj)
           IcePenetSW(I,J)= 0. _d 0
          ENDIF
-        ENDIF
+        ENDDO
        ENDDO
-      ENDDO
+      ENDIF
       IF ( postSolvTempIter.EQ.2 .OR. SEAICEadjMODE.GE.2 ) THEN
        DO J=1,sNy
         DO I=1,sNx

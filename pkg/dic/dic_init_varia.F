@@ -107,7 +107,6 @@ C-    Move these S/R call here (were previously in gchem_init_vari.F), except
 C     DIC_INI_ATMOS which was called from the top of DIC_SURFFORCING_INIT
       CALL DIC_INI_ATMOS( startTime, nIter0, myThid )
       CALL DIC_SURFFORCING_INIT(myThid)
-      CALL DIC_BIOTIC_INIT(myThid)
 # ifdef ALLOW_CTRL
       CALL DIC_SET_CONTROL(myThid)
 # endif

@@ -231,14 +231,10 @@ C     it is important that this file is included after SEAICE_SIZE.h
 #ifdef ALLOW_TAPENADE
 # ifdef ALLOW_GMREDI
 #  include "GMREDI.h"
-#  include "GMREDI_TAVE.h"
 # endif
 # ifdef ALLOW_KPP
 #  include "KPP.h"
 c#  include "KPP_PARAMS.h"
-# endif
-# ifdef ALLOW_TIMEAVE
-#  include "TIMEAVE_STATV.h"
 # endif
 # ifdef ALLOW_EXF
 #  include "EXF_PARAM.h"
