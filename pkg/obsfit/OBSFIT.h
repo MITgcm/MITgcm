@@ -18,12 +18,12 @@ C ObsFit LOGICAL parameters
      & obsfitDoNcOutput, obsfitDoGenGrid
 
 C ObsFit real parameters
-      _RL sample_timeS(NFILESMAX_OBS,NSAMPLESMAX,nSx,nSy)
-      _RL sample_timeE(NFILESMAX_OBS,NSAMPLESMAX,nSx,nSy)
-      _RL sample_lon(NFILESMAX_OBS,NSAMPLESMAX,nSx,nSy)
-      _RL sample_lat(NFILESMAX_OBS,NSAMPLESMAX,nSx,nSy)
-      _RL sample_depth(NFILESMAX_OBS,NSAMPLESMAX,nSx,nSy)
-      _RL sample_weight(NFILESMAX_OBS,NSAMPLESMAX,nSx,nSy)
+      _RL sample_timeS(NFILESMAX_OBS,NSAMP_PER_TILE_MAX,nSx,nSy)
+      _RL sample_timeE(NFILESMAX_OBS,NSAMP_PER_TILE_MAX,nSx,nSy)
+      _RL sample_lon(NFILESMAX_OBS,NSAMP_PER_TILE_MAX,nSx,nSy)
+      _RL sample_lat(NFILESMAX_OBS,NSAMP_PER_TILE_MAX,nSx,nSy)
+      _RL sample_depth(NFILESMAX_OBS,NSAMP_PER_TILE_MAX,nSx,nSy)
+      _RL sample_weight(NFILESMAX_OBS,NSAMP_PER_TILE_MAX,nSx,nSy)
       _RL sample_modmask(nSx,nSy)
       _RL obs_delT(NFILESMAX_OBS,NOBSMAX_OBS)
 
@@ -33,11 +33,11 @@ C ObsFit real parameters
      & obs_delT
 
 C ObsFit integer parameters
-      INTEGER sample_type(NFILESMAX_OBS,NSAMPLESMAX,nSx,nSy)
+      INTEGER sample_type(NFILESMAX_OBS,NSAMP_PER_TILE_MAX,nSx,nSy)
       INTEGER obs_ind_glob(NFILESMAX_OBS,NOBSMAX_OBS)
       INTEGER obs_np(NFILESMAX_OBS,NOBSMAX_OBS)
       INTEGER obsfitOperation(NFILESMAX_OBS)
-      INTEGER sample_ind_glob(NFILESMAX_OBS,NSAMPLESMAX,nSx,nSy)
+      INTEGER sample_ind_glob(NFILESMAX_OBS,NSAMP_PER_TILE_MAX,nSx,nSy)
       INTEGER ObsNo(NFILESMAX_OBS)
       INTEGER sampleNo(NFILESMAX_OBS,nSx,nSy)
       INTEGER fidfwd_obs(NFILESMAX_OBS,nSx,nSy)
@@ -74,19 +74,19 @@ C ObsFit character strings
      & obsfit_nameuncert, obsfit_nameequi
 
 C Grid parameters
-      INTEGER sample_interp_i(NFILESMAX_OBS,NSAMPLESMAX,
+      INTEGER sample_interp_i(NFILESMAX_OBS,NSAMP_PER_TILE_MAX,
      &     NUM_INTERP_PTS_OBS,nSx,nSy)
-      INTEGER sample_interp_j(NFILESMAX_OBS,NSAMPLESMAX,
+      INTEGER sample_interp_j(NFILESMAX_OBS,NSAMP_PER_TILE_MAX,
      &     NUM_INTERP_PTS_OBS,nSx,nSy)
-      INTEGER sample_interp_k(NFILESMAX_OBS,NSAMPLESMAX,
+      INTEGER sample_interp_k(NFILESMAX_OBS,NSAMP_PER_TILE_MAX,
      &     NUM_INTERP_PTS_OBS,nSx,nSy)
-      _RL sample_interp_frac(NFILESMAX_OBS,NSAMPLESMAX,
+      _RL sample_interp_frac(NFILESMAX_OBS,NSAMP_PER_TILE_MAX,
      &     NUM_INTERP_PTS_OBS,nSx,nSy)
 C Generic grid
-      _RL sample_interp_xC11(NFILESMAX_OBS,NSAMPLESMAX,nSx,nSy)
-      _RL sample_interp_yC11(NFILESMAX_OBS,NSAMPLESMAX,nSx,nSy)
-      _RL sample_interp_xCNINJ(NFILESMAX_OBS,NSAMPLESMAX,nSx,nSy)
-      _RL sample_interp_yCNINJ(NFILESMAX_OBS,NSAMPLESMAX,nSx,nSy)
+      _RL sample_interp_xC11(NFILESMAX_OBS,NSAMP_PER_TILE_MAX,nSx,nSy)
+      _RL sample_interp_yC11(NFILESMAX_OBS,NSAMP_PER_TILE_MAX,nSx,nSy)
+      _RL sample_interp_xCNINJ(NFILESMAX_OBS,NSAMP_PER_TILE_MAX,nSx,nSy)
+      _RL sample_interp_yCNINJ(NFILESMAX_OBS,NSAMP_PER_TILE_MAX,nSx,nSy)
 
       COMMON /OBSFIT_GRID_I/
      & sample_interp_i, sample_interp_j, sample_interp_k

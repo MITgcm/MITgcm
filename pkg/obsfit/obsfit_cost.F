@@ -72,10 +72,10 @@ C     !LOCAL VARIABLES:
       _RL sample_mask_sum
       _RL objf_obsfit_glo
       _RL num_obsfit_glo
-      _RL samples_buff(NSAMPLESMAX)
-      _RL samples_mask_buff(NSAMPLESMAX)
-      _RL samples_modval_glob(NSAMPLESMAX)
-      _RL samples_mask_glob(NSAMPLESMAX)
+      _RL samples_buff(NSAMPLES_MAX_GLO)
+      _RL samples_mask_buff(NSAMPLES_MAX_GLO)
+      _RL samples_modval_glob(NSAMPLES_MAX_GLO)
+      _RL samples_mask_glob(NSAMPLES_MAX_GLO)
       _RL tmpgs
       INTEGER nobsmean
       _RL offset, mod_mean, obs_mean, misfit
@@ -118,7 +118,7 @@ C Need to sync the file so that the data is not lost when run finishes
         ENDDO
 
 C Loop over samples
-        DO ii = 1, NSAMPLESMAX
+        DO ii = 1, NSAMP_PER_TILE_MAX
           samples_buff(ii)      = zeroRL
           samples_mask_buff(ii) = zeroRL
         ENDDO
@@ -127,7 +127,7 @@ C Loop over samples
           DO bi = 1, nSx
 
 C Open tiled files and read to buffer
-            DO sample_num = 1, NSAMPLESMAX
+            DO sample_num = 1, NSAMP_PER_TILE_MAX
               IF ( sample_num.LE.sampleNo(num_file,bi,bj) ) THEN
 
                 sample_modval = zeroRL
@@ -153,7 +153,7 @@ C Combine all threads here
         ENDDO !DO bi
 
 C Combine all processes
-        DO ii = 1, NSAMPLESMAX
+        DO ii = 1, NSAMP_PER_TILE_MAX
           tmpgs = samples_buff(ii)
           _GLOBAL_SUM_RL(tmpgs, myThid)
           samples_modval_glob(ii) = tmpgs

@@ -1212,7 +1212,12 @@ C Number of valid samples in the file
 
           IF ( ntype_ssh.GT.0 ) THEN
            IF ( ntype_other.GT.0 ) THEN
-CAV add error message
+            WRITE( msgBuf,'(3A)' )
+     &           'OBSFIT_INIT_FIXED: file ', obsfitFile(1:IL),
+     &           'includes both SSH and non-SSH observations; '
+     &           'this is not currently supported.'
+            CALL PRINT_ERROR( msgBuf, myThid )
+            stopObsfit = 1
            ELSE
             obs_is_ssh_loc = obs_is_ssh_loc+1
            ENDIF
