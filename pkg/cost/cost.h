@@ -31,6 +31,11 @@ c     glofc      - contributions from global mean constraints
 c     mult_"var" - multipliers for the individual cost
 c                  function contributions.
 
+C     costWriteCostFunction :: internal parameter to ensure that cost function
+C                              contribution is only written once per run
+      COMMON /COST_L/ costWriteCostFunction
+      LOGICAL costWriteCostFunction
+
       common /cost_r/
      &                fc, glofc
       _RL  fc

@@ -58,7 +58,6 @@ C     !LOCAL VARIABLES:
       INTEGER ifc
       CHARACTER*22 cfname
       INTEGER IL
-      LOGICAL cfexist
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
@@ -169,15 +168,8 @@ C     write contributions to costfunction file
 
 C--   Each process has calculated the global part for itself.
       IF ( MASTER_CPU_THREAD(myThid) .AND. ctrlWriteCostFunction ) THEN
-       cfexist = .FALSE.
-       WRITE(cfname,'(A,I4.4)') 'costfunction',optimcycle
-       INQUIRE(FILE=cfname(1:16), EXIST=cfexist )
-       IF ( cfexist ) THEN
-        OPEN(unit=ifc,file=cfname(1:16),ACCESS='append',STATUS='old')
-       ELSE
-        WRITE(cfname,'(A,I4.4)') 'costfunction_ctrl',optimcycle
-        OPEN(unit=ifc,file=cfname)
-       ENDIF
+       WRITE(cfname,'(A,I4.4)') 'costfunction_ctrl',optimcycle
+       OPEN(unit=ifc,file=cfname)
        WRITE(msgBuf,'(A,A)')
      &      'Writing generic ctrl cost function info to ', cfname
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,

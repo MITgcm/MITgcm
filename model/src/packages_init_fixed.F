@@ -59,6 +59,8 @@ C       |-- BBL_INIT_FIXED
 C       |
 C       |-- DWNSLP_INIT_FIXED
 C       |
+C       |-- COST_INIT_FIXED
+C       |
 C       |-- SEAICE_COST_INIT_FIXED
 C       |
 C       |-- SMOOTH_INIT_FIXED
@@ -348,10 +350,16 @@ C--   Initialize fixed arrays for Down-Slope pkg
       ENDIF
 #endif
 
+#ifdef ALLOW_COST
+C--   Initialise cost function.
+# ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('COST_INIT_FIXED',myThid)
+# endif
+      CALL COST_INIT_FIXED( myThid )
+#endif
+
 #ifdef ALLOW_SEAICE
-C--   Initialise ecco-specific cost function.
-C--   This needs to preceed the call CTRL_INIT_FIXED
-C--   in order to provide the weight files
+C--   Initialise seaice-specific cost function.
       IF (useSEAICE) THEN
 # ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('SEAICE_COST_INIT_FIXED',myThid)
