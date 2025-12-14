@@ -77,8 +77,8 @@ C     diffsecs     :: absolute time
       _RL tmp_lon, tmp_lon2(1000), tmp_lat2(1000), lon_cur, lat_cur
       _RL tmp_depth2(1000), depth_cur, delT_cur
       _RL tmp_weight2(1000)
-      _RL tmp_sample_time(NSAMPLESMAX)
-      _RL tmp_sample_delT(NSAMPLESMAX)
+      _RL tmp_sample_time(NSAMP_PER_TILE_MAX)
+      _RL tmp_sample_delT(NSAMP_PER_TILE_MAX)
       _RL lon_1, lon_2, lat_1, lat_2
       _RL depth_1, depth_2
       _RL lon_tmp1, lon_tmp2, lat_tmp1, lat_tmp2
@@ -669,7 +669,7 @@ C If isample is not a dimension, use iobs for size of sampleno
            err = NF_INQ_DIMLEN( fid, dimid, sampleNo(num_file,bi,bj) )
           ENDIF
 
-          DO ip = 1, NSAMPLESMAX
+          DO ip = 1, NSAMP_PER_TILE_MAX
            sample_timeS(num_file,ip,bi,bj)  = -999. _d 0
            sample_timeE(num_file,ip,bi,bj)  = -999. _d 0
            sample_lon(num_file,ip,bi,bj)    = -999. _d 0
@@ -1181,11 +1181,11 @@ C interpolation information consistent (self and with grid)
 C ==============================================================================
 
 C Check that maximum size was not reached:
-              IF ( sampleNo_tile.GT.NSAMPLESMAX ) THEN
+              IF ( sampleNo_tile.GT.NSAMP_PER_TILE_MAX ) THEN
                WRITE( msgBuf,'(3A)' )
      &              'OBSFIT_INIT_FIXED: file ', obsfitFile(1:IL),
      &              '.nc was not read properly ',
-     &              '(increase NSAMPLESMAX).'
+     &              '(increase NSAMP_PER_TILE_MAX).'
                CALL PRINT_ERROR( msgBuf, myThid )
                stopObsfit = 1
               ENDIF
@@ -1212,9 +1212,9 @@ C Number of valid samples in the file
 
           IF ( ntype_ssh.GT.0 ) THEN
            IF ( ntype_other.GT.0 ) THEN
-            WRITE( msgBuf,'(3A)' )
+            WRITE( msgBuf,'(4A)' )
      &           'OBSFIT_INIT_FIXED: file ', obsfitFile(1:IL),
-     &           'includes both SSH and non-SSH observations; '
+     &           'includes both SSH and non-SSH observations; ',
      &           'this is not currently supported.'
             CALL PRINT_ERROR( msgBuf, myThid )
             stopObsfit = 1
@@ -1376,7 +1376,7 @@ C===========================================================
           DO ip = 1, NOBSMAX_OBS
            obs_np(num_file,ip) = -999. _d 0
           ENDDO
-          DO ip = 1, NSAMPLESMAX
+          DO ip = 1, NSAMP_PER_TILE_MAX
            sample_timeS(num_file,ip,bi,bj)    = -999. _d 0
            sample_timeE(num_file,ip,bi,bj)    = -999. _d 0
            sample_lon(num_file,ip,bi,bj)      = -999. _d 0

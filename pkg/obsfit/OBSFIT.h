@@ -83,10 +83,14 @@ C Grid parameters
       _RL sample_interp_frac(NFILESMAX_OBS,NSAMP_PER_TILE_MAX,
      &     NUM_INTERP_PTS_OBS,nSx,nSy)
 C Generic grid
-      _RL sample_interp_xC11(NFILESMAX_OBS,NSAMP_PER_TILE_MAX,nSx,nSy)
-      _RL sample_interp_yC11(NFILESMAX_OBS,NSAMP_PER_TILE_MAX,nSx,nSy)
-      _RL sample_interp_xCNINJ(NFILESMAX_OBS,NSAMP_PER_TILE_MAX,nSx,nSy)
-      _RL sample_interp_yCNINJ(NFILESMAX_OBS,NSAMP_PER_TILE_MAX,nSx,nSy)
+      _RL sample_interp_xC11(NFILESMAX_OBS,NSAMP_PER_TILE_MAX,
+     &     nSx,nSy)
+      _RL sample_interp_yC11(NFILESMAX_OBS,NSAMP_PER_TILE_MAX,
+     &     nSx,nSy)
+      _RL sample_interp_xCNINJ(NFILESMAX_OBS,NSAMP_PER_TILE_MAX,
+     &     nSx,nSy)
+      _RL sample_interp_yCNINJ(NFILESMAX_OBS,NSAMP_PER_TILE_MAX,
+     &     nSx,nSy)
 
       COMMON /OBSFIT_GRID_I/
      & sample_interp_i, sample_interp_j, sample_interp_k

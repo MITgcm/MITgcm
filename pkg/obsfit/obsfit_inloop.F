@@ -89,7 +89,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       DO bj = 1, nSy
         DO bi = 1, nSx
           DO num_file = 1, NFILESMAX_OBS
-            DO sample_num = 1, NSAMPLESMAX
+            DO sample_num = 1, NSAMP_PER_TILE_MAX
               IF ( sample_num.LE.sampleNo(num_file,bi,bj) ) THEN
                 IF ( (sample_timeE(num_file,sample_num,bi,bj).GE.
      &           myTime).AND.
