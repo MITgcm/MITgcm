@@ -1,0 +1,14 @@
+ simulation = { 'OBC + Biogeo S.Ocean Box' };
+ nDims = [   2 ];
+ dimList = [
+    42,   29,   42,
+    20,   11,   20
+ ];
+ dataprec = [ 'float64' ];
+ nrecords = [        123 ];
+ timeStepNumber = [          5 ];
+ timeInterval = [  2.160000000000E+05 ];
+ nFlds = [   11 ];
+ fldList = {
+ 'Uvel    ' 'Vvel    ' 'Theta   ' 'Salt    ' 'GuNm1   ' 'GvNm1   ' 'GtNm1   ' 'GsNm1   ' 'EtaN    ' 'dEtaHdt ' 'EtaH    '
+ };

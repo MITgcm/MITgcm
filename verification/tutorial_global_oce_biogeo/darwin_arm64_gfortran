@@ -1,0 +1,120 @@
+#!/bin/bash
+#
+# tested on MacBook Pro with macOS Monterey
+# uname -a
+# Darwin bkli04m056 21.3.0 Darwin Kernel Version 21.3.0: Wed Jan  5 21:37:58 PST 2022; root:xnu-8019.80.24~20/RELEASE_ARM64_T6000 arm64
+# gcc, gfortran, netcdf/netcdf-fortran, and openmpi obtained from
+# https://www.macports.org
+# sudo port install gcc11
+# sudo port select --set gcc mp-gcc11
+# similar results can be achieved using homebrew
+
+# Note: at the time of creating this file (Mar2022), the
+# gfortran-build of http://hpc.sourceforge.net does not work with
+# testreport (also: cannot compile like the "etime" test and leads to
+# multile warnings at the link step), because the model compiled with
+# this gfortran does not print the last line before the stop statement
+# without an additional flush-statement.
+
+if test "x$MPI" = xtrue ; then
+  CC=mpicc
+  FC=mpif77
+  F90C=mpif90
+  LINK=$F90C
+else
+  CC=gcc
+  FC=gfortran
+  F90C=gfortran
+  LINK=$F90C
+fi
+
+ABSOLUTE_ROOTDIR=$(cd $(dirname $0) && cd ../ && pwd)
+TAPENADECMD="docker container run --rm -u $(stat -f '%u:%g' ./) \
+ -v \${PWD}:\${PWD} -v ${ABSOLUTE_ROOTDIR}:${ABSOLUTE_ROOTDIR} -w \${PWD} \
+ registry.gitlab.inria.fr/tapenade/tapenade"
+
+FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X ## _"
+S64='$(TOOLSDIR)/set64bitConst.sh'
+DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR'
+CPP='/usr/bin/cpp -traditional -P'
+GET_FC_VERSION="--version"
+EXTENDED_SRC_FLAG='-ffixed-line-length-132'
+OMPFLAG='-fopenmp'
+
+#MAKEDEPEND=tools_xmakedepend
+
+NOOPTFLAGS='-O0'
+NOOPTFILES=''
+
+FFLAGS="$FFLAGS -fconvert=big-endian"
+# needed for big objects (e.g., to compile and run TAF AD of
+# global_ocean.cs32x15), but requires larger stack sizes (set with
+# ulimit -s) in other cases, so we leave this commented out:
+# man gfortran: Allow indirect recursion by forcing all local arrays
+#               to be allocated on the stack.
+#FFLAGS="$FFLAGS -frecursive"
+#- might want to use '-fdefault-real-8' for fizhi pkg:
+#FFLAGS="$FFLAGS -fdefault-real-8 -fdefault-double-8"
+
+#- for setting specific options, check compiler version:
+fcVers=`$FC -dumpversion | head -n 1 | sed 's/^[^0-9]* //;s/\..*$//'`
+if ! [[ $fcVers =~ ^[0-9]+$ ]] ; then
+  echo "    un-recognized Compiler-version '$fcVers' ; ignored (-> set to 0)" ; fcVers=0 ;
+else echo "    get Compiler-version: '$fcVers'" ; fi
+
+if [ $fcVers -ge 10 ] ; then
+  FFLAGS="$FFLAGS -fallow-argument-mismatch"
+fi
+
+#  For IEEE, use the "-ffloat-store" option
+if test "x$IEEE" = x ; then
+    FFLAGS="$FFLAGS -Wunused -Wuninitialized"
+    FOPTIM='-O3 -ftree-vectorize -funroll-loops'
+    NOOPTFLAGS='-O2 -funroll-loops'
+#    NOOPTFILES='gad_c4_adv_x.F gad_u3_adv_x.F'
+else
+    FFLAGS="$FFLAGS -Wall"
+    if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
+	FOPTIM='-O0'
+    else                          #- development/check options:
+	FOPTIM='-O0 -g -fbounds-check'
+	FOPTIM="$FOPTIM -ffpe-trap=invalid,zero,overflow -finit-real=inf"
+    fi
+fi
+
+# add undocumented flag -x f95 to force gfortran to interpret any
+# suffix as a f90-freeformat file, add -ffree-form to suppress the
+# associated warning
+F90FLAGS="$FFLAGS -x f95 -ffree-form"
+F90OPTIM=$FOPTIM
+
+INCLUDEDIRS='/opt/homebrew/include/'
+INCLUDES="-I$INCLUDEDIRS"
+LIBS='-L/opt/homebrew/lib -lnetcdff -lnetcdf'
+
+if [ -n "$MPI_HOME" -a -z "$MPI_INC_DIR" ]; then
+    MPI_INC_DIR="$MPI_HOME/include"
+fi
+
+if [ "x$MPI" = xtrue ] ; then
+   if [ -z "$MPI_INC_DIR" ] ; then
+      # MPI env variables are not set, trying pkg-config insteal
+      # this works for macport installs of openmpi
+      if [[ -n $( pkg-config --cflags-only-I mpich ) && ($? == 0) ]] ; then
+         MPI_INC_DIR=$(pkg-config --cflags-only-I mpich | awk '{ print $1 }' | sed -e "s/-I//" )
+      else
+         echo MPI_HOME is not set and pkg-config not available, aborting
+         exit 1
+      fi
+   fi
+   if [ -n "$MPI_INC_DIR" ] ; then
+      # only fill this if we can find MPI, otherwise triggers netcdf error
+      INCLUDES+=" -I$MPI_INC_DIR"
+      INCLUDEDIRS+=" $MPI_INC_DIR"
+      #- used for parallel (MPI) DIVA
+      MPIINCLUDEDIR="$MPI_INC_DIR"
+   else
+      echo could not set MPI_INC_DIR, aborting
+      exit 1
+   fi
+fi

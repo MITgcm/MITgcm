@@ -1,0 +1,14 @@
+# Run-time options for MNC package and netcdf output
+ &MNC_01
+# mnc_echo_gvtypes=.FALSE.,
+# mnc_use_indir=.FALSE.,
+ mnc_use_outdir=.TRUE.,
+ mnc_outdir_str='/Users/jml1/GitHub/MITgcm/verification/tutorial_global_oce_biogeo/car_diss_1mnth_follows_',
+ mnc_outdir_date=.FALSE.,
+ monitor_mnc=.TRUE.,
+ snapshot_mnc=.TRUE.,
+ timeave_mnc=.TRUE.,
+ pickup_read_mnc=.FALSE.,
+ pickup_write_mnc=.FALSE.,
+ &
+

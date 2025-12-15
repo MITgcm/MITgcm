@@ -1,0 +1,10 @@
+# header of file: dynStDiag
+# frequency (s):     432000.000000
+# phase (s)    :          0.000000
+# Regions      :   0
+# Fields       : ETAN     DETADT2  THETA    SALT     CONVADJ  UVEL     VVEL     WVEL     GM_PsiX  GM_PsiY 
+# Fields       : TRAC01   TRAC02   TRAC03   TRAC04   TRAC05   DIC3DSIT OMEGAC   DIC3DPH  DIC3DPCO DIC3DCO3
+# Nb of levels :    1   1  15  15  15  15  15  15  15  15  15  15  15  15  15  15  15  15  15  15
+# end of header ------------------------------------------------------------
+ 
+# records End here.
