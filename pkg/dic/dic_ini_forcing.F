@@ -68,44 +68,33 @@ C end bi,bj loops
        ENDDO
       ENDDO 
 #else /* GCHEM_ALLOW_FFIELDS */
-C-    Initialise DIC_VARS.h forcing-field arrays locally
-C           wind      (i,j,bi,bj) = 0. _d 0
-C           fIce      (i,j,bi,bj) = 0. _d 0
-C           AtmosP    (i,j,bi,bj) = 0. _d 0
-C           silicaSurf(i,j,bi,bj) = 0. _d 0
-C#ifdef DIC_BIOTIC
-C           par       (i,j,bi,bj) = 0. _d 0
-C           CHL       (i,j,bi,bj) = 0. _d 0
-C           InputFe   (i,j,bi,bj) = 0. _d 0
-C#endif
+C--   Initialise forcing arrays in common blocks
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
+
+C-    Initialise DIC_VARS.h forcing-field arrays:
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          wind(i,j,bi,bj)       = 5. _d 0*maskC(i,j,1,bi,bj)
-          AtmosP(i,j,bi,bj)     = 1. _d 0*maskC(i,j,1,bi,bj)
-          silicaSurf(i,j,bi,bj) = 7.6838 _d -3*maskC(i,j,1,bi,bj)
-          fIce(i,j,bi,bj)       = 0. _d 0
-#ifdef READ_PAR
-          par(i,j,bi,bj)        = 100. _d 0*maskC(i,j,1,bi,bj)
-#endif
-#ifdef LIGHT_CHL
-C If the chlorophyll climatology is not provided, use this default value.
-          CHL(i,j,bi,bj)        = 1. _d -2*maskC(i,j,1,bi,bj)
-#endif
-#ifdef ALLOW_FE
-         InputFe(i,j,bi,bj)    = 1. _d -11*maskC(i,j,1,bi,bj)
-#endif
-#ifdef DIC_CALCITE_SAT
-         IF ( useCalciteSaturation ) THEN
-           DO k=1,Nr
-            silicaDeep(i,j,k,bi,bj) = 3. _d -2*maskC(i,j,k,bi,bj)
-           ENDDO
-          ENDIF 
+           wind      (i,j,bi,bj) = 0. _d 0
+           fIce      (i,j,bi,bj) = 0. _d 0
+           AtmosP    (i,j,bi,bj) = 0. _d 0
+           silicaSurf(i,j,bi,bj) = 0. _d 0
+#ifdef DIC_BIOTIC
+           par       (i,j,bi,bj) = 0. _d 0
+           CHL       (i,j,bi,bj) = 0. _d 0
+           InputFe   (i,j,bi,bj) = 0. _d 0
 #endif
          ENDDO
         ENDDO 
-
+#ifdef DIC_CALCITE_SAT
+        DO k=1,Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           silicaDeep(i,j,k,bi,bj) = 0. _d 0
+          ENDDO
+         ENDDO
+        ENDDO
+#endif
 CC-    Initialise DIC_LOAD.h arrays:
         DIC_ldRec(bi,bj) = 0
         DO j=1-OLy,sNy+OLy
@@ -129,9 +118,8 @@ CC-    Initialise DIC_LOAD.h arrays:
 #ifdef LIGHT_CHL
          chlinput(i,j,bi,bj) = 0. _d 0
 #endif
-          ENDDO
          ENDDO
-
+        ENDDO
 #ifdef DIC_CALCITE_SAT
         DO k=1,Nr
          DO j=1-OLy,sNy+OLy
@@ -147,7 +135,45 @@ C-   end bi,bj loops:
       ENDDO
 
 C ======================================================================
-C
+
+C--   Set reasonable values to those that need at least something
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          wind(i,j,bi,bj)       = 5. _d 0*maskC(i,j,1,bi,bj)
+          AtmosP(i,j,bi,bj)     = 1. _d 0*maskC(i,j,1,bi,bj)
+          silicaSurf(i,j,bi,bj) = 7.6838 _d -3*maskC(i,j,1,bi,bj)
+          fIce(i,j,bi,bj)       = 0. _d 0
+#ifdef READ_PAR
+          par(i,j,bi,bj)        = 100. _d 0*maskC(i,j,1,bi,bj)
+#endif
+#ifdef LIGHT_CHL
+C If the chlorophyll climatology is not provided, use this default value.
+          CHL(i,j,bi,bj)        = 1. _d -2*maskC(i,j,1,bi,bj)
+#endif
+#ifdef ALLOW_FE
+         InputFe(i,j,bi,bj)    = 1. _d -11*maskC(i,j,1,bi,bj)
+#endif
+          ENDDO
+         ENDDO
+#ifdef DIC_CALCITE_SAT
+         IF ( useCalciteSaturation ) THEN
+          DO k=1,Nr
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+              silicaDeep(i,j,k,bi,bj) = 3. _d -2*maskC(i,j,k,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDIF
+#endif
+C-    end bi,bj loops
+       ENDDO
+      ENDDO
+
+C ======================================================================
+
 CC--   Load constant forcing-file (used if DIC_forcingCycle=0 )
 Cc     IF ( DIC_forcingCycle .LE. zeroRL ) THEN
       IF ( DIC_windFile .NE. ' '  ) THEN
