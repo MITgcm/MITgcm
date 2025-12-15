@@ -1,7 +1,7 @@
 .. _chap_state_estimation:
 
-Ocean State Estimation Packages
-===============================
+Packages III - Ocean State Estimation
+=====================================
 
 This chapter describes packages that have been introduced for ocean
 state estimation purposes and in relation with automatic differentiation
@@ -15,7 +15,7 @@ ECCO: model-data comparisons using gridded data sets
 
 Author: Gael Forget
 
-The functionalities implemented in :varlink:`pkg/ecco` are: (1) output
+The functionalities implemented in :filelink:`pkg/ecco` are: (1) output
 time-averaged model fields to compare with gridded data sets; (2)
 compute normalized model-data distances (i.e., cost functions); (3)
 compute averages and transports (i.e., integrals). The former is
@@ -658,7 +658,7 @@ PROFILES: model-data comparisons at observed locations
 
 Author: Gael Forget
 
-The purpose of pkg/profiles is to allow sampling of MITgcm runs
+The purpose of :filelink:`pkg/profiles <pkg/profiles>` is to allow sampling of MITgcm runs
 according to a chosen pathway (after a ship or a drifter, along
 altimeter tracks, etc.), typically leading to easy model-data
 comparisons. Given input files that contain positions and dates,
@@ -752,6 +752,320 @@ grid files. *This operation could eventually be inlined.*
     prof_Tweight:units = "(degree Celsius)-2" ;
     prof_Tweight:missing_value = -9999. ;
     }
+
+.. _sec:pkg:ObsFit:
+
+OBSFIT: grid-independent model-data comparisons 
+------------------------------------------------------
+
+Author: Ariane Verdy
+
+Introduction
+~~~~~~~~~~~~
+
+:filelink:`pkg/obsfit <pkg/obsfit>` is a versatile package used for grid-independent model-data comparisons
+including cost function calculations.
+
+Given an observational dataset, OBSFIT samples the model during the run at the time and location of observations,
+calculates the cost (sum of weighted misfits), and produces a model-equivalent output file that is directly
+comparable to an input file containing observational data.
+It is designed to accommodate datasets that are sparse, irregular, or non-local.
+OBSFIT works in "observations space", meaning that the model is interpolated to the observations locations, not the other way around. Hence observations do not have to be interpolated or constrained to a fixed set of depth levels, and model-data comparisons are independent of the model grid. 
+This increases the efficiency of data
+assimilation for many datasets and allows compatibility with multi-grid state estimation. OBSFIT offers the
+capability of assimilating high-resolution altimetry data (e.g., `SWOT <https://swot.jpl.nasa.gov>`_), 
+high-frequency radar (HRF), and spatially/temporally averaged data such as tomography or SST products.
+
+Description
+~~~~~~~~~~~
+
+The code is evolved from :filelink:`pkg/profiles <pkg/profiles>` and shares much of its general structure.
+In addition to relaxing pkg/profile's constraint on vertical levels, OBSFIT can handle:
+
+-  spatial averages of multiple sample locations;
+
+-  time averages (or a cumulative integral) of multiple sampled points;
+
+-  observations that are combinations of multiple variables.
+
+.. _obsfit_space: 
+
+Observations vs. Samples
+^^^^^^^^^^^^^^^^^^^^^^^^
+One feature of this package is that it allows measured observations to be averages in both space and/or time
+(or alternatively, integrated values in space and/or time via optional parameter choices, see :ref:`below <obsfit_time>`).
+Samples, defined as instantaneous model data values
+at specific locations (which may or may not coincide with model gridpoints), are aggregated and
+interpolated for comparison with observations. Hence, in OBSFIT, sampled points are referred to as *samples*, the averaged/integrated values as *model-equivalents*, and the measured values as *observations*. The cost function is evaluated from the misfit between *model-equivalents* and *observations*. 
+As an example, consider observations of integrated sound speed along the acoustic ray path:
+in such case, one specifies multiple locations at which to sample the model, as we require model
+data at multiple locations to calculate the model-equivalent of a single observation. 
+Sample locations are used during the model run to extract model data (and save it to file). Then, sampled
+values are combined at the end of the run to calculate the model-equivalent values to the observations.
+
+In many applications, *observations* are not spatially averaged or integrated; in that case, NP = 1 and *samples* and *observations* are effectively the same. A feature of the obsefit package, however, is that it allows each observation to be comprised of a number of samples (NP). Each of those NP samples is assigned a relative
+weight in the average/integral; by default all samples are weighed equally. (Note that the our definition of weights is
+different from the uncertainty-related weights in :filelink:`pkg/profiles`.)  
+
+.. _obsfit_type: 
+
+Sample types
+^^^^^^^^^^^^
+
+Each OBSFIT sample is assigned a type corresponding to the model variable that will be sampled.
+There are currently five types of variables implemented in the code: potential temperature, salinity,
+zonal velocity, meridional velocity, and sea surface height. Other variables can be added in 
+``obsfit_sampling.F``. Observations can be made of samples
+of different types; for example, one could compute the along-shore current speed (a combination of
+zonal and meridional velocities) or the water spiciness (a combination of temperature and salinity). 
+
+
+For sea surface height (SSH) observations, OBSFIT samples the model variable :varlink:`etaN`. Inputs should thus
+be the total dynamic height (SSH relative to the geoid), not SSH anomalies. Because of arbitrary reference 
+values for the dynamic topography, the mean offset between modeled and observed SSH is removed when the cost is calculated, for each dataset (i.e., each obsfit input file). 
+
+.. _obsfit_time: 
+
+Observation duration
+^^^^^^^^^^^^^^^^^^^^
+
+Each OBSFIT observation is assigned a start time and a duration.
+Observations with a specified positive duration are averaged in time, whereas a negative duration
+is used to indicate time integration, and instantaneous observations have duration=0
+(if no duration is provided, duration=0 is assumed). During each
+model time step which falls within the specified observation window, the model is sampled 
+at each specified sample location.
+In other words, all samples inherit the time and duration from the corresponding observation.
+If observation time does not align exactly with model time steps, samples are taken from model data
+at the beginning of the time step in which the observation time falls (time interpolation is not 
+necessary as long as the model time step is relatively small).
+Sampled values are saved in tiled files. For non-zero specified duration, accumulated values
+are saved in the tiled files and the average is calculated at the end of the model run.
+
+
+Interpolation
+^^^^^^^^^^^^^
+
+Sampling is done by interpolating model values from grid points surrounding the
+sample location (up to 8 surrounding grid points are used). For a cartesian or spherical polar grid,
+interpolation factors (not to be confused with weights!) are calculated from the input longitude, latitude, and depth.
+For a curvilinear grid (LLC, etc), interpolation factors are computed offline and included in the input file (see below). 
+
+Cost Functions
+^^^^^^^^^^^^^^
+
+
+OBSFIT configuration and compiling
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+OBSFIT can be turned on or off at compile time
+(see :numref:`building_code`)
+
+- using the ``packages.conf`` file by adding ``obsfit`` to it
+
+- or using :filelink:`genmake2 <tools/genmake2>` adding ``-enable=obsfit`` or
+  ``-disable=obsfit`` switches
+
+- *required packages and CPP options*: :filelink:`pkg/cal` must be enabled to use OBSFIT. No other packages or CPP options are required.
+
+If needed, edit :filelink:`OBSFIT_SIZE.h <pkg/obsfit/OBSFIT_SIZE.h>` to change the maximum number of input files,
+total number of observations, number of samples per tile, or number of samples per observation. For maximum efficiency,
+set those to the smallest values possible for your input datasets. 
+
+Run-time requirements
+~~~~~~~~~~~~~~~~~~~~~
+
+Pre-processing: How to make OBSFIT input files
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Users must provide at least one OBSFIT input file, in netCDF format, with observed values and sampling locations.
+Typically, different datasets will be processed as separate files. In OBSFIT input files, all fields will be
+vectors -- with the exception of position and integration factors for the generic grid case.
+
+They must include the following fields:
+
+- obs_val (observed value)
+
+- obs_uncert (uncertainty on the observed value)
+
+- obs_YYYYMMDD (observation start time [year,month,day])
+
+- obs_HHMMSS (observation start time [hour,min,sec])
+
+- sample_type (variable type, [integer; see table below])
+
+- sample_lon (longitude)
+
+- sample_lat (latitude)
+
+- sample_depth (depth)
+
+  
+The following fields are optional:
+
+- obs_delt (observation duration [default=0; negative for time integration])
+
+- obs_np (number of samples in the observation [default=1])
+
+- sample_weight (weighting factor [default=1/obs_np])
+
+
+If the grid is not longitude/latitude, i.e. for a generic grid case, additional fields are needed:
+
+- sample_point
+
+- sample_interp_XC11
+
+- sample_interp_YC11
+
+- sample_interp_XCNINJ
+
+- sample_interp_YCNINJ
+
+- sample_interp_i
+
+- sample_interp_j
+
+- sample_interp_k
+
+- sample_interp_frac
+
+
+
+See make_obsfit_example.m for a simple matlab example with a longitude-latitude grid. 
+A python toolbox, ObsPrep, for formatting ungridded datasets into objects readable by pkg/obsfit using xarray 
+is under development: https://github.com/ECCO-Hackweek/EH24-processors-llc/tree/main?tab=readme-ov-file. The application computes the required *sample_interp* fields.
+
+In the simplest case, the number of samples per observation is 1; then obs_np = 1 (by default), sample_weight = 1 (by default), and sample_{type/lon/lat/depth} give the variable type/longitude/latitude/depth of the observation. If there are {N} observations, each field listed above is a vector of size {1xN}.
+
+If observations are spatial averages or integrals, one must specify the number of samples that make each observation, as well as their relative weight. If there are {N} observations, obs* fields are vectors of size {1xN} and sample* fields are vectors of size :math:`\sum_N` (obs_np). Note that the number of samples can be different for each observation.
+
+The observation start time is given in two separate fields, obs_YYYYMMDD and obs_HHMMSS. They are numeric values with 8 and 6 digits, respectively. The first 4 digits of obs_YYYYMMDD correspond to the year, the next 2 to the month, and the last 2 to the day; a similar notation is used for obs_HHMMSS.
+
+
+Sample types currently supported:
+
+==============          ======
+Variable                Type
+==============          ======
+:math:`\theta`          1 
+:math:`S`               2
+:math:`u`               3
+:math:`v`               4
+SSH                     5
+==============          ======
+
+
+Enabling the package
+^^^^^^^^^^^^^^^^^^^^
+
+:filelink:`/pkg/obsfit` package is switched on/off at run-time by
+setting :varlink:`useOBSFIT` ``= .TRUE.,`` in ``data.pkg``.
+
+General flags and parameters
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+:numref:`tab_phys_pkg_obsfit_runtimeparms` lists run-time parameters.
+
+.. tabularcolumns:: |\Y{.275}|\Y{.20}|\Y{.525}|
+
+.. table:: Run-time parameters and default values
+  :class: longtable
+  :name: tab_phys_pkg_obsfit_runtimeparms
+
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  |   Name                             |      Default value           |   Description                                                           |
+  +====================================+==============================+=========================================================================+
+  | :varlink:`obsfitDir`               |     ' '                      | subdirectory name containing OBSFIT data files                          |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`obsfitFiles`             |     ' '                      | OBSFIT data filenames (``.nc`` automatically appended)                  |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`mult_obsfit`             |     1.0                      | multiplier factor for observation in total cost function calculation    |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`obsfit_facmod`           |     1.0                      |                                                                         |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`obsfitDoNcOutput`        |     FALSE                    | boolean to generate tiled output file in netCDF format                  |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+
+
+File ``data.obsfit`` must be present in the run folder. Here is an example:
+
+::
+
+    # *********************
+    # OBSFIT cost function
+    # *********************
+    &OBSFIT_NML
+    obsfitDir      = 'OBSFIT',
+    obsfitFiles(1) = 'swot_L3',
+    mult_obsfit(1) = 1.0,
+    obsfitFiles(2) = 'moorings',
+    mult_obsfit(2) = 0.0,
+    &
+
+
+In this example there are two input files: swot_L3.nc and moorings.nc
+(note that the suffix .nc should not be included in data.obsfit). They have multiplier factors that will
+multiply their respective cost in the total cost calculation. For example, the first dataset
+will be counted with a factor=1, and the second dataset will not influence the total cost 
+since its multiplier is 0. Output files will be written in a folder called "OBSFIT" that
+will be created if it doesn't already exist. 
+
+
+``Example: swot_L3.nc``
+
+::
+
+    netcdf swot_L3.nc {
+    dimensions:
+    iOBS = 1575 ;
+    iSAMPLE = 1575;
+    variables:
+    double obs_val(iOBS) ;
+    double obs_uncert(iOBS) ;
+    double obs_YYYYMMDD(iOBS) ;
+    obs_YYYYMMDD:missing_value = -9999. ;
+    obs_YYYYMMDD:long_name = "year (4 digits), month (2 digits), day (2 digits)" ;
+    double obs_HHMMSS(iOBS) ;
+    obs_HHMMSS:missing_value = -9999. ;
+    obs_HHMMSS:long_name = "hour (2 digits), minute (2 digits), second (2 digits)" ;
+    double sample_lon(iSAMPLE) ;
+    sample_lon:units = "(degree E)" ;
+    sample_lon:missing_value = -9999. ;
+    double sample_lat(iSAMPLE) ;
+    sample_lat:units = "(degree N)" ;
+    sample_lat:missing_value = -9999. ;
+    double sample_depth(iSAMPLE) ;
+    sample_depth:units = "(meters)" ;
+    sample_depth:missing_value = -9999. ;
+    double sample_type(iSAMPLE) ;
+    sample_type:missing_value = -9999. ;
+    sample_type:long_name = "1=T, 2=S, 3=u, 4=v, 5=SSH" ;
+    }
+
+Post-processing
+^^^^^^^^^^^^^^^
+
+For each input file, two new files are created. One, named <original_filename>.equi.nc,
+contains model-equivalent values for direct comparison with observation data.
+The other, named <original_filename>.misfits.nc, contains model-observations misfits.
+"equi.nc" output files include two variables, mod_val and mod_mask. They are in the same format as the input files,
+thus obs_val and mod_val are directly comparable. The mask indicates missing model-equivalent values.
+
+A simple way to plot the observed values and model-equivalent values in matlab could be:
+
+::
+
+    load swot_L3.nc
+    figure; scatter(sample_lon, sample_lat, 30, obs_val);
+    load swot_L3.equi.nc
+    figure; scatter(sample_lon, sample_lat, 30, mod_val);
+
+Experiments and tutorials that use OBSFIT
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+/verification/global_oce_biogeo_bling/
+
 
 .. _sec:pkg:ctrl:
 
