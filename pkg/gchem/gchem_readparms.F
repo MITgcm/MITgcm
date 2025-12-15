@@ -100,10 +100,10 @@ C  default based on 360 day year or related to calendar settings
        gchem_secondsPerYear   = 360. _d 0 * 86400. _d 0
 #ifdef ALLOW_CAL
        IF ( useCAL ) THEN
-        IF ( usingGregorianCalendar ) THEN
+        IF ( theCalendar .EQ. 'gregorian') THEN
          gchem_secondsPerYear = 365.25 _d 0*86400. _d 0
-        ELSE
-         gchem_secondsPerYear = nDaysNoLeap*86400. _d 0
+        ELSEIF ( theCalendar .EQ. 'noLeapYear') THEN
+         gchem_secondsPerYear = 365.00 _d 0*86400. _d 0
         ENDIF
        ENDIF
 #endif
