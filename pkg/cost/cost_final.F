@@ -107,6 +107,10 @@ C     obcs contributions if available.
       IF (usePROFILES) CALL PROFILES_COST_FINAL( myThid )
 #endif
 
+#ifdef ALLOW_OBSFIT
+      IF (useOBSFIT) CALL OBSFIT_COST_FINAL( myThid )
+#endif
+
 #ifdef ALLOW_CTRL
       IF (useCTRL) CALL CTRL_COST_FINAL( myThid )
 #endif
@@ -202,22 +206,12 @@ c--   Sum up all other contributions.
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
 
-#ifdef ALLOW_OBSFIT
-      IF (.NOT.useECCO) THEN
-       DO num_file_obs=1,NFILESMAX_OBS
-        glofc = glofc
-     &          +  mult_obsfit(num_file_obs)
-     &            *objf_obsfit(num_file_obs)
-       ENDDO
-      ENDIF
-#endif
-
 c--   Do global summation.
       CALL GLOBAL_SUM_TILE_RL( tile_fc, glob_fc, myThid )
       _BEGIN_MASTER( myThid )
       fc = fc + glob_fc
 
-c--   Add contributions from global mean constraints
+c--   Add contributions from global mean constraints (includes pkg/obsfit)
       fc = fc + glofc
       _END_MASTER( myThid )
 

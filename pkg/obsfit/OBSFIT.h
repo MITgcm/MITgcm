@@ -13,9 +13,10 @@ CEOP
 C ObsFit LOGICAL parameters
       LOGICAL obsfitDoNcOutput
       LOGICAL obsfitDoGenGrid
+      LOGICAL obsfitWriteCostFunction
 
       COMMON /OBSFIT_PACKAGE/
-     & obsfitDoNcOutput, obsfitDoGenGrid
+     & obsfitDoNcOutput, obsfitDoGenGrid, obsfitWriteCostFunction
 
 C ObsFit real parameters
       _RL sample_timeS(NFILESMAX_OBS,NSAMP_PER_TILE_MAX,nSx,nSy)
