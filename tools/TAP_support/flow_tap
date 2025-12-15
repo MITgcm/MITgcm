@@ -1092,3 +1092,11 @@ subroutine mnc_file_close_all_matching:
   ReadNotWritten:     (1,1)
   NotReadThenWritten: (0,0)
   ReadThenWritten:    (0,0)
+
+subroutine streamice_cg_solve:
+  external:
+  shape: (param 1, param 2, param 3, param 4, param 5, param 6, param 7, param 8, param 9, param 10, param 11, param 12)
+  type: (none(),none(),none(),none(),none(),none(),none(),none(),none(),none(),none(),none())
+  ReadNotWritten:     (0,0,1,1,1,1,1,1,1,0,1,1)
+  NotReadThenWritten: (0,0,0,0,0,0,0,0,0,1,0,0)
+  ReadThenWritten:    (1,1,0,0,0,0,0,0,0,0,0,0)

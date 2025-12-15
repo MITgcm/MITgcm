@@ -771,6 +771,13 @@ C       Close all open NetCDF files
       ENDIF
 #endif /* ALLOW_PROFILES */
 
+#ifdef ALLOW_OBSFIT
+      IF ( useOBSFIT ) THEN
+C       Close all open NetCDF files
+        CALL OBSFIT_NC_CLOSE( myThid )
+      ENDIF
+#endif /* ALLOW_OBSFIT */
+
 C--   This timer encompasses the whole code
       CALL TIMER_STOP ('ALL                    [THE_MODEL_MAIN]',myThid)
 

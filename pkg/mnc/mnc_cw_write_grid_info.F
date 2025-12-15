@@ -190,10 +190,10 @@ C     Write coordinates to file "fname"
       _BEGIN_MASTER( myThid )
 
       CALL MNC_CW_SET_UDIM(fname, 0, myThid)
-      CALL MNC_CW_RS_W('R',fname,0,0,'XC',xC, myThid)
-      CALL MNC_CW_RS_W('R',fname,0,0,'YC',yC, myThid)
-      CALL MNC_CW_RS_W('R',fname,0,0,'XG',xG, myThid)
-      CALL MNC_CW_RS_W('R',fname,0,0,'YG',yG, myThid)
+      CALL MNC_CW_RS_W('R',fname,0,0,'xC',xC, myThid)
+      CALL MNC_CW_RS_W('R',fname,0,0,'yC',yC, myThid)
+      CALL MNC_CW_RS_W('R',fname,0,0,'xG',xG, myThid)
+      CALL MNC_CW_RS_W('R',fname,0,0,'yG',yG, myThid)
 C--   Here we can add as much grid information as we like, but this
 C--   will increase the size of each of the affected files. It is
 C--   a matter of taste, but here are some candidates:
