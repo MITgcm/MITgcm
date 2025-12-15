@@ -6,7 +6,7 @@
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP
-      SUBROUTINE STREAMICE_VEL_SOLVE_OPENAD ( myThid, maxNLIter,
+      SUBROUTINE STREAMICE_VEL_SOLVE_FP ( myThid, maxNLIter,
      &                                maxCGiter, myIter )
 C     /============================================================\
 C     | SUBROUTINE                                                 |
@@ -33,7 +33,7 @@ C     !INPUT/OUTPUT ARGUMENTS
 
 C     LOCAL VARIABLES
 
-#ifdef ALLOW_STREAMICE_OAD_FP
+#ifdef ALLOW_STREAMICE_FP_ADJ
       INTEGER i, j, k, l, bi, bj, loopiter
       INTEGER NL_iter
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -103,18 +103,7 @@ C     LOCAL VARIABLES
 
        endif
 
-#ifndef ALLOW_OPENAD
-      CALL STREAMICE_VEL_PHISTAGE (
-     I                   myThid,
-     I                   maxNLIter,
-     I                   maxCGiter,
-     O                   cgtol,
-     O                   nL_iter,
-     O                   CONVERGED,
-     O                   err_last_change,
-     O                   err_init,
-     I                   isinloop0)
-#else
+#ifdef ALLOW_OPENAD
       CALL STREAMICE_VEL_PHISTAGE (
      I                   myThid,
      I                   maxNLIter,
@@ -129,7 +118,16 @@ C     LOCAL VARIABLES
      I                   isinloop0)
 #endif
 
+#if (defined(ALLOW_STREAMICE_FP_ADJ) && defined(ALLOW_TAPENADE))
+#ifdef STREAMICE_HYBRID_STRESS
+!$AD FP-LOOP "u_streamice,v_streamice,streamice_taubx,streamice_tauby,visc_streamice_full" adj_reduction=1.e-6
+#else
+!$AD FP-LOOP "u_streamice,v_streamice" adj_reduction=2.e-8
+#endif
+      DO WHILE (.not.CONVERGED)
+#else
       DO loopiter=1,maxNLIter
+#endif
 
 C     To avoid using "exit", loop goes through all iterations
 C       but after convergence loop does nothing
@@ -175,18 +173,7 @@ c      ENDDO
 
       ENDDO
 
-#ifndef ALLOW_OPENAD
-      CALL STREAMICE_VEL_PHISTAGE (
-     I                   myThid,
-     I                   maxNLIter,
-     I                   maxCGiter,
-     O                   cgtol,
-     O                   nL_iter,
-     O                   CONVERGED,
-     O                   err_last_change,
-     O                   err_init,
-     I                   isinloop2)
-#else
+#ifdef ALLOW_OPENAD
       CALL STREAMICE_VEL_PHISTAGE (
      I                   myThid,
      I                   maxNLIter,
@@ -209,11 +196,14 @@ C-------------------------------------------------------------------
      &         nl_iter, ' iterations'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT , 1)
+       PRINT *, 'VELOCITY SOLVE CONVERGED, ', nl_iter, 'iterations'
       else
        WRITE(msgBuf,'(A,I5,A)') 'VELOCITY SOLVE NOT CONVERGED IN ',
      &         nl_iter, ' iterations'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT , 1)
+       PRINT *, 'VELOCITY SOLVE NOT CONVERGED IN ', nl_iter,
+     &        'iterations'
       endif
 
       _EXCH_XY_RL(U_streamice, myThid)

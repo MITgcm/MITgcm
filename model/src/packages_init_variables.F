@@ -113,6 +113,7 @@ C       |-- MYPACKAGE_INIT_VARIA
 C       |
 C       |-- SMOOTH_INIT_VARIA
 C       |-- PROFILES_INIT_VARIA
+C       |-- OBSFIT_INIT_VARIA
 C       |-- ECCO_INIT_VARIA
 C       |-- CTRL_INIT_VARIABLES
 C       |
@@ -575,6 +576,13 @@ C--   Initialise pkg/profiles
         CALL PROFILES_INIT_VARIA( myThid )
       ENDIF
 #endif /* ALLOW_PROFILES */
+
+C--   Initialise pkg/obsfit
+#ifdef ALLOW_OBSFIT
+      IF (useOBSFIT) THEN
+        CALL OBSFIT_INIT_VARIA( myThid )
+      ENDIF
+#endif /* ALLOW_OBSFIT */
 
 C--   Initialise pkg/ecco (and related pkgs components)
 #ifdef ALLOW_ECCO

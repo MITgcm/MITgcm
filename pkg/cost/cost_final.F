@@ -30,10 +30,13 @@ C     == Global variables ===
 #ifdef ALLOW_COST_SHELFICE
 # include "SHELFICE_COST.h"
 #endif
-
 #ifdef ALLOW_PROFILES
 # include "PROFILES_SIZE.h"
 # include "profiles.h"
+#endif
+#ifdef ALLOW_OBSFIT
+# include "OBSFIT_SIZE.h"
+# include "OBSFIT.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -55,6 +58,9 @@ C     dummy parameter for this unlikely case
 #endif
       INTEGER ifc
       CHARACTER*16 cfname
+#ifdef ALLOW_OBSFIT
+      INTEGER num_file_obs
+#endif
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       WRITE(msgBuf,'(A)')
@@ -195,6 +201,16 @@ c--   Sum up all other contributions.
       WRITE(msgBuf,'(A,D22.15)') '  local fc = ', loc_fc
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
+
+#ifdef ALLOW_OBSFIT
+      IF (.NOT.useECCO) THEN
+       DO num_file_obs=1,NFILESMAX_OBS
+        glofc = glofc
+     &          +  mult_obsfit(num_file_obs)
+     &            *objf_obsfit(num_file_obs)
+       ENDDO
+      ENDIF
+#endif
 
 c--   Do global summation.
       CALL GLOBAL_SUM_TILE_RL( tile_fc, glob_fc, myThid )

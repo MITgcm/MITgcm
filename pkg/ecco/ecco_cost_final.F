@@ -30,6 +30,10 @@ c     == global variables ==
 # include "ECCO_SIZE.h"
 # include "ECCO.h"
 #endif
+#ifdef ALLOW_OBSFIT
+# include "OBSFIT_SIZE.h"
+# include "OBSFIT.h"
+#endif
 
 c     == routine arguments ==
 
@@ -46,9 +50,20 @@ c     == local variables ==
       INTEGER bi,bj
       INTEGER ifc
       INTEGER num_var
+
+#ifndef ALLOW_OBSFIT
+      INTEGER NFILESMAX_OBS
+      PARAMETER ( NFILESMAX_OBS=1 )
+#endif
+
       _RL locfc
       _RL f_gencost(NGENCOST)
       _RL no_gencost(NGENCOST)
+#ifdef ALLOW_OBSFIT
+      INTEGER num_file_obs
+      _RL f_obsfit(NFILESMAX_OBS)
+      _RL no_obsfit(NFILESMAX_OBS)
+#endif
       INTEGER IL
       CHARACTER*22 cfname
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -59,6 +74,12 @@ c     == end of interface ==
 
       locfc = 0. _d 0
 
+#ifdef ALLOW_OBSFIT
+      DO num_file_obs=1,NFILESMAX_OBS
+       f_obsfit(num_file_obs) = objf_obsfit(num_file_obs)
+       no_obsfit(num_file_obs) = num_obsfit(num_file_obs)
+      ENDDO
+#endif
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       DO num_var=1,NGENCOST
        f_gencost(num_var) = 0. _d 0
@@ -99,6 +120,18 @@ c--   Do global summation for each part of the cost function
 #endif
 
 C     start printing to STDOUT
+#ifdef ALLOW_OBSFIT
+      IF ( useOBSFIT ) THEN
+       DO num_file_obs=1,NFILESMAX_OBS
+        IF ( no_obsfit(num_file_obs).GT.zeroRL ) THEN
+         WRITE(msgBuf,'(A,D22.15,i2.0)')
+     &     ' --> f_obsfit =', f_obsfit(num_file_obs), num_file_obs
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+        ENDIF
+       ENDDO
+      ENDIF
+#endif
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       DO num_var=1,NGENCOST
        IF (no_gencost(num_var).GT.0) THEN
@@ -114,6 +147,14 @@ C     start printing to STDOUT
 
 c--   Each process has calculated the global part for itself.
 
+#ifdef ALLOW_OBSFIT
+      DO num_file_obs=1,NFILESMAX_OBS
+        glofc = glofc
+     &          +  mult_obsfit(num_file_obs)
+     &            *objf_obsfit(num_file_obs)
+      ENDDO
+#endif
+
       locfc=locfc+glofc
 
 C     only master thread of master CPU open and write to file
@@ -127,6 +168,21 @@ C     only master thread of master CPU open and write to file
      &                      SQUEEZE_RIGHT, myThid )
         open(unit=ifc,file=cfname)
 
+#ifdef ALLOW_OBSFIT
+        IF ( useOBSFIT ) THEN
+         DO num_file_obs=1,NFILESMAX_OBS
+          IF ( no_obsfit(num_file_obs).GT.zeroRL ) THEN
+           IL  = ILNBLNK( obsfitfiles(num_file_obs) )
+           IL  = max (IL,30)
+           WRITE(ifc,'(4A,2D22.15)')
+     &      obsfitfiles(num_file_obs)(1:IL),' ',
+     &      obsfit_nameval, ' = ',
+     &      f_obsfit(num_file_obs),
+     &      no_obsfit(num_file_obs)
+          ENDIF
+         ENDDO
+        ENDIF
+#endif
 #ifdef ALLOW_GENCOST_CONTRIBUTION
         DO num_var=1,NGENCOST
          IF (no_gencost(num_var).GT.0) THEN
@@ -140,7 +196,7 @@ C     only master thread of master CPU open and write to file
         ENDDO
 #endif
 
-        close(ifc)
+        CLOSE(ifc)
 C     Do not ever write this cost function again to cfname
         eccoWriteCostFunction = .FALSE.
 
@@ -151,6 +207,7 @@ C     Do not ever write this cost function again to cfname
      &                      SQUEEZE_RIGHT, myThid )
 C     eccoWriteCostFunction
        ENDIF
+
 C     MASTER_CPU_THREAD
       ENDIF
 

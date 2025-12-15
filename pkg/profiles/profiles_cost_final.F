@@ -32,7 +32,7 @@ C     == global variables ==
 C     !INPUT/OUTPUT PARAMETERS:
       INTEGER myThid
 
-#if defined ALLOW_COST
+#ifdef ALLOW_COST
 C     ! FUNCTIONS:
       LOGICAL  MASTER_CPU_THREAD
       EXTERNAL MASTER_CPU_THREAD
@@ -41,12 +41,6 @@ C     ! FUNCTIONS:
 
 C     !LOCAL VARIABLES:
       INTEGER bi, bj, num_var
-#ifndef ALLOW_PROFILES
-      INTEGER NFILESPROFMAX
-      parameter (NFILESPROFMAX=1)
-      INTEGER NVARMAX
-      parameter (NVARMAX=1)
-#endif
       INTEGER num_file
       _RL f_profiles(NFILESPROFMAX,NVARMAX)
       _RL f_profiles_mean(NVARMAX)
@@ -167,7 +161,7 @@ C     Do it only once per run, otherwise grdchk will overwrite or append
 C     files in an uncontrolled way.
        profilesWriteCostFunction = .FALSE.
 
-C     MASTER_CPU_THREAD .AND. profilesoWriteCostFunction
+C     MASTER_CPU_THREAD .AND. profilesWriteCostFunction
       ENDIF
 
 #endif /* ALLOW_COST */

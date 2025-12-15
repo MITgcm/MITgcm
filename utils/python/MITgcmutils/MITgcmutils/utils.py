@@ -73,9 +73,9 @@ def gen_blanklist(depth, sNx, sNy, tilemap=False,fill_value=0):
         tile_order[n, m] = int(n*nPx+m+1)
         if tile_sum == 0:  # the tile with only land cells
           blank.append(tile_order[n, m])
-          
+
     assert len(blank)>0,'There are not land tiles'
-    
+
     if tilemap:
 
       # plot ocean and blank tiles
@@ -162,10 +162,10 @@ def hfac(depth,rF,hFacMin=0.3,hFacMinDr=50,htype='C'):
     assert np.all(rF<=0),'check_stp: rF must be negative'
 
     [Ny,Nx] = depth.shape
-    dRF = abs(np.diff(rF))
-    Nr = dRF.size
+    drF = abs(np.diff(rF))
+    Nr = drF.size
 
-    recip_drF = 1/dRF
+    recip_drF = 1/drF
 
     hFacC = np.zeros([Nr,Ny,Nx])
     hFacW = np.zeros([Nr,Ny,Nx])
@@ -363,7 +363,7 @@ def writebin(fname, arr, dataprec='float32', machineformat='b'):
                ('float32' by default)
     machineformat : string
                     'b' or 'l' for big or little endian
-                    ('b' by default)  
+                    ('b' by default)
     Usage
     -----
     >>> writebin('data.bin',arr)
