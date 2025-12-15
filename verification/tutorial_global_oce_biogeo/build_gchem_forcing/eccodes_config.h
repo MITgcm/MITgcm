@@ -1,1 +1,0 @@
-/opt/homebrew/include//eccodes_config.h

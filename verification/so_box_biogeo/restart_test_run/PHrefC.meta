@@ -1,9 +1,0 @@
- simulation = { 'OBC + Biogeo S.Ocean Box' };
- nDims = [   3 ];
- dimList = [
-     1,    1,    1,
-     1,    1,    1,
-    15,    1,   15
- ];
- dataprec = [ 'float32' ];
- nrecords = [          1 ];

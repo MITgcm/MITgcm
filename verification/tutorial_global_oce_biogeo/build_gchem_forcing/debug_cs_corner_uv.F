@@ -1,1 +1,0 @@
-/Users/jml1/GitHub/MITgcm//pkg/debug/debug_cs_corner_uv.F

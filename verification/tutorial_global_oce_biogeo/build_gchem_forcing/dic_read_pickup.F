@@ -1,1 +1,0 @@
-/Users/jml1/GitHub/MITgcm//pkg/dic/dic_read_pickup.F

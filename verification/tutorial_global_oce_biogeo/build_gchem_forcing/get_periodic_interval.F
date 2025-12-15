@@ -1,1 +1,0 @@
-/Users/jml1/GitHub/MITgcm//eesupp/src/get_periodic_interval.F

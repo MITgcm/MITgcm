@@ -1,16 +1,16 @@
 #include "DIC_OPTIONS.h"
 #include "GCHEM_OPTIONS.h"
 CBOP
-C !ROUTINE: DIC_FIELDS_LOAD
+C ROUTINE: DIC_FIELDS_LOAD
 
-C !INTERFACE: ==========================================================
+C INTERFACE: ==========================================================
       SUBROUTINE DIC_FIELDS_LOAD (
      I           myTime, myIter, myThid )
 
-C !DESCRIPTION:
+C DESCRIPTION:
 C  Read in fields needed for CO2,O2 fluxterms, silica for pH calculation
 
-C !USES: ===============================================================
+C USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -18,11 +18,11 @@ C !USES: ===============================================================
 #include "GRID.h"
 #include "DIC_VARS.h"
 #include "DIC_LOAD.h"
-#ifdef GCHEM_ALLOW_FFIELDS
+#ifdef ALLOW_GCHEM
 # include "GCHEM_FIELDS.h"
 #endif
 
-C !INPUT PARAMETERS: ===================================================
+C INPUT PARAMETERS: ===================================================
 C  myTime               :: current time
 C  myIter               :: current timestep
 C  myThid               :: thread number
@@ -32,7 +32,7 @@ C  myThid               :: thread number
 
 #ifdef ALLOW_DIC
 
-c !LOCAL VARIABLES: ===================================================
+c LOCAL VARIABLES: ===================================================
       INTEGER bi, bj, i, j
       INTEGER intimeP, intime0, intime1
       _RL aWght,bWght
@@ -173,30 +173,30 @@ C--   Load chlorophyll climatology data, unit for chlorophyll : mg/m3
 #endif
  
 C--   fill-in overlap after loading temp arrays:
-        _EXCH_XY_RS(dicwind0, myThid )
-        _EXCH_XY_RS(dicwind1, myThid )
-        _EXCH_XY_RS(atmosp0, myThid )
-        _EXCH_XY_RS(atmosp1, myThid )
-        _EXCH_XY_RS(silicaSurf0, myThid )
-        _EXCH_XY_RS(silicaSurf1, myThid )
+         _EXCH_XY_RS(dicwind0, myThid )
+         _EXCH_XY_RS(dicwind1, myThid )
+         _EXCH_XY_RS(atmosp0, myThid )
+         _EXCH_XY_RS(atmosp1, myThid )
+         _EXCH_XY_RS(silicaSurf0, myThid )
+         _EXCH_XY_RS(silicaSurf1, myThid )
 #ifdef DIC_CALCITE_SAT
-        IF ( DIC_deepSilicaFile .NE. ' '  ) THEN
-          _EXCH_XYZ_RS(silicaDeep0, myThid )
-          _EXCH_XYZ_RS(silicaDeep1, myThid )
-        ENDIF
+      IF ( DIC_deepSilicaFile .NE. ' '  ) THEN
+        _EXCH_XYZ_RS(silicaDeep0, myThid )
+        _EXCH_XYZ_RS(silicaDeep1, myThid )
+      ENDIF
 #endif
-        _EXCH_XY_RS(ice0, myThid )
-        _EXCH_XY_RS(ice1, myThid )
+         _EXCH_XY_RS(ice0, myThid )
+         _EXCH_XY_RS(ice1, myThid )
 #ifdef READ_PAR
-        _EXCH_XY_RS(par0, myThid )
-        _EXCH_XY_RS(par1, myThid )
+         _EXCH_XY_RS(par0, myThid )
+         _EXCH_XY_RS(par1, myThid )
 #endif
 #ifdef LIGHT_CHL
-        _EXCH_XY_RS(chlinput, myThid )
+         _EXCH_XY_RS(chlinput, myThid )
 #endif
 #ifdef ALLOW_FE
-        _EXCH_XY_RS(feinput0, myThid )
-        _EXCH_XY_RS(feinput1, myThid )
+         _EXCH_XY_RS(feinput0, myThid )
+         _EXCH_XY_RS(feinput1, myThid )
 #endif
  
 C-    save newly loaded time-record
@@ -218,11 +218,10 @@ C-     end if-bloc (time to load new fields)
      &                       + aWght*dicwind1(i,j,bi,bj)
             ENDDO
            ENDDO
-
 C calculate piston velocity
 C QQ: note - we should have wind speed variance in here
 C QQ         also need to check units, and conversion factors
-c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5   !QQQQ
+c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    QQQQ
           ENDIF
 #ifndef USE_PLOAD
          IF ( DIC_atmospFile .NE. ' '  ) THEN
@@ -313,7 +312,6 @@ C If no surface silicate file but deep (3d) silicate provided, use top level
 C endif for DIC_forcingCycle
       ENDIF
 #endif /* GCHEM_ALLOW_FFIELDS */
-
 #endif /* ALLOW_DIC */
       RETURN
       END

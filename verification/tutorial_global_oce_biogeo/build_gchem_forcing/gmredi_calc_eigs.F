@@ -1,1 +1,0 @@
-/Users/jml1/GitHub/MITgcm//pkg/gmredi/gmredi_calc_eigs.F

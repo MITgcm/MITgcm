@@ -1,1 +1,0 @@
-/Users/jml1/GitHub/MITgcm//pkg/diagnostics/diagnostics_is_on.F
