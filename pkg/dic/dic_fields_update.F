@@ -67,13 +67,13 @@ C     Update forcing fields in pkg/dic common blocks
 #endif /* ALLOW_SEAICE */
         ELSEIF ( useCoupler ) THEN
 #ifdef ALLOW_OCN_COMPON_INTERF
-          IF ( useImportFice ) THEN
+         IF ( useImportFice ) THEN
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
              fIce(i,j,bi,bj) = sIceFrac_cpl(i,j,bi,bj)
             ENDDO
            ENDDO
-          ENDIF
+         ENDIF
 #endif /* ALLOW_OCN_COMPON_INTERF */
         ENDIF
 

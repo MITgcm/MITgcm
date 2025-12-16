@@ -102,7 +102,7 @@ C     This is the correct formulation (works in Adjoint run).
 C     Unfortunatly, produces many recomputations <== not used until it is fixed
        IF ( intime1.NE.DIC_ldRec(bi,bj) ) THEN
 #endif /* ALLOW_AUTODIFF */
- 
+
 C--   If the above condition is met then we need to read in
 C     data for the period ahead and the period behind myTime.
         IF ( debugLevel.GE.debLevZero ) THEN
@@ -171,7 +171,7 @@ C--   Load chlorophyll climatology data, unit for chlorophyll : mg/m3
      &       myIter,myThid )
         ENDIF
 #endif
- 
+
 C--   fill-in overlap after loading temp arrays:
         _EXCH_XY_RS(dicwind0, myThid )
         _EXCH_XY_RS(dicwind1, myThid )
@@ -198,7 +198,7 @@ C--   fill-in overlap after loading temp arrays:
         _EXCH_XY_RS(feinput0, myThid )
         _EXCH_XY_RS(feinput1, myThid )
 #endif
- 
+
 C-    save newly loaded time-record
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -208,7 +208,7 @@ C-    save newly loaded time-record
 
 C-     end if-bloc (time to load new fields)
        ENDIF
- 
+
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          IF ( DIC_windFile .NE. ' '  ) THEN
@@ -218,12 +218,11 @@ C-     end if-bloc (time to load new fields)
      &                       + aWght*dicwind1(i,j,bi,bj)
             ENDDO
            ENDDO
-
 C calculate piston velocity
 C QQ: note - we should have wind speed variance in here
 C QQ         also need to check units, and conversion factors
-c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5   !QQQQ
-          ENDIF
+c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    !QQQQ
+         ENDIF
 #ifndef USE_PLOAD
          IF ( DIC_atmospFile .NE. ' '  ) THEN
            DO j=1-OLy,sNy+OLy
@@ -257,7 +256,7 @@ C If file provided for surface silicate, read it in
            ENDDO
 #ifndef ALLOW_AUTODIFF
 #ifdef DIC_CALCITE_SAT
-          ELSEIF ( DIC_deepSilicaFile .NE. ' '  ) THEN
+         ELSEIF ( DIC_deepSilicaFile .NE. ' '  ) THEN
             DO j=1-OLy,sNy+OLy
              DO i=1-OLx,sNx+OLx
 C If no surface silicate file but deep (3d) silicate provided, use top level
@@ -268,16 +267,16 @@ C If no surface silicate file but deep (3d) silicate provided, use top level
 #endif /* DIC_CALCITE_SAT */
 #endif /* not ALLOW_AUTODIFF */
          ENDIF
- 
+
          IF ( DIC_iceFile .NE. ' '  ) THEN
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
              fIce(i,j,bi,bj) = bWght*ice0(i,j,bi,bj)
      &                       + aWght*ice1(i,j,bi,bj)
+            ENDDO
            ENDDO
-          ENDDO
          ENDIF
- 
+
 #ifdef READ_PAR
          IF ( DIC_parFile .NE. ' '  ) THEN
            DO j=1-OLy,sNy+OLy
@@ -289,13 +288,13 @@ C If no surface silicate file but deep (3d) silicate provided, use top level
          ENDIF
 #endif
 #ifdef LIGHT_CHL
-          IF ( DIC_chlaFile .NE. ' '  ) THEN
-            DO j=1-OLy,sNy+OLy
-             DO i=1-OLx,sNx+OLx
-              CHL(i,j,bi,bj) = chlinput(i,j,bi,bj)
-             ENDDO
+         IF ( DIC_chlaFile .NE. ' '  ) THEN
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             CHL(i,j,bi,bj) = chlinput(i,j,bi,bj)
             ENDDO
-          ENDIF
+           ENDDO
+         ENDIF
 #endif
 #ifdef ALLOW_FE
          IF ( DIC_ironFile .NE. ' '  ) THEN

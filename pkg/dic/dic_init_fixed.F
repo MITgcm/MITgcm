@@ -1,5 +1,5 @@
 #include "DIC_OPTIONS.h"
-
+#include "GCHEM_OPTIONS.h"
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: DIC_INIT_FIXED
@@ -17,7 +17,6 @@ C     !USES:
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DIC_VARS.h"
-#include "GCHEM.h" 
 #include "DIC_ATMOS.h"
 
 C     !INPUT PARAMETERS:
@@ -104,6 +103,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--  Check some option & parameter combinations:
 
 C    for now, just collect here few check & stop from various places:
+#ifndef GCHEM_ALLOW_FFIELDS
 #ifdef READ_PAR
 #ifdef USE_QSW
 c     WRITE(msgBuf,'(2A)') ' DIC_INI_FORCING: ',
@@ -113,7 +113,7 @@ c     WRITE(msgBuf,'(2A)') ' DIC_INI_FORCING: ',
       STOP 'ABNORMAL END: S/R DIC_INIT_FIXED'
 #endif
       IF ( DIC_forcingCycle.GT.0. _d 0
-     &     .AND. gchem_parFile .EQ. ' '  ) THEN
+     &     .AND. DIC_parFile .EQ. ' '  ) THEN
 c       WRITE(msgBuf,'(2A)') ' DIC_FIELDS_LOAD: ',
         WRITE(msgBuf,'(2A)') 'DIC_INIT_FIXED: ',
      &     'You need to provide a file if you want to use READ_PAR'
@@ -121,7 +121,7 @@ c       WRITE(msgBuf,'(2A)') ' DIC_FIELDS_LOAD: ',
            STOP 'ABNORMAL END: S/R DIC_INIT_FIXED'
       ENDIF
 #endif /* READ_PAR */
-
+#endif /* GCHEM_ALLOW_FFIELDS */
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_MNC

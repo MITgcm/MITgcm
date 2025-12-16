@@ -18,9 +18,9 @@ C !USES: ===============================================================
 #include "GRID.h"
 #include "DIC_VARS.h"
 #ifdef GCHEM_ALLOW_FFIELDS
-#include "GCHEM_FIELDS.h"
+# include "GCHEM_FIELDS.h"
 #else
-#include "DIC_LOAD.h"
+# include "DIC_LOAD.h"
 #endif /* GCHEM_ALLOW_FFIELDS */
 
 C !INPUT PARAMETERS: ===================================================
@@ -85,7 +85,7 @@ C-    Initialise DIC_VARS.h forcing-field arrays:
            InputFe   (i,j,bi,bj) = 0. _d 0
 #endif
          ENDDO
-        ENDDO 
+        ENDDO
 #ifdef DIC_CALCITE_SAT
         DO k=1,Nr
          DO j=1-OLy,sNy+OLy
@@ -95,7 +95,8 @@ C-    Initialise DIC_VARS.h forcing-field arrays:
          ENDDO
         ENDDO
 #endif
-CC-    Initialise DIC_LOAD.h arrays:
+
+C-    Initialise DIC_LOAD.h arrays:
         DIC_ldRec(bi,bj) = 0
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
@@ -135,7 +136,6 @@ C-   end bi,bj loops:
       ENDDO
 
 C ======================================================================
-
 C--   Set reasonable values to those that need at least something
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -153,12 +153,12 @@ C If the chlorophyll climatology is not provided, use this default value.
           CHL(i,j,bi,bj)        = 1. _d -2*maskC(i,j,1,bi,bj)
 #endif
 #ifdef ALLOW_FE
-         InputFe(i,j,bi,bj)    = 1. _d -11*maskC(i,j,1,bi,bj)
+          InputFe(i,j,bi,bj)    = 1. _d -11*maskC(i,j,1,bi,bj)
 #endif
-          ENDDO
          ENDDO
+        ENDDO
 #ifdef DIC_CALCITE_SAT
-         IF ( useCalciteSaturation ) THEN
+        IF ( useCalciteSaturation ) THEN
           DO k=1,Nr
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
@@ -166,14 +166,13 @@ C If the chlorophyll climatology is not provided, use this default value.
             ENDDO
            ENDDO
           ENDDO
-         ENDIF
+        ENDIF
 #endif
 C-    end bi,bj loops
        ENDDO
       ENDDO
 
 C ======================================================================
-
 CC--   Load constant forcing-file (used if DIC_forcingCycle=0 )
 Cc     IF ( DIC_forcingCycle .LE. zeroRL ) THEN
       IF ( DIC_windFile .NE. ' '  ) THEN
@@ -228,8 +227,7 @@ Cc#endif
         _EXCH_XYZ_RL( silicaDeep, myThid )
       ENDIF
 #endif
-Cc     ENDIF
-
+c     ENDIF
 C ======================================================================
 
       IF ( DIC_forcingCycle .GT. zeroRL ) THEN
@@ -254,39 +252,39 @@ C-    Get reccord number and weight for time interpolation:
 
        IF ( DIC_silicaFile .NE. ' '  ) THEN
 C-    If file provided for surface silicate, read it in
-        CALL READ_REC_XY_RS( DIC_silicaFile,silicaSurf0,intime0,
+         CALL READ_REC_XY_RS( DIC_silicaFile,silicaSurf0,intime0,
      &        nIter0,myThid )
-        CALL READ_REC_XY_RS( DIC_silicaFile,silicaSurf1,intime1,
+         CALL READ_REC_XY_RS( DIC_silicaFile,silicaSurf1,intime1,
      &        nIter0,myThid )
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-             silicaSurf(i,j,bi,bj) = bWght*silicaSurf0(i,j,bi,bj)
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+              silicaSurf(i,j,bi,bj) = bWght*silicaSurf0(i,j,bi,bj)
      &                              + aWght*silicaSurf1(i,j,bi,bj)
+            ENDDO
            ENDDO
           ENDDO
          ENDDO
-        ENDDO
 #ifndef ALLOW_AUTODIFF
 #ifdef DIC_CALCITE_SAT
        ELSEIF ( DIC_deepSilicaFile .NE. ' '  ) THEN
-C-    If no surface silicate file but deep (3d) silicate provided, use top Clevel
-        k = 1
-        CALL READ_REC_XYZ_RS( DIC_deepSilicaFile, silicaDeep0,
+C-    If no surface silicate file but deep (3d) silicate provided, use top level
+         k = 1
+         CALL READ_REC_XYZ_RS( DIC_deepSilicaFile, silicaDeep0,
      &                         intime0, nIter0, myThid )
-        CALL READ_REC_XYZ_RS( DIC_deepSilicaFile, silicaDeep1,
+         CALL READ_REC_XYZ_RS( DIC_deepSilicaFile, silicaDeep1,
      &                         intime1, nIter0, myThid )
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
              silicaSurf(i,j,bi,bj) = bWght*silicaDeep0(i,j,k,bi,bj)
      &                              + aWght*silicaDeep1(i,j,k,bi,bj)
+            ENDDO
            ENDDO
           ENDDO
          ENDDO
-        ENDDO
 #endif /* DIC_CALCITE_SAT */
 #endif /* ndef ALLOW_AUTODIFF */
        ENDIF
