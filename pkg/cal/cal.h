@@ -100,9 +100,8 @@ C     cal_setStatus    :: status of calendar parms setting (0=none, 3=fully set)
       INTEGER startdate_2
 
 C   calendarDumps :: When set, approximate months (30-31 days) and years (360-372 days)
-C                    for parameters chkPtFreq, pChkPtFreq, taveFreq, SEAICE_taveFreq,
-C                    KPP_taveFreq, and freq in pkg/diagnostics are converted to exact
-C                    calendar months and years.  Requires pkg/cal.
+C                    for parameters chkPtFreq, pChkPtFreq and freq in pkg/diagnostics 
+C                    are converted to exact calendar months and years.
       COMMON /CALENDAR_L/
      &               calendarDumps,
      &               usingModelCalendar,
