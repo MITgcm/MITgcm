@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/obsfit:
+  - new package "obsfit" for for model-observations comparisons (and cost
+    contribution);
+  - add secondary "obsfit" test in TAF-AD exp. global_oce_biogeo_bling.
 o verification:
   - move "global_ocean_ebm" experiment forward tests to "global_oce_latlon" and
     adjust AD test for merging in global_oce_latlon, as a secondary "ebm" test.
