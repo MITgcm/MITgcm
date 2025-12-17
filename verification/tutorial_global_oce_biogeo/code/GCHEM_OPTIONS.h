@@ -29,7 +29,7 @@ C    tendency to Advect-Diff tendency
 
 C o read gchem-specific forcing fields to be passed to submodels
 C   undefine to save some memory, also for TAF-AD
-#undef GCHEM_ALLOW_FFIELDS
+#define GCHEM_ALLOW_FFIELDS
 
 #endif /* ALLOW_GCHEM */
 #endif /* GCHEM_OPTIONS_H */

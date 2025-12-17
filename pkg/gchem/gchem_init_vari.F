@@ -72,9 +72,8 @@ C--   Initialise GCHEM variables:
       ENDDO
 #endif /* GCHEM_ADD2TR_TENDENCY */
 
-C-- Initialize Geo-Chemistry forcing fields
-
 #ifdef GCHEM_ALLOW_FFIELDS
+C-- Initialize Geo-Chemistry forcing fields
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 C     First call requires that we initialize everything to zero for safety
@@ -101,31 +100,31 @@ C     set reasonable values fields that need at least something
       ENDDO
 
       IF ( .NOT. gchem_useEXF ) THEN
-       CALL LEF_ZERO( gchemSi0,myThid )
-       CALL LEF_ZERO( gchemSi1,myThid )
+        CALL LEF_ZERO( gchemSi0,    myThid )
+        CALL LEF_ZERO( gchemSi1,    myThid )
 #ifdef GCHEM_3D_SILICA
-       CALL LEF_ZERO( gchem3DSi0,myThid )
-       CALL LEF_ZERO( gchem3DSi1,myThid )
+        CALL LEF_ZERO( gchem3DSi0,  myThid )
+        CALL LEF_ZERO( gchem3DSi1,  myThid )
 #endif
-       CALL LEF_ZERO( gchemWind0,myThid )
-       CALL LEF_ZERO( gchemWind1,myThid )
-       CALL LEF_ZERO( gchemIce0,myThid )
-       CALL LEF_ZERO( gchemIce1,myThid )
-       CALL LEF_ZERO( gchemApres0,myThid )
-       CALL LEF_ZERO( gchemApres1,myThid )
-       CALL LEF_ZERO( gchemPAR0,myThid )
-       CALL LEF_ZERO( gchemPAR1,myThid )
-       CALL LEF_ZERO( gchemFe0,myThid )
-       CALL LEF_ZERO( gchemFe1,myThid )
-       CALL LEF_ZERO( gchemapCO20,myThid )
-       CALL LEF_ZERO( gchemapCO21,myThid )
-       CALL LEF_ZERO( gchemchl0,myThid )
-       CALL LEF_ZERO( gchemchl1,myThid )
+        CALL LEF_ZERO( gchemWind0,  myThid )
+        CALL LEF_ZERO( gchemWind1,  myThid )
+        CALL LEF_ZERO( gchemIce0,   myThid )
+        CALL LEF_ZERO( gchemIce1,   myThid )
+        CALL LEF_ZERO( gchemApres0, myThid )
+        CALL LEF_ZERO( gchemApres1, myThid )
+        CALL LEF_ZERO( gchemPAR0,   myThid )
+        CALL LEF_ZERO( gchemPAR1,   myThid )
+        CALL LEF_ZERO( gchemFe0,    myThid )
+        CALL LEF_ZERO( gchemFe1,    myThid )
+        CALL LEF_ZERO( gchemapCO20, myThid )
+        CALL LEF_ZERO( gchemapCO21, myThid )
+        CALL LEF_ZERO( gchemchl0,   myThid )
+        CALL LEF_ZERO( gchemchl1,   myThid )
 
 C--   Now calculate whether it is time to update the forcing arrays
         CALL GET_PERIODIC_INTERVAL(
      O                   intimeP, intime0, intime1, bWght, aWght,
-     I                   externForcingCycle, externForcingPeriod,
+     I                   gchem_ForcingCycle, gchem_ForcingPeriod,
      I                   deltaTClock, startTime, myThid )
 
         IF ( gchem_WindFile .NE. ' ' ) THEN
