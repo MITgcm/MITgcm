@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o optim:
+  - fix outdated ALLOW_SHIFWFLX_CONTROL option in "optim_read/writedata.F".
 o pkg/obsfit:
   - new package "obsfit" for for model-observations comparisons (and cost
     contribution);
