@@ -2525,30 +2525,48 @@ done
 rm -f $TMP.pack
 echo "    packages are: $PACKAGES"
 
-#  Check for package MNC: if NetCDF is available, then build the MNC
-#  template files ; otherwise, delete mnc from the list of packages.
+#  Check for packages that relies on NetCDF availability:
+#  for package MNC: if NetCDF is available, then build the MNC template files
+#    otherwise, delete mnc from the list of packages.
+#  for package PROFILES and OBSFIT: if NetCDF is not available,
+#    then remove profiles or obsfit from the list of available packages.
 echo " $PACKAGES " | grep ' mnc ' > /dev/null 2>&1
-mnc_in=$?
+mnc_In=$?
 if test "x$HAVE_NETCDF" != xt ; then
-    if test "x$mnc_in" = x0 ; then
-	cat <<EOF
+    echo " $PACKAGES " | grep ' profiles ' > /dev/null 2>&1
+    profiles_In=$?
+    echo " $PACKAGES " | grep ' obsfit ' > /dev/null 2>&1
+    obsfit_In=$?
+    if test "x$mnc_In" = x0 -o "x$profiles_In" = x0 -o "x$obsfit_In" = x0 ; then
+	turnOff_pkg=1
+	cat > $TMP.turnOff_pkg <<EOF
 *********************************************************************
-WARNING: the "mnc" package was enabled but tests failed to compile
+WARNING: the "THIS_PKG_NAME" package was enabled but tests failed to compile
   NetCDF applications.  Please check that:
 
   1) NetCDF is correctly installed for this compiler and
   2) the LIBS variable (within the "optfile") specifies the correct
        NetCDF library to link against.
 
-  Due to this failure, the "mnc" package is now DISABLED.
+  Due to this failure, the "THIS_PKG_NAME" package is now DISABLED.
 *********************************************************************
 EOF
+    else turnOff_pkg=0 ; fi
+    if test "x$mnc_In" = x0 ; then
+	cat $TMP.turnOff_pkg | sed 's/THIS_PKG_NAME/mnc/'
 	PACKAGES=`echo $PACKAGES | sed -e 's/mnc//g'`
-	DISABLE="$DISABLE mnc"
-    else
-    #  this prevent to add mnc (due to pdepend rules) if not available
-	DISABLE="$DISABLE mnc"
     fi
+    if test "x$profiles_In" = x0 ; then
+	cat $TMP.turnOff_pkg | sed 's/THIS_PKG_NAME/profiles/'
+	PACKAGES=`echo $PACKAGES | sed -e 's/profiles//g'`
+    fi
+    if test "x$obsfit_In" = x0 ; then
+	cat $TMP.turnOff_pkg | sed 's/THIS_PKG_NAME/obsfit/'
+	PACKAGES=`echo $PACKAGES | sed -e 's/obsfit//g'`
+    fi
+    #  this prevent to add the pkg (due to pdepend rules) if not available
+    DISABLE="$DISABLE mnc profiles obsfit"
+    if [ $turnOff_pkg -eq 1 ] ; then rm -f $TMP.turnOff_pkg ; fi
 else
     # we have NetCDF, we try to build MNC template files
     ( cd $ROOTDIR"/pkg/mnc" && $MAKE testclean && $MAKE templates ) > make_mnc.errors 2>&1
@@ -2558,37 +2576,11 @@ else
     else
 	echo "Error: problem encountered while building source files in pkg/mnc:"
 	cat make_mnc.errors 1>&2
-	if test "x$mnc_in" = x0 ; then
+	if test "x$mnc_In" = x0 ; then
 	    exit 1
 	else
 	    DISABLE="$DISABLE mnc"
 	fi
-    fi
-fi
-
-#  Check for package PROFILES: if NetCDF is not available,
-#  then delete profiles from the list of available packages.
-if test "x$HAVE_NETCDF" != xt ; then
-    echo " $PACKAGES " | grep ' profiles ' > /dev/null 2>&1
-    RETVAL=$?
-    if test "x$RETVAL" = x0 ; then
-	cat <<EOF
-*********************************************************************
-WARNING: the "profiles" package was enabled but tests failed to
-  compile NetCDF applications.  Please check that:
-
-  1) NetCDF is correctly installed for this compiler and
-  2) the LIBS variable (within the "optfile") specifies the correct
-       NetCDF library to link against.
-
-  Due to this failure, the "profiles" package is now DISABLED.
-*********************************************************************
-EOF
-	PACKAGES=`echo $PACKAGES | sed -e 's/profiles//g'`
-	DISABLE="$DISABLE profiles"
-    else
-    #  this prevent to add profiles (due to pdepend rules) if not available
-	DISABLE="$DISABLE profiles"
     fi
 fi
 

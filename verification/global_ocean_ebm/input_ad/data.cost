@@ -5,7 +5,7 @@
 # ******************
  &COST_NML
 #
- mult_tracer  = 1.,
- mult_test    = 1.,
+ mult_tracer  = 0.,
+ mult_test    = 0.,
  mult_atl     = 1.,
  &
