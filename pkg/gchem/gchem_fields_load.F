@@ -305,8 +305,10 @@ C If a wind file is given in data.gchem, read it
 # endif
      &     mytime, myiter, mythid )
 C Otherwise get winds from PKG/EXF
-       ELSEIF ( uwindfile .NE. ' ' .AND. vwindfile .NE. ' ' ) .OR.
-     &      ( ustressfile .NE. ' ' .AND. vstressfile .NE. ' ' ) THEN
+       ELSEIF (( uwindfile .NE. ' ' .AND.
+     &           vwindfile .NE. ' ' ) 
+     &  .OR. ( ustressfile .NE. ' ' .AND.
+     &         vstressfile .NE. ' ' )) THEN
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
@@ -443,6 +445,7 @@ C     forcing load fields with pkg/exf tools
      &     ice_interpMethod,
 # endif
      &     mytime, myiter, mythid )
+#ifdef EXF_SEAICE_FRACTION
      C Otherwise get sea ice fraction from PKG/EXF
        ELSEIF ( areamaskfile .NE. ' ' ) THEN
         DO bj = myByLo(myThid), myByHi(myThid)
@@ -454,15 +457,18 @@ C     forcing load fields with pkg/exf tools
           ENDDO
          ENDDO
         ENDDO
+#endif /* EXF_SEAICE_FRACTION */
        ENDIF
        
        IF ( gchem_chlFile .NE. ' ' ) THEN
 C     forcing load fields with pkg/exf tools
         CALL EXF_SET_FLD(
-     &     'gchemChl', gchem_chlfile, chlmask,
-     &     chlStartTime, chlperiod, chlRepCycle,
+     &     'gchemChl', gchem_chlfile, gchem_chlmask,
+     &     gchem_chlStartTime, gchem_chlperiod, 
+     &     gchem_chlRepCycle,
      &     gchem_inscal_chl,
-     &     chl_exfremo_intercept, chl_exfremo_slope,
+     &     gchem_chl_exfremo_intercept, 
+     &     gchem_chl_exfremo_slope,
      &     gchemchl, gchemchl0, gchemchl1,
 # ifdef USE_EXF_INTERPOLATION
      &     chl_lon0, chl_lon_inc,

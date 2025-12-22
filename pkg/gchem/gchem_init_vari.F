@@ -393,16 +393,16 @@ C This will not work until exf can load 3d fields
 
        IF ( gchem_WindFile .NE. ' ' ) THEN
         CALL EXF_INIT_FLD (
-      &     'gchemWind', gchem_WindFile, gchem_WindMask,
-      &     gchem_WindPeriod, gchem_inscal_Wind, gchem_wind_const,
-      &     gchemWind, gchemWind0, gchemWind1,
+     &     'gchemWind', gchem_WindFile, gchem_WindMask,
+     &     gchem_WindPeriod, gchem_inscal_Wind, gchem_wind_const,
+     &     gchemWind, gchemWind0, gchemWind1,
 #ifdef USE_EXF_INTERPOLATION
-      &     wind_lon0, wind_lon_inc,
-      &     wind_lat0, wind_lat_inc,
-      &     wind_nlon, wind_nlat, xC, yC,
-      &     wind_interpMethod,
+     &     wind_lon0, wind_lon_inc,
+     &     wind_lat0, wind_lat_inc,
+     &     wind_nlon, wind_nlat, xC, yC,
+     &     wind_interpMethod,
 #endif
-      &     mythid )
+     &     mythid )
        ENDIF
 
        IF ( gchem_apresFile .NE. ' ' ) THEN

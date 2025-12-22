@@ -91,10 +91,10 @@ c      ENDIF
         IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START silica',myThid)
 # endif
         CALL EXF_GETFFIELD_START( useExfYearlyFields,
-     I                          'gchem', 'SurfSi', gchem_SiPeriod,
-     I                          gchem_SiStartDate1, gchem_SiStartDate2,
-     U                          gchem_SiStartTime, errCount,
-     I                          myThid )
+     I                    'gchem', 'SurfSi', gchem_SiPeriod,
+     I                    gchem_SiStartDate1, gchem_SiStartDate2,
+     U                    gchem_SiStartTime, errCount,
+     I                    myThid )
        ENDIF
 
 #ifdef GCHEM_3D_SILICA
@@ -103,10 +103,10 @@ c      ENDIF
         IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START silica3D',myThid)
 # endif
         CALL EXF_GETFFIELD_START( useExfYearlyFields,
-     I                          'gchem', '3DSi', gchem_3DSiPeriod,
-     I                          gchem_3DSiStartDate1, gchem_3DSiStartDate2,
-     U                          gchem_3DSiStartTime, errCount,
-     I                          myThid )
+     I                    'gchem', '3DSi', gchem_3DSiPeriod,
+     I                    gchem_3DSiStartDate1, gchem_3DSiStartDate2,
+     U                    gchem_3DSiStartTime, errCount,
+     I                    myThid )
        ENDIF
 #endif
 
@@ -115,10 +115,10 @@ c      ENDIF
         IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START PAR',myThid)
 # endif
         CALL EXF_GETFFIELD_START( useExfYearlyFields,
-     I                         'gchem', 'PAR', gchem_parPeriod,
-     I                         gchem_parStartDate1, gchem_parStartDate2,
-     U                         gchem_parStartTime, errCount,
-     I                         myThid )
+     I                    'gchem', 'PAR', gchem_parPeriod,
+     I                    gchem_parStartDate1, gchem_parStartDate2,
+     U                    gchem_parStartTime, errCount,
+     I                    myThid )
        ENDIF
 
        IF ( gchem_apresFile .NE. ' ' ) THEN
@@ -126,10 +126,10 @@ c      ENDIF
         IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START APRES',myThid)
 # endif
         CALL EXF_GETFFIELD_START( useExfYearlyFields,
-     I                         'gchem', 'APRES', gchem_apresPeriod,
-     I                         gchem_apresStartDate1, gchem_apresStartDate2,
-     U                         gchem_apresStartTime, errCount,
-     I                         myThid )
+     I                    'gchem', 'APRES', gchem_apresPeriod,
+     I                    gchem_apresStartDate1, gchem_apresStartDate2,
+     U                    gchem_apresStartTime, errCount,
+     I                    myThid )
        ENDIF
 
        IF ( gchem_windFile .NE. ' ' ) THEN
@@ -137,10 +137,10 @@ c      ENDIF
         IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START wind',myThid)
 # endif
         CALL EXF_GETFFIELD_START( useExfYearlyFields,
-     I                         'gchem', 'wind', gchem_windPeriod,
-     I                         gchem_windStartDate1, gchem_windStartDate2,
-     U                         gchem_windStartTime, errCount,
-     I                         myThid )
+     I                    'gchem', 'wind', gchem_windPeriod,
+     I                    gchem_windStartDate1, gchem_windStartDate2,
+     U                    gchem_windStartTime, errCount,
+     I                    myThid )
        ENDIF
        
        IF ( gchem_iceFile .NE. ' ' ) THEN
@@ -148,10 +148,10 @@ c      ENDIF
         IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START ice',myThid)
 # endif
         CALL EXF_GETFFIELD_START( useExfYearlyFields,
-     I                         'gchem', 'ice', gchem_icePeriod,
-     I                         gchem_iceStartDate1, gchem_iceStartDate2,
-     U                         gchem_iceStartTime, errCount,
-     I                         myThid )
+     I                    'gchem', 'ice', gchem_icePeriod,
+     I                    gchem_iceStartDate1, gchem_iceStartDate2,
+     U                    gchem_iceStartTime, errCount,
+     I                    myThid )
        ENDIF
 
        IF ( gchem_FeFile .NE. ' ' ) THEN
@@ -159,10 +159,10 @@ c      ENDIF
         IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START iron',myThid)
 # endif
         CALL EXF_GETFFIELD_START( useExfYearlyFields,
-     I                         'gchem', 'iron', gchem_FePeriod,
-     I                         gchem_FeStartDate1, gchem_FeStartDate2,
-     U                         gchem_FeStartTime, errCount,
-     I                         myThid )
+     I                    'gchem', 'iron', gchem_FePeriod,
+     I                    gchem_FeStartDate1, gchem_FeStartDate2,
+     U                    gchem_FeStartTime, errCount,
+     I                    myThid )
        ENDIF
 
        IF ( gchem_apco2File .NE. ' ' ) THEN
@@ -170,22 +170,22 @@ c      ENDIF
         IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START pCO2',myThid)
 # endif
         CALL EXF_GETFFIELD_START( useExfYearlyFields,
-     I                         'gchem', 'apCO2', gchem_apco2Period,
-     I                         gchem_apco2StartDate1, 
-     I                         gchem_apco2StartDate2,
-     U                         gchem_apco2StartTime, errCount,
-     I                         myThid )
+     I                    'gchem', 'apCO2', gchem_apco2Period,
+     I                    gchem_apco2StartDate1, 
+     I                    gchem_apco2StartDate2,
+     U                    gchem_apco2StartTime, errCount,
+     I                    myThid )
        ENDIF
 
-IF ( gchem_chlfile .NE. ' ' ) THEN
+       IF ( gchem_chlfile .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START CHL',myThid)
 # endif
         CALL EXF_GETFFIELD_START( useExfYearlyFields,
-     I                         'gchem', 'chl', chlperiod,
-     I                         chlstartdate1, chlstartdate2,
-     U                         chlStartTime, errCount,
-     I                         myThid )
+     I                   'gchem', 'chl', gchem_chlperiod,
+     I                   gchem_chlstartdate1, gchem_chlstartdate2,
+     U                   gchem_chlStartTime, errCount,
+     I                   myThid )
        ENDIF
        
        _END_MASTER( myThid )

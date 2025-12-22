@@ -1,0 +1,15 @@
+ simulation = { 'Tutorial Biogeo' };
+ nDims = [   3 ];
+ dimList = [
+   128,    1,  128,
+    64,    1,   64,
+    15,    1,   15
+ ];
+ dataprec = [ 'float64' ];
+ nrecords = [     5 ];
+ timeStepNumber = [    5184000 ];
+ /* modelTime = [  2.239488000000E+11 ];*/
+ nFlds = [    5 ];
+ fldList = {
+ 'pTr01   ' 'pTr02   ' 'pTr03   ' 'pTr04   ' 'pTr05   '
+ };

@@ -113,11 +113,11 @@ C
      &     gchem_apresPeriod, gchem_apresRepCycle, gchem_apresStartTime,
      &     gchem_apresStartDate1, gchem_apresStartDate2,
      &     gchem_apres_exfremo_intercept, gchem_apres_exfremo_slope,
-     &     gchem_apresMask, gchem_inscal_apres
+     &     gchem_apresMask, gchem_inscal_apres,
 C
      &     gchem_chlperiod, gchem_chlRepCycle, gchem_chlStartTime,
      &     gchem_chlstartdate1, gchem_chlstartdate2,
-     &     gchem_chl_exfremo_intercept, chl_exfremo_slope,
+     &     gchem_chl_exfremo_intercept, gchem_chl_exfremo_slope,
      &     gchem_chlMask, gchem_inscal_chl
 #  ifdef USE_EXF_INTERPOLATION
       NAMELIST /GCHEM_INTERP_PARAMS/
@@ -246,7 +246,7 @@ C- Open and read the data.gchem file
        gchem_3DSi_exfremo_intercept = 0.0 _d 0
        gchem_3DSi_exfremo_slope     = 0.0 _d 0
        gchem_3DSiMask               = 'c'
-       gchem_3Dinscal_Si            = 1. _d 0
+       gchem_inscal_3DSi            = 1. _d 0
 
        gchem_parPeriod             = 0.0 _d 0
        gchem_parRepCycle           = repeatPeriod
@@ -480,11 +480,12 @@ C     gchem_useEXF and useExfYearlyFields
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
+      ENDIF 
 C     useEXF and useExfYearlyFields
 #ifndef GCHEM_3D_SILICA
       IF ( gchem_3DSiFile .NE. ' ' ) THEN
         WRITE(msgBuf,'(2A)') 'GCHEM_READPARMS: The use of ',
-     &   'gchem_3DSiFile is not implemented unless GCHEM_3D_SILICA is defined'
+     &   'gchem_3DSiFile needs GCHEM_3D_SILICA to be defined'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF

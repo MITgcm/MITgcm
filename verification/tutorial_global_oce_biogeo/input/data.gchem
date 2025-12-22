@@ -7,5 +7,5 @@
   gchem_SiFile='sillev1.bin',
 #
   gchem_apco2_const = 278.0e-6,
-  gchem_apres_const = 1013.25e2,
+#  gchem_apres_const = 1013.25e2,
  &
