@@ -95,6 +95,7 @@ CADJ STORE apco2      = comlev1, key = ikey_dynamics, kind = isbyte
 # ifdef ALLOW_DIC
 CADJ STORE wind       = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE atmosP     = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE atmospCO2  = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE silicaSurf = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE fIce       = comlev1, key = ikey_dynamics, kind = isbyte
 cCADJ STORE inputFe    = comlev1, key = ikey_dynamics, kind = isbyte

@@ -5,23 +5,25 @@ CADJ STORE pH                 = tapelev3, key = ilev_3
 cCADJ STORE pCO2               = tapelev3, key = ilev_3
 cCADJ STORE fIce               = tapelev3, key = ilev_3
 cCADJ STORE silicaSurf         = tapelev3, key = ilev_3
-CADJ STORE atmosPCO2          = tapelev3, key = ilev_3
+cCADJ STORE atmosPCO2          = tapelev3, key = ilev_3
 
 cCADJ STORE gsm_s              = tapelev3, key = ilev_3
-CADJ STORE co2atmos           = tapelev3, key = ilev_3
-CADJ STORE total_atmos_carbon = tapelev3, key = ilev_3
+cCADJ STORE co2atmos           = tapelev3, key = ilev_3
+cCADJ STORE total_atmos_carbon = tapelev3, key = ilev_3
 
+# ifndef GCHEM_ALLOW_FFIELDS
 C common dic_load
 CADJ STORE dicwind0, dicwind1       = tapelev3, key = ilev_3
 CADJ STORE ice0, ice1               = tapelev3, key = ilev_3
 CADJ STORE atmosp0, atmosp1         = tapelev3, key = ilev_3
 CADJ STORE silicaSurf0, silicaSurf1 = tapelev3, key = ilev_3
-#ifdef ALLOW_FE
+#  ifdef ALLOW_FE
 CADJ STORE feinput0, feinput1       = tapelev3, key = ilev_3
-#endif
+#  endif
+# endif /* ndef GCHEM_ALLOW_FFIELDS */
 
-#ifdef ALLOW_COST
+# ifdef ALLOW_COST
 CADJ STORE totcost = tapelev3, key = ilev_3
-#endif
+# endif
 
 #endif /* ALLOW_DIC */

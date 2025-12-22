@@ -6,6 +6,6 @@
   gchem_iceFile='fice.bin',
   gchem_SiFile='sillev1.bin',
 #
-  gchem_apco2_const = 278e-6,
+  gchem_apco2_const = 278.0e-6,
   gchem_apres_const = 1013.25e2,
  &
