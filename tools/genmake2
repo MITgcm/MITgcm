@@ -1474,6 +1474,7 @@ AUTODIFF_PKG_USED=f
 AD_OPTFILE=
 TAPENADE=
 TAPENADECMD=tapenade
+TAPENADE_FLAGS=
 OPENAD=
 CAT_SRC_FOR_TAF=1
 DEP_TAF_FILE='Makefile_taf.dep'
@@ -3712,6 +3713,7 @@ rm -f $TMP.nonADF77srclist $TMP.nonADF90srclist
 
 cat >>$MAKEFILE <<EOF
 
+TAPARG = ${TAPARG} ${TAPENADE_FLAGS}
 TAPENADECMD = ${TAPENADECMD}
 
 TAPENADE_SUPPORT_F90_SRC_FILES = \
@@ -3748,11 +3750,11 @@ if test $CAT_SRC_FOR_TAF = 1 ; then
 
 cat >>$MAKEFILE <<EOF
 adj_tap_all.$FS: \$(AD_FILES) f95_test_mods.f90
-	\$(TAPENADECMD) ${TAPARG} -b -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
+	\$(TAPENADECMD) -b \$(TAPARG) \$(AD_FILES) f95_test_mods.f90
 	cat \$(AD_FILES_ADJ) > adj_tap_all.$FS 2> /dev/null || true
 
 tlm_tap_all.$FS: \$(AD_FILES) f95_test_mods.f90
-	\$(TAPENADECMD) ${TAPARG} -d -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
+	\$(TAPENADECMD) -d \$(TAPARG) \$(AD_FILES) f95_test_mods.f90
 	cat \$(AD_FILES_TLM) > tlm_tap_all.$FS 2> /dev/null || true
 
 \$(EXE_ADJ): \$(SPECIAL_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES) \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(OBJFILES) \$(EMBEDDED_FILES) adj_tap_all.$FS
@@ -3772,14 +3774,14 @@ else
 cat >>$MAKEFILE <<EOF
 adj_tap_all.$FS: \$(AD_FILES) f95_test_mods.f90
 	@-rm -f \$(AD_FILES_ADJ)
-	\$(TAPENADECMD) ${TAPARG} -b -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
+	\$(TAPENADECMD) -b \$(TAPARG) \$(AD_FILES) f95_test_mods.f90
 	ls -l the_main_loop_b.f
 	@$BASH\$(TOOLSDIR)/TAP_support/append_fwd_src _b $FS \$(AD_FILES)
 	touch adj_tap_all.$FS
 
 tlm_tap_all.$FS: \$(AD_FILES) f95_test_mods.f90
 	@-rm -f \$(AD_FILES_TLM)
-	\$(TAPENADECMD) ${TAPARG} -d -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
+	\$(TAPENADECMD) -d \$(TAPARG) \$(AD_FILES) f95_test_mods.f90
 	ls -l the_main_loop_d.f
 	@$BASH\$(TOOLSDIR)/TAP_support/append_fwd_src _d $FS \$(AD_FILES)
 	touch tlm_tap_all.$FS
