@@ -446,7 +446,7 @@ C     forcing load fields with pkg/exf tools
 # endif
      &     mytime, myiter, mythid )
 #ifdef EXF_SEAICE_FRACTION
-     C Otherwise get sea ice fraction from PKG/EXF
+C Otherwise get sea ice fraction from PKG/EXF
        ELSEIF ( areamaskfile .NE. ' ' ) THEN
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
