@@ -136,6 +136,15 @@ c    &  ' exceeds number of PTRACERS(_numInUse)=', PTRACERS_numInUse
         errCount = errCount + 1
       ENDIF
 
+#ifdef GCHEM_3D_SILICATE
+      IF ( gchem_useEXF .AND. gchem_3DSiFile .NE. ' ') THEN
+        WRITE(msgBuf,'(A)')
+     &       '3D Silicate forcing not yet implemented with gchem_useEXF'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+#endif /* GCHEM_3D_SILICATE */
+
       IF ( errCount.GE.1 ) THEN
         WRITE(msgBuf,'(A,I3,A)')
      &       'GCHEM_CHECK: detected', errCount,' fatal error(s)'
