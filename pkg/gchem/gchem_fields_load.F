@@ -121,9 +121,9 @@ C     data for the period ahead and the period behind myTime.
 #ifdef GCHEM_3D_SILICA
          IF ( gchem3DSiFile .NE. ' '  ) THEN
           CALL READ_REC_XYZ_RS( gchem3DSiFile,gchem3DSi0,intime0,
-      &        myIter,myThid )
+     &        myIter,myThid )
           CALL READ_REC_XYZ_RS( gchem3DSiFile,gchem3DSi1,intime1,
-      &        myIter,myThid )
+     &        myIter,myThid )
          ENDIF
 #endif
          IF ( gchem_iceFile .NE. ' ' ) THEN
