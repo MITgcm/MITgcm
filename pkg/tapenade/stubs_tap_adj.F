@@ -119,10 +119,10 @@
       END
 
       
-      SUBROUTINE STREAMICE_CG_SOLVE_D(cg_uin, cg_uinb, cg_vin, cg_vinb,
-     &                                cg_bu, cg_bub, cg_bv, cg_bvb, a_uu
-     &                                , a_uub, a_uv, a_uvb, a_vu, a_vub
-     &                                , a_vv, a_vvb, tolerance, iters,
+      SUBROUTINE STREAMICE_CG_SOLVE_D(cg_uin, cg_uind, cg_vin, cg_vind,
+     &                                cg_bu, cg_bud, cg_bv, cg_bvd, a_uu
+     &                                , a_uud, a_uv, a_uvd, a_vu, a_vud
+     &                                , a_vv, a_vvd, tolerance, iters,
      &                                maxiter, mythid)
       IMPLICIT NONE
 
@@ -143,15 +143,87 @@
      & A_vu (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
      & A_uv (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
      & A_vv (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1)
-      _RL cg_Uinb (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL cg_Vinb (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL cg_Bub (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL cg_Bvb (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL cg_Uind (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL cg_Vind (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL cg_Bud (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL cg_Bvd (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL
-     & A_uub (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
-     & A_vub (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
-     & A_uvb (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
-     & A_vvb (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1)
+     & A_uud (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
+     & A_vud (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
+     & A_uvd (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
+     & A_vvd (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1)
+      ! LOCAL VARIABLES
+      INTEGER i, j, bi, bj
+      INTEGER colx, coly
+      _RL deltaAu (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL deltaAv (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL deltaAuMdBu (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL deltaAvMdBv (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+
+      ! A x = b
+      ! delta A x + A delta x = delta b
+      ! A delta x = delta b - delta A x
+      ! delta x = A^{-1} (delta b - delta A x)
+
+      CALL STREAMICE_CG_SOLVE (cg_uin, cg_vin,
+     &                                cg_bu, cg_bv, 
+     &                                a_uu, a_uv, a_vu, a_vv, 
+     &                                tolerance, iters,
+     &                                maxiter, mythid)
+
+      _EXCH_XY_RL(cg_uin, myThid)
+      _EXCH_XY_RL(cg_vin, myThid)
+
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO j=1,sNy
+         DO i=1,sNx
+
+          deltaAu(i,j,bi,bj) = 0. _d 0
+          deltaAv(i,j,bi,bj) = 0. _d 0
+
+          DO colx=-1,1
+           DO coly=-1,1
+            deltaAu(i,j,bi,bj) = deltaAu(i,j,bi,bj) +
+     &         A_uud(i,j,bi,bj,colx,coly)*
+     &         cg_Uin(i+colx,j+coly,bi,bj)+
+     &         A_uvd(i,j,bi,bj,colx,coly)*
+     &         cg_Vin(i+colx,j+coly,bi,bj)
+
+            deltaAv(i,j,bi,bj) = deltaAv(i,j,bi,bj) +
+     &         A_vud(i,j,bi,bj,colx,coly)*
+     &         cg_Uin(i+colx,j+coly,bi,bj)+
+     &         A_vvd(i,j,bi,bj,colx,coly)*
+     &         cg_Vin(i+colx,j+coly,bi,bj)
+           ENDDO
+          ENDDO
+
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+
+      _EXCH_XY_RL(deltaAu, myThid)
+      _EXCH_XY_RL(deltaAv, myThid)
+
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO j=1-oly,sNy+oly
+         DO i=1-olx,sNx+olx
+          deltaAuMdBu(i,j,bi,bj) = cg_bud(i,j,bi,bj)-deltaAu(i,j,bi,bj)
+          deltaAvMdBv(i,j,bi,bj) = cg_bvd(i,j,bi,bj)-deltaAv(i,j,bi,bj)
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+
+      CALL STREAMICE_CG_SOLVE (cg_uind, cg_vind,
+     &                                deltaAuMdBu, deltaAvMdBv, 
+     &                                a_uu, a_uv, a_vu, a_vv,
+     &                                tolerance, iters,
+     &                                maxiter, mythid) 
+
       END
 
 

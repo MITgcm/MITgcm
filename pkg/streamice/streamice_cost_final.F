@@ -108,7 +108,7 @@ C     == Local variables
      &      R0, 0, myThid )
       print *, 'GOT HERE read topo file'
 
-      _EXCH_XY_RL (R0, myThid)
+      _EXCH_XY_RL(R0,myThid)
 
 C--   Calculate mask for tracer cells  (0 => land, 1 => water)
 c       k=1

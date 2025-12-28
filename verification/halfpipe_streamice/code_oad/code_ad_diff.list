@@ -1,2 +1,4 @@
 master_cpu_io.f
 streamice_init_fixed.f
+streamice_get_vel_fp_err.f
+streamice_get_vel_resid_err.f
