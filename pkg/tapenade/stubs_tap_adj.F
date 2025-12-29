@@ -161,6 +161,7 @@
       _RL deltaAuMdBu (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL deltaAvMdBv (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
+#ifdef ALLOW_STREAMICE
 
       ! A x = b
       ! delta A x + A delta x = delta b
