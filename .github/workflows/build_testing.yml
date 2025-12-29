@@ -54,7 +54,7 @@ jobs:
      matrix:
       include:
         - exp: "halfpipe_streamice"
-        - exp: "global_oce_latlon"
+        - exp: "isomip"
 
    continue-on-error: true
 
