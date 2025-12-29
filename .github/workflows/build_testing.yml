@@ -53,6 +53,7 @@ jobs:
    strategy:
      matrix:
       include:
+        - exp: "halfpipe_streamice"
         - exp: "global_oce_latlon"
 
    continue-on-error: true
