@@ -153,6 +153,7 @@
      & A_uvd (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
      & A_vvd (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1)
       ! LOCAL VARIABLES
+#ifdef ALLOW_STREAMICE
       INTEGER i, j, bi, bj
       INTEGER colx, coly
       _RL deltaAu (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -224,6 +225,7 @@
      &                                tolerance, iters,
      &                                maxiter, mythid) 
 
+#endif
       END
 
 
