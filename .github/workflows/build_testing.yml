@@ -65,8 +65,8 @@ jobs:
 
      - name: Get a docker image and set it running
        run: |
-         docker pull registry.gitlab.inria.fr/tapenade/tapenade
          docker run -i -t -v `pwd`:/MITgcm -d --name tapenade-testing --ulimit stack=-1:-1 --memory=5g --rm registry.gitlab.inria.fr/tapenade/tapenade /bin/bash
+         docker pull mitgcm/tapenade-ubuntu:latest
 
      - name: Run testreport
        env:
