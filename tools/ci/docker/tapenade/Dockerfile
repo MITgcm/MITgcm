@@ -16,4 +16,3 @@ RUN tar -xzvf tapenade-e89660a5921a1ccf68b4afc331b3b0910878a179.tar.gz
 RUN cd tapenade-e89660a5921a1ccf68b4afc331b3b0910878a179; ./gradlew
 
 ENV PATH=$PATH:/tapenade-e89660a5921a1ccf68b4afc331b3b0910878a179/bin
-ENV _JAVA_OPTIONS=-Xmx1g
