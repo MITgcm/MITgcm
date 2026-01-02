@@ -72,7 +72,7 @@ jobs:
        env:
         MITGCM_EXP: ${{ matrix.exp }}
         MITGCM_DECMD: "docker exec -i tapenade-testing bash -lc"
-        MITGCM_TROPT: "-tap -ad -devel -of=../tools/build_options/linux_amd64_gfortran -match 10"
+        MITGCM_TROPT: "-tap -adm -ncad -of=../tools/build_options/linux_amd64_gfortran -match 14"
         MITGCM_INPUT_DIR_PAT: '/input_tap.*'
        run: |
          . tools/ci/runtr.sh         
