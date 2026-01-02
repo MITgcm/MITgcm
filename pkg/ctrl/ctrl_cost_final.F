@@ -58,6 +58,7 @@ C     !LOCAL VARIABLES:
       INTEGER ifc
       CHARACTER*22 cfname
       INTEGER IL
+      CHARACTER*(MAX_LEN_FNAM) xx_fname_loc
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
@@ -121,15 +122,17 @@ C     Initialise cost function variables zo zero
        ENDDO
       ENDDO
 
+c#ifndef ALLOW_OPENAD
 # ifdef ALLOW_GENTIM2D_CONTROL
       DO num_var=1,maxCtrlTim2D
        _GLOBAL_SUM_RL(f_gentim2d(num_var), myThid )
        _GLOBAL_SUM_RL(no_gentim2d(num_var), myThid )
        IF (no_gentim2d(num_var).GT.0. _d 0) THEN
-        IL  = ILNBLNK( xx_gentim2d_file(num_var) )
+        xx_fname_loc = xx_gentim2d_file(num_var)
+        IL  = ILNBLNK( xx_fname_loc )
         WRITE(msgBuf,'(A,D22.15,I2.0,1X,3A)')
      &     ' --> f_gentim2d =',f_gentim2d(num_var),
-     &      num_var,'(',xx_gentim2d_file(num_var)(1:IL),')'
+     &      num_var,'(',xx_fname_loc(1:IL),')'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
        ENDIF
@@ -140,10 +143,11 @@ C     Initialise cost function variables zo zero
        _GLOBAL_SUM_RL(f_genarr2d(num_var), myThid )
        _GLOBAL_SUM_RL(no_genarr2d(num_var), myThid )
        IF (no_genarr2d(num_var).GT.0. _d 0) THEN
-        IL  = ILNBLNK( xx_genarr2d_file(num_var) )
+        xx_fname_loc = xx_genarr2d_file(num_var)
+        IL  = ILNBLNK( xx_fname_loc )
         WRITE(msgBuf,'(A,D22.15,I2.0,1X,3A)')
      &     ' --> f_genarr2d =',f_genarr2d(num_var),
-     &      num_var,'(',xx_genarr2d_file(num_var)(1:IL),')'
+     &      num_var,'(',xx_fname_loc(1:IL),')'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
        ENDIF
@@ -154,10 +158,11 @@ C     Initialise cost function variables zo zero
        _GLOBAL_SUM_RL(f_genarr3d(num_var), myThid )
        _GLOBAL_SUM_RL(no_genarr3d(num_var), myThid )
        IF (no_genarr3d(num_var).GT.0. _d 0) THEN
-        IL  = ILNBLNK( xx_genarr3d_file(num_var) )
+        xx_fname_loc = xx_genarr3d_file(num_var)
+        IL  = ILNBLNK( xx_fname_loc )
         WRITE(msgBuf,'(A,D22.15,I2.0,1X,3A)')
      &     ' --> f_genarr3d =',f_genarr3d(num_var),
-     &      num_var,'(',xx_genarr3d_file(num_var)(1:IL),')'
+     &      num_var,'(',xx_fname_loc(1:IL),')'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
        ENDIF
@@ -178,13 +183,12 @@ C--   Each process has calculated the global part for itself.
 # ifdef ALLOW_GENTIM2D_CONTROL
        DO num_var=1,maxCtrlTim2D
         IF (no_gentim2d(num_var).GT.0. _d 0) THEN
-         IL  = ILNBLNK( xx_gentim2d_file(num_var) )
+         xx_fname_loc = xx_gentim2d_file(num_var)
+         IL  = ILNBLNK( xx_fname_loc )
          IL  = max (IL,15)
          WRITE(ifc,'(2A,i2.0,A,2D22.15)')
-     &        xx_gentim2d_file(num_var)(1:IL),
-     &        ' (gentim2d ', num_var, ') = ',
-     &        f_gentim2d(num_var),
-     &        no_gentim2d(num_var)
+     &        xx_fname_loc(1:IL), ' (gentim2d ', num_var, ') = ',
+     &        f_gentim2d(num_var), no_gentim2d(num_var)
         ENDIF
        ENDDO
 # endif
@@ -192,13 +196,12 @@ C--   Each process has calculated the global part for itself.
 # ifdef ALLOW_GENARR2D_CONTROL
        DO num_var=1,maxCtrlArr2D
         IF (no_genarr2d(num_var).GT.0. _d 0) THEN
-         IL  = ILNBLNK( xx_genarr2d_file(num_var) )
+         xx_fname_loc = xx_genarr2d_file(num_var)
+         IL  = ILNBLNK( xx_fname_loc )
          IL  = max (IL,15)
          WRITE(ifc,'(2A,i2.0,A,2D22.15)')
-     &        xx_genarr2d_file(num_var)(1:IL),
-     &        ' (genarr2d ', num_var, ') = ',
-     &        f_genarr2d(num_var),
-     &        no_genarr2d(num_var)
+     &        xx_fname_loc(1:IL), ' (genarr2d ', num_var, ') = ',
+     &        f_genarr2d(num_var), no_genarr2d(num_var)
         ENDIF
        ENDDO
 # endif
@@ -206,13 +209,12 @@ C--   Each process has calculated the global part for itself.
 # ifdef ALLOW_GENARR3D_CONTROL
        DO num_var=1,maxCtrlArr3D
         IF (no_genarr3d(num_var).GT.0. _d 0) THEN
-         IL  = ILNBLNK( xx_genarr3d_file(num_var) )
-         IL  = max (IL,15)
+         xx_fname_loc = xx_genarr3d_file(num_var)
+         IL  = ILNBLNK( xx_fname_loc )
+         IL  = MAX(IL,15)
          WRITE(ifc,'(2A,i2.0,A,2D22.15)')
-     &        xx_genarr3d_file(num_var)(1:IL),
-     &        ' (genarr3d ', num_var, ') = ',
-     &        f_genarr3d(num_var),
-     &        no_genarr3d(num_var)
+     &        xx_fname_loc(1:IL), ' (genarr3d ', num_var, ') = ',
+     &        f_genarr3d(num_var), no_genarr3d(num_var)
         ENDIF
        ENDDO
 # endif
