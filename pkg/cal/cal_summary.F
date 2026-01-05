@@ -23,9 +23,7 @@ C     ==================================================================
       IMPLICIT NONE
 
 C     == global variables ==
-#include "SIZE.h"
 #include "EEPARAMS.h"
-#include "PARAMS.h"
 #include "cal.h"
 
 C     == routine arguments ==
@@ -37,7 +35,6 @@ C     == local variables ==
       INTEGER numcaldays
       INTEGER numcalmonths
       INTEGER numcalyears
-      INTEGER IL
 
 C     == Functions ==
       INTEGER  cal_IntYears
@@ -46,8 +43,6 @@ C     == Functions ==
       EXTERNAL cal_IntMonths
       INTEGER  cal_IntDays
       EXTERNAL cal_IntDays
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
 
 C     == end of interface ==
 
@@ -149,23 +144,6 @@ c    &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
-
-C     some consistency check with a soft warning to STDOUT
-      IF ( .NOT.useEXF .AND. (
-     &     ( usingGregorianCalendar
-     &       .AND. externForcingCycle.NE.31557600. )
-     &     .OR.
-     &     ( .NOT. usingGregorianCalendar
-     &       .AND. externForcingCycle .NE. nDaysNoLeap*86400. _d 0 )
-     &     ) ) THEN
-       IL = ILNBLNK(theCalendar)
-       WRITE(msgBuf,'(3A,F12.1)')
-     &      '** Warning ** CAL_SUMMARY: "', theCalendar(1:IL),
-     &      '"-calendar is not consistent with externForcingCycle = ',
-     &      externForcingCycle
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-      ENDIF
 
       _END_MASTER(myThid)
 

@@ -163,16 +163,26 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C     some consistency checks with a soft warning
       errCount = 0
-      IF ( .NOT.useCAL .AND.
-     &     gchem_secondsPeryear .NE. externForcingCycle ) THEN
-       WRITE(msgBuf,'(2(A,F12.1))')
-     &      '** Warning ** GCHEM_INIT_FIXED: gchem_secondsPeryear = ',
-     &      gchem_secondsPerYear,
-     &      ' is not consistent with externForcingCycle = ',
-     &      externForcingCycle
-       errCount = errCount + 1
+      IF ( periodicExternalForcing ) THEN
+       IF ( gchem_secondsPeryear .NE. externForcingCycle ) THEN
+        WRITE(msgBuf,'(2(A,F12.1))')
+     &       '** Warning ** GCHEM_INIT_FIXED: gchem_secondsPeryear = ',
+     &       gchem_secondsPerYear,
+     &       ' is not consistent with externForcingCycle = ',
+     &       externForcingCycle
+        errCount = errCount + 1
+       ENDIF
+       IF ( gchem_secondsPeryear .NE. gchem_ForcingCycle ) THEN
+        WRITE(msgBuf,'(2(A,F12.1))')
+     &       '** Warning ** GCHEM_INIT_FIXED: gchem_secondsPeryear = ',
+     &       gchem_secondsPerYear,
+     &       ' is not consistent with gchem_ForcingCycle = ',
+     &       gchem_ForcingCycle
+        errCount = errCount + 1
+       ENDIF
+      ENDIF
 #ifdef ALLOW_CAL
-      ELSE
+      IF ( useCAL ) THEN
        IF ( usingGregorianCalendar .AND.
      &      gchem_secondsPeryear .NE. 365.25 _d 0*86400. _d 0 ) THEN
         errCount = errCount + 1
@@ -188,8 +198,8 @@ C     some consistency checks with a soft warning
      &       ' is not consistent with theCalendar = "',
      &       theCalendar(1:IL),'"'
        ENDIF
-#endif
       ENDIF
+#endif
       IF ( errCount .GT. 0 ) THEN
        CALL PRINT_MESSAGE( msgBuf, ioUnit,
      &                     SQUEEZE_RIGHT, myThid )

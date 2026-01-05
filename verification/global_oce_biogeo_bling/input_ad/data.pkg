@@ -6,7 +6,6 @@
  useECCO        = .TRUE.,
 # this is the default if useECCO=T or usePROFILES = T and ALLOW_CAL is defined
  useCAL         = .TRUE.,
-# this is the default if ALLOW_CTRL is defined
  useGrdchk      = .TRUE.,
  usePROFILES    = .TRUE.,
  useDIAGNOSTICS = .TRUE.,
