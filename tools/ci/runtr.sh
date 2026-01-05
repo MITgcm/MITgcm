@@ -20,4 +20,4 @@ if [ -z "${MITGCM_INPUT_DIR_PAT}" ]; then
  export MITGCM_INPUT_DIR_PAT='/input.*'
 fi
 
-${MITGCM_DECMD} "cd /MITgcm/verification; ./testreport -pass -t ${MITGCM_EXP} ${MITGCM_TROPT}"
+${MITGCM_DECMD} "cd /MITgcm/verification; ./testreport -pass -t ${MITGCM_EXP} ${MITGCM_TROPT}; grep grad-res output_tap_tlm.txt"
