@@ -163,24 +163,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C     some consistency checks with a soft warning
       errCount = 0
-      IF ( periodicExternalForcing ) THEN
-       IF ( gchem_secondsPeryear .NE. externForcingCycle ) THEN
-        WRITE(msgBuf,'(2(A,F12.1))')
-     &       '** Warning ** GCHEM_INIT_FIXED: gchem_secondsPeryear = ',
-     &       gchem_secondsPerYear,
-     &       ' is not consistent with externForcingCycle = ',
-     &       externForcingCycle
-        errCount = errCount + 1
-       ENDIF
-       IF ( gchem_secondsPeryear .NE. gchem_ForcingCycle ) THEN
-        WRITE(msgBuf,'(2(A,F12.1))')
-     &       '** Warning ** GCHEM_INIT_FIXED: gchem_secondsPeryear = ',
-     &       gchem_secondsPerYear,
-     &       ' is not consistent with gchem_ForcingCycle = ',
-     &       gchem_ForcingCycle
-        errCount = errCount + 1
-       ENDIF
-      ENDIF
 #ifdef ALLOW_CAL
       IF ( useCAL ) THEN
        IF ( usingGregorianCalendar .AND.
@@ -193,16 +175,37 @@ C     some consistency checks with a soft warning
        IF ( errCount .GT. 0 ) THEN
         IL = ILNBLNK(theCalendar)
         WRITE(msgBuf,'(A,F12.1,3A)')
-     &       '** Warning ** GCHEM_INIT_FIXED: gchem_secondsPeryear = ',
+     &       '** Warning ** GCHEM_CHECK: gchem_secondsPeryear = ',
      &       gchem_secondsPerYear,
      &       ' is not consistent with theCalendar = "',
      &       theCalendar(1:IL),'"'
+        CALL PRINT_MESSAGE( msgBuf, ioUnit,
+     &                      SQUEEZE_RIGHT, myThid )
        ENDIF
       ENDIF
 #endif
-      IF ( errCount .GT. 0 ) THEN
-       CALL PRINT_MESSAGE( msgBuf, ioUnit,
-     &                     SQUEEZE_RIGHT, myThid )
+      IF ( periodicExternalForcing ) THEN
+       IF ( gchem_secondsPeryear .NE. externForcingCycle ) THEN
+        WRITE(msgBuf,'(2(A,F12.1))')
+     &       '** Warning ** GCHEM_CHECK: gchem_secondsPeryear = ',
+     &       gchem_secondsPerYear,
+     &       ' is not consistent with externForcingCycle = ',
+     &       externForcingCycle
+c       errCount = errCount + 1
+        CALL PRINT_MESSAGE( msgBuf, ioUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+       ENDIF
+       IF ( gchem_ForcingCycle .NE. externForcingCycle .AND.
+     &      gchem_secondsPeryear .NE. gchem_ForcingCycle ) THEN
+        WRITE(msgBuf,'(2(A,F12.1))')
+     &       '** Warning ** GCHEM_CHECK: gchem_secondsPeryear = ',
+     &       gchem_secondsPerYear,
+     &       ' is not consistent with gchem_ForcingCycle = ',
+     &       gchem_ForcingCycle
+c       errCount = errCount + 1
+        CALL PRINT_MESSAGE( msgBuf, ioUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+       ENDIF
       ENDIF
 
       _END_MASTER(myThid)
