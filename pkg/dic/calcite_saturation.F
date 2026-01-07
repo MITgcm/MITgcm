@@ -20,6 +20,7 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
+#include "GCHEM_VARS.h"
 #include "DIC_VARS.h"
 
 C !INPUT PARAMETERS: ===================================================
@@ -81,29 +82,33 @@ c      ENDIF
             pCO2local(i,j) = 0. _d 0
          ENDDO
         ENDDO
-#ifdef CARBONCHEM_SOLVESAPHE
+#ifndef ALLOW_AUTODIFF
+        IF ( selectModernCoeffs.GT.0 ) THEN
 #ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL( 'DIC_COEFFS_DEEP',myThid )
+         IF (debugMode) CALL DEBUG_CALL( 'GCHEM_COEFFS_DEEP',myThid )
 #endif
 C Calculate carbon coefficients
-        CALL DIC_COEFFS_SURF(
+         CALL GCHEM_COEFFS_SURF(
      I                       locTemp, locSalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
 
 C Now correct the coefficients for pressure dependence
-        CALL DIC_COEFFS_DEEP(
+         CALL GCHEM_COEFFS_DEEP(
      I                       locTemp, locSalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,
      I                       k,myThid)
-#else
+        ELSE
+#endif /* ALLOW_AUTODIFF */
 #ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL(
-     &      'CARBON_COEFFS_PRESSURE_DEP',myThid)
+         IF (debugMode) CALL DEBUG_CALL(
+     &      'GCHEM_CARBON_COEFFS',myThid)
 #endif
-        CALL CARBON_COEFFS_PRESSURE_DEP(
+         CALL GCHEM_CARBON_COEFFS(
      I                       locTemp, locSalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,
      I                       k,myThid)
+#ifndef ALLOW_AUTODIFF
+        ENDIF
 #endif
 
         debugPrt = debugMode
@@ -111,11 +116,15 @@ C Now correct the coefficients for pressure dependence
          DO i=imin,imax
 
           IF ( maskC(i,j,k,bi,bj).EQ.oneRS ) THEN
-#ifdef CARBONCHEM_SOLVESAPHE
-C calcium concentration already calculated in S/R DIC_COEFFS_SURF
-           calcium = cat(i,j,bi,bj)
-#else
-           calcium = 1.028 _d -2*salt(i,j,k,bi,bj)/35. _d 0
+#ifndef ALLOW_AUTODIFF
+           IF ( selectModernCoeffs.GT.0 ) THEN
+C calcium concentration already calculated in S/R GCHEM_COEFFS_SURF
+            calcium = cat(i,j,bi,bj)
+           ELSE
+#endif
+            calcium = 1.028 _d -2*salt(i,j,k,bi,bj)/35. _d 0
+#ifndef ALLOW_AUTODIFF
+           ENDIF
 #endif
 
 C SilicaDeep filled with constant value of 0.03 mol/m3 unless
@@ -125,40 +134,42 @@ C     DIC_deepSilicaFile provided.
            diclocal = PTR_DIC(i,j,k)
            alklocal = PTR_ALK(i,j,k)
 
-#ifdef CARBONCHEM_SOLVESAPHE
+#ifndef ALLOW_AUTODIFF
            IF ( selectPHsolver.GT.0 ) THEN
 C Use Munhoven (2013) Solvesaphe routine to calculate pH and pCO2
             IF ( doIni_pH ) THEN
 #ifdef ALLOW_DEBUG
-             IF (debugPrt) CALL DEBUG_CALL('AHINI_FOR_AT',myThid)
+             IF (debugPrt) CALL DEBUG_CALL('GCHEM_AHINI_FOR_AT',myThid)
 #endif
-C call AHINI_FOR_AT to get better initial guess of pH
-             CALL AHINI_FOR_AT(alklocal*permil,
+C call GCHEM_AHINI_FOR_AT to get better initial guess of pH
+             CALL GCHEM_AHINI_FOR_AT(alklocal*permil,
      I              diclocal*permil,
      I              bt(i,j,bi,bj),
      O              pH3d(i,j,k,bi,bj),
      I              i,j,k,bi,bj,myIter,myThid )
             ENDIF /* 3d pH is not loaded */
 #ifdef ALLOW_DEBUG
-            IF (debugPrt) CALL DEBUG_CALL('CALC_PCO2_SOLVESAPHE',myThid)
+            IF (debugPrt)
+     &           CALL DEBUG_CALL('GCHEM_CALC_PCO2_SOLVESAPHE',myThid)
 #endif
-            CALL CALC_PCO2_SOLVESAPHE(
+            CALL GCHEM_CALC_PCO2_SOLVESAPHE(
      I          locTemp(i,j), locSalt(i,j),
      I          diclocal, po4local,
-     I          sitlocal, alklocal,
+     I          sitlocal, alklocal, permil,
      U          pH3d(i,j,k,bi,bj), pCO2local(i,j), carbonate(i,j),
      I          i,j,k,bi,bj, debugPrt,myIter,myThid )
 
 C- convert carbonate to mol kg^-1-SW for calculation of saturation state
             carbonate(i,j) = carbonate(i,j)*permil
            ELSE
+#endif /* ALLOW_AUTODIFF */
 C Use the original Follows et al. (2006) solver
-#endif /* CARBONCHEM_SOLVESAPHE */
 #ifdef ALLOW_DEBUG
-            IF (debugPrt) CALL DEBUG_CALL('CALC_PCO2_APPROX',myThid)
+            IF (debugPrt)
+     &           CALL DEBUG_CALL('GCHEM_CALC_PCO2_APPROX',myThid)
 #endif
             DO CO3iter = 1, doIterCO3
-             CALL CALC_PCO2_APPROX(
+             CALL GCHEM_CALC_PCO2_APPROX(
      I          locTemp(i,j), locSalt(i,j),
      I          diclocal, po4local,
      I          sitlocal, alklocal,
@@ -168,14 +179,13 @@ C Use the original Follows et al. (2006) solver
      I          aksi(i,j,bi,bj),akf(i,j,bi,bj),
      I          ak0(i,j,bi,bj), fugf(i,j,bi,bj), ff(i,j,bi,bj),
      I          bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
+     I          permil,
      U          pH3d(i,j,k,bi,bj), pCO2local(i,j), carbonate(i,j),
      I          i,j,k,bi,bj,myIter,myThid )
             ENDDO
-
-#ifdef CARBONCHEM_SOLVESAPHE
+#ifndef ALLOW_AUTODIFF
            ENDIF
-#endif /* CARBONCHEM_SOLVESAPHE */
-
+#endif
            omegaC(i,j,k,bi,bj) = calcium * carbonate(i,j)
      &                         / Ksp_TP_Calc(i,j,bi,bj)
            debugPrt = .FALSE.

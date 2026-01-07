@@ -20,6 +20,7 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "GRID.h"
 #include "FFIELDS.h"
+#include "GCHEM_VARS.h"
 #include "DIC_VARS.h"
 
 C !INPUT PARAMETERS: ===================================================

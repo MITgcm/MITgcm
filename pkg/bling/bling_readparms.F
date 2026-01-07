@@ -38,51 +38,18 @@ C     iUnit     :: Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER errCount
       INTEGER iUnit
-
-C ==========================================================
-C   Abiotic parameters
-C  selectBTconst :: estimates borate concentration from salinity
-C     selectBTconst=1 for the default formulation of UppstrÃ¶1974) i.e.
-C     the same as S/R CARBON_COEFFS
-C     selectBTconst=2 for the new formulation from Lee et al (2010)
-C  selectFTconst :: estimates fluoride concentration from salinity
-C     selectFTconst=1 for the default formulation of Riley (1965) i.e.
-C     the same as S/R CARBON_COEFFS
-C     selectFTconst=2 for the new formulation from Culkin (1965)
-C  selectHFconst :: sets the first dissociation constant for hydrogen
-C  fluoride:
-C     selectHFconst=1 for the default  Dickson and Riley (1979) i.e. the
-C     same as S/R CARBON_COEFFS
-C     selectHFconst=2 for the formulation of Perez and Fraga (1987)
-C  selectK1K2const :: sets the first and second dissociation constants
-C  of carbonic acid:
-C     selectK1K2const=1 for the default formulation of Millero (1995)
-C     with data from Mehrbach et al. (1973),
-C          i.e. the same as S/R CARBON_COEFFS
-C     selectK1K2const=2 for the formulation of Roy et al. (1993)
-C     selectK1K2const=3 for the "combination" formulation of Millero
-C     (1995)
-C     selectK1K2const=4 for the formulation of Luecker et al. (2000)
-C     selectK1K2const=5 for the formulation of Millero (2010, Mar. Fresh
-C     Wat. Res.)
-C     selectK1K2const=6 for the formulation of Waters, Millero, Woosley
-C     (2014, Mar. Chem.)
-C  selectPHsolver  :: sets the pH solver to use
-C     selectPHsolver=0 for Follows et al., (2006)
-C     selectPHsolver=1 for Munhoven (2013) solvesaphe general
-C     selectPHsolver=2 for Munhoven (2013) solvesaphe sec
-C     selectPHsolver=3 for Munhoven (2013) solvesaphe fast
-C ==========================================================
+C     retired parameters
+      INTEGER nRetired
+      INTEGER selectBTconst, selectFTconst, selectHFconst
+      INTEGER selectK1K2const, selectPHsolver
 
       NAMELIST /ABIOTIC_PARMS/
      &                      permil,
      &                      Pa2Atm,
-     &                      epsln
-#ifdef CARBONCHEM_SOLVESAPHE
-     & ,selectBTconst,selectFTconst,
+     &                      epsln,
+     &  selectBTconst,selectFTconst,
      &  selectHFconst,selectK1K2const,
      &  selectPHsolver
-#endif
 
 C ==========================================================
 C   BLING parameters
@@ -313,13 +280,6 @@ C     Default values
       permil               = 1. _d 0 / 1024.5 _d 0
       Pa2Atm               = 1.01325 _d 5
       epsln                = 1. _d -30
-#ifdef CARBONCHEM_SOLVESAPHE
-       selectBTconst   = 1
-       selectFTconst   = 1
-       selectHFconst   = 1
-       selectK1K2const = 1
-       selectPHsolver  = 0
-#endif
 
       CtoN                 = 6.75 _d 0
       CtoP                 = 106. _d 0
@@ -468,6 +428,13 @@ C     model grid cell-center position (leading to trivial interpolation)
       apco2_interpMethod = 1
 #endif /* USE_EXF_INTERPOLATION */
 #endif /* ALLOW_EXF */
+C     retired parameters (moved to pkg/gchem/gchem_readparms.F)
+      nRetired = 0
+      selectBTconst   = UNSET_I
+      selectFTconst   = UNSET_I
+      selectHFconst   = UNSET_I
+      selectK1K2const = UNSET_I
+      selectPHsolver  = UNSET_I
 
 C     default periodic forcing to same as for physics
       bling_forcingPeriod = externForcingPeriod
@@ -503,121 +470,74 @@ C--   Close the open data file
       CLOSE(iUnit,STATUS='DELETE')
 #endif /* SINGLE_DISK_IO */
 
-      iUnit = standardMessageUnit
-C Record the solver to calculate pH and evaluate surface ocean pCO2
-#ifdef CARBONCHEM_SOLVESAPHE
-      IF ( selectPHsolver.GT.0 ) THEN
-         WRITE(msgBuf,'(A)')
-     &  'Using Munhoven (2013) Solvesaphe for pH/pCO2'
-         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
-      ELSEIF ( selectPHsolver.EQ.0 ) THEN
-         WRITE(msgBuf,'(A)')
-     &  'Using Follows et al. (2006) for pH/pCO2'
-         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
-      ENDIF
-#endif
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C-    derive other parameters:
 
-C Record which carbonate coefficients are used and which pH/pCO2 solver
-#ifdef CARBONCHEM_SOLVESAPHE
-      WRITE(msgBuf,'(A)')
-     &  'Using Munhoven (2013) Solvesaphe carbon coefficients'
-      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
-C Munhoven (2013)'s "Solvesaphe" coefficients have several options:
-      IF ( selectK1K2const.EQ.1 ) THEN
-         WRITE(msgBuf,'(A)')
-     &  'Using Millero (1995)/Mehrbach K1 and K2 coefficients'
-         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
-      ELSEIF ( selectK1K2const.EQ.2 ) THEN
-         WRITE(msgBuf,'(A)')
-     &  'Using Roy et al. (1993) K1 and K2 coefficients'
-         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
-      ELSEIF ( selectK1K2const.EQ.3 ) THEN
-         WRITE(msgBuf,'(A)')
-     &  'Using Millero (1995) "consensus" K1 and K2 coefficients'
-         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
-      ELSEIF ( selectK1K2const.EQ.4 ) THEN
-         WRITE(msgBuf,'(A)')
-     &  'Using Luecker et al. (2000) K1 and K2 coefficients'
-         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
-      ELSEIF ( selectK1K2const.EQ.5 ) THEN
-         WRITE(msgBuf,'(A)')
-     &  'Using Millero et al. (2010) K1 and K2 coefficients'
-         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
-      ELSEIF ( selectK1K2const.EQ.6 ) THEN
-         WRITE(msgBuf,'(A)')
-     &  'Using Waters et al. (2014) K1 and K2 coefficients'
-         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+      iUnit = standardMessageUnit
+
+C     retired parameters
+      IF ( selectBTconst    .NE. UNSET_I ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)') 'S/R BLING_READPARMS: "selectBTconst" ',
+     &      'is no longer allowed in file "data.dic"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &  'S/R BLING_READPARMS: use "data.gchem" instead.'
+       CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
-      IF ( selectHFconst.EQ.1 ) THEN
-         WRITE(msgBuf,'(A)')
-     &  'Using Dickson and Riley (1979) KF coefficient'
-         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
-      ELSEIF ( selectHFconst.EQ.2 ) THEN
-         WRITE(msgBuf,'(A)')
-     &  'Using Perez and Fraga (1987) KF coefficient'
-         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+      IF ( selectFTconst   .NE. UNSET_I ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)') 'S/R BLING_READPARMS: "selectFTconst" ',
+     &      'is no longer allowed in file "data.dic"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &  'S/R BLING_READPARMS: use "data.gchem" instead.'
+       CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
-      IF ( selectBTconst.EQ.1 ) THEN
-         WRITE(msgBuf,'(A)')
-     & 'Using Uppstrom (1974) BT estimation from salinity'
-         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
-      ELSEIF ( selectBTconst.EQ.2 ) THEN
-         WRITE(msgBuf,'(A)')
-     &  'Using Lee et al (2010) BT estimation from salinity'
-         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+      IF ( selectHFconst   .NE. UNSET_I ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)') 'S/R BLING_READPARMS: "selectHFconst" ',
+     &      'is no longer allowed in file "data.dic"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &  'S/R BLING_READPARMS: use "data.gchem" instead.'
+       CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
-      IF ( selectFTconst.EQ.1 ) THEN
-         WRITE(msgBuf,'(A)')
-     &  'Using Riley (1965) FT estimation from salinity'
-         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
-      ELSEIF ( selectBTconst.EQ.2 ) THEN
-         WRITE(msgBuf,'(A)')
-     &  'Using Culkin (1965) FT estimation from salinity'
-         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+      IF ( selectK1K2const .NE. UNSET_I ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)') 'S/RF BLING_READPARMS: "selectK1K2const" ',
+     &      'is no longer allowed in file "data.dic"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &  'S/R BLING_READPARMS: use "data.gchem" instead.'
+       CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
-#else
-C OCMIP2 Coefficients from S/R CARBON_COEFFS in CARBON_CHEM.F
-      WRITE(msgBuf,'(A)')
-     &  'Using Millero (1995)/Mehrbach K1 and K2 coefficients'
-      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
-      WRITE(msgBuf,'(A)')
-     &  'Using Dickson and Riley (1979) KF coefficient'
-      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
-      WRITE(msgBuf,'(A)')
-     &  'Using Uppstrom (1974) BT estimation from salinity'
-      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
-      WRITE(msgBuf,'(A)')
-     &  'Using Riley (1965) FT estimation from salinity'
-      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
-#endif
+      IF ( selectPHsolver  .NE. UNSET_I ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)') 'S/R BLING_READPARMS: "selectPHsolver" ',
+     &      'is no longer allowed in file "data.dic"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &  'S/R BLING_READPARMS: use "data.gchem" instead.'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+
+      IF ( nRetired.GE.1 ) THEN
+        WRITE(msgBuf,'(A,I3,A)')
+     &   'BLING_READPARMS: detected', nRetired,' retired parameter(s)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
 
       IF ( errCount.GE.1 ) THEN
-       WRITE(msgBuf,'(A,I3,A)')
-     &     'BLING_READPARMS: detected', errCount,' fatal error(s)'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       CALL ALL_PROC_DIE( 0 )
-       STOP 'ABNORMAL END: S/R BLING_READPARMS'
+        WRITE(msgBuf,'(A,I3,A)')
+     &       'BLING_READPARMS: detected', errCount,' fatal error(s)'
+        CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
 
-#ifdef CARBONCHEM_SOLVESAPHE
-      IF ( selectHFconst.GT.2 .OR. selectBTconst.GT.2
-     & .OR. selectFTconst.GT.2 ) THEN
-        WRITE(msgBuf,'(A)')
-     &    'BLING_READPARMS: selectHF, selectBT or selectFT > 2'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R BLING_READPARMS: solvesaphe_const error'
-      ELSEIF ( selectK1K2const.GT.6 ) THEN
-        WRITE(msgBuf,'(A)')
-     &    'BLING_READPARMS: selectK1K2const > 6 '
-        CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R BLING_READPARMS: solvesaphe_const error'
-      ELSEIF ( selectPHsolver.GT.3 ) THEN
-        WRITE(msgBuf,'(A)')
-     &    'BLING_READPARMS: selectPHsolver > 3 '
-        CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R BLING_READPARMS: select pH solver error'
+      IF ( nRetired .GE. 1 .OR. errCount.GE.1 ) THEN
+        CALL ALL_PROC_DIE( 0 )
+        STOP 'ABNORMAL END: S/R BLING_READPARMS'
       ENDIF
-#endif
 
       _END_MASTER(myThid)
 

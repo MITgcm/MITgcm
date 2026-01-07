@@ -26,6 +26,7 @@ C     == GLobal variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "GCHEM_VARS.h"
 #include "BLING_VARS.h"
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -63,6 +64,7 @@ C     pHlocal           :: local value of pH
 C     CO3iter           :: iterations counter for CO3 ion calculation
 C     CO3iterMax        :: total number of iterations
        INTEGER i,j,k
+       LOGICAL debugPrt
        _RL carbonate
        _RL calcium
        _RL po4local
@@ -107,38 +109,42 @@ C$TAF LOOP = parallel
          ENDDO
         ENDDO
 
-#ifdef CARBONCHEM_SOLVESAPHE
+      IF ( selectModernCoeffs.GT.0 ) THEN
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL(
-     &   'DIC_COEFFS_DEEP',myThid)
+     &   'GCHEM_COEFFS_DEEP',myThid)
 #endif
+#ifndef ALLOW_AUTODIFF
 C Calculate carbon coefficients
-        CALL DIC_COEFFS_SURF(
+        CALL GCHEM_COEFFS_SURF(
      I                       locTemp, locSalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
 
 C Now correct the coefficients for pressure dependence
-        CALL DIC_COEFFS_DEEP(
+        CALL GCHEM_COEFFS_DEEP(
      I                       locTemp, locSalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,
      I                       k,myThid)
+#endif
 
-#else /* CARBONCHEM_SOLVESAPHE */
+      ELSE
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL(
-     &   'CARBON_COEFFS_PRESSURE_DEP',myThid)
+     &   'GCHEM_CARBON_COEFFS_PRESSURE_DEP',myThid)
 #endif
 
 C  Get coefficients for carbonate calculations
-        CALL CARBON_COEFFS_PRESSURE_DEP(
+        CALL GCHEM_CARBON_COEFFS(
      I                       locTemp, locSalt,
+     I                       atmosP(1-OLx,1-OLy,bi,bj),
      I                       bi, bj, iMin, iMax, jMin, jMax,
      I                       k, myThid )
-#endif /* CARBONCHEM_SOLVESAPHE */
+      ENDIF
 
 C--------------------------------------------------
 
+        debugPrt = debugMode
 C$TAF LOOP = parallel
         DO j=jMin,jMax
 C$TAF LOOP = parallel
@@ -149,11 +155,15 @@ C$TAF LOOP = parallel
 #ifdef ALLOW_AUTODIFF_TAMC
            ikey = i + (j - 1)*sNx + (kkey - 1)*sNx*sNy
 #endif
-#ifdef CARBONCHEM_SOLVESAPHE
-           calcium = cat(i,j,bi,bj)
-#else
+#ifndef ALLOW_AUTODIFF
+           IF ( selectModernCoeffs.GT.0 ) THEN
+            calcium = cat(i,j,bi,bj)
+           ELSE
+#endif
 C  Estimate calcium concentration from salinity
-           calcium = 1.028 _d -2*salt(i,j,k,bi,bj)/35. _d 0
+            calcium = 1.028 _d -2*salt(i,j,k,bi,bj)/35. _d 0
+#ifndef ALLOW_AUTODIFF
+           ENDIF
 #endif
 
            po4local = PTR_PO4(i,j,k)
@@ -170,36 +180,40 @@ C  unless SIBLING is used
            sitlocal = 0.03 _d 0
 #endif
 
-#ifdef CARBONCHEM_SOLVESAPHE
+#ifndef ALLOW_AUTODIFF
            IF ( selectPHsolver.GT.0 ) THEN
 C Use Munhoven (2013) Solvesaphe routine to calculate pH and pCO2
 #ifdef ALLOW_DEBUG
-         IF (debugMode) CALL DEBUG_CALL('AHINI_FOR_AT',myThid)
+            IF (debugMode) CALL DEBUG_CALL('GCHEM_AHINI_FOR_AT',myThid)
 #endif
 CAV since we carry pH, no need for an initial guess
-C call AHINI_FOR_AT to get better initial guess of pH
-c               CALL AHINI_FOR_AT(alklocal*permil,
+C call GCHEM_AHINI_FOR_AT to get better initial guess of pH
+c               CALL GCHEM_AHINI_FOR_AT(alklocal*permil,
 c     I           diclocal*permil,
 c     I           bt(i,j,bi,bj),
 c     O           pHlocal,
 c     I           i,j,k,bi,bj,myIter,myThid )
 #ifdef ALLOW_DEBUG
-         IF (debugMode) CALL DEBUG_CALL('CALC_PCO2_SOLVESAPHE',myThid)
+            IF (debugMode)
+     &           CALL DEBUG_CALL('GCHEM_CALC_PCO2_SOLVESAPHE',myThid)
 #endif
-            CALL CALC_PCO2_SOLVESAPHE(
+
+            CALL GCHEM_CALC_PCO2_SOLVESAPHE(
      I          locTemp(i,j), locSalt(i,j),
      I          diclocal, po4local,
-     I          sitlocal, alklocal,
+     I          sitlocal, alklocal, permil,
      U          pHlocal, pCO2local, carbonate,
-     I          i,j,k,bi,bj,myIter,myThid )
+     I          i,j,k,bi,bj,debugPrt,myIter,myThid )
+            debugPrt = .FALSE.
 
 C- convert carbonate to mol kg^-1-SW for calculation of saturation state
             carbonate = carbonate*permil
            ELSE
+#endif /* ALLOW_AUTODIFF */
 C Use the original Follows et al. (2006) solver
-#endif /* CARBONCHEM_SOLVESAPHE */
 #ifdef ALLOW_DEBUG
-            IF (debugMode) CALL DEBUG_CALL('CALC_PCO2_APPROX',myThid)
+            IF (debugMode)
+     &           CALL DEBUG_CALL('GCHEM_CALC_PCO2_APPROX',myThid)
 #endif
 
 C  Evaluate carbonate (CO3) ions concentration
@@ -209,7 +223,7 @@ c           DO CO3iter = 1, CO3iterMax
 
 C--------------------------------------------------
 
-             CALL CALC_PCO2_APPROX(
+             CALL GCHEM_CALC_PCO2_APPROX(
      I          locTemp(i,j), locSalt(i,j),
      I          diclocal, po4local,
      I          sitlocal,alklocal,
@@ -219,13 +233,14 @@ C--------------------------------------------------
      I          aksi(i,j,bi,bj),akf(i,j,bi,bj),
      I          ak0(i,j,bi,bj),fugf(i,j,bi,bj),ff(i,j,bi,bj),
      I          bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
+     I          permil,
      U          pHlocal,pCO2local,carbonate,
      I          i,j,k,bi,bj,myIter,myThid )
 c           ENDDO
-
-#ifdef CARBONCHEM_SOLVESAPHE
+#ifndef ALLOW_AUTODIFF
            ENDIF
-#endif /* CARBONCHEM_SOLVESAPHE */
+#endif
+
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ store carbonate = comlev1_bibj_ijk, key = ikey, kind = isbyte
 #endif

@@ -74,15 +74,8 @@ C For adjoint safe, do not call bling_dvm
 #endif
 
 C ABIOTIC OPTIONS
-C Compile "Solvesaphe" package (Munhoven 2013) for pH/pCO2
-C  can still select Follows et al (2006) solver in data.bling,
-C  but will use solvesaphe dissociation coefficient options
-#undef CARBONCHEM_SOLVESAPHE
-
 C In S/R CARBON_CHEM convert ak1 and ak2 to the total pH scale
 C  consistent with other coefficients (currently on the seawater scale).
-C NOTE: Has NO effect when CARBONCHEM_SOLVESAPHE is defined (different
-C  coeffs are used).
 #undef CARBONCHEM_TOTALPHSCALE
 
 C When calculating the fraction of sinking organic matter, use model biomass diagnostics.
