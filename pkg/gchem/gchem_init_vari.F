@@ -40,7 +40,7 @@ C !LOCAL VARIABLES: ====================================================
 C  i,j,k,bi,bj          :: loop indices
 C  jTr                  :: ptracer number
       INTEGER bi,bj
-      INTEGER i,j
+      INTEGER i,j,k
 #ifdef GCHEM_ALLOW_FFIELDS
       INTEGER m
       INTEGER intimeP, intime0, intime1
@@ -89,7 +89,7 @@ C     set reasonable values fields that need at least something
           gchemSi    (i,j,bi,bj) = gchem_Si_const   *maskC(i,j,1,bi,bj)
 #ifdef GCHEM_3D_SILICA
           DO k = 1, Nr
-           gchemSi3D(i,j,k,bi,bj)= gchem_3DSi_const *maskC(i,j,k,bi,bj)
+           gchem3DSi(i,j,k,bi,bj)= gchem_3DSi_const *maskC(i,j,k,bi,bj)
           ENDDO
 #endif
           gchemIce   (i,j,bi,bj) = gchem_ice_const  *maskC(i,j,1,bi,bj)
@@ -240,14 +240,14 @@ C--   Now calculate whether it is time to update the forcing arrays
         ENDIF
 
 #ifdef GCHEM_3D_SILICA
-        IF ( gchem3DSiFile .NE. ' '  ) THEN
+        IF ( gchem_3DSiFile .NE. ' '  ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO k=1,Nr
             DO j=1-OLy,sNy+OLy
              DO i=1-OLx,sNx+OLx
               gchem3DSi(i,j,k,bi,bj) = bWght*gchem3DSi0(i,j,k,bi,bj)
-      &                              + aWght*gchem3DSi1(i,j,k,bi,bj)
+     &                               + aWght*gchem3DSi1(i,j,k,bi,bj)
              ENDDO
             ENDDO
            ENDDO
@@ -377,7 +377,7 @@ c     &     mythid )
 #ifdef GCHEM_3D_SILICA
 C This will not work until exf can load 3d fields
        IF ( gchem_3DSiFile .NE. ' ' ) THEN
-        CALL EXF_SET_FLD (
+        CALL EXF_SET_FLD3D(
      &     'gchem3DSi', gchem_3DSiFile, gchem_3DSiMask,
      &     gchem_3DSiPeriod, gchem_inscal_3DSi, gchem_3DSi_const,
      &     gchem3DSi, gchem3DSi0, gchem3DSi1,

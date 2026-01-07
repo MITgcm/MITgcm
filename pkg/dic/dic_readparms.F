@@ -1,5 +1,5 @@
 #include "DIC_OPTIONS.h"
-
+#include "GCHEM_OPTIONS.h"
 CBOP
 C !ROUTINE: DIC_READPARMS
 C !INTERFACE: ==========================================================
@@ -642,6 +642,20 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* CARBONCHEM_SOLVESAPHE */
 
 #ifdef DIC_CALCITE_SAT
+C Issue an error and stop if DIC_CALCITE_SAT AND ALLOW_GCHEM_FFIELDS 
+C  but not GCHEM_3D_SILICA
+#if defined (GCHEM_ALLOW_FFIELDS) && \
+    !defined (GCHEM_3D_SILICA)
+      IF ( useCalciteSaturation ) THEN
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
+     &    'to use: useCalciteSaturation with ALLOW_GCHEM_FFIELDS'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
+     &    'needs: "#define GCHEM_3D_SILICA" in "GCHEM_OPTIONS.h"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+#endif
 C Issue an error and stop for invalid selectCalciteDissolution
       IF ( ( selectCalciteDissolution .LT. 0 .OR.
      &       selectCalciteDissolution .GT. 3 )

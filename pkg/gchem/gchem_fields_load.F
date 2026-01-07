@@ -42,7 +42,7 @@ C  myThid               :: thread number
 
 #ifdef GCHEM_ALLOW_FFIELDS
 C !LOCAL VARIABLES: ===================================================
-      INTEGER bi, bj, i, j
+      INTEGER bi, bj, i, j, k
       INTEGER intimeP, intime0, intime1
       _RL aWght,bWght
 CEOP
@@ -119,10 +119,10 @@ C     data for the period ahead and the period behind myTime.
      &         myIter,myThid )
          ENDIF
 #ifdef GCHEM_3D_SILICA
-         IF ( gchem3DSiFile .NE. ' '  ) THEN
-          CALL READ_REC_XYZ_RS( gchem3DSiFile,gchem3DSi0,intime0,
+         IF ( gchem_3DSiFile .NE. ' '  ) THEN
+          CALL READ_REC_XYZ_RS( gchem_3DSiFile,gchem3DSi0,intime0,
      &        myIter,myThid )
-          CALL READ_REC_XYZ_RS( gchem3DSiFile,gchem3DSi1,intime1,
+          CALL READ_REC_XYZ_RS( gchem_3DSiFile,gchem3DSi1,intime1,
      &        myIter,myThid )
          ENDIF
 #endif
@@ -169,7 +169,7 @@ C--   fill-in overlap after loading temp arrays:
          _EXCH_XY_RS(gchemSi0, myThid )
          _EXCH_XY_RS(gchemSi1, myThid )
 #ifdef GCHEM_3D_SILICA
-         IF ( gchem3DSiFile .NE. ' '  ) THEN
+         IF ( gchem_3DSiFile .NE. ' '  ) THEN
            _EXCH_XYZ_RS(gchem3DSi0, myThid )
            _EXCH_XYZ_RS(gchem3DSi1, myThid )
          ENDIF
@@ -221,12 +221,12 @@ C-     end if-bloc (time to load new fields)
           ENDIF
 
 #ifdef GCHEM_3D_SILICA
-          IF ( gchem3DSiFile .NE. ' '  ) THEN
+          IF ( gchem_3DSiFile .NE. ' '  ) THEN
            DO k=1,Nr
             DO j=1-OLy,sNy+OLy
              DO i=1-OLx,sNx+OLx
               gchem3DSi(i,j,k,bi,bj) = bWght*gchem3DSi0(i,j,k,bi,bj)
-      &                              + aWght*gchem3DSi1(i,j,k,bi,bj)
+     &                              + aWght*gchem3DSi1(i,j,k,bi,bj)
              ENDDO
             ENDDO
            ENDDO
@@ -365,9 +365,9 @@ C Otherwise get atmospheric pressure from PKG/EXF
        ENDIF
 
 #ifdef GCHEM_3D_SILICA
-       IF ( gchem3DSiFile .NE. ' '  ) THEN
-          CALL EXF_SET_FLD(
-     &     'gchem3DSi', gchem3DSiFile, gchem3DSiMask,
+       IF ( gchem_3DSiFile .NE. ' '  ) THEN
+          CALL EXF_SET_FLD3D(
+     &     'gchem3DSi', gchem_3DSiFile, gchem_3DSiMask,
      &     gchem_3DSiStartTime, gchem_3DSiPeriod, gchem_3DSiRepCycle,
      &     gchem_inscal_3DSi,
      &     gchem_3DSi_exfremo_intercept, gchem_3DSi_exfremo_slope,

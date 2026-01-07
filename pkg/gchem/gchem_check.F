@@ -136,14 +136,14 @@ c    &  ' exceeds number of PTRACERS(_numInUse)=', PTRACERS_numInUse
         errCount = errCount + 1
       ENDIF
 
-#ifdef GCHEM_3D_SILICATE
-      IF ( gchem_useEXF .AND. gchem_3DSiFile .NE. ' ') THEN
-        WRITE(msgBuf,'(A)')
-     &       '3D Silicate forcing not yet implemented with gchem_useEXF'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        errCount = errCount + 1
-      ENDIF
-#endif /* GCHEM_3D_SILICATE */
+C#ifdef GCHEM_3D_SILICA
+C      IF ( gchem_useEXF .AND. gchem_3DSiFile .NE. ' ') THEN
+C        WRITE(msgBuf,'(A)')
+C     &       '3D Silicate forcing not yet implemented with gchem_useEXF'
+C        CALL PRINT_ERROR( msgBuf, myThid )
+C        errCount = errCount + 1
+C      ENDIF
+C#endif /* GCHEM_3D_SILICA */
 
       IF ( errCount.GE.1 ) THEN
         WRITE(msgBuf,'(A,I3,A)')

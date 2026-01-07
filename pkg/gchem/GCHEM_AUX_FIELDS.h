@@ -18,7 +18,7 @@ C--   COMMON /GCHEM_LOAD_I/
 C--   COMMON /GCHEM_AUX_FIELDS_R/
       COMMON /GCHEM_AUX_FIELDS_R/
 #ifdef GCHEM_3D_SILICA
-      &    gchem3DSi0, gchem3DSi1,
+     &    gchem3DSi0, gchem3DSi1,
 #endif
      &    gchemSi0, gchemSi1,
      &    gchemPAR0, gchemPAR1,

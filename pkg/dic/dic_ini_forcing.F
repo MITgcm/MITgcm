@@ -42,8 +42,8 @@ c !LOCAL VARIABLES: ====================================================
 C--   Initialise forcing arrays in common blocks
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
+        DO j = 1-OLy,sNy+OLy
+         DO i = 1-OLx,sNx+OLx
 C-    Initialise DIC_VARS.h forcing-field arrays from reasonable values in pkg/gchem
          wind      (i,j,bi,bj) = gchemWind(i,j,bi,bj)
          fIce      (i,j,bi,bj) = gchemIce(i,j,bi,bj)
@@ -57,8 +57,8 @@ C-    Initialise DIC_VARS.h forcing-field arrays from reasonable values in pkg/g
 #endif
 #if defined(DIC_CALCITE_SAT) && defined(GCHEM_3D_SILICA) 
          IF ( useCalciteSaturation ) THEN
-          DO k=1,Nr
-           silicaDeep(i,j,k,bi,bj) = gchemSi3D(i,j,k,bi,bj)
+          DO k = 1,Nr
+           silicaDeep(i,j,k,bi,bj) = gchem3DSi(i,j,k,bi,bj)
           ENDDO
          ENDIF 
 #endif /* DIC_CALCITE_SAT && GCHEM_3D_SILICA */
@@ -73,8 +73,8 @@ C--   Initialise forcing arrays in common blocks
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
 C-    Initialise DIC_VARS.h forcing-field arrays:
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
+        DO j = 1-OLy,sNy+OLy
+         DO i = 1-OLx,sNx+OLx
            wind      (i,j,bi,bj) = 0. _d 0
            fIce      (i,j,bi,bj) = 0. _d 0
            AtmosP    (i,j,bi,bj) = 0. _d 0
@@ -87,9 +87,9 @@ C-    Initialise DIC_VARS.h forcing-field arrays:
          ENDDO
         ENDDO
 #ifdef DIC_CALCITE_SAT
-        DO k=1,Nr
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
+        DO k = 1,Nr
+         DO j = 1-OLy,sNy+OLy
+          DO i = 1-OLx,sNx+OLx
            silicaDeep(i,j,k,bi,bj) = 0. _d 0
           ENDDO
          ENDDO
@@ -98,8 +98,8 @@ C-    Initialise DIC_VARS.h forcing-field arrays:
 
 C-    Initialise DIC_LOAD.h arrays:
         DIC_ldRec(bi,bj) = 0
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
+        DO j = 1-OLy,sNy+OLy
+         DO i = 1-OLx,sNx+OLx
           dicwind0(i,j,bi,bj) = 0. _d 0
           dicwind1(i,j,bi,bj) = 0. _d 0
           atmosp0 (i,j,bi,bj) = 0. _d 0
@@ -122,9 +122,9 @@ C-    Initialise DIC_LOAD.h arrays:
          ENDDO
         ENDDO
 #ifdef DIC_CALCITE_SAT
-        DO k=1,Nr
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
+        DO k = 1,Nr
+         DO j = 1-OLy,sNy+OLy
+          DO i = 1-OLx,sNx+OLx
            silicaDeep0(i,j,k,bi,bj) = 0. _d 0
            silicaDeep1(i,j,k,bi,bj) = 0. _d 0
           ENDDO
@@ -139,8 +139,8 @@ C ======================================================================
 C--   Set reasonable values to those that need at least something
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
+        DO j = 1-OLy,sNy+OLy
+         DO i = 1-OLx,sNx+OLx
           wind(i,j,bi,bj)       = 5. _d 0*maskC(i,j,1,bi,bj)
           AtmosP(i,j,bi,bj)     = 1. _d 0*maskC(i,j,1,bi,bj)
           silicaSurf(i,j,bi,bj) = 7.6838 _d -3*maskC(i,j,1,bi,bj)
@@ -159,9 +159,9 @@ C If the chlorophyll climatology is not provided, use this default value.
         ENDDO
 #ifdef DIC_CALCITE_SAT
         IF ( useCalciteSaturation ) THEN
-          DO k=1,Nr
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
+          DO k = 1,Nr
+           DO j = 1-OLy,sNy+OLy
+            DO i = 1-OLx,sNx+OLx
               silicaDeep(i,j,k,bi,bj) = 3. _d -2*maskC(i,j,k,bi,bj)
             ENDDO
            ENDDO

@@ -51,6 +51,13 @@ C Access pkg/gchem forcing fields
           wind(i,j,bi,bj)       = gchemWind(i,j,bi,bj)
           AtmospCO2(i,j,bi,bj)  = gchemapCO2(i,j,bi,bj)
           silicaSurf(i,j,bi,bj) = gchemSi(i,j,bi,bj)
+#if defined(DIC_CALCITE_SAT) && defined(GCHEM_3D_SILICA) 
+          IF ( useCalciteSaturation ) THEN
+            DO k = 1,Nr
+             silicaDeep(i,j,k,bi,bj) = gchem3DSi(i,j,k,bi,bj)
+            ENDDO
+          ENDIF
+#endif
 #ifndef USE_PLOAD
 C     Atm pressure in Pascals, convert to atm
           AtmosP(i,j,bi,bj)     = gchemAtmosP(i,j,bi,bj)/Pa2atm

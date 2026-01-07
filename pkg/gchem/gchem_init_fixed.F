@@ -98,7 +98,7 @@ c      ENDIF
        ENDIF
 
 #ifdef GCHEM_3D_SILICA
-       IF ( gchem_Si3DFile .NE. ' ' ) THEN
+       IF ( gchem_3DSiFile .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START silica3D',myThid)
 # endif

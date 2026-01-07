@@ -19,7 +19,7 @@ CEOP
 
 #ifdef GCHEM_ALLOW_FFIELDS
       COMMON /GCHEM_FORCING_R/
-#ifdef GCHEM_3D_SILICATE
+#ifdef GCHEM_3D_SILICA
      &    gchem3DSi,
 #endif
      &    gchemSi,
@@ -31,7 +31,7 @@ CEOP
      &    gchemAtmosP,
      &    gchemChl
 
-#ifdef GCHEM_3D_SILICATE
+#ifdef GCHEM_3D_SILICA
       _RL gchem3DSi  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
       _RL gchemSi    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
