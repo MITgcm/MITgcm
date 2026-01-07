@@ -1,6 +1,21 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint69j (2025/12/20)
+o optim:
+  - fix outdated ALLOW_SHIFWFLX_CONTROL option in "optim_read/writedata.F".
+o pkg/obsfit:
+  - new package "obsfit" for for model-observations comparisons (and cost
+    contribution);
+  - add secondary "obsfit" test in TAF-AD exp. global_oce_biogeo_bling.
+o verification:
+  - move "global_ocean_ebm" experiment forward tests to "global_oce_latlon" and
+    adjust AD test for merging in global_oce_latlon, as a secondary "ebm" test.
+  - disable test of global_ocean_ebm (to be removed later).
+o pkg/seaice:
+  - fix compilation of untested SEAICE_MODIFY_GROWTH_ADJ code.
+o model/src:
+  - add a STOP if using selectPenetratingSW > 0 in Atmospheric set-up.
 o pkg/streamice & Tapenade:
   - introduce fixed-point treatment of Goldberg et al 2016 (GMD) for streamice
     nonlinear solver using Tapenade FP-LOOP pragma ; used in halfpipe_streamice
