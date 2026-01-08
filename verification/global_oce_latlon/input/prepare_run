@@ -1,5 +1,10 @@
 #! /usr/bin/env bash
 
+here=`pwd`
+locDir=`basename $here | sed 's/\./ /g' | awk '{print $1}'`
+#- for secondary test, skip this completely:
+if test $locDir = 'tr_run' ; then echo ' skip prepare_run' ; exit 0 ; fi
+
 #- in order to save disc space, take *.bin files
 #- from this dir:
 fromDir="../../tutorial_global_oce_latlon/input"
