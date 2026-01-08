@@ -58,7 +58,7 @@ C-    Initialise DIC_VARS.h forcing-field arrays from reasonable values in pkg/g
 #if defined(DIC_CALCITE_SAT) && defined(GCHEM_3D_SILICA) 
          IF ( useCalciteSaturation ) THEN
           DO k = 1,Nr
-           silicaDeep(i,j,k,bi,bj) = gchem3DSi(i,j,k,bi,bj)
+           silicaDeep(i,j,k,bi,bj) = gchemSi3D(i,j,k,bi,bj)
           ENDDO
          ENDIF 
 #endif /* DIC_CALCITE_SAT && GCHEM_3D_SILICA */

@@ -119,10 +119,10 @@ C     data for the period ahead and the period behind myTime.
      &         myIter,myThid )
          ENDIF
 #ifdef GCHEM_3D_SILICA
-         IF ( gchem_3DSiFile .NE. ' '  ) THEN
-          CALL READ_REC_XYZ_RS( gchem_3DSiFile,gchem3DSi0,intime0,
+         IF ( gchem_Si3DFile .NE. ' '  ) THEN
+          CALL READ_REC_XYZ_RS( gchem_Si3DFile,gchemSi3D0,intime0,
      &        myIter,myThid )
-          CALL READ_REC_XYZ_RS( gchem_3DSiFile,gchem3DSi1,intime1,
+          CALL READ_REC_XYZ_RS( gchem_Si3DFile,gchemSi3D1,intime1,
      &        myIter,myThid )
          ENDIF
 #endif
@@ -169,9 +169,9 @@ C--   fill-in overlap after loading temp arrays:
          _EXCH_XY_RS(gchemSi0, myThid )
          _EXCH_XY_RS(gchemSi1, myThid )
 #ifdef GCHEM_3D_SILICA
-         IF ( gchem_3DSiFile .NE. ' '  ) THEN
-           _EXCH_XYZ_RS(gchem3DSi0, myThid )
-           _EXCH_XYZ_RS(gchem3DSi1, myThid )
+         IF ( gchem_Si3DFile .NE. ' '  ) THEN
+           _EXCH_XYZ_RS(gchemSi3D0, myThid )
+           _EXCH_XYZ_RS(gchemSi3D1, myThid )
          ENDIF
 #endif
          _EXCH_XY_RS(gchemPAR0, myThid )
@@ -221,12 +221,12 @@ C-     end if-bloc (time to load new fields)
           ENDIF
 
 #ifdef GCHEM_3D_SILICA
-          IF ( gchem_3DSiFile .NE. ' '  ) THEN
+          IF ( gchem_Si3DFile .NE. ' '  ) THEN
            DO k=1,Nr
             DO j=1-OLy,sNy+OLy
              DO i=1-OLx,sNx+OLx
-              gchem3DSi(i,j,k,bi,bj) = bWght*gchem3DSi0(i,j,k,bi,bj)
-     &                              + aWght*gchem3DSi1(i,j,k,bi,bj)
+              gchemSi3D(i,j,k,bi,bj) = bWght*gchemSi3D0(i,j,k,bi,bj)
+     &                              + aWght*gchemSi3D1(i,j,k,bi,bj)
              ENDDO
             ENDDO
            ENDDO
@@ -365,20 +365,22 @@ C Otherwise get atmospheric pressure from PKG/EXF
        ENDIF
 
 #ifdef GCHEM_3D_SILICA
-       IF ( gchem_3DSiFile .NE. ' '  ) THEN
-          CALL EXF_SET_FLD3D(
-     &     'gchem3DSi', gchem_3DSiFile, gchem_3DSiMask,
-     &     gchem_3DSiStartTime, gchem_3DSiPeriod, gchem_3DSiRepCycle,
-     &     gchem_inscal_3DSi,
-     &     gchem_3DSi_exfremo_intercept, gchem_3DSi_exfremo_slope,
-     &     gchem3DSi, gchem3DSi0, gchem3DSi1,
+       IF ( gchem_Si3DFile .NE. ' '  ) THEN
+        CALL EXF_SET_FLD3D(
+     &      'gchemSi3D', gchem_Si3DFile, gchem_Si3DMask,
+     &      gchem_Si3DStartTime, gchem_Si3DPeriod, 
+     &      gchem_Si3DRepCycle,
+     &      gchem_inscal_Si3D,
+     &      gchem_Si3D_exfremo_intercept, 
+     &      gchem_Si3D_exfremo_slope,
+     &      gchemSi3D, gchemSi3D0, gchemSi3D1,
 # ifdef USE_EXF_INTERPOLATION
-     &     Si3D_lon0, Si3D_lon_inc,
-     &     Si3D_lat0, Si3D_lat_inc,
-     &     Si3D_nlon, Si3D_nlat, xC, yC,
-     &     Si3D_interpMethod,
+     &      Si3D_lon0, Si3D_lon_inc,
+     &      Si3D_lat0, Si3D_lat_inc,
+     &      Si3D_nlon, Si3D_nlat, xC, yC,
+     &      Si3D_interpMethod,
 # endif
-     &     mytime, myiter, mythid )
+     &      mytime, myiter, mythid )
        ENDIF
 #endif
 

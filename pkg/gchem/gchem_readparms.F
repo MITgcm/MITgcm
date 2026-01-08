@@ -65,10 +65,10 @@ C  to test the flag before any corresponding pkg S/R call
      &           gchem_rl1, gchem_rl2, gchem_rl3,
      &           gchem_rl4, gchem_rl5,
      &           gchem_ForcingPeriod, gchem_ForcingCycle,
-     &           gchem_SiFile, gchem_3DSiFile, gchem_parFile, 
+     &           gchem_SiFile, gchem_Si3DFile, gchem_parFile, 
      &           gchem_FeFile, gchem_apco2File, gchem_windFile, 
      &           gchem_apresFile, gchem_iceFile, gchem_chlFile,
-     &           gchem_Si_const, gchem_3DSi_const, gchem_par_const, 
+     &           gchem_Si_const, gchem_Si3D_const, gchem_par_const, 
      &           gchem_Fe_const, gchem_apco2_const, gchem_wind_const, 
      &           gchem_apres_const, gchem_ice_const, gchem_chl_const,
      &           tIter0
@@ -80,10 +80,10 @@ C  to test the flag before any corresponding pkg S/R call
      &     gchem_Si_exfremo_intercept, gchem_Si_exfremo_slope,
      &     gchem_SiMask, gchem_inscal_Si,
 C
-     &     gchem_3DSiPeriod, gchem_3DSiRepCycle, gchem_3DSiStartTime,
-     &     gchem_3DSiStartDate1, gchem_3DSiStartDate2,
-     &     gchem_3DSi_exfremo_intercept, gchem_3DSi_exfremo_slope,
-     &     gchem_3DSiMask, gchem_inscal_3DSi,
+     &     gchem_Si3DPeriod, gchem_Si3DRepCycle, gchem_Si3DStartTime,
+     &     gchem_Si3DStartDate1, gchem_Si3DStartDate2,
+     &     gchem_Si3D_exfremo_intercept, gchem_Si3D_exfremo_slope,
+     &     gchem_Si3DMask, gchem_inscal_Si3D,
 C
      &     gchem_parPeriod, gchem_parRepCycle, gchem_parStartTime,
      &     gchem_parStartDate1, gchem_parStartDate2,
@@ -124,8 +124,8 @@ C
      &     Si_lon0, Si_lat0, Si_nlon,Si_nlat,
      &     Si_lon_inc, Si_lat_inc, Si_interpMethod,
 C
-     &     3DSi_lon0, 3DSi_lat0, 3DSi_nlon,Si_nlat,
-     &     3DSi_lon_inc, 3DSi_lat_inc, 3DSi_interpMethod,
+     &     Si3D_lon0, Si3D_lat0, Si3D_nlon,Si_nlat,
+     &     Si3D_lon_inc, Si3D_lat_inc, Si3D_interpMethod,
 C
      &     par_lon0, par_lat0, par_nlon, par_nlat,
      &     par_lon_inc, par_lat_inc, par_interpMethod,
@@ -198,7 +198,7 @@ C     some predefined forcing fields and constants
       gchem_windFile  = ' '
       gchem_apresFile = ' '
       gchem_SiFile    = ' '
-      gchem_3DSiFile  = ' '
+      gchem_Si3DFile  = ' '
       gchem_parFile   = ' '
       gchem_FeFile    = ' '
       gchem_apco2File = ' '
@@ -208,7 +208,7 @@ C     some sensible defaults
       gchem_wind_const  =    0.      _d 0
       gchem_apres_const =    1.01325 _d 5
       gchem_Si_const    =    7.6     _d -3
-      gchem_3DSi_const  =    3.      _d -2
+      gchem_Si3D_const  =    3.      _d -2
       gchem_par_const   =    0.      _d 0
       gchem_Fe_const    =    0.      _d 0
       gchem_apco2_const =  280.      _d -6
@@ -238,15 +238,15 @@ C- Open and read the data.gchem file
        gchem_SiMask               = 'c'
        gchem_inscal_Si            = 1. _d 0
 
-       gchem_3DSiPeriod             = 0.0 _d 0
-       gchem_3DSiRepCycle           = repeatPeriod
-       gchem_3DSiStartTime          = UNSET_RL
-       gchem_3DSiStartDate1         = 0
-       gchem_3DSiStartDate2         = 0
-       gchem_3DSi_exfremo_intercept = 0.0 _d 0
-       gchem_3DSi_exfremo_slope     = 0.0 _d 0
-       gchem_3DSiMask               = 'c'
-       gchem_inscal_3DSi            = 1. _d 0
+       gchem_Si3DPeriod             = 0.0 _d 0
+       gchem_Si3DRepCycle           = repeatPeriod
+       gchem_Si3DStartTime          = UNSET_RL
+       gchem_Si3DStartDate1         = 0
+       gchem_Si3DStartDate2         = 0
+       gchem_Si3D_exfremo_intercept = 0.0 _d 0
+       gchem_Si3D_exfremo_slope     = 0.0 _d 0
+       gchem_Si3DMask               = 'c'
+       gchem_inscal_Si3D            = 1. _d 0
 
        gchem_parPeriod             = 0.0 _d 0
        gchem_parRepCycle           = repeatPeriod
@@ -329,12 +329,12 @@ C- Open and read the data.gchem file
        Si_lon_inc = inp_dLon
        Si_interpMethod  = 1
 
-       3DSi_lon0 = inp_lon0
-       3DSi_lat0 = inp_lat0
-       3DSi_nlon = inp_gNx
-       3DSi_nlat = inp_gNy
-       3DSi_lon_inc = inp_dLon
-       3DSi_interpMethod  = 1
+       Si3D_lon0 = inp_lon0
+       Si3D_lat0 = inp_lat0
+       Si3D_nlon = inp_gNx
+       Si3D_nlat = inp_gNy
+       Si3D_lon_inc = inp_dLon
+       Si3D_interpMethod  = 1
 
        par_lon0 = inp_lon0
        par_lat0 = inp_lat0
@@ -384,7 +384,7 @@ C- Open and read the data.gchem file
        
        DO j=1,MAX_LAT_INC
         Si_lat_inc(j)    = inp_dLat(j)
-        3DSi_lat_inc(j)  = inp_dLat(j)
+        Si3D_lat_inc(j)  = inp_dLat(j)
         par_lat_inc(j)   = inp_dLat(j)
         Fe_lat_inc(j)    = inp_dLat(j)
         apco2_lat_inc(j) = inp_dLat(j)
@@ -444,9 +444,9 @@ C     gchem_useEXF and useExfYearlyFields
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
-       IF ( gchem_3DSiRepCycle.NE.0. ) THEN
+       IF ( gchem_Si3DRepCycle.NE.0. ) THEN
         WRITE(msgBuf,'(2A)') 'GCHEM_READPARMS: The use of ',
-     &    'useExfYearlyFields AND gchem_3DSiRepCycle is not implemented'
+     &    'useExfYearlyFields AND gchem_Si3DRepCycle is not implemented'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
@@ -483,9 +483,9 @@ C     gchem_useEXF and useExfYearlyFields
       ENDIF 
 C     useEXF and useExfYearlyFields
 #ifndef GCHEM_3D_SILICA
-      IF ( gchem_3DSiFile .NE. ' ' ) THEN
+      IF ( gchem_Si3DFile .NE. ' ' ) THEN
         WRITE(msgBuf,'(2A)') 'GCHEM_READPARMS: The use of ',
-     &   'gchem_3DSiFile needs GCHEM_3D_SILICA to be defined'
+     &   'gchem_Si3DFile needs GCHEM_3D_SILICA to be defined'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF

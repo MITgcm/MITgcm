@@ -92,7 +92,7 @@ C     set reasonable values fields that need at least something
           gchemSi    (i,j,bi,bj) = gchem_Si_const   *maskC(i,j,1,bi,bj)
 #ifdef GCHEM_3D_SILICA
           DO k = 1, Nr
-           gchem3DSi(i,j,k,bi,bj)= gchem_3DSi_const *maskC(i,j,k,bi,bj)
+           gchemSi3D(i,j,k,bi,bj)= gchem_Si3D_const *maskC(i,j,k,bi,bj)
           ENDDO
 #endif
           gchemIce   (i,j,bi,bj) = gchem_ice_const  *maskC(i,j,1,bi,bj)
@@ -106,8 +106,8 @@ C     set reasonable values fields that need at least something
         CALL LEF_ZERO( gchemSi0,    myThid )
         CALL LEF_ZERO( gchemSi1,    myThid )
 #ifdef GCHEM_3D_SILICA
-        CALL LEF_ZERO( gchem3DSi0,  myThid )
-        CALL LEF_ZERO( gchem3DSi1,  myThid )
+        CALL LEF_ZERO( gchemSi3D0,  myThid )
+        CALL LEF_ZERO( gchemSi3D1,  myThid )
 #endif
         CALL LEF_ZERO( gchemWind0,  myThid )
         CALL LEF_ZERO( gchemWind1,  myThid )
@@ -145,10 +145,10 @@ C--   Now calculate whether it is time to update the forcing arrays
         ENDIF
 
 #ifdef GCHEM_3D_SILICA
-        IF ( gchem_3DSiFile .NE. ' ' ) THEN
-          CALL READ_REC_XYZ_RS( gchem_3DSiFile,gchem3DSi0,intime0,
+        IF ( gchem_Si3DFile .NE. ' ' ) THEN
+          CALL READ_REC_XYZ_RS( gchem_Si3DFile,gchemSi3D0,intime0,
      &         nIter0,myThid )
-          CALL READ_REC_XYZ_RS( gchem_3DSiFile,gchem3DSi1,intime1,
+          CALL READ_REC_XYZ_RS( gchem_Si3DFile,gchemSi3D1,intime1,
      &         nIter0,myThid )
         ENDIF
 #endif
@@ -200,8 +200,8 @@ C--   Now calculate whether it is time to update the forcing arrays
         _EXCH_XY_RS(gchemSi0, myThid )
         _EXCH_XY_RS(gchemSi1, myThid )
 #ifdef GCHEM_3D_SILICA
-        _EXCH_XYZ_RS(gchem3DSi0, myThid )
-        _EXCH_XYZ_RS(gchem3DSi1, myThid )
+        _EXCH_XYZ_RS(gchemSi3D0, myThid )
+        _EXCH_XYZ_RS(gchemSi3D1, myThid )
 #endif
         _EXCH_XY_RS(gchemPAR0, myThid )
         _EXCH_XY_RS(gchemPAR1, myThid )
@@ -243,14 +243,14 @@ C--   Now calculate whether it is time to update the forcing arrays
         ENDIF
 
 #ifdef GCHEM_3D_SILICA
-        IF ( gchem_3DSiFile .NE. ' '  ) THEN
+        IF ( gchem_Si3DFile .NE. ' '  ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO k=1,Nr
             DO j=1-OLy,sNy+OLy
              DO i=1-OLx,sNx+OLx
-              gchem3DSi(i,j,k,bi,bj) = bWght*gchem3DSi0(i,j,k,bi,bj)
-     &                               + aWght*gchem3DSi1(i,j,k,bi,bj)
+              gchemSi3D(i,j,k,bi,bj) = bWght*gchemSi3D0(i,j,k,bi,bj)
+     &                               + aWght*gchemSi3D1(i,j,k,bi,bj)
              ENDDO
             ENDDO
            ENDDO
@@ -378,19 +378,22 @@ c     &     mythid )
        ENDIF
 
 #ifdef GCHEM_3D_SILICA
-C This will not work until exf can load 3d fields
-       IF ( gchem_3DSiFile .NE. ' ' ) THEN
-        CALL EXF_SET_FLD3D(
-     &     'gchem3DSi', gchem_3DSiFile, gchem_3DSiMask,
-     &     gchem_3DSiPeriod, gchem_inscal_3DSi, gchem_3DSi_const,
-     &     gchem3DSi, gchem3DSi0, gchem3DSi1,
-#ifdef USE_EXF_INTERPOLATION
-     &     3DSi_lon0, 3DSi_lon_inc,
-     &     3DSi_lat0, 3DSi_lat_inc,
-     &     3DSi_nlon, 3DSi_nlat, xC, yC,
-     &     3DSi_interpMethod,
-#endif
-     &     mythid )
+       IF ( gchem_Si3DFile .NE. ' ' ) THEN
+         CALL EXF_SET_FLD3D(
+     &      'gchemSi3D', gchem_Si3DFile, gchem_Si3DMask,
+     &      gchem_Si3DStartTime, gchem_Si3DPeriod, 
+     &      gchem_Si3DRepCycle,
+     &      gchem_inscal_Si3D,
+     &      gchem_Si3D_exfremo_intercept, 
+     &      gchem_Si3D_exfremo_slope,
+     &      gchemSi3D, gchemSi3D0, gchemSi3D1,
+# ifdef USE_EXF_INTERPOLATION
+     &      Si3D_lon0, Si3D_lon_inc,
+     &      Si3D_lat0, Si3D_lat_inc,
+     &      Si3D_nlon, Si3D_nlat, xC, yC,
+     &      Si3D_interpMethod,
+# endif
+     &      myLocTime, nIter0, mythid )
        ENDIF
 #endif /* GCHEM_3D_SILICA */
 
@@ -498,7 +501,7 @@ C     useEXF
 
       _EXCH_XY_RL( gchemSi, myThid )
 #ifdef GCHEM_3D_SILICA
-      _EXCH_XYZ_RL( gchem3DSi, myThid )
+      _EXCH_XYZ_RL( gchemSi3D, myThid )
 #endif
       _EXCH_XY_RL( gchemWind, myThid )
       _EXCH_XY_RL( gchemIce, myThid )

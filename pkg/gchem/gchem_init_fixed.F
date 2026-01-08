@@ -88,7 +88,8 @@ c      ENDIF
 
        IF ( gchem_SiFile .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START silica',myThid)
+        IF (debugMode) CALL DEBUG_CALL(
+     &           'GETFFIELD_START silica',myThid)
 # endif
         CALL EXF_GETFFIELD_START( useExfYearlyFields,
      I                    'gchem', 'SurfSi', gchem_SiPeriod,
@@ -98,14 +99,15 @@ c      ENDIF
        ENDIF
 
 #ifdef GCHEM_3D_SILICA
-       IF ( gchem_3DSiFile .NE. ' ' ) THEN
+       IF ( gchem_Si3DFile .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START silica3D',myThid)
+        IF (debugMode) CALL DEBUG_CALL(
+     &           'GETFFIELD_START 3D silica',myThid)
 # endif
         CALL EXF_GETFFIELD_START( useExfYearlyFields,
-     I                    'gchem', '3DSi', gchem_3DSiPeriod,
-     I                    gchem_3DSiStartDate1, gchem_3DSiStartDate2,
-     U                    gchem_3DSiStartTime, errCount,
+     I                    'gchem', 'Si3D', gchem_Si3DPeriod,
+     I                    gchem_Si3DStartDate1, gchem_Si3DStartDate2,
+     U                    gchem_Si3DStartTime, errCount,
      I                    myThid )
        ENDIF
 #endif

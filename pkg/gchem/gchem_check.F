@@ -137,7 +137,7 @@ c    &  ' exceeds number of PTRACERS(_numInUse)=', PTRACERS_numInUse
       ENDIF
 
 C#ifdef GCHEM_3D_SILICA
-C      IF ( gchem_useEXF .AND. gchem_3DSiFile .NE. ' ') THEN
+C      IF ( gchem_useEXF .AND. gchem_Si3DFile .NE. ' ') THEN
 C        WRITE(msgBuf,'(A)')
 C     &       '3D Silicate forcing not yet implemented with gchem_useEXF'
 C        CALL PRINT_ERROR( msgBuf, myThid )

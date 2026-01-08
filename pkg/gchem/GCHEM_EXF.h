@@ -30,23 +30,23 @@ C Surface silica forcing parameters for exf
       _RL gchem_inscal_Si
 
       COMMON/gchem_forcing_silica3D_c/
-     &    gchem_3DSiMask
+     &    gchem_Si3DMask
       COMMON/gchem_forcing_silica3D_i/
-     &    gchem_3DSiStartDate1, gchem_3DSiStartDate2
+     &    gchem_Si3DStartDate1, gchem_Si3DStartDate2
       COMMON/gchem_forcing_silica3D_r/
-     &    gchem_3DSiStartTime,
-     &    gchem_3DSiPeriod, gchem_3DSiRepCycle,
-     &    gchem_3DSi_exfremo_intercept, gchem_3DSi_exfremo_slope,
-     &    gchem_inscal_3DSi
-      CHARACTER*1 gchem_3DSiMask
-      INTEGER gchem_3DSiStartDate1
-      INTEGER gchem_3DSiStartDate2
-      _RL gchem_3DSiStartTime
-      _RL gchem_3DSiPeriod
-      _RL gchem_3DSiRepCycle
-      _RL gchem_3DSi_exfremo_intercept
-      _RL gchem_3DSi_exfremo_slope
-      _RL gchem_inscal_3DSi
+     &    gchem_Si3DStartTime,
+     &    gchem_Si3DPeriod, gchem_Si3DRepCycle,
+     &    gchem_Si3D_exfremo_intercept, gchem_Si3D_exfremo_slope,
+     &    gchem_inscal_Si3D
+      CHARACTER*1 gchem_Si3DMask
+      INTEGER gchem_Si3DStartDate1
+      INTEGER gchem_Si3DStartDate2
+      _RL gchem_Si3DStartTime
+      _RL gchem_Si3DPeriod
+      _RL gchem_Si3DRepCycle
+      _RL gchem_Si3D_exfremo_intercept
+      _RL gchem_Si3D_exfremo_slope
+      _RL gchem_inscal_Si3D
 
 C PAR forcing parameters for exf
 

@@ -18,7 +18,7 @@ C--   COMMON /GCHEM_LOAD_I/
 C--   COMMON /GCHEM_AUX_FIELDS_R/
       COMMON /GCHEM_AUX_FIELDS_R/
 #ifdef GCHEM_3D_SILICA
-     &    gchem3DSi0, gchem3DSi1,
+     &    gchemSi3D0, gchemSi3D1,
 #endif
      &    gchemSi0, gchemSi1,
      &    gchemPAR0, gchemPAR1,
@@ -30,8 +30,8 @@ C--   COMMON /GCHEM_AUX_FIELDS_R/
      &    gchemChl0, gchemChl1
 
 #ifdef GCHEM_3D_SILICA
-      _RL gchem3DSi0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL gchem3DSi1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL gchemSi3D0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL gchemSi3D1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
       _RL gchemSi0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL gchemSi1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

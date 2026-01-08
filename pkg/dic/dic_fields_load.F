@@ -54,7 +54,7 @@ C Access pkg/gchem forcing fields
 #if defined(DIC_CALCITE_SAT) && defined(GCHEM_3D_SILICA) 
           IF ( useCalciteSaturation ) THEN
             DO k = 1,Nr
-             silicaDeep(i,j,k,bi,bj) = gchem3DSi(i,j,k,bi,bj)
+             silicaDeep(i,j,k,bi,bj) = gchemSi3D(i,j,k,bi,bj)
             ENDDO
           ENDIF
 #endif
