@@ -40,15 +40,18 @@ C !LOCAL VARIABLES: ====================================================
 C  i,j,k,bi,bj          :: loop indices
 C  jTr                  :: ptracer number
       INTEGER bi,bj
-      INTEGER i,j,k
+      INTEGER i,j
 #ifdef GCHEM_ALLOW_FFIELDS
       INTEGER m
       INTEGER intimeP, intime0, intime1
       _RL aWght,bWght
+# ifdef GCHEM_3D_SILICA
+      INTEGER k
+# endif
 # ifdef ALLOW_EXF
       _RL myLocTime
 # endif
-#endif
+#endif /* GCHEM_ALLOW_FFIELDS */
 #ifdef GCHEM_ADD2TR_TENDENCY
       INTEGER k
       INTEGER jTr
