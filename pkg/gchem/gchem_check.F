@@ -61,11 +61,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       _BEGIN_MASTER(myThid)
       errCount = 0
-      ioUnit = standardMessageUnit
 
       WRITE(msgBuf,'(2A)') 'GCHEM_CHECK ',
      &                     ' --> Starts to check GCHEM set-up'
-      CALL PRINT_MESSAGE( msgBuf, ioUnit,
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
 
 C--   Check GCHEM Options and Parameters:
@@ -162,9 +161,10 @@ c    &  ' exceeds number of PTRACERS(_numInUse)=', PTRACERS_numInUse
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C     some consistency checks with a soft warning
-      errCount = 0
+      ioUnit = errorMessageUnit
 #ifdef ALLOW_CAL
       IF ( useCAL ) THEN
+       errCount = 0
        IF ( usingGregorianCalendar .AND.
      &      gchem_secondsPeryear .NE. 365.25 _d 0*86400. _d 0 ) THEN
         errCount = errCount + 1
@@ -174,37 +174,41 @@ C     some consistency checks with a soft warning
        ENDIF
        IF ( errCount .GT. 0 ) THEN
         IL = ILNBLNK(theCalendar)
-        WRITE(msgBuf,'(A,F12.1,3A)')
-     &       '** Warning ** GCHEM_CHECK: gchem_secondsPeryear = ',
+        WRITE(msgBuf,'(A,F13.1,3A)')
+     &       '** warning ** GCHEM_CHECK: gchem_secondsPeryear=',
      &       gchem_secondsPerYear,
-     &       ' is not consistent with theCalendar = "',
+     &       ' is not consistent with theCalendar= "',
      &       theCalendar(1:IL),'"'
-        CALL PRINT_MESSAGE( msgBuf, ioUnit,
-     &                      SQUEEZE_RIGHT, myThid )
+        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(A)')
+     &       '** warning ** GCHEM_CHECK:   Is this intentional ?'
+        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
        ENDIF
       ENDIF
 #endif
       IF ( periodicExternalForcing ) THEN
-       IF ( gchem_secondsPeryear .NE. externForcingCycle ) THEN
-        WRITE(msgBuf,'(2(A,F12.1))')
-     &       '** Warning ** GCHEM_CHECK: gchem_secondsPeryear = ',
+       errCount = 0
+       IF ( gchem_ForcingCycle .EQ. externForcingCycle .AND.
+     &      gchem_secondsPeryear .NE. externForcingCycle ) THEN
+        WRITE(msgBuf,'(2(A,F13.1))')
+     &       '** warning ** GCHEM_CHECK: gchem_secondsPeryear=',
      &       gchem_secondsPerYear,
-     &       ' is not consistent with externForcingCycle = ',
+     &       ' is different from externForcingCycle=',
      &       externForcingCycle
-c       errCount = errCount + 1
-        CALL PRINT_MESSAGE( msgBuf, ioUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-       ENDIF
-       IF ( gchem_ForcingCycle .NE. externForcingCycle .AND.
-     &      gchem_secondsPeryear .NE. gchem_ForcingCycle ) THEN
-        WRITE(msgBuf,'(2(A,F12.1))')
-     &       '** Warning ** GCHEM_CHECK: gchem_secondsPeryear = ',
+        errCount = errCount + 1
+       ELSEIF ( gchem_secondsPeryear .NE. gchem_ForcingCycle ) THEN
+        WRITE(msgBuf,'(2(A,F13.1))')
+     &       '** warning ** GCHEM_CHECK: gchem_secondsPeryear=',
      &       gchem_secondsPerYear,
-     &       ' is not consistent with gchem_ForcingCycle = ',
+     &       ' is different from gchem_ForcingCycle=',
      &       gchem_ForcingCycle
-c       errCount = errCount + 1
-        CALL PRINT_MESSAGE( msgBuf, ioUnit,
-     &                      SQUEEZE_RIGHT, myThid )
+        errCount = errCount + 1
+       ENDIF
+       IF ( errCount .GT. 0 ) THEN
+        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(A)')
+     &       '** warning ** GCHEM_CHECK:   Is this intentional ?'
+        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
        ENDIF
       ENDIF
 
@@ -231,6 +235,7 @@ C-    run checks specific to darwin
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       _BEGIN_MASTER(myThid)
+      ioUnit = standardMessageUnit
 
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
@@ -300,13 +305,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 
-      WRITE(msgBuf,'(2A)') 'GCHEM_CHECK ',
-     &                     ' <-- Ends Normally'
-      CALL PRINT_MESSAGE( msgBuf, ioUnit,
-     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(2A)') 'GCHEM_CHECK ', ' <-- Ends Normally'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(2A)') ' '
-      CALL PRINT_MESSAGE( msgBuf, ioUnit,
-     &                    SQUEEZE_RIGHT, myThid )
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 
       _END_MASTER(myThid)
 
