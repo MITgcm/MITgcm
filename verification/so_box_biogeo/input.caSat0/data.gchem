@@ -1,10 +1,11 @@
  &GCHEM_PARM01
   useDIC=.TRUE.,
   nsubtime=1,
+  gchem_useEXF=.FALSE.,  
   gchem_iceFile='fice_box.bin',
   gchem_windFile='tren_speed_box.bin',
   gchem_SiFile='sillev1_box.bin',
-  gchem_3DSiFile='silicate_3D_12m_box.bin',
+  gchem_Si3DFile='silicate_3D_12m_box.bin',
 #
   gchem_apco2_const = 278.e-6,
   gchem_apres_const = 1013.25e2,
