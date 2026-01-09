@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/gchem:
+  - new routine gchem_insolation.F to replace pkg/bling & pkg/dic code,
+    and now also usable on Curvilinear-Grid.
 o tools/ci:
   - add two tapenade AD test experiments to GitHub action CI test.
 

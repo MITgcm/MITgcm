@@ -30,17 +30,31 @@ C     === Global variables ===
 # include "PTRACERS_SIZE.h"
 # include "PTRACERS_PARAMS.h"
 #endif
+#ifdef ALLOW_CAL
+# include "cal.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid   :: My Thread Id number
       INTEGER myThid
 
 #ifdef ALLOW_GCHEM
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
 C     !LOCAL VARIABLES:
 C     msgBuf   :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER errCount
       INTEGER nb_tendTr
+      INTEGER IL
+      INTEGER k
+      INTEGER ioUnit
+      INTEGER gchem_int(5)
+      _RL     gchem_rl(5)
+      CHARACTER*(MAX_LEN_FNAM) gchem_fileName(5)
+      CHARACTER*(10) varName
 CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -143,6 +157,61 @@ c    &  ' exceeds number of PTRACERS(_numInUse)=', PTRACERS_numInUse
         CALL ALL_PROC_DIE( 0 )
         STOP 'ABNORMAL END: S/R GCHEM_CHECK'
       ENDIF
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C     some consistency checks with a soft warning
+      ioUnit = errorMessageUnit
+#ifdef ALLOW_CAL
+      IF ( useCAL ) THEN
+       errCount = 0
+       IF ( usingGregorianCalendar .AND.
+     &      gchem_secondsPeryear .NE. 365.25 _d 0*86400. _d 0 ) THEN
+        errCount = errCount + 1
+       ELSEIF ( .NOT. usingGregorianCalendar .AND.
+     &       gchem_secondsPerYear .NE. nDaysNoLeap*86400. _d 0 ) THEN
+        errCount = errCount + 1
+       ENDIF
+       IF ( errCount .GT. 0 ) THEN
+        IL = ILNBLNK(theCalendar)
+        WRITE(msgBuf,'(A,F13.1,3A)')
+     &       '** warning ** GCHEM_CHECK: gchem_secondsPeryear=',
+     &       gchem_secondsPerYear,
+     &       ' is not consistent with theCalendar= "',
+     &       theCalendar(1:IL),'"'
+        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(A)')
+     &       '** warning ** GCHEM_CHECK:   Is this intentional ?'
+        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+       ENDIF
+      ENDIF
+#endif
+      IF ( periodicExternalForcing ) THEN
+       errCount = 0
+       IF ( gchem_ForcingCycle .EQ. externForcingCycle .AND.
+     &      gchem_secondsPeryear .NE. externForcingCycle ) THEN
+        WRITE(msgBuf,'(2(A,F13.1))')
+     &       '** warning ** GCHEM_CHECK: gchem_secondsPeryear=',
+     &       gchem_secondsPerYear,
+     &       ' is different from externForcingCycle=',
+     &       externForcingCycle
+        errCount = errCount + 1
+       ELSEIF ( gchem_secondsPeryear .NE. gchem_ForcingCycle ) THEN
+        WRITE(msgBuf,'(2(A,F13.1))')
+     &       '** warning ** GCHEM_CHECK: gchem_secondsPeryear=',
+     &       gchem_secondsPerYear,
+     &       ' is different from gchem_ForcingCycle=',
+     &       gchem_ForcingCycle
+        errCount = errCount + 1
+       ENDIF
+       IF ( errCount .GT. 0 ) THEN
+        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(A)')
+     &       '** warning ** GCHEM_CHECK:   Is this intentional ?'
+        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+       ENDIF
+      ENDIF
+
       _END_MASTER(myThid)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -163,16 +232,86 @@ C-    run checks specific to darwin
       ENDIF
 #endif
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       _BEGIN_MASTER(myThid)
-      WRITE(msgBuf,'(2A)') 'GCHEM_CHECK ',
-     &                     ' <-- Ends Normally'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
+      ioUnit = standardMessageUnit
+
+      WRITE(msgBuf,'(A)')
+     &'// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)') '// pkg/gchem configuration'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)')
+     &'// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+
+      WRITE(msgBuf,'(A)') '//  '
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+
+      CALL WRITE_0D_L( useCFC, INDEX_NONE,
+     &     'useCFC =', ' /* use pkg/cfc */')
+      CALL WRITE_0D_L( useDIC, INDEX_NONE,
+     &     'useDIC =', '  /* use pkg/dic */')
+      CALL WRITE_0D_L( useBLING, INDEX_NONE,
+     &     'useBLING =', ' /* use pkg/bling */')
+      CALL WRITE_0D_L( useSPOIL, INDEX_NONE,
+     &     'useSPOIL =', ' /* use pkg/spoil */')
+      CALL WRITE_0D_L( useDARWIN, INDEX_NONE,
+     &     'useDARWIN =', ' /* use pkg/darwin */')
+      CALL WRITE_0D_I( nsubtime, INDEX_NONE, 'nsubtime =',
+     &     ' /* number of sub-timesteps withing bgc-module */')
+      gchem_int = (/gchem_int1,gchem_int2,
+     &     gchem_int3,gchem_int4,gchem_int5/)
+      gchem_rl = (/gchem_rl1,gchem_rl2,
+     &     gchem_rl3,gchem_rl4,gchem_rl5/)
+      gchem_fileName = (/fileName1,fileName2,
+     &     fileName3,fileName4,fileName5/)
+      DO k = 1, 5
+       varName = ' '
+       IF ( gchem_fileName(k) .NE. ' ' ) THEN
+        WRITE(varName,'(A,I1)') 'fileName',k
+        CALL WRITE_0D_C( gchem_fileName(k), -1, INDEX_NONE,
+     &      varName(1:9)//' =', ' /* generic file name parameter */')
+       ENDIF
+       IF ( gchem_int(k) .NE. 0 ) THEN
+        WRITE(varName,'(A,I1)') 'gchem_int',k
+        CALL WRITE_0D_I( gchem_int(k), INDEX_NONE,
+     &      varName(1:10)//' =', ' /* generic INTEGER parameter */')
+       ENDIF
+       IF ( gchem_rl(k) .NE. 0. _d 0 ) THEN
+        WRITE(varName,'(A,I1)') 'gchem_rl',k
+        CALL WRITE_0D_RL( gchem_rl(k), INDEX_NONE,
+     &      varName(1:9)//' =', ' /* generic REAL*8 parameter */')
+       ENDIF
+      ENDDO
+      CALL WRITE_0D_RL( gchem_ForcingPeriod, INDEX_NONE,
+     & 'gchem_ForcingPeriod =', ' /* gchem forcing period (s) */')
+      CALL WRITE_0D_RL( gchem_ForcingCycle, INDEX_NONE,
+     & 'gchem_ForcingCycle =',
+     & ' /* period of gchem forcing cycle (s) */')
+      CALL WRITE_0D_RL( gchem_secondsPerYear, INDEX_NONE,
+     & 'gchem_secondsPerYear =',
+     & ' /* second in a year for light computations */')
+
+      WRITE(msgBuf,'(A)')
+     &'// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)') '// End of pkg/gchem config. summary'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)')
+     &'// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)') ' '
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+
+      WRITE(msgBuf,'(2A)') 'GCHEM_CHECK ', ' <-- Ends Normally'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(2A)') ' '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 
       _END_MASTER(myThid)
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #endif /* ALLOW_GCHEM */
