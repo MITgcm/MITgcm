@@ -41,18 +41,22 @@ C     myThid   :: My Thread Id number
 
 #ifdef ALLOW_GCHEM
 C     !FUNCTIONS:
+#ifdef ALLOW_CAL
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
+#endif
 
 C     !LOCAL VARIABLES:
 C     msgBuf   :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER errCount
       INTEGER nb_tendTr
-      INTEGER IL
-      INTEGER k
       INTEGER ioUnit
+#ifdef ALLOW_CAL
+      INTEGER IL
+#endif
 #ifdef GCHEM_REPORT_UNUSED_PARAMS
+      INTEGER k
       INTEGER gchem_int(5)
       _RL     gchem_rl(5)
       CHARACTER*(MAX_LEN_FNAM) gchem_fileName(5)
