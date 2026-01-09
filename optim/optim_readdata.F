@@ -170,7 +170,7 @@ C     filei/jG are dummy values and not used
 c#ifdef ALLOW_CTRL_WETV
 c     read( funit ) (nWetvGlobal(k), k=1,Nr)
 c#endif
-#ifdef ALLOW_SHIFWFLX_CONTROL
+#ifdef ALLOW_SHELFICE
       read(funit) (nWetiGlobal(k), k=1,Nr)
 c     read(funit) nWetiGlobal(1)
 #endif
@@ -242,7 +242,7 @@ cgg)
        print *, prefix, 'nWetsGlobal ', (nWetsGlobal(k), k=1,Nr)
        print *, prefix, 'nWetwGlobal ', (nWetwGlobal(k), k=1,Nr)
 c      print *, prefix, 'nWetvGlobal ', (nWetvGlobal(k), k=1,Nr)
-#ifdef ALLOW_SHIFWFLX_CONTROL
+#ifdef ALLOW_SHELFICE
        print *, prefix, 'nWetiGlobal ', (nWetiGlobal(k), k=1,Nr)
 #endif
 #ifdef ALLOW_OBCSN_CONTROL
@@ -338,7 +338,7 @@ cph           do bi = 1,nsx
               cbuffindex = nWetwGlobal(k)
 c            else if (ncvargrd(ivar) .eq. 'v') then
 c             cbuffindex = nWetvGlobal(k)
-#ifdef ALLOW_SHIFWFLX_CONTROL
+#ifdef ALLOW_SHELFICE
              else if (ncvargrd(ivar) .eq. 'i') then
               cbuffindex = nWetiGlobal(k)
 #endif

@@ -4,6 +4,8 @@
  usePTRACERS    = .TRUE.,
  useGCHEM       = .TRUE.,
  useECCO        = .TRUE.,
+# this is the default if useECCO=T or usePROFILES = T and ALLOW_CAL is defined
+ useCAL         = .TRUE.,
  useGrdchk      = .TRUE.,
  usePROFILES    = .TRUE.,
  useDIAGNOSTICS = .TRUE.,

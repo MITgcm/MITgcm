@@ -47,7 +47,7 @@ C     tmpObsNo :: number of obs in the file
       INTEGER vv, err, varID, tmpObsNo
       INTEGER vec_start,vec_count
       _RL     vec_tmp1(1000),vec_tmp2(1000)
-      CHARACTER*(max_len_mbuf) msgbuf
+      CHARACTER*(MAX_LEN_MBUF) msgbuf
 
       IF ( (irec.LT.obsfit_minind_buff) .OR.
      &     (irec.GT.obsfit_maxind_buff) .OR.
@@ -55,10 +55,10 @@ C     tmpObsNo :: number of obs in the file
        err = NF_INQ_DIMID( fiddata_obs(fNb),'iOBS', varID )
        CALL OBSFIT_NF_ERROR(
      &      'READ_OBS: NF_INQ_DIMID fiddata iObs',
-     &      err,myThid )
+     &      err, 0, 0, myThid )
        err = NF_INQ_DIMLEN( fiddata_obs(fNb), varID, tmpObsNo )
        CALL OBSFIT_NF_ERROR( 'READ_OBS: NF_INQ_DIMLEN tmpObsNo',
-     &      err,myThid )
+     &      err, 0, 0, myThid )
 
        IF ( obsfit_curfile_buff.NE.fNb ) THEN
 C No asumption on whether a forward or a backward loop is calling
@@ -93,18 +93,18 @@ C Implies that a forward loop is calling
 
        err = NF_INQ_VARID( fiddata_obs(fNb), obsfit_nameval, varID )
        CALL OBSFIT_NF_ERROR(
-     &      'READ_OBS: NF_INQ_VARID obsfit_nameval',err,myThid )
+     &      'READ_OBS: NF_INQ_VARID obsfit_nameval',err,0,0,myThid )
        err = NF_GET_VARA_DOUBLE( fiddata_obs(fNb), varID, vec_start,
      &       vec_count, vec_tmp1 )
        CALL OBSFIT_NF_ERROR(
-     &      'READ_OBS: NF_GET_VARA_DOUBLE vec_tmp1',err,myThid )
+     &      'READ_OBS: NF_GET_VARA_DOUBLE vec_tmp1',err,0,0,myThid )
        err = NF_INQ_VARID( fiddata_obs(fNb), obsfit_nameuncert, varID )
        CALL OBSFIT_NF_ERROR(
-     &      'READ_OBS: NF_INQ_VARID obsfit_nameuncert',err,myThid )
+     &      'READ_OBS: NF_INQ_VARID obsfit_nameuncert',err,0,0,myThid )
        err = NF_GET_VARA_DOUBLE( fiddata_obs(fNb), varID, vec_start,
      &       vec_count, vec_tmp2 )
        CALL OBSFIT_NF_ERROR(
-     &      'READ_OBS: NF_GET_VARA_DOUBLE vec_tmp2',err,myThid )
+     &      'READ_OBS: NF_GET_VARA_DOUBLE vec_tmp2',err,0,0,myThid )
 
         IF ( err.NE.NF_NOERR ) THEN
          WRITE( errorMessageUnit,'(A)' )

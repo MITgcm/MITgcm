@@ -26,6 +26,9 @@ C !USES: ===============================================================
 #  include "EXF_INTERP_PARAM.h"
 #  include "GCHEM_INTERP_PARAM.h"
 # endif
+# ifdef ALLOW_CAL
+#  include "cal.h"
+# endif
 #endif
 
 C !INPUT PARAMETERS: ===================================================
@@ -71,6 +74,7 @@ C  to test the flag before any corresponding pkg S/R call
      &           gchem_Si_const, gchem_Si3D_const, gchem_par_const, 
      &           gchem_Fe_const, gchem_apco2_const, gchem_wind_const, 
      &           gchem_apres_const, gchem_ice_const, gchem_chl_const,
+     &           gchem_secondsPerYear,
      &           tIter0
 
 # ifdef ALLOW_EXF
@@ -189,10 +193,6 @@ C- Set defaults values for parameters in GCHEM.h
       gchem_rl4=0. _d 0
       gchem_rl5=0. _d 0
 
-C     default periodic forcing to same as for physics
-      gchem_ForcingPeriod=externForcingPeriod
-      gchem_ForcingCycle=externForcingCycle
-
 C     some predefined forcing fields and constants
       gchem_iceFile   = ' '
       gchem_windFile  = ' '
@@ -214,6 +214,20 @@ C     some sensible defaults
       gchem_apco2_const =  280.      _d -6
       gchem_chl_const   =    0.      _d 0
 
+C  default periodic forcing to same as for physics
+       gchem_ForcingPeriod=externForcingPeriod
+       gchem_ForcingCycle=externForcingCycle
+C  default based on 360 day year or related to calendar settings
+       gchem_secondsPerYear   = 360. _d 0 * 86400. _d 0
+#ifdef ALLOW_CAL
+       IF ( useCAL ) THEN
+        IF ( theCalendar .EQ. 'gregorian') THEN
+         gchem_secondsPerYear = 365.25 _d 0*86400. _d 0
+        ELSEIF ( theCalendar .EQ. 'noLeapYear') THEN
+         gchem_secondsPerYear = 365.00 _d 0*86400. _d 0
+        ENDIF
+       ENDIF
+#endif
 C- Open and read the data.gchem file
       WRITE(msgBuf,'(A)') ' GCHEM_READPARMS: opening data.gchem'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
