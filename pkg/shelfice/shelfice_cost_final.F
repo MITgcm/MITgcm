@@ -48,6 +48,7 @@ C     ! FUNCTIONS:
 C     !LOCAL VARIABLES:
       INTEGER bi, bj
       INTEGER ifc
+      CHARACTER*18 fmt
       CHARACTER*(25) cfname
 
       _RL f_shelfice
@@ -83,10 +84,11 @@ ccc        end do
       ENDIF
 
 C--   Sum up all contributions.
+      fmt = '(A,D22.15,1X,E8.2)'
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        write(standardmessageunit,'(A,D22.15)')
-     &       ' --> objf_shelfice(bi,bj) = ', objf_shelfice(bi,bj)
+        WRITE(standardMessageUnit,fmt) ' --> objf_shelfice(bi,bj) = ',
+     &       objf_shelfice(bi,bj), mult_shelfice
         tile_fc(bi,bj) = tile_fc(bi,bj)
      &       + mult_shelfice * objf_shelfice(bi,bj)
 
@@ -98,17 +100,23 @@ cML      CALL GLOBAL_SUM_TILE_RL( num_shelfice, no_shelfice, myThid )
 
 # ifndef ALLOW_OPENAD
 C--   Each process has calculated the global part for itself.
-      IF ( MASTER_CPU_THREAD(myThid) ) THEN
+      IF ( MASTER_CPU_THREAD(myThid)
+     &     .AND. SHELFICEwriteCostFunction ) THEN
 
        ifc = 30
        WRITE(cfname,'(A,i4.4)') 'costfunction_shelfice',optimcycle
        OPEN(unit=ifc,file=cfname)
 
-       WRITE(ifc,*) 'fc =', fc
+C     makes little sense to print this now, because it is zero at this point
+c       WRITE(ifc,*) 'fc =', fc
 cML       WRITE(ifc,*) 'f_shelfice =', f_shelfice, no_shelfice
-       WRITE(ifc,*) 'f_shelfice =', f_shelfice
+       WRITE(ifc,fmt) 'f_shelfice =', f_shelfice, mult_shelfice
 
        CLOSE(ifc)
+
+C     Do it only once per run, otherwise grdchk will overwrite or append
+C     files in an uncontrolled way.
+       SHELFICEwriteCostFunction = .FALSE.
 
       ENDIF
 # endif /* ALLOW_OPENAD */

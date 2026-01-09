@@ -127,6 +127,7 @@ CEOP
      &     SHI_withBL_uStarTopDz,
      &     no_slip_shelfice,
      &     SHELFICEwriteState,
+     &     SHELFICEwriteCostFunction,
      &     SHELFICE_dump_mdsio,
      &     SHELFICE_dump_mnc,
      &     SHELFICEadvDiffHeatFlux,
@@ -143,6 +144,7 @@ CEOP
       LOGICAL SHI_withBL_uStarTopDz
       LOGICAL no_slip_shelfice
       LOGICAL SHELFICEwriteState
+      LOGICAL SHELFICEwriteCostFunction
       LOGICAL SHELFICE_dump_mdsio
       LOGICAL SHELFICE_dump_mnc
       LOGICAL SHELFICEadvDiffHeatFlux

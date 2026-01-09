@@ -104,9 +104,10 @@ C     start printing to STDOUT
       DO num_var=1,NGENCOST
        IF (no_gencost(num_var).GT.0) THEN
         IL  = ILNBLNK( gencost_name(num_var) )
-        WRITE(msgBuf,'(A,D22.15,i2.0,3A)')
-     &     ' --> f_gencost  =',f_gencost(num_var),
-     &     num_var, ' (', gencost_name(num_var)(1:IL), ')'
+        WRITE(msgBuf,'(A,D22.15,I3,1X,E8.2,3A)')
+     &     ' --> f_gencost  =', f_gencost(num_var), num_var,
+     &     mult_gencost(num_var),
+     &     ' (', gencost_name(num_var)(1:IL), ')'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
        ENDIF
@@ -129,10 +130,10 @@ C     only master thread of master CPU open and write to file
          IF (no_gencost(num_var).GT.0) THEN
           IL  = ILNBLNK( gencost_name(num_var) )
           IL  = max (IL,15)
-          WRITE(ifc,'(2A,i2.0,A,2D22.15)')
+          WRITE(ifc,'(2A,I3.0,A,2D22.15,1X,E8.2)')
      &    gencost_name(num_var)(1:IL),' (gencost ', num_var, ') = ',
      &    f_gencost(num_var),
-     &    no_gencost(num_var)
+     &    no_gencost(num_var), mult_gencost(num_var)
          ENDIF
         ENDDO
 #endif

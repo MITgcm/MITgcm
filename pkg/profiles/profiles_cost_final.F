@@ -106,9 +106,10 @@ C     start printing to STDOUT
       DO num_file=1,NFILESPROFMAX
        DO num_var=1,NVARMAX
         IF ( no_profiles(num_file,num_var).GT.zeroRL ) THEN
-         WRITE(msgBuf,'(A,D22.15,i2.0,i2.0)')
+         WRITE(msgBuf,'(A,D22.15,2I3,1X,E8.2)')
      &     ' --> f_profiles =',f_profiles(num_file,num_var),
-     &      num_file, num_var
+     &      num_file, num_var, mult_profiles(num_file,num_var)
+
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT, myThid )
         ENDIF
@@ -116,9 +117,10 @@ C     start printing to STDOUT
       ENDDO
       DO num_var=1,NVARMAX
        IF ( no_profiles_mean(num_var).GT.zeroRL ) THEN
-        WRITE(msgBuf,'(A,D22.15,i2.0,i2.0)')
+        WRITE(msgBuf,'(A,D22.15,I3,1X,E8.2)')
      &     ' --> f_profiles_mean =',f_profiles_mean(num_var),
-     &      num_var
+     &      num_var, mult_profiles_mean(num_var)
+
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
        ENDIF
@@ -141,19 +143,21 @@ C     only master thread of master CPU open and write to file
          IF ( no_profiles(num_file,num_var).GT.zeroRL ) THEN
           IL = ILNBLNK( profilesfiles(num_file) )
           IL = MAX(IL,30)
-          WRITE(ifc,'(4A,2D22.15)')
+          WRITE(ifc,'(4A,2D22.15,1X,E8.2)')
      &         profilesfiles(num_file)(1:IL),' ',
      &         prof_names(num_file,num_var), ' = ',
      &         f_profiles(num_file,num_var),
-     &         no_profiles(num_file,num_var)
+     &         no_profiles(num_file,num_var),
+     &         mult_profiles(num_file,num_var)
          ENDIF
         ENDDO
        ENDDO
        DO num_var=1,NVARMAX
         IF ( no_profiles_mean(num_var).GT.zeroRL ) THEN
-         WRITE(ifc,'(3A,2D22.15)')
+         WRITE(ifc,'(3A,2D22.15,1X,E8.2)')
      &        'profile_mean ', prof_names(1,num_var), ' = ',
-     &        f_profiles_mean(num_var), no_profiles_mean(num_var)
+     &        f_profiles_mean(num_var), no_profiles_mean(num_var),
+     &        mult_profiles_mean(num_var)
         ENDIF
        ENDDO
        CLOSE(ifc)

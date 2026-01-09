@@ -60,6 +60,9 @@ C     Initialize MNC variable information for SHELFICE
       ENDIF
 #endif /* ALLOW_MNC */
 
+C     only used for writing cost function files
+      SHELFICEwriteCostFunction = .TRUE.
+
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j = 1-OLy, sNy+OLy

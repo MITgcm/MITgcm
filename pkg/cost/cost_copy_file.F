@@ -33,7 +33,7 @@ C !LOCAL VARIABLES:
       INTEGER iUnit
       INTEGER IL
       INTEGER nPkg, iPkg
-      PARAMETER ( nPkg = 5 )
+      PARAMETER ( nPkg = 7 )
       CHARACTER*8 pkgNames(nPkg)
       CHARACTER*(MAX_LEN_FNAM) cfname
       CHARACTER*(MAX_LEN_PREC) RECORD
@@ -42,12 +42,14 @@ C !LOCAL VARIABLES:
 
 C     This list can be appened as necessary with the only limitation
 C     that the character variables need to be all of the same length.
-      pkgNames = (/
-     &             'profiles',
-     &             'obsfit  ',
-     &             'ecco    ',
-     &             'ctrl    ',
-     &             'obcs    '/)
+      DATA pkgNames /
+     &     'profiles',
+     &     'obsfit  ',
+     &     'ecco    ',
+     &     'ctrl    ',
+     &     'obcs    ',
+     &     'seaice  ',
+     &     'shelfice' /
 
       iUnit = scrUnit1
       DO ipkg = 1, nPkg
@@ -72,7 +74,7 @@ C     that the character variables need to be all of the same length.
         ENDDO
  1001   CONTINUE
 
-        CLOSE(scrUnit1)
+        CLOSE(iUnit)
        ENDIF
       ENDDO
 

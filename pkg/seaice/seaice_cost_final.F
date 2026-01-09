@@ -48,6 +48,7 @@ C     !LOCAL VARIABLES:
       INTEGER ifc
       _RL f_ice
       _RL no_ice
+      CHARACTER*19 fmt
       CHARACTER*23 cfname
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
@@ -79,19 +80,25 @@ C--   Do global summation for each part of the cost function
       CALL GLOBAL_SUM_TILE_RL( objf_ice,     f_ice,     myThid )
       CALL GLOBAL_SUM_TILE_RL( num_ice,     no_ice,     myThid )
 
-      WRITE(standardMessageUnit,'(A,D22.15)')
-     &     ' --> f_ice     =',f_ice
+      fmt = '(A,2D22.15,1X,E8.2)'
+      WRITE(standardMessageUnit,fmt)
+     &     ' --> f_ice     =',f_ice, no_ice, mult_ice
 
 C--   Each process has calculated the global part for itself.
-      IF ( MASTER_CPU_THREAD(myThid) ) THEN
+      IF ( MASTER_CPU_THREAD(myThid).AND.SEAICEwriteCostFunction ) THEN
 
         WRITE(cfname,'(A,i4.4)') 'costfunction_seaice',optimcycle
         OPEN(unit=ifc,file=cfname)
 
-        WRITE(ifc,*) 'fc =', fc
-        WRITE(ifc,*) 'f_ice   =', f_ice, no_ice
+C     makes little sense to print this now, because it is zero at this point
+c       WRITE(ifc,*) 'fc =', fc
+        WRITE(ifc,fmt) 'f_ice   =', f_ice, no_ice, mult_ice
 
         CLOSE(ifc)
+
+C     Do it only once per run, otherwise grdchk will overwrite or append
+C     files in an uncontrolled way.
+        SEAICEwriteCostFunction = .FALSE.
 
       ENDIF
 
