@@ -62,7 +62,6 @@ C coefficients for determining saturation O2
       oC0= -4.88682 _d -7
 
 C--   Set other constant/flag
-#ifndef GCHEM_ALLOW_FFIELDS
       IF ( dic_int1.EQ.2 ) THEN
         CALL MDSFINDUNIT( iUnit, myThid )
         OPEN(UNIT=iUnit,FILE='co2atmos.dat',STATUS='old')
@@ -72,7 +71,6 @@ C--   Set other constant/flag
         ENDDO
         CLOSE(iUnit)
       ENDIF
-#endif /* GCHEM_ALLOW_FFIELDS */
 
 #ifdef DIC_BIOTIC
 #ifdef ALLOW_AUTODIFF

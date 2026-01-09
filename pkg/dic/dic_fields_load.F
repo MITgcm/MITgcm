@@ -47,9 +47,13 @@ C Access pkg/gchem forcing fields
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
+          IF ( dic_int1.EQ.-1) THEN
+C           only update if dic_int1 = -1 (use gchem fields only in this case)
+C           not if dic_int1 = 3 (interact with atmospheric box)
+            AtmospCO2(i,j,bi,bj)  = gchemapCO2(i,j,bi,bj)
+          ENDIF
           fIce(i,j,bi,bj)       = gchemIce(i,j,bi,bj)
           wind(i,j,bi,bj)       = gchemWind(i,j,bi,bj)
-          AtmospCO2(i,j,bi,bj)  = gchemapCO2(i,j,bi,bj)
           silicaSurf(i,j,bi,bj) = gchemSi(i,j,bi,bj)
 #if defined(DIC_CALCITE_SAT) && defined(GCHEM_3D_SILICA) 
           IF ( useCalciteSaturation ) THEN

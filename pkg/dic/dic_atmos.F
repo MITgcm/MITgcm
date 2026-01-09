@@ -182,8 +182,8 @@ C if end of forcing cycle, find total change in ocean carbon
 #endif
 
        atm_pCO2 = atpco2
-      ELSE
-       atm_pCO2 = dic_pCO2
+C      ELSE
+C       atm_pCO2 = dic_pCO2
       ENDIF
 
 #ifndef ALLOW_AUTODIFF

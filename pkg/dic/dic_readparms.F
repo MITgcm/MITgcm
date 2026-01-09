@@ -222,7 +222,11 @@ C-- setting default values for Calcite Saturation params ends here.
        DIC_parFile    = ' '
        DIC_chlaFile   = ' '
        DIC_ironFile   = ' '
+#ifdef GCHEM_ALLOW_FFIELDS
+       dic_int1    = -1
+#else
        dic_int1    = 0
+#endif
        dic_int2    = 0
        dic_int3    = 0
        dic_int4    = 0
@@ -702,6 +706,29 @@ C    DIC_CALCITE_SATURATION code is not compiled
         errCount = errCount + 1
       ENDIF
 #endif /* DIC_CALCITE_SAT */
+
+C Issue an error and stop if GCHEM_ALLOW_FFIELDS conflicts
+C   with interactive atmospheric box
+#ifdef GCHEM_ALLOW_FFIELDS
+      IF (dic_int1.GE.0 .AND. dic_int1.LT.3) THEN
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
+     &    'GCHEM_ALLOW_FFIELDS conflicts with 0<=dic_int1<=2'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
+     &    'only interactive atmosphere dic_int1=3 allowed'
+        CALL PRINT_ERROR( msgBuf, myThid )
+
+        IF (dic_int1.EQ.0 .OR. dic_int1.EQ.1) THEN
+          WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
+     &      'dic_int1=0 or 1: set gchem_apco2_const in data.gchem'
+        ELSEIF (dic_int1.EQ.2) THEN
+          WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
+     &      'dic_int1=2: supply 2D gchem_apco2File in data.gchem'
+        ENDIF
+          CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+#endif /* GCHEM_ALLOW_FFIELDS */
 
       IF ( errCount.GE.1 ) THEN
         WRITE(msgBuf,'(A,I3,A)')
