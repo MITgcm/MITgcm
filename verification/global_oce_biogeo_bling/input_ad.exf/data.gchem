@@ -13,12 +13,13 @@
   gchem_par_const   = 140.0,
   gchem_Fe_const    = 1.e-11,
   gchem_Si_const    = 7.6838e-3,
-#
  &
 
  &GCHEM_FORCING_PARAMS
-  gchem_FePeriod = -12.,
-  gchem_SiPeriod = -12.,
+  gchem_windPeriod = -12.,
+  gchem_icePeriod  = -12.,
+  gchem_FePeriod   = -12.,
+  gchem_SiPeriod   = -12.,
  &
 
  &GCHEM_INTERP_PARAMS

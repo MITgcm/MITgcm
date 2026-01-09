@@ -7,6 +7,6 @@
  useGCHEM       = .TRUE.,
  useECCO        = .TRUE.,
  useGrdchk      = .TRUE.,
- usePROFILEs    = .TRUE.,
+ usePROFILES    = .TRUE.,
  useDIAGNOSTICS = .TRUE.,
  &
