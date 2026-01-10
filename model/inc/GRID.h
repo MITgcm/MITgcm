@@ -308,9 +308,9 @@ C                   (= +1 for R=P (P increases downward, +gravity direction)
 C     rkSign     :: Vertical coordinate to vertical index orientation.
 C                   ( +1 same orientation, -1 opposite orientation )
 C     globalArea :: Domain Integrated horizontal Area ( m^2 )
-C     rAc_3dMean :: domain 3-d averaged of grid-cell horizontal area ( m^2 )
-C     n2dWetPts  :: number of non-empty columns (wet surface point)
-C     n3dWetPts  :: number of non-empty grid points (wet grid point)
+C     rAc_3dMean :: domain 3-d average of grid-cell horizontal area ( m^2 )
+C     n2dWetPts  :: number of non-empty columns (wet free-surface points)
+C     n3dWetPts  :: number of non-empty grid points (wet grid points)
       COMMON /GRID_RL/
      &  cosFacU, cosFacV, sqCosFacU, sqCosFacV,
      &  deepFacC, deepFac2C, recip_deepFacC, recip_deepFac2C,
