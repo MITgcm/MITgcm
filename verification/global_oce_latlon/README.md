@@ -36,9 +36,8 @@ The **secondary** test, using input files from `input.ebm/`,
 relies on Energy-Balance Model package (`pkg/ebm`) to compute oceanic surface forcing.<br>
 
 ***Note:***
-    this forward set-up has been moved (in PR #944) from `verification/global_ocean_ebm/`
-    together with the TAF Adjoint Compiler conterpart set-up and
-    a "README" there still provides some details related to `pkg/ebm` specific
+    this secondary test set-up has been moved (in PR #944) from `verification/global_ocean_ebm/`
+    and a "README" there still provides some details related to `pkg/ebm` specific
     features used here.
 
 ## Part 1, using OpenAD Adjoint Compiler:

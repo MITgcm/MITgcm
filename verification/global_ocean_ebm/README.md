@@ -6,6 +6,9 @@ This experiment has been moved (PR #944) inside `global_oce_latlon`,
 and is now run there as secondary test ("global_oce_latlon.ebm") using
 `input.ebm/` and `input_ad.ebm/` for the forward and adjoint test respectively.
 
+Original Description:
+=====================
+
 ### Overview:
 This experiment is derived from `tutorial_global_oce_latlon` (see also
 `global_ocean.90x40x15`) and relies on Energy-Balance Model
