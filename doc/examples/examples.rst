@@ -642,8 +642,8 @@ directories ``code_oad`` and ``input_oad`` respectively.
    - using thermodynamic sea ice from :filelink:`pkg/thsice`
      (:filelink:`input_ad.thsice <verification/global_ocean.cs32x15/input_ad.thsice>`).
 
-#. :filelink:`global_oce_biogeo_bling <verification/global_oce_biogeo_bling>`
- - Based on standard forward experiment, TAF adjoint setup, uses package
+#. :filelink:`global_oce_biogeo_bling <verification/global_oce_biogeo_bling>` - Based on
+   standard forward experiment, TAF adjoint setup, uses package
    :filelink:`ecco <pkg/ecco>` and package :filelink:`profiles <pkg/profiles>`.
    Also contains an additional TAF adjoint setup
    that uses package :filelink:`obsfit <pkg/obsfit>`
