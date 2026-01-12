@@ -51,7 +51,7 @@ C     myThid     :: my Thread Id. number
       INTEGER myOptimIter
       INTEGER myThid
       _RL  dummy
-      _RL dummyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL dummyd
 
 C     !LOCAL VARIABLES:
       CHARACTER*(80) fname
@@ -64,12 +64,9 @@ CEOP
       call active_read_xy(active_var_file, active_var,
      &                    iRec, doglobalread, lAdInit,
      &                    myOptimIter, myThid, dummy)
-      call active_read_xy(fname, dummyd, iRec,
+      call active_read_xy(fname, active_vard, iRec,
      &                    doglobalread, lAdInit,
-     &                    myOptimIter, myThid, dummy)
-
-      active_var = 0.d0
-      active_vard = dummyd
+     &                    myOptimIter, myThid, dummyd)
 
       END
 
@@ -118,7 +115,7 @@ C     myThid     :: my Thread Id. number
       INTEGER myOptimIter
       INTEGER myThid
       _RL  dummy
-      _RL dummyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL dummyd
 
 C     !LOCAL VARIABLES:
       CHARACTER*(80) fname
@@ -131,12 +128,10 @@ CEOP
       call active_read_xyz(active_var_file, active_var,
      &                    iRec, doglobalread, lAdInit,
      &                    myOptimIter, myThid, dummy)
-      call active_read_xyz(fname, dummyd, iRec,
+      call active_read_xyz(fname, active_vard, iRec,
      &                    doglobalread, lAdInit,
-     &                    myOptimIter, myThid, dummy)
+     &                    myOptimIter, myThid, dummyd)
 
-      active_var = 0.d0
-      active_vard = dummyd
 
       END
 
