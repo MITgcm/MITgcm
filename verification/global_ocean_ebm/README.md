@@ -3,7 +3,7 @@ Quasi-global ocean set-up, $`80^\circ`$S -- $`80^\circ`$N, at $`4^\circ`$
 horizontal resolution with 15 vertical levels.
 
 This experiment has been moved (PR #944) inside `global_oce_latlon`,
-and is now run there as secondary test ("global_oce_latlon.ebm") using
+and is now run there as a secondary test (`global_oce_latlon.ebm`) using
 `input.ebm/` and `input_ad.ebm/` for the forward and adjoint test respectively.
 
 Original Description:

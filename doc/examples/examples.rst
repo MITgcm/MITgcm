@@ -400,8 +400,8 @@ For many experiments, additional information is provided in a ``README`` file lo
 
 #. :filelink:`global_oce_latlon <verification/global_oce_latlon>` - Global ocean experiment
    on a lat-lon grid, similar to :ref:`tutorial_global_oce_latlon <sec_global_oce_latlon>`
-   experiment but using other surface forcing pkg, such as with the :filelink:`exf <pkg/exf>`
-   package with :filelink:`exf <pkg/exf>` interpolation (formerly
+   experiment but using the surface forcing pkg :filelink:`exf <pkg/exf>` package
+   with :filelink:`exf <pkg/exf>` interpolation (formerly
    :filelink:`global_with_exf <verification/global_with_exf>`). Also contains additional setups:
 
    - same as above with yearly :filelink:`exf <pkg/exf>` fields

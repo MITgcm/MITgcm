@@ -9,7 +9,7 @@ with surface forcing provided by specific pkgs, either
 `pkg/exf` or `pkg/ebm`, instead of relying on the main model surface forcing capability.
 It contains 3 forward set-up, all using the same executable built from `code`
 config but with specific input files from `input/` (primary test) and,
-as secondary tests, from `input.yearly\` and `input.ebm/`.
+as secondary tests, from `input.yearly/` and `input.ebm/`.
 
 It provides also adjoint settings for 3 AD compilers, OpenAD, TAF and Tapenade, with primary
 test input files in `input_oad/`, `input_ad/` and `input_tap/` respectively, but also
@@ -17,7 +17,7 @@ several secondary test setting with each of the AD compilers.
 
 ## Part 0, Forward only tests:
 
-The **primary** forward test, using input files from `input\`,
+The **primary** forward test, using input files from `input/`,
 uses prescribed monthly-mean air-sea surface fluxes from `pkg/exf`.<br>
 
 The **secondary** test, using input files from `input.yearly/`,
@@ -33,7 +33,7 @@ is very similar except for the specification of yearly input fields to`pkg/exf`.
     is not used here (`#undef ALLOW_BULKFORMULAE`).
 
 The **secondary** test, using input files from `input.ebm/`,
-relies on Energy-Balance Model package (`pkg/ebm`) to compute oceanic surface forcing.<br>
+relies on the Energy-Balance Model package (`pkg/ebm`) to compute oceanic surface forcing.<br>
 
 ***Note:***
     this secondary test set-up has been moved (in PR #944) from `verification/global_ocean_ebm/`
