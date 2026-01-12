@@ -8,6 +8,15 @@
 #ifdef ALLOW_KPP
 # include "KPP_OPTIONS.h"
 #endif
+#if ( defined GM_READ_K3D_REDI || defined GM_VISBECK_VARIABLE_K \
+      || defined ALLOW_GM_LEITH_QG || defined GM_BATES_K3D )
+# define GM_USE_K3D_REDI
+#endif
+C no GM_GEOM_VARIABLE here since it is at a different location
+#if ( defined GM_READ_K3D_GM   || defined GM_VISBECK_VARIABLE_K \
+      || defined ALLOW_GM_LEITH_QG || defined GM_BATES_K3D )
+# define GM_USE_K3D_GM
+#endif
 
 CBOP
 C     !ROUTINE: GMREDI_CALC_TENSOR
@@ -63,7 +72,6 @@ C
 CEOP
 
 #ifdef ALLOW_GMREDI
-
 C     !LOCAL VARIABLES:
 C     maskFk    :: 2-D mask for vertical interface k (between level k-1 & k)
       INTEGER i,j,k
@@ -92,15 +100,21 @@ C     maskFk    :: 2-D mask for vertical interface k (between level k-1 & k)
       INTEGER kp1
       _RL maskp1
 #endif
+#ifdef GM_USE_K3D_REDI
+      _RL locK3dRedi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+#else
+      _RL locK3dRedi(1)
+#endif
+#ifdef GM_USE_K3D_GM
+      _RL locK3dGM(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+#else
+      _RL locK3dGM(1)
+#endif
 
 #ifdef GM_VISBECK_VARIABLE_K
-# ifdef OLD_VISBECK_CALC
-      _RL Ssq(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-# else
       INTEGER ks
       _RL dSigmaH, dSigmaR, Sloc, rTop
 c     _RL M2loc
-# endif
       _RL recipMaxSlope
       _RL deltaH, integrDepth
       _RL N2loc, SNloc
@@ -231,6 +245,12 @@ C-    Just initialize to zero (not use anyway)
          Kuz(i,j,k,bi,bj)  = 0. _d 0
          Kvz(i,j,k,bi,bj)  = 0. _d 0
 # endif
+# ifdef GM_USE_K3D_REDI
+         locK3dRedi(i,j,k) = 0. _d 0
+# endif
+# ifdef GM_USE_K3D_GM
+         locK3dGM(i,j,k)   = 0. _d 0
+# endif
         ENDDO
        ENDDO
       ENDDO
@@ -346,7 +366,9 @@ c        dSigmaDr(i,j)=sigmaR(i,j,k)
        ENDDO
 
 #ifdef GM_VISBECK_VARIABLE_K
-# ifndef OLD_VISBECK_CALC
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ INCOMPLETE dSigmaDr
+# endif
        IF ( GM_Visbeck_alpha.GT.zeroRL .AND.
      &      -rC(k-1).LT.GM_Visbeck_depth ) THEN
 
@@ -405,6 +427,13 @@ C        (same stencil and same weights as for dSigmaH calculation)
      &             + dSigmaDy(i,j)*dSigmaDy(i,j)
            IF ( dSigmaH .GT. 0. _d 0 ) THEN
              dSigmaH = SQRT( dSigmaH )
+# ifdef ALLOW_AUTODIFF_TAMC
+C     This gets rid of a TAF-recomputation warning for dSigmaH that is
+C     not associated with any actual recomputations. TAF is probably
+C     just confused by the cascade of if-statements.
+           ENDIF
+           IF ( dSigmaH .GT. 0. _d 0 ) THEN
+# endif
 C-       compute slope, limited by GM_Visbeck_maxSlope:
              IF ( dSigmaR.GT.dSigmaH*recipMaxSlope ) THEN
               Sloc = dSigmaH / dSigmaR
@@ -428,7 +457,6 @@ c            M2loc = gravity*recip_rhoConst*dSigmaH
          ENDDO
         ENDDO
        ENDIF
-# endif /* ndef OLD_VISBECK_CALC */
 #endif /* GM_VISBECK_VARIABLE_K */
 C     Z-Coords: change sign of vertical Sigma gradient (always downward)
 C     to match stratification sign (i.e., positive if stratified)
@@ -497,42 +525,6 @@ C     flip sign of extra-diagonal component (see manual sec. 8.4.1.2.4)
         ENDDO
        ENDDO
 
-#ifdef GM_VISBECK_VARIABLE_K
-# ifdef OLD_VISBECK_CALC
-       DO j=1-OLy+1,sNy+OLy-1
-        DO i=1-OLx+1,sNx+OLx-1
-
-C- note (jmc) : moved here since only used in VISBECK_VARIABLE_K
-C           but do not know if *taperFct (or **2 ?) is necessary
-         Ssq(i,j)=SlopeSqr(i,j)*taperFct(i,j)
-
-C--     Depth average of M^2/N^2 * N
-
-C       Calculate terms for mean Richardson number
-C       which is used in the "variable K" parameterisaton.
-C       Distance between interface above layer and the integration depth
-         deltaH=abs(GM_Visbeck_depth)-abs(rF(k))
-C       If positive we limit this to the layer thickness
-         integrDepth = drF(k)
-         deltaH=min(deltaH,integrDepth)
-C       If negative then we are below the integration level
-         deltaH=max(deltaH, 0. _d 0)
-C       Now we convert deltaH to a non-dimensional fraction
-         deltaH=deltaH/GM_Visbeck_depth
-
-         IF ( Ssq(i,j).NE.0. .AND. dSigmaDr(i,j).NE.0. ) THEN
-          N2loc = gravity*recip_rhoConst*dSigmaDr(i,j)
-          SNloc = SQRT(Ssq(i,j)*N2loc )
-          VisbeckK(i,j,bi,bj) = VisbeckK(i,j,bi,bj)
-     &        +deltaH*GM_Visbeck_alpha
-     &               *GM_Visbeck_length*GM_Visbeck_length*SNloc
-         ENDIF
-
-        ENDDO
-       ENDDO
-# endif /* OLD_VISBECK_CALC */
-#endif /* GM_VISBECK_VARIABLE_K */
-
 C-- end 1rst loop on vertical level index k
       ENDDO
 
@@ -550,89 +542,74 @@ C-     Limit range that Kappa-GM can take
         ENDDO
        ENDDO
       ENDIF
-# ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=tkey, byte=isbyte
-# endif
+C     If you want to avoid recomputing the above loop, you can uncomment
+C     the following lines; alternatively, storing locK3dRedi/GM below
+C     also reduces the recomputations, but at the cost of increased
+C     memory usage (2 3D-fields), probably not worth it.
+c# ifdef ALLOW_AUTODIFF_TAMC
+cCADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=tkey, byte=isbyte
+c# endif
 #endif /* GM_VISBECK_VARIABLE_K */
 
-C     Update components of Redi/GM tensor, second step: multiply by Diffusivity
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C--   Set local 3D Redi diffusivity and GM Kappa:
+#ifdef GM_USE_K3D_REDI
       DO k=1,Nr
-#ifdef ALLOW_AUTODIFF_TAMC
-C to avoid few minor recomputations (with KAPREDI_CONTROL, KAPGM_CONTROL ?)
-       kkey = k + (tkey-1)*Nr
-CADJ STORE Kwx(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE Kwy(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
-#endif
-       km1 = MAX(k-1,1)
-       isopycK = GM_isopycK
-     &         *(GM_isoFac1d(km1)+GM_isoFac1d(k))*op5
-       bolus_K = GM_background_K
-     &         *(GM_bolFac1d(km1)+GM_bolFac1d(k))*op5
-       DO j=1-OLy+1,sNy+OLy-1
-        DO i=1-OLx+1,sNx+OLx-1
-#ifdef GM_READ_K3D_REDI
-         Kgm_tmp = op5*( GM_inpK3dRedi(i,j,km1,bi,bj)
-     &                 + GM_inpK3dRedi(i,j,k,bi,bj) )
-#else
-         Kgm_tmp = isopycK*GM_isoFac2d(i,j,bi,bj)
-#endif
-#ifdef GM_READ_K3D_GM
-     &           + GM_skewflx*op5*( GM_inpK3dGM(i,j,km1,bi,bj)
-     &                            + GM_inpK3dGM(i,j,k,bi,bj) )
-#else
-     &           + GM_skewflx*bolus_K*GM_bolFac2d(i,j,bi,bj)
-#endif
-#ifdef GM_VISBECK_VARIABLE_K
-     &           + VisbeckK(i,j,bi,bj)*(GM_isoFac_calcK + GM_skewflx)
-#endif
-#ifdef GM_GEOM_VARIABLE_K
-     &           + GM_skewflx*GEOM_K3d(i,j,k,bi,bj)
-#endif
-#ifdef ALLOW_GM_LEITH_QG
-     &           + op5*( GM_LeithQG_K(i,j,km1,bi,bj)
-     &                 + GM_LeithQG_K(i,j,k,bi,bj) )
-     &                *(GM_isoFac_calcK + GM_skewflx)
-#endif
-#if (defined GM_BATES_K3D && !defined GM_BATES_PASSIVE)
-     &           + op5*( GM_BatesK3d(i,j,km1,bi,bj)
-     &                 + GM_BatesK3d(i,j,k,bi,bj) )
-     &                *(GM_isoFac_calcK + GM_skewflx)
-#endif
-         Kwx(i,j,k,bi,bj)= Kgm_tmp*Kwx(i,j,k,bi,bj)
-         Kwy(i,j,k,bi,bj)= Kgm_tmp*Kwy(i,j,k,bi,bj)
-#ifdef GM_READ_K3D_REDI
-         Kwz(i,j,k,bi,bj)= ( op5*( GM_inpK3dRedi(i,j,km1,bi,bj)
-     &                           + GM_inpK3dRedi(i,j,k,bi,bj) )
-#else
-         Kwz(i,j,k,bi,bj)= ( isopycK*GM_isoFac2d(i,j,bi,bj)
-#endif
-#ifdef GM_VISBECK_VARIABLE_K
-     &                     + VisbeckK(i,j,bi,bj)*GM_isoFac_calcK
-#endif
-C no GM_GEOM_VARIABLE here because this is the Redi part
-#ifdef ALLOW_GM_LEITH_QG
-     &                     + op5*( GM_LeithQG_K(i,j,km1,bi,bj)
-     &                           + GM_LeithQG_K(i,j,k,bi,bj) )
-     &                                          *GM_isoFac_calcK
-#endif
-#if (defined GM_BATES_K3D && !defined GM_BATES_PASSIVE)
-     &                     + op5*( GM_BatesK3d(i,j,km1,bi,bj)
-     &                           + GM_BatesK3d(i,j,k,bi,bj) )
-     &                                          *GM_isoFac_calcK
-#endif
-     &                     )*Kwz(i,j,k,bi,bj)
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         locK3dRedi(i,j,k) =
+# ifdef GM_READ_K3D_REDI
+     &       GM_inpK3dRedi(i,j,k,bi,bj)
+# else
+     &       GM_isopycK*GM_isoFac1d(k)*GM_isoFac2d(i,j,bi,bj)
+# endif
+# ifdef GM_VISBECK_VARIABLE_K
+     &     + VisbeckK(i,j,bi,bj)*GM_isoFac_calcK
+# endif
+# ifdef ALLOW_GM_LEITH_QG
+     &     + GM_LeithQG_K(i,j,k,bi,bj)*GM_isoFac_calcK
+# endif
+# if ( defined GM_BATES_K3D && !defined GM_BATES_PASSIVE )
+     &     + GM_BatesK3d(i,j,k,bi,bj)*GM_isoFac_calcK
+# endif
         ENDDO
        ENDDO
       ENDDO
+c# ifdef ALLOW_AUTODIFF_TAMC
+cCADJ STORE locK3dRedi = comlev1_bibj, key=tkey, byte=isbyte
+c# endif
+#else /* GM_USE_K3D_REDI */
+      locK3dRedi(1) = 0. _d 0
+#endif /* GM_USE_K3D_REDI */
 
-#ifdef ALLOW_DIAGNOSTICS
-      IF ( useDiagnostics .AND. GM_taper_scheme.EQ.'fm07' ) THEN
-       CALL DIAGNOSTICS_FILL( hTransLay, 'GM_hTrsL', 0,1,2,bi,bj,myThid)
-       CALL DIAGNOSTICS_FILL( baseSlope, 'GM_baseS', 0,1,2,bi,bj,myThid)
-       CALL DIAGNOSTICS_FILL(recipLambda,'GM_rLamb', 0,1,2,bi,bj,myThid)
-      ENDIF
-#endif /* ALLOW_DIAGNOSTICS */
+#ifdef GM_USE_K3D_GM
+      DO k=1,Nr
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         locK3dGM(i,j,k) =
+# ifdef GM_READ_K3D_GM
+     &       GM_inpK3dGM(i,j,k,bi,bj)
+# else
+     &       GM_background_K*GM_bolFac1d(k)*GM_bolFac2d(i,j,bi,bj)
+# endif
+# ifdef GM_VISBECK_VARIABLE_K
+     &     + VisbeckK(i,j,bi,bj)
+# endif
+# ifdef ALLOW_GM_LEITH_QG
+     &     + GM_LeithQG_K(i,j,k,bi,bj)
+# endif
+# if ( defined GM_BATES_K3D && !defined GM_BATES_PASSIVE )
+     &     + GM_BatesK3d(i,j,k,bi,bj)
+# endif
+        ENDDO
+       ENDDO
+      ENDDO
+c# ifdef ALLOW_AUTODIFF_TAMC
+cCADJ STORE locK3dGM = comlev1_bibj, key=tkey, byte=isbyte
+c# endif
+#else /* GM_USE_K3D_GM */
+      locK3dGM(1) = 0. _d 0
+#endif /* GM_USE_K3D_GM */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Calculate Stream-Functions used in Advective Form:
@@ -647,13 +624,13 @@ C--   Calculate Stream-Functions used in Advective Form:
      I             myThid )
        ELSE
 # endif
-#ifndef GM_BATES_PASSIVE
+# ifndef GM_BATES_PASSIVE
          IF ( .NOT.GM_useBatesK3d ) THEN
 # endif
 C          If using BatesK3d PsiX and PsiY are calculated in GMREDI_CALC_BATES_K
-           CALL GMREDI_CALC_PSI_B(
+           CALL GMREDI_CALC_PSI_BOLUS(
      I              bi, bj, iMin, iMax, jMin, jMax,
-     I              sigmaX, sigmaY, sigmaR,
+     I              sigmaX, sigmaY, sigmaR, locK3dGM,
      I              ldd97_LrhoW, ldd97_LrhoS,
      I              myThid )
 # ifndef GM_BATES_PASSIVE
@@ -672,10 +649,65 @@ C          If using BatesK3d PsiX and PsiY are calculated in GMREDI_CALC_BATES_K
      I              sigmaX, sigmaY, sigmaR,
      I              locMixLayer,
      I              myIter, myThid )
+c    U              locK3dRedi
       ENDIF
 #endif /* ndef GM_EXCLUDE_SUBMESO */
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C     Update components of Redi/GM tensor, second step: multiply by Diffusivity
+      DO k=1,Nr
+#ifdef ALLOW_AUTODIFF_TAMC
+C to avoid few minor recomputations (with KAPREDI_CONTROL, KAPGM_CONTROL ?)
+       kkey = k + (tkey-1)*Nr
+CADJ STORE Kwx(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE Kwy(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+#endif
+       km1 = MAX(k-1,1)
+       isopycK = GM_isopycK
+     &         *(GM_isoFac1d(km1)+GM_isoFac1d(k))*op5
+       bolus_K = GM_background_K
+     &         *(GM_bolFac1d(km1)+GM_bolFac1d(k))*op5
+       DO j=1-OLy+1,sNy+OLy-1
+        DO i=1-OLx+1,sNx+OLx-1
+         Kgm_tmp =
+#ifdef GM_USE_K3D_REDI
+     &      op5*( locK3dRedi(i,j,km1) + locK3dRedi(i,j,k) )
+#else
+     &      isopycK*GM_isoFac2d(i,j,bi,bj)
+#endif
+#ifdef GM_USE_K3D_GM
+     &    + GM_skewflx*op5*( locK3dGM(i,j,km1)+locK3dGM(i,j,k) )
+#else
+     &    + GM_skewflx*bolus_K*GM_bolFac2d(i,j,bi,bj)
+#endif
+#ifdef GM_GEOM_VARIABLE_K
+     &    + GM_skewflx*GEOM_K3d(i,j,k,bi,bj)
+#endif
+         Kwx(i,j,k,bi,bj) = Kgm_tmp*Kwx(i,j,k,bi,bj)
+         Kwy(i,j,k,bi,bj) = Kgm_tmp*Kwy(i,j,k,bi,bj)
+         Kwz(i,j,k,bi,bj) =
+#ifdef GM_USE_K3D_REDI
+     &      op5*( locK3dRedi(i,j,km1) + locK3dRedi(i,j,k) )
+#else
+     &      isopycK*GM_isoFac2d(i,j,bi,bj)
+#endif
+     &                    *Kwz(i,j,k,bi,bj)
+        ENDDO
+       ENDDO
+      ENDDO
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics .AND. GM_taper_scheme.EQ.'fm07' ) THEN
+       CALL DIAGNOSTICS_FILL( hTransLay, 'GM_hTrsL', 0,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL( baseSlope, 'GM_baseS', 0,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(recipLambda,'GM_rLamb', 0,1,2,bi,bj,myThid)
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #if ( defined GM_NON_UNITY_DIAGONAL || defined GM_EXTRA_DIAGONAL )
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-- 2nd  k loop : compute Tensor Coeff. at U point
 
@@ -768,27 +800,13 @@ c      IF ( GM_nonUnitDiag ) THEN
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
           Kux(i,j,k,bi,bj) =
-#  ifdef GM_READ_K3D_REDI
-     &     ( op5*( GM_inpK3dRedi(i-1,j,k,bi,bj)
-     &           + GM_inpK3dRedi(i,j,k,bi,bj) )
+#  ifdef GM_USE_K3D_REDI
+     &      op5*( locK3dRedi(i-1,j,k) + locK3dRedi(i,j,k) )
 #  else
-     &     ( GM_isopycK*GM_isoFac1d(k)
+     &      GM_isopycK*GM_isoFac1d(k)
      &        *op5*(GM_isoFac2d(i-1,j,bi,bj)+GM_isoFac2d(i,j,bi,bj))
 #  endif
-#  ifdef GM_VISBECK_VARIABLE_K
-     &     + op5*(VisbeckK(i-1,j,bi,bj)+VisbeckK(i,j,bi,bj))
-     &          *GM_isoFac_calcK
-#  endif
-C no GM_GEOM_VARIABLE here because this is the Redi part
-#  ifdef ALLOW_GM_LEITH_QG
-     &     + op5*(GM_LeithQG_K(i-1,j,k,bi,bj)+GM_LeithQG_K(i,j,k,bi,bj))
-     &          *GM_isoFac_calcK
-#  endif
-#  if (defined GM_BATES_K3D && !defined GM_BATES_PASSIVE)
-     &     + op5*(GM_BatesK3d(i-1,j,k,bi,bj)+GM_BatesK3d(i,j,k,bi,bj))
-     &          *GM_isoFac_calcK
-#  endif
-     &     )*taperFct(i,j)
+     &     *taperFct(i,j)
          ENDDO
         ENDDO
 #  if ( defined ALLOW_AUTODIFF_TAMC && defined GM_EXCLUDE_CLIPPING )
@@ -811,39 +829,23 @@ CADJ STORE SlopeX(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
           Kuz(i,j,k,bi,bj) = -gravitySign*
-#  ifdef GM_READ_K3D_REDI
-     &     ( op5*( GM_inpK3dRedi(i-1,j,k,bi,bj)
-     &           + GM_inpK3dRedi(i,j,k,bi,bj) )
+#  ifdef GM_USE_K3D_REDI
+     &     ( op5*( locK3dRedi(i-1,j,k) + locK3dRedi(i,j,k) )
 #  else
      &     ( GM_isopycK*GM_isoFac1d(k)
      &        *op5*(GM_isoFac2d(i-1,j,bi,bj)+GM_isoFac2d(i,j,bi,bj))
 #  endif
-#  ifdef GM_READ_K3D_GM
-     &     - GM_skewflx*op5*( GM_inpK3dGM(i-1,j,k,bi,bj)
-     &                      + GM_inpK3dGM(i,j,k,bi,bj) )
+#  ifdef GM_USE_K3D_GM
+     &     - GM_skewflx*op5*( locK3dGM(i-1,j,k) + locK3dGM(i,j,k) )
 #  else
      &     - GM_skewflx*GM_background_K*GM_bolFac1d(k)
      &        *op5*(GM_bolFac2d(i-1,j,bi,bj)+GM_bolFac2d(i,j,bi,bj))
-#  endif
-#  ifdef GM_VISBECK_VARIABLE_K
-     &     + op5*(VisbeckK(i-1,j,bi,bj)+VisbeckK(i,j,bi,bj))
-     &          *(GM_isoFac_calcK - GM_skewflx)
 #  endif
 #  ifdef GM_GEOM_VARIABLE_K
      &     - GM_skewflx*op25*( ( GEOM_K3d(i-1,j, k, bi,bj)
      &                         + GEOM_K3d( i, j, k, bi,bj) )
      &                       + ( GEOM_K3d(i-1,j,kp1,bi,bj)
      &                         + GEOM_K3d( i, j,kp1,bi,bj) ) )
-#  endif
-#  ifdef ALLOW_GM_LEITH_QG
-     &     + op5*( GM_LeithQG_K(i-1,j,k,bi,bj)
-     &           + GM_LeithQG_K(i,j,k,bi,bj) )
-     &          *(GM_isoFac_calcK - GM_skewflx)
-#  endif
-#  if (defined GM_BATES_K3D && !defined GM_BATES_PASSIVE)
-     &     + op5*( GM_BatesK3d(i-1,j,k,bi,bj)
-     &           + GM_BatesK3d(i,j,k,bi,bj) )
-     &          *(GM_isoFac_calcK - GM_skewflx)
 #  endif
      &     )*SlopeX(i,j)*taperFct(i,j)
          ENDDO
@@ -864,28 +866,13 @@ c       ENDDO
          DO i=1,sNx+1
 C         store in tmp1k Kuz_Redi
           tmp1k(i,j) = -gravitySign*
-#  ifdef GM_READ_K3D_REDI
-     &      ( op5*( GM_inpK3dRedi(i-1,j,k,bi,bj)
-     &            + GM_inpK3dRedi(i,j,k,bi,bj) )
+#  ifdef GM_USE_K3D_REDI
+     &      op5*( locK3dRedi(i-1,j,k)+ locK3dRedi(i,j,k) )
 #  else
-     &      ( GM_isopycK*GM_isoFac1d(k)
-     &        *op5*(GM_isoFac2d(i-1,j,bi,bj)+GM_isoFac2d(i,j,bi,bj))
+     &      GM_isopycK*GM_isoFac1d(k)
+     &       *op5*(GM_isoFac2d(i-1,j,bi,bj)+GM_isoFac2d(i,j,bi,bj))
 #  endif
-#  ifdef GM_VISBECK_VARIABLE_K
-     &      + op5*(VisbeckK(i-1,j,bi,bj)+VisbeckK(i,j,bi,bj))
-     &           *GM_isoFac_calcK
-#  endif
-C no GM_GEOM_VARIABLE here because this is the Redi part
-#  ifdef ALLOW_GM_LEITH_QG
-     &      + op5*( GM_LeithQG_K(i-1,j,k,bi,bj)
-     &            + GM_LeithQG_K(i,j,k,bi,bj) )
-     &           *GM_isoFac_calcK
-#  endif
-#  if (defined GM_BATES_K3D && !defined GM_BATES_PASSIVE)
-     &      + op5*(GM_BatesK3d(i-1,j,k,bi,bj)+GM_BatesK3d(i,j,k,bi,bj))
-     &           *GM_isoFac_calcK
-#  endif
-     &      )*SlopeX(i,j)*taperFct(i,j)
+     &     *SlopeX(i,j)*taperFct(i,j)
          ENDDO
         ENDDO
         DO j=1,sNy
@@ -1010,27 +997,13 @@ c      IF ( GM_nonUnitDiag ) THEN
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
           Kvy(i,j,k,bi,bj) =
-#  ifdef GM_READ_K3D_REDI
-     &     ( op5*( GM_inpK3dRedi(i,j-1,k,bi,bj)
-     &           + GM_inpK3dRedi(i,j,k,bi,bj) )
+#  ifdef GM_USE_K3D_REDI
+     &      op5*( locK3dRedi(i,j-1,k) + locK3dRedi(i,j,k) )
 #  else
-     &     ( GM_isopycK*GM_isoFac1d(k)
+     &      GM_isopycK*GM_isoFac1d(k)
      &        *op5*(GM_isoFac2d(i,j-1,bi,bj)+GM_isoFac2d(i,j,bi,bj))
 #  endif
-#  ifdef GM_VISBECK_VARIABLE_K
-     &     + op5*(VisbeckK(i,j-1,bi,bj)+VisbeckK(i,j,bi,bj))
-     &          *GM_isoFac_calcK
-#  endif
-C no GM_GEOM_VARIABLE here because this is the Redi part
-#  ifdef ALLOW_GM_LEITH_QG
-     &     + op5*(GM_LeithQG_K(i,j-1,k,bi,bj)+GM_LeithQG_K(i,j,k,bi,bj))
-     &          *GM_isoFac_calcK
-#  endif
-#  if (defined GM_BATES_K3D && !defined GM_BATES_PASSIVE)
-     &     + op5*(GM_BatesK3d(i,j-1,k,bi,bj)+GM_BatesK3d(i,j,k,bi,bj))
-     &          *GM_isoFac_calcK
-#  endif
-     &     )*taperFct(i,j)
+     &     *taperFct(i,j)
          ENDDO
         ENDDO
 #  if ( defined ALLOW_AUTODIFF_TAMC && defined GM_EXCLUDE_CLIPPING )
@@ -1053,39 +1026,23 @@ CADJ STORE SlopeY(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
           Kvz(i,j,k,bi,bj) = -gravitySign*
-#  ifdef GM_READ_K3D_REDI
-     &     ( op5*( GM_inpK3dRedi(i,j-1,k,bi,bj)
-     &           + GM_inpK3dRedi(i,j,k,bi,bj) )
+#  ifdef GM_USE_K3D_REDI
+     &     ( op5*( locK3dRedi(i,j-1,k) + locK3dRedi(i,j,k) )
 #  else
      &     ( GM_isopycK*GM_isoFac1d(k)
      &        *op5*(GM_isoFac2d(i,j-1,bi,bj)+GM_isoFac2d(i,j,bi,bj))
 #  endif
-#  ifdef GM_READ_K3D_GM
-     &     - GM_skewflx*op5*( GM_inpK3dGM(i,j-1,k,bi,bj)
-     &                      + GM_inpK3dGM(i,j,k,bi,bj) )
+#  ifdef GM_USE_K3D_GM
+     &     - GM_skewflx*op5*( locK3dGM(i,j-1,k) + locK3dGM(i,j,k) )
 #  else
      &     - GM_skewflx*GM_background_K*GM_bolFac1d(k)
      &        *op5*(GM_bolFac2d(i,j-1,bi,bj)+GM_bolFac2d(i,j,bi,bj))
-#  endif
-#  ifdef GM_VISBECK_VARIABLE_K
-     &     + op5*(VisbeckK(i,j-1,bi,bj)+VisbeckK(i,j,bi,bj))
-     &          *(GM_isoFac_calcK - GM_skewflx)
 #  endif
 #  ifdef GM_GEOM_VARIABLE_K
      &     - GM_skewflx*op25*( ( GEOM_K3d(i,j-1, k, bi,bj)
      &                         + GEOM_K3d(i, j,  k, bi,bj) )
      &                       + ( GEOM_K3d(i,j-1,kp1,bi,bj)
      &                         + GEOM_K3d(i, j, kp1,bi,bj) ) )
-#  endif
-#  ifdef ALLOW_GM_LEITH_QG
-     &     + op5*( GM_LeithQG_K(i,j-1,k,bi,bj)
-     &           + GM_LeithQG_K(i,j,k,bi,bj) )
-     &          *(GM_isoFac_calcK - GM_skewflx)
-#  endif
-#  if (defined GM_BATES_K3D && !defined GM_BATES_PASSIVE)
-     &     + op5*( GM_BatesK3d(i,j-1,k,bi,bj)
-     &           + GM_BatesK3d(i,j,k,bi,bj) )
-     &          *(GM_isoFac_calcK - GM_skewflx)
 #  endif
      &     )*SlopeY(i,j)*taperFct(i,j)
          ENDDO
@@ -1106,28 +1063,13 @@ c       ENDDO
          DO i=1,sNx
 C         store in tmp1k Kvz_Redi
           tmp1k(i,j) = -gravitySign*
-#  ifdef GM_READ_K3D_REDI
-     &      ( op5*( GM_inpK3dRedi(i,j-1,k,bi,bj)
-     &            + GM_inpK3dRedi(i,j,k,bi,bj) )
+#  ifdef GM_USE_K3D_REDI
+     &      op5*( locK3dRedi(i,j-1,k) + locK3dRedi(i,j,k) )
 #  else
-     &      ( GM_isopycK*GM_isoFac1d(k)
-     &        *op5*(GM_isoFac2d(i,j-1,bi,bj)+GM_isoFac2d(i,j,bi,bj))
+     &      GM_isopycK*GM_isoFac1d(k)
+     &       *op5*(GM_isoFac2d(i,j-1,bi,bj)+GM_isoFac2d(i,j,bi,bj))
 #  endif
-#  ifdef GM_VISBECK_VARIABLE_K
-     &      + op5*(VisbeckK(i,j-1,bi,bj)+VisbeckK(i,j,bi,bj))
-     &           *GM_isoFac_calcK
-#  endif
-C no GM_GEOM_VARIABLE here because this is the Redi part
-#  ifdef ALLOW_GM_LEITH_QG
-     &      + op5*( GM_LeithQG_K(i,j-1,k,bi,bj)
-     &            + GM_LeithQG_K(i,j,k,bi,bj) )
-     &           *GM_isoFac_calcK
-#  endif
-#  if (defined GM_BATES_K3D && !defined GM_BATES_PASSIVE)
-     &      + op5*(GM_BatesK3d(i,j-1,k,bi,bj)+GM_BatesK3d(i,j,k,bi,bj))
-     &           *GM_isoFac_calcK
-#  endif
-     &      )*SlopeY(i,j)*taperFct(i,j)
+     &     *SlopeY(i,j)*taperFct(i,j)
          ENDDO
         ENDDO
         DO j=1,sNy+1
@@ -1159,6 +1101,7 @@ C-- end 3rd  loop on vertical level index k
       ENDDO
 
 #endif /* GM_NON_UNITY_DIAGONAL || GM_EXTRA_DIAGONAL */
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifndef GM_NON_UNITY_DIAGONAL
 C--   keep a simplified setting here (used to be inside gmredi_x/ytransport)
@@ -1166,26 +1109,22 @@ C     for backeard compatibility + for trying to generate a simpler adjoint code
       DO k=1,Nr
        DO j=1-OLy+1,sNy+OLy-1
         DO i=1-OLx+1,sNx+OLx-1
-          Kux(i,j,k,bi,bj) = (
-# ifdef GM_READ_K3D_REDI
-     &       op5*( GM_inpK3dRedi(i-1,j,k,bi,bj)
-     &           + GM_inpK3dRedi(i,j,k,bi,bj) )
+          Kux(i,j,k,bi,bj) =
+# ifdef GM_USE_K3D_REDI
+     &      op5*( locK3dRedi(i-1,j,k) + locK3dRedi(i,j,k) )
 # else
-     &       GM_isopycK
+     &      GM_isopycK
 # endif
-     &                       )
         ENDDO
        ENDDO
        DO j=1-OLy+1,sNy+OLy-1
         DO i=1-OLx+1,sNx+OLx-1
-          Kvy(i,j,k,bi,bj) = (
-# ifdef GM_READ_K3D_REDI
-     &       op5*( GM_inpK3dRedi(i,j-1,k,bi,bj)
-     &           + GM_inpK3dRedi(i,j,k,bi,bj) )
+          Kvy(i,j,k,bi,bj) =
+# ifdef GM_USE_K3D_REDI
+     &      op5*( locK3dRedi(i,j-1,k) + locK3dRedi(i,j,k) )
 # else
-     &       GM_isopycK
+     &      GM_isopycK
 # endif
-     &                       )
         ENDDO
        ENDDO
       ENDDO
@@ -1193,7 +1132,7 @@ C     for backeard compatibility + for trying to generate a simpler adjoint code
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
-        CALL GMREDI_DIAGNOSTICS_FILL(bi,bj,myThid)
+        CALL GMREDI_DIAGNOSTICS_FILL( bi, bj, myThid )
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
