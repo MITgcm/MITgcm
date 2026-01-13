@@ -24,10 +24,10 @@ The **secondary** test, using input files from `input.yearly/`,
 is very similar except for the specification of yearly input fields to`pkg/exf`.<br>
 
 **Note:**
-1.  these 2 set-up have been moved (in PR #830) from `verification/global_with_exf/`
+1.  These 2 set-up have been moved (in PR #830) from `verification/global_with_exf/`
     where a "README" still provides some details related to `pkg/exf` specific
     features used here.
-2.  the ability, using `pkg/exf`, to compute surface fluxes from near surface
+2.  The ability, using `pkg/exf`, to compute surface fluxes from near surface
     atmospheric state and downward radiation as shown, e.g., in experiment
     `global_ocean.cs32x15` (secondary test `input.seaice` or `input.icedyn` or `input.in_p`)
     is not used here (`#undef ALLOW_BULKFORMULAE`).
@@ -35,10 +35,11 @@ is very similar except for the specification of yearly input fields to`pkg/exf`.
 The **secondary** test, using input files from `input.ebm/`,
 relies on the Energy-Balance Model package (`pkg/ebm`) to compute oceanic surface forcing.<br>
 
-***Note:***
-    this secondary test set-up has been moved (in PR #944) from `verification/global_ocean_ebm/`
-    and a "README" there still provides some details related to `pkg/ebm` specific
-    features used here.
+**Note:**
+
+This secondary test set-up has been moved (in PR #944) from `verification/global_ocean_ebm/`
+and a "README" there still provides some details related to `pkg/ebm` specific
+features used here.
 
 ## Part 1, using OpenAD Adjoint Compiler:
 
