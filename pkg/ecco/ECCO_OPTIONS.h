@@ -40,26 +40,26 @@ C     implement the actual model average (i.e. the bar file content).
 # undef ALLOW_GENCOST_1D
 # undef ALLOW_GENCOST_SSTV4_OUTPUT
 
-C o Allow Open-Boundary cost contributions
-#ifdef ALLOW_OBCS
-C   Open-Boundary cost is meaningless without compiling pkg/obcs
-C   Note: Make sure that coresponding OBCS N/S/W/E Option is defined
-# define ALLOW_OBCSN_COST_CONTRIBUTION
-# define ALLOW_OBCSS_COST_CONTRIBUTION
-# define ALLOW_OBCSW_COST_CONTRIBUTION
-# define ALLOW_OBCSE_COST_CONTRIBUTION
-#  undef OBCS_AGEOS_COST_CONTRIBUTION
-#  undef OBCS_VOLFLUX_COST_CONTRIBUTION
-#  undef BAROTROPIC_OBVEL_CONTROL
-#endif /* ALLOW_OBCS */
-
-C o Set ALLOW_OBCS_COST_CONTRIBUTION (Do not edit/modify):
-#if (defined (ALLOW_OBCSN_COST_CONTRIBUTION) || \
-     defined (ALLOW_OBCSS_COST_CONTRIBUTION) || \
-     defined (ALLOW_OBCSW_COST_CONTRIBUTION) || \
-     defined (ALLOW_OBCSE_COST_CONTRIBUTION))
-# define ALLOW_OBCS_COST_CONTRIBUTION
-#endif
+C     now in pkg/obcs/OBCS_OPTIONS.h
+cC o Allow Open-Boundary cost contributions
+c#ifdef ALLOW_OBCS
+cC   Open-Boundary cost is meaningless without compiling pkg/obcs
+cC   Note: Make sure that coresponding OBCS N/S/W/E Option is defined
+c# define ALLOW_OBCSN_COST_CONTRIBUTION
+c# define ALLOW_OBCSS_COST_CONTRIBUTION
+c# define ALLOW_OBCSW_COST_CONTRIBUTION
+c# define ALLOW_OBCSE_COST_CONTRIBUTION
+c#  undef OBCS_AGEOS_COST_CONTRIBUTION
+c#  undef OBCS_VOLFLUX_COST_CONTRIBUTION
+c#endif /* ALLOW_OBCS */
+c
+cC o Set ALLOW_OBCS_COST_CONTRIBUTION (Do not edit/modify):
+c#if (defined (ALLOW_OBCSN_COST_CONTRIBUTION) || \
+c     defined (ALLOW_OBCSS_COST_CONTRIBUTION) || \
+c     defined (ALLOW_OBCSW_COST_CONTRIBUTION) || \
+c     defined (ALLOW_OBCSE_COST_CONTRIBUTION))
+c# define ALLOW_OBCS_COST_CONTRIBUTION
+c#endif
 
 C o Use total time-varying volume to weight contributions, if defined
 #undef ECCO_VARIABLE_AREAVOLGLOB

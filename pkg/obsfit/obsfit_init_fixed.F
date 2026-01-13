@@ -104,6 +104,9 @@ c     _RL xy_buffer_r8(0:sNx+1,0:sNy+1)
       CHARACTER*(MAX_LEN_MBUF) msgbuf
       LOGICAL exst
 
+C     only used for writing cost function files
+      obsfitWriteCostFunction = .TRUE.
+
       iUnit = standardMessageUnit
       WRITE( msgbuf,'(A)' ) ' '
       CALL PRINT_MESSAGE( msgbuf, iUnit, SQUEEZE_RIGHT, myThid )

@@ -29,6 +29,8 @@ c     == routine arguments ==
 c     == local variables ==
       CHARACTER*(max_len_mbuf) msgbuf
       INTEGER iUnit
+c     retired parameter
+      _RL     mult_depth
 
 c     == end of interface ==
 
@@ -36,9 +38,7 @@ c--   Read the namelist input.
       NAMELIST /cost_nml/
      &         mult_atl, mult_test, mult_tracer,
      &         multTheta, multSalt, multUvel, multVvel, multEtan,
-#ifdef ALLOW_COST_DEPTH
      &         mult_depth,
-#endif
 #ifdef ALLOW_COST_HFLUXM
      &         mult_temp_tut, mult_hflux_tut,
 #endif
@@ -55,9 +55,7 @@ c--     Set default values.
         multUvel              =      0. _d 0
         multVvel              =      0. _d 0
         multEtan              =      0. _d 0
-#ifdef ALLOW_COST_DEPTH
         mult_depth            =      0. _d 0
-#endif
 #ifdef ALLOW_COST_HFLUXM
         mult_temp_tut         =      0. _d 0
         mult_hflux_tut        =      0. _d 0
@@ -93,11 +91,23 @@ c--     Next, read the cost data file.
      &       lastinterval = MAX(
      &       INT(lastinterval/deltaTClock-1)*deltaTClock,deltaTClock)
 
+
 #if (defined ALLOW_COST_HFLUXM) || (defined ALLOW_COST_TEMP)
 c-- get the weights for the cost functions
       CALL COST_WEIGHTS( myThid )
 cgf : to compile previous line user is expected to provide cost_weights.F
 #endif
+
+      IF ( mult_depth .NE. 0. _d 0 ) THEN
+       WRITE(msgBuf,'(a)')
+     & 'S/R COST_READPARMS: mult_depth is now longer allow in data.cost'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(a)')
+     & 'S/R COST_READPARMS: use generic control cost instead'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       CALL ALL_PROC_DIE( 0 )
+       STOP 'ABNORMAL END: S/R COST_READPARMS'
+      ENDIF
 
 C--   print cost parameters to stdout for better debugging
       WRITE(msgBuf,'(A)')

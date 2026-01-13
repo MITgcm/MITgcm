@@ -128,6 +128,10 @@ C     === Global variables ===
 #ifdef ALLOW_AUTODIFF
 # include "FFIELDS.h"
 # include "DYNVARS.h"
+# ifdef ALLOW_SEAICE
+#  include "SEAICE_SIZE.h"
+#  include "SEAICE.h"
+# endif
 #endif /* ALLOW_AUTODIFF */
 
 #ifdef ALLOW_TAPENADE
@@ -152,10 +156,6 @@ C     === Global variables ===
 # endif
 # ifdef ALLOW_STREAMICE
 #  include "STREAMICE.h"
-# endif
-# ifdef ALLOW_SEAICE
-#  include "SEAICE_SIZE.h"
-#  include "SEAICE.h"
 # endif
 #endif /* ALLOW_TAPENADE */
 
@@ -604,6 +604,10 @@ CADJ STORE salt  = tapelev_init, key = 1
 C--   Initialise pkg/ctl (and related pkgs components)
 #ifdef ALLOW_CTRL
 # ifdef ALLOW_AUTODIFF
+#  if defined ALLOW_SEAICE && defined ALLOW_DEPTH_CONTROL \
+      && defined ALLOW_AUTODIFF_TAMC
+CADJ STORE area, heff = tapelev_init, key = 1
+#  endif
 C- Note: use same trick as for pkg/gmredi (call to GMREDI_INIT_VARIA) when
 C     compiling pkg/autodiff (with "If useOBCS" inside ctrl_init_variables.F)
 # else

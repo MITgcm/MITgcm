@@ -97,6 +97,32 @@ c     == end of interface ==
         enddo
       enddo
 #endif
+
+      do bj = myByLo(myThid), myByHi(myThid)
+        do bi = myBxLo(myThid), myBxHi(myThid)
+          do k = 1,Nr
+            do i = 1-OLx, sNx+OLx
+              objf_obcsn(bi,bj) = 0. _d 0
+              objf_obcss(bi,bj) = 0. _d 0
+              objf_obcsw(bi,bj) = 0. _d 0
+              objf_obcse(bi,bj) = 0. _d 0
+              objf_ageos(bi,bj) = 0. _d 0
+              num_obcsn(bi,bj)  = 0. _d 0
+              num_obcss(bi,bj)  = 0. _d 0
+              num_obcsw(bi,bj)  = 0. _d 0
+              num_obcse(bi,bj)  = 0. _d 0
+              num_ageos(bi,bj)  = 0. _d 0
+            enddo
+          enddo
+        enddo
+      enddo
+
+C--   Initialise the "global" parts of the cost function.
+      _BEGIN_MASTER( myThid )
+        objf_obcsvol = 0. _d 0
+        num_obcsvol  = 0. _d 0
+      _END_MASTER( myThid )
+
 #endif /* ALLOW_OBCS */
 
       return

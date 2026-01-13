@@ -30,3 +30,9 @@ orlanski_north.f
 orlanski_south.f
 orlanski_west.f
 orlanski_init.f
+obcs_cost_driver.f
+obcs_cost_obcsn.f
+obcs_cost_obcss.f
+obcs_cost_obcsw.f
+obcs_cost_obcse.f
+obcs_cost_final.f

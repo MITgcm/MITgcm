@@ -122,6 +122,9 @@ C--   Read the namelist input.
      &  xx_shifwflx_file,
      &  xx_shifwflx_remo_intercept, xx_shifwflx_remo_slope,
      &  xx_shifwflxstartdate1, xx_shifwflxstartdate2, xx_shifwflxperiod,
+     &  mult_obcsn, mult_obcss, mult_obcsw, mult_obcse,
+     &  mult_obcsvol, mult_ageos,
+     &  obcs_data_errfile,
      &  doInitXX, ctrlSmoothCorrel3D, ctrlSmoothCorrel2D, ctrlUseGen,
      &  doPackDiag,
      &  doZscaleUnpack, doZscalePack,
@@ -208,6 +211,7 @@ C     flag is defined
         ctrlprec = 64
 #endif
 
+        obcs_data_errfile = ' '
         ctrlDir = ' '
 
         xx_theta_file      = 'xx_theta'
@@ -305,6 +309,13 @@ C     flag is defined
         xx_obcsestartdate2  =   0
         xx_obcseperiod      =   0. _d 0
         xx_obcse_file       = 'xx_obcse'
+
+        mult_obcsn          =   0. _d 0
+        mult_obcss          =   0. _d 0
+        mult_obcsw          =   0. _d 0
+        mult_obcse          =   0. _d 0
+        mult_obcsvol        =   0. _d 0
+        mult_ageos          =   0. _d 0
 
 C     retired parameters
 

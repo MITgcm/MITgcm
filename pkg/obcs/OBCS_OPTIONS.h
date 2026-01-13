@@ -64,5 +64,23 @@ C     Compute rather than specify seaice velocities at the edges.
 C     Smooth the tracer sea-ice variables near the edges.
 #undef OBCS_SEAICE_SMOOTH_EDGE
 
+C o Allow Open-Boundary cost contributions
+C   Note: Make sure that coresponding OBCS N/S/W/E Option is defined
+c#define ALLOW_OBCSN_COST_CONTRIBUTION
+c#define ALLOW_OBCSS_COST_CONTRIBUTION
+c#define ALLOW_OBCSW_COST_CONTRIBUTION
+c#define ALLOW_OBCSE_COST_CONTRIBUTION
+C o these flags refer to untested and potentially broken code
+# undef OBCS_AGEOS_COST_CONTRIBUTION
+# undef OBCS_VOLFLUX_COST_CONTRIBUTION
+
+C o Set ALLOW_OBCS_COST_CONTRIBUTION (Do not edit/modify):
+c#if (defined (ALLOW_OBCSN_COST_CONTRIBUTION) || \
+c     defined (ALLOW_OBCSS_COST_CONTRIBUTION) || \
+c     defined (ALLOW_OBCSW_COST_CONTRIBUTION) || \
+c     defined (ALLOW_OBCSE_COST_CONTRIBUTION))
+# define ALLOW_OBCS_COST_CONTRIBUTION
+c#endif
+
 #endif /* ALLOW_OBCS */
 #endif /* OBCS_OPTIONS_H */
