@@ -284,7 +284,7 @@ C Read the info for observations:
 
         readDelT = 1
         err = NF_INQ_VARID( fid,'obs_delT', varID1c )
-C Time interval (if missing, assume instanteneous):
+C Time interval (if missing, assume instantaneous):
         IF (err.NE.NF_NOERR) THEN
          readDelT = 0
          WRITE( msgbuf,'(2A)' )
@@ -399,7 +399,7 @@ C Create global files for obs-equivalent
      &          varID(2) )
 
          ENDIF
-C Initiliaze mask values to 0
+C Initialize mask values to 0
          DO obs_num = 1, ObsNo(num_file)
           err = NF_PUT_VARA_DOUBLE( fidglobal(num_file), varID(2),
      &          obs_num, 1, 0. _d 0 )
