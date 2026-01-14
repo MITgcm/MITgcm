@@ -77,8 +77,8 @@ C     diffsecs     :: absolute time
       _RL tmp_lon, tmp_lon2(1000), tmp_lat2(1000), lon_cur, lat_cur
       _RL tmp_depth2(1000), depth_cur, delT_cur
       _RL tmp_weight2(1000)
-      _RL tmp_sample_time(NSAMP_PER_TILE_MAX)
-      _RL tmp_sample_delT(NSAMP_PER_TILE_MAX)
+      _RL tmp_sample_time(NSAMPLES_MAX_GLO)
+      _RL tmp_sample_delT(NSAMPLES_MAX_GLO)
       _RL lon_1, lon_2, lat_1, lat_2
       _RL depth_1, depth_2
       _RL lon_tmp1, lon_tmp2, lat_tmp1, lat_tmp2
