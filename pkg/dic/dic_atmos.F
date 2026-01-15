@@ -124,15 +124,7 @@ C for 278ppmv we need total_atmos_carbon=4.9206e+16
        CALL GLOBAL_SUM_TILE_RL( tile_flux,   total_flux,   myThid )
        CALL GLOBAL_SUM_TILE_RL( tile_carbon, total_carbon, myThid )
 
-#ifdef ALLOW_AUTODIFF
-C--NOTE: we DO need to make this section Master-Thread only to prevent multiple
-C   update (by each thread) of shared variable "total_atmos_carbon"
-C- However, TAF does not recognize MITgcm multi-threading and shared variable
-C   status and see a conditional (if myThid=1) reset of "atpco2" that results
-C   in major recomputations.
-#else
        _BEGIN_MASTER(myThid)
-#endif
 C store previous content:
        total_ocean_carbon_old = total_ocean_carbon
        total_atmos_carbon_old = total_atmos_carbon
@@ -176,19 +168,15 @@ C if end of forcing cycle, find total change in ocean carbon
           total_atmos_carbon_year = total_atmos_carbon
        ENDIF
 
-#ifndef ALLOW_AUTODIFF
        _END_MASTER(myThid)
        _BARRIER
-#endif
 
        atm_pCO2 = atpco2
 C      ELSE
 C       atm_pCO2 = dic_pCO2
       ENDIF
 
-#ifndef ALLOW_AUTODIFF
       IF ( dic_int1.EQ.2 .OR. dic_int1.EQ.3 ) THEN
-#endif
 C--    Set AtmospCO2 for next iteration:
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -199,9 +187,7 @@ C--    Set AtmospCO2 for next iteration:
          ENDDO
         ENDDO
        ENDDO
-#ifndef ALLOW_AUTODIFF
       ENDIF
-#endif
 
 #endif /* ALLOW_DIC */
 

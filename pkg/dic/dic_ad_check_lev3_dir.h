@@ -5,11 +5,12 @@ CADJ STORE pH                 = tapelev3, key = ilev_3
 cCADJ STORE pCO2               = tapelev3, key = ilev_3
 cCADJ STORE fIce               = tapelev3, key = ilev_3
 cCADJ STORE silicaSurf         = tapelev3, key = ilev_3
-cCADJ STORE atmosPCO2          = tapelev3, key = ilev_3
+CADJ STORE atmosPCO2          = tapelev3, key = ilev_3
 
 cCADJ STORE gsm_s              = tapelev3, key = ilev_3
 cCADJ STORE co2atmos           = tapelev3, key = ilev_3
-cCADJ STORE total_atmos_carbon = tapelev3, key = ilev_3
+CADJ STORE total_atmos_carbon = tapelev3, key = ilev_3
+CADJ STORE atpco2             = tapelev3, key = ilev_3
 
 # ifndef GCHEM_ALLOW_FFIELDS
 C common dic_load
