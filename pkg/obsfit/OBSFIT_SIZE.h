@@ -32,7 +32,7 @@ C (not only "valid" samples)
       INTEGER NSAMPLES_MAX_GLO
       PARAMETER ( NSAMPLES_MAX_GLO=2000 )
 
-C This is the max number of valid samples in each tile
+C This is the max number of "valid" samples in each tile
       INTEGER NSAMP_PER_TILE_MAX
       PARAMETER ( NSAMP_PER_TILE_MAX=2000 )
 
