@@ -646,7 +646,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* CARBONCHEM_SOLVESAPHE */
 
 #ifdef DIC_CALCITE_SAT
-C Issue an error and stop if DIC_CALCITE_SAT AND ALLOW_GCHEM_FFIELDS 
+C Issue an error and stop if DIC_CALCITE_SAT AND ALLOW_GCHEM_FFIELDS
 C  but not GCHEM_3D_SILICA
 #if defined (GCHEM_ALLOW_FFIELDS) && \
     !defined (GCHEM_3D_SILICA)
@@ -725,9 +725,17 @@ C   with interactive atmospheric box
           WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
      &      'dic_int1=2: supply 2D gchem_apco2File in data.gchem'
         ENDIF
-          CALL PRINT_ERROR( msgBuf, myThid )
+        CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
+# ifndef DIC_ALLOW_READ_ATMOSPCO2
+      IF (dic_int1.EQ.-1) THEN
+        WRITE(msgBuf,'(3A)') '** warning ** DIC_READPARMS: ',
+     &    '#define DIC_ALLOW_READ_ATMOSPCO2 is required ',
+     &    'for dic_int1=-1 to work properly'
+        CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+# endif
 #endif /* GCHEM_ALLOW_FFIELDS */
 
       IF ( errCount.GE.1 ) THEN

@@ -43,25 +43,43 @@ CEOP
 
 #ifdef GCHEM_ALLOW_FFIELDS
 C Access pkg/gchem forcing fields
+# if defined DIC_CALCITE_SAT && defined GCHEM_3D_SILICA
+      IF ( useCalciteSaturation ) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO k = 1,Nr
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            silicaDeep(i,j,k,bi,bj) = gchemSi3D(i,j,k,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+# endif
+# ifdef DIC_ALLOW_READ_ATMOSPCO2
+      IF ( dic_int1.EQ.-1) THEN
+C     only update if dic_int1 = -1 (use gchem fields only in this case)
+C     not if dic_int1 = 3 (interact with atmospheric box)
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           AtmospCO2(i,j,bi,bj)  = gchemapCO2(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+# endif
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          IF ( dic_int1.EQ.-1) THEN
-C           only update if dic_int1 = -1 (use gchem fields only in this case)
-C           not if dic_int1 = 3 (interact with atmospheric box)
-            AtmospCO2(i,j,bi,bj)  = gchemapCO2(i,j,bi,bj)
-          ENDIF
           fIce(i,j,bi,bj)       = gchemIce(i,j,bi,bj)
           wind(i,j,bi,bj)       = gchemWind(i,j,bi,bj)
           silicaSurf(i,j,bi,bj) = gchemSi(i,j,bi,bj)
-#if defined(DIC_CALCITE_SAT) && defined(GCHEM_3D_SILICA) 
-          IF ( useCalciteSaturation ) THEN
-            DO k = 1,Nr
-             silicaDeep(i,j,k,bi,bj) = gchemSi3D(i,j,k,bi,bj)
-            ENDDO
-          ENDIF
-#endif
 #ifndef USE_PLOAD
 C     Atm pressure in Pascals, convert to atm
           AtmosP(i,j,bi,bj)     = gchemAtmosP(i,j,bi,bj)/Pa2atm
