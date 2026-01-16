@@ -68,7 +68,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-    initialise <-- done earlier, in dic_init_varia.F
 c     total_atmos_carbon = 0.
 c     atpco2 = 0.
-C     initialize AtmospCO2 with user specified value (or default = 278 ppm)- set only once
+C     always initialize AtmospCO2 with user specified value
+C     (default = 278 ppm in dic_readparms) except for dic_int1=-1, when the
+C     initialisation is done from gchemapCO2 in dic_ini_forcing.
 C     IF ( dic_int1.EQ.0 .OR. dic_int1.EQ.1 ) THEN
       IF ( dic_int1.GE.0) THEN
         DO bj=myByLo(myThid),myByHi(myThid)
@@ -127,7 +129,7 @@ C for 278ppmv we need total_atmos_carbon=4.9206e+16
           ENDDO
          ENDDO
         ENDDO
- 
+
         CALL GLOBAL_SUM_TILE_RL( tile_carbon, total_carbon, myThid )
 
 #ifdef GCHEM_ALLOW_FFIELDS

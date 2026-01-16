@@ -1,5 +1,8 @@
 #include "DIC_OPTIONS.h"
 #include "PTRACERS_OPTIONS.h"
+#ifdef ALLOW_GCHEM
+# include "GCHEM_OPTIONS.h"
+#endif
 
 CBOP
 C !ROUTINE: DIC_ATMOS
@@ -10,6 +13,7 @@ C !INTERFACE: ==========================================================
 C !DESCRIPTION:
 C  Calculate the atmospheric pCO2
 C  dic_int1:
+C -1=use atmospheric field read from file via pkg/gchem
 C  0=use default 278.d-6
 C  1=use constant value - dic_pCO2, read in from data.dic
 C  2=read in from file
@@ -26,6 +30,9 @@ C !USES: ===============================================================
 #include "PTRACERS_PARAMS.h"
 #include "PTRACERS_FIELDS.h"
 #include "DIC_ATMOS.h"
+#ifdef GCHEM_ALLOW_FFIELDS
+# include "GCHEM_FIELDS.h"
+#endif
 
 C !INPUT PARAMETERS: ===================================================
 C  myTime             :: current time
@@ -68,7 +75,39 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       ioUnit = standardMessageUnit
 
-      IF ( dic_int1.EQ.2 ) THEN
+      IF ( dic_int1.EQ.-1 ) THEN
+#ifdef GCHEM_ALLOW_FFIELDS
+C--   Get AtmospCO2 from file read by pkg/gchem
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           AtmospCO2(i,j,bi,bj)  = gchemapCO2(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+#else
+C     print *, "Oops, this should not happen"
+#endif
+#ifdef ALLOW_AUTODIFF
+CML      ELSEIF ( dic_int1.EQ.0 .OR. dic_int1.EQ.1 ) THEN
+CML
+CMLC     This is not necessary because dic_pCO2 never changes during a
+CMLC     simulation, but it may help AD-tools to generate the correct
+CMLC     AD-code so we leave it here, in case of issues with AD.
+CML       DO bj=myByLo(myThid),myByHi(myThid)
+CML        DO bi=myBxLo(myThid),myBxHi(myThid)
+CML         DO j=1-OLy,sNy+OLy
+CML          DO i=1-OLx,sNx+OLx
+CML           AtmospCO2(i,j,bi,bj) = dic_pCO2
+CML          ENDDO
+CML         ENDDO
+CML        ENDDO
+CML       ENDDO
+#endif
+      ELSEIF ( dic_int1.EQ.2 ) THEN
+
 C read from a file and linearly interpolate between file entries
 C     (note:  dic_int2=number entries to read
 C             dic_int3=start timestep,
@@ -84,6 +123,16 @@ C             dic_int4=timestep between file entries)
         bWght = 1. _d 0 - aWght
         atm_pCO2 = co2atmos(ntim)*bWght + co2atmos(ntim+1)*aWght
         WRITE(ioUnit,*) 'weights',ntim, aWght, bWght, atm_pCO2
+
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           AtmospCO2(i,j,bi,bj) = atm_pCO2
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
 
       ELSEIF ( dic_int1.EQ.3 ) THEN
 C interactive atmosphere
@@ -171,22 +220,16 @@ C if end of forcing cycle, find total change in ocean carbon
        _END_MASTER(myThid)
        _BARRIER
 
-       atm_pCO2 = atpco2
-C      ELSE
-C       atm_pCO2 = dic_pCO2
-      ENDIF
-
-      IF ( dic_int1.EQ.2 .OR. dic_int1.EQ.3 ) THEN
-C--    Set AtmospCO2 for next iteration:
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-            AtmospCO2(i,j,bi,bj) = atm_pCO2
+           AtmospCO2(i,j,bi,bj) = atpco2
           ENDDO
          ENDDO
         ENDDO
        ENDDO
+
       ENDIF
 
 #endif /* ALLOW_DIC */

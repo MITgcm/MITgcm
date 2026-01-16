@@ -58,25 +58,14 @@ C Access pkg/gchem forcing fields
        ENDDO
       ENDIF
 # endif
-# ifdef DIC_ALLOW_READ_ATMOSPCO2
-      IF ( dic_int1.EQ.-1) THEN
-C     only update if dic_int1 = -1 (use gchem fields only in this case)
-C     not if dic_int1 = 3 (interact with atmospheric box)
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           AtmospCO2(i,j,bi,bj)  = gchemapCO2(i,j,bi,bj)
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDIF
-# endif
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
+C     Intuitively one may want to copy the gchem field gchemapCO2 to the
+C     dic field AtmospCO2 here as for the other fields, but this breaks
+C     dependencies for the AD-code, so this is done in dic_atmos.F
+c         if (dic_int1.eq.-1) AtmospCO2(i,j,bi,bj)  = gchemapCO2(i,j,bi,bj)
           fIce(i,j,bi,bj)       = gchemIce(i,j,bi,bj)
           wind(i,j,bi,bj)       = gchemWind(i,j,bi,bj)
           silicaSurf(i,j,bi,bj) = gchemSi(i,j,bi,bj)

@@ -61,10 +61,5 @@ C Include iron sediment source using DOP flux
 C For Adjoint built
 #undef DIC_AD_SAFE
 
-C Include code that copies the gchemApCO2 fieldto AtmospCO2 in S/R DIC_FIELDS_LOAD.
-C For TAF-AD code this means that TAF will no generate AD-code for dic_atmos.F
-C This flag only has an effect if GCHEM_ALLOW_FFIELDS is defined.
-#undef DIC_ALLOW_READ_ATMOSPCO2
-
 #endif /* ALLOW_DIC */
 #endif /* DIC_OPTIONS_H */

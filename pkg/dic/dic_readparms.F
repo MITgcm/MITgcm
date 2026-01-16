@@ -707,35 +707,15 @@ C    DIC_CALCITE_SATURATION code is not compiled
       ENDIF
 #endif /* DIC_CALCITE_SAT */
 
-C Issue an error and stop if GCHEM_ALLOW_FFIELDS conflicts
-C   with interactive atmospheric box
-#ifdef GCHEM_ALLOW_FFIELDS
-      IF (dic_int1.GE.0 .AND. dic_int1.LT.3) THEN
+C Issue an error and stop if trying to use pkg/gchem field with
+C undefined GCHEM_ALLOW_FFIELDS
+#ifndef GCHEM_ALLOW_FFIELDS
+      IF (dic_int1.EQ.-1) THEN
         WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
-     &    'GCHEM_ALLOW_FFIELDS conflicts with 0<=dic_int1<=2'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
-     &    'only interactive atmosphere dic_int1=3 allowed'
-        CALL PRINT_ERROR( msgBuf, myThid )
-
-        IF (dic_int1.EQ.0 .OR. dic_int1.EQ.1) THEN
-          WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
-     &      'dic_int1=0 or 1: set gchem_apco2_const in data.gchem'
-        ELSEIF (dic_int1.EQ.2) THEN
-          WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
-     &      'dic_int1=2: supply 2D gchem_apco2File in data.gchem'
-        ENDIF
+     &    'dic_int1=-1 requires GCHEM_ALLOW_FFIELDS to be defined'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
-# ifndef DIC_ALLOW_READ_ATMOSPCO2
-      IF (dic_int1.EQ.-1) THEN
-        WRITE(msgBuf,'(3A)') '** warning ** DIC_READPARMS: ',
-     &    '#define DIC_ALLOW_READ_ATMOSPCO2 is required ',
-     &    'for dic_int1=-1 to work properly'
-        CALL PRINT_ERROR( msgBuf, myThid )
-      ENDIF
-# endif
 #endif /* GCHEM_ALLOW_FFIELDS */
 
       IF ( errCount.GE.1 ) THEN
