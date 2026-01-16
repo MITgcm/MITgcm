@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/obsfit:
+  - fix allocation of 2 local vars in obsfit_init_fixed.F
 o pkg/profiles:
   - fix typo ; this allows to compile ALLOW_PROFILES_SAMPLESPLIT_COST code.
 o pkg/gchem:
