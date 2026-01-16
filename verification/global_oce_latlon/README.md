@@ -24,6 +24,7 @@ The **secondary** test, using input files from `input.yearly/`,
 is very similar except for the specification of yearly input fields to`pkg/exf`.<br>
 
 **Note:**
+
 1.  These 2 set-up have been moved (in PR #830) from `verification/global_with_exf/`
     where a "README" still provides some details related to `pkg/exf` specific
     features used here.
@@ -49,6 +50,7 @@ the remaining changes are kept in `code_oad/` for now.
 
 ### Instructions:
 Configure and compile the code:
+
 ```
   cd build
   ../../../tools/genmake2 -mods ../code_oad [-of my_platform_optionFile]
@@ -59,6 +61,7 @@ Configure and compile the code:
 
 ***Note:*** might want to split the full single step above (make adAll) in
 several intermediate steps such as:
+
 ```
   make cb2m
   make makefile
@@ -66,15 +69,16 @@ several intermediate steps such as:
   make allmods
   make adAll
 ```
-where the first step (cb2m) invoke script to convert COMMON block headers
-(e.g.. FILE.h) to MODULE headers (FILE_mod.h) and create new module file
-(FILE_mod.F90); the second step (makefile) re-generate makefile which takes
-into account newly created files FILE_mod.h, FILE_mod.F90 ; the third step
-(small_f) generate `.f` and `.f90` files. The fourth step (allmods)
-compiles all module files .f90 ; and the fifth and last step complile all f90
+where the first step (`cb2m`) invokes a script to convert `COMMON` block headers
+(e.g. `FILE.h`) to `MODULE` headers (`FILE_mod.h`) and create new module files
+(`FILE_mod.F90`); the second step (`makefile`) re-generates the makefile to take
+into account newly created files `FILE_mod.h`, `FILE_mod.F90` ; the third step
+(`small_f`) generates `.f` and `.f90` files. The fourth step (`allmods`)
+compiles all module files `.f90` ; and the fifth and last step compliles all f90
 src files.
 
 To run primary test:
+
 ```
   cd run
   ln -s ../input_oad/* .
@@ -87,6 +91,7 @@ There is comparison output in the directory:
   `results/output_oadm.txt`
 
 To run any of secondary `$st` test (`$st` in: `ggl90`, `kpp`):
+
 ```
   cd run
   rm *
@@ -104,6 +109,7 @@ similar to above but using set-up specific code from `code_ad/` and input files 
 
 ### Instructions:
 Configure and compile the code:
+
 ```
   cd build
   ../../../tools/genmake2 -mods ../code_ad [-of my_platform_optionFile]
@@ -114,6 +120,7 @@ Configure and compile the code:
 ```
 
 To run primary test:
+
 ```
   cd run
   ln -s ../input_ad/* .
@@ -126,6 +133,7 @@ There is comparison output in the directory:
   `results/output_adm.txt`
 
 To run any of secondary `$st` test (`$st` in: `ggl90`, `w_exf`, `ebm`):
+
 ```
   cd run
   rm *
@@ -139,6 +147,7 @@ There is comparison output in the directory:
   `results/output_adm.$st.txt`
 
 **Note:**
+
 1.  `input_ad.w_exf` set-up has been moved (in PR #830)
     from `verification/global_with_exf/input_ad`
 2.  `input_ad.ebm` set-up has been moved (in PR #944)
@@ -146,4 +155,3 @@ There is comparison output in the directory:
 
 ## Part 3, using Tapenade Adjoint Compiler:
 similar to above but using set-up specific code from `code_tap/` and input files from `input_tap/`
-
