@@ -6,5 +6,5 @@
  useOBCS  =.TRUE.,
  useDiagnostics=.TRUE.,
  useCal=.TRUE.,
- useEXF=.TRUE.,
+ useEXF=.FALSE.,
  &

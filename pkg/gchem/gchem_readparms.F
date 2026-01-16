@@ -46,9 +46,16 @@ C  msgBuf         :: message buffer
       INTEGER iUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER errCount
+#ifdef ALLOW_EXF
+C     Local helper parameters that can be set in case we want to use
+C     pkg/exf machinery for gchem-fields with useEXF=F
+      INTEGER gchem_exf_iprec, gchem_exf_debugLev
+      LOGICAL gchem_useExfYearlyFields, gchem_twoDigitYear
 # ifdef USE_EXF_INTERPOLATION
+      LOGICAL gchem_exf_output_interp
       INTEGER j
 # endif
+#endif
 CEOP
 
 C- Sub-package on/off flags: not fully implemented, requires
@@ -68,17 +75,20 @@ C  to test the flag before any corresponding pkg S/R call
      &           gchem_rl1, gchem_rl2, gchem_rl3,
      &           gchem_rl4, gchem_rl5,
      &           gchem_ForcingPeriod, gchem_ForcingCycle,
-     &           gchem_SiFile, gchem_Si3DFile, gchem_parFile, 
-     &           gchem_FeFile, gchem_apco2File, gchem_windFile, 
+     &           gchem_SiFile, gchem_Si3DFile, gchem_parFile,
+     &           gchem_FeFile, gchem_apco2File, gchem_windFile,
      &           gchem_apresFile, gchem_iceFile, gchem_chlFile,
-     &           gchem_Si_const, gchem_Si3D_const, gchem_par_const, 
-     &           gchem_Fe_const, gchem_apco2_const, gchem_wind_const, 
+     &           gchem_Si_const, gchem_Si3D_const, gchem_par_const,
+     &           gchem_Fe_const, gchem_apco2_const, gchem_wind_const,
      &           gchem_apres_const, gchem_ice_const, gchem_chl_const,
      &           gchem_secondsPerYear,
      &           tIter0
 
 # ifdef ALLOW_EXF
       NAMELIST /GCHEM_FORCING_PARAMS/
+     &     gchem_exf_iprec, gchem_exf_debugLev,
+     &     gchem_useExfYearlyFields, gchem_twoDigitYear,
+C
      &     gchem_SiPeriod, gchem_SiRepCycle, gchem_SiStartTime,
      &     gchem_SiStartDate1, gchem_SiStartDate2,
      &     gchem_Si_exfremo_intercept, gchem_Si_exfremo_slope,
@@ -125,6 +135,8 @@ C
      &     gchem_chlMask, gchem_inscal_chl
 #  ifdef USE_EXF_INTERPOLATION
       NAMELIST /GCHEM_INTERP_PARAMS/
+     &     gchem_exf_output_interp,
+C
      &     Si_lon0, Si_lat0, Si_nlon,Si_nlat,
      &     Si_lon_inc, Si_lat_inc, Si_interpMethod,
 C
@@ -242,6 +254,8 @@ C- Open and read the data.gchem file
 
       IF ( gchem_useEXF ) THEN
 
+       IF ( .not. useEXF ) repeatPeriod = gchem_ForcingCycle
+
        gchem_SiPeriod             = 0.0 _d 0
        gchem_SiRepCycle           = repeatPeriod
        gchem_SiStartTime          = UNSET_RL
@@ -321,7 +335,7 @@ C- Open and read the data.gchem file
        gchem_apres_exfremo_slope     = 0.0 _d 0
        gchem_apresMask               = 'c'
        gchem_inscal_apres            = 1. _d 0
-       
+
        gchem_chlPeriod               = 0.0 _d 0
        gchem_chlRepCycle             = repeatPeriod
        gchem_chlStartTime            = UNSET_RL
@@ -332,9 +346,48 @@ C- Open and read the data.gchem file
        gchem_chlMask                 = 'c'
        gchem_inscal_chl              = 1. _d 0
 
+C     If useEXF=F, s/r exf_readparms is not called and exf-parameters
+C     are not initialiased properly. The following few exf-related
+C     parameters need to have a defined value to be used in s/r
+C     exf_set_fld.
+       gchem_exf_iprec           = 32
+       gchem_useExfYearlyFields  = .FALSE.
+       gchem_twoDigitYear        = .FALSE.
+       gchem_exf_debugLev        = debugLevel
+
        READ(UNIT=iUnit, NML=GCHEM_FORCING_PARAMS)
 
+       IF ( .NOT. useEXF ) THEN
+        exf_iprec          = gchem_exf_iprec
+        useExfYearlyFields = gchem_useExfYearlyFields
+        twoDigitYear       = gchem_twoDigitYear
+        exf_debugLev       = gchem_exf_debugLev
+       ENDIF
+
 #  ifdef USE_EXF_INTERPOLATION
+
+       IF ( .not. useEXF ) THEN
+C     This is done in s/r exf_init_interp only if useEXF=T
+# ifdef ALLOW_EXCH2
+        inp_gNx = exch2_mydNx(1)
+        inp_gNy = exch2_mydNy(1)
+# else /* ALLOW_EXCH2 */
+        inp_gNx = Nx
+        inp_gNy = Ny
+# endif /* ALLOW_EXCH2 */
+
+        inp_lon0 = xgOrigin + delX(1)*halfRL
+        inp_lat0 = ygOrigin + delY(1)*halfRL
+
+        inp_dLon = delX(1)
+        DO j=1,MAX_LAT_INC
+         IF (j.LT.inp_gNy) THEN
+          inp_dLat(j) = (delY(j) + delY(j+1))*halfRL
+         ELSE
+          inp_dLat(j) = 0.
+         ENDIF
+        ENDDO
+       ENDIF
 
        Si_lon0 = inp_lon0
        Si_lat0 = inp_lat0
@@ -395,7 +448,7 @@ C- Open and read the data.gchem file
        chl_nlat = inp_gNy
        chl_lon_inc = inp_dLon
        chl_interpMethod  = 1
-       
+
        DO j=1,MAX_LAT_INC
         Si_lat_inc(j)    = inp_dLat(j)
         Si3D_lat_inc(j)  = inp_dLat(j)
@@ -408,7 +461,13 @@ C- Open and read the data.gchem file
         chl_lat_inc(j)   = inp_dLat(j)
        ENDDO
 
+       gchem_exf_output_interp = .FALSE.
+
        READ(UNIT=iUnit, NML=GCHEM_INTERP_PARAMS)
+
+       IF ( .NOT. useEXF ) THEN
+        exf_output_interp = gchem_exf_output_interp
+       ENDIF
 
 #  endif /* USE_EXF_INTERPOLATION */
 C     gchem_useEXF
@@ -494,7 +553,7 @@ C     gchem_useEXF and useExfYearlyFields
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
-      ENDIF 
+      ENDIF
 C     useEXF and useExfYearlyFields
 #ifndef GCHEM_3D_SILICA
       IF ( gchem_Si3DFile .NE. ' ' ) THEN

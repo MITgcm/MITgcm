@@ -156,7 +156,7 @@ C     data for the period ahead and the period behind myTime.
           CALL READ_REC_XY_RS( gchem_chlFile,gchemchl1,intime1,
      &         myIter,myThid )
          ENDIF
-         
+
 C--   fill-in overlap after loading temp arrays:
          _EXCH_XY_RS(gchemWind0, myThid )
          _EXCH_XY_RS(gchemWind1, myThid )
@@ -250,7 +250,7 @@ C-     end if-bloc (time to load new fields)
             ENDDO
            ENDDO
           ENDIF
-          
+
           IF ( GCHEM_parFile .NE. ' ' ) THEN
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
@@ -305,8 +305,9 @@ C If a wind file is given in data.gchem, read it
 # endif
      &     mytime, myiter, mythid )
 C Otherwise get winds from PKG/EXF
-       ELSEIF (( uwindfile .NE. ' ' .AND.
-     &           vwindfile .NE. ' ' ) 
+       ELSEIF ( useEXF
+     &   .AND. ( uwindfile .NE. ' ' .AND.
+     &           vwindfile .NE. ' ' )
      &  .OR. ( ustressfile .NE. ' ' .AND.
      &         vstressfile .NE. ' ' )) THEN
         DO bj = myByLo(myThid), myByHi(myThid)
@@ -336,7 +337,7 @@ C If a pressure files is given in data.gchem, read it
 # endif
      &     mytime, myiter, mythid )
 C Otherwise get atmospheric pressure from PKG/EXF
-       ELSEIF ( apressurefile .NE. ' ' ) THEN
+       ELSEIF ( useEXF .AND. apressurefile .NE. ' ' ) THEN
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
@@ -368,10 +369,10 @@ C Otherwise get atmospheric pressure from PKG/EXF
        IF ( gchem_Si3DFile .NE. ' '  ) THEN
         CALL EXF_SET_FLD3D(
      &      'gchemSi3D', gchem_Si3DFile, gchem_Si3DMask,
-     &      gchem_Si3DStartTime, gchem_Si3DPeriod, 
+     &      gchem_Si3DStartTime, gchem_Si3DPeriod,
      &      gchem_Si3DRepCycle,
      &      gchem_inscal_Si3D,
-     &      gchem_Si3D_exfremo_intercept, 
+     &      gchem_Si3D_exfremo_intercept,
      &      gchem_Si3D_exfremo_slope,
      &      gchemSi3D, gchemSi3D0, gchemSi3D1,
 # ifdef USE_EXF_INTERPOLATION
@@ -461,15 +462,15 @@ C Otherwise get sea ice fraction from PKG/EXF
         ENDDO
 #endif /* EXF_SEAICE_FRACTION */
        ENDIF
-       
+
        IF ( gchem_chlFile .NE. ' ' ) THEN
 C     forcing load fields with pkg/exf tools
         CALL EXF_SET_FLD(
      &     'gchemChl', gchem_chlfile, gchem_chlmask,
-     &     gchem_chlStartTime, gchem_chlperiod, 
+     &     gchem_chlStartTime, gchem_chlperiod,
      &     gchem_chlRepCycle,
      &     gchem_inscal_chl,
-     &     gchem_chl_exfremo_intercept, 
+     &     gchem_chl_exfremo_intercept,
      &     gchem_chl_exfremo_slope,
      &     gchemchl, gchemchl0, gchemchl1,
 # ifdef USE_EXF_INTERPOLATION
