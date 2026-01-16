@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/profiles:
+  - fix typo ; this allows to compile ALLOW_PROFILES_SAMPLESPLIT_COST code.
 o pkg/gchem:
   - new routine gchem_insolation.F to replace pkg/bling & pkg/dic code,
     and now also usable on Curvilinear-Grid.
