@@ -1,9 +1,8 @@
 Global ocean on Lat-Lon grid using forcing from pkg/exf
 =========================================================
-This experiment has been moved (PR #830):
-1. inside `global_ocean_ebm` (Forward set-up) and is now run there
-   as secondary tests ("global_ocean_ebm.w_exf" & "global_ocean_ebm.yearly")
-   using `input.w_exf/` and `input.yearly/`.
+This experiment has been moved (PR #830, #944):
+1. inside `global_oce_latlon` (Forward primary and secondary set-up)
+   and is now run there.
 2. inside `global_oce_latlon` (Adjoint set-ups) and is now run there
    as a secondary test ("global_oce_latlon.w_exf")
    using `input_ad.w_exfs/` and `input_tap.w_exf/`.
