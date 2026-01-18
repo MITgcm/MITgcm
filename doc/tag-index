@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification:
+ - after moving/merging (PR #944) fwd & adm tests from global_ocean_ebm into new
+   host-exp. global_oce_latlon, move former input dir and ref. output to replace
+   sym-link in new host-exp and remove remaining files/dir in global_ocean_ebm.
 o pkg/obsfit:
   - fix allocation of 2 local vars in obsfit_init_fixed.F
 o pkg/profiles:
