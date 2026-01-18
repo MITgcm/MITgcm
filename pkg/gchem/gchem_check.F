@@ -1,4 +1,5 @@
 #include "GCHEM_OPTIONS.h"
+#undef GCHEM_REPORT_UNUSED_PARAMS
 
 CBOP
 C     !ROUTINE: GCHEM_CHECK
@@ -40,21 +41,27 @@ C     myThid   :: My Thread Id number
 
 #ifdef ALLOW_GCHEM
 C     !FUNCTIONS:
+#ifdef ALLOW_CAL
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
+#endif
 
 C     !LOCAL VARIABLES:
 C     msgBuf   :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER errCount
       INTEGER nb_tendTr
-      INTEGER IL
-      INTEGER k
       INTEGER ioUnit
+#ifdef ALLOW_CAL
+      INTEGER IL
+#endif
+#ifdef GCHEM_REPORT_UNUSED_PARAMS
+      INTEGER k
       INTEGER gchem_int(5)
       _RL     gchem_rl(5)
       CHARACTER*(MAX_LEN_FNAM) gchem_fileName(5)
       CHARACTER*(10) varName
+#endif
 CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -261,6 +268,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &     'useDARWIN =', ' /* use pkg/darwin */')
       CALL WRITE_0D_I( nsubtime, INDEX_NONE, 'nsubtime =',
      &     ' /* number of sub-timesteps withing bgc-module */')
+#ifdef GCHEM_REPORT_UNUSED_PARAMS
       gchem_int = (/gchem_int1,gchem_int2,
      &     gchem_int3,gchem_int4,gchem_int5/)
       gchem_rl = (/gchem_rl1,gchem_rl2,
@@ -285,6 +293,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &      varName(1:9)//' =', ' /* generic REAL*8 parameter */')
        ENDIF
       ENDDO
+#endif
       CALL WRITE_0D_RL( gchem_ForcingPeriod, INDEX_NONE,
      & 'gchem_ForcingPeriod =', ' /* gchem forcing period (s) */')
       CALL WRITE_0D_RL( gchem_ForcingCycle, INDEX_NONE,
