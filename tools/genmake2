@@ -19,10 +19,9 @@ Usage: "$0" [OPTIONS]
     -tap | --tap
           Generate a Makefile for a Tapenade build
 
-    -taparg ARG | --taparg ARG | -taparg=ARGS | --taparg=ARGS
-          Here, "ARG" or "ARGS" specifies a list of cmd line arguments
-          passed to the tapenade tool
-
+    -tap_extra FLAG | --tap_extra FLAG | -tap_extra=FLAGS | --tap_extra=FLAGS
+          Here, "FLAG" or "FLAGS" specifies a list of extra cmd line flags 
+          or arguments passed to the tapenade tool
 
     -oad | --oad
 	  Generate a Makefile for an OpenAD built
@@ -1475,6 +1474,7 @@ AD_OPTFILE=
 TAPENADE=
 TAPENADECMD=tapenade
 TAPENADE_FLAGS=
+TAP_EXTRA=
 OPENAD=
 CAT_SRC_FOR_TAF=1
 DEP_TAF_FILE='Makefile_taf.dep'
@@ -1507,9 +1507,10 @@ gm_s8="HAVE_NETCDF HAVE_SYSTEM HAVE_FDATE HAVE_ETIME HAVE_LAPACK HAVE_FLUSH"
 gm_s10="AUTODIFF_PKG_USED AD_OPTFILE TAPENADE TAPENADECMD OPENAD"
 gm_s11="TAF AD_TAF_FLAGS FTL_TAF_FLAGS SVD_TAF_FLAGS TAF_F77_FLAGS TAF_F90_FLAGS"
 gm_s12="TAF_EXTRA DIVA MPIINCLUDEDIR MPI_HEADER_FILES"
+gm_s13="TAP_EXTRA"
 
 gm_state="COMMANDL $gm_s1 $gm_s2 $gm_s3 $gm_s4 $gm_s5 $gm_s6 $gm_s7 $gm_s8"
-gm_state="$gm_state $gm_s10 $gm_s11 $gm_s12"
+gm_state="$gm_state $gm_s10 $gm_s11 $gm_s12 $gm_s13"
 
 cat <<EOF
 
@@ -1567,10 +1568,10 @@ for ac_option in "$@" ; do
 	-tap | --tap)
 	    TAPENADE="true" ; ALWAYS_USE_F90=1 ;;
 
-	-taparg | --taparg)
-            ac_prev=TAPARG ;;
-        -taparg=* | --taparg)
-            TAPARG=$ac_optarg ;;
+	-tap_extra | --tap_extra)
+	    ac_prev=TAP_EXTRA ;;
+	-tap_extra=* | --tap_extra=*)
+	    TAP_EXTRA=$ac_optarg ;;
 
 	-oad | --oad)
 	    OPENAD="true" ; ALWAYS_USE_F90=1 ;;
@@ -3713,8 +3714,9 @@ rm -f $TMP.nonADF77srclist $TMP.nonADF90srclist
 
 cat >>$MAKEFILE <<EOF
 
-TAPARG = ${TAPARG} ${TAPENADE_FLAGS}
+TAP_EXTRA = ${TAP_EXTRA}
 TAPENADECMD = ${TAPENADECMD}
+TAPENADE_FLAGS = ${TAPENADE_FLAGS}
 
 TAPENADE_SUPPORT_F90_SRC_FILES = \
 ${TAPTOOLS}/diffsizes.F90
@@ -3750,11 +3752,11 @@ if test $CAT_SRC_FOR_TAF = 1 ; then
 
 cat >>$MAKEFILE <<EOF
 adj_tap_all.$FS: \$(AD_FILES) f95_test_mods.f90
-	\$(TAPENADECMD) -b \$(TAPARG) \$(AD_FILES) f95_test_mods.f90
+	\$(TAPENADECMD) -b \$(TAPENADE_FLAGS) \$(TAP_EXTRA) \$(AD_FILES) f95_test_mods.f90
 	cat \$(AD_FILES_ADJ) > adj_tap_all.$FS 2> /dev/null || true
 
 tlm_tap_all.$FS: \$(AD_FILES) f95_test_mods.f90
-	\$(TAPENADECMD) -d \$(TAPARG) \$(AD_FILES) f95_test_mods.f90
+	\$(TAPENADECMD) -d \$(TAPENADE_FLAGS) \$(TAP_EXTRA) \$(AD_FILES) f95_test_mods.f90
 	cat \$(AD_FILES_TLM) > tlm_tap_all.$FS 2> /dev/null || true
 
 \$(EXE_ADJ): \$(SPECIAL_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES) \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(OBJFILES) \$(EMBEDDED_FILES) adj_tap_all.$FS
@@ -3774,14 +3776,14 @@ else
 cat >>$MAKEFILE <<EOF
 adj_tap_all.$FS: \$(AD_FILES) f95_test_mods.f90
 	@-rm -f \$(AD_FILES_ADJ)
-	\$(TAPENADECMD) -b \$(TAPARG) \$(AD_FILES) f95_test_mods.f90
+	\$(TAPENADECMD) -b \$(TAPENADE_FLAGS) \$(TAP_EXTRA) \$(AD_FILES) f95_test_mods.f90
 	ls -l the_main_loop_b.f
 	@$BASH\$(TOOLSDIR)/TAP_support/append_fwd_src _b $FS \$(AD_FILES)
 	touch adj_tap_all.$FS
 
 tlm_tap_all.$FS: \$(AD_FILES) f95_test_mods.f90
 	@-rm -f \$(AD_FILES_TLM)
-	\$(TAPENADECMD) -d \$(TAPARG) \$(AD_FILES) f95_test_mods.f90
+	\$(TAPENADECMD) -d \$(TAPENADE_FLAGS) \$(TAP_EXTRA) \$(AD_FILES) f95_test_mods.f90
 	ls -l the_main_loop_d.f
 	@$BASH\$(TOOLSDIR)/TAP_support/append_fwd_src _d $FS \$(AD_FILES)
 	touch tlm_tap_all.$FS
