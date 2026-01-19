@@ -4,6 +4,30 @@
 # include "STREAMICE_OPTIONS.h"
 #endif      
 
+C--   File stubs_tap_adj.F: Subroutines with "manual" derivatives
+C--  to be called by the tapenade adjoint and tangent linear code
+C--    *_B: adjoint with checkpointing on
+C--    *_D: tlm 
+C--    *_FWD, *_BWD: adjoint with no checkpointing
+C-- 
+C--    Contents:
+C--    o  GLOBAL_MAX_R8_B
+C--    o  GLOBAL_SUM_TILE_RL_B
+C--    o  GLOBAL_SUM_TILE_RL_FWD
+C--    o  GLOBAL_SUM_TILE_RL_BWD
+C--    o  GLOBAL_SUM_R8_B
+C--    o  CG2D_B0
+C--    o  ADEXCH_3D_RL
+C--    o  ADEXCH_UV_XY_RS
+C--    o  ADEXCH_UV_3D_RL
+C--    o  ADEXCH_XY_RS
+C--    o  ADEXCH_XY_RL
+C--    o  STREAMICE_CG_SOLVE_D
+C--    o  STREAMICE_CG_SOLVE_B
+C--    o  STREAMICE_CG_SOLVE_FWD
+C--    o  STREAMICE_CG_SOLVE_BWD
+      
+
       SUBROUTINE GLOBAL_MAX_R8_B(rhsmax, rhsmaxb, myThid)
       IMPLICIT NONE
 #include "SIZE.h"

@@ -5,6 +5,8 @@ C--    o ACTIVE_READ_XY_D
 C--    o ACTIVE_READ_XYZ_D
 C--    o ACTIVE_READ_XY_B
 C--    o ACTIVE_READ_XYZ_B
+C--    o ACTIVE_READ_XY_BWD (for use without checkpointing)
+C--    o ACTIVE_READ_XY_FWD (for use without checkpointing)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

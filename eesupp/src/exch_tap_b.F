@@ -9,6 +9,13 @@ C--   o  EXCH1_RL_CUBE_B
 C--   o  EXCH1_RS_CUBE_B
 C--   o  EXCH1_RL_B
 C--   o  EXCH1_RS_B
+C--   o  EXCH1_RL_CUBE_FWD (for adjoint without checkpointing)
+C--   o  EXCH1_RL_CUBE_BWD (for adjoint without checkpointing)
+C--   o  EXCH1_RL_FWD (for adjoint without checkpointing)
+C--   o  EXCH1_RL_BWD (for adjoint without checkpointing)
+C--   o  EXCH1_RS_FWD (for adjoint without checkpointing)
+C--   o  EXCH1_RS_BWD (for adjoint without checkpointing)
+
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
