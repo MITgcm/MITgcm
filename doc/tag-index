@@ -1,10 +1,16 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - fix scaling from cg2g/cg3d TargetResWunit to CG-Tolerance (exact scaling
+    if rAc is uniform) by using few more domain global quantities (in GRID.h).
+  - adjust accordingly cg2g/cg3d TargetResWunit in all forward test exp. to keep
+    identical results but switch off cg2dTargetResWunit in most AD exp. (except
+    if using useNSACGSolver=T) to use cg2gTargetResidual (normalize cg2d RHS).
 o verification:
- - after moving/merging (PR #944) fwd & adm tests from global_ocean_ebm into new
-   host-exp. global_oce_latlon, move former input dir and ref. output to replace
-   sym-link in new host-exp and remove remaining files/dir in global_ocean_ebm.
+  - after moving/merging (PR 944) fwd & adm tests from global_ocean_ebm into new
+    host-exp global_oce_latlon, move former input dir and ref. output to replace
+    sym-link in new host-exp and remove remaining files/dir in global_ocean_ebm.
 o pkg/obsfit:
   - fix allocation of 2 local vars in obsfit_init_fixed.F
 o pkg/profiles:
