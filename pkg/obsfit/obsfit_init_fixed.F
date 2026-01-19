@@ -77,8 +77,8 @@ C     diffsecs     :: absolute time
       _RL tmp_lon, tmp_lon2(1000), tmp_lat2(1000), lon_cur, lat_cur
       _RL tmp_depth2(1000), depth_cur, delT_cur
       _RL tmp_weight2(1000)
-      _RL tmp_sample_time(NSAMP_PER_TILE_MAX)
-      _RL tmp_sample_delT(NSAMP_PER_TILE_MAX)
+      _RL tmp_sample_time(NSAMPLES_MAX_GLO)
+      _RL tmp_sample_delT(NSAMPLES_MAX_GLO)
       _RL lon_1, lon_2, lat_1, lat_2
       _RL depth_1, depth_2
       _RL lon_tmp1, lon_tmp2, lat_tmp1, lat_tmp2
@@ -284,7 +284,7 @@ C Read the info for observations:
 
         readDelT = 1
         err = NF_INQ_VARID( fid,'obs_delT', varID1c )
-C Time interval (if missing, assume instanteneous):
+C Time interval (if missing, assume instantaneous):
         IF (err.NE.NF_NOERR) THEN
          readDelT = 0
          WRITE( msgbuf,'(2A)' )
@@ -399,7 +399,7 @@ C Create global files for obs-equivalent
      &          varID(2) )
 
          ENDIF
-C Initiliaze mask values to 0
+C Initialize mask values to 0
          DO obs_num = 1, ObsNo(num_file)
           err = NF_PUT_VARA_DOUBLE( fidglobal(num_file), varID(2),
      &          obs_num, 1, 0. _d 0 )
