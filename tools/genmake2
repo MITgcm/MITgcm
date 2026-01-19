@@ -3752,11 +3752,11 @@ if test $CAT_SRC_FOR_TAF = 1 ; then
 
 cat >>$MAKEFILE <<EOF
 adj_tap_all.$FS: \$(AD_FILES) f95_test_mods.f90
-	\$(TAPENADECMD) -b \$(TAPENADE_FLAGS) \$(TAP_EXTRA) \$(AD_FILES) f95_test_mods.f90
+	\$(TAPENADECMD) -b \$(TAP_EXTRA) \$(TAPENADE_FLAGS) \$(AD_FILES) f95_test_mods.f90
 	cat \$(AD_FILES_ADJ) > adj_tap_all.$FS 2> /dev/null || true
 
 tlm_tap_all.$FS: \$(AD_FILES) f95_test_mods.f90
-	\$(TAPENADECMD) -d \$(TAPENADE_FLAGS) \$(TAP_EXTRA) \$(AD_FILES) f95_test_mods.f90
+	\$(TAPENADECMD) -d \$(TAP_EXTRA) \$(TAPENADE_FLAGS) \$(AD_FILES) f95_test_mods.f90
 	cat \$(AD_FILES_TLM) > tlm_tap_all.$FS 2> /dev/null || true
 
 \$(EXE_ADJ): \$(SPECIAL_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES) \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(OBJFILES) \$(EMBEDDED_FILES) adj_tap_all.$FS
@@ -3776,14 +3776,14 @@ else
 cat >>$MAKEFILE <<EOF
 adj_tap_all.$FS: \$(AD_FILES) f95_test_mods.f90
 	@-rm -f \$(AD_FILES_ADJ)
-	\$(TAPENADECMD) -b \$(TAPENADE_FLAGS) \$(TAP_EXTRA) \$(AD_FILES) f95_test_mods.f90
+	\$(TAPENADECMD) -b \$(TAP_EXTRA) \$(TAPENADE_FLAGS) \$(AD_FILES) f95_test_mods.f90
 	ls -l the_main_loop_b.f
 	@$BASH\$(TOOLSDIR)/TAP_support/append_fwd_src _b $FS \$(AD_FILES)
 	touch adj_tap_all.$FS
 
 tlm_tap_all.$FS: \$(AD_FILES) f95_test_mods.f90
 	@-rm -f \$(AD_FILES_TLM)
-	\$(TAPENADECMD) -d \$(TAPENADE_FLAGS) \$(TAP_EXTRA) \$(AD_FILES) f95_test_mods.f90
+	\$(TAPENADECMD) -d \$(TAP_EXTRA) \$(TAPENADE_FLAGS) \$(AD_FILES) f95_test_mods.f90
 	ls -l the_main_loop_d.f
 	@$BASH\$(TOOLSDIR)/TAP_support/append_fwd_src _d $FS \$(AD_FILES)
 	touch tlm_tap_all.$FS
