@@ -1,6 +1,21 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification:
+ - after moving/merging (PR #944) fwd & adm tests from global_ocean_ebm into new
+   host-exp. global_oce_latlon, move former input dir and ref. output to replace
+   sym-link in new host-exp and remove remaining files/dir in global_ocean_ebm.
+o pkg/obsfit:
+  - fix allocation of 2 local vars in obsfit_init_fixed.F
+o pkg/profiles:
+  - fix typo ; this allows to compile ALLOW_PROFILES_SAMPLESPLIT_COST code.
+o pkg/gchem:
+  - new routine gchem_insolation.F to replace pkg/bling & pkg/dic code,
+    and now also usable on Curvilinear-Grid.
+o tools/ci:
+  - add two tapenade AD test experiments to GitHub action CI test.
+
+checkpoint69j (2025/12/20)
 o optim:
   - fix outdated ALLOW_SHIFWFLX_CONTROL option in "optim_read/writedata.F".
 o pkg/obsfit:
