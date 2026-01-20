@@ -48,7 +48,6 @@ C     !LOCAL VARIABLES:
       INTEGER ifc
       _RL f_ice
       _RL no_ice
-      CHARACTER*19 fmt
       CHARACTER*23 cfname
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
@@ -80,8 +79,7 @@ C--   Do global summation for each part of the cost function
       CALL GLOBAL_SUM_TILE_RL( objf_ice,     f_ice,     myThid )
       CALL GLOBAL_SUM_TILE_RL( num_ice,     no_ice,     myThid )
 
-      fmt = '(A,2D22.15,1X,E8.2)'
-      WRITE(standardMessageUnit,fmt)
+      WRITE(standardMessageUnit,'(A,2D22.15,1X,E8.2)')
      &     ' --> f_ice     =',f_ice, no_ice, mult_ice
 
 C--   Each process has calculated the global part for itself.
@@ -92,7 +90,8 @@ C--   Each process has calculated the global part for itself.
 
 C     makes little sense to print this now, because it is zero at this point
 c       WRITE(ifc,*) 'fc =', fc
-        WRITE(ifc,fmt) 'f_ice   =', f_ice, no_ice, mult_ice
+        WRITE(ifc,'(A,2D22.15,1X,E8.2)')
+     &       'f_ice   =', f_ice, no_ice, mult_ice
 
         CLOSE(ifc)
 

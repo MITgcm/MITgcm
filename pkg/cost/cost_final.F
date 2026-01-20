@@ -58,7 +58,6 @@ C     dummy parameter for this unlikely case
 #endif
       INTEGER ifc
       INTEGER ioUnit
-      CHARACTER*20 fmt
       CHARACTER*16 cfname
 #ifdef ALLOW_OBSFIT
       INTEGER num_file_obs
@@ -157,28 +156,32 @@ cgf : to compile previous line user is expected to provide cost_temp.F
 
 c--   Sum up all other contributions.
       loc_fc = 0.
-      fmt = '(A,D22.15,1X,E8.2)'
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
 #ifdef ALLOW_COST_TEST
-        WRITE(ioUnit,fmt) ' --> objf_test(bi,bj)      = ',
+        WRITE(UNIT=ioUnit,FMT='(A,D22.15,1X,E8.2)')
+     &       ' --> objf_test(bi,bj)      = ',
      &       objf_test(bi,bj), mult_test
 #endif
 #ifdef ALLOW_COST_TRACER
-        WRITE(ioUnit,fmt) ' --> objf_tracer(bi,bj)    = ',
+        WRITE(UNIT=ioUnit,FMT='(A,D22.15,1X,E8.2)')
+     &       ' --> objf_tracer(bi,bj)    = ',
      &       objf_tracer(bi,bj), mult_tracer
 #endif
 #ifdef ALLOW_COST_ATLANTIC_HEAT
-        WRITE(ioUnit,fmt) ' --> objf_atl(bi,bj)       = ',
+        WRITE(UNIT=ioUnit,FMT='(A,D22.15,1X,E8.2)')
+     &       ' --> objf_atl(bi,bj)       = ',
      &       objf_atl(bi,bj), mult_atl
 #endif
 #ifdef ALLOW_COST_TEMP
-        WRITE(ioUnit,fmt) ' --> objf_temp_tut(bi,bj)  = ',
+        WRITE(UNIT=ioUnit,FMT='(A,D22.15,1X,E8.2)')
+     &       ' --> objf_temp_tut(bi,bj)  = ',
      &       objf_temp_tut(bi,bj), mult_temp_tut
 #endif
 #ifdef ALLOW_COST_HFLUXM
-        WRITE(ioUnit,fmt) ' --> objf_hflux_tut(bi,bj) = ',
+        WRITE(UNIT=ioUnit,FMT='(A,D22.15,1X,E8.2)')
+     &       ' --> objf_hflux_tut(bi,bj) = ',
      &       objf_hflux_tut(bi,bj), mult_hflux_tut
 #endif
 

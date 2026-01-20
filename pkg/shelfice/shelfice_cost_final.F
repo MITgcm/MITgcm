@@ -47,9 +47,10 @@ C     ! FUNCTIONS:
 
 C     !LOCAL VARIABLES:
       INTEGER bi, bj
+#ifndef ALLOW_OPENAD
       INTEGER ifc
-      CHARACTER*18 fmt
       CHARACTER*(25) cfname
+#endif
 
       _RL f_shelfice
       _RL f_shifwflx
@@ -84,10 +85,10 @@ ccc        end do
       ENDIF
 
 C--   Sum up all contributions.
-      fmt = '(A,D22.15,1X,E8.2)'
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        WRITE(standardMessageUnit,fmt) ' --> objf_shelfice(bi,bj) = ',
+        WRITE(standardMessageUnit,'(A,D22.15,1X,E8.2)')
+     &       ' --> objf_shelfice(bi,bj) = ',
      &       objf_shelfice(bi,bj), mult_shelfice
         tile_fc(bi,bj) = tile_fc(bi,bj)
      &       + mult_shelfice * objf_shelfice(bi,bj)
@@ -110,7 +111,8 @@ C--   Each process has calculated the global part for itself.
 C     makes little sense to print this now, because it is zero at this point
 c       WRITE(ifc,*) 'fc =', fc
 cML       WRITE(ifc,*) 'f_shelfice =', f_shelfice, no_shelfice
-       WRITE(ifc,fmt) 'f_shelfice =', f_shelfice, mult_shelfice
+       WRITE(ifc,'(A,D22.15,1X,E8.2)')
+     &      'f_shelfice =', f_shelfice, mult_shelfice
 
        CLOSE(ifc)
 
