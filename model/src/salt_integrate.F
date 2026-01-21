@@ -112,6 +112,7 @@ C                   at the upper(U) and lower(D) faces of a cell.
 C     gS_loc     :: Salinity tendency (local to this S/R)
 C     gsForc     :: Salinity forcing tendency
 C     gs_AB      :: Adams-Bashforth salinity tendency increment
+C     tracTmp    :: tracer field intermediate value (after Multi-Dim Advect)
       INTEGER iMin, iMax, jMin, jMax
       INTEGER i, j, k
       INTEGER kUp, kDown, kM1
@@ -129,9 +130,13 @@ C     gs_AB      :: Adams-Bashforth salinity tendency increment
       _RL gsForc  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL gs_AB   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef ALLOW_DIAGNOSTICS
+      _RL tracTmp (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       LOGICAL diagForcing, diagAB_tend
+#else
+      _RL tracTmp(1)
 #endif
       LOGICAL calcAdvection
+      LOGICAL diagAdvVarE, diagAdvVarI
       INTEGER iterNb
 #ifdef ALLOW_ADAMSBASHFORTH_3
       INTEGER m2
@@ -168,6 +173,12 @@ C     extended over 1 point in tile halo region (0:sNx+1,0:sNy=1).
       IF ( useDiagnostics .AND. AdamsBashforthGs )
      &     diagAB_tend = DIAGNOSTICS_IS_ON( 'AB_gS   ', myThid )
 #endif
+      diagAdvVarE = .FALSE.
+      diagAdvVarI = .FALSE.
+      IF ( useDiagnostics )
+     &    CALL GAD_DIAG_VARIANCE_SET(
+     O             diagAdvVarE, diagAdvVarI,
+     I             saltImplVertAdv, GAD_SALINITY, bi, bj, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
       tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
@@ -259,12 +270,12 @@ CADJ STORE som_S(:,:,:,bi,bj,:) = comlev1_bibj, key=tkey, kind=isbyte
         IF (debugMode) CALL DEBUG_CALL('GAD_SOM_ADVECT',myThid)
 # endif
         CALL GAD_SOM_ADVECT(
-     I             saltImplVertAdv,
-     I             saltAdvScheme, saltVertAdvScheme, GAD_SALINITY,
-     I             dTtracerLev, uFld, vFld, wFld, salt,
-     U             som_S,
-     O             gS_loc,
-     I             bi, bj, myTime, myIter, myThid )
+     I           saltImplVertAdv, diagAdvVarE,
+     I           saltAdvScheme, saltVertAdvScheme, GAD_SALINITY,
+     I           dTtracerLev, uFld, vFld, wFld, salt,
+     U           som_S,
+     O           gS_loc, tracTmp,
+     I           bi, bj, myTime, myIter, myThid )
       ELSEIF (saltMultiDimAdvec) THEN
 #else /* GAD_ALLOW_TS_SOM_ADV */
       IF (saltMultiDimAdvec) THEN
@@ -273,11 +284,11 @@ CADJ STORE som_S(:,:,:,bi,bj,:) = comlev1_bibj, key=tkey, kind=isbyte
         IF (debugMode) CALL DEBUG_CALL('GAD_ADVECTION',myThid)
 # endif
         CALL GAD_ADVECTION(
-     I             saltImplVertAdv,
-     I             saltAdvScheme, saltVertAdvScheme, GAD_SALINITY,
-     I             dTtracerLev, uFld, vFld, wFld, salt,
-     O             gS_loc,
-     I             bi, bj, myTime, myIter, myThid )
+     I           saltImplVertAdv, diagAdvVarE,
+     I           saltAdvScheme, saltVertAdvScheme, GAD_SALINITY,
+     I           dTtracerLev, uFld, vFld, wFld, salt,
+     O           gS_loc, tracTmp,
+     I           bi, bj, myTime, myIter, myThid )
       ENDIF
 #endif /* DISABLE_MULTIDIM_ADVECTION */
 
@@ -437,6 +448,18 @@ CADJ STORE gsNm1(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, kind = isbyte
         ENDIF
 #endif /* NONLIN_FRSURF */
 
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( diagAdvVarE ) THEN
+          CALL GAD_DIAG_VARIANCE_K(
+     I             GAD_SALINITY, saltMultiDimAdvec, calcAdvection,
+     I             xA, yA, uTrans, vTrans, rTransKp,
+     I             fZon, fMer, fVer(1-OLx,1-OLy,kDown), gsForc,
+     I             salt(1-OLx,1-OLy,1,bi,bj),
+     I             tracTmp, gS_loc, dTtracerLev,
+     I             k, bi, bj, myTime, myIter, myThid )
+        ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+
 C-    end of vertical index (k) loop (Nr:1)
       ENDDO
 
@@ -485,20 +508,21 @@ CADJ STORE salt(:,:,:,bi,bj) = comlev1_bibj, key = tkey, kind = isbyte
 CADJ STORE recip_hFac(:,:,:) = comlev1_bibj, key = tkey, kind = isbyte
 # endif /* ALLOW_AUTODIFF_TAMC */
         CALL GAD_IMPLICIT_R(
-     I         saltImplVertAdv, saltVertAdvScheme, GAD_SALINITY,
-     I         dTtracerLev, kappaRk, recip_hFac, wFld,
-     I         salt(1-OLx,1-OLy,1,bi,bj),
-     U         gS_loc,
-     I         bi, bj, myTime, myIter, myThid )
+     I           saltImplVertAdv, diagAdvVarI,
+     I           saltVertAdvScheme, GAD_SALINITY,
+     I           dTtracerLev, kappaRk, recip_hFac, wFld,
+     I           salt(1-OLx,1-OLy,1,bi,bj),
+     U           gS_loc,
+     I           bi, bj, myTime, myIter, myThid )
       ELSEIF ( implicitDiffusion ) THEN
 #else /* INCLUDE_IMPLVERTADV_CODE */
       IF     ( implicitDiffusion ) THEN
 #endif /* INCLUDE_IMPLVERTADV_CODE */
         CALL IMPLDIFF(
-     I         bi, bj, iMin, iMax, jMin, jMax,
-     I         GAD_SALINITY, kappaRk, recip_hFac,
-     U         gS_loc,
-     I         myThid )
+     I           bi, bj, iMin, iMax, jMin, jMax,
+     I           GAD_SALINITY, kappaRk, recip_hFac,
+     U           gS_loc,
+     I           myThid )
       ENDIF
 
       IF ( AdamsBashforth_S ) THEN
