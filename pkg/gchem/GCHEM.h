@@ -22,8 +22,9 @@ C  nsubtime    :: number of chemistry timesteps per deltaTtracer (default 1)
 C  fileName*   :: various spare filenames
 C  gchem_int*  :: place holder to read in a integer number, set at run time
 C  gchem_rl*   :: place holder to read in a real number, set at run time
-C  gchem_ForcingPeriod :: periodic forcing parameter specific for gchem (seconds)
-C  gchem_ForcingCycle  :: periodic forcing parameter specific for gchem (seconds)
+C  gchem_ForcingPeriod  :: periodic forcing parameter specific for gchem (secs)
+C  gchem_ForcingCycle   :: periodic forcing parameter specific for gchem (secs)
+C  gchem_secondsPerYear :: used for gchem_insolation only (secs)
 CEOP
 
       COMMON /GCHEM_PARM_L/
@@ -59,7 +60,8 @@ CEOP
       COMMON /GCHEM_PARM_R/
      &           gchem_rl1, gchem_rl2, gchem_rl3,
      &           gchem_rl4, gchem_rl5,
-     &           gchem_ForcingPeriod, gchem_ForcingCycle
+     &           gchem_ForcingPeriod, gchem_ForcingCycle,
+     &           gchem_secondsPerYear
       _RL     gchem_rl1
       _RL     gchem_rl2
       _RL     gchem_rl3
@@ -67,5 +69,6 @@ CEOP
       _RL     gchem_rl5
       _RL     gchem_ForcingPeriod
       _RL     gchem_ForcingCycle
+      _RL     gchem_secondsPerYear
 
 #endif /* ALLOW_GCHEM */

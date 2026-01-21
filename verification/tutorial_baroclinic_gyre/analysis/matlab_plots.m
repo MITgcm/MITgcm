@@ -18,15 +18,15 @@ bluered_colormaps
 % vertical grid provided in meters, area in m^2
 
 % 1-D fields
-  RC = ncread('grid.nc', 'RC');   % vertical grid, cell center locations
+  RC = ncread('grid.nc', 'rC');   % vertical grid, cell center locations
   drF = ncread('grid.nc', 'drF'); % vertical spacing of grid cells (thickness of cells)
 % 2-D fields (x,y)
-  XC = ncread('grid.nc', 'XC');   % x-location of gridcell centers
-  YC = ncread('grid.nc', 'YC');   % y-location of gridcell centers
+  XC = ncread('grid.nc', 'xC');   % x-location of gridcell centers
+  YC = ncread('grid.nc', 'yC');   % y-location of gridcell centers
   dyG = ncread('grid.nc', 'dyG'); % grid spacing in y-dim (separation between corners)
-  rA = ncread('grid.nc', 'rA');   % surface area of gridcells
+  rA = ncread('grid.nc', 'rAc');   % surface area of gridcells
 % 3-D fields (x,y,z)
-  HFacC = ncread('grid.nc', 'HFacC'); % vertical fraction of cell which is ocean
+  HFacC = ncread('grid.nc', 'hFacC'); % vertical fraction of cell which is ocean
    
 % For convenience, load additional dimensional variables from
 % netcdf files (these variables are NOT included in binary output)

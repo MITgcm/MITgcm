@@ -138,6 +138,7 @@ C--   SEAICE parameters
      & SEAICE_evpDampC, SEAICEnEVPstarSteps,
      & SEAICE_evpAlpha, SEAICE_evpBeta,
      & SEAICEaEVPcoeff, SEAICEaEVPcStar, SEAICEaEVPalphaMin,
+     & SEAICE_evpAreaReg,
      & SEAICE_zetaMin, SEAICE_zetaMaxFac, SEAICEusePicardAsPrecon,
      & SEAICEuseLSRflex, SEAICEuseKrylov, SEAICEuseJFNK,
      & SEAICEnonLinIterMax, SEAICElinearIterMax, SEAICEnonLinTol,
@@ -375,6 +376,7 @@ C     Hunke, JCP, 2001 use 615 kg/m^2 for this, but does not recommend using it
       SEAICEaEVPcoeff    = UNSET_RL
       SEAICEaEVPcStar    = UNSET_RL
       SEAICEaEVPalphaMin = UNSET_RL
+      SEAICE_evpAreaReg  = -1.
       SEAICE_initialHEFF = ZERO
 #ifdef SEAICE_ITD
 C     Coefficients used to calculate sea ice thickness category limits
