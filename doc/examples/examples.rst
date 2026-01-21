@@ -315,7 +315,8 @@ For many experiments, additional information is provided in a ``README`` file lo
 
 #. :filelink:`deep_anelastic <verification/deep_anelastic>` - Convection simulation on a giant
    planet: relaxes both the Boussinesq approximation (anelastic) and the thin atmosphere
-   approximation (deep atmosphere).
+   approximation (deep atmosphere). Also contains an additional setup using vector-invariant
+   momentum (:filelink:`input.vecinv <verification/deep_anelastic/input.vecinv>`).
 
 #. :filelink:`dome <verification/dome>` - Idealized 3-D test of a density-driven bottom current
    (Denmark Overflow Mixing and Entrainment experiment).
@@ -394,22 +395,23 @@ For many experiments, additional information is provided in a ``README`` file lo
      and dynamic and thermodynamic seaice (:filelink:`pkg/seaice`) package and :filelink:`exf <pkg/exf>`
      package (:filelink:`input.in_p <verification/global_ocean.cs32x15/input.in_p>`)
 
-#. :filelink:`global_ocean_ebm <verification/global_ocean_ebm>` - Global ocean experiment on a lat-lon grid,
-   similar to :ref:`tutorial_global_oce_latlon <sec_global_oce_latlon>` experiment
-   but using other surface forcing pkg, such as from a zonally averaged atmospheric energy balance model
-   (:filelink:`ebm <pkg/ebm>` package). Also contains additional setups:
-
-   - using the :filelink:`exf <pkg/exf>` package with :filelink:`exf <pkg/exf>` interpolation
-     (:filelink:`input.w_exf <verification/global_ocean_ebm/input.w_exf>`,
-     formerly :filelink:`global_with_exf <verification/global_with_exf>`).
-
-   - same as above with yearly :filelink:`exf <pkg/exf>` fields
-     (:filelink:`input.yearly <verification/global_ocean_ebm/input.yearly>`,
-     formerly in :filelink:`global_with_exf <verification/global_with_exf>`).
-
-
 #. :filelink:`global_oce_biogeo_bling  <verification/global_oce_biogeo_bling >` - Global ocean biogeochemistry simulation,
    based on :ref:`sub_global_oce_biogeo` but using package :filelink:`bling <pkg/bling>` instead of the :ref:`DIC <sub_pkg_dic>` package.
+
+#. :filelink:`global_oce_latlon <verification/global_oce_latlon>` - Global ocean experiment
+   on a lat-lon grid, similar to :ref:`tutorial_global_oce_latlon <sec_global_oce_latlon>`
+   experiment but using the surface forcing pkg :filelink:`exf <pkg/exf>` package
+   with :filelink:`exf <pkg/exf>` interpolation (formerly
+   :filelink:`global_with_exf <verification/global_with_exf>`). Also contains additional setups:
+
+   - same as above with yearly :filelink:`exf <pkg/exf>` fields
+     (:filelink:`input.yearly <verification/global_oce_latlon/input.yearly>`,
+     formerly in :filelink:`global_with_exf <verification/global_with_exf>`).
+
+   - using surface forcing from a zonally averaged atmospheric energy balance model
+     with :filelink:`ebm <pkg/ebm>` package
+     (:filelink:`input.ebm <verification/global_oce_latlon/input.ebm>`,
+     formerly in :filelink:`global_ocean_ebm <verification/global_ocean_ebm>`).
 
 #. :filelink:`halfpipe_streamice<verification/halfpipe_streamice>` - Example using package :filelink:`streamice <pkg/streamice>`.
 
@@ -537,6 +539,8 @@ For many experiments, additional information is provided in a ``README`` file lo
    conditions derived from :filelink:`lab_sea <verification/lab_sea>` experiment.
    Also contains additional setups:
 
+   - with Adaptative EVP method (:filelink:`input.regDenom <verification/seaice_obcs/input.regDenom>`)
+
    - includes relaxation of seaice variables (:filelink:`input.seaiceSponge <verification/seaice_obcs/input.seaiceSponge>`)
 
    - includes tidal velocity forcing (:filelink:`input.tides <verification/seaice_obcs/input.tides>`).
@@ -638,10 +642,12 @@ directories ``code_oad`` and ``input_oad`` respectively.
    - using thermodynamic sea ice from :filelink:`pkg/thsice`
      (:filelink:`input_ad.thsice <verification/global_ocean.cs32x15/input_ad.thsice>`).
 
-#. :filelink:`global_ocean_ebm <verification/global_ocean_ebm>` - Based on standard forward experiment, TAF adjoint setup.
-
-#. :filelink:`global_oce_biogeo_bling <verification/global_oce_biogeo_bling>` - Based on standard forward experiment,
-   TAF adjoint setup, uses package :filelink:`ecco <pkg/ecco>`.
+#. :filelink:`global_oce_biogeo_bling <verification/global_oce_biogeo_bling>` - Based on
+   standard forward experiment, TAF adjoint setup, uses package
+   :filelink:`ecco <pkg/ecco>` and package :filelink:`profiles <pkg/profiles>`.
+   Also contains an additional TAF adjoint setup
+   that uses package :filelink:`obsfit <pkg/obsfit>`
+   (:filelink:`input_ad.obsfit <verification/global_oce_biogeo_bling/input_ad.obsfit>`).
 
 #. :filelink:`global_oce_latlon <verification/global_oce_latlon>` - Simple adjoint experiment (used also to test OpenAD compiler), TAF and OpenAD adjoint setups.
    Also contains additional TAF and OpenAD adjoint setups:
@@ -650,10 +656,16 @@ directories ``code_oad`` and ``input_oad`` respectively.
      (:filelink:`input_ad.ggl90 <verification/global_oce_latlon/input_ad.ggl90>`,
      :filelink:`input_oad.ggl90 <verification/global_oce_latlon/input_oad.ggl90>`).
 
-   - using package :filelink:`kpp <pkg/kpp>` (:filelink:`input_oad.kpp <verification/global_oce_latlon/input_oad.kpp>`).
+   - using package :filelink:`kpp <pkg/kpp>`
+     (:filelink:`input_oad.kpp <verification/global_oce_latlon/input_oad.kpp>`).
 
-   - using package :filelink:`exf <pkg/exf>` (:filelink:`input_ad.w_exf <verification/global_oce_latlon/input_ad.w_exf>`,
+   - using package :filelink:`exf <pkg/exf>`
+     (:filelink:`input_ad.w_exf <verification/global_oce_latlon/input_ad.w_exf>`,
      formerly :filelink:`global_with_exf <verification/global_with_exf>`)
+
+   - using package :filelink:`ebm <pkg/ebm>`
+     (:filelink:`input_ad.ebm <verification/global_oce_latlon/input_ad.ebm>`,
+     formerly :filelink:`global_ocean_ebm <verification/global_ocean_ebm>`)
 
 #. :filelink:`halfpipe_streamice<verification/halfpipe_streamice>` - Based on standard forward experiment, TAF and OpenAD adjoint setups.
 
