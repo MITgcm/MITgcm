@@ -68,6 +68,8 @@ C       |   |- ECCO_COST_INIT_FIXED
 C       |
 C       |-- PROFILES_INIT_FIXED
 C       |
+C       |-- OBSFIT_INIT_FIXED
+C       |
 C       |-- FLT_INIT_FIXED
 C       |
 C       |-- LONGSTEP_INIT_FIXED
@@ -378,6 +380,15 @@ C--   provide the weight files.
         IF (debugMode) CALL DEBUG_CALL('PROFILES_INIT_FIXED',myThid)
 # endif
         CALL PROFILES_INIT_FIXED( myThid )
+      ENDIF
+#endif
+
+#ifdef ALLOW_OBSFIT
+      IF (useOBSFIT) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('OBSFIT_INIT_FIXED',myThid)
+# endif
+        CALL OBSFIT_INIT_FIXED( myThid )
       ENDIF
 #endif
 

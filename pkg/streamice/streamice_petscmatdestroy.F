@@ -3,8 +3,7 @@
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP
-      SUBROUTINE STREAMICE_PETSCMATDESTROY(
-     I                               myThid )
+      SUBROUTINE STREAMICE_PETSCMATDESTROY()
 
 C     *============================================================*
 C     | SUBROUTINE                                                 |
@@ -46,7 +45,6 @@ C     === Global variables ===
 C     !INPUT/OUTPUT ARGUMENTS
 C     cg_Uin, cg_Vin - input and output velocities
 C     cg_Bu, cg_Bv - driving stress
-      INTEGER myThid
 #ifdef ALLOW_PETSC
       PetscErrorCode ierr
       call KSPDestroy (ksp, ierr)
