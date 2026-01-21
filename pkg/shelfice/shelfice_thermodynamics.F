@@ -76,6 +76,7 @@ C                         1 for advective and diffusive heat flux (eq22, 26, 31)
 C     fwflxFac         :: only effective for dFac=1, 1 if we expect a melting
 C                         fresh water flux, 0 otherwise
 C     rFWinBL          :: = 1 when realFreshWaterFlux is used with BoundaryLayer
+C     sFac             :: auxillary field to help avoid division by zero
 C     auxiliary variables and abbreviations:
 C     a0, a1, a2, b, c0
 C     eps1, eps2, eps3, eps3a, eps4, eps6, eps7, eps8
@@ -97,7 +98,7 @@ C     drKp1, recip_drLoc
 #endif
       _RL a0, a1, a2, b, c0
       _RL eps1, eps2, eps3, eps3a, eps4, eps6, eps7, eps8
-      _RL cFac, rFac, dFac, fwflxFac, rFWinBL
+      _RL cFac, rFac, dFac, fwflxFac, rFWinBL, sFac
       _RL aqe, bqe, cqe, discrim, recip_aqe
       _RL drKp1, recip_drLoc
       _RL recip_latentHeat
@@ -642,9 +643,11 @@ cph change to identical form
 cph            freshWaterFlux = rUnit2mass
 cph     &           * shiTransCoeffS(i,j,bi,bj)
 cph     &           * ( saltFreeze - sLoc(I,J) ) / saltFreeze
+            sFac = 1. _d 0
+            IF ( saltFreeze .NE. 0. _d 0 )
+     &           sFac = 1. _d 0 - sLoc(I,J) / saltFreeze
             freshWaterFlux = rUnit2mass
-     &           * shiTransCoeffS(i,j,bi,bj)
-     &           * ( 1. _d 0 - sLoc(I,J) / saltFreeze )
+     &           * shiTransCoeffS(i,j,bi,bj) * sFac
 #ifdef ALLOW_GENTIM2D_CONTROL
      &           + xx_shifwflx_loc(I,J,bi,bj)
 #endif /*  ALLOW_GENTIM2D_CONTROL */
