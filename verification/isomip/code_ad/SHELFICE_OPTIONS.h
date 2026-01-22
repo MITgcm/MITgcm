@@ -21,6 +21,12 @@ C     allow friction velocity-dependent transfer coefficient
 C     following Holland and Jenkins, JPO, 1999
 #undef SHI_ALLOW_GAMMAFRICT
 
+C     Use a formulation of fresh water flux, derived from the heat
+C     balance equation instead of the salt balance equation, that can
+C     handle the case when the salinity of the ocean, boundary layer,
+C     and ice are identical.
+#define SHELFICE_USE_HEATBALANCE_FOR_FRESHWATERFLUX
+
 C     allow (vertical) remeshing whenever ocean top thickness factor
 C     exceeds thresholds
 #undef ALLOW_SHELFICE_REMESHING
