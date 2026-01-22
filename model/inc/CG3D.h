@@ -23,15 +23,15 @@ C     cg3dNormaliseRHS :: flag set to TRUE if normalise RHS in the Solver
       LOGICAL cg3dNormaliseRHS
 
 C--   COMMON /CG3D_R/ DEL**2 Laplacian operators
-C-    Matrix coeff units: before normalisation: wVel units ; no unit after.
+C-    Matrix coeff units: before normalisation: r-Unit.s (m.s,Pa.s); none after
 C     aW3d     :: East-west operator.
 C     aS3d     :: North-south operator.
 C     aV3d     :: Vertical operator.
 C     aC3d     :: 3D operator main diagonal term.
 C     zMC, zML, zMU :: preconditioner 3D solver
-C     cg3dNorm :: matrix normalisation factor, units: 1/wVel [s/rUnits]
+C     cg3dNorm :: matrix normalisation factor, units: 1/(s.r-Unit)
 C     cg3dTolerance_sq :: square of cg3d solver Tolerance (units depends on
-C                 cg3dNormaliseRHS=F/T, solver-unit ^2 = (m^2)^2 or no unit)
+C                 cg3dNormaliseRHS=F/T, cg2d_x-unit ^2 = (m2/s2)^2 or no unit)
       COMMON /CG3D_RS/
      &      aW3d, aS3d, aV3d, aC3d,
      &      zMC, zML, zMU

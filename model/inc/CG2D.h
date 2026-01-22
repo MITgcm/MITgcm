@@ -20,16 +20,16 @@ C     cg2dNormaliseRHS :: flag set to TRUE if normalise RHS in the Solver
       LOGICAL cg2dNormaliseRHS
 
 C--   COMMON /CG2D_I_R/ DEL**2 Laplacian operators
-C-    Matrix coeff units: before normalisation: wVel units ; no unit after.
+C-    Matrix coeff units: before normalisation: r-Unit.s (m.s,Pa.s); none after
 C     aW2d     :: East-west operator.
 C     aS2d     :: North-south operator.
 C     aC2d     :: 2D operator main diagonal term.
 C     pW       :: East-west off-diagonal term of preconditioner.
 C     pS       :: North-south off-diagonal term of preconditioner.
 C     pC       :: Main diagonal term of preconditioner.
-C     cg2dNorm :: matrix normalisation factor, units: 1/wVel [s/rUnits]
+C     cg2dNorm :: matrix normalisation factor, units: 1/(s.r-Unit)
 C     cg2dTolerance_sq :: square of cg2d solver Tolerance (units depends on
-C                 cg2dNormaliseRHS=F/T, solver-unit ^2 = (m^2)^2 or no unit)
+C                 cg2dNormaliseRHS=F/T, cg2d_x-unit ^2 = (m2/s2)^2 or no unit)
       COMMON /CG2D_I_RS/
      &      aW2d, aS2d, aC2d,
      &      pW, pS, pC

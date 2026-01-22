@@ -153,7 +153,7 @@ C     CALL PLOT_FIELD_XYRS( aS2d, 'AS2D INI_CG2D.2' , 1, myThid )
 CcnhDebugEnds
 
       _BEGIN_MASTER(myThid)
-C-- set global parameter in common block, units of 1/rVel:
+C-- set global parameter in common block, units of 1/(s.r-Unit):
       cg2dNorm = myNorm
 C-- Define the solver tolerance in the appropriate Unit :
       cg2dNormaliseRHS = cg2dTargetResWunit.LE.zeroRL
@@ -173,7 +173,7 @@ C   not much to solve anyway, cg2dTolerance does not matter as long as it is > 0
      &                           * globalArea / deltaTMom
 #else
       ELSE
-C-  convert Target-Residual (in W unit) to cg2d-solver residual unit [m^2]
+C-  convert Target-Residual (in W unit) to cg2d-solver residual unit [m^2/s^2]
         cg2dTolerance = cg2dNorm * cg2dTargetResWunit
      &                           * globalArea / SQRT( n2dWetPts )
 #endif

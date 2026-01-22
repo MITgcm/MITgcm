@@ -184,7 +184,7 @@ c    &      theRecip_Dr = 1. _d 0/theRecip_Dr
       ENDIF
 
       _BEGIN_MASTER( myThid )
-C-- set global parameter in common block, units of 1/rVel:
+C-- set global parameter in common block, units of 1/(s.r-Unit):
        cg3dNorm = myNorm
 C-- Define the solver tolerance in the appropriate Unit :
       cg3dNormaliseRHS = cg3dTargetResWunit.LE.zeroRL
@@ -198,7 +198,7 @@ C-  convert Target-Residual (in W unit) to cg3d-solver residual unit [m^2/s^2]
      &                           * implicDiv2DFlow / deltaTMom
      &                           * rAc_3dMean * SQRT( n3dWetPts )
 #else
-C-  convert Target-Residual (in W unit) to cg3d-solver residual unit [m^2]
+C-  convert Target-Residual (in W unit) to cg3d-solver residual unit [m^2/s^2]
         cg3dTolerance = cg3dNorm * cg3dTargetResWunit
      &                           * rAc_3dMean * SQRT( n3dWetPts )
 #endif
