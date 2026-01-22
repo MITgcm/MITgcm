@@ -1,0 +1,41 @@
+# SEAICE parameters
+ &SEAICE_PARM01
+      SEAICE_multDim     = 7
+      SEAICE_drag        = 0.00114,
+      HO                 = 0.53,
+      SEAICE_strength    = 2.2640e+04,
+      LSR_ERROR          = 1.e-5,
+      SEAICE_no_slip     = .TRUE.,
+      SEAICEadvScheme    = 7,
+#
+      MIN_ATEMP          = -40.,
+      MIN_TICE           = -40.,
+      SEAICEpressReplFac = 0,
+#ian new begin
+      SEAICE_area_reg = 0.15,
+      SEAICE_hice_reg = 0.1,
+      IMAX_TICE = 6,
+      SEAICE_EPS = 1.E-8,
+      SEAICE_deltaMin = 2.E-9,
+#ian new end
+#ph new begin
+      SEAICE_salt0 = 4.0,
+      SEAICE_doOpenWaterMelt = .TRUE.,
+#ph new end
+      SEAICE_wetAlbTemp  = 0.0,
+      SEAICE_mcPheeTaper = 0.92,
+      SEAICE_mcPheePiston= 0.000875,
+      SEAICE_frazilFrac  = 0.1,
+      SEAICE_saltFrac    = 0.3548,
+#
+      AreaFile           = 'AREA_210x192_arctic.cube81',
+      HeffFile           = 'HEFF_210x192_arctic.cube81',
+      HsaltFile          = 'HSALT_210x192_arctic.cube81',
+      HsnowFile          = 'HSNOW_210x192_arctic.cube81',
+ &
+
+ &SEAICE_PARM02
+ &
+
+ &SEAICE_PARM03
+ &

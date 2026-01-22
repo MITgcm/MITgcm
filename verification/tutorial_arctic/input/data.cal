@@ -1,0 +1,10 @@
+#
+# *******************
+# Calendar Parameters
+# *******************
+ &CAL_NML
+ TheCalendar='noLeapYear',
+ startDate_1=19800102,
+ startDate_2=000000,
+ calendarDumps = .FALSE.,
+ &
