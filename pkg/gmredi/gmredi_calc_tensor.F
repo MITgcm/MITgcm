@@ -87,7 +87,7 @@ C     maskFk    :: 2-D mask for vertical interface k (between level k-1 & k)
       _RL ldd97_LrhoW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL ldd97_LrhoS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL Cspd, LrhoInf, LrhoSup, fCoriLoc, rDepth
-      _RL Kgm_tmp, isopycK, bolus_K
+      _RL Kgm_tmp, Kredi_tmp, isopycK, bolus_K
 
       INTEGER kLow_W (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER kLow_S (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -232,6 +232,38 @@ C-    Just initialize to zero (not use anyway)
        ENDDO
       ENDDO
 #endif /* GM_BOLUS_ADVEC */
+#ifdef GM_USE_K3D_REDI
+      DO k=1,Nr
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         locK3dRedi(i,j,k) = 0. _d 0
+# ifdef GM_READ_K3D_REDI
+     &       + GM_inpK3dRedi(i,j,k,bi,bj)
+# else
+     &       + GM_isopycK*GM_isoFac1d(k)*GM_isoFac2d(i,j,bi,bj)
+# endif
+        ENDDO
+       ENDDO
+      ENDDO
+#else
+      locK3dRedi(1) = 0. _d 0
+#endif /* GM_USE_K3D_REDI */
+#ifdef GM_USE_K3D_GM
+      DO k=1,Nr
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         locK3dGM(i,j,k) = 0. _d 0
+# ifdef GM_READ_K3D_GM
+     &       + GM_inpK3dGM(i,j,k,bi,bj)
+# else
+     &       + GM_background_K*GM_bolFac1d(k)*GM_bolFac2d(i,j,bi,bj)
+# endif
+        ENDDO
+       ENDDO
+      ENDDO
+#else
+      locK3dGM(1) = 0. _d 0
+#endif /* GM_USE_K3D_GM */
 #ifdef ALLOW_AUTODIFF
       DO k=1,Nr
        DO j=1-OLy,sNy+OLy
@@ -244,12 +276,6 @@ C-    Just initialize to zero (not use anyway)
 # ifdef GM_EXTRA_DIAGONAL
          Kuz(i,j,k,bi,bj)  = 0. _d 0
          Kvz(i,j,k,bi,bj)  = 0. _d 0
-# endif
-# ifdef GM_USE_K3D_REDI
-         locK3dRedi(i,j,k) = 0. _d 0
-# endif
-# ifdef GM_USE_K3D_GM
-         locK3dGM(i,j,k)   = 0. _d 0
 # endif
         ENDDO
        ENDDO
@@ -294,6 +320,18 @@ C     Calculate the 3D diffusivity as per Bates et al. (JPO, 2014)
      I       bi, bj, myTime, myIter, myThid )
         CALL TIMER_STOP('GMREDI_CALC_BATES_K [GMREDI_CALC_TENSOR]',
      &                  myThid)
+# ifndef GM_BATES_PASSIVE
+        DO k=1,Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           locK3dRedi(i,j,k) = locK3dRedi(i,j,k)
+     &          + GM_BatesK3d(i,j,k,bi,bj)*GM_isoFac_calcK
+           locK3dGM(i,j,k)   = locK3dGM(i,j,k)
+     &          + GM_BatesK3d(i,j,k,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+# endif
       ENDIF
 #endif
 
@@ -312,6 +350,16 @@ C   Use Leith QG viscosity in GMRedi scheme
         CALL GMREDI_CALC_QGLEITH(
      O                GM_LeithQG_K(1-OLx,1-OLy,1,bi,bj),
      I                bi, bj, myTime, myIter, myThid )
+        DO k=1,Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           locK3dRedi(i,j,k) = locK3dRedi(i,j,k)
+     &          + GM_LeithQG_K(i,j,k,bi,bj)*GM_isoFac_calcK
+           locK3dGM(i,j,k)   = locK3dGM(i,j,k)
+     &          + GM_LeithQG_K(i,j,k,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
       ENDIF
 #endif /* ALLOW_GM_LEITH_QG */
 
@@ -541,75 +589,23 @@ C-     Limit range that Kappa-GM can take
      &            GM_Visbeck_maxVal_K )
         ENDDO
        ENDDO
+       DO k=1,Nr
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          locK3dRedi(i,j,k) = locK3dRedi(i,j,k)
+     &         + VisbeckK(i,j,bi,bj)*GM_isoFac_calcK
+          locK3dGM(i,j,k)   = locK3dGM(i,j,k)
+     &         + VisbeckK(i,j,bi,bj)
+         ENDDO
+        ENDDO
+       ENDDO
       ENDIF
 C     If you want to avoid recomputing the above loop, you can uncomment
-C     the following lines; alternatively, storing locK3dRedi/GM below
-C     also reduces the recomputations, but at the cost of increased
-C     memory usage (2 3D-fields), probably not worth it.
+C     the following lines.
 c# ifdef ALLOW_AUTODIFF_TAMC
 cCADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=tkey, byte=isbyte
 c# endif
 #endif /* GM_VISBECK_VARIABLE_K */
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C--   Set local 3D Redi diffusivity and GM Kappa:
-#ifdef GM_USE_K3D_REDI
-      DO k=1,Nr
-       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-         locK3dRedi(i,j,k) =
-# ifdef GM_READ_K3D_REDI
-     &       GM_inpK3dRedi(i,j,k,bi,bj)
-# else
-     &       GM_isopycK*GM_isoFac1d(k)*GM_isoFac2d(i,j,bi,bj)
-# endif
-# ifdef GM_VISBECK_VARIABLE_K
-     &     + VisbeckK(i,j,bi,bj)*GM_isoFac_calcK
-# endif
-# ifdef ALLOW_GM_LEITH_QG
-     &     + GM_LeithQG_K(i,j,k,bi,bj)*GM_isoFac_calcK
-# endif
-# if ( defined GM_BATES_K3D && !defined GM_BATES_PASSIVE )
-     &     + GM_BatesK3d(i,j,k,bi,bj)*GM_isoFac_calcK
-# endif
-        ENDDO
-       ENDDO
-      ENDDO
-c# ifdef ALLOW_AUTODIFF_TAMC
-cCADJ STORE locK3dRedi = comlev1_bibj, key=tkey, byte=isbyte
-c# endif
-#else /* GM_USE_K3D_REDI */
-      locK3dRedi(1) = 0. _d 0
-#endif /* GM_USE_K3D_REDI */
-
-#ifdef GM_USE_K3D_GM
-      DO k=1,Nr
-       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-         locK3dGM(i,j,k) =
-# ifdef GM_READ_K3D_GM
-     &       GM_inpK3dGM(i,j,k,bi,bj)
-# else
-     &       GM_background_K*GM_bolFac1d(k)*GM_bolFac2d(i,j,bi,bj)
-# endif
-# ifdef GM_VISBECK_VARIABLE_K
-     &     + VisbeckK(i,j,bi,bj)
-# endif
-# ifdef ALLOW_GM_LEITH_QG
-     &     + GM_LeithQG_K(i,j,k,bi,bj)
-# endif
-# if ( defined GM_BATES_K3D && !defined GM_BATES_PASSIVE )
-     &     + GM_BatesK3d(i,j,k,bi,bj)
-# endif
-        ENDDO
-       ENDDO
-      ENDDO
-c# ifdef ALLOW_AUTODIFF_TAMC
-cCADJ STORE locK3dGM = comlev1_bibj, key=tkey, byte=isbyte
-c# endif
-#else /* GM_USE_K3D_GM */
-      locK3dGM(1) = 0. _d 0
-#endif /* GM_USE_K3D_GM */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Calculate Stream-Functions used in Advective Form:
@@ -670,12 +666,13 @@ CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
      &         *(GM_bolFac1d(km1)+GM_bolFac1d(k))*op5
        DO j=1-OLy+1,sNy+OLy-1
         DO i=1-OLx+1,sNx+OLx-1
-         Kgm_tmp =
+         Kredi_tmp =
 #ifdef GM_USE_K3D_REDI
      &      op5*( locK3dRedi(i,j,km1) + locK3dRedi(i,j,k) )
 #else
      &      isopycK*GM_isoFac2d(i,j,bi,bj)
 #endif
+         Kgm_tmp = Kredi_tmp
 #ifdef GM_USE_K3D_GM
      &    + GM_skewflx*op5*( locK3dGM(i,j,km1)+locK3dGM(i,j,k) )
 #else
@@ -686,13 +683,7 @@ CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
          Kwx(i,j,k,bi,bj) = Kgm_tmp*Kwx(i,j,k,bi,bj)
          Kwy(i,j,k,bi,bj) = Kgm_tmp*Kwy(i,j,k,bi,bj)
-         Kwz(i,j,k,bi,bj) =
-#ifdef GM_USE_K3D_REDI
-     &      op5*( locK3dRedi(i,j,km1) + locK3dRedi(i,j,k) )
-#else
-     &      isopycK*GM_isoFac2d(i,j,bi,bj)
-#endif
-     &                    *Kwz(i,j,k,bi,bj)
+         Kwz(i,j,k,bi,bj) = Kredi_tmp*Kwz(i,j,k,bi,bj)
         ENDDO
        ENDDO
       ENDDO
