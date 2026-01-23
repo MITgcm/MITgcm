@@ -1066,6 +1066,12 @@ C     Grid along selected grid lines
 
       CALL WRITE_0D_RL( globalArea, INDEX_NONE, 'globalArea =',
      & ' /* Integrated horizontal Area (m^2) */')
+      CALL WRITE_0D_RL( rAc_3dMean, INDEX_NONE, 'rAc_3dMean =',
+     & ' /* 3-D Averaged grid-cell Area (m^2) */')
+      CALL WRITE_0D_RL( n2dWetPts, INDEX_NONE, 'n2dWetPts =',
+     & ' /* Number of wet surface points (-) */')
+      CALL WRITE_0D_RL( n3dWetPts, INDEX_NONE, 'n3dWetPts =',
+     & ' /* Number of wet grid points (-) */')
       IF ( useCubedSphereExchange ) THEN
        CALL WRITE_0D_L( hasWetCSCorners,INDEX_NONE,'hasWetCSCorners =',
      &  ' /* Domain contains CS corners (True/False) */')
