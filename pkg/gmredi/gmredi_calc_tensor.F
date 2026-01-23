@@ -102,8 +102,6 @@ C     maskFk    :: 2-D mask for vertical interface k (between level k-1 & k)
 #endif
 #ifdef GM_USE_K3D_REDI
       _RL locK3dRedi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-#else
-      _RL locK3dRedi(1)
 #endif
 #ifdef GM_USE_K3D_GM
       _RL locK3dGM(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -236,27 +234,25 @@ C-    Just initialize to zero (not use anyway)
       DO k=1,Nr
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-         locK3dRedi(i,j,k) = 0. _d 0
+         locK3dRedi(i,j,k) =
 # ifdef GM_READ_K3D_REDI
-     &       + GM_inpK3dRedi(i,j,k,bi,bj)
+     &       GM_inpK3dRedi(i,j,k,bi,bj)
 # else
-     &       + GM_isopycK*GM_isoFac1d(k)*GM_isoFac2d(i,j,bi,bj)
+     &       GM_isopycK*GM_isoFac1d(k)*GM_isoFac2d(i,j,bi,bj)
 # endif
         ENDDO
        ENDDO
       ENDDO
-#else
-      locK3dRedi(1) = 0. _d 0
 #endif /* GM_USE_K3D_REDI */
 #ifdef GM_USE_K3D_GM
       DO k=1,Nr
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-         locK3dGM(i,j,k) = 0. _d 0
+         locK3dGM(i,j,k) =
 # ifdef GM_READ_K3D_GM
-     &       + GM_inpK3dGM(i,j,k,bi,bj)
+     &       GM_inpK3dGM(i,j,k,bi,bj)
 # else
-     &       + GM_background_K*GM_bolFac1d(k)*GM_bolFac2d(i,j,bi,bj)
+     &       GM_background_K*GM_bolFac1d(k)*GM_bolFac2d(i,j,bi,bj)
 # endif
         ENDDO
        ENDDO
