@@ -13,7 +13,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: ACTIVE_WRITE_XY_D
 C     !INTERFACE:
-      subroutine ACTIVE_WRITE_XY_D(
+      SUBROUTINE ACTIVE_WRITE_XY_D(
      I                            active_var_file,
      I                            active_var,
      I                            active_vard,
@@ -34,7 +34,6 @@ C     \ev
 
 C     !USES:
       IMPLICIT NONE
-
 C     == global variables ==
 #include "SIZE.h"
 
@@ -68,12 +67,12 @@ CEOP
       globalFile = .FALSE.
       useCurrentDir = .FALSE.
 
-      call active_write_3d_rl(
+      CALL ACTIVE_WRITE_3D_RL(
      &                 active_var_file, active_var, globalFile,
      &                 useCurrentDir, iRec, myNr,
      &                 0, myOptimIter, myThid )
 
-      call active_write_3d_rl(
+      CALL ACTIVE_WRITE_3D_RL(
      &                 fname, active_vard, globalFile,
      &                 useCurrentDir, iRec, myNr,
      &                 2, myOptimIter, myThid )
@@ -86,7 +85,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: ACTIVE_WRITE_XYZ_D
 C     !INTERFACE:
-      subroutine ACTIVE_WRITE_XYZ_D(
+      SUBROUTINE ACTIVE_WRITE_XYZ_D(
      I                            active_var_file,
      I                            active_var,
      I                            active_vard,
@@ -107,7 +106,6 @@ C     \ev
 
 C     !USES:
       IMPLICIT NONE
-
 C     == global variables ==
 #include "SIZE.h"
 
@@ -141,12 +139,12 @@ CEOP
       globalFile = .FALSE.
       useCurrentDir = .FALSE.
 
-      call active_write_3d_rl(
+      CALL ACTIVE_WRITE_3D_RL(
      &                 active_var_file, active_var, globalFile,
      &                 useCurrentDir, iRec, myNr,
      &                 0, myOptimIter, myThid )
 
-      call active_write_3d_rl(
+      CALL ACTIVE_WRITE_3D_RL(
      &                 fname, active_vard, globalFile,
      &                 useCurrentDir, iRec, myNr,
      &                 2, myOptimIter, myThid )
@@ -159,7 +157,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: ACTIVE_WRITE_XY_B
 C     !INTERFACE:
-      subroutine ACTIVE_WRITE_XY_B(
+      SUBROUTINE ACTIVE_WRITE_XY_B(
      I                              active_var_file,
      I                              active_var,
      U                              active_varb,
@@ -180,7 +178,6 @@ C     \ev
 
 C     !USES:
       IMPLICIT NONE
-
 C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
@@ -217,6 +214,7 @@ CEOP
      &                 fname, active_varb, globalFile,
      &                 useCurrentDir, iRec, myNr,
      &                 REVERSE_SIMULATION, myOptimIter, myThid )
+
       RETURN
       END
 
@@ -225,7 +223,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: ACTIVE_WRITE_XYZ_B
 C     !INTERFACE:
-      subroutine ACTIVE_WRITE_XYZ_B(
+      SUBROUTINE ACTIVE_WRITE_XYZ_B(
      I                              active_var_file,
      I                              active_var,
      U                              active_varb,
@@ -246,7 +244,6 @@ C     \ev
 
 C     !USES:
       IMPLICIT NONE
-
 C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
@@ -288,6 +285,7 @@ CEOP
      &                 fname, active_varb, globalFile,
      &                 useCurrentDir, iRec, myNr,
      &                 REVERSE_SIMULATION, myOptimIter, myThid )
+
       RETURN
       END
 
@@ -296,7 +294,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: ACTIVE_WRITE_XY_FWD
 C     !INTERFACE:
-      subroutine ACTIVE_WRITE_XY_FWD(
+      SUBROUTINE ACTIVE_WRITE_XY_FWD(
      I                              active_var_file,
      I                              active_var,
      I                              iRec,
@@ -332,7 +330,7 @@ C     myThid         :: thread number for this instance
       INTEGER myThid
       Real*8     dummy
 
-      CALL active_write_xy(
+      CALL ACTIVE_WRITE_XY(
      I                 active_var_file,
      I                 active_var,
      I                 iRec,
@@ -342,16 +340,14 @@ C     myThid         :: thread number for this instance
      &                    )
 
       RETURN
-
-      END      
-
+      END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP
 C     !ROUTINE: ACTIVE_WRITE_XY_BWD
 C     !INTERFACE:
-      subroutine ACTIVE_WRITE_XY_BWD(
+      SUBROUTINE ACTIVE_WRITE_XY_BWD(
      I                              active_var_file,
      I                              active_var,
      U                              active_varb,
@@ -372,7 +368,6 @@ C     \ev
 
 C     !USES:
       IMPLICIT NONE
-
 C     == global variables ==
 #include "SIZE.h"
 
@@ -393,16 +388,14 @@ C     myThid         :: thread number for this instance
       Real*8     dummyb
 
       CALL ACTIVE_WRITE_XY_B(
-     I                              active_var_file,
-     I                              active_var,
-     U                              active_varb,
-     I                              iRec,
-     I                              myOptimIter,
-     I                              myThid,
-     I                              dummy,
-     O                              dummyb
-     &                            )
+     I                 active_var_file,
+     I                 active_var,
+     U                 active_varb,
+     I                 iRec,
+     I                 myOptimIter,
+     I                 myThid,
+     I                 dummy,
+     O                 dummyb )
 
       RETURN
-
       END

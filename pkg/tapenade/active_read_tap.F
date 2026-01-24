@@ -28,12 +28,11 @@ C     \ev
 
 C     !USES:
       IMPLICIT NONE
-
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
+
 C     !INPUT/OUTPUT PARAMETERS:
-C     === Routine arguments ===
 C     active_var_file:: filename
 C     active_var     :: array
 C     active_vard     :: forward derivative of active_var
@@ -61,18 +60,19 @@ C     !LOCAL VARIABLES:
 CEOP
 
       tlmpref = 'g_'
-      call ADD_PREFIX( tlmpref, active_var_file, fname )
+      CALL ADD_PREFIX( tlmpref, active_var_file, fname )
 
-      call active_read_xy(active_var_file, active_var,
+      CALL ACTIVE_READ_XY(active_var_file, active_var,
      &                    iRec, doglobalread, lAdInit,
      &                    myOptimIter, myThid, dummy)
-      call active_read_xy(fname, dummyd, iRec,
+      CALL ACTIVE_READ_XY(fname, dummyd, iRec,
      &                    doglobalread, lAdInit,
      &                    myOptimIter, myThid, dummy)
 
-      active_var = 0.d0
+      active_var = 0. _d 0
       active_vard = dummyd
 
+      RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -80,7 +80,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: ACTIVE_READ_XYZ_D
 C     !INTERFACE:
-      subroutine ACTIVE_READ_XYZ_D(active_var_file,
+      SUBROUTINE ACTIVE_READ_XYZ_D(active_var_file,
      &                 active_var, active_vard,
      &                 iRec, doglobalread, lAdInit,
      &                 myOptimIter, myThid, dummy, dummyd)
@@ -95,12 +95,11 @@ C     \ev
 
 C     !USES:
       IMPLICIT NONE
-
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
+
 C     !INPUT/OUTPUT PARAMETERS:
-C     === Routine arguments ===
 C     active_var_file:: filename
 C     active_var     :: array
 C     active_vard     :: forward derivative of active_var
@@ -128,18 +127,19 @@ C     !LOCAL VARIABLES:
 CEOP
 
       tlmpref = 'g_'
-      call ADD_PREFIX( tlmpref, active_var_file, fname )
+      CALL ADD_PREFIX( tlmpref, active_var_file, fname )
 
-      call active_read_xyz(active_var_file, active_var,
+      CALL ACTIVE_READ_XYZ(active_var_file, active_var,
      &                    iRec, doglobalread, lAdInit,
      &                    myOptimIter, myThid, dummy)
-      call active_read_xyz(fname, dummyd, iRec,
+      CALL ACTIVE_READ_XYZ(fname, dummyd, iRec,
      &                    doglobalread, lAdInit,
      &                    myOptimIter, myThid, dummy)
 
-      active_var = 0.d0
+      active_var = 0. _d 0
       active_vard = dummyd
 
+      RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -162,12 +162,11 @@ C     \ev
 
 C     !USES:
       IMPLICIT NONE
-
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
+
 C     !INPUT/OUTPUT PARAMETERS:
-C     === Routine arguments ===
 C     active_var_file:: filename
 C     active_var     :: array
 C     active_varb     :: reverse derivative of active_var
@@ -207,7 +206,6 @@ CEOP
      &                 REVERSE_SIMULATION, myIter, myThid )
 
       RETURN
-
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -230,12 +228,11 @@ C     \ev
 
 C     !USES:
       IMPLICIT NONE
-
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
+
 C     !INPUT/OUTPUT PARAMETERS:
-C     === Routine arguments ===
 C     active_var_file:: filename
 C     active_var     :: array
 C     active_varb     :: reverse derivative of active_var
@@ -297,12 +294,11 @@ C     \ev
 
 C     !USES:
       IMPLICIT NONE
-
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
+
 C     !INPUT/OUTPUT PARAMETERS:
-C     === Routine arguments ===
 C     active_var_file:: filename
 C     active_var     :: array
 C     active_varb     :: reverse derivative of active_var
@@ -323,12 +319,11 @@ C     myThid     :: my Thread Id. number
 C Tags for IO: ctrl input and adjoint (gradient) output
       _RL  dummy
 
-      call active_read_xy(active_var_file, active_var,
+      CALL ACTIVE_READ_XY(active_var_file, active_var,
      &                    iRec, doglobalread, lAdInit,
      &                    myOptimIter, myThid, dummy)
 
       RETURN
-
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -351,12 +346,11 @@ C     \ev
 
 C     !USES:
       IMPLICIT NONE
-
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
+
 C     !INPUT/OUTPUT PARAMETERS:
-C     === Routine arguments ===
 C     active_var_file:: filename
 C     active_var     :: array
 C     active_varb     :: reverse derivative of active_var
@@ -385,4 +379,3 @@ C Tags for IO: ctrl input and adjoint (gradient) output
 
       RETURN
       END
-
