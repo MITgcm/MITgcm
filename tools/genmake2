@@ -17,15 +17,13 @@ Usage: "$0" [OPTIONS]
 	  Print this help message and exit.
 
     -tap | --tap
-          Generate a Makefile for a Tapenade build
-
-    -tap_extra FLAG | --tap_extra FLAG | -tap_extra=FLAGS | --tap_extra=FLAGS
-          Here, "FLAG" or "FLAGS" specifies a list of extra cmd line flags 
-          or arguments passed to the tapenade tool
+	  Generate a Makefile for a Tapenade build
+    -tap_extra NAME | --tap_extra NAME | -tap_extra=NAME | --tap_extra=NAME
+	  Here, "NAME" specifies a list of extra arguments to pass to the
+	  Tapenade command.
 
     -oad | --oad
 	  Generate a Makefile for an OpenAD built
-
     -oadsingularity NAME | --oadsingularity NAME | -oadsngl NAME | --oadsngl NAME
       -oadsingularity=NAME | --oadsingularity=NAME | -oadsngl=NAME | --oadsngl=NAME
 	  Here, "NAME" specifies the singularity file
@@ -37,9 +35,10 @@ Usage: "$0" [OPTIONS]
 
     -adoptfile NAME | --adoptfile NAME | -adof NAME | --adof NAME
       -adoptfile=NAME | --adoptfile=NAME | -adof=NAME | --adof=NAME
-	  Use "NAME" as the adoptfile.  By default, the file at
-	  "tools/adjoint_options/adjoint_oad" (for OpenAD built) or
-	  "tools/adjoint_options/adjoint_default" will be used.
+	  Use "NAME" as the adoptfile.  By default, use file
+	  "tools/adjoint_options/adjoint_default" or
+	  "tools/adjoint_options/adjoint_tap" (for Tapenade built) or
+	  "tools/adjoint_options/adjoint_oad" (for OpenAD built).
 
     -optfile NAME | --optfile NAME | -of NAME | --of NAME
       -optfile=NAME | --optfile=NAME | -of=NAME | --of=NAME
@@ -79,10 +78,9 @@ Usage: "$0" [OPTIONS]
 
     -mods NAME | --mods NAME | -mo NAME | --mo NAME
       -mods=NAME | --mods=NAME | -mo=NAME | --mo=NAME
-	  Here, "NAME" specifies a list of directories that are
-	  used for additional source code.  Files found in the
-	  "mods list" are given preference over files of the same
-	  name found elsewhere.
+	  Here, "NAME" specifies a list of directories that are used for
+	  additional source code.  Files found in the "mods list" are given
+	  preference over files of the same name found elsewhere.
 
     -disable NAME | --disable NAME
       -disable=NAME | --disable=NAME
@@ -159,9 +157,8 @@ Usage: "$0" [OPTIONS]
 	  Activate OpenMP code + use Compiler option OMPFLAG
 
     -es | --es | -embed-source | --embed-source
-	  Embed a tarball containing the full source code
-	  (including the Makefile, etc.) used to build the
-	  executable [off by default]
+	  Embed a tarball containing the full source code (including the
+	  Makefile, etc.) used to build the executable [off by default]
 
     -ds | --ds
 	  Report genmake internal variables status (DUMPSTATE)
