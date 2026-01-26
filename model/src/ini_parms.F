@@ -652,6 +652,12 @@ C-    use temp diffusivity as default salt diffusivity:
         IF (useRealFreshWaterFlux) convertFW2Salt=-1
         IF ( selectAddFluid.GE.1 ) convertFW2Salt=-1
       ENDIF
+      IF ( selectPenetratingSW.EQ.UNSET_I ) THEN
+        selectPenetratingSW = 0
+#ifdef SHORTWAVE_HEATING
+        IF ( fluidIsWater ) selectPenetratingSW = 1
+#endif
+      ENDIF
 
 C--   for backward compatibility :
       IF ( selectCoriScheme.EQ.UNSET_I ) THEN
