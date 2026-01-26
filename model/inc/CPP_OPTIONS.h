@@ -125,6 +125,10 @@ C o Include/exclude code for Non Self-Adjoint (NSA) conjugate-gradient solver
 C o Include/exclude code for single reduction Conjugate-Gradient solver
 #define ALLOW_SRCG
 
+C o Include/exclude code for Preconditioned Classical Stiefel
+C   Iteration(PCSi) solver
+#undef ALLOW_PCSI
+
 C o Choices for implicit solver routines solve_*diagonal.F
 C   The following has low memory footprint, but not suitable for AD
 #undef SOLVE_DIAGONAL_LOWMEMORY

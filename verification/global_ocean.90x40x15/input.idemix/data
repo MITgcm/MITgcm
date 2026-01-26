@@ -37,8 +37,10 @@
 
 # Elliptic solver parameters
  &PARM02
- cg2dMaxIters=500,
- cg2dTargetResidual=1.E-13,
+ usePcsiSolver = .TRUE.,
+ useCG2DPrecond = .FALSE.,
+ pcsiMaxIters=500,
+ pcsiTargetResidual=1.E-13,
  &
 
 # Time stepping parameters

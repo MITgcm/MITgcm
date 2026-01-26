@@ -159,6 +159,11 @@ C     cg2dUseMinResSol    :: =0 : use last-iteration/converged solution
 C                            =1 : use solver minimum-residual solution
 C     cg3dMaxIters        :: Maximum number of iterations in the
 C                            three-dimensional con. grad solver.
+C     PcsiMaxIters        :: Maximum number of iterations in the PCSI solver
+C     PcsiConvergenceCheckFreq
+C                         :: check convergence every so many iters
+C     PcsiConvergenceCheckStart
+C                         :: start checking convergennce at this iter
 C     printResidualFreq   :: Frequency for printing residual in CG iterations
 C     nIter0              :: Start time-step number of for this run
 C     nTimeSteps          :: Number of timesteps to execute
@@ -235,6 +240,8 @@ C                            and statistics ; higher -> more writing
 C-    plotLevel           :: controls printing of field maps ; higher -> more flds
 
       COMMON /PARM_I/
+     &        PcsiConvergenceCheckFreq,
+     &        PcsiConvergenceCheckStart, PcsiMaxIters,
      &        cg2dMaxIters, cg2dMinItersNSA,
      &        cg2dPreCondFreq, cg2dUseMinResSol,
      &        cg3dMaxIters, printResidualFreq,
@@ -252,6 +259,9 @@ C-    plotLevel           :: controls printing of field maps ; higher -> more fl
      &        selectBotDragQuadr, selectPenetratingSW, pCellMix_select,
      &        readBinaryPrec, writeBinaryPrec,
      &        rwSuffixType, monitorSelect, debugLevel, plotLevel
+      INTEGER PcsiConvergenceCheckFreq
+      INTEGER PcsiConvergenceCheckStart
+      INTEGER PcsiMaxIters
       INTEGER cg2dMaxIters
       INTEGER cg2dMinItersNSA
       INTEGER cg2dPreCondFreq
@@ -367,6 +377,9 @@ C                       for an iterative adjoint as accuate as possible
 C     useSRCGSolver  :: Set to true to use conjugate gradient
 C                       solver with single reduction (only one call of
 C                       s/r mpi_allreduce), default is false
+C     usePcsiSolver  :: Set to true to use Preconditioned Classical Stiefel
+C                       Iteration (PCSI) solver
+C     useCG2DPrecond :: use the full preconditions of CG2D (default = .TRUE.)
 C- Time-stepping & free-surface params:
 C     rigidLid            :: Set to true to use rigid lid
 C     implicitFreeSurface :: Set to true to use implicit free surface
@@ -447,7 +460,7 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
      & tempAdvection, tempVertDiff4, tempIsActiveTr, tempForcing,
      & saltAdvection, saltVertDiff4, saltIsActiveTr, saltForcing,
      & maskIniTemp, maskIniSalt, checkIniTemp, checkIniSalt,
-     & useNSACGSolver, useSRCGSolver,
+     & useNSACGSolver, useSRCGSolver, usePcsiSolver, useCG2DPrecond,
      & rigidLid, implicitFreeSurface,
      & uniformLin_PhiSurf, uniformFreeSurfLev,
      & exactConserv, linFSConserveTr, useRealFreshWaterFlux,
@@ -528,6 +541,8 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
       LOGICAL checkIniSalt
       LOGICAL useNSACGSolver
       LOGICAL useSRCGSolver
+      LOGICAL usePcsiSolver
+      LOGICAL useCG2DPrecond
       LOGICAL rigidLid
       LOGICAL implicitFreeSurface
       LOGICAL uniformLin_PhiSurf
@@ -580,6 +595,8 @@ C          :: Target residual for cg3d solver ; no unit (RHS normalisation)
 C     cg3dTargetResWunit
 C          :: Target residual for cg3d solver ; W unit (No RHS normalisation)
 C     cg2dpcOffDFac :: Averaging weight for preconditioner off-diagonal.
+C     PcsiTargetResidual
+C          :: Target residual for PCSI solver; no unit (RHS normalisation)
 C     Note. 20th May 1998
 C           I made a weird discovery! In the model paper we argue
 C           for the form of the preconditioner used here ( see
@@ -822,6 +839,7 @@ C     phiEuler      :: Euler angle, rotation about original z-axis
 C     thetaEuler    :: Euler angle, rotation about new x-axis
 C     psiEuler      :: Euler angle, rotation about new z-axis
       COMMON /PARM_R/ cg2dTargetResidual, cg2dTargetResWunit,
+     & PcsiTargetResidual,
      & cg2dpcOffDFac, cg3dTargetResidual, cg3dTargetResWunit,
      & delR, delRc, xgOrigin, ygOrigin, rSphere, recip_rSphere,
      & radius_fromHorizGrid, seaLev_Z, top_Pres, rSigmaBnd,
@@ -873,6 +891,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL cg3dTargetResidual
       _RL cg3dTargetResWunit
       _RL cg2dpcOffDFac
+      _RL PcsiTargetResidual
       _RL delR(Nr)
       _RL delRc(Nr+1)
       _RL xgOrigin
