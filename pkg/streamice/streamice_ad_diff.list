@@ -30,8 +30,6 @@ streamice_adv_flux_fl_y.f
 streamice_advect_2dtracer.f
 streamice_forced_buttress.f
 streamice_read_pickup.f
-streamice_get_vel_resid_err.f
-streamice_get_vel_fp_err.f
 streamice_fields_load.f
 streamice_vel_solve_fp.f
 streamice_vel_phistage.f
