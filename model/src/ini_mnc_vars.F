@@ -37,87 +37,87 @@ C     !LOCAL VARIABLES:
 
 C     Define coordinates for all MNC files ---------------------------------
 C     XC
-      CALL MNC_CW_ADD_VNAME('XC', 'Cen_xy_Hn__-__-', 3,4, myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('XC','description',
+      CALL MNC_CW_ADD_VNAME('xC', 'Cen_xy_Hn__-__-', 3,4, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('xC','description',
      &     'X coordinate of cell center (T-P point)',myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('XC',
+      CALL MNC_CW_ADD_VATTR_TEXT('xC',
      &     'units', 'degree_east', myThid)
 
 C     YC
-      CALL MNC_CW_ADD_VNAME('YC', 'Cen_xy_Hn__-__-', 3,4, myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('YC','description',
+      CALL MNC_CW_ADD_VNAME('yC', 'Cen_xy_Hn__-__-', 3,4, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('yC','description',
      &     'Y coordinate of cell center (T-P point)',myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('YC',
+      CALL MNC_CW_ADD_VATTR_TEXT('yC',
      &     'units', 'degree_north', myThid)
 
 C     XU
-      CALL MNC_CW_ADD_VNAME('XU', 'U_xy_Hn__-__-', 3,4, myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('XU','description',
+      CALL MNC_CW_ADD_VNAME('xU', 'U_xy_Hn__-__-', 3,4, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('xU','description',
      &     'X coordinate of U point',myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('XU',
+      CALL MNC_CW_ADD_VATTR_TEXT('xU',
      &     'units', 'degree_east', myThid)
 
 C     YU
-      CALL MNC_CW_ADD_VNAME('YU', 'U_xy_Hn__-__-', 3,4, myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('YU','description',
+      CALL MNC_CW_ADD_VNAME('yU', 'U_xy_Hn__-__-', 3,4, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('yU','description',
      &     'Y coordinate of U point',myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('YU',
+      CALL MNC_CW_ADD_VATTR_TEXT('yU',
      &     'units', 'degree_north', myThid)
 
 C     XV
-      CALL MNC_CW_ADD_VNAME('XV', 'V_xy_Hn__-__-', 3,4, myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('XV','description',
+      CALL MNC_CW_ADD_VNAME('xV', 'V_xy_Hn__-__-', 3,4, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('xV','description',
      &     'X coordinate of V point',myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('XV',
+      CALL MNC_CW_ADD_VATTR_TEXT('xV',
      &     'units', 'degree_east', myThid)
 
 C     YV
-      CALL MNC_CW_ADD_VNAME('YV', 'V_xy_Hn__-__-', 3,4, myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('YV','description',
+      CALL MNC_CW_ADD_VNAME('yV', 'V_xy_Hn__-__-', 3,4, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('yV','description',
      &     'Y coordinate of V point',myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('YV',
+      CALL MNC_CW_ADD_VATTR_TEXT('yV',
      &     'units', 'degree_north', myThid)
 
 C     XG
-      CALL MNC_CW_ADD_VNAME('XG', 'Cor_xy_Hn__-__-', 3,4, myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('XG','description',
+      CALL MNC_CW_ADD_VNAME('xG', 'Cor_xy_Hn__-__-', 3,4, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('xG','description',
      &     'X coordinate of cell corner (Vorticity point)',myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('XG',
+      CALL MNC_CW_ADD_VATTR_TEXT('xG',
      &     'units', 'degree_east', myThid)
 
 C     YG
-      CALL MNC_CW_ADD_VNAME('YG', 'Cor_xy_Hn__-__-', 3,4, myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('YG','description',
+      CALL MNC_CW_ADD_VNAME('yG', 'Cor_xy_Hn__-__-', 3,4, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('yG','description',
      &     'Y coordinate of cell corner (Vorticity point)',myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('YG',
+      CALL MNC_CW_ADD_VATTR_TEXT('yG',
      &     'units', 'degree_north', myThid)
 
 C     RC
-      CALL MNC_CW_ADD_VNAME('RC', '-_-_--__C__-', 0,0, myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('RC','description',
+      CALL MNC_CW_ADD_VNAME('rC', '-_-_--__C__-', 0,0, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('rC','description',
      &     'R coordinate of cell center',myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('RC',
+      CALL MNC_CW_ADD_VATTR_TEXT('rC',
      &     'units', 'm', myThid)
 
 C     RF
-      CALL MNC_CW_ADD_VNAME('RF', '-_-_--__I__-', 0,0, myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('RF','description',
+      CALL MNC_CW_ADD_VNAME('rF', '-_-_--__I__-', 0,0, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('rF','description',
      &     'R coordinate of cell interface',myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('RF',
+      CALL MNC_CW_ADD_VATTR_TEXT('rF',
      &     'units', 'm', myThid)
 
 C     RL
-      CALL MNC_CW_ADD_VNAME('RL', '-_-_--__L__-', 0,0, myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('RL','description',
+      CALL MNC_CW_ADD_VNAME('rL', '-_-_--__L__-', 0,0, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('rL','description',
      &     'R coordinate of lower interface',myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('RL',
+      CALL MNC_CW_ADD_VATTR_TEXT('rL',
      &     'units', 'm', myThid)
 
 C     RU
-      CALL MNC_CW_ADD_VNAME('RU', '-_-_--__U__-', 0,0, myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('RU','description',
+      CALL MNC_CW_ADD_VNAME('rU', '-_-_--__U__-', 0,0, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('rU','description',
      &     'R coordinate of upper interface',myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('RU',
+      CALL MNC_CW_ADD_VATTR_TEXT('rU',
      &     'units', 'm', myThid)
 C     End define coordinates for all MNC files  ----------------------
 
@@ -133,20 +133,20 @@ C     Grid variables  ------------------------------------------------
       CALL MNC_CW_ADD_VNAME('dyG', 'U_xy_Hn__-__-', 3,4, myThid)
       CALL MNC_CW_ADD_VNAME('dxV', 'Cor_xy_Hn__-__-', 3,4, myThid)
       CALL MNC_CW_ADD_VNAME('dyU', 'Cor_xy_Hn__-__-', 3,4, myThid)
-      CALL MNC_CW_ADD_VNAME('rA',  'Cen_xy_Hn__-__-', 3,4, myThid)
+      CALL MNC_CW_ADD_VNAME('rAc',  'Cen_xy_Hn__-__-', 3,4, myThid)
       CALL MNC_CW_ADD_VNAME('rAw', 'U_xy_Hn__-__-', 3,4, myThid)
       CALL MNC_CW_ADD_VNAME('rAs', 'V_xy_Hn__-__-', 3,4, myThid)
       CALL MNC_CW_ADD_VNAME('rAz', 'Cor_xy_Hn__-__-', 3,4, myThid)
-      CALL MNC_CW_ADD_VNAME('AngleCS','Cen_xy_Hn__-__-', 3,4,myThid)
-      CALL MNC_CW_ADD_VNAME('AngleSN','Cen_xy_Hn__-__-', 3,4,myThid)
+      CALL MNC_CW_ADD_VNAME('angleCS','Cen_xy_Hn__-__-', 3,4,myThid)
+      CALL MNC_CW_ADD_VNAME('angleSN','Cen_xy_Hn__-__-', 3,4,myThid)
       CALL MNC_CW_ADD_VNAME('fCori', 'Cen_xy_Hn__-__-', 3,4,myThid)
       CALL MNC_CW_ADD_VNAME('fCoriG','Cor_xy_Hn__-__-', 3,4,myThid)
-      CALL MNC_CW_ADD_VNAME('R_low', 'Cen_xy_Hn__-__-', 3,4,myThid)
-      CALL MNC_CW_ADD_VNAME('Ro_surf','Cen_xy_Hn__-__-',3,4,myThid)
+      CALL MNC_CW_ADD_VNAME('rLowC', 'Cen_xy_Hn__-__-', 3,4,myThid)
+      CALL MNC_CW_ADD_VNAME('rSurfC','Cen_xy_Hn__-__-',3,4,myThid)
       CALL MNC_CW_ADD_VNAME('Depth', 'Cen_xy_Hn__-__-', 3,4,myThid)
-      CALL MNC_CW_ADD_VNAME('HFacC', 'Cen_xy_Hn__C__-', 4,5,myThid)
-      CALL MNC_CW_ADD_VNAME('HFacW', 'U_xy_Hn__C__-', 4,5,myThid)
-      CALL MNC_CW_ADD_VNAME('HFacS', 'V_xy_Hn__C__-', 4,5,myThid)
+      CALL MNC_CW_ADD_VNAME('hFacC', 'Cen_xy_Hn__C__-', 4,5,myThid)
+      CALL MNC_CW_ADD_VNAME('hFacW', 'U_xy_Hn__C__-', 4,5,myThid)
+      CALL MNC_CW_ADD_VNAME('hFacS', 'V_xy_Hn__C__-', 4,5,myThid)
 
       CALL MNC_CW_ADD_VATTR_TEXT('drC','description',
      &     'r cell center separation',myThid)
@@ -168,7 +168,7 @@ C     Grid variables  ------------------------------------------------
      &     'x v-velocity separation',myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('dyU','description',
      &     'y u-velocity separation',myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('rA','description',
+      CALL MNC_CW_ADD_VATTR_TEXT('rAc','description',
      &     'r-face area at cell center',myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('rAw','description',
      &     'r-face area at U point',myThid)
@@ -176,25 +176,25 @@ C     Grid variables  ------------------------------------------------
      &     'r-face area at V point',myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('rAz','description',
      &     'r-face area at cell corner',myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('AngleCS','description',
+      CALL MNC_CW_ADD_VATTR_TEXT('angleCS','description',
      &     'Cos of grid orientation angle at cell center',myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('AngleSN','description',
+      CALL MNC_CW_ADD_VATTR_TEXT('angleSN','description',
      &       'Sin of grid orientation angle at cell center',myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('fCori','description',
      &     'Coriolis f at cell center',myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('fCoriG','description',
      &     'Coriolis f at cell corner',myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('R_low','description',
+      CALL MNC_CW_ADD_VATTR_TEXT('rLowC','description',
      &     'base of fluid in r-units',myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('Ro_surf','description',
+      CALL MNC_CW_ADD_VATTR_TEXT('rSurfC','description',
      &     'surface reference (at rest) position',myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('Depth','description',
      &     'fluid thickness in r coordinates (at rest)',myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('HFacC','description',
+      CALL MNC_CW_ADD_VATTR_TEXT('hFacC','description',
      &     'vertical fraction of open cell at cell center',myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('HFacW','description',
+      CALL MNC_CW_ADD_VATTR_TEXT('hFacW','description',
      &       'vertical fraction of open cell at West face', myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('HFacS','description',
+      CALL MNC_CW_ADD_VATTR_TEXT('hFacS','description',
      &     'vertical fraction of open cell at South face',myThid)
 
 
@@ -235,25 +235,25 @@ C     format: seconds since 1992-01-01 00:00:00
       CALL MNC_CW_ADD_VNAME('U', 'U_xy_Hn__C__t', 4,5, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('U','units','m/s', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('U',
-     &     'coordinates','XU YU RC iter', myThid)
+     &     'coordinates','xU yU rC iter', myThid)
 
       CALL MNC_CW_ADD_VNAME('V', 'V_xy_Hn__C__t', 4,5, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('V','units','m/s', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('V',
-     &     'coordinates','XV YV RC iter', myThid)
+     &     'coordinates','xV yV rC iter', myThid)
 
       CALL MNC_CW_ADD_VNAME('Temp', 'Cen_xy_Hn__C__t', 4,5, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('Temp','units','degC', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('Temp','long_name',
      &     'potential_temperature', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('Temp',
-     &     'coordinates','XC YC RC iter', myThid)
+     &     'coordinates','xC yC rC iter', myThid)
 
       CALL MNC_CW_ADD_VNAME('S', 'Cen_xy_Hn__C__t', 4,5, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('S','long_name',
      &     'salinity', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('S',
-     &     'coordinates','XC YC RC iter', myThid)
+     &     'coordinates','xC yC rC iter', myThid)
 
       CALL MNC_CW_ADD_VNAME('gUnm1', 'U_xy_Hn__C__t', 4,5, myThid)
       CALL MNC_CW_ADD_VNAME('gVnm1', 'V_xy_Hn__C__t', 4,5, myThid)
@@ -265,20 +265,20 @@ C     format: seconds since 1992-01-01 00:00:00
      &     'free-surface_r-anomaly', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('Eta','units','m', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('Eta',
-     &     'coordinates','XC YC iter', myThid)
+     &     'coordinates','xC yC iter', myThid)
 
       CALL MNC_CW_ADD_VNAME('EtaH', 'Cen_xy_Hn__-__t', 3,4, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('EtaH','long_name',
      &     'column-thickness_r-anomaly', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('EtaH','units','m', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('EtaH',
-     &     'coordinates','XC YC iter', myThid)
+     &     'coordinates','xC yC iter', myThid)
       CALL MNC_CW_ADD_VNAME('dEtaHdt', 'Cen_xy_Hn__-__t', 3,4, myThid)
 
       CALL MNC_CW_ADD_VNAME('W', 'Cen_xy_Hn__L__t', 4,5, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('W','units','m/s', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('W',
-     &     'coordinates','XC YC RC iter', myThid)
+     &     'coordinates','xC yC rC iter', myThid)
 
       CALL MNC_CW_ADD_VNAME('phiHyd', 'Cen_xy_Hn__C__t', 4,5, myThid)
       CALL MNC_CW_ADD_VNAME('phiHydLow', 'Cen_xy_Hn__-__t', 3,4, myThid)
@@ -288,16 +288,16 @@ C     format: seconds since 1992-01-01 00:00:00
 
 C     Write coordinates to "state" file
 C     CALL MNC_CW_SET_UDIM('state', 0, myThid)
-C     CALL MNC_CW_RS_W('R','state',0,0,'XC',xC, myThid)
-C     CALL MNC_CW_RS_W('R','state',0,0,'YC',yC, myThid)
-C     CALL MNC_CW_RS_W('R','state',0,0,'XU',xG, myThid)
-C     CALL MNC_CW_RS_W('R','state',0,0,'YU',yC, myThid)
-C     CALL MNC_CW_RS_W('R','state',0,0,'XV',xC, myThid)
-C     CALL MNC_CW_RS_W('R','state',0,0,'YV',yG, myThid)
-C     CALL MNC_CW_RS_W('R','state',0,0,'XG',xG, myThid)
-C     CALL MNC_CW_RS_W('R','state',0,0,'YG',yG, myThid)
-C     CALL MNC_CW_RS_W('R','state',0,0,'RC',rC, myThid)
-C     CALL MNC_CW_RS_W('R','state',0,0,'RF',rF, myThid)
+C     CALL MNC_CW_RS_W('R','state',0,0,'xC',xC, myThid)
+C     CALL MNC_CW_RS_W('R','state',0,0,'yC',yC, myThid)
+C     CALL MNC_CW_RS_W('R','state',0,0,'xU',xG, myThid)
+C     CALL MNC_CW_RS_W('R','state',0,0,'yU',yC, myThid)
+C     CALL MNC_CW_RS_W('R','state',0,0,'xV',xC, myThid)
+C     CALL MNC_CW_RS_W('R','state',0,0,'yV',yG, myThid)
+C     CALL MNC_CW_RS_W('R','state',0,0,'xG',xG, myThid)
+C     CALL MNC_CW_RS_W('R','state',0,0,'yG',yG, myThid)
+C     CALL MNC_CW_RS_W('R','state',0,0,'rC',rC, myThid)
+C     CALL MNC_CW_RS_W('R','state',0,0,'rF',rF, myThid)
 
 C     Define variables used in mom_vecinv
 C     CALL MNC_CW_ADD_VNAME('fV', 'Cen_xy_Hn__-__t', 0,0, myThid)

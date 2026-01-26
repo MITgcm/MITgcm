@@ -19,6 +19,5 @@ dic_store_fluxco2.f
 dic_surfforcing.f
 dic_surfforcing_init.f
 fe_chem.f
-insol.f
 o2_surfforcing.f
 phos_flux.f
