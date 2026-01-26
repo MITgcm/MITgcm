@@ -6,10 +6,6 @@
 
 DEFINES="$DEFINES -DDEFAULT_R8"
 
-# TAPENADE_FLAGS can also be set elsewhere, e.g. in a genmake_local file.
-# This is here to show how to append additional flags to the list:
-#TAPENADE_FLAGS="$TAPENADE_FLAGS -someOtherFlagIcareAbout"
+DIFF_FLAGSS="-ext '../../../tools/TAP_support/flow_tap' -head 'the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)'"
 
-TAPENADE_DEFAULTS_FLAGS="-ext '../../../tools/TAP_support/flow_tap' -head 'the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)'"
-
-TAPENADE_FLAGS="$TAPENADE_FLAGS $TAPENADE_DEFAULTS_FLAGS"
+TAPENADE_FLAGS="$DIFF_FLAGSS $TAPENADE_FLAGS"
