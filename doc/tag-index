@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint69k (2026/01/25)
 o model/src:
   - fix scaling from cg2g/cg3d TargetResWunit to CG-Tolerance (exact scaling
     if rAc is uniform) by using few more domain global quantities (in GRID.h).
