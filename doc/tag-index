@@ -1,6 +1,12 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/gmredi:
+  - remove OLD_VISBECK_CALC code ; rename S/R GMREDI_CALC_PSI_B ;
+  - unless restricted to only uniform Kappa (including 2-D & 1-D scaling),
+    define local 3-d vars for Kappa-Redi and Kappa-GM to simplify Tensor
+    setting and Psi-Bolus code.
+
 checkpoint69k (2026/01/25)
 o model/src:
   - fix scaling from cg2g/cg3d TargetResWunit to CG-Tolerance (exact scaling
