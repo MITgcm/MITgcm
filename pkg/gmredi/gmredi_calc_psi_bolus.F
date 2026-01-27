@@ -5,19 +5,23 @@
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
+#if ( defined GM_READ_K3D_GM   || defined GM_VISBECK_VARIABLE_K \
+      || defined ALLOW_GM_LEITH_QG || defined GM_BATES_K3D )
+# define GM_USE_K3D_GM
+#endif
 
 CBOP
-C     !ROUTINE: GMREDI_CALC_PSI_B
+C     !ROUTINE: GMREDI_CALC_PSI_BOLUS
 C     !INTERFACE:
-      SUBROUTINE GMREDI_CALC_PSI_B(
+      SUBROUTINE GMREDI_CALC_PSI_BOLUS(
      I             bi, bj, iMin, iMax, jMin, jMax,
-     I             sigmaX, sigmaY, sigmaR,
+     I             sigmaX, sigmaY, sigmaR, locK3dGM,
      I             ldd97_LrhoW, ldd97_LrhoS,
      I             myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE GMREDI_CALC_PSI_B
+C     | SUBROUTINE GMREDI_CALC_PSI_BOLUS
 C     | o Calculate stream-functions for GM bolus velocity
 C     *==========================================================*
 C     \ev
@@ -44,6 +48,11 @@ C     !INPUT/OUTPUT PARAMETERS:
       _RL sigmaX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL sigmaY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL sigmaR(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+#ifdef GM_USE_K3D_GM
+      _RL locK3dGM(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+#else
+      _RL locK3dGM(1)
+#endif
       _RL ldd97_LrhoW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL ldd97_LrhoS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER bi,bj,iMin,iMax,jMin,jMax
@@ -75,14 +84,6 @@ C-    Initialization : <= done in S/R gmredi_init
       tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-#ifdef ALLOW_AUTODIFF_TAMC
-# ifdef GM_VISBECK_VARIABLE_K
-CADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=tkey, byte=isbyte
-# endif
-# ifdef GM_GEOM_VARIABLE_K
-CADJ STORE GEOM_K3d(:,:,:,bi,bj) = comlev1_bibj, key=igmkey, byte=isbyte
-# endif
-#endif
       IF (GM_AdvForm) THEN
 C     change sign of vertical Sigma gradient to match stratification sign
        halfSign = halfRL*gravitySign
@@ -148,25 +149,16 @@ C   Note: since SlopeX,Y have been masked, no needs to mask again GM_PsiX,Y
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx+1,sNx+OLx
           GM_PsiX(i,j,k,bi,bj) = SlopeX(i,j)*taperX(i,j)
-#ifdef GM_READ_K3D_GM
+#ifdef GM_USE_K3D_GM
      &     *( op25
-     &        *( GM_inpK3dGM(i-1,j,km1,bi,bj)+GM_inpK3dGM(i,j,km1,bi,bj)
-     &         + GM_inpK3dGM(i-1,j,k,bi,bj)+GM_inpK3dGM(i,j,k,bi,bj) )
+     &        *( locK3dGM(i-1,j,km1)+locK3dGM(i,j,km1)
+     &         + locK3dGM(i-1,j,k)+locK3dGM(i,j,k) )
 #else
      &     *( half_K
      &          *(GM_bolFac2d(i-1,j,bi,bj)+GM_bolFac2d(i,j,bi,bj))
 #endif
-#ifdef GM_VISBECK_VARIABLE_K
-     &      + op5*(VisbeckK(i-1,j,bi,bj)+VisbeckK(i,j,bi,bj))
-#endif
 #ifdef GM_GEOM_VARIABLE_K
      &      + op5*(GEOM_K3d(i-1,j,k,bi,bj)+GEOM_K3d(i,j,k,bi,bj))
-#endif
-#ifdef ALLOW_GM_LEITH_QG
-     &      + op25*( GM_LeithQG_K(i-1,j,km1,bi,bj)
-     &             + GM_LeithQG_K( i ,j,km1,bi,bj)
-     &             + GM_LeithQG_K(i-1,j,k,bi,bj)
-     &             + GM_LeithQG_K( i ,j,k,bi,bj) )
 #endif
      &      )
 c    &       *maskW(i,j,km1,bi,bj)*maskW(i,j,k,bi,bj)
@@ -178,25 +170,16 @@ c    &       *maskW(i,j,km1,bi,bj)*maskW(i,j,k,bi,bj)
         DO j=1-OLy+1,sNy+OLy
          DO i=1-OLx,sNx+OLx
           GM_PsiY(i,j,k,bi,bj) = SlopeY(i,j)*taperY(i,j)
-#ifdef GM_READ_K3D_GM
+#ifdef GM_USE_K3D_GM
      &     *( op25
-     &        *( GM_inpK3dGM(i,j-1,km1,bi,bj)+GM_inpK3dGM(i,j,km1,bi,bj)
-     &         + GM_inpK3dGM(i,j-1,k,bi,bj)+GM_inpK3dGM(i,j,k,bi,bj) )
+     &        *( locK3dGM(i,j-1,km1)+locK3dGM(i,j,km1)
+     &         + locK3dGM(i,j-1,k)+locK3dGM(i,j,k) )
 #else
      &     *( half_K
      &          *(GM_bolFac2d(i,j-1,bi,bj)+GM_bolFac2d(i,j,bi,bj))
 #endif
-#ifdef GM_VISBECK_VARIABLE_K
-     &      + op5*(VisbeckK(i,j-1,bi,bj)+VisbeckK(i,j,bi,bj))
-#endif
 #ifdef GM_GEOM_VARIABLE_K
      &      + op5*(GEOM_K3d(i,j-1,k,bi,bj)+GEOM_K3d(i,j,k,bi,bj))
-#endif
-#ifdef ALLOW_GM_LEITH_QG
-     &      + op25*( GM_LeithQG_K(i,j-1,km1,bi,bj)
-     &             + GM_LeithQG_K(i, j ,km1,bi,bj)
-     &             + GM_LeithQG_K(i,j-1,k,bi,bj)
-     &             + GM_LeithQG_K(i, j ,k,bi,bj) )
 #endif
      &      )
 c    &       *maskS(i,j,km1,bi,bj)*maskS(i,j,k,bi,bj)
