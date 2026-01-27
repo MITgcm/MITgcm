@@ -30,9 +30,10 @@ C===========================================================
       integer profNo(NFILESPROFMAX,nsx,nsy)
       integer profDepthNo(NFILESPROFMAX,nsx,nsy)
 
+      logical profilesWriteCostFunction
       logical vec_quantities(NFILESPROFMAX,NVARMAX,nsx,nsy)
-      integer fidforward(NFILESPROFMAX,nsx,nsy), 
-     & fidadjoint(NFILESPROFMAX,nsx,nsy), 
+      integer fidforward(NFILESPROFMAX,nsx,nsy),
+     & fidadjoint(NFILESPROFMAX,nsx,nsy),
      & fidtangent(NFILESPROFMAX,nsx,nsy)
       integer fiddata(NFILESPROFMAX,nsx,nsy)
       character*(8) prof_names(NFILESPROFMAX,NVARMAX)
@@ -79,7 +80,7 @@ C Common Blocks
 C===========================================================
 
       COMMON /profiles_r/ prof_time, prof_lon, prof_lat,
-     & prof_depth, prof_mask1D_cur, 
+     & prof_depth, prof_mask1D_cur,
      & prof_etan_mean, prof_theta_mean, prof_salt_mean
 #ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
      &,prof_depth_comb
@@ -102,8 +103,9 @@ C===========================================================
      &,profiles_mean_indsamples
 #endif
 
-      COMMON /profiles_l/ vec_quantities, profilesDoNcOutput, 
-     & profilesDoGenGrid, prof_make_nc
+      COMMON /profiles_l/ vec_quantities, profilesDoNcOutput,
+     & profilesDoGenGrid, prof_make_nc,
+     & profilesWriteCostFunction
       COMMON /profiles_c/ prof_names, prof_namesmask,
 #ifdef ALLOW_PROFILES_CLIMMASK
      & prof_namesclim,
@@ -112,15 +114,15 @@ C===========================================================
 
       COMMON /profiles_GenericGrid_r/ prof_interp_weights,
      & prof_interp_xC11, prof_interp_yC11,
-     & prof_interp_xCNINJ, prof_interp_yCNINJ  
-      COMMON /profiles_GenericGrid_i/ 
+     & prof_interp_xCNINJ, prof_interp_yCNINJ
+      COMMON /profiles_GenericGrid_i/
      & prof_interp_i, prof_interp_j
 
       COMMON /profiles_buff_r/ profiles_data_buff, profiles_weight_buff
       COMMON /profiles_buff_i/
      & profiles_minind_buff, profiles_maxind_buff, profiles_curfile_buff
 
-     
+
       COMMON /profiles_cost_r/
      &                objf_profiles,
      &                num_profiles,
@@ -146,5 +148,3 @@ C===========================================================
       COMMON /profiles_ctrl_dummy/
      &                profiles_dummy
       _RL profiles_dummy(NFILESPROFMAX,NVARMAX,nsx,nsy)
-
-

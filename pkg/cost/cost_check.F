@@ -42,6 +42,12 @@ C     msgBuf   :: Informational/error message buffer
         CALL PRINT_ERROR( msgBuf, myThid )
         nRetired = nRetired + 1
 #endif
+#ifdef ALLOW_COST_DEPTH
+        WRITE(msgBuf,'(2A)') 'COST_CHECK: ',
+     &    'ALLOW_COST_DEPTH not allowed anymore in COST_OPTIONS.h'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        nRetired = nRetired + 1
+#endif
 
       IF ( nRetired .GT. 0 ) THEN
         WRITE(msgBuf,'(2A)') 'S/R COST_CHECK: ',

@@ -27,13 +27,18 @@ C--
       _RL  num_obcsn(nSx,nSy), num_obcss(nSx,nSy)
       _RL  num_obcsw(nSx,nSy), num_obcse(nSx,nSy)
       _RL  num_obcsvol, num_ageos(nSx,nSy)
-      COMMON /ecco_cost_weights_obcs/
+      COMMON /obcs_cost_weights_obcs/
      &     objf_obcsn, objf_obcss, objf_obcsw, objf_obcse,
      &     objf_obcsvol, objf_ageos,
      &     mult_obcsn, mult_obcss, mult_obcsw, mult_obcse,
      &     mult_obcsvol, mult_ageos,
      &     num_obcsn, num_obcss, num_obcsw, num_obcse,
      &     num_obcsvol, num_ageos
+
+C     obcsWriteCostFunction :: internal parameter to ensure that cost function
+C                              contribution is only written once per run
+      COMMON /OBCS_COST_L/ obcsWriteCostFunction
+      LOGICAL obcsWriteCostFunction
 
       COMMON /ih_modes/ modesv
       _RL modesv (Nr,Nr,Nr)
@@ -112,12 +117,12 @@ C--
 
 C     This is moved from ecco_local_params.h, because it is the only
 C     parameter used (by obcs ctrl parameters)
-      COMMON /ecco_data_errfile/
-     &     data_errfile
-      CHARACTER*(MAX_LEN_FNAM) data_errfile
+      COMMON /obcs_data_errfile/
+     &     obcs_data_errfile
+      CHARACTER*(MAX_LEN_FNAM) obcs_data_errfile
 
-#if ( defined ALLOW_OBCSN_COST_CONTRIBUTION || defined ALLOW_OBCSN_CONTROL )
-      COMMON /ecco_cost_weights_obcsn/
+#ifdef ALLOW_OBCSN_CONTROL
+      COMMON /obcs_cost_weights_obcsn/
      &                      wobcsn, wobcsnLev
       _RL wobcsn     (                      Nr,nobcs)
       _RL wobcsnLev  (1-OLx:sNx+OLx,Nr,nSx,nSy,nobcs)
@@ -128,8 +133,8 @@ C     parameter used (by obcs ctrl parameters)
       _RL xx_obcsn1 (1-OLx:sNx+OLx,Nr,nSx,nSy,nobcs)
 #endif
 
-#if ( defined ALLOW_OBCSS_COST_CONTRIBUTION || defined ALLOW_OBCSS_CONTROL )
-      COMMON /ecco_cost_weights_obcss/
+#ifdef ALLOW_OBCSS_CONTROL
+      COMMON /obcs_cost_weights_obcss/
      &                      wobcss, wobcssLev
       _RL wobcss     (                      Nr,nobcs)
       _RL wobcssLev  (1-OLx:sNx+OLx,Nr,nSx,nSy,nobcs)
@@ -140,8 +145,8 @@ C     parameter used (by obcs ctrl parameters)
       _RL xx_obcss1 (1-OLx:sNx+OLx,Nr,nSx,nSy,nobcs)
 #endif
 
-#if ( defined ALLOW_OBCSW_COST_CONTRIBUTION || defined ALLOW_OBCSW_CONTROL )
-      COMMON /ecco_cost_weights_obcsw/
+#ifdef ALLOW_OBCSW_CONTROL
+      COMMON /obcs_cost_weights_obcsw/
      &                      wobcsw, wobcswLev
       _RL wobcsw     (                      Nr,nobcs)
       _RL wobcswLev  (1-OLy:sNy+OLy,Nr,nSx,nSy,nobcs)
@@ -152,8 +157,8 @@ C     parameter used (by obcs ctrl parameters)
       _RL xx_obcsw1 (1-OLy:sNy+OLy,Nr,nSx,nSy,nobcs)
 #endif
 
-#if ( defined ALLOW_OBCSE_COST_CONTRIBUTION || defined ALLOW_OBCSE_CONTROL )
-      COMMON /ecco_cost_weights_obcse/
+#ifdef ALLOW_OBCSE_CONTROL
+      COMMON /obcs_cost_weights_obcse/
      &                      wobcse, wobcseLev
       _RL wobcse     (                      Nr,nobcs)
       _RL wobcseLev  (1-OLy:sNy+OLy,Nr,nSx,nSy,nobcs)

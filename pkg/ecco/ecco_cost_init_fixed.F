@@ -221,7 +221,9 @@ c     call ecco_check( myThid )
 
 c--   Get the weights that are to be used for the individual cost
 c--   function contributions.
-      call ecco_cost_weights( myThid )
+c     Now done from s/r obcs_init_fixed, because this function only
+c     contains obcs-related weights.
+c     call ecco_cost_weights( myThid )
 
 c--   Initialise adjoint of monthly mean files calculated
 c--   in cost_averagesfields (and their ad...).

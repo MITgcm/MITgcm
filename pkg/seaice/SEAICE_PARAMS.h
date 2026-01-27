@@ -157,7 +157,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICE_doOpenWaterGrowth, SEAICE_doOpenWaterMelt,
      &     SEAICE_salinityTracer, SEAICE_ageTracer,
      &     SEAICErestoreUnderIce, SEAICE_growMeltByConv,
-     &     SEAICEwriteState,
+     &     SEAICEwriteState, SEAICEwriteCostFunction,
      &     SEAICE_dump_mdsio, SEAICE_mon_stdio,
      &     SEAICE_dump_mnc,   SEAICE_mon_mnc
       COMMON /SEAICE_PARM_L/
@@ -187,10 +187,9 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICE_doOpenWaterGrowth, SEAICE_doOpenWaterMelt,
      &     SEAICE_salinityTracer, SEAICE_ageTracer,
      &     SEAICErestoreUnderIce, SEAICE_growMeltByConv,
-     &     SEAICEwriteState,
+     &     SEAICEwriteState, SEAICEwriteCostFunction,
      &     SEAICE_dump_mdsio, SEAICE_mon_stdio,
      &     SEAICE_dump_mnc,   SEAICE_mon_mnc
-
 C--   COMMON /SEAICE_PARM_I/ Integer valued parameters of sea ice model.
 C     IMAX_TICE         :: number of iterations for ice surface temp
 C                          (default=10)

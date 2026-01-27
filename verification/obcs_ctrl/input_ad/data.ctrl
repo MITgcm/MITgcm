@@ -9,26 +9,31 @@
  doZscalePack = .FALSE.,
  delZexp = 1.,
 # doSinglePrecTapelev = .TRUE.,
+ obcs_data_errfile = 'data.err',
 #
  xx_obcsnstartdate1 = 20070101,
  xx_obcsnstartdate2 =    00000,
  xx_obcsnperiod     =      0.0,
- xx_obcsn_file = 'xx_obcsn',
+ xx_obcsn_file      = 'xx_obcsn',
+ mult_obcsn         = 1.0,
 #
  xx_obcssstartdate1 = 20070101,
  xx_obcssstartdate2 =    00000,
  xx_obcssperiod     =      0.0,
- xx_obcss_file = 'xx_obcss',
+ xx_obcss_file      = 'xx_obcss',
+ mult_obcss         = 1.0,
 #
  xx_obcswstartdate1 = 20070101,
  xx_obcswstartdate2 =   00000,
  xx_obcswperiod     =     0.0,
- xx_obcsw_file = 'xx_obcsw',
+ xx_obcsw_file      = 'xx_obcsw',
+ mult_obcsw         = 1.0,
 #
  xx_obcsestartdate1 = 20070101,
  xx_obcsestartdate2 =    00000,
  xx_obcseperiod     =      0.0,
  xx_obcse_file = 'xx_obcse',
+ mult_obcse         = 1.0,
  &
 #
 # *********************

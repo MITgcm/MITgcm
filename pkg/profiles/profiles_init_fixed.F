@@ -97,6 +97,9 @@ C     ProfNo_tile  :: counter
       _RL tmp_avgbin(1000)
 # endif /* ALLOW_PROFILES_SAMPLESPLIT_COST */
 
+C     only used for writing cost function files
+      profilesWriteCostFunction = .TRUE.
+
       iUnit = standardMessageUnit
       WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
