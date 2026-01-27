@@ -17,11 +17,13 @@ Usage: "$0" [OPTIONS]
 	  Print this help message and exit.
 
     -tap | --tap
-          Generate a Makefile for a Tapenade build
+	  Generate a Makefile for a Tapenade build
+    -tap_extra NAME | --tap_extra NAME | -tap_extra=NAME | --tap_extra=NAME
+	  Here, "NAME" specifies a list of extra arguments to pass to the
+	  Tapenade command.
 
     -oad | --oad
 	  Generate a Makefile for an OpenAD built
-
     -oadsingularity NAME | --oadsingularity NAME | -oadsngl NAME | --oadsngl NAME
       -oadsingularity=NAME | --oadsingularity=NAME | -oadsngl=NAME | --oadsngl=NAME
 	  Here, "NAME" specifies the singularity file
@@ -33,9 +35,10 @@ Usage: "$0" [OPTIONS]
 
     -adoptfile NAME | --adoptfile NAME | -adof NAME | --adof NAME
       -adoptfile=NAME | --adoptfile=NAME | -adof=NAME | --adof=NAME
-	  Use "NAME" as the adoptfile.  By default, the file at
-	  "tools/adjoint_options/adjoint_oad" (for OpenAD built) or
-	  "tools/adjoint_options/adjoint_default" will be used.
+	  Use "NAME" as the adoptfile.  By default, use file
+	  "tools/adjoint_options/adjoint_default" or
+	  "tools/adjoint_options/adjoint_tap" (for Tapenade built) or
+	  "tools/adjoint_options/adjoint_oad" (for OpenAD built).
 
     -optfile NAME | --optfile NAME | -of NAME | --of NAME
       -optfile=NAME | --optfile=NAME | -of=NAME | --of=NAME
@@ -75,10 +78,9 @@ Usage: "$0" [OPTIONS]
 
     -mods NAME | --mods NAME | -mo NAME | --mo NAME
       -mods=NAME | --mods=NAME | -mo=NAME | --mo=NAME
-	  Here, "NAME" specifies a list of directories that are
-	  used for additional source code.  Files found in the
-	  "mods list" are given preference over files of the same
-	  name found elsewhere.
+	  Here, "NAME" specifies a list of directories that are used for
+	  additional source code.  Files found in the "mods list" are given
+	  preference over files of the same name found elsewhere.
 
     -disable NAME | --disable NAME
       -disable=NAME | --disable=NAME
@@ -155,9 +157,8 @@ Usage: "$0" [OPTIONS]
 	  Activate OpenMP code + use Compiler option OMPFLAG
 
     -es | --es | -embed-source | --embed-source
-	  Embed a tarball containing the full source code
-	  (including the Makefile, etc.) used to build the
-	  executable [off by default]
+	  Embed a tarball containing the full source code (including the
+	  Makefile, etc.) used to build the executable [off by default]
 
     -ds | --ds
 	  Report genmake internal variables status (DUMPSTATE)
@@ -1469,6 +1470,8 @@ AUTODIFF_PKG_USED=f
 AD_OPTFILE=
 TAPENADE=
 TAPENADECMD=tapenade
+TAPENADE_FLAGS=
+TAP_EXTRA=
 OPENAD=
 CAT_SRC_FOR_TAF=1
 DEP_TAF_FILE='Makefile_taf.dep'
@@ -1498,12 +1501,13 @@ gm_s7="TMP THISHOST THISUSER THISDATE THISVER MACHINE FC_CHECK FC_NAMEMANGLE"
 gm_s8="HAVE_NETCDF HAVE_SYSTEM HAVE_FDATE HAVE_ETIME HAVE_LAPACK HAVE_FLUSH"
 
 #  The following are all related to adjoint/tangent-linear stuff
-gm_s10="AUTODIFF_PKG_USED AD_OPTFILE TAPENADE TAPENADECMD OPENAD"
+gm_s10="AUTODIFF_PKG_USED AD_OPTFILE TAPENADE OPENAD"
 gm_s11="TAF AD_TAF_FLAGS FTL_TAF_FLAGS SVD_TAF_FLAGS TAF_F77_FLAGS TAF_F90_FLAGS"
 gm_s12="TAF_EXTRA DIVA MPIINCLUDEDIR MPI_HEADER_FILES"
+gm_s13="TAPENADECMD TAPENADE_FLAGS TAP_EXTRA"
 
 gm_state="COMMANDL $gm_s1 $gm_s2 $gm_s3 $gm_s4 $gm_s5 $gm_s6 $gm_s7 $gm_s8"
-gm_state="$gm_state $gm_s10 $gm_s11 $gm_s12"
+gm_state="$gm_state $gm_s10 $gm_s11 $gm_s12 $gm_s13"
 
 cat <<EOF
 
@@ -1560,6 +1564,11 @@ for ac_option in "$@" ; do
 
 	-tap | --tap)
 	    TAPENADE="true" ; ALWAYS_USE_F90=1 ;;
+
+	-tap_extra | --tap_extra)
+	    ac_prev=TAP_EXTRA ;;
+	-tap_extra=* | --tap_extra=*)
+	    TAP_EXTRA=$ac_optarg ;;
 
 	-oad | --oad)
 	    OPENAD="true" ; ALWAYS_USE_F90=1 ;;
@@ -3702,7 +3711,9 @@ rm -f $TMP.nonADF77srclist $TMP.nonADF90srclist
 
 cat >>$MAKEFILE <<EOF
 
+TAP_EXTRA = ${TAP_EXTRA}
 TAPENADECMD = ${TAPENADECMD}
+TAPENADE_FLAGS = ${TAPENADE_FLAGS}
 
 TAPENADE_SUPPORT_F90_SRC_FILES = \
 ${TAPTOOLS}/diffsizes.F90
@@ -3738,11 +3749,11 @@ if test $CAT_SRC_FOR_TAF = 1 ; then
 
 cat >>$MAKEFILE <<EOF
 adj_tap_all.$FS: \$(AD_FILES) f95_test_mods.f90
-	\$(TAPENADECMD) -b -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
+	\$(TAPENADECMD) -b \$(TAP_EXTRA) \$(TAPENADE_FLAGS) \$(AD_FILES) f95_test_mods.f90
 	cat \$(AD_FILES_ADJ) > adj_tap_all.$FS 2> /dev/null || true
 
 tlm_tap_all.$FS: \$(AD_FILES) f95_test_mods.f90
-	\$(TAPENADECMD) -d -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
+	\$(TAPENADECMD) -d \$(TAP_EXTRA) \$(TAPENADE_FLAGS) \$(AD_FILES) f95_test_mods.f90
 	cat \$(AD_FILES_TLM) > tlm_tap_all.$FS 2> /dev/null || true
 
 \$(EXE_ADJ): \$(SPECIAL_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES) \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(OBJFILES) \$(EMBEDDED_FILES) adj_tap_all.$FS
@@ -3762,14 +3773,14 @@ else
 cat >>$MAKEFILE <<EOF
 adj_tap_all.$FS: \$(AD_FILES) f95_test_mods.f90
 	@-rm -f \$(AD_FILES_ADJ)
-	\$(TAPENADECMD) -b -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
+	\$(TAPENADECMD) -b \$(TAP_EXTRA) \$(TAPENADE_FLAGS) \$(AD_FILES) f95_test_mods.f90
 	ls -l the_main_loop_b.f
 	@$BASH\$(TOOLSDIR)/TAP_support/append_fwd_src _b $FS \$(AD_FILES)
 	touch adj_tap_all.$FS
 
 tlm_tap_all.$FS: \$(AD_FILES) f95_test_mods.f90
 	@-rm -f \$(AD_FILES_TLM)
-	\$(TAPENADECMD) -d -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
+	\$(TAPENADECMD) -d \$(TAP_EXTRA) \$(TAPENADE_FLAGS) \$(AD_FILES) f95_test_mods.f90
 	ls -l the_main_loop_d.f
 	@$BASH\$(TOOLSDIR)/TAP_support/append_fwd_src _d $FS \$(AD_FILES)
 	touch tlm_tap_all.$FS

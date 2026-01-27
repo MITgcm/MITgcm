@@ -37,12 +37,14 @@ C     myThid - Thread number for this instance of the routine.
 #ifdef ALLOW_COST_STREAMICE
 C     == Local variables
       integer bi, bj
-      integer i, j, k
-      integer ig, jg
+      integer i, j
       integer itlo,ithi
       integer jtlo,jthi
-      _RL i_numcells, dCdx, dCdy, dBdx, dBdy, dmdx, dmdy, idt
-      _RL utmp, vtmp, uotmp, votmp, cotmp, dhdt, dhdt_fac
+C     unused variables
+c     integer ig, jg
+c     _RL dhdt, dhdt_fac, dmdx, dmdy
+      _RL i_numcells, dCdx, dCdy, dBdx, dBdy, idt
+      _RL utmp, vtmp, uotmp, votmp, cotmp
       _RL dRdx, dRdy, cfricval, bglenval, cfricvalp1, bglenvalp1
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
@@ -108,7 +110,7 @@ C     == Local variables
      &      R0, 0, myThid )
       print *, 'GOT HERE read topo file'
 
-      _EXCH_XY_RL (R0, myThid)
+      _EXCH_XY_RL(R0, myThid)
 
 C--   Calculate mask for tracer cells  (0 => land, 1 => water)
 c       k=1

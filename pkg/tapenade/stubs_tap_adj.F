@@ -1,9 +1,32 @@
-#include "CPP_EEOPTIONS.h"
 #include "TAPENADE_OPTIONS.h"
 #ifdef ALLOW_STREAMICE
 # include "STREAMICE_OPTIONS.h"
-#endif      
+#endif
 
+C--   File stubs_tap_adj.F: Subroutines with "manual" derivatives
+C--  to be called by the tapenade adjoint and tangent linear code
+C--    *_B: adjoint with checkpointing on
+C--    *_D: tlm
+C--    *_FWD, *_BWD: adjoint with no checkpointing
+C--
+C--    Contents:
+C--    o  GLOBAL_MAX_R8_B
+C--    o  GLOBAL_SUM_TILE_RL_B
+C--    o  GLOBAL_SUM_TILE_RL_FWD
+C--    o  GLOBAL_SUM_TILE_RL_BWD
+C--    o  GLOBAL_SUM_R8_B
+C--    o  CG2D_B0
+C--    o  ADEXCH_3D_RL
+C--    o  ADEXCH_UV_XY_RS
+C--    o  ADEXCH_UV_3D_RL
+C--    o  ADEXCH_XY_RS
+C--    o  ADEXCH_XY_RL
+C--    o  STREAMICE_CG_SOLVE_D
+C--    o  STREAMICE_CG_SOLVE_B
+C--    o  STREAMICE_CG_SOLVE_FWD
+C--    o  STREAMICE_CG_SOLVE_BWD
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       SUBROUTINE GLOBAL_MAX_R8_B(rhsmax, rhsmaxb, myThid)
       IMPLICIT NONE
 #include "SIZE.h"
@@ -18,6 +41,7 @@
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       SUBROUTINE GLOBAL_SUM_TILE_RL_B(phiTile, phiTileb,
      &     sumPhi, sumPhib, myThid)
       IMPLICIT NONE
@@ -34,6 +58,43 @@
       CALL GLOBAL_ADSUM_TILE_RL(phiTileb, sumPhib, myThid)
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+      SUBROUTINE GLOBAL_SUM_TILE_RL_FWD(phiTile,
+     &     sumPhi, myThid)
+      IMPLICIT NONE
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "EESUPPORT.h"
+#include "GLOBAL_SUM.h"
+      _RL     phiTile(nSx,nSy)
+      _RL     sumPhi
+      INTEGER myThid
+
+      CALL PUSHINTEGER4(myThid)
+      CALL GLOBAL_SUM_TILE_RL(phiTile, sumPhi, myThid)
+      CALL PUSHREAL8(sumPhi)
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+      SUBROUTINE GLOBAL_SUM_TILE_RL_BWD(phiTile, phiTileb,
+     &     sumPhi, sumPhib, myThid)
+      IMPLICIT NONE
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "EESUPPORT.h"
+#include "GLOBAL_SUM.h"
+      _RL     phiTile(nSx,nSy)
+      _RL     phiTileb(nSx,nSy)
+      _RL     sumPhib
+      _RL     sumPhi
+      INTEGER myThid
+
+      CALL POPREAL8(sumPhi)
+      CALL POPINTEGER4(myThid)
+      CALL GLOBAL_ADSUM_TILE_RL(phiTileb, sumPhib, myThid)
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 !     Adjoint of global_sum_r8 for arguments Arg1=(in;out)
       SUBROUTINE GLOBAL_SUM_R8_B(sumPhi, sumPhib, myThid)
       IMPLICIT NONE
@@ -48,6 +109,7 @@
       CALL GLOBAL_ADSUM_R8(sumPhib, myThid)
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       SUBROUTINE CG2D_B0(cg2d_b, cg2d_bb, cg2d_x,
      &                cg2d_xb, firstResidual, minResidualSq,
      &                lastResidual,numIters, nIterMin,myThid)
@@ -77,6 +139,7 @@
       cg2d_xb = 0.d0
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       SUBROUTINE ADEXCH_3D_RL( adVar, Nr, myThid )
       IMPLICIT NONE
       Real*8 adVar
@@ -85,6 +148,7 @@
       WRITE(*,*) "Called not yet defined"
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       SUBROUTINE ADEXCH_UV_XY_RS( adU, adV, bool, myThid )
       IMPLICIT NONE
       Real*8 adU
@@ -94,6 +158,7 @@
       WRITE(*,*) "Called not yet defined"
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       SUBROUTINE ADEXCH_UV_3D_RL( aduVel,advVel, bool, Nr, myThid )
       IMPLICIT NONE
       LOGICAL bool
@@ -104,6 +169,7 @@
       WRITE(*,*) "Called not yet defined"
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       SUBROUTINE ADEXCH_XY_RS( adVar, myThid )
       IMPLICIT NONE
       Real*8 adVar
@@ -111,6 +177,7 @@
       WRITE(*,*) "Called not yet defined"
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       SUBROUTINE ADEXCH_XY_RL( adVar, myThid )
       IMPLICIT NONE
       Real*8 adVar
@@ -118,12 +185,12 @@
       WRITE(*,*) "Called not yet defined"
       END
 
-      
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       SUBROUTINE STREAMICE_CG_SOLVE_D(cg_uin, cg_uinb, cg_vin, cg_vinb,
      &                                cg_bu, cg_bub, cg_bv, cg_bvb, a_uu
      &                                , a_uub, a_uv, a_uvb, a_vu, a_vub
      &                                , a_vv, a_vvb, tolerance, iters,
-     &                                maxiter, mythid)
+     &                                maxiter, myThid)
       IMPLICIT NONE
 
 #include "SIZE.h"
@@ -154,12 +221,12 @@
      & A_vvb (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1)
       END
 
-
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       SUBROUTINE STREAMICE_CG_SOLVE_B(cg_uin, cg_uinb, cg_vin, cg_vinb,
      &                                cg_bu, cg_bub, cg_bv, cg_bvb, a_uu
      &                                , a_uub, a_uv, a_uvb, a_vu, a_vub
      &                                , a_vv, a_vvb, tolerance, iters,
-     &                                maxiter, mythid)
+     &                                maxiter, myThid)
 
       IMPLICIT NONE
 
@@ -221,6 +288,7 @@
 #endif
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C [llh] Hand-written forward-sweep adjoint code of STREAMICE_CG_SOLVE
 C [llh] Adjoint of solving Ax=b,
 C [llh]  where A is (Auu, Auv, Avu, Avv), x is (xu,xv), b is (bu,bv)
@@ -231,8 +299,7 @@ C [llh]  where A is (Auu, Auv, Avu, Avv), x is (xu,xv), b is (bu,bv)
      &                                  a_uu, a_uv,
      &                                  a_vu, a_vv,
      &                                  tolerance, iters,
-     &                                  maxiters, mythid)
-
+     &                                  maxiters, myThid)
 
       IMPLICIT NONE
 
@@ -243,7 +310,6 @@ C [llh]  where A is (Auu, Auv, Avu, Avv), x is (xu,xv), b is (bu,bv)
 #include "STREAMICE.h"
 #include "STREAMICE_CG.h"
 #endif
-
 
       !INPUT/OUTPUT ARGUMENTS
       _RL cg_Uin (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -261,7 +327,6 @@ C [llh]  where A is (Auu, Auv, Avu, Avv), x is (xu,xv), b is (bu,bv)
       INTEGER myThid
 
 #ifdef ALLOW_STREAMICE
-
 C     !LOCAL VARIABLES
       INTEGER i, j, bi, bj, colx, coly
       INTEGER conv_flag, tmpiter
@@ -282,11 +347,12 @@ C     !LOCAL VARIABLES
      &  maxiters,
      &  myThid )
 
-      CALL PUSHREAL8ARRAY(cg_vin, (snx+2*olx)*(sny+2*oly)*nsx*nsy)
-      CALL PUSHREAL8ARRAY(cg_uin, (snx+2*olx)*(sny+2*oly)*nsx*nsy)
+      CALL PUSHREAL8ARRAY(cg_vin, (sNx+2*OLx)*(sNy+2*OLy)*nSx*nSy)
+      CALL PUSHREAL8ARRAY(cg_uin, (sNx+2*OLx)*(sNy+2*OLy)*nSx*nSy)
 #endif
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C [llh] Hand-written backward-sweep adjoint code of STREAMICE_CG_SOLVE
 C [llh] Adjoint of solving Ax=b,
 C [llh]  where A is (Auu, Auv, Avu, Avv), x is (xu,xv), b is (bu,bv)
@@ -297,16 +363,16 @@ C [llh]  where A is (Auu, Auv, Avu, Avv), x is (xu,xv), b is (bu,bv)
      &                                , a_uub, a_uv, a_uvb, a_vu, a_vub
      &                                , a_vv, a_vvb, tolerance
      &                                , toleranceb, iters
-     &                                , maxiter, mythid)
-#else              
+     &                                , maxiter, myThid)
+#else
       SUBROUTINE STREAMICE_CG_SOLVE_BWD(
      &                                cg_uin, cg_uinb, cg_vin, cg_vinb,
      &                                cg_bu, cg_bub, cg_bv, cg_bvb, a_uu
      &                                , a_uub, a_uv, a_uvb, a_vu, a_vub
-     &                                , a_vv, a_vvb, tolerance, 
-     &                                iters, maxiter, 
-     &                                mythid)
-#endif              
+     &                                , a_vv, a_vvb, tolerance,
+     &                                iters, maxiter,
+     &                                myThid)
+#endif
 
       IMPLICIT NONE
 
@@ -324,7 +390,7 @@ C [llh]  where A is (Auu, Auv, Avu, Avv), x is (xu,xv), b is (bu,bv)
       _RL tolerance
 #ifdef ALLOW_PETSC
       _RL toleranceb
-#endif      
+#endif
       _RL cg_Uin (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL cg_Vin (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL cg_Bu (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -345,10 +411,8 @@ C [llh]  where A is (Auu, Auv, Avu, Avv), x is (xu,xv), b is (bu,bv)
      & A_vvb (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1)
 
 #ifdef ALLOW_STREAMICE
-
-      CALL POPREAL8ARRAY(cg_Uin, (snx+2*olx)*(sny+2*oly)*nsx*nsy)
-      CALL POPREAL8ARRAY(cg_Vin, (snx+2*olx)*(sny+2*oly)*nsx*nsy)
-
+      CALL POPREAL8ARRAY(cg_Uin, (sNx+2*OLx)*(sNy+2*OLy)*nSx*nSy)
+      CALL POPREAL8ARRAY(cg_Vin, (sNx+2*OLx)*(sNy+2*OLy)*nSx*nSy)
 
       CALL ADSTREAMICE_CG_SOLVE(
      U                               cg_Uin,    ! velocities - need to be recalc ed
