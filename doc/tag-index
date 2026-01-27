@@ -1,6 +1,14 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o tapenade & genmake2:
+  - in genmake2, import Tapenade command arguments from ad-optfile (adjoint_tap)
+  - allow additional extra arguments with TAP_EXTRA, which can also be set using
+    new command line option "-tap_extra" ;
+  - add support for Tapenade to skip checkpointing with new "_FWD" and "_BWD"
+    versions of manually written subroutine derivatives ;
+  - test new "no-checkpointing" feature in halfpipe_streamice experiment
+    with new reference output.
 o pkg/gmredi:
   - remove OLD_VISBECK_CALC code ; rename S/R GMREDI_CALC_PSI_B ;
   - unless restricted to only uniform Kappa (including 2-D & 1-D scaling),
