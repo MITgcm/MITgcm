@@ -368,14 +368,17 @@ C     useSRCGSolver  :: Set to true to use conjugate gradient
 C                       solver with single reduction (only one call of
 C                       s/r mpi_allreduce), default is false
 C- Time-stepping & free-surface params:
-C     rigidLid            :: Set to true to use rigid lid
+C     rigidLid         :: Set to true to use rigid lid
 C     implicitFreeSurface :: Set to true to use implicit free surface
-C     uniformLin_PhiSurf  :: Set to true to use a uniform Bo_surf in the
-C                            linear relation Phi_surf = Bo_surf*eta
-C     uniformFreeSurfLev  :: TRUE if free-surface level-index is uniform (=1)
-C     exactConserv        :: Set to true to conserve exactly the total Volume
-C     linFSConserveTr     :: Set to true to correct source/sink of tracer
-C                            at the surface due to Linear Free Surface
+C     exactConserv     :: Set to true to update etaN from continuity Eq
+C                         after correction-step (like wVel in Non-Hyd)
+C     solveForDeltaP   :: solve for pressure increment (deltaP= P^{n+1} - P^n )
+C                         instead of for future time-step pressure P^{n+1}
+C     uniformLin_PhiSurf :: Set to true to use a uniform Bo_surf in the
+C                           linear relation Phi_surf = Bo_surf*eta
+C     uniformFreeSurfLev :: TRUE if free-surface level-index is uniform (=1)
+C     linFSConserveTr  :: Set to true to correct source/sink of tracer
+C                         at the surface due to Linear Free Surface
 C     useRealFreshWaterFlux :: if True (=Natural BCS), treats P+R-E flux
 C                         as a real Fresh Water (=> changes the Sea Level)
 C                         if F, converts P+R-E to salt flux (no SL effect)
@@ -448,9 +451,9 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
      & saltAdvection, saltVertDiff4, saltIsActiveTr, saltForcing,
      & maskIniTemp, maskIniSalt, checkIniTemp, checkIniSalt,
      & useNSACGSolver, useSRCGSolver,
-     & rigidLid, implicitFreeSurface,
-     & uniformLin_PhiSurf, uniformFreeSurfLev,
-     & exactConserv, linFSConserveTr, useRealFreshWaterFlux,
+     & rigidLid, implicitFreeSurface, exactConserv,
+     & solveForDeltaP, uniformLin_PhiSurf, uniformFreeSurfLev,
+     & linFSConserveTr, useRealFreshWaterFlux,
      & storePhiHyd4Phys, quasiHydrostatic, nonHydrostatic,
      & use3Dsolver, implicitIntGravWave, staggerTimeStep,
      & applyExchUV_early, doResetHFactors,
@@ -530,9 +533,10 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
       LOGICAL useSRCGSolver
       LOGICAL rigidLid
       LOGICAL implicitFreeSurface
+      LOGICAL exactConserv
+      LOGICAL solveForDeltaP
       LOGICAL uniformLin_PhiSurf
       LOGICAL uniformFreeSurfLev
-      LOGICAL exactConserv
       LOGICAL linFSConserveTr
       LOGICAL useRealFreshWaterFlux
       LOGICAL storePhiHyd4Phys

@@ -60,7 +60,7 @@
 #endif
 
 #define ALLOW_MOM_STEPPING
-#if ( defined (ALLOW_AUTODIFF) && defined (ALLOW_OFFLINE) )
+#if ( defined ALLOW_AUTODIFF && defined ALLOW_OFFLINE )
 # undef ALLOW_MOM_STEPPING
 #endif
 
@@ -409,9 +409,17 @@ C     myThid :: thread number for this instance of the routine.
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
+C     cg2d_x  :: Solution vector of the 2-D solver equation A.x=b
+C     cg3d_x  :: Solution vector of the 3-D solver equation A.X=B
 C     modelEnd  :: true if reaching the end of the run
 C     myTimeBeg :: time at beginning of time step (needed by longstep)
 C     myIterBeg :: iteration number at beginning of time step
+      _RL cg2d_x(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#ifdef ALLOW_NONHYDROSTATIC
+      _RL cg3d_x(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#else /* ALLOW_NONHYDROSTATIC */
+      _RL cg3d_x(1)
+#endif /* ALLOW_NONHYDROSTATIC */
       LOGICAL modelEnd
 #ifdef ALLOW_LONGSTEP
       INTEGER myIterBeg
@@ -427,11 +435,11 @@ CEOP
 C--   Reset the model iteration counter and the model time.
       myIter = nIter0 + (iloop-1)
       myTime = startTime + deltaTClock*(iLoop-1)
-#endif
 
-#ifdef ALLOW_AUTODIFF
+C--   Special Autodiff S/R: adjoint version will switch back to inAdMode=F
+C      (plus switch few selected usePKG back to inFwdMode)
       CALL AUTODIFF_INADMODE_UNSET( myTime, myIter, myThid )
-#endif
+#endif /* ALLOW_AUTODIFF */
 
 #ifdef ALLOW_LONGSTEP
 C     store this for longstep_average with staggerTimeStep
@@ -791,10 +799,7 @@ C--   Step forward fields and calculate time tendency terms.
 #endif /* ALLOW_MOM_STEPPING */
 
 #ifdef ALLOW_AUTODIFF_TAMC
-# if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
-CADJ STORE gU, gV  = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
-# endif
+CADJ STORE gU, gV  = comlev1, key = ikey_dynamics, kind = isbyte
 #endif
 
 C--   Update time-counter
@@ -871,14 +876,14 @@ CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
 
 C--   Apply Filters to u*,v* before SOLVE_FOR_PRESSURE
 #ifdef ALLOW_SHAP_FILT
-      IF (useSHAP_FILT .AND. shap_filt_uvStar) THEN
+      IF ( useSHAP_FILT .AND. shap_filt_uvStar ) THEN
         CALL TIMER_START('SHAP_FILT_UV        [FORWARD_STEP]',myThid)
         CALL SHAP_FILT_APPLY_UV( gU, gV, myTime, myIter, myThid )
         CALL TIMER_STOP ('SHAP_FILT_UV        [FORWARD_STEP]',myThid)
       ENDIF
 #endif
 #ifdef ALLOW_ZONAL_FILT
-      IF (useZONAL_FILT .AND. zonal_filt_uvStar) THEN
+      IF ( useZONAL_FILT .AND. zonal_filt_uvStar ) THEN
         CALL TIMER_START('ZONAL_FILT_UV       [FORWARD_STEP]',myThid)
         CALL ZONAL_FILT_APPLY_UV( gU, gV, myThid )
         CALL TIMER_STOP ('ZONAL_FILT_UV       [FORWARD_STEP]',myThid)
@@ -895,7 +900,9 @@ CADJ STORE hFacS, hFacW = comlev1, key = ikey_dynamics, kind = isbyte
 # endif
 #endif
         CALL TIMER_START('SOLVE_FOR_PRESSURE  [FORWARD_STEP]',myThid)
-        CALL SOLVE_FOR_PRESSURE( myTime, myIter, myThid )
+        CALL SOLVE_FOR_PRESSURE(
+     O             cg2d_x, cg3d_x,
+     I             myTime, myIter, myThid )
         CALL TIMER_STOP ('SOLVE_FOR_PRESSURE  [FORWARD_STEP]',myThid)
       ENDIF
 
@@ -905,7 +912,9 @@ C--   Correct divergence in flow field and cycle time-stepping momentum
       IF ( momStepping ) THEN
 #endif
         CALL TIMER_START('MOM_CORRECTION_STEP [FORWARD_STEP]',myThid)
-        CALL MOMENTUM_CORRECTION_STEP( myTime, myIter, myThid )
+        CALL MOMENTUM_CORRECTION_STEP(
+     I                cg2d_x, cg3d_x,
+     I                myTime, myIter, myThid )
         CALL TIMER_STOP ('MOM_CORRECTION_STEP [FORWARD_STEP]',myThid)
 #ifndef ALLOW_AUTODIFF
       ENDIF
@@ -1199,6 +1208,7 @@ C--   Save state for restarts
 #endif /* HAVE_SIGREG */
 
 #ifdef ALLOW_AUTODIFF
+C--   Special Autodiff S/R: adjoint version will switch to inAdMode=T
       CALL AUTODIFF_INADMODE_SET( myTime, myIter, myThid )
 #endif
 

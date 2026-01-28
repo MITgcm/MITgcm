@@ -23,14 +23,15 @@ C     cg3dNormaliseRHS :: flag set to TRUE if normalise RHS in the Solver
       LOGICAL cg3dNormaliseRHS
 
 C--   COMMON /CG3D_R/ DEL**2 Laplacian operators
-C     aW3d :: East-west operator.
-C     aS3d :: North-south operator.
-C     aV3d :: Vertical operator.
-C     aC3d :: 3D operator main diagonal term.
+C-    Matrix coeff units: before normalisation: r-Unit.s (m.s,Pa.s); none after
+C     aW3d     :: East-west operator.
+C     aS3d     :: North-south operator.
+C     aV3d     :: Vertical operator.
+C     aC3d     :: 3D operator main diagonal term.
 C     zMC, zML, zMU :: preconditioner 3D solver
-C     cg3dNorm :: A matrix normalisation factor.
-C     cg3dTolerance_sq :: square of cg3d solver Tolerance (units depends
-C                 on cg3dNormaliseRHS, solver-unit ^2 = (m2/s2)^2 or no unit)
+C     cg3dNorm :: matrix normalisation factor, units: 1/(s.r-Unit)
+C     cg3dTolerance_sq :: square of cg3d solver Tolerance (units depends on
+C                 cg3dNormaliseRHS=F/T, cg2d_x-unit ^2 = (m2/s2)^2 or no unit)
       COMMON /CG3D_RS/
      &      aW3d, aS3d, aV3d, aC3d,
      &      zMC, zML, zMU
@@ -46,9 +47,9 @@ C                 on cg3dNormaliseRHS, solver-unit ^2 = (m2/s2)^2 or no unit)
       _RL  cg3dNorm, cg3dTolerance_sq
 
 C--   COMMON /CG3D_WK_R/  Work array common block
-C     cg3d_q :: Intermediate matrix-vector product term
-C     cg3d_r ::   idem
-C     cg3d_s ::   idem
+C     cg3d_q   :: Intermediate matrix-vector product term
+C     cg3d_r   ::   idem
+C     cg3d_s   ::   idem
       COMMON /CG3D_WK_R/
      & cg3d_q, cg3d_r, cg3d_s
       _RL  cg3d_q( 0:sNx+1, 0:sNy+1, Nr,nSx,nSy)
