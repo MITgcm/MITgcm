@@ -1,5 +1,5 @@
 #include "DIC_OPTIONS.h"
-
+#include "GCHEM_OPTIONS.h"
 CBOP
 C !ROUTINE: DIC_READPARMS
 C !INTERFACE: ==========================================================
@@ -222,7 +222,11 @@ C-- setting default values for Calcite Saturation params ends here.
        DIC_parFile    = ' '
        DIC_chlaFile   = ' '
        DIC_ironFile   = ' '
+#ifdef GCHEM_ALLOW_FFIELDS
+       dic_int1    = -1
+#else
        dic_int1    = 0
+#endif
        dic_int2    = 0
        dic_int3    = 0
        dic_int4    = 0
@@ -642,6 +646,20 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* CARBONCHEM_SOLVESAPHE */
 
 #ifdef DIC_CALCITE_SAT
+C Issue an error and stop if DIC_CALCITE_SAT AND ALLOW_GCHEM_FFIELDS
+C  but not GCHEM_3D_SILICA
+#if defined (GCHEM_ALLOW_FFIELDS) && \
+    !defined (GCHEM_3D_SILICA)
+      IF ( useCalciteSaturation ) THEN
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
+     &    'to use: useCalciteSaturation with ALLOW_GCHEM_FFIELDS'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
+     &    'needs: "#define GCHEM_3D_SILICA" in "GCHEM_OPTIONS.h"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+#endif
 C Issue an error and stop for invalid selectCalciteDissolution
       IF ( ( selectCalciteDissolution .LT. 0 .OR.
      &       selectCalciteDissolution .GT. 3 )
@@ -688,6 +706,17 @@ C    DIC_CALCITE_SATURATION code is not compiled
         errCount = errCount + 1
       ENDIF
 #endif /* DIC_CALCITE_SAT */
+
+C Issue an error and stop if trying to use pkg/gchem field with
+C undefined GCHEM_ALLOW_FFIELDS
+#ifndef GCHEM_ALLOW_FFIELDS
+      IF (dic_int1.EQ.-1) THEN
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
+     &    'dic_int1=-1 requires GCHEM_ALLOW_FFIELDS to be defined'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+#endif /* GCHEM_ALLOW_FFIELDS */
 
       IF ( errCount.GE.1 ) THEN
         WRITE(msgBuf,'(A,I3,A)')

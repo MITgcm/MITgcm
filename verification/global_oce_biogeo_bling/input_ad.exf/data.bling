@@ -1,0 +1,9 @@
+# BLING parameters 
+ &ABIOTIC_PARMS
+ &
+
+ &BIOTIC_PARMS
+ &
+
+ &BLING_FORCING
+ &

@@ -49,7 +49,6 @@ C  myThid               :: thread number
       INTEGER myIter, myThid
 CEOP
 
-#ifdef ALLOW_GCHEM
 #ifdef GCHEM_SEPARATE_FORCING
 
 C!LOCAL VARIABLES: ====================================================
@@ -318,7 +317,6 @@ C       tendency multiplied by maskInC)
 #endif
 
 #endif /* GCHEM_SEPARATE_FORCING */
-#endif /* ALLOW_GCHEM */
 
       RETURN
       END

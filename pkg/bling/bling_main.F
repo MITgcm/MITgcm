@@ -42,7 +42,7 @@ C     === Global variables ===
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
 #ifdef ALLOW_EXF
-# include "EXF_INTERP_SIZE.h"
+c# include "EXF_INTERP_SIZE.h"
 # include "EXF_FIELDS.h"
 #endif
 #include "BLING_VARS.h"

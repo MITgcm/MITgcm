@@ -1,5 +1,3 @@
-#ifdef ALLOW_GCHEM
-
 CBOP
 C    !ROUTINE: GCHEM.h
 C    !INTERFACE:
@@ -14,6 +12,7 @@ C     useDIC    :: flag to turn on/off DIC pkg
 C     useBLING  :: flag to turn on/off BLING pkg
 C     useSPOIL  :: flag to turn on/off SPOIL pkg
 C     useDARWIN :: flag to turn on/off darwin pkg
+C     gchem_useEXF :: flag to read BGC input files using pkg/EXF
 C
 C--   COMMON /GCHEM_PARAMS/
 C  gchem_Tracer_num :: number of Geo-Chemistry tracers
@@ -32,8 +31,10 @@ CEOP
      &              useDIC,
      &              useBLING,
      &              useSPOIL,
-     &              useDARWIN
+     &              useDARWIN,
+     &              gchem_useEXF
       LOGICAL useCFC, useDIC, useBLING, useSPOIL, useDARWIN
+      LOGICAL gchem_useEXF
 
       COMMON /GCHEM_PARM_C/
      &                   fileName1, fileName2, fileName3,
@@ -71,4 +72,42 @@ CEOP
       _RL     gchem_ForcingCycle
       _RL     gchem_secondsPerYear
 
-#endif /* ALLOW_GCHEM */
+C--   COMMON /GCHEM_FIELDS_C/
+      COMMON /GCHEM_FIELDS_C/
+     &    gchem_iceFile,
+     &    gchem_windFile,
+     &    gchem_apresFile,
+     &    gchem_SiFile,
+     &    gchem_parFile,
+     &    gchem_FeFile,
+     &    gchem_apco2File,
+     &    gchem_chlFile,
+     &    gchem_Si3DFile
+
+      CHARACTER*128 gchem_iceFile
+      CHARACTER*128 gchem_windFile
+      CHARACTER*128 gchem_SiFile
+      CHARACTER*128 gchem_parFile
+      CHARACTER*128 gchem_FeFile
+      CHARACTER*128 gchem_apco2File
+      CHARACTER*128 gchem_apresFile
+      CHARACTER*128 gchem_chlFile
+      CHARACTER*128 gchem_Si3DFile
+
+C--   COMMON /GCHEM_FIELDS_R/
+      COMMON /GCHEM_FIELDS_R/
+     &     gchem_Si_const, gchem_Si3D_const, gchem_par_const, 
+     &     gchem_Fe_const, gchem_apco2_const, gchem_wind_const, 
+     &     gchem_apres_const, gchem_chl_const, gchem_ice_const
+
+      _RL gchem_Si_const
+      _RL gchem_Si3D_const
+      _RL gchem_par_const
+      _RL gchem_Fe_const
+      _RL gchem_apco2_const
+      _RL gchem_wind_const
+      _RL gchem_apres_const
+      _RL gchem_chl_const
+      _RL gchem_ice_const
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

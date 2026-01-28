@@ -1,5 +1,5 @@
 #include "DIC_OPTIONS.h"
-
+#include "GCHEM_OPTIONS.h"
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: DIC_INIT_FIXED
@@ -44,7 +44,7 @@ C define Schmidt no. coefficients for CO2
 C define Schmidt no. coefficients for O2
 C based on Keeling et al [GBC, 12, 141, (1998)]
       sox1 = 1638.0 _d 0
-      sox2 = -81.83 _d 0
+      sox2 =  -81.83 _d 0
       sox3 =    1.483 _d 0
       sox4 =   -0.008004 _d 0
 
@@ -62,7 +62,6 @@ C coefficients for determining saturation O2
       oC0= -4.88682 _d -7
 
 C--   Set other constant/flag
-
       IF ( dic_int1.EQ.2 ) THEN
         CALL MDSFINDUNIT( iUnit, myThid )
         OPEN(UNIT=iUnit,FILE='co2atmos.dat',STATUS='old')
@@ -103,6 +102,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--  Check some option & parameter combinations:
 
 C    for now, just collect here few check & stop from various places:
+#ifndef GCHEM_ALLOW_FFIELDS
 #ifdef READ_PAR
 #ifdef USE_QSW
 c     WRITE(msgBuf,'(2A)') ' DIC_INI_FORCING: ',
@@ -120,7 +120,7 @@ c       WRITE(msgBuf,'(2A)') ' DIC_FIELDS_LOAD: ',
            STOP 'ABNORMAL END: S/R DIC_INIT_FIXED'
       ENDIF
 #endif /* READ_PAR */
-
+#endif /* GCHEM_ALLOW_FFIELDS */
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_MNC

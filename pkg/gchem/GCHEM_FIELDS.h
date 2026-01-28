@@ -1,4 +1,3 @@
-#ifdef ALLOW_GCHEM
 CBOP
 C    !ROUTINE: GCHEM_FIELDS.h
 C    !INTERFACE:
@@ -8,16 +7,41 @@ C Contains tracer fields specifically for chemical tracers.
 C
 C  gchemTendency :: 3DxPTRACER_num field that store the tendencies due
 C                   to the bio-geochemical model
+C  gchemSi/PAR etc :: surface forcing fields provided by pkg/gchem
 
+CEOP
 #ifdef GCHEM_ADD2TR_TENDENCY
       _RL gchemTendency(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,
      &                  GCHEM_tendTr_num)
-      COMMON /GCHEM_FIELDS/
+      COMMON /GCHEM_TENDENCY_R/
      &     gchemTendency
 #endif /* GCHEM_ADD2TR_TENDENCY */
-CEOP
-#endif /* ALLOW_GCHEM */
 
-CEH3 ;;; Local Variables: ***
-CEH3 ;;; mode:fortran ***
-CEH3 ;;; End: ***
+#ifdef GCHEM_ALLOW_FFIELDS
+      COMMON /GCHEM_FORCING_R/
+#ifdef GCHEM_3D_SILICA
+     &    gchemSi3D,
+#endif
+     &    gchemSi,
+     &    gchemPAR,
+     &    gchemFe,
+     &    gchemapCO2,
+     &    gchemIce,
+     &    gchemWind,
+     &    gchemAtmosP,
+     &    gchemChl
+
+#ifdef GCHEM_3D_SILICA
+      _RL gchemSi3D  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif
+      _RL gchemSi    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL gchemPAR   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL gchemFe    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL gchemapCO2 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL gchemIce   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL gchemWind  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL gchemAtmosP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL gchemChl   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif /* GCHEM_ALLOW_FFIELDS */
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

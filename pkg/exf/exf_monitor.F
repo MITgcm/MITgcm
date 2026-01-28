@@ -1,7 +1,4 @@
 #include "EXF_OPTIONS.h"
-#ifdef ALLOW_BLING
-# include "BLING_OPTIONS.h"
-#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -29,8 +26,8 @@ C     !USES:
 # include "MNC_PARAMS.h"
 #endif
 #ifdef ALLOW_BLING
-# include "EXF_INTERP_SIZE.h"
 # include "BLING_VARS.h"
+# include "GCHEM.h"
 #endif
 
 C     !INPUT PARAMETERS:
@@ -211,7 +208,7 @@ C       Print some statistics about input forcing fields
         ENDIF
 #endif
 #ifdef ALLOW_BLING
-        IF ( apco2file .NE. ' ' ) THEN
+        IF ( gchem_apco2file .NE. ' ' ) THEN
           CALL MON_WRITESTATS_RL( 1, apCO2, '_apco2',
      &             maskInC, maskInC, rA , drF, dummyRL, myThid )
         ENDIF

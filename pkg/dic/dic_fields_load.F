@@ -1,5 +1,5 @@
 #include "DIC_OPTIONS.h"
-
+#include "GCHEM_OPTIONS.h"
 CBOP
 C !ROUTINE: DIC_FIELDS_LOAD
 
@@ -18,6 +18,9 @@ C !USES: ===============================================================
 #include "GRID.h"
 #include "DIC_VARS.h"
 #include "DIC_LOAD.h"
+#ifdef GCHEM_ALLOW_FFIELDS
+# include "GCHEM_FIELDS.h"
+#endif
 
 C !INPUT PARAMETERS: ===================================================
 C  myTime               :: current time
@@ -38,6 +41,52 @@ c !LOCAL VARIABLES: ===================================================
 #endif
 CEOP
 
+#ifdef GCHEM_ALLOW_FFIELDS
+C Access pkg/gchem forcing fields
+# if defined DIC_CALCITE_SAT && defined GCHEM_3D_SILICA
+      IF ( useCalciteSaturation ) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO k = 1,Nr
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            silicaDeep(i,j,k,bi,bj) = gchemSi3D(i,j,k,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+# endif
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+C     Intuitively one may want to copy the gchem field gchemapCO2 to the
+C     dic field AtmospCO2 here as for the other fields, but this breaks
+C     dependencies for the AD-code, so this is done in dic_atmos.F
+c         if (dic_int1.eq.-1) AtmospCO2(i,j,bi,bj)  = gchemapCO2(i,j,bi,bj)
+          fIce(i,j,bi,bj)       = gchemIce(i,j,bi,bj)
+          wind(i,j,bi,bj)       = gchemWind(i,j,bi,bj)
+          silicaSurf(i,j,bi,bj) = gchemSi(i,j,bi,bj)
+#ifndef USE_PLOAD
+C     Atm pressure in Pascals, convert to atm
+          AtmosP(i,j,bi,bj)     = gchemAtmosP(i,j,bi,bj)/Pa2atm
+#endif
+#ifdef READ_PAR
+          PAR(i,j,bi,bj)        = gchemPAR(i,j,bi,bj)
+#endif
+#ifdef ALLOW_FE
+          inputFe(i,j,bi,bj)    = gchemFe(i,j,bi,bj)
+#endif
+#ifdef LIGHT_CHL
+          CHL(i,j,bi,bj)        = gchemCHL(i,j,bi,bj)
+#endif
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+#else /* GCHEM_ALLOW_FFIELDS */
       IF (  DIC_forcingCycle.GT.0. _d 0 ) THEN
 
 C--   Now calculate whether it is time to update the forcing arrays
@@ -149,10 +198,10 @@ C--   fill-in overlap after loading temp arrays:
         _EXCH_XY_RS(silicaSurf0, myThid )
         _EXCH_XY_RS(silicaSurf1, myThid )
 #ifdef DIC_CALCITE_SAT
-      IF ( DIC_deepSilicaFile .NE. ' '  ) THEN
-        _EXCH_XYZ_RS(silicaDeep0, myThid )
-        _EXCH_XYZ_RS(silicaDeep1, myThid )
-      ENDIF
+        IF ( DIC_deepSilicaFile .NE. ' '  ) THEN
+          _EXCH_XYZ_RS(silicaDeep0, myThid )
+          _EXCH_XYZ_RS(silicaDeep1, myThid )
+        ENDIF
 #endif
         _EXCH_XY_RS(ice0, myThid )
         _EXCH_XY_RS(ice1, myThid )
@@ -187,7 +236,6 @@ C-     end if-bloc (time to load new fields)
      &                       + aWght*dicwind1(i,j,bi,bj)
             ENDDO
            ENDDO
-
 C calculate piston velocity
 C QQ: note - we should have wind speed variance in here
 C QQ         also need to check units, and conversion factors
@@ -227,8 +275,8 @@ C If file provided for surface silicate, read it in
 #ifndef ALLOW_AUTODIFF
 #ifdef DIC_CALCITE_SAT
          ELSEIF ( DIC_deepSilicaFile .NE. ' '  ) THEN
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
+            DO j=1-OLy,sNy+OLy
+             DO i=1-OLx,sNx+OLx
 C If no surface silicate file but deep (3d) silicate provided, use top level
              silicaSurf(i,j,bi,bj) = bWght*silicaDeep0(i,j,1,bi,bj)
      &                             + aWght*silicaDeep1(i,j,1,bi,bj)
@@ -281,6 +329,7 @@ C If no surface silicate file but deep (3d) silicate provided, use top level
 
 C endif for DIC_forcingCycle
       ENDIF
+#endif /* GCHEM_ALLOW_FFIELDS */
 
 #endif /* ALLOW_DIC */
       RETURN
