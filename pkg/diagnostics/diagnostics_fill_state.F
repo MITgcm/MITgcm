@@ -45,6 +45,7 @@ C     == Local variables ==
       LOGICAL  DIAGNOSTICS_IS_ON
       EXTERNAL DIAGNOSTICS_IS_ON
       _RL tmpMk(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL tmpDep(1-Olx:sNx+Olx,1-OLy:sNy+OLy,nSx,nSy)
       _RL tmp1k(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL tmpU (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tmpV (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -57,10 +58,27 @@ C     == Local variables ==
 #endif
       INTEGER i,j,k,bi,bj
       INTEGER km1
+catn create depth to compute hfac for layers
+catn This is Depth written out from write_grid.F
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO j = 1,sNy
+         DO i = 1,sNx
+           tmpdep(i,j,bi,bj) = Ro_surf(i,j,bi,bj) - R_low(i,j,bi,bj)
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 
+c for staggerTimeStep (our case):
+c seqFlag=0 (beg of forward_step) --> selectVars=2
+c seqFlag=1 (mid of forward_step) --> selectVars=1
+c seqFlag=2 (end of forward_step) --> selectVars=4
+c So if we want to fill something like (end-beg)/dt, choose 2 and 4
+c when staggerTimeStep is false, then seqFlag=0->selectVars=3 (not our case)
       IF ( selectVars.EQ.2 .OR. selectVars.EQ.3 ) THEN
 C--   fill momentum state-var diagnostics:
-
+c selectVars=2: filling etan before forward_step -> etan from prev timestep
         CALL DIAGNOSTICS_FILL(etaN, 'ETAN    ',0, 1,0,1,1,myThid)
 
         IF ( DIAGNOSTICS_IS_ON('RSURF   ',myThid) ) THEN
@@ -387,53 +405,69 @@ C     (next fill for these diagnostics will NOT allow counter to be incremented)
         CALL DIAGNOSTICS_SCALE_FILL( vVel, tmpFac, 1,
      &                              'TOTVTEND',0,Nr,0,1,1,myThid )
 
-        IF ( DIAGNOSTICS_IS_ON('TOTTTEND',myThid) ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO k=1,Nr
-            tmpFac = -86400. _d 0/dTtracerLev(k)
+            tmpFac = -1. _d 0/dTtracerLev(k)
             DO j = 1,sNy
              DO i = 1,sNx
-               tmpMk(i,j,k,bi,bj) = tmpFac*theta(i,j,k,bi,bj)
+c               tmpMk(i,j,k,bi,bj) = tmpFac*theta(i,j,k,bi,bj)
+catn: after verification, we need to derive the correct hfac, as the
+catn: one available at this stage of the model is the incorrect factor
+               IF(tmpDep(i,j,bi,bj).gt.0. _d 0) then
+                tmpMk(i,j,k,bi,bj) = tmpFac*theta(i,j,k,bi,bj)
+     &          *( etaN(i,j,bi,bj)/tmpDep(i,j,bi,bj) + 1. _d 0 )
+               ELSE
+                tmpMk(i,j,k,bi,bj) = 0. _d 0
+               ENDIF
              ENDDO
             ENDDO
            ENDDO
           ENDDO
          ENDDO
+        IF ( DIAGNOSTICS_IS_ON('TOTTTEND',myThid) ) THEN
          CALL DIAGNOSTICS_FILL(tmpMk,'TOTTTEND',0,Nr,0,1,1,myThid)
+        ENDIF
 #ifdef ALLOW_LAYERS
          IF ( useLayers ) THEN
            CALL LAYERS_FILL(tmpMk,1,'TOT',0,Nr,0,1,1,myThid)
          ENDIF
 #endif /* ALLOW_LAYERS */
-        ENDIF
 
-        IF ( DIAGNOSTICS_IS_ON('TOTSTEND',myThid) ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO k=1,Nr
-            tmpFac = -86400. _d 0/dTtracerLev(k)
+            tmpFac = -1. _d 0/dTtracerLev(k)
             DO j = 1,sNy
              DO i = 1,sNx
-               tmpMk(i,j,k,bi,bj) = tmpFac*salt(i,j,k,bi,bj)
+               IF(tmpDep(i,j,bi,bj).gt.0. _d 0) then
+                tmpMk(i,j,k,bi,bj) = tmpFac*salt(i,j,k,bi,bj)
+     &          *( etaN(i,j,bi,bj)/tmpDep(i,j,bi,bj) + 1. _d 0 )
+               ELSE
+                tmpMk(i,j,k,bi,bj) = 0. _d 0
+               ENDIF
              ENDDO
             ENDDO
            ENDDO
           ENDDO
          ENDDO
+        IF ( DIAGNOSTICS_IS_ON('TOTSTEND',myThid) ) THEN
          CALL DIAGNOSTICS_FILL(tmpMk,'TOTSTEND',0,Nr,0,1,1,myThid)
+        ENDIF
 #ifdef ALLOW_LAYERS
          IF ( useLayers ) THEN
            CALL LAYERS_FILL(tmpMk,2,'TOT',0,Nr,0,1,1,myThid)
          ENDIF
 #endif /* ALLOW_LAYERS */
-        ENDIF
 
 C--   fill momentum state-var diagnostics: end
       ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
+catn selectVars=1: mid of forward_step, *after* calls to DO_OCEANIC_PHYS,
+catn THERMODYNAMICS, DYNAMICS, UPDATE_R_STAR, UPDATE_SURF_DR,
+catn SOLVE_FOR_PRESSURE, MOMENTUM_CORRECTION_STEP, INTEGR_CONTINUITY,
+catn CALC_R_STAR, CALC_SURF_DR, DO_STAGGER_FIELDS_EXCHANGES
       IF ( selectVars.EQ.1 .OR. selectVars.EQ.3 ) THEN
 C--   fill tracer state-var diagnostics:
 
@@ -695,18 +729,26 @@ C     (previous fill for these diagnostics DID allow counter to be incremented)
          ENDDO
         ENDDO
 
-        IF ( DIAGNOSTICS_IS_ON('TOTTTEND',myThid) ) THEN
+catn: move layers outside of diags loop
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO k=1,Nr
-            tmpFac = 86400. _d 0/dTtracerLev(k)
+            tmpFac = 1. _d 0/dTtracerLev(k)
             DO j = 1,sNy
              DO i = 1,sNx
-               tmpMk(i,j,k,bi,bj) = tmpFac*theta(i,j,k,bi,bj)
+catn: need to mult with hFacC if use nlfs
+               IF(tmpDep(i,j,bi,bj).gt.0. _d 0) then
+                tmpMk(i,j,k,bi,bj) = tmpFac*theta(i,j,k,bi,bj)
+     &          *( etaN(i,j,bi,bj)/tmpDep(i,j,bi,bj) + 1. _d 0 )
+               ELSE
+                tmpMk(i,j,k,bi,bj) = 0. _d 0
+               ENDIF
              ENDDO
             ENDDO
            ENDDO
-           CALL DIAGNOSTICS_FILL(tmpMk,'TOTTTEND',0,Nr,-1,bi,bj,myThid)
+        IF ( DIAGNOSTICS_IS_ON('TOTTTEND',myThid) ) THEN
+          CALL DIAGNOSTICS_FILL(tmpMk,'TOTTTEND',0,Nr,-1,bi,bj,myThid)
+        ENDIF
 #ifdef ALLOW_LAYERS
            IF ( useLayers ) THEN
              CALL LAYERS_FILL(tmpMk,1,'TOT',0,Nr,-1,bi,bj,myThid)
@@ -714,20 +756,27 @@ C     (previous fill for these diagnostics DID allow counter to be incremented)
 #endif /* ALLOW_LAYERS */
           ENDDO
          ENDDO
-        ENDIF
 
-        IF ( DIAGNOSTICS_IS_ON('TOTSTEND',myThid) ) THEN
+catn: move layers outside of diags loop
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO k=1,Nr
-            tmpFac = 86400. _d 0/dTtracerLev(k)
+            tmpFac = 1. _d 0/dTtracerLev(k)
             DO j = 1,sNy
              DO i = 1,sNx
-               tmpMk(i,j,k,bi,bj) = tmpFac*salt(i,j,k,bi,bj)
+catn: need to mult with hFacC if use nlfs
+               IF(tmpDep(i,j,bi,bj).gt.0. _d 0) then
+                tmpMk(i,j,k,bi,bj) = tmpFac*salt(i,j,k,bi,bj)
+     &          *( etaN(i,j,bi,bj)/tmpDep(i,j,bi,bj) + 1. _d 0 )
+               ELSE
+                tmpMk(i,j,k,bi,bj) = 0. _d 0
+               ENDIF
              ENDDO
             ENDDO
            ENDDO
-           CALL DIAGNOSTICS_FILL(tmpMk,'TOTSTEND',0,Nr,-1,bi,bj,myThid)
+         IF ( DIAGNOSTICS_IS_ON('TOTSTEND',myThid) ) THEN
+          CALL DIAGNOSTICS_FILL(tmpMk,'TOTSTEND',0,Nr,-1,bi,bj,myThid)
+         ENDIF
 #ifdef ALLOW_LAYERS
            IF ( useLayers ) THEN
             CALL LAYERS_FILL(tmpMk,2,'TOT',0,Nr,-1,bi,bj,myThid)
@@ -735,7 +784,6 @@ C     (previous fill for these diagnostics DID allow counter to be incremented)
 #endif /* ALLOW_LAYERS */
           ENDDO
          ENDDO
-        ENDIF
 
 C--   fill state tendency diagnostics the second time: end
       ENDIF
