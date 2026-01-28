@@ -487,7 +487,8 @@ Further, we introduce these helper variables:
    \epsilon_{3a} = \rho_{I} \, c_{p,I} \, \kappa \, (1-\phi_d) \\
    \epsilon_{4}  &= b_{0}p + c_{0}, \\
    \epsilon_{6}  &= \epsilon_{4} - T, \quad \epsilon_{7} = \epsilon_{4} - T_{S} \\
-   \epsilon_{8}  &= \rho_c c_{p,I} \gamma_{S}\, \phi_m \\
+   \epsilon_{8}  &= \epsilon_{2} \frac{c_{p,I}}{L}\,\phi_m
+                  = \rho_c c_{p,I} \gamma_{S}\, \phi_m \\
    \epsilon_{q}  &= \epsilon_{1}\,\epsilon_{6} + \epsilon_{3}\,\epsilon_{7} \\
    \end{aligned}
 
@@ -594,16 +595,12 @@ the general form:
    \end{aligned}
 
 The smaller non-negative root of the quadratic equation in :math:`S_{b}` is
-used. With :math:`S_b`, the boundary layer temperature :math:`T_b` is known through
-:eq:`hellmerfreeze` and the melt rate :math:`q` from :eq:`hellmersaltbalance`,
-
-.. math::
-   q = \rho_c \gamma_{S} \frac{S_{b} - S}{S_b}
-
-For the unlikely case :math:`S=S_b=S_I=0`, :eq:`hellmersaltbalance` is
-degenerate and it may be safer to use :eq:`jenkinsheatbudget`,
-:eq:`solvedmeltrate`, or :eq:`solvedmeltrateagain` to diagnose the freshwater
-flux. More generally:
+used. With :math:`S_b`, the boundary layer temperature :math:`T_b` is known
+through :eq:`hellmerfreeze` and the melt rate :math:`q` from
+:eq:`hellmersaltbalance`.  For the unlikely case :math:`S=S_b=S_I=0`,
+:eq:`hellmersaltbalance` is degenerate and it may be safer to use
+:eq:`jenkinsheatbudget`, :eq:`solvedmeltrate`, or :eq:`solvedmeltrateagain` to
+diagnose the freshwater flux. More generally:
 
 .. math::
    q = \frac{ \epsilon_{1}\,( T_{b} - T ) + \epsilon_{3}\,( T_{b} - T_{S} ) }
