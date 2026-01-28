@@ -603,6 +603,14 @@ cCADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=tkey, byte=isbyte
 c# endif
 #endif /* GM_VISBECK_VARIABLE_K */
 
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics .AND. GM_taper_scheme.EQ.'fm07' ) THEN
+       CALL DIAGNOSTICS_FILL( hTransLay, 'GM_hTrsL', 0,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL( baseSlope, 'GM_baseS', 0,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(recipLambda,'GM_rLamb', 0,1,2,bi,bj,myThid)
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Calculate Stream-Functions used in Advective Form:
 
@@ -646,6 +654,38 @@ c    U              locK3dRedi
 #endif /* ndef GM_EXCLUDE_SUBMESO */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+#ifdef GM_TRIADS_SCHEME
+C-    Save isoneutral gradient and Redi diffusivity
+      DO k=1,Nr
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         GM_Nm2(i,j,k,bi,bj) = oneRL
+     &       / MAX( gravitySign*sigmaR(i,j,k), GM_Small_Number )
+         GM_isoK3d(i,j,k,bi,bj) =
+# ifdef GM_READ_K3D_REDI
+     &       GM_inpK3dRedi(i,j,k,bi,bj)
+# else
+     &       GM_isopycK*GM_isoFac1d(k)*GM_isoFac2d(i,j,bi,bj)
+# endif
+# ifdef GM_VISBECK_VARIABLE_K
+     &     + VisbeckK(i,j,bi,bj)*GM_isoFac_calcK
+# endif
+# ifdef ALLOW_GM_LEITH_QG
+     &     + GM_LeithQG_K(i,j,k,bi,bj)*GM_isoFac_calcK
+# endif
+# if ( defined GM_BATES_K3D && !defined GM_BATES_PASSIVE )
+     &     +  GM_BatesK3d(i,j,k,bi,bj)*GM_isoFac_calcK
+# endif
+C     For now, just reset tensor:
+         Kwx(i,j,k,bi,bj)  = 0. _d 0
+         Kwy(i,j,k,bi,bj)  = 0. _d 0
+         Kwz(i,j,k,bi,bj)  = 0. _d 0
+        ENDDO
+       ENDDO
+      ENDDO
+#else /* GM_TRIADS_SCHEME */
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     Update components of Redi/GM tensor, second step: multiply by Diffusivity
       DO k=1,Nr
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -683,14 +723,6 @@ CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
         ENDDO
        ENDDO
       ENDDO
-
-#ifdef ALLOW_DIAGNOSTICS
-      IF ( useDiagnostics .AND. GM_taper_scheme.EQ.'fm07' ) THEN
-       CALL DIAGNOSTICS_FILL( hTransLay, 'GM_hTrsL', 0,1,2,bi,bj,myThid)
-       CALL DIAGNOSTICS_FILL( baseSlope, 'GM_baseS', 0,1,2,bi,bj,myThid)
-       CALL DIAGNOSTICS_FILL(recipLambda,'GM_rLamb', 0,1,2,bi,bj,myThid)
-      ENDIF
-#endif /* ALLOW_DIAGNOSTICS */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #if ( defined GM_NON_UNITY_DIAGONAL || defined GM_EXTRA_DIAGONAL )
@@ -1116,6 +1148,7 @@ C     for backeard compatibility + for trying to generate a simpler adjoint code
        ENDDO
       ENDDO
 #endif /* ndef GM_NON_UNITY_DIAGONAL */
+#endif /* GM_TRIADS_SCHEME */
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN

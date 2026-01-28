@@ -43,6 +43,9 @@ C bolus transport and K for Redi
 #undef GM_BATES_K3D
 #undef GM_BATES_PASSIVE
 
+C Use triads implementation of Isopycnal diffusion (Griffies etal, JPO, 1998)
+#undef GM_TRIADS_SCHEME
+
 C This allows the leading diagonal (top two rows) to be non-unity
 C (a feature required when tapering adiabatically).
 #define GM_NON_UNITY_DIAGONAL
