@@ -76,9 +76,10 @@ C                         1 for advective and diffusive heat flux (eq22, 26, 31)
 C     fwflxFac         :: only effective for dFac=1, 1 if we expect a melting
 C                         fresh water flux, 0 otherwise
 C     rFWinBL          :: = 1 when realFreshWaterFlux is used with BoundaryLayer
+C     sFac             :: auxillary field to help avoid division by zero
 C     auxiliary variables and abbreviations:
 C     a0, a1, a2, b, c0
-C     eps1, eps2, eps3, eps3a, eps4, eps6, eps7, eps8
+C     eps1, eps2, eps3, eps3a, eps4, eps6, eps7, eps8, epsq
 C     aqe, bqe, cqe, discrim, recip_aqe
 C     drKp1, recip_drLoc
       INTEGER I,J,K,Kp1
@@ -96,7 +97,7 @@ C     drKp1, recip_drLoc
       _RL convertFW2SaltLoc
 #endif
       _RL a0, a1, a2, b, c0
-      _RL eps1, eps2, eps3, eps3a, eps4, eps6, eps7, eps8
+      _RL eps1, eps2, eps3, eps3a, eps4, eps6, eps7, eps8, epsq
       _RL cFac, rFac, dFac, fwflxFac, rFWinBL
       _RL aqe, bqe, cqe, discrim, recip_aqe
       _RL drKp1, recip_drLoc
@@ -588,19 +589,13 @@ C     code of type (pLoc-const)/pLoc
             eps7 = eps4 - SHELFICEthetaSurface
             eps8 = rUnit2mass*SHELFICEheatCapacity_Cp
      &           *shiTransCoeffS(i,j,bi,bj) * fwflxFac
+            epsq = eps1*eps6 + eps3*eps7
+C     coefficents of the quadratic equations for saltFreeze
             aqe = a0  *(eps1+eps3-eps8)
             recip_aqe = 0. _d 0
             IF ( aqe .NE. 0. _d 0 ) recip_aqe = 0.5 _d 0/aqe
-c           bqe = eps1*eps6 + eps3*eps7 - eps2
-            bqe = eps1*eps6
-     &           + eps3a*( b
-     &                   + ( c0 - SHELFICEthetaSurface )/pLoc(I,J) )
-     &           - eps2
-     &           + eps8*( a0*sLoc(I,J) - eps7 )
-     &           + (eps1*a0*dFac + (oneRL-dFac)*aqe) * SHELFICEsalinity
-            cqe = ( eps2 + eps8*eps7 )*sLoc(I,J)
-     &           - (eps1*dFac + (oneRL-dFac)*(eps1*eps6+eps3*eps7))
-     &           * SHELFICEsalinity
+            bqe = epsq - eps2  + eps8*( a0*sLoc(I,J) - eps7 )
+            cqe = ( eps2 + eps8*eps7 )*sLoc(I,J) - epsq*SHELFICEsalinity
             discrim = bqe*bqe - 4. _d 0*aqe*cqe
 #undef ALLOW_SHELFICE_DEBUG
 #ifdef ALLOW_SHELFICE_DEBUG
@@ -638,16 +633,37 @@ c           bqe = eps1*eps6 + eps3*eps7 - eps2
      &           saltFreeze = (- bqe + SQRT(discrim))*recip_aqe
             thetaFreeze = a0*saltFreeze + eps4
 C--   upward fresh water flux due to melting (in kg/m^2/s)
+#ifdef SHELFICE_USE_HEATBALANCE_FOR_FRESHWATERFLUX
+C     This formulation of fwflux, derived from the heat balance equation
+C     instead of the salt balance equation, can handle the case when the
+C     salinity of the ocean, boundary layer, and ice are identical.
+C     Default thermodynamics specify a linear temperature gradient
+C     through the ice (Holland and Jenkins, 1999, Section 2).
+C     Here, via eps3=0 and fwFlxFac, we also cover the case of a nonlinear
+C     temperature gradient through the ice (Holland and Jenkins, 1999,
+C     Section 3), but only for melting (Eq. 31 of Holland and Jenkins,
+C     1999). fwFlxFac = 0 or freezing and 1 for melting conditions.
+            freshWaterFlux = (
+     &             eps1*( thetaFreeze - tLoc(i,j) )
+     &           + eps3*( thetaFreeze - SHELFICEthetaSurface )
+     &           ) / ( SHELFICElatentHeat
+     &                + fwFlxFac * SHELFICEheatCapacity_Cp*
+     &                  (thetaFreeze - SHELFICEthetaSurface) )
+#else /* ndef SHELFICE_USE_HEATBALANCE_FOR_FRESHWATERFLUX */
 cph change to identical form
 cph            freshWaterFlux = rUnit2mass
 cph     &           * shiTransCoeffS(i,j,bi,bj)
 cph     &           * ( saltFreeze - sLoc(I,J) ) / saltFreeze
-            freshWaterFlux = rUnit2mass
-     &           * shiTransCoeffS(i,j,bi,bj)
+            freshWaterFlux = rUnit2mass * shiTransCoeffS(i,j,bi,bj)
+C     Catch unlikely case of saltFreeze = 0 (often when sLoc=0)
+            IF ( saltFreeze .NE. 0. _d 0 )
+     &           freshWaterFlux = freshWaterFlux
      &           * ( 1. _d 0 - sLoc(I,J) / saltFreeze )
+#endif /* ndef SHELFICE_USE_HEATBALANCE_FOR_FRESHWATERFLUX */
+
 #ifdef ALLOW_GENTIM2D_CONTROL
-     &           + xx_shifwflx_loc(I,J,bi,bj)
-#endif /*  ALLOW_GENTIM2D_CONTROL */
+            freshWaterFlux = freshWaterFlux + xx_shifwflx_loc(I,J,bi,bj)
+#endif /* ALLOW_GENTIM2D_CONTROL */
 C--   Calculate the upward heat and fresh water fluxes;
 C--   MITgcm sign conventions: downward (negative) fresh water flux
 C--   implies melting and due to upward (positive) heat flux

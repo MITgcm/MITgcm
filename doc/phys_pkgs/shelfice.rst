@@ -44,15 +44,17 @@ via CPP preprocessor flags. These options are set in :filelink:`SHELFICE_OPTIONS
 .. table:: Compile-time parameters
    :name: tab_phys_pkg_shelfice_compileparms
 
-   +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
-   | CPP Flag Name                                 | Default | Description                                                                                                          |
-   +===============================================+=========+======================================================================================================================+
-   | :varlink:`ALLOW_SHELFICE_DEBUG`               | #undef  | include code for enhanced diagnostics and debug output                                                               |
-   +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`ALLOW_ISOMIP_TD`                    | #define | include code for for simplified ISOMIP thermodynamics                                                                |
-   +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`SHI_ALLOW_GAMMAFRICT`               | #define | allow friction velocity-dependent transfer coefficient following Holland and Jenkins (1999) :cite:`holland:99`       |
-   +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+   +--------------------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------+
+   | CPP Flag Name                                          | Default | Description                                                                                                    |
+   +========================================================+=========+================================================================================================================+
+   | :varlink:`ALLOW_SHELFICE_DEBUG`                        | #undef  | include code for enhanced diagnostics and debug output                                                         |
+   +--------------------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------+
+   | :varlink:`ALLOW_ISOMIP_TD`                             | #define | include code for for simplified ISOMIP thermodynamics                                                          |
+   +--------------------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------+
+   | :varlink:`SHI_ALLOW_GAMMAFRICT`                        | #define | allow friction velocity-dependent transfer coefficient following Holland and Jenkins (1999) :cite:`holland:99` |
+   +--------------------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------+
+   | :varlink:`SHELFICE_USE_HEATBALANCE_FOR_FRESHWATERFLUX` | #define | use heat balance to diagnose freshwater flux, avoid a divion by zero if salinity of boundary layer  = 0        |
+   +--------------------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------+
 
 .. _shelfice_runtime:
 
@@ -361,7 +363,7 @@ ice to water:
 .. math::
    {\rho_I} \, c_{p,I} \, \kappa_{I,T}
    \frac{\partial{T_I}}{\partial{z}}\biggl|_{b}
-   = c_{p} \, \rho_c \, \gamma_{T} ( T_{b} - T )+ L q.
+   = c_{p} \, \rho_c \, \gamma_{T} ( T_{b} - T ) - L q.
    :label: jenkinsheatbudget
 
 where :math:`\kappa_{I,T}` is the thermal ice diffusivity
@@ -450,10 +452,52 @@ boundary conditions non-conservative.
 Solving the three-equations system
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-There has been some confusion about the three-equations system, so we
-document the solution in the code here: We use :eq:`hellmerfreeze`
-:math:`T_{b} = a_{0} S_{b} + \epsilon_{4}` to eliminate :math:`T_{b}`
-from :eq:`jenkinsheatbudget` with :eq:`dTdzdiffus` and find an
+There has been some confusion about the three-equations system, so we document
+the solution in the code here.
+
+To accomodate the many different options in the code of
+:filelink:`pkg/shelfice/shelfice_thermodynamics.F`, the following multiplier
+flags are introduced, that switch in or out specific terms in the
+thermodynamic equations:
+
++---------------------+----------------+--------------------------------------------------------------------------------+
+| model parameter     | math symbol    | value                                                                          |
++=====================+================+================================================================================+
+| :varlink:`cFac`     | :math:`\phi_c` | 1 for conservative form (:varlink:`SHELFICEconserve` ``=.TRUE.``),             |
+|                     |                | 0 otherwise, multiplies :math:`q` in :eq:`jenkinsbc`                           |
++---------------------+----------------+--------------------------------------------------------------------------------+
+| :varlink:`rFac`     | :math:`\phi_r` | 1 if :varlink:`useRealFreshWaterFlux` ``=.TRUE.``, 0 otherwise,                |
+|                     |                | only used in diagnostics if heat flux                                          |
++---------------------+----------------+--------------------------------------------------------------------------------+
+| :varlink:`dFac`     | :math:`\phi_d` | 1 if :varlink:`SHELFICEadvDiffHeatFlux` ``=.TRUE.``, 0 otherwise               |
++---------------------+----------------+--------------------------------------------------------------------------------+
+| :varlink:`fwFlxFac` | :math:`\phi_m` | 1 if :math:`\phi_d = 1` and melting conditions, 0 otherwise                    |
++---------------------+----------------+--------------------------------------------------------------------------------+
+| :varlink:`rFWinBL`  | :math:`\phi_C` | 1 if :varlink:`SHI_withBL_realFWflux` ``=.TRUE.``, 0 otherwise,                |
+|                     |                | used for additional terms in case :varlink:`SHEFLICEboundaryLayer` ``=.TRUE.`` |
++---------------------+----------------+--------------------------------------------------------------------------------+
+
+Further, we introduce these helper variables:
+
+.. math::
+   \begin{aligned}
+   \epsilon_{1}  &= c_{p} \, \rho_c \, \gamma_{T}, \quad
+   \epsilon_{2}  = \rho_c L \, \gamma_{S} \\
+   \epsilon_{3}  &= \frac{\epsilon_{3a}}{h}, \quad\text{with}\quad
+   \epsilon_{3a} = \rho_{I} \, c_{p,I} \, \kappa \, (1-\phi_d) \\
+   \epsilon_{4}  &= b_{0}p + c_{0}, \\
+   \epsilon_{6}  &= \epsilon_{4} - T, \quad \epsilon_{7} = \epsilon_{4} - T_{S} \\
+   \epsilon_{8}  &= \epsilon_{2} \frac{c_{p,I}}{L}\,\phi_m
+                  = \rho_c c_{p,I} \gamma_{S}\, \phi_m \\
+   \epsilon_{q}  &= \epsilon_{1}\,\epsilon_{6} + \epsilon_{3}\,\epsilon_{7} \\
+   \end{aligned}
+
+This makes the code more difficult to read, but hopefully improves performance
+(fewer if-statements).
+
+For illustration we set :math:`\phi_d=0 \Rightarrow \phi_m=0` and use
+:eq:`hellmerfreeze` (:math:`T_{b} = a_{0} S_{b} + \epsilon_{4}`) to eliminate
+:math:`T_{b}` from :eq:`jenkinsheatbudget` with :eq:`dTdzdiffus` and find an
 expression for the freshwater flux :math:`q`:
 
 .. math::
@@ -476,13 +520,55 @@ to be substituted into :eq:`hellmersaltbalance`:
    + \{ \epsilon_{q}  - \epsilon_{2}
      - a_{0}\,(\epsilon_{1} + \epsilon_{3})\,S_{I} \}\,S_{b}
      + \epsilon_{2}\,S - \epsilon_{q}\,S_{I} \\
-   \Leftrightarrow 0 &= A\,S_{b}^{2} + B\,S_{b} + C \\
+   \Leftrightarrow 0 &= A_0\,S_{b}^{2} + B_0\,S_{b} + C_0 \\
+   \end{aligned}
+
+For :math:`\phi_d=1`, the diffusive-advective flux through the ice is
+approximated by :math:`q\,c_{p,I} (T_S - T_b)\,\phi_m` :cite:`holland:99`, and
+:eq:`solvedmeltrate` assumes the form
+
+.. math::
+   \begin{aligned}
+   -Lq &= \epsilon_{1} (T - a_{0} S_{b} - \epsilon_{4})
+   - q\,c_{p,I}\,\phi_m (T_{S} - a_{0} S_{b} - \epsilon_{4}) \\
+   Lq &= a_{0}\,\epsilon_{1} S_{b} + \epsilon_{1}\epsilon_{6}
+   - Lq\,\frac{c_{p,I}}{L}\,\phi_m (a_{0} S_{b} + \epsilon_{7}) \\
+   \Leftrightarrow Lq &= \frac{a_{0}\,\epsilon_{1} S_{b} + \epsilon_{1}\epsilon_{6}}
+   {1 + \frac{c_{p,I}}{L}\,\phi_m (a_{0} S_b+ \epsilon_{7})}
+   \end{aligned}
+   :label: solvedmeltrateagain
+
+which leads to
+
+.. math::
+   \begin{aligned}
+   0 &= \epsilon_{2}\,(S - S_{b})\{1 + \frac{c_{p,I}}{L}\,\phi_m (
+   a_{0} S_b+\epsilon_{7})\}
+   + (a_{0}\,\epsilon_{1} S_{b} + \epsilon_{1}\epsilon_{6})(S_{b}-S_{I}) \\
+   \Leftrightarrow 0 &= a_{0}\,(\epsilon_{1} - \epsilon_{8})\,S_{b}^{2}
+   + \{ \epsilon_{1}\epsilon_{6}  - \epsilon_{2} + \epsilon_{8}(a_{0}\,S_b - e_{7})
+     - a_{0}\,\epsilon_{1}\,S_{I} \}\,S_{b} \\
+   &+ (\epsilon_{2} + \epsilon_{8}\epsilon_{7})\,S
+     - \epsilon_{1}\epsilon_{6}\,S_{I} \\
+   \Leftrightarrow 0 &= A_1\,S_{b}^{2} + B_1\,S_{b} + C_1 \\
+   \end{aligned}
+
+The combination of :math:`\{A_0,B_0,C_0\}` and :math:`\{A_1,B_1,C_1\}` gives
+the general form:
+
+.. math::
+   \begin{aligned}
+   A &= a_{0}\,(\epsilon_{1} + \epsilon_{3} - \epsilon_{8}) \\
+   B &= \epsilon_{q} - \epsilon_{2} + \epsilon_{8}\,( a_{0}\,S - \epsilon_{7})
+        - a_{0}\,(\epsilon_{1} + \epsilon_{3})\,S_{I} \\
+   C &= (\epsilon_{2} + \epsilon_{8}\epsilon_{7})\,S - \epsilon_{q}\,S_{I} \\
    \Rightarrow S_{b} &= \frac{-B \pm \sqrt{ B^{2} - 4AC }}{2A}
    \end{aligned}
 
-with the abbrevations
 
-.. math::
+.. with the abbrevations
+
+..
    \begin{aligned}
    \epsilon_{1} &= c_{p} \, \rho_c \, \gamma_{T}, \quad
    \epsilon_{2} = \rho_c L \, \gamma_{S}, \quad
@@ -496,11 +582,9 @@ with the abbrevations
    C = \epsilon_{2}\,S -\epsilon_{q}\,S_{I}.
    \end{aligned}
 
-The smaller non-negative root of the quadratic equation in :math:`S_{b}` is
-used. By default, the ice shelf salinity :math:`S_{I}` is zero and the
-quadratic equation simplifies to
-
-.. math::
+.. By default, the ice shelf salinity :math:`S_{I}` is zero and the
+   quadratic equation simplifies to
+..
    \begin{aligned}
    0 &= a_{0}\,(\epsilon_{1} + \epsilon_{3})\,S_{b}^{2}
    + (\epsilon_{q}  - \epsilon_{2}) \,S_{b} + \epsilon_{2}\,S \\
@@ -510,8 +594,20 @@ quadratic equation simplifies to
      {2\,a_{0}\,(\epsilon_{1} + \epsilon_{3})}
    \end{aligned}
 
-With :math:`S_b`, the boundary layer temperature :math:`T_b` and the melt rate
-:math:`q` are known through :eq:`hellmerfreeze` and :eq:`solvedmeltrate`.
+The smaller non-negative root of the quadratic equation in :math:`S_{b}` is
+used. With :math:`S_b`, the boundary layer temperature :math:`T_b` is known
+through :eq:`hellmerfreeze` and the melt rate :math:`q` from
+:eq:`hellmersaltbalance`.  For the unlikely case :math:`S=S_b=S_I=0`,
+:eq:`hellmersaltbalance` is degenerate and it may be safer to use
+:eq:`jenkinsheatbudget`, :eq:`solvedmeltrate`, or :eq:`solvedmeltrateagain` to
+diagnose the freshwater flux. More generally:
+
+.. math::
+   q = \frac{ \epsilon_{1}\,( T_{b} - T ) + \epsilon_{3}\,( T_{b} - T_{S} ) }
+   { L + \phi_m c_{p,I}\, ( T_{b} - T_{S} )}
+
+Define :varlink:`SHELFICE_USE_HEATBALANCE_FOR_FRESHWATERFLUX` to use this
+method of computing the freshwater flux `q`.
 
 .. _shelfice_isomip:
 
