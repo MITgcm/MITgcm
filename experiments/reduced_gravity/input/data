@@ -1,0 +1,55 @@
+ # Continuous equation parameters
+ &PARM01
+ viscAh=20.0,
+ viscAr=0.0,
+ rhoConst=1029.0,
+ gBaro=0.02,
+ rigidLid=.FALSE.,
+ implicitFreeSurface=.TRUE.,
+ tempStepping=.FALSE.,
+ saltStepping=.FALSE.,
+ exactConserv=.TRUE.,
+ useCDscheme=.FALSE.,
+ vectorInvariantMomentum=.FALSE.,
+ momAdvection= .TRUE.,
+ readBinaryPrec=64,
+ writeBinaryPrec=64,
+ f0=5.0e-5,
+ beta=2.1e-11,
+ no_slip_sides = .FALSE.,
+ hFacMin   = 0.1,
+ hFacMinDr = 5.0,
+/
+# Elliptic solver parameters
+&PARM02
+ cg2dTargetResidual=1.0e-8,
+ cg2dMaxIters=2000,
+/
+
+&PARM03
+ nIter0=0,
+ deltaT=200.0,
+ endTime=12960000.,
+ dumpFreq=21600,
+ monitorFreq=3600.,
+ monitorSelect=2,
+/
+
+&PARM04
+ usingCartesianGrid=.TRUE.,
+ delX=200*4000.,   
+ delY= 200*4000.,  
+ delR=500.,       
+ xgOrigin=0.,      
+ ygOrigin=-200000., 
+/
+
+&PARM05
+ bathyFile='bathy.bin',
+ uVelInitFile='uVelInit_a.bin',
+ vVelInitFile='vVelInit_a.bin',
+ pSurfInitFile='etaInit_a.bin',
+/
+
+
+

@@ -1,0 +1,4 @@
+&PACKAGES
+ useDiagnostics = .TRUE.,
+ useMNC        = .FALSE.,
+/

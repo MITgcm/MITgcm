@@ -1,0 +1,14 @@
+# Minimal diagnostics for lone_eddy experiment
+# Write all diagnostics into a subdirectory named "Diags" under the run directory.
+&DIAGNOSTICS_LIST
+  diagMdsDir  = 'Diags',
+  fileName(1)  = 'eta',
+  frequency(1) = -21600.,
+  fields(1,1)  = 'ETAN    ',
+  fileName(2)  = 'uv',
+  frequency(2) =  86400.,
+  fields(1,2)  = 'UVEL    ',
+  fields(2,2)  = 'VVEL    ',
+/
+&DIAG_STATIS_PARMS
+/
