@@ -524,7 +524,8 @@ to be substituted into :eq:`hellmersaltbalance`:
    \end{aligned}
 
 For :math:`\phi_d=1`, the diffusive-advective flux through the ice is
-approximated by :math:`q\,c_{p,I} (T_S - T_b)\,\phi_m` :cite:`holland:99`, and
+approximated by :math:`-q\,c_{p,I} (T_S - T_b)\,\phi_m` with :math:`\phi_m=1` in
+case of melting and :math:`0` in case of freezing :cite:`holland:99`, and
 :eq:`solvedmeltrate` assumes the form
 
 .. math::
@@ -538,7 +539,7 @@ approximated by :math:`q\,c_{p,I} (T_S - T_b)\,\phi_m` :cite:`holland:99`, and
    \end{aligned}
    :label: solvedmeltrateagain
 
-which leads to
+which substituted in :eq:`hellmersaltbalance` leads to
 
 .. math::
    \begin{aligned}
@@ -546,7 +547,7 @@ which leads to
    a_{0} S_b+\epsilon_{7})\}
    + (a_{0}\,\epsilon_{1} S_{b} + \epsilon_{1}\epsilon_{6})(S_{b}-S_{I}) \\
    \Leftrightarrow 0 &= a_{0}\,(\epsilon_{1} - \epsilon_{8})\,S_{b}^{2}
-   + \{ \epsilon_{1}\epsilon_{6}  - \epsilon_{2} + \epsilon_{8}(a_{0}\,S_b - e_{7})
+   + \{ \epsilon_{1}\epsilon_{6}  - \epsilon_{2} + \epsilon_{8}(a_{0}\,S - e_{7})
      - a_{0}\,\epsilon_{1}\,S_{I} \}\,S_{b} \\
    &+ (\epsilon_{2} + \epsilon_{8}\epsilon_{7})\,S
      - \epsilon_{1}\epsilon_{6}\,S_{I} \\
