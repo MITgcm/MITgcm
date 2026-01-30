@@ -53,7 +53,7 @@
 # Elliptic solver parameters
  &PARM02
  cg2dMaxIters=200,
- cg2dTargetResWunit=1.E-17,
+ cg2dTargetResWunit=8.E-16,
  &
 
 # Time stepping parameters

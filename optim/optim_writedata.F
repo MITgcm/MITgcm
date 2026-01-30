@@ -147,7 +147,7 @@ c--   Write the header.
 c#ifdef ALLOW_CTRL_WETV
 c     write( funit ) (nWetvGlobal(k), k=1,Nr)
 c#endif
-#ifdef ALLOW_SHIFWFLX_CONTROL
+#ifdef ALLOW_SHELFICE
       write(funit) (nWetiGlobal(k),   k=1,Nr)
 c     write(funit) nWetiGlobal(1)
 #endif
@@ -197,7 +197,7 @@ CML         write( funit ) bj
            cbuffindex = nWetwGlobal(k)
 c         else if (ncvargrd(ivar) .eq. 'v') then
 c          cbuffindex = nWetvGlobal(k)
-#ifdef ALLOW_SHIFWFLX_CONTROL
+#ifdef ALLOW_SHELFICE
           else if (ncvargrd(ivar) .eq. 'i') then
            cbuffindex = nWetiGlobal(k)
 #endif

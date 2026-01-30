@@ -1,1 +1,1 @@
-## Scripts used from Travis CI
+## Scripts used for GitHub action CI (formerly used from Travis CI)
