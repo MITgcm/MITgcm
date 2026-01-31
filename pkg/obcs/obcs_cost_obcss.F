@@ -83,7 +83,7 @@ c     jp1 = 1
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(a,i9.8)')
-     &      ' cost_obcss: number of records to process: ',nrec
+     &      ' OBCS_COST_OBCSS: number of records to process: ',nrec
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(a)') ' '
@@ -159,7 +159,7 @@ c--     Print cost function for all tiles.
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
         WRITE(msgBuf,'(a,i8.8)')
-     &    ' cost_obcss: irec = ',irec
+     &    ' OBCS_COST_OBCSS: irec = ',irec
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
         WRITE(msgBuf,'(a,a,d22.15)')

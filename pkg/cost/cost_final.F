@@ -72,8 +72,7 @@ C     dummy parameter for this unlikely case
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)')
      &  '// ======================================================='
-      CALL PRINT_MESSAGE( msgBuf, ioUnit,
-     &     SQUEEZE_RIGHT, myThid )
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 
 #ifndef ALLOW_CTRL
 C     dummy value for this unlikely case
@@ -93,14 +92,14 @@ C     dummy value for this unlikely case
 #endif
 
 #ifdef ALLOW_THSICE
-      IF (useThSIce) CALL THSICE_COST_FINAL (myThid)
+      IF (useThSIce) CALL THSICE_COST_FINAL( myThid )
 #endif
 
 C     It is important to do the ecco part first, because it creates a
 C     file costfunctionXXXX that will be reopened again by the ctrl and
 C     obcs contributions if available.
 #ifdef ALLOW_ECCO
-      IF (useECCO) CALL ECCO_COST_FINAL (myThid)
+      IF (useECCO) CALL ECCO_COST_FINAL( myThid )
 #endif
 
 #ifdef ALLOW_PROFILES
@@ -151,8 +150,7 @@ cgf : to compile previous line user is expected to provide cost_temp.F
 #endif
 
       WRITE(msgBuf,'(A,D22.15)') '  early fc = ', fc
-      CALL PRINT_MESSAGE( msgBuf, ioUnit,
-     &                    SQUEEZE_RIGHT, myThid )
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 
 c--   Sum up all other contributions.
       loc_fc = 0.

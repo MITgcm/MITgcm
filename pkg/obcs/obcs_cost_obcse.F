@@ -92,7 +92,7 @@ c     ip1 = 1
        _END_MASTER( myThid )
       ENDIF
 
-      IF (optimcycle .ge. 0) THEN
+      IF (optimcycle .GE. 0) THEN
        ilfld=ILNBLNK( xx_obcse_file )
        WRITE(fnamefld,'(2a,i10.10)')
      &      xx_obcse_file(1:ilfld), '.', optimcycle
@@ -140,7 +140,7 @@ CMM        fctile = fctile + wobcse2(j,k,bi,bj,iobcs)
            fctile = fctile + wobcse(k,iobcs)
      &          *tmpx*tmpx*maskyz(j,k,bi,bj)
 cgg        ENDIF
-CMM        IF (wobcsw2(j,k,bi,bj,iobcs)*maskyz(j,k,bi,bj).NE.0.)
+CMM        IF (wobcse2(j,k,bi,bj,iobcs)*maskyz(j,k,bi,bj).NE.0.)
            IF (wobcse(k,iobcs)*maskyz(j,k,bi,bj).NE.0.)
      &          num_obcse(bi,bj) = num_obcse(bi,bj) + 1. _d 0
           ENDDO

@@ -104,7 +104,7 @@ C     only master thread of master CPU open and write to file
          WRITE(ifc,'(4A,2D22.15,1X,E8.2)')
      &        obsfitfiles(num_file_obs)(1:IL), ' ', obsfit_nameval,
      &        ' = ', f_obsfit(num_file_obs), no_obsfit(num_file_obs),
-     &       mult_obsfit(num_file_obs)
+     &        mult_obsfit(num_file_obs)
         ENDIF
        ENDDO
        CLOSE(ifc)

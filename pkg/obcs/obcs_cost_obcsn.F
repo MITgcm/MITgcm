@@ -92,7 +92,7 @@ c     jp1 = 0
        _END_MASTER( myThid )
       ENDIF
 
-      IF (optimcycle .ge. 0) THEN
+      IF (optimcycle .GE. 0) THEN
        ilfld=ILNBLNK( xx_obcsn_file )
        WRITE(fnamefld,'(2a,i10.10)')
      &      xx_obcsn_file(1:ilfld), '.', optimcycle
@@ -139,8 +139,8 @@ cgg        IF (maskS(i,j+jp1,k,bi,bj) .NE. 0.) THEN
 CMM        fctile = fctile + wobcsn2(i,k,bi,bj,iobcs)
            fctile = fctile + wobcsn(k,iobcs)
      &                       *tmpx*tmpx*maskxz(i,k,bi,bj)
-cgg        endif
-CMM        if (wobcsn2(i,k,bi,bj,iobcs)*maskxz(i,k,bi,bj).ne.0.)
+cgg        ENDIF
+CMM        IF (wobcsn2(i,k,bi,bj,iobcs)*maskxz(i,k,bi,bj).NE.0.)
            IF (wobcsn(k,iobcs)*maskxz(i,k,bi,bj).NE.0.)
      &          num_obcsn(bi,bj) = num_obcsn(bi,bj) + 1. _d 0
 cgg        PRINT*,'S fctile',fctile

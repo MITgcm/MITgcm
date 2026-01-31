@@ -124,7 +124,7 @@ cgg    Need to solve for iobcs would have been.
      &                      maskyz, iobcs, 1, myThid )
 #endif
 
-c--   Loop over this thfread s tiles.
+c--   Loop over this thread s tiles.
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
 

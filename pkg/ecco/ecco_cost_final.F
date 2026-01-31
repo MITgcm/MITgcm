@@ -144,7 +144,7 @@ C     Do not ever write this cost function again to cfname
 
        ELSE
         WRITE(msgBuf,'(A,A)')
-     &           'Not writing cost function info to ', cfname
+     &           'Not writing ecco cost function info to ', cfname
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
 C     eccoWriteCostFunction

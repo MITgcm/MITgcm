@@ -7,7 +7,7 @@ c# include "COST_OPTIONS.h"
 c#endif
 
 CBOP
-C !ROUTINE: OBCS_COST_DRIVER
+C !ROUTINE: OBCS_COST_FINAL
 
 C !INTERFACE: ==========================================================
       SUBROUTINE OBCS_COST_FINAL( myThid )
