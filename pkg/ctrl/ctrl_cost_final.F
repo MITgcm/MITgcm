@@ -62,169 +62,173 @@ C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
-      ifc = 30
+      IF ( useCtrlCostContribution ) THEN
+       ifc = 30
 
 C     Initialise cost function variables zo zero
 # ifdef ALLOW_GENTIM2D_CONTROL
-      DO num_var=1,maxCtrlTim2D
-       f_gentim2d(num_var)= 0. _d 0
-       no_gentim2d(num_var)= 0. _d 0
-      ENDDO
+       DO num_var=1,maxCtrlTim2D
+        f_gentim2d(num_var)= 0. _d 0
+        no_gentim2d(num_var)= 0. _d 0
+       ENDDO
 # endif
 # ifdef ALLOW_GENARR2D_CONTROL
-      DO num_var=1,maxCtrlArr2D
-       f_genarr2d(num_var)= 0. _d 0
-       no_genarr2d(num_var)= 0. _d 0
-      ENDDO
+       DO num_var=1,maxCtrlArr2D
+        f_genarr2d(num_var)= 0. _d 0
+        no_genarr2d(num_var)= 0. _d 0
+       ENDDO
 # endif
 # ifdef ALLOW_GENARR3D_CONTROL
-      DO num_var=1,maxCtrlArr3D
-       f_genarr3d(num_var)= 0. _d 0
-       no_genarr3d(num_var)= 0. _d 0
-      ENDDO
+       DO num_var=1,maxCtrlArr3D
+        f_genarr3d(num_var)= 0. _d 0
+        no_genarr3d(num_var)= 0. _d 0
+       ENDDO
 # endif
 
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
 # ifdef ALLOW_GENTIM2D_CONTROL
-        DO num_var=1,maxCtrlTim2D
-         tile_fc(bi,bj) = tile_fc(bi,bj)
-     &        + mult_gentim2d(num_var)
-     &        *objf_gentim2d(bi,bj,num_var)
-         f_gentim2d(num_var) = f_gentim2d(num_var)
-     &        +objf_gentim2d(bi,bj,num_var)
-         no_gentim2d(num_var) = no_gentim2d(num_var)
-     &        +num_gentim2d(bi,bj,num_var)
-        ENDDO
+         DO num_var=1,maxCtrlTim2D
+          tile_fc(bi,bj) = tile_fc(bi,bj)
+     &         + mult_gentim2d(num_var)
+     &         *objf_gentim2d(bi,bj,num_var)
+          f_gentim2d(num_var) = f_gentim2d(num_var)
+     &         +objf_gentim2d(bi,bj,num_var)
+          no_gentim2d(num_var) = no_gentim2d(num_var)
+     &         +num_gentim2d(bi,bj,num_var)
+         ENDDO
 # endif
 # ifdef ALLOW_GENARR2D_CONTROL
-        DO num_var=1,maxCtrlArr2D
-         tile_fc(bi,bj) = tile_fc(bi,bj)
-     &        + mult_genarr2d(num_var)
-     &        *objf_genarr2d(bi,bj,num_var)
-         f_genarr2d(num_var) = f_genarr2d(num_var)
-     &        +objf_genarr2d(bi,bj,num_var)
-         no_genarr2d(num_var) = no_genarr2d(num_var)
-     &        +num_genarr2d(bi,bj,num_var)
-        ENDDO
+         DO num_var=1,maxCtrlArr2D
+          tile_fc(bi,bj) = tile_fc(bi,bj)
+     &         + mult_genarr2d(num_var)
+     &         *objf_genarr2d(bi,bj,num_var)
+          f_genarr2d(num_var) = f_genarr2d(num_var)
+     &         +objf_genarr2d(bi,bj,num_var)
+          no_genarr2d(num_var) = no_genarr2d(num_var)
+     &         +num_genarr2d(bi,bj,num_var)
+         ENDDO
 # endif
 # ifdef ALLOW_GENARR3D_CONTROL
-        DO num_var=1,maxCtrlArr3D
-         tile_fc(bi,bj) = tile_fc(bi,bj)
-     &        + mult_genarr3d(num_var)
-     &        *objf_genarr3d(bi,bj,num_var)
-         f_genarr3d(num_var) = f_genarr3d(num_var)
-     &        +objf_genarr3d(bi,bj,num_var)
-         no_genarr3d(num_var) = no_genarr3d(num_var)
-     &        +num_genarr3d(bi,bj,num_var)
-        ENDDO
+         DO num_var=1,maxCtrlArr3D
+          tile_fc(bi,bj) = tile_fc(bi,bj)
+     &         + mult_genarr3d(num_var)
+     &         *objf_genarr3d(bi,bj,num_var)
+          f_genarr3d(num_var) = f_genarr3d(num_var)
+     &         +objf_genarr3d(bi,bj,num_var)
+          no_genarr3d(num_var) = no_genarr3d(num_var)
+     &         +num_genarr3d(bi,bj,num_var)
+         ENDDO
 # endif
+        ENDDO
        ENDDO
-      ENDDO
 
 c#ifndef ALLOW_OPENAD
 # ifdef ALLOW_GENTIM2D_CONTROL
-      DO num_var=1,maxCtrlTim2D
-       _GLOBAL_SUM_RL(f_gentim2d(num_var), myThid )
-       _GLOBAL_SUM_RL(no_gentim2d(num_var), myThid )
-       IF (no_gentim2d(num_var).GT.0. _d 0) THEN
-        xx_fname_loc = xx_gentim2d_file(num_var)
-        IL  = ILNBLNK( xx_fname_loc )
-        WRITE(msgBuf,'(A,D22.15,I2,1X,E8.2,1X,3A)')
-     &     ' --> f_gentim2d =',f_gentim2d(num_var), num_var,
-     &      mult_gentim2d(num_var), '(', xx_fname_loc(1:IL), ')'
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-       ENDIF
-      ENDDO
+       DO num_var=1,maxCtrlTim2D
+        _GLOBAL_SUM_RL(f_gentim2d(num_var), myThid )
+        _GLOBAL_SUM_RL(no_gentim2d(num_var), myThid )
+        IF (no_gentim2d(num_var).GT.0. _d 0) THEN
+         xx_fname_loc = xx_gentim2d_file(num_var)
+         IL  = ILNBLNK( xx_fname_loc )
+         WRITE(msgBuf,'(A,D22.15,I2,1X,E8.2,1X,3A)')
+     &        ' --> f_gentim2d =',f_gentim2d(num_var), num_var,
+     &        mult_gentim2d(num_var), '(', xx_fname_loc(1:IL), ')'
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+        ENDIF
+       ENDDO
 # endif
 # ifdef ALLOW_GENARR2D_CONTROL
-      DO num_var=1,maxCtrlArr2D
-       _GLOBAL_SUM_RL(f_genarr2d(num_var), myThid )
-       _GLOBAL_SUM_RL(no_genarr2d(num_var), myThid )
-       IF (no_genarr2d(num_var).GT.0. _d 0) THEN
-        xx_fname_loc = xx_genarr2d_file(num_var)
-        IL  = ILNBLNK( xx_fname_loc )
-        WRITE(msgBuf,'(A,D22.15,I2,1X,E8.2,1X,3A)')
-     &     ' --> f_genarr2d =',f_genarr2d(num_var), num_var,
-     &      mult_genarr2d(num_var), '(', xx_fname_loc(1:IL), ')'
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-       ENDIF
-      ENDDO
+       DO num_var=1,maxCtrlArr2D
+        _GLOBAL_SUM_RL(f_genarr2d(num_var), myThid )
+        _GLOBAL_SUM_RL(no_genarr2d(num_var), myThid )
+        IF (no_genarr2d(num_var).GT.0. _d 0) THEN
+         xx_fname_loc = xx_genarr2d_file(num_var)
+         IL  = ILNBLNK( xx_fname_loc )
+         WRITE(msgBuf,'(A,D22.15,I2,1X,E8.2,1X,3A)')
+     &        ' --> f_genarr2d =',f_genarr2d(num_var), num_var,
+     &        mult_genarr2d(num_var), '(', xx_fname_loc(1:IL), ')'
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+        ENDIF
+       ENDDO
 # endif
 # ifdef ALLOW_GENARR3D_CONTROL
-      DO num_var=1,maxCtrlArr3D
-       _GLOBAL_SUM_RL(f_genarr3d(num_var), myThid )
-       _GLOBAL_SUM_RL(no_genarr3d(num_var), myThid )
-       IF (no_genarr3d(num_var).GT.0. _d 0) THEN
-        xx_fname_loc = xx_genarr3d_file(num_var)
-        IL  = ILNBLNK( xx_fname_loc )
-        WRITE(msgBuf,'(A,D22.15,I2,1X,E8.2,1X,3A)')
-     &     ' --> f_genarr3d =',f_genarr3d(num_var), num_var,
-     &      mult_genarr3d(num_var), '(', xx_fname_loc(1:IL), ')'
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-       ENDIF
-      ENDDO
+       DO num_var=1,maxCtrlArr3D
+        _GLOBAL_SUM_RL(f_genarr3d(num_var), myThid )
+        _GLOBAL_SUM_RL(no_genarr3d(num_var), myThid )
+        IF (no_genarr3d(num_var).GT.0. _d 0) THEN
+         xx_fname_loc = xx_genarr3d_file(num_var)
+         IL  = ILNBLNK( xx_fname_loc )
+         WRITE(msgBuf,'(A,D22.15,I2,1X,E8.2,1X,3A)')
+     &        ' --> f_genarr3d =',f_genarr3d(num_var), num_var,
+     &        mult_genarr3d(num_var), '(', xx_fname_loc(1:IL), ')'
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+        ENDIF
+       ENDDO
 # endif
 
 C     write contributions to costfunction file
 
 C--   Each process has calculated the global part for itself.
-      IF ( MASTER_CPU_THREAD(myThid) .AND. ctrlWriteCostFunction ) THEN
-       WRITE(cfname,'(A,I4.4)') 'costfunction_ctrl',optimcycle
-       OPEN(unit=ifc,file=cfname)
-       WRITE(msgBuf,'(A,A)')
-     &      'Writing generic ctrl cost function info to ', cfname
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
+       IF ( MASTER_CPU_THREAD(myThid) .AND. ctrlWriteCostFunction ) THEN
+        WRITE(cfname,'(A,I4.4)') 'costfunction_ctrl',optimcycle
+        OPEN(unit=ifc,file=cfname)
+        WRITE(msgBuf,'(A,A)')
+     &       'Writing generic ctrl cost function info to ', cfname
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
 
 # ifdef ALLOW_GENTIM2D_CONTROL
-       DO num_var=1,maxCtrlTim2D
-        IF (no_gentim2d(num_var).GT.0. _d 0) THEN
-         xx_fname_loc = xx_gentim2d_file(num_var)
-         IL  = ILNBLNK( xx_fname_loc )
-         IL  = max (IL,15)
-         WRITE(ifc,'(2A,i2.0,A,2D22.15,1X,E8.2)')
-     &        xx_fname_loc(1:IL), ' (gentim2d ', num_var, ') = ',
-     &        f_gentim2d(num_var), no_gentim2d(num_var),
-     &        mult_gentim2d(num_var)
-        ENDIF
-       ENDDO
+        DO num_var=1,maxCtrlTim2D
+         IF (no_gentim2d(num_var).GT.0. _d 0) THEN
+          xx_fname_loc = xx_gentim2d_file(num_var)
+          IL  = ILNBLNK( xx_fname_loc )
+          IL  = max (IL,15)
+          WRITE(ifc,'(2A,i2.0,A,2D22.15,1X,E8.2)')
+     &         xx_fname_loc(1:IL), ' (gentim2d ', num_var, ') = ',
+     &         f_gentim2d(num_var), no_gentim2d(num_var),
+     &         mult_gentim2d(num_var)
+         ENDIF
+        ENDDO
 # endif
 
 # ifdef ALLOW_GENARR2D_CONTROL
-       DO num_var=1,maxCtrlArr2D
-        IF (no_genarr2d(num_var).GT.0. _d 0) THEN
-         xx_fname_loc = xx_genarr2d_file(num_var)
-         IL  = ILNBLNK( xx_fname_loc )
-         IL  = max (IL,15)
-         WRITE(ifc,'(2A,i2.0,A,2D22.15,1X,E8.2)')
-     &        xx_fname_loc(1:IL), ' (genarr2d ', num_var, ') = ',
-     &        f_genarr2d(num_var), no_genarr2d(num_var),
-     &        mult_genarr2d(num_var)
-        ENDIF
-       ENDDO
+        DO num_var=1,maxCtrlArr2D
+         IF (no_genarr2d(num_var).GT.0. _d 0) THEN
+          xx_fname_loc = xx_genarr2d_file(num_var)
+          IL  = ILNBLNK( xx_fname_loc )
+          IL  = max (IL,15)
+          WRITE(ifc,'(2A,i2.0,A,2D22.15,1X,E8.2)')
+     &         xx_fname_loc(1:IL), ' (genarr2d ', num_var, ') = ',
+     &         f_genarr2d(num_var), no_genarr2d(num_var),
+     &         mult_genarr2d(num_var)
+         ENDIF
+        ENDDO
 # endif
 
 # ifdef ALLOW_GENARR3D_CONTROL
-       DO num_var=1,maxCtrlArr3D
-        IF (no_genarr3d(num_var).GT.0. _d 0) THEN
-         xx_fname_loc = xx_genarr3d_file(num_var)
-         IL  = ILNBLNK( xx_fname_loc )
-         IL  = MAX(IL,15)
-         WRITE(ifc,'(2A,i2.0,A,2D22.15,1X,E8.2)')
-     &        xx_fname_loc(1:IL), ' (genarr3d ', num_var, ') = ',
-     &        f_genarr3d(num_var), no_genarr3d(num_var),
-     &        mult_genarr3d(num_var)
-        ENDIF
-       ENDDO
+        DO num_var=1,maxCtrlArr3D
+         IF (no_genarr3d(num_var).GT.0. _d 0) THEN
+          xx_fname_loc = xx_genarr3d_file(num_var)
+          IL  = ILNBLNK( xx_fname_loc )
+          IL  = MAX(IL,15)
+          WRITE(ifc,'(2A,i2.0,A,2D22.15,1X,E8.2)')
+     &         xx_fname_loc(1:IL), ' (genarr3d ', num_var, ') = ',
+     &         f_genarr3d(num_var), no_genarr3d(num_var),
+     &         mult_genarr3d(num_var)
+         ENDIF
+        ENDDO
 # endif
-       CLOSE(ifc)
+        CLOSE(ifc)
 C     Do it only once per run, otherwise grdchk will overwrite or append
 C     files in an uncontrolled way.
-       ctrlWriteCostFunction = .FALSE.
+        ctrlWriteCostFunction = .FALSE.
+       ENDIF
+
+C     useCtrlCostContribution
       ENDIF
 
 #endif /* ALLOW_COST */

@@ -79,6 +79,7 @@ C                            contribution is only written once per run
      &                       doMainPack,
      &                       doSinglePrecTapelev,
      &                       doAdmtlmBypassAD,
+     &                       useCtrlCostContribution,
      &                       ctrlWriteCostFunction
 
       LOGICAL doInitXX
@@ -90,6 +91,7 @@ C                            contribution is only written once per run
       LOGICAL doMainPack
       LOGICAL doSinglePrecTapelev
       LOGICAL doAdmtlmBypassAD
+      LOGICAL useCtrlCostContribution
       LOGICAL ctrlWriteCostFunction
 
 C--   parameters vectors, set in S/R CTRL_INIT_CTRLVAR, that describe

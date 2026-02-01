@@ -230,7 +230,7 @@ C     flag is defined
 #endif
          write(xx_genarr2d_weight(iarr)(1:MAX_LEN_FNAM),'(a)') ' '
          genarr2dPrecond(iarr)  = 1. _d 0
-         mult_genarr2d(iarr)    = 1. _d 0
+         mult_genarr2d(iarr)    =-1. _d 0
          do jarr = 1, 5
            xx_genarr2d_bounds(jarr,iarr) = 0. _d 0
          enddo
@@ -251,7 +251,7 @@ C     flag is defined
 #endif
          write(xx_genarr3d_weight(iarr)(1:MAX_LEN_FNAM),'(a)') ' '
          genarr3dPrecond(iarr)  = 1. _d 0
-         mult_genarr3d(iarr)    = 1. _d 0
+         mult_genarr3d(iarr)    =-1. _d 0
          do jarr = 1, 5
            xx_genarr3d_bounds(jarr,iarr) = 0. _d 0
          enddo
@@ -282,7 +282,7 @@ C     flag is defined
           xx_gentim2d_preproc_i(jarr,iarr) = 0
           xx_gentim2d_preproc_r(jarr,iarr) = 0. _d 0
          enddo
-         mult_gentim2d(iarr)          = 1. _d 0
+         mult_gentim2d(iarr)          =-1. _d 0
          gentim2dPrecond(iarr)        = 1. _d 0
          do jarr = 1, 5
            xx_gentim2d_bounds(jarr,iarr) = 0. _d 0
@@ -445,7 +445,9 @@ C--     Next, read the cost data file.
 
         READ(unit = iUnit, nml = ctrl_nml)
         READ(unit = iUnit, nml = ctrl_packnames)
-#if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
+#if (      defined ALLOW_GENARR2D_CONTROL \
+        || defined ALLOW_GENARR3D_CONTROL \
+        || defined ALLOW_GENTIM2D_CONTROL )
         READ(unit = iUnit, nml = ctrl_nml_genarr)
 #endif
 
@@ -459,6 +461,55 @@ C--     Next, read the cost data file.
 #else
         CLOSE(iUnit,STATUS='DELETE')
 #endif /* SINGLE_DISK_IO */
+
+C--   Set defaults for backwards compatibility
+#ifdef ALLOW_GENARR2D_CONTROL
+        DO iarr = 1, maxCtrlArr2D
+         IF ( mult_genarr2d(iarr) .EQ. -1. ) THEN
+          mult_genarr2d(iarr) = 0.
+          IF ( useECCO ) mult_genarr2d(iarr) = 1.
+         ENDIF
+        ENDDO
+#endif
+#ifdef ALLOW_GENARR3D_CONTROL
+        DO iarr = 1, maxCtrlArr3D
+         IF ( mult_genarr3d(iarr) .EQ. -1. ) THEN
+          mult_genarr3d(iarr) = 0.
+          IF ( useECCO ) mult_genarr3d(iarr) = 1.
+         ENDIF
+        ENDDO
+#endif
+#ifdef ALLOW_GENTIM2D_CONTROL
+        DO iarr = 1, maxCtrlTim2D
+         IF ( mult_gentim2d(iarr) .EQ. -1. ) THEN
+          mult_gentim2d(iarr) = 0.
+          IF ( useECCO ) mult_gentim2d(iarr) = 1.
+         ENDIF
+        ENDDO
+#endif
+
+C--   if all multipliers are zero, we do not need to calculate the cost
+C     function contribution of the ctrl-variables (no Tikhonov
+C     regularisation)
+        useCtrlCostContribution = .FALSE.
+#ifdef ALLOW_GENARR2D_CONTROL
+        DO iarr = 1, maxCtrlArr2D
+         useCtrlCostContribution = useCtrlCostContribution
+     &        .OR. mult_genarr2d(iarr) .GT. 0. _d 0
+        ENDDO
+#endif
+#ifdef ALLOW_GENARR3D_CONTROL
+        DO iarr = 1, maxCtrlArr3D
+         useCtrlCostContribution = useCtrlCostContribution
+     &        .OR. mult_genarr3d(iarr) .GT. 0. _d 0
+        ENDDO
+#endif
+#ifdef ALLOW_GENTIM2D_CONTROL
+        DO iarr = 1, maxCtrlTim2D
+         useCtrlCostContribution = useCtrlCostContribution
+     &        .OR. mult_gentim2d(iarr) .GT. 0. _d 0
+        ENDDO
+#endif
 
 C-- Create ctrlDir if necessary
       IF ( ctrlDir .NE. ' ' ) THEN

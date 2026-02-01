@@ -62,6 +62,7 @@ CEOP
 
 c--   Evaluate the individual cost function contributions.
 
+      if ( useCtrlCostContribution ) then
       do ivar = 1, maxcvars
 #ifdef ALLOW_GENTIM2D_CONTROL
        if ( ncvartype(ivar) .EQ. 'Tim2D' ) then
@@ -155,6 +156,9 @@ C --- Get appropriate mask for field
        endif
 #endif
       enddo
+C     useCtrlCostContribution
+      endif
+
 #endif /* ALLOW_CTRL */
 
       RETURN
