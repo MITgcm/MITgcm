@@ -53,7 +53,7 @@ via CPP preprocessor flags. These options are set in :filelink:`SHELFICE_OPTIONS
    +--------------------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------+
    | :varlink:`SHI_ALLOW_GAMMAFRICT`                        | #define | allow friction velocity-dependent transfer coefficient following Holland and Jenkins (1999) :cite:`holland:99` |
    +--------------------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------+
-   | :varlink:`SHELFICE_USE_HEATBALANCE_FOR_FRESHWATERFLUX` | #define | use heat balance to diagnose freshwater flux, avoid a divion by zero if salinity of boundary layer  = 0        |
+   | :varlink:`SHELFICE_USE_HEATBALANCE_FOR_FRESHWATERFLUX` | #define | use heat balance to diagnose freshwater flux, avoid a division by zero if salinity of boundary layer  = 0      |
    +--------------------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------+
 
 .. _shelfice_runtime:
@@ -474,7 +474,7 @@ thermodynamic equations:
 | :varlink:`fwFlxFac` | :math:`\phi_m` | 1 if :math:`\phi_d = 1` and melting conditions, 0 otherwise                    |
 +---------------------+----------------+--------------------------------------------------------------------------------+
 | :varlink:`rFWinBL`  | :math:`\phi_C` | 1 if :varlink:`SHI_withBL_realFWflux` ``=.TRUE.``, 0 otherwise,                |
-|                     |                | used for additional terms in case :varlink:`SHEFLICEboundaryLayer` ``=.TRUE.`` |
+|                     |                | used for additional terms in case :varlink:`SHELFICEboundaryLayer` ``=.TRUE.`` |
 +---------------------+----------------+--------------------------------------------------------------------------------+
 
 Further, we introduce these helper variables:
