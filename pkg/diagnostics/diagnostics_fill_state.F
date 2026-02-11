@@ -58,8 +58,7 @@ C     == Local variables ==
 #endif
       INTEGER i,j,k,bi,bj
       INTEGER km1
-catn create depth to compute hfac for layers
-catn This is Depth written out from write_grid.F
+catn This is Depth written out from write_grid.F, need for hfac
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j = 1,sNy
@@ -405,10 +404,11 @@ C     (next fill for these diagnostics will NOT allow counter to be incremented)
         CALL DIAGNOSTICS_SCALE_FILL( vVel, tmpFac, 1,
      &                              'TOTVTEND',0,Nr,0,1,1,myThid )
 
+        IF ( DIAGNOSTICS_IS_ON('TOTTTEND',myThid) ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO k=1,Nr
-            tmpFac = -1. _d 0/dTtracerLev(k)
+            tmpFac = -86400. _d 0/dTtracerLev(k)
             DO j = 1,sNy
              DO i = 1,sNx
 c               tmpMk(i,j,k,bi,bj) = tmpFac*theta(i,j,k,bi,bj)
@@ -425,19 +425,19 @@ catn: one available at this stage of the model is the incorrect factor
            ENDDO
           ENDDO
          ENDDO
-        IF ( DIAGNOSTICS_IS_ON('TOTTTEND',myThid) ) THEN
          CALL DIAGNOSTICS_FILL(tmpMk,'TOTTTEND',0,Nr,0,1,1,myThid)
-        ENDIF
 #ifdef ALLOW_LAYERS
          IF ( useLayers ) THEN
            CALL LAYERS_FILL(tmpMk,1,'TOT',0,Nr,0,1,1,myThid)
          ENDIF
 #endif /* ALLOW_LAYERS */
+        ENDIF
 
+        IF ( DIAGNOSTICS_IS_ON('TOTSTEND',myThid) ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO k=1,Nr
-            tmpFac = -1. _d 0/dTtracerLev(k)
+            tmpFac = -86400. _d 0/dTtracerLev(k)
             DO j = 1,sNy
              DO i = 1,sNx
                IF(tmpDep(i,j,bi,bj).gt.0. _d 0) then
@@ -451,14 +451,13 @@ catn: one available at this stage of the model is the incorrect factor
            ENDDO
           ENDDO
          ENDDO
-        IF ( DIAGNOSTICS_IS_ON('TOTSTEND',myThid) ) THEN
          CALL DIAGNOSTICS_FILL(tmpMk,'TOTSTEND',0,Nr,0,1,1,myThid)
-        ENDIF
 #ifdef ALLOW_LAYERS
          IF ( useLayers ) THEN
            CALL LAYERS_FILL(tmpMk,2,'TOT',0,Nr,0,1,1,myThid)
          ENDIF
 #endif /* ALLOW_LAYERS */
+        ENDIF
 
 C--   fill momentum state-var diagnostics: end
       ENDIF
@@ -729,11 +728,11 @@ C     (previous fill for these diagnostics DID allow counter to be incremented)
          ENDDO
         ENDDO
 
-catn: move layers outside of diags loop
+        IF ( DIAGNOSTICS_IS_ON('TOTTTEND',myThid) ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO k=1,Nr
-            tmpFac = 1. _d 0/dTtracerLev(k)
+            tmpFac = 86400. _d 0/dTtracerLev(k)
             DO j = 1,sNy
              DO i = 1,sNx
 catn: need to mult with hFacC if use nlfs
@@ -746,9 +745,7 @@ catn: need to mult with hFacC if use nlfs
              ENDDO
             ENDDO
            ENDDO
-        IF ( DIAGNOSTICS_IS_ON('TOTTTEND',myThid) ) THEN
-          CALL DIAGNOSTICS_FILL(tmpMk,'TOTTTEND',0,Nr,-1,bi,bj,myThid)
-        ENDIF
+           CALL DIAGNOSTICS_FILL(tmpMk,'TOTTTEND',0,Nr,-1,bi,bj,myThid)
 #ifdef ALLOW_LAYERS
            IF ( useLayers ) THEN
              CALL LAYERS_FILL(tmpMk,1,'TOT',0,Nr,-1,bi,bj,myThid)
@@ -756,12 +753,13 @@ catn: need to mult with hFacC if use nlfs
 #endif /* ALLOW_LAYERS */
           ENDDO
          ENDDO
+        ENDIF
 
-catn: move layers outside of diags loop
+        IF ( DIAGNOSTICS_IS_ON('TOTSTEND',myThid) ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO k=1,Nr
-            tmpFac = 1. _d 0/dTtracerLev(k)
+            tmpFac = 86400. _d 0/dTtracerLev(k)
             DO j = 1,sNy
              DO i = 1,sNx
 catn: need to mult with hFacC if use nlfs
@@ -774,9 +772,7 @@ catn: need to mult with hFacC if use nlfs
              ENDDO
             ENDDO
            ENDDO
-         IF ( DIAGNOSTICS_IS_ON('TOTSTEND',myThid) ) THEN
-          CALL DIAGNOSTICS_FILL(tmpMk,'TOTSTEND',0,Nr,-1,bi,bj,myThid)
-         ENDIF
+           CALL DIAGNOSTICS_FILL(tmpMk,'TOTSTEND',0,Nr,-1,bi,bj,myThid)
 #ifdef ALLOW_LAYERS
            IF ( useLayers ) THEN
             CALL LAYERS_FILL(tmpMk,2,'TOT',0,Nr,-1,bi,bj,myThid)
@@ -784,6 +780,7 @@ catn: need to mult with hFacC if use nlfs
 #endif /* ALLOW_LAYERS */
           ENDDO
          ENDDO
+        ENDIF
 
 C--   fill state tendency diagnostics the second time: end
       ENDIF
