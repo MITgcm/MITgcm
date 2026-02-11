@@ -77,21 +77,21 @@ C      Read iceberg area
 C      Read iceberg lengths
        IF (ICEBERGlengthFile .NE. ' ' ) THEN
         CALL READ_REC_3D_RL
-     &     (ICEBERGlengthFile,precFloat64,
+     &     (ICEBERGlengthFile,readBinaryPrec,
      &         brg_MaxBergCt,brg_Length,1,0,myThid) 
        ENDIF
 
 C      Read iceberg widths
        IF (ICEBERGwidthsFile .NE. ' ' ) THEN
         CALL READ_REC_3D_RL
-     &     (ICEBERGwidthsFile,precFloat64,
+     &     (ICEBERGwidthsFile,readBinaryPrec,
      &         brg_MaxBergCt,brg_Widths,1,0,myThid)
        ENDIF
 
 C      Read iceberg depths
        IF (ICEBERGdepthsFile .NE. ' ' ) THEN
         CALL READ_REC_3D_RL
-     &     (ICEBERGdepthsFile,precFloat64,
+     &     (ICEBERGdepthsFile,readBinaryPrec,
      &         brg_MaxBergCt,brg_Depths,1,0,myThid)
        ENDIF
 
@@ -226,7 +226,7 @@ C     Initialize tracer mask
 C      Read ptracer mask data
        IF ( brg_ptracerMaskFile .NE. ' ' ) THEN
         CALL READ_REC_3D_RL
-     &     (brg_ptracerMaskFile,precFloat64,PTRACERS_num,
+     &     (brg_ptracerMaskFile,readBinaryPrec,PTRACERS_num,
      &      brg_ptracerMask,1,0,myThid)
        ENDIF
 #endif /* ALLOW_PTRACERS */
