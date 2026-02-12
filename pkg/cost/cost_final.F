@@ -24,7 +24,8 @@ c     == global variables ==
 
 #include "cost.h"
 #ifdef ALLOW_CTRL
-# include "ctrl.h"
+# include "CTRL_SIZE.h"
+# include "CTRL.h"
 #endif
 #ifdef ALLOW_DIC
 # include "DIC_COST.h"
@@ -38,6 +39,11 @@ c     == global variables ==
 # include "profiles.h"
 #endif
 
+#ifdef ALLOW_OBSFIT
+# include "OBSFIT_SIZE.h"
+# include "OBSFIT.h"
+#endif
+
 c     == routine arguments ==
       INTEGER myThid
 
@@ -47,6 +53,9 @@ c     == local variables ==
       _RL glob_fc, loc_fc
 #ifdef ALLOW_PROFILES
       INTEGER num_file,num_var
+#endif
+#ifdef ALLOW_OBSFIT
+      INTEGER num_file_obs
 #endif
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
@@ -58,6 +67,10 @@ c     == end of interface ==
 
 #ifdef ALLOW_SHELFICE
       IF (useShelfice) CALL SHELFICE_COST_FINAL (myThid)
+#endif
+
+#if (defined(ALLOW_STREAMICE) && defined(ALLOW_COST_STREAMICE))
+      IF (useStreamice) CALL STREAMICE_COST_FINAL (myThid)
 #endif
 
 #ifdef ALLOW_THSICE
@@ -183,6 +196,16 @@ c--   Do global summation.
       _BEGIN_MASTER( myThid )
       fc = fc + glob_fc
       _END_MASTER( myThid )
+
+#ifdef ALLOW_OBSFIT
+      IF (.NOT.useECCO) THEN
+       DO num_file_obs=1,NFILESMAX_OBS
+        glofc = glofc
+     &          +  mult_obsfit(num_file_obs)
+     &            *objf_obsfit(num_file_obs)
+       ENDDO
+      ENDIF
+#endif
 
 c--   Add contributions from global mean constraints
       _BEGIN_MASTER( myThid )

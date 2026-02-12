@@ -137,10 +137,8 @@ C--   COMMON / THSICE_PAR_L / ice model (logical) parameters
 C     stepFwd_oceMxL        :: step forward mixed-layer T & S (slab-ocean)
 C     thSIce_skipThermo     :: by-pass seaice thermodynamics
 C     thSIce_calc_albNIR    :: calculate Near Infra-Red Albedo
-C     thSIce_tave_mdsio     :: write TimeAverage output using MDSIO
 C     thSIce_snapshot_mdsio :: write snap-shot output   using MDSIO
 C     thSIce_mon_stdio      :: write monitor to std-outp
-C     thSIce_tave_mnc       :: write TimeAverage output using MNC
 C     thSIce_snapshot_mnc   :: write snap-shot output   using MNC
 C     thSIce_mon_mnc        :: write monitor to netcdf file
 C     thSIce_pickup_read_mnc    :: pickup read w/ MNC
@@ -149,8 +147,8 @@ C     thSIce_pickup_write_mdsio :: pickup write w/ MDSIO
       COMMON / THSICE_PAR_L /
      &     stepFwd_oceMxL, thSIce_skipThermo,
      &     thSIce_calc_albNIR,
-     &     thSIce_tave_mdsio, thSIce_snapshot_mdsio, thSIce_mon_stdio,
-     &     thSIce_tave_mnc,   thSIce_snapshot_mnc,   thSIce_mon_mnc,
+     &     thSIce_snapshot_mdsio, thSIce_mon_stdio,
+     &     thSIce_snapshot_mnc,   thSIce_mon_mnc,
      &     thSIce_pickup_read_mnc,
      &     thSIce_pickup_write_mdsio,
      &     thSIce_pickup_write_mnc
@@ -158,8 +156,8 @@ C     thSIce_pickup_write_mdsio :: pickup write w/ MDSIO
       LOGICAL stepFwd_oceMxL
       LOGICAL thSIce_skipThermo
       LOGICAL thSIce_calc_albNIR
-      LOGICAL thSIce_tave_mdsio, thSIce_snapshot_mdsio, thSIce_mon_stdio
-      LOGICAL thSIce_tave_mnc,   thSIce_snapshot_mnc,   thSIce_mon_mnc
+      LOGICAL thSIce_snapshot_mdsio, thSIce_mon_stdio
+      LOGICAL thSIce_snapshot_mnc,   thSIce_mon_mnc
       LOGICAL thSIce_pickup_read_mnc
       LOGICAL thSIce_pickup_write_mdsio
       LOGICAL thSIce_pickup_write_mnc
@@ -190,7 +188,6 @@ C     sMxL_default    :: default value for salinity in MixLayer [g/kg]
 C     vMxL_default    :: default value for ocean current velocity in MxL [m/s]
 C     thSIce_diffK    :: thickness (horizontal) diffusivity [m^2/s]
 C     stressReduction :: reduction factor for wind-stress under sea-ice [0-1]
-C     thSIce_taveFreq :: Frequency^-1 for time-Aver. output [s]
 C     thSIce_diagFreq :: Frequency^-1 for diagnostic output [s]
 C     thSIce_monFreq  :: Frequency^-1 for monitor    output [s]
       COMMON / THSICE_PAR_R /
@@ -198,13 +195,13 @@ C     thSIce_monFreq  :: Frequency^-1 for monitor    output [s]
      &  tauRelax_MxL, tauRelax_MxL_salt,
      &  hMxL_default,  sMxL_default, vMxL_default,
      &  thSIce_diffK,  stressReduction,
-     &  thSIce_taveFreq, thSIce_diagFreq, thSIce_monFreq
+     &  thSIce_diagFreq, thSIce_monFreq
 
       _RL  thSIce_deltaT, thSIce_dtTemp, ocean_deltaT
       _RL  tauRelax_MxL, tauRelax_MxL_salt
       _RL  hMxL_default, sMxL_default, vMxL_default
       _RL  thSIce_diffK,  stressReduction
-      _RL  thSIce_taveFreq, thSIce_diagFreq, thSIce_monFreq
+      _RL  thSIce_diagFreq, thSIce_monFreq
 
 C--   COMMON / THSICE_PAR_C / ice model (character) parameters
 C     thSIceFract_InitFile :: File name for initial ice fraction

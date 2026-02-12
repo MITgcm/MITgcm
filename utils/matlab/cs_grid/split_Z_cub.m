@@ -4,33 +4,42 @@ function [z6t] = split_Z_cub(z3d)
 % split 2d/3d arrays z3d to 2d/3d x 6 faces
 % and add 1 column + 1 row
 %  => output is z6t(nc+1,nc+1,[nr],6)
-% either input is z3d(nc*6*nc+2,*): includes the 2 missing corners
-%   or   input is z3d(nc*6,nc,*): => use the average value (from the 3
-%                                 neighbours) for the 2 missing corners
+% input is either z3d(nc*nc*6+2,*): compact format including the 2 missing corners
+%            or   z3d(nc,nc*6,*)  : compact format without the 2 missing corners
+%            or   z3d(nc*6,nc,*)  : original format, no missing corners
+% last 2 cases => use the average value (from the 3  neighbours) for the 2 missing corners
 %----------------------------------------------
-% Written by jmc@ocean.mit.edu, 2005.
+% Written by jmc@mit.edu, 2005.
+
 dims=size(z3d); nDim=length(dims);
 %fprintf(' nDim= %i , dims:',nDim);fprintf(' %i',dims);fprintf('\n');
 
 nc=fix((dims(1)-2)/6); nc=fix(sqrt(abs(nc)));
 if dims(1) == nc*nc*6+2,
  nr=dims(2); if nDim > 2, nr=prod(dims(2:end)); end
- nx=6*nc ; nPg=nx*nc; nPts=nPg+2; dims=[nPts 1 dims(2:end)];
+ nPg=nc*nc*6; nPts=nPg+2; dims=[nPts 1 dims(2:end)];
  z3d=reshape(z3d,[nPts nr]);
- zzC=z3d(nPg+1:nPg+2,:); z3d=z3d(1:nPg,:);
-elseif dims(1) == 6*dims(2),
+ zzC=z3d(nPg+1:nPg+2,:);
+ z3d=reshape(z3d(1:nPg,:),[nc nc 6 nr]);
+elseif dims(1) == 6*dims(2) | dims(1)*6 == dims(2),
+ nc=min(dims(1),dims(2));
  if nDim == 2, nr=1; else nr=prod(dims(3:end)); end
- nc=dims(2); nx=6*nc ; nPg=nx*nc; nPts=nPg+2;
+ nPg=nc*nc*6; nPts=nPg+2;
  zzC=zeros(2,nr);
+ if dims(2) == nc,
+   z3d=permute(reshape(z3d,[nc 6 nc nr]),[1 3 2 4]);
+ else
+   z3d=reshape(z3d,[nc nc 6 nr]);
+ end
 else
  fprintf(' Error in split_Z_cub: bad input dimensions :');
  fprintf(' %i',dims); fprintf('\n');
- z6t=0; return 
+ z6t=0; return
 end
 
 %=================================================================
 
- z3d=reshape(z3d,[nc 6 nc nr]); z3d=permute(z3d,[1 3 4 2]);
+ z3d=permute(z3d,[1 2 4 3]);
  ncp=nc+1; z6t=zeros(ncp,ncp,nr,6);
 
 %-- split on to 6 faces:
@@ -43,13 +52,13 @@ end
  z6t(ncp,[2:ncp],:,4)=z3d([nc:-1:1],1,:,6);
  z6t(ncp,[1:nc], :,5)=z3d(1,[1:nc],:,6);
  z6t(ncp,[2:ncp],:,6)=z3d([nc:-1:1],1,:,2);
- 
+
  z6t([2:ncp],ncp,:,1)=z3d(1,[nc:-1:1],:,3);
  z6t([1:nc], ncp,:,2)=z3d([1:nc],1,:,3);
  z6t([2:ncp],ncp,:,3)=z3d(1,[nc:-1:1],:,5);
  z6t([1:nc], ncp,:,4)=z3d([1:nc],1,:,5);
  z6t([2:ncp],ncp,:,5)=z3d(1,[nc:-1:1],:,1);
- z6t([1:nc], ncp,:,6)=z3d([1:nc],1,:,1);   
+ z6t([1:nc], ncp,:,6)=z3d([1:nc],1,:,1);
 
 %----------------------------------------------------
 

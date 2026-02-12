@@ -1,12 +1,11 @@
 #include "DIAG_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP 0
+CBOP
 C     !ROUTINE: DIAGNOSTICS_INIT_VARIA
 
 C     !INTERFACE:
-      SUBROUTINE DIAGNOSTICS_INIT_VARIA(
-     I     myThid )
+      SUBROUTINE DIAGNOSTICS_INIT_VARIA( myThid )
 
 C     !DESCRIPTION:
 C     Initialize the qdiag array which accumulates during integration
@@ -33,6 +32,9 @@ c      IF ( diag_pkgStatus.NE.3 ) STOP
        diag_pkgStatus = 10
       _END_MASTER( myThid )
       _BARRIER
+
+C--   Set I/O unit and open diag-stats ASCII output file:
+      CALL DIAGSTATS_INI_IO( myThid )
 
 C--   Zero out the qdiag array which accumulates during integration
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -68,7 +70,7 @@ C--   Zero out the qSdiag array (statistics) which accumulates during integratio
 
       CALL DIAGNOSTICS_READ_PICKUP( myThid )
 
-      CALL DIAGNOSTICS_SUMMARY( startTime, nIter0, myThid )
+      CALL DIAGNOSTICS_SUMMARY( 0, startTime, nIter0, myThid )
 
       RETURN
       END

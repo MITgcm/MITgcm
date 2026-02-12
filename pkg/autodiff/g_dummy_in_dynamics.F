@@ -13,7 +13,7 @@ C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE g_dummy_in_dynamics                           |
 C     *==========================================================*
-C     Extract tangent linear variable from TAMC/TAF-generated
+C     Extract tangent linear variable from TAF-generated
 C     tangent linear common blocks, contained in g_common.h
 C     and write fields to file;
 C     Make sure common blocks in g_common.h are up-to-date
@@ -71,11 +71,6 @@ C--     Set suffix for this set of data files.
         ELSE
           CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
         ENDIF
-C ==>> Resetting run-time parameter writeBinaryPrec in the middle of a run
-C ==>>  is very very very nasty !!!
-c       writeBinaryPrec = writeStatePrec
-C <<==  If you really want to mess-up with this at your own risk,
-C <<==  uncomment the line above
 
 #ifdef ALLOW_AUTODIFF_MONITOR_DIAG
         CALL WRITE_FLD_XYZ_RL(

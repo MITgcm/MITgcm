@@ -15,7 +15,7 @@ C     *==========================================================*
 C     | SUBROUTINE G_EXF_ADJOINT_SNAPSHOTS                       |
 C     *==========================================================*
 C     Tangent-Linear version of EXF Adjoint-variable output S/R:
-C     extract tangent linear variable from TAMC/TAF-generated
+C     extract tangent linear variable from TAF-generated
 C     tangent linear common blocks, contained in g_common.h
 C     and write fields to file;
 C     Make sure common blocks in g_common.h are up-to-date
@@ -73,11 +73,6 @@ C--     Set suffix for this set of data files.
         ELSE
           CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
         ENDIF
-C ==>> Resetting run-time parameter writeBinaryPrec in the middle of a run
-C ==>>  is very very very nasty !!!
-c       writeBinaryPrec = writeStatePrec
-C <<==  If you really want to mess-up with this at your own risk,
-C <<==  uncomment the line above
 
         IF ( iwhen .EQ.1 ) THEN
 

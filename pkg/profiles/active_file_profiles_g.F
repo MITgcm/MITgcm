@@ -1,45 +1,46 @@
 #include "PROFILES_OPTIONS.h"
 
-c     ==================================================================
-c
-c     active_file_g.F: Routines to handle the I/O of the active file for
-c                      the tangent linear calculations. All files are
-c                      direct access files.
-c
-c     Routines
-c
-c    o  g_active_read_profile      - Read  an active 1D variable from file.
-c    o  g_active_write_profile     - Write an active 1D variable to a file.
-c
-c        changed: gforget@ocean.mit.edu 23-Mar-2006
-c
-c     ==================================================================
+C     ==================================================================
+C     active_file_profiles_g.F: Routines that handle the I/O of
+C                               active variables for the tangently linear
+C                               calculations, related to netcdf
+C                               profiles data files
+C
+C     Routines
+C     o  g_active_read_profile  - Read an active 1 record from file
+C                                 fwd-mode only: including a mask
+C     o  g_active_write_profile - Write nn active 1D record to file.
+C                                 fwd-mode only: including a mask
+C
+C     changed: gforget@ocean.mit.edu 23-Mar-2006
+C     ==================================================================
 
-      subroutine g_active_read_profile(
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C !ROUTINE: G_ACTIVE_READ_PROFILE
+
+C !INTERFACE:
+      SUBROUTINE G_ACTIVE_READ_PROFILE(
      I                           active_num_file,
      I                           nactive_var,
      O                           active_var,
+     O                           g_active_var,
      I                           active_varnum,
      I                           irec,
      I                           lAdInit,
      I                           myOptimIter,
      I                           bi,
      I                           bj,
-     I                           mythid,
-     I                           dummy,
-     I                           g_active_var
+     I                           myThid,
+     O                           dummy
      &                         )
 
-C     !DESCRIPTION: \bv
-c     ==================================================================
-c     SUBROUTINE g_active_read_profile
-c     ==================================================================
-c     o Read an active 1D record from an profile data file.
-c     ==================================================================
+C     !DESCRIPTION:
+C     Read active 1D records from file for tangent linear simulation
 
-      implicit none
-
-c     == global variables ==
+C     !USES:
+      IMPLICIT NONE
+C     == Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #ifdef ALLOW_PROFILES
@@ -47,75 +48,73 @@ c     == global variables ==
 # include "profiles.h"
 #endif
 
-c     == routine arguments ==
-c     active_var_file: filename
-c     nactive_var:     integer size of active_var
-c     active_var:      array
-c     irec:            record number
-c     myOptimIter:     number of optimization iteration (default: 0)
-c     mythid:          thread number for this instance
-c     doglobalread:    flag for global or local read/write
-c                      (default: .false.)
-c     lAdInit:         initialisation of corresponding adjoint
-c                      variable and write to active file
-      integer nactive_var
-      _RL  active_var(nactive_var)
-      _RL  g_active_var(nactive_var)
-      integer irec,active_varnum,active_num_file
-      integer myOptimIter
-      integer  bi,bj,mythid
-      logical lAdInit
+C     !INPUT PARAMETERS:
+C     active_var_file: filename
+C     nactive_var:     integer size of active_var
+C     active_var:      array
+C     irec:            record number
+C     myOptimIter:     number of optimization iteration (default: 0)
+C     myThid:          my thread ID number
+C     lAdInit:         initialisation of corresponding adjoint
+C                      variable and write to active file
+      INTEGER active_num_file
+      INTEGER nactive_var
+      INTEGER active_varnum
+      INTEGER irec
+      INTEGER myOptimIter
+      INTEGER bi, bj, myThid
+      LOGICAL lAdInit
+C     !OUTPUT PARAMETERS:
+      _RL     active_var(nactive_var)
+      _RL     g_active_var(nactive_var)
       _RL     dummy
+CEOP
 
 #ifdef ALLOW_PROFILES
 
-      call active_read_profile_rl( fidforward(active_num_file,bi,bj),
+      CALL ACTIVE_READ_PROFILE_RL( fidforward(active_num_file,bi,bj),
      &     active_num_file,
      &     nactive_var,  active_var, active_varnum, lAdInit,
      &     irec, prof_ind_glob(active_num_file,irec,bi,bj),
-     &     TANGENT_SIMULATION, myOptimIter,bi,bj, mythid)
+     &     FORWARD_SIMULATION, myOptimIter, bi, bj, myThid )
 
-      call active_read_profile_rl( fidtangent(active_num_file,bi,bj),
+      CALL ACTIVE_READ_PROFILE_RL( fidtangent(active_num_file,bi,bj),
      &     active_num_file,
      &     nactive_var, g_active_var,active_varnum, lAdInit,
      &     irec, prof_ind_glob(active_num_file,irec,bi,bj),
-     &     TANGENT_SIMULATION, myOptimIter,bi,bj, mythid)
+     &     TANGENT_SIMULATION, myOptimIter, bi, bj, myThid )
 
 #endif
 
-      return
-      end
+      RETURN
+      END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C !ROUTINE: G_ACTIVE_WRITE_PROFILE
 
-c     ==================================================================
-c     ==================================================================
-c     ==================================================================
-
-      subroutine g_active_write_profile(
+C !INTERFACE:
+      SUBROUTINE G_ACTIVE_WRITE_PROFILE(
      I                           active_num_file,
      I                           nactive_var,
      I                           active_var,
+     I                           g_active_var,
      I                           active_varnum,
      I                           irec,
      I                           myOptimIter,
      I                           bi,
      I                           bj,
-     I                           mythid,
+     I                           myThid,
      I                           dummy,
-     I                           g_active_var,
      I                           g_dummy
      &                                )
 
-c     ==================================================================
-c     SUBROUTINE g_active_write_profile
-c     ==================================================================
-c
-c     o Write an active 1D variable to a file.
-c     ==================================================================
+C     !DESCRIPTION:
+C     Write active 1D records to file for tangent linear simulation
 
-      implicit none
-
-c     == global variables ==
+C     !USES:
+      IMPLICIT NONE
+C     == Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #ifdef ALLOW_PROFILES
@@ -123,42 +122,39 @@ c     == global variables ==
 # include "profiles.h"
 #endif
 
-c     == routine arguments ==
-c     active_var_file: filename
-c     nactive_var:     integer size of active_var
-c     active_var:      array
-c     irec:            record number
-c     myOptimIter:     number of optimization iteration (default: 0)
-c     mythid:          thread number for this instance
-      integer nactive_var,active_num_file
-      _RL  active_var(nactive_var)
-      _RL  g_active_var(nactive_var)
-      integer irec,active_varnum
-      integer myOptimIter
-      integer  bi,bj,mythid
+C     !INPUT PARAMETERS:
+C     active_var_file: filename
+C     nactive_var:     integer size of active_var
+C     active_var:      array
+C     irec:            record number
+C     myOptimIter:     number of optimization iteration (default: 0)
+C     myThid:          my thread ID number
+      INTEGER nactive_var,active_num_file
+      _RL     active_var(nactive_var)
+      _RL     g_active_var(nactive_var)
+      INTEGER irec,active_varnum
+      INTEGER myOptimIter
+      INTEGER bi,bj,myThid
       _RL     dummy
       _RL     g_dummy
+C     !OUTPUT PARAMETERS:
+CEOP
 
 #ifdef ALLOW_PROFILES
 
-      call active_write_profile_rl( fidforward(active_num_file,bi,bj) ,
+      CALL ACTIVE_WRITE_PROFILE_RL( fidforward(active_num_file,bi,bj),
      &     active_num_file,
      &     nactive_var, active_var, active_varnum,
      &     irec, prof_ind_glob(active_num_file,irec,bi,bj),
-     &     TANGENT_SIMULATION, myOptimIter,bi,bj, mythid)
+     &     FORWARD_SIMULATION, myOptimIter, bi, bj, myThid )
 
-      call active_write_profile_rl( fidtangent(active_num_file,bi,bj) ,
+      CALL ACTIVE_WRITE_PROFILE_RL( fidtangent(active_num_file,bi,bj),
      &     active_num_file,
      &     nactive_var, g_active_var, active_varnum,
      &     irec, prof_ind_glob(active_num_file,irec,bi,bj),
-     &     TANGENT_SIMULATION, myOptimIter,bi,bj, mythid)
+     &     TANGENT_SIMULATION, myOptimIter, bi, bj, myThid )
 
 #endif
 
-      return
-      end
-
-c     ==================================================================
-
-
-
+      RETURN
+      END

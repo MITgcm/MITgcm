@@ -291,7 +291,7 @@ C     some output diagnostics
          _BEGIN_MASTER( myThid )
          totalNewtonItersLoc =
      &        SEAICEnonLinIterMax*(myIter-nIter0)+newtonIter
-         WRITE(msgBuf,'(2A,2(1XI6),2E12.5)')
+         WRITE(msgBuf,'(2A,2(1X,I6),2E12.5)')
      &        ' S/R SEAICE_JFNK: Newton iterate / total, ',
      &        'JFNKgamma_lin, initial norm = ',
      &        newtonIter, totalNewtonItersLoc,
@@ -581,7 +581,7 @@ C     Only start a linesearch after some Newton iterations
 C     some output diagnostics
        IF ( debugLevel.GE.debLevA .AND. doLineSearch ) THEN
         _BEGIN_MASTER( myThid )
-        WRITE(msgBuf,'(2A,2(1XI6),1X,3E12.5)')
+        WRITE(msgBuf,'(2A,2(1X,I6),1X,3E12.5)')
      &       ' S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, ',
      &       'facLS, JFNKresidual, resLoc = ',
      &        newtonIter, l, facLS, JFNKresidual, resLoc

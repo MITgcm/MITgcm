@@ -421,11 +421,11 @@ CADJ STORE localTij = loctape_gad_adv_k_pass, key = dkey, kind = isbyte
            CALL GAD_DST3FL_ADV_X(    bi,bj,k, .TRUE., deltaTLev(k),
      I              uTrans, uFld(1-OLx,1-OLy,k), maskLocW, localTij,
      O              af, myThid )
-#ifndef ALLOW_AUTODIFF
           ELSEIF ( advectionScheme.EQ.ENUM_OS7MP ) THEN
            CALL GAD_OS7MP_ADV_X(     bi,bj,k, .TRUE., deltaTLev(k),
      I              uTrans, uFld(1-OLx,1-OLy,k), maskLocW, localTij,
      O              af, myThid )
+#ifndef ALLOW_AUTODIFF
           ELSEIF ( advectionScheme.EQ.ENUM_PPM_NULL_LIMIT  .OR.
      &             advectionScheme.EQ.ENUM_PPM_MONO_LIMIT  .OR.
      &             advectionScheme.EQ.ENUM_PPM_WENO_LIMIT ) THEN
@@ -461,7 +461,7 @@ C-     Internal exchange for next calculations in Y
 C-     Advective flux in X : done
          ENDIF
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#if ( defined ALLOW_AUTODIFF_TAMC && defined NONLIN_FRSURF )
 CADJ STORE af = loctape_gad_adv_k_pass, key = dkey, kind = isbyte
 #endif
 C-     Update the local tracer field where needed:
@@ -642,11 +642,11 @@ CADJ STORE localTij = loctape_gad_adv_k_pass, key = dkey, kind = isbyte
            CALL GAD_DST3FL_ADV_Y(    bi,bj,k, .TRUE., deltaTLev(k),
      I              vTrans, vFld(1-OLx,1-OLy,k), maskLocS, localTij,
      O              af, myThid )
-#ifndef ALLOW_AUTODIFF
           ELSEIF ( advectionScheme.EQ.ENUM_OS7MP ) THEN
            CALL GAD_OS7MP_ADV_Y(     bi,bj,k, .TRUE., deltaTLev(k),
      I              vTrans, vFld(1-OLx,1-OLy,k), maskLocS, localTij,
      O              af, myThid )
+#ifndef ALLOW_AUTODIFF
           ELSEIF ( advectionScheme.EQ.ENUM_PPM_NULL_LIMIT  .OR.
      &             advectionScheme.EQ.ENUM_PPM_MONO_LIMIT  .OR.
      &             advectionScheme.EQ.ENUM_PPM_WENO_LIMIT ) THEN
@@ -682,7 +682,7 @@ C-     Internal exchange for next calculations in X
 C-     Advective flux in Y : done
          ENDIF
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#if ( defined ALLOW_AUTODIFF_TAMC && defined NONLIN_FRSURF )
 CADJ STORE af = loctape_gad_adv_k_pass, key = dkey, kind = isbyte
 #endif
 C-     Update the local tracer field where needed:
@@ -998,11 +998,11 @@ C-    Compute vertical advective flux in the interior:
           CALL GAD_DST3FL_ADV_R(    bi,bj,k, deltaTLev(k),
      I              rTrans, wFld(1-OLx,1-OLy,k), localT3d,
      O              fVerT(1-OLx,1-OLy,kUp), myThid )
-#ifndef ALLOW_AUTODIFF
          ELSEIF ( vertAdvecScheme.EQ.ENUM_OS7MP ) THEN
           CALL GAD_OS7MP_ADV_R(     bi,bj,k, deltaTLev(k),
      I              rTrans, wFld(1-OLx,1-OLy,k), localT3d,
      O              fVerT(1-OLx,1-OLy,kUp), myThid )
+#ifndef ALLOW_AUTODIFF
          ELSEIF ( usePPMvertAdv .OR. usePQMvertAdv ) THEN
 C- copy level from 3d flux data
           DO j = 1-OLy,sNy+OLy
@@ -1021,11 +1021,13 @@ C- end Surface/Interior if bloc
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE rtrans   = loctape_gad_adv_k, key = k, kind = isbyte
 CADJ STORE rtransKp = loctape_gad_adv_k, key = k, kind = isbyte
+# ifdef NONLIN_FRSURF
 cph --- following storing of fVerT is critical for correct
 cph --- gradient with multiDimAdvection
 cph --- Without it, kDown component is not properly recomputed
 cph --- This is a TAF bug (and no warning available)
 CADJ STORE fVerT(:,:,:) = loctape_gad_adv_k, key = k, kind = isbyte
+# endif
 #endif
 
 C--   Divergence of vertical fluxes

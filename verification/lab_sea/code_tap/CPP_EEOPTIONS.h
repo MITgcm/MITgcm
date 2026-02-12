@@ -1,3 +1,6 @@
+#ifndef _CPP_EEOPTIONS_H_
+#define _CPP_EEOPTIONS_H_
+
 CBOP
 C     !ROUTINE: CPP_EEOPTIONS.h
 C     !INTERFACE:
@@ -27,9 +30,6 @@ C     |       identified, rebuild the code with the appropriate  |
 C     |       options set at compile time.                       |
 C     *==========================================================*
 CEOP
-
-#ifndef _CPP_EEOPTIONS_H_
-#define _CPP_EEOPTIONS_H_
 
 C     In general the following convention applies:
 C     ALLOW  - indicates an feature will be included but it may
@@ -76,10 +76,6 @@ C     a different file for each tile) and read are thread-safe.
 C--   Flag to turn off the writing of error message to ioUnit zero
 #undef DISABLE_WRITE_TO_UNIT_ZERO
 
-C--   Alternative formulation of BYTESWAP, faster than
-C     compiler flag -byteswapio on the Altix.
-#undef FAST_BYTESWAP
-
 C--   Flag to turn on old default of opening scratch files with the
 C     STATUS='SCRATCH' option. This method, while perfectly FORTRAN-standard,
 C     caused filename conflicts on some multi-node/multi-processor platforms
@@ -99,7 +95,6 @@ C     gather_* subroutines to speed up integrations.
 
 C--   Control use of communication that might overlap computation.
 C     Under MPI selects/deselects "non-blocking" sends and receives.
-#define ALLOW_ASYNC_COMMUNICATION
 #undef  ALLOW_ASYNC_COMMUNICATION
 #undef  ALWAYS_USE_ASYNC_COMMUNICATION
 C--   Control use of communication that is atomic to computation.
@@ -142,7 +137,10 @@ C--   Control use of communication with other component:
 C     allow to import and export from/to Coupler interface.
 #undef COMPONENT_MODULE
 
-#endif /* _CPP_EEOPTIONS_H_ */
+C--   Activate some pieces of code for coupling to GEOS AGCM
+#undef HACK_FOR_GMAO_CPL
 
+C=== And define Macros ===
 #include "CPP_EEMACROS.h"
 
+#endif /* _CPP_EEOPTIONS_H_ */

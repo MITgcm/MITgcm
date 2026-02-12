@@ -20,12 +20,12 @@ C     == Global variables ===
 #include "SEAICE_PARAMS.h"
 #endif
 #ifdef ALLOW_CTRL
-#include "ctrl.h"
+# include "CTRL_SIZE.h"
+# include "CTRL.h"
 #endif
 #ifdef ALLOW_AUTODIFF_MONITOR
 # ifdef ALLOW_DIAGNOSTICS
-#  include "DIAGNOSTICS_SIZE.h"
-#  include "DIAGNOSTICS.h"
+#  include "DIAGNOSTICS_P2SHARE.h"
 # endif
 #endif /* ALLOW_AUTODIFF_MONITOR */
 

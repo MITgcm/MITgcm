@@ -7,7 +7,10 @@
   selectHFconst=1,
   selectK1K2const=6,
 # Munhoven "GENERAL" solver: =1 ; Munhoven "SEC" solver: =2 ; Munhoven "FAST" solver: =3
-  selectPHsolver=3,
+  selectPHsolver= 3,
+#- Calcite-Dissolution option:  =0 : Constant rate ; =1 : Follows sinking flux (default) ;
+#  =2 : Keir (1980) Geochem. Cosmochem. Acta. ; =3 : Naviaux et al. 2019, Marine Chemistry
+  selectCalciteDissolution= 3,
  &
 
  &BIOTIC_PARMS

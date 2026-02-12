@@ -12,7 +12,7 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #ifdef ALLOW_ADMTLM
-# include "ctrl.h"
+# include "CTRL.h"
 # include "ctrl_weights.h"
 #endif
 

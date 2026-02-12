@@ -1,0 +1,108 @@
+# Diagnostic Package Choices
+#--------------------
+#  dumpAtLast (logical): always write output at the end of simulation (default=F)
+#  diag_mnc   (logical): write to NetCDF files (default=useMNC)
+#--for each output-stream:
+#  fileName(n) : prefix of the output file name (max 80c long) for outp.stream n
+#  frequency(n):< 0 : write snap-shot output every |frequency| seconds
+#               > 0 : write time-average output every frequency seconds
+#  timePhase(n)     : write at time = timePhase + multiple of |frequency|
+#    averagingFreq  : frequency (in s) for periodic averaging interval
+#    averagingPhase : phase     (in s) for periodic averaging interval
+#    repeatCycle    : number of averaging intervals in 1 cycle
+#  levels(:,n) : list of levels to write to file (Notes: declared as REAL)
+#                when this entry is missing, select all common levels of this list
+#  fields(:,n) : list of selected diagnostics fields (8.c) in outp.stream n
+#                (see "available_diagnostics.log" file for the full list of diags)
+#  missing_value(n) : missing value for real-type fields in output file "n"
+#  fileFlags(n)     : specific code (8c string) for output file "n"
+#--------------------
+ &DIAGNOSTICS_LIST
+# diag_mnc     = .FALSE.,
+#--
+  fields(1:16,1) = 'ETAN    ','ETANSQ  ','DETADT2 ',
+                   'AtPhCnvP','AtPhLscP','AtPhCAPE',
+                   'AtPhSens','AtPhEvap','AtPhTauX','AtPhTauY',
+                   'AtPh_SST','AtPhNTSR','AtPhOLR ',
+                   'AtPhNSSR','AtPhDSLR','AtPhUSLR',
+   fileName(1) = 'surfDiag',
+# fileFlags(1) = 'D       ',
+# frequency(1) = 31104000.,
+  frequency(1) = 432000.,
+#- 
+  fields(1:14,2) = 'UVEL    ','VVEL    ','WVEL    ','THETA   ','SALT    ',
+                   'UVELSQ  ','VVELSQ  ','WVELSQ  ','THETASQ ','SALTSQ  ',
+                   'UVELMASS','VVELMASS','UV_VEL_C','RELHUM  ',
+#                  'ADVx_TH ','ADVy_TH ','ADVr_TH ',
+#                  'ADVx_SLT','ADVy_SLT','ADVr_SLT',
+   fileName(2) = 'dynDiag',
+# frequency(2) = 31104000.,
+  frequency(2) = 432000.,
+#- 
+  fields(1:11,3) = 'AtPhdTdt','AtPhdQdt','AtPhdUdt','AtPhdVdt',
+#                  'AtPhdtTg','AtPhdtQg','AtPhDifT','AtPhDifM',
+                   'AtPhDisH','HeatDiss','MoistCor','SHAP_dKE',
+                   'AtPhdTrd','AtPhdTlc','AtPhdTcv',
+   fileName(3) = 'physDiag',
+# frequency(3) = 31104000.,
+  frequency(3) = 432000.,
+#- 
+  fields(1:8,4)  = 'AtPhCnvP','AtPhLscP','AtPhCAPE',
+                   'AtPhCnIn','AtPhKlzb','AtPhConv',
+                   'AtPhRlxT','AtPhRlxQ',
+#  fileName(4) = 'convDiag',
+# timePhase(4) =  31103600.,
+  frequency(4) = -172800.,
+#- 
+  fields(1:4,5)  = 'AtPhNSR ','AtPhNLR ','AtPhDSR ','AtPhDLR ',
+   fileName(5) = 'rad_Diag',
+# timePhase(5) =  31103600.,
+  frequency(5) = -172800.,
+ &
+
+#--------------------
+# Parameter for Diagnostics of per level statistics:
+#--------------------
+#  diagSt_mnc (logical): write stat-diags to NetCDF files (default=diag_mnc)
+#  diagSt_regMaskFile : file containing the region-mask to read-in
+#  nSetRegMskFile   : number of region-mask sets within the region-mask file
+#  set_regMask(i)   : region-mask set-index that identifies the region "i"
+#  val_regMask(i)   : region "i" identifier value in the region mask
+#--for each output-stream:
+#  stat_fName(n) : prefix of the output file name (max 80c long) for outp.stream n
+#  stat_freq(n):< 0 : write snap-shot output every |stat_freq| seconds
+#               > 0 : write time-average output every stat_freq seconds
+#  stat_phase(n)    : write at time = stat_phase + multiple of |stat_freq|
+#  stat_region(:,n) : list of "regions" (default: 1 region only=global)
+#  stat_fields(:,n) : list of selected diagnostics fields (8.c) in outp.stream n
+#                (see "available_diagnostics.log" file for the full list of diags)
+#--------------------
+ &DIAG_STATIS_PARMS
+ stat_fields(1:11,1) = 'ETAN    ','THETA   ','SALT    ','RELHUM  ',
+                       'UE_VEL_C','VN_VEL_C','WVEL    ',
+                       'AtPhdTdt','AtPhdQdt','AtPhdUdt','AtPhdVdt',
+  stat_fName(1) = 'dynStDiag',
+#  stat_freq(1) = 432000.,
+#  stat_freq(1) = 43200.,
+   stat_freq(1) = 3600.,
+# stat_phase(1) = 0.,
+ stat_fields(1:11,2) = 'AtPhdtTg','AtPhdtQg','AtPhDifT','AtPhDifM',
+                       'AtPhDisH','HeatDiss','MoistCor','SHAP_dKE',
+                       'AtPhdTrd','AtPhdTlc','AtPhdTcv',
+  stat_fName(2) = 'phyStDiag',
+#  stat_freq(2) = 432000.,
+#  stat_freq(2) = 43200.,
+   stat_freq(2) = 3600.,
+# stat_phase(2) = 0.,
+ stat_fields(1:17,3) = 'AtPhSens','AtPhEvap','AtPhTauX','AtPhTauY',
+                       'AtPhCnvP','AtPhLscP','AtPhCAPE',
+                       'AtPh_SST','AtPhNTSR','AtPhOLR ',
+                       'AtPhNSSR','AtPhDSLR','AtPhUSLR',
+                       'AtPhNSR ','AtPhNLR ','AtPhDSR ','AtPhDLR ',
+  stat_fName(3) = 'flxStDiag',
+#  stat_freq(3) = 432000.,
+#  stat_freq(3) = 43200.,
+   stat_freq(3) = 3600.,
+# stat_phase(3) = 0.,
+ &
+

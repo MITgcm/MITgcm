@@ -150,7 +150,7 @@ C-    Step forward land model
           CALL LAND_STEPFWD( aim_landFr, bi, bj,
      I                       myTime, myIter, myThid )
 
-C-    Land diagnostics : write snap-shot & cumulate for TimeAve output
+C-    Land diagnostics : write snap-shot & fill diagnostics
           CALL LAND_DO_DIAGS( aim_landFr, bi, bj,
      I                        myTime, myIter, myThid )
 
@@ -177,7 +177,7 @@ C-    Step forward sea-ice model
         ENDIF
 #endif /* ALLOW_THSICE */
 
-C-    AIM diagnostics : write snap-shot & cumulate for TimeAve output
+C-    AIM diagnostics : write snap-shot & fill diagnostics
         CALL AIM_DIAGNOSTICS( bi, bj, myTime, myIter, myThid )
 
 C--   end bi,bj loops.

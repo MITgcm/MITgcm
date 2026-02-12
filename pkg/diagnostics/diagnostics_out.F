@@ -95,11 +95,11 @@ C---  set file properties
         CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
       ENDIF
       iLen = ILNBLNK(fnames(listId))
-      WRITE( fn, '(A,A,A)' ) fnames(listId)(1:iLen),'.',suff
+      WRITE(fn,'(3A)') fnames(listId)(1:iLen), '.', suff
       IF ( diag_mdsio.AND.(diagMdsDir.NE.' ') ) THEN
         jLen = ILNBLNK(diagMdsDir)
-        WRITE( fn, '(5A)' ) diagMdsDir(1:jLen),'/',
-     &                       fnames(listId)(1:iLen),'.',suff
+        WRITE(fn,'(5A)') diagMdsDir(1:jLen), '/',
+     &                 fnames(listId)(1:iLen), '.', suff
       ENDIF
 
 C-    for now, if integrate vertically, output field has just 1 level:
@@ -200,10 +200,10 @@ C--     Start processing 1 Fld :
 C-        Post-Processed diag from an other Post-Processed diag -and-
 C         both of them have just been calculated and are still stored in qtmp:
 C         => skip computation and just write qtmp2
-            IF ( debugLevel.GE.debLevB .AND. myThid.EQ.1 ) THEN
-               WRITE(ioUnit,'(A,I6,3A,I6)')
-     &         '  get Post-Proc. Diag # ', ndId, '  ', cdiag(ndId),
-     &         ' from previous computation of Diag # ', isComputed
+            IF ( diag_dBugLevel.GE.debLevB .AND. myThid.EQ.1 ) THEN
+              WRITE(ioUnit,'(A,I6,3A,I6)')
+     &          '  get Post-Proc. Diag # ', ndId, '  ', cdiag(ndId),
+     &          ' from previous computation of Diag # ', isComputed
             ENDIF
             isComputed = 0
           ELSEIF ( ndiag(ip,1,1).EQ.0 ) THEN
@@ -214,27 +214,27 @@ C-        Empty diagnostics case :
             WRITE(msgBuf,'(A,I10)')
      &        '- WARNING - from DIAGNOSTICS_OUT at iter=', myIter
             CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                          SQUEEZE_RIGHT, myThid)
+     &                          SQUEEZE_RIGHT, myThid )
             WRITE(msgBuf,'(A,I6,3A,I4,2A)')
-     &       '- WARNING -   diag.#',ndId, ' : ',flds(md,listId),
-     &       ' (#',md,' ) in outp.Stream: ',fnames(listId)
+     &        '- WARNING -   diag.#',ndId, ' : ',flds(md,listId),
+     &        ' (#',md,' ) in outp.Stream: ',fnames(listId)
             CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                          SQUEEZE_RIGHT, myThid)
+     &                          SQUEEZE_RIGHT, myThid )
             IF ( averageCycle(listId).GT.1 ) THEN
              WRITE(msgBuf,'(A,2(I3,A))')
-     &        '- WARNING -   has not been filled (ndiag(lm=',lm,')=',
-     &                                            ndiag(ip,1,1), ' )'
+     &         '- WARNING -   has not been filled (ndiag(lm=',lm,')=',
+     &                                             ndiag(ip,1,1), ' )'
             ELSE
              WRITE(msgBuf,'(A,2(I3,A))')
-     &        '- WARNING -   has not been filled (ndiag=',
-     &                                            ndiag(ip,1,1), ' )'
+     &         '- WARNING -   has not been filled (ndiag=',
+     &                                             ndiag(ip,1,1), ' )'
             ENDIF
             CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                          SQUEEZE_RIGHT, myThid)
+     &                          SQUEEZE_RIGHT, myThid )
             WRITE(msgBuf,'(A)')
-     &       'WARNING DIAGNOSTICS_OUT  => write ZEROS instead'
+     &        'WARNING DIAGNOSTICS_OUT  => write ZEROS instead'
             CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                          SQUEEZE_RIGHT, myThid)
+     &                          SQUEEZE_RIGHT, myThid )
             _END_MASTER( myThid )
             DO bj = myByLo(myThid), myByHi(myThid)
               DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -252,41 +252,42 @@ C-        Empty diagnostics case :
 C-        diagnostics is not empty :
             isComputed = 0
 
-            IF ( debugLevel.GE.debLevB .AND. myThid.EQ.1 ) THEN
+            IF ( diag_dBugLevel.GE.debLevB .AND. myThid.EQ.1 ) THEN
               IF ( ppFld.GE.1 ) THEN
-               WRITE(ioUnit,'(A,I6,7A,I8,2A)')
-     &         ' Post-Processing Diag # ', ndId, '  ', cdiag(ndId),
-     &         '   Parms: ',gdiag(ndId)
+               WRITE(ioUnit,'(A,I6,3A,I3,3A)')
+     &           ' Post-Processing Diag #', ndId, ' "', cdiag(ndId),
+     &           '" (list#', listId, ') Parms "', gdiag(ndId), '"'
                IF ( mDbl.EQ.0 ) THEN
                 WRITE(ioUnit,'(2(3A,I6,A,I8))') '   from diag: ',
      &            cdiag(nn), ' (#', nn, ') Cnt=', ndiag(ip,1,1)
                ELSE
                 WRITE(ioUnit,'(2(3A,I6,A,I8))') '   from diag: ',
      &            cdiag(nn), ' (#', nn, ') Cnt=', ndiag(ip,1,1),
-     &          ' and diag: ',
-     &            cdiag(mDbl),' (#',mDbl,') Cnt=',ndiag(im,1,1)
+     &            ' and diag: ',
+     &            cdiag(mDbl), ' (#', mDbl, ') Cnt=', ndiag(im,1,1)
                ENDIF
               ELSE
-               WRITE(ioUnit,'(A,I6,3A,I8,2A)')
-     &         ' Computing Diagnostic # ', ndId, '  ', cdiag(ndId),
-     &         '     Counter:',ndiag(ip,1,1),'   Parms: ',gdiag(ndId)
+               WRITE(ioUnit,'(A,I6,3A,I3,3A,I8)')
+     &           ' Computing Diagnostic #', ndId, ' "', cdiag(ndId),
+     &           '" (list#', listId, ') Parms "', gdiag(ndId),
+     &           '", Count=', ndiag(ip,1,1)
               ENDIF
               IF ( mate.GT.0 ) THEN
-               WRITE(ioUnit,'(3A,I6,2A)')
-     &         '       use Counter Mate for  ', cdiag(ndId),
-     &         '     Diagnostic # ',mate, '  ', cdiag(mate)
+               WRITE(ioUnit,'(3A,I6,3A)')
+     &           '         use Counter Mate for "', cdiag(ndId),
+     &           '" :  Diagnostic #', mate, ' "', cdiag(mate), '"'
               ELSEIF ( mVec.GT.0 ) THEN
-                IF ( im.GT.0 .AND. ndiag(MAX(1,im),1,1).GT.0 ) THEN
-                 WRITE(ioUnit,'(3A,I6,3A)')
-     &             '           Vector  Mate for  ', cdiag(ndId),
-     &             '     Diagnostic # ',mVec, '  ', cdiag(mVec),
-     &             ' exists '
-                ELSE
-                 WRITE(ioUnit,'(3A,I6,3A)')
-     &             '           Vector  Mate for  ', cdiag(ndId),
-     &             '     Diagnostic # ',mVec, '  ', cdiag(mVec),
-     &             ' not enabled'
-                ENDIF
+               IF ( im.GT.0 .AND. ndiag(MAX(1,im),1,1).GT.0 ) THEN
+                WRITE(ioUnit,'(3A,I6,3A)')
+     &            '             Vector  Mate for "', cdiag(ndId),
+     &            '" :  Diagnostic # ', mVec, ' "', cdiag(mVec),
+     &            '" exists'
+               ELSE
+                WRITE(ioUnit,'(3A,I6,3A)')
+     &            '             Vector  Mate for "', cdiag(ndId),
+     &            '" :  Diagnostic # ', mVec, ' "', cdiag(mVec),
+     &            '" not enabled'
+               ENDIF
               ENDIF
             ENDIF
 

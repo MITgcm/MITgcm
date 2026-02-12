@@ -47,7 +47,6 @@
  abEps = 0.1,
  pChkptFreq= 2592000.,
  dumpFreq=   2592000.,
-# taveFreq=   2592000.,
  monitorFreq=0.,
 # 2 months restoring timescale for temperature
 #tauThetaClimRelax=  5184000.,

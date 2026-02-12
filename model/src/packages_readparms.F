@@ -78,6 +78,8 @@ C       |-- STREAMICE_READPARMS
 C       |
 C       |-- SHELFICE_READPARMS
 C       |
+C       |-- STIC_READPARMS
+C       |
 C       |-- ICEFRONT_READPARMS
 C       |
 C       |-- SEAICE_READPARMS
@@ -103,6 +105,8 @@ C       |
 C       |-- ECCO_READPARMS
 C       |
 C       |-- PROFILES_READPARMS
+C       |
+C       |-- OBSFIT_READPARMS
 C       |
 C       |-- SBO_READPARMS
 C       |
@@ -264,7 +268,7 @@ C--   if useOffLine=T, set OFFLINE parameters; otherwise just return
 
 #ifdef ALLOW_MATRIX
 C--   if useMATRIX=T, set MATRIX parameters; otherwise just return
-      CALL MATRIX_READPARMS ( myThid )
+      CALL MATRIX_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_STREAMICE
@@ -275,6 +279,11 @@ C--   if useStreamIce=T, set STREAMICE parameters; otherwise just return
 #ifdef ALLOW_SHELFICE
 C--   if useShelfIce=T, set SHELFICE parameters; otherwise just return
       CALL SHELFICE_READPARMS( myThid )
+#endif
+
+#ifdef ALLOW_STEEP_ICECAVITY
+C--   if useSTIC=T, set STEEP_ICECAVITY parameters; otherwise just return
+      CALL STIC_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_ICEFRONT
@@ -326,17 +335,22 @@ C--   if useGrdChk=T, set gradient-check parameters; otherwise just return
 
 #ifdef ALLOW_SMOOTH
 C--   if useSMOOTH=T, set SMOOTH parameters; otherwise just return
-      CALL SMOOTH_READPARMS ( myThid )
+      CALL SMOOTH_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_ECCO
 c--   Initialize ECCO package parameters
-      CALL ECCO_READPARMS ( myThid )
+      CALL ECCO_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_PROFILES
 C--   if usePROFILES=T, set PROFILES parameters; otherwise just return
-      CALL PROFILES_READPARMS ( myThid )
+      CALL PROFILES_READPARMS( myThid )
+#endif
+
+#ifdef ALLOW_OBSFIT
+C--   if useOBSFIT=T, set OBSFIT parameters; otherwise just return
+      CALL OBSFIT_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_SBO
@@ -372,12 +386,12 @@ C--   if useLayers=T, set layers parameters; otherwise just return
 
 #ifdef ALLOW_NEST_CHILD
 C--    Initialize nest(ing) package parameters x CHILD
-       IF (useNEST_CHILD) CALL NEST_CHILD_READPARMS ( myThid )
+       IF (useNEST_CHILD) CALL NEST_CHILD_READPARMS( myThid )
 #endif /* ALLOW_NEST_CHILD */
 C
 #ifdef ALLOW_NEST_PARENT
 C--    Initialize nest(ing) package parameters x PARENT
-       IF (useNEST_PARENT) CALL NEST_PARENT_READPARMS ( myThid )
+       IF (useNEST_PARENT) CALL NEST_PARENT_READPARMS( myThid )
 #endif /* ALLOW_NEST_PARENT */
 
 #ifdef ALLOW_NEST2W_CHILD
@@ -396,7 +410,7 @@ C--   set Coupling parameters
 #endif /* COMPONENT_MODULE */
 
 #ifdef ALLOW_OASIS
-       IF (useOASIS) CALL OASIS_READPARMS ( myThid )
+       IF (useOASIS) CALL OASIS_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_RUNCLOCK

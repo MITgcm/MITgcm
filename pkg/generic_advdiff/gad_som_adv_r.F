@@ -1,4 +1,7 @@
 #include "GAD_OPTIONS.h"
+#ifdef ALLOW_PTRACERS
+# include "PTRACERS_OPTIONS.h"
+#endif
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
 #endif
@@ -106,6 +109,7 @@ C  wT           :: vertical advective flux
       _RL  fn_yz(1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL wT    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
+#if ( defined GAD_ALLOW_TS_SOM_ADV || defined PTRACERS_ALLOW_DYN_STATE )
 C !LOCAL VARIABLES: ====================================================
 C  i,j          :: loop indices
 C  wLoc         :: volume transported (per time step)
@@ -360,6 +364,7 @@ C      add into grid box (k): positive W(kDw) and negative W(kUp)
 #endif /* ALLOW_OBCS */
        ENDDO
       ENDDO
+#endif /* GAD_ALLOW_TS_SOM_ADV or PTRACERS_ALLOW_DYN_STATE */
 
       RETURN
       END

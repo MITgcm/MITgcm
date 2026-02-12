@@ -49,7 +49,13 @@ CEndOfInterface
 #if defined(ALLOW_OBCS) && defined(ALLOW_OBCS_SPONGE)
 C     == Local variables ==
 C     Loop counters
-      INTEGER i, j, isl, jsl
+      INTEGER i, j
+#if (defined ALLOW_OBCS_EAST ) || (defined ALLOW_OBCS_WEST )
+      INTEGER isl
+#endif
+#if (defined ALLOW_OBCS_NORTH) || (defined ALLOW_OBCS_SOUTH)
+      INTEGER jsl
+#endif
       _RL urelax, lambda_obcs_u
 
       IF ( useOBCSsponge .AND. spongeThickness.NE.0 ) THEN
@@ -243,7 +249,13 @@ CEndOfInterface
 #if defined(ALLOW_OBCS) && defined(ALLOW_OBCS_SPONGE)
 C     == Local variables ==
 C     Loop counters
-      INTEGER i, j, isl, jsl
+      INTEGER i, j
+#if (defined ALLOW_OBCS_EAST ) || (defined ALLOW_OBCS_WEST )
+      INTEGER isl
+#endif
+#if (defined ALLOW_OBCS_NORTH) || (defined ALLOW_OBCS_SOUTH)
+      INTEGER jsl
+#endif
       _RL vrelax,lambda_obcs_v
 
       IF ( useOBCSsponge .AND. spongeThickness.NE.0 ) THEN
@@ -437,7 +449,13 @@ CEndOfInterface
 #if defined(ALLOW_OBCS) && defined(ALLOW_OBCS_SPONGE)
 C     == Local variables ==
 C     Loop counters
-      INTEGER i, j, isl, jsl
+      INTEGER i, j
+#if (defined ALLOW_OBCS_EAST ) || (defined ALLOW_OBCS_WEST )
+      INTEGER isl
+#endif
+#if (defined ALLOW_OBCS_NORTH) || (defined ALLOW_OBCS_SOUTH)
+      INTEGER jsl
+#endif
       _RL trelax, lambda_obcs_t
 
       IF ( useOBCSsponge .AND. spongeThickness.NE.0 ) THEN
@@ -639,7 +657,13 @@ CEndOfInterface
 #if defined(ALLOW_OBCS) && defined(ALLOW_OBCS_SPONGE)
 C     == Local variables ==
 C     Loop counters
-      INTEGER i, j, isl, jsl
+      INTEGER i, j
+#if (defined ALLOW_OBCS_EAST ) || (defined ALLOW_OBCS_WEST )
+      INTEGER isl
+#endif
+#if (defined ALLOW_OBCS_NORTH) || (defined ALLOW_OBCS_SOUTH)
+      INTEGER jsl
+#endif
       _RL srelax, lambda_obcs_s
 
       IF ( useOBCSsponge .AND. spongeThickness.NE.0 ) THEN

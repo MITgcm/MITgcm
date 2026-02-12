@@ -36,7 +36,7 @@ C    myThid   :: my Thread Id number
       INTEGER myThid
 CEOP
 
-#if (defined (ALLOW_OBCS) && defined (ALLOW_SEAICE))
+#if ( defined ALLOW_OBCS && defined ALLOW_SEAICE )
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
@@ -55,14 +55,24 @@ C     == Local variables ==
         IF ( tileHasOBN(bi,bj) ) THEN
 C     Set model variables to OB values on Northern Boundary
          DO i=1-OLx,sNx+OLx
-          Jobc = OB_Jn(I,bi,bj)
+          Jobc = OB_Jn(i,bi,bj)
           IF ( Jobc.NE.OB_indexNone ) THEN
+           IF ( useSeaiceNeumann ) THEN
+C     Neumann boundary conditions
+            HEFF (i,Jobc,bi,bj) = HEFF (i,Jobc-1,bi,bj)
+            AREA (i,Jobc,bi,bj) = AREA (i,Jobc-1,bi,bj)
+            HSNOW(i,Jobc,bi,bj) = HSNOW(i,Jobc-1,bi,bj)
+#  ifdef SEAICE_VARIABLE_SALINITY
+            HSALT(i,Jobc,bi,bj) = HSALT(i,Jobc-1,bi,bj)
+#  endif
+           ELSE
             HEFF (i,Jobc,bi,bj) = OBNh (i,bi,bj)
             AREA (i,Jobc,bi,bj) = OBNa (i,bi,bj)
             HSNOW(i,Jobc,bi,bj) = OBNsn(i,bi,bj)
-# ifdef SEAICE_VARIABLE_SALINITY
+#  ifdef SEAICE_VARIABLE_SALINITY
             HSALT(i,Jobc,bi,bj) = OBNsl(i,bi,bj)
-# endif
+#  endif
+           ENDIF
           ENDIF
          ENDDO
         ENDIF
@@ -72,14 +82,24 @@ C     Set model variables to OB values on Northern Boundary
         IF ( tileHasOBS(bi,bj) ) THEN
 C     Set model variables to OB values on Southern Boundary
          DO i=1-OLx,sNx+OLx
-          Jobc = OB_Js(I,bi,bj)
+          Jobc = OB_Js(i,bi,bj)
           IF ( Jobc.NE.OB_indexNone ) THEN
+           IF ( useSeaiceNeumann ) THEN
+C     Neumann boundary conditions
+            HEFF (i,Jobc,bi,bj) = HEFF (i,Jobc+1,bi,bj)
+            AREA (i,Jobc,bi,bj) = AREA (i,Jobc+1,bi,bj)
+            HSNOW(i,Jobc,bi,bj) = HSNOW(i,Jobc+1,bi,bj)
+#  ifdef SEAICE_VARIABLE_SALINITY
+            HSALT(i,Jobc,bi,bj) = HSALT(i,Jobc+1,bi,bj)
+#  endif
+           ELSE
             HEFF (i,Jobc,bi,bj) = OBSh (i,bi,bj)
             AREA (i,Jobc,bi,bj) = OBSa (i,bi,bj)
             HSNOW(i,Jobc,bi,bj) = OBSsn(i,bi,bj)
-# ifdef SEAICE_VARIABLE_SALINITY
+#  ifdef SEAICE_VARIABLE_SALINITY
             HSALT(i,Jobc,bi,bj) = OBSsl(i,bi,bj)
-# endif
+#  endif
+           ENDIF
           ENDIF
          ENDDO
         ENDIF
@@ -89,14 +109,24 @@ C     Set model variables to OB values on Southern Boundary
         IF ( tileHasOBE(bi,bj) ) THEN
 C     Set model variables to OB values on Eastern Boundary
          DO j=1-OLy,sNy+OLy
-          Iobc = OB_Ie(J,bi,bj)
+          Iobc = OB_Ie(j,bi,bj)
           IF ( Iobc.NE.OB_indexNone ) THEN
+           IF ( useSeaiceNeumann ) THEN
+C     Neumann boundary conditions
+            HEFF (Iobc,j,bi,bj) = HEFF (Iobc-1,j,bi,bj)
+            AREA (Iobc,j,bi,bj) = AREA (Iobc-1,j,bi,bj)
+            HSNOW(Iobc,j,bi,bj) = HSNOW(Iobc-1,j,bi,bj)
+#  ifdef SEAICE_VARIABLE_SALINITY
+            HSALT(Iobc,j,bi,bj) = HSALT(Iobc-1,j,bi,bj)
+#  endif
+           ELSE
             HEFF (Iobc,j,bi,bj) = OBEh (j,bi,bj)
             AREA (Iobc,j,bi,bj) = OBEa (j,bi,bj)
             HSNOW(Iobc,j,bi,bj) = OBEsn(j,bi,bj)
-# ifdef SEAICE_VARIABLE_SALINITY
+#  ifdef SEAICE_VARIABLE_SALINITY
             HSALT(Iobc,j,bi,bj) = OBEsl(j,bi,bj)
-# endif
+#  endif
+           ENDIF
           ENDIF
          ENDDO
         ENDIF
@@ -108,12 +138,22 @@ C     Set model variables to OB values on Western Boundary
          DO j=1-OLy,sNy+OLy
           Iobc = OB_Iw(j,bi,bj)
           IF ( Iobc.NE.OB_indexNone ) THEN
+           IF ( useSeaiceNeumann ) THEN
+C     Neumann boundary conditions
+            HEFF (Iobc,j,bi,bj) = HEFF (Iobc+1,j,bi,bj)
+            AREA (Iobc,j,bi,bj) = AREA (Iobc+1,j,bi,bj)
+            HSNOW(Iobc,j,bi,bj) = HSNOW(Iobc+1,j,bi,bj)
+#  ifdef SEAICE_VARIABLE_SALINITY
+            HSALT(Iobc,j,bi,bj) = HSALT(Iobc+1,j,bi,bj)
+#  endif
+           ELSE
             HEFF (Iobc,j,bi,bj) = OBWh (j,bi,bj)
             AREA (Iobc,j,bi,bj) = OBWa (j,bi,bj)
             HSNOW(Iobc,j,bi,bj) = OBWsn(j,bi,bj)
-# ifdef SEAICE_VARIABLE_SALINITY
+#  ifdef SEAICE_VARIABLE_SALINITY
             HSALT(Iobc,j,bi,bj) = OBWsl(j,bi,bj)
-# endif
+#  endif
+           ENDIF
           ENDIF
          ENDDO
         ENDIF
@@ -128,7 +168,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         IF ( tileHasOBN(bi,bj) ) THEN
 C     Northern Boundary
          DO i=1-OLx,sNx+OLx
-          Jobc = OB_Jn(I,bi,bj)
+          Jobc = OB_Jn(i,bi,bj)
           IF ( Jobc.NE.OB_indexNone ) THEN
            IF ( _maskS(i,Jobc-1,k,bi,bj) .NE. 0. ) THEN
             IF ( SEAICEadvHeff .AND. OBNhfile .NE. ' ' ) THEN
@@ -167,7 +207,7 @@ C     Northern Boundary
         IF ( tileHasOBS(bi,bj) ) THEN
 C     Southern Boundary
          DO i=1-OLx,sNx+OLx
-          Jobc = OB_Js(I,bi,bj)
+          Jobc = OB_Js(i,bi,bj)
           IF ( Jobc.NE.OB_indexNone ) THEN
            IF ( _maskS(i,Jobc+2,k,bi,bj) .NE. 0. ) THEN
             IF ( SEAICEadvHeff .AND. OBNhfile .NE. ' ' ) THEN
@@ -206,7 +246,7 @@ C     Southern Boundary
         IF ( tileHasOBE(bi,bj) ) THEN
 C     Eastern Boundary
          DO j=1-OLy,sNy+OLy
-          Iobc = OB_Ie(J,bi,bj)
+          Iobc = OB_Ie(j,bi,bj)
           IF ( Iobc.NE.OB_indexNone ) THEN
            IF ( _maskW(Iobc-1,j,k,bi,bj) .NE. 0. ) THEN
             IF ( SEAICEadvHeff .AND. OBNhfile .NE. ' ' ) THEN
@@ -292,7 +332,7 @@ C     Western Boundary
       ENDIF
 #endif /* ALLOW_OBCS_SEAICE_SPONGE */
 
-#endif /* defined (ALLOW_OBCS) && defined (ALLOW_SEAICE) */
+#endif /* defined ALLOW_OBCS and defined ALLOW_SEAICE */
 
       RETURN
       END

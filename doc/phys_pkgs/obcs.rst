@@ -290,8 +290,8 @@ the namelist looks like this:
 
 ::
 
-      OB_Iwest  = 1*0,1*5,142*0,
-      OB_Jsouth = 2*3,3*2,115*0,
+      OB_Iwest  = 0, 5, 2, 141*0,
+      OB_Jsouth = 2*3, 3*2, 115*0,
 
 .. figure:: figs/obcsexample.*
     :width: 70%
@@ -548,10 +548,10 @@ OBCS\_APPLY\_*:
 :filelink:`OBCS\_SPONGE <pkg/obcs/obcs_sponge.F>`:
 ##################################################
 
-The sponge layer code (turned on with CPP option :varlink:`ALLOW_OBCS_SPONGE` and run-time parameter
-:varlink:`useOBCSsponge`) adds a relaxation term to the right-hand-side of
-the momentum and tracer equations. The variables are relaxed towards
-the boundary values with a relaxation time scale that increases
+The sponge layer code (turned on with CPP option :varlink:`ALLOW_OBCS_SPONGE`
+and run-time parameter :varlink:`useOBCSsponge`) adds a relaxation term to the
+right-hand-side of the momentum and tracer equations. The variables are relaxed
+towards the boundary values with a relaxation time scale that increases
 linearly with distance from the boundary
 
 .. math::
@@ -563,26 +563,41 @@ linearly with distance from the boundary
    {[(1-l)\tau_{b}+l\tau_{i}]}
 
 where :math:`\chi` is the model variable (U/V/T/S) in the interior,
-:math:`\chi_{BC}` the boundary value, :math:`L` the thickness of the
-sponge layer (runtime parameter :varlink:`spongeThickness` in number
-of grid points), :math:`\delta{L}\in[0,L]`
-(:math:`\frac{\delta{L}}{L}=l\in[0,1]`) the distance from the boundary
-(also in grid points), and :math:`\tau_{b}` (runtime parameters
-:varlink:`Urelaxobcsbound` and :varlink:`Vrelaxobcsbound`) and
+:math:`\chi_{BC}` the boundary value, :math:`L` the thickness of the sponge
+layer (runtime parameter :varlink:`spongeThickness` in number of grid points),
+:math:`\delta{L}\in[0,L]` (:math:`\frac{\delta{L}}{L}=l\in[0,1]`) the distance
+from the boundary (also in grid points), and :math:`\tau_{b}` (runtime
+parameters :varlink:`Urelaxobcsbound` and :varlink:`Vrelaxobcsbound`) and
 :math:`\tau_{i}` (runtime parameters :varlink:`Urelaxobcsinner` and
-:varlink:`Vrelaxobcsinner`) the relaxation time scales on the boundary
-and at the interior termination of the sponge layer. The parameters
-:varlink:`Urelaxobcsbound` and :varlink:`Urelaxobcsinner` set the relaxation time scales for
-the Eastern and Western boundaries, :varlink:`Vrelaxobcsbound` and :varlink:`Vrelaxobcsinner`
-for the Northern and Southern boundaries.
+:varlink:`Vrelaxobcsinner`) the relaxation time scales on the boundary and at
+the interior termination of the sponge layer. The parameters
+:varlink:`Urelaxobcsbound` and :varlink:`Urelaxobcsinner` set the relaxation
+time scales for the Eastern and Western boundaries, :varlink:`Vrelaxobcsbound`
+and :varlink:`Vrelaxobcsinner` for the Northern and Southern boundaries.
 
 
 OB's with nonlinear free surface
 ################################
 
-
 OB's with sea ice
 #################
+
+Simple Dirichlet boundary conditions for sea ice parameters can be specified in
+anology to the ocean variables via filenames ``OB[N/S/E/W][a/h/sl/sn/u/v]File``
+(sea ice concentration, cell averaged sea ice thickness, salinity, cell
+averaged snow thickness, ice drift components). With CPP-flag
+:varlink:`ALLOW_OBCS_SEAICE_SPONGE` and runtime flags
+:varlink:`useSeaiceSponge`, :varlink:`seaiceSpongeThickness`, and
+``[A/H/SL/SN]relaxobcs[inner/bound]`` are available in analogy to the sponge
+parameters for the ocean variables.
+
+Neumann boundary conditions :math:`\frac{\partial\phi}{\partial{n}}=0` for all
+sea ice variables can be applied with runtime flag
+:varlink:`SEAICEuseNeumannBC`, which overrides the input files for the
+Dirichlet values.
+
+Defining CPP-flag :varlink:`OBCS_SEAICE_SMOOTH_EDGE` allows to smooth the
+tracer sea-ice variables near the edges.
 
 
 .. _ssub_phys_pkg_obcs_flowchart:
@@ -595,7 +610,49 @@ Flow chart
 
 
     C     !CALLING SEQUENCE:
-    c ...
+    C    [...]
+    C    | |-MAIN_DO_LOOP    :: Open-AD case: Main timestepping loop routine
+    C    | \                    otherwise: just call FORWARD_STEP
+    C    | |
+    C/\  | |-FORWARD_STEP        :: Step forward a time-step ( AT LAST !!! )
+    C    [...]
+    C/\  | | |-DO_OCEANIC_PHYS   :: Oceanic (& seaice) physics computation
+    C/\  | | | |
+    C/\  | | | |-OBCS_CALC       :: Open boundary. package (see pkg/obcs).
+    C/\  | | | |
+    C    [...]
+    C/\  | | | |-SEAICE_MODEL          :: pkg/seaice
+    C/\  | | | | |-SEAICE_DYNSOLVER    :: pkg/seaice
+    C/\  | | | | | |-OBCS_APPLY_UVICE  :: apply uIce/vIce boudnary conditions
+    C/\  | | | | |-OBCS_ADJUST_UVICE   :: (Only for OBCS_UVICE_OLD)
+    C/\  | | | | |-SEAICE_GROWTH
+    C/\  | | | | |-SEAICE_APPLY_SEAICE :: add OBCS for scalar variables
+    C    [...]
+    C/\  | | |-THERMODYNAMICS         :: theta, salt + tracer equations driver.
+    C/\  | | | |                         (synchronous time-stepping case)
+    C    [...]
+    C/\  | | | |-TEMP_INTEGRATE       :: Step forward Prognostic Eq for Temperature.
+    C/\  | | | |
+    C/\  | | | |-SALT_INTEGRATE       :: Step forward Prognostic Eq for Salinity.
+    C/\  | | | |                         same sequence of calls as in TEMP_INTEGRATE
+    C/\  | | | |
+    C/\  | | | |-PTRACERS_INTEGRATE   :: Integrate other tracer(s) (see pkg/ptracers).
+    C/\  | | | | |                     same sequence of calls as in TEMP_INTEGRATE
+    C/\  | | | | |-OBCS_APPLY_PTRACER :: Open boundary package for pTracers
+    C/\  | | | |
+    C/\  | | | |-OBCS_APPLY_TS        :: Open boundary package (see pkg/obcs ).
+    C/\  | | |
+    C    [...]
+    C/\  | | |
+    C/\  | | |-DYNAMICS       :: Momentum equations driver.
+    C/\  | | | |
+    C    [...]
+    C/\  | | | |-OBCS_APPLY_UV    :: Apply Open bndary Conditions to provisional U,V
+    C    [...]
+    C/\  | | |-MOMENTUM_CORRECTION_STEP :: Finalise momentum stepping
+    C    [...]
+    C/\  | | | |-OBCS_APPLY_UV       :: Open boundary package (see pkg/obcs).
+
 
 
 .. _ssub_phys_pkg_obcs_diagnostics:
@@ -603,13 +660,9 @@ Flow chart
 OBCS diagnostics
 ++++++++++++++++
 
-Diagnostics output is available via the diagnostics package (see :numref:`sub_outp_pkg_diagnostics`). Available output fields are summarized below:
-
-::
-
-    ------------------------------------------------------
-     <-Name->|Levs|grid|<--  Units   -->|<- Tile (max=80c)
-    ------------------------------------------------------
+Diagnostics output is available via the diagnostics package (see
+:numref:`sub_outp_pkg_diagnostics`). Currently there are no OBCS-specific
+diagnostics available.
 
 
 .. _ssub_phys_pkg_obcs_experiments:

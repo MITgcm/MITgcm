@@ -1,27 +1,24 @@
 #include "PROFILES_OPTIONS.h"
 
-      subroutine profiles_init_varia( mythid )
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C !ROUTINE: PROFILES_INIT_VARIA
 
-c     ==================================================================
-c     SUBROUTINE profiles_init_varia
-c     ==================================================================
-c
-c     o Initialise the variable cost function part.
-c
-c     started: Christian Eckert eckert@mit.edu 30-Jun-1999
-c     changed: Christian Eckert eckert@mit.edu 18-Apr-2000
-c              - Restructured the code in order to create a package
-c                for the MITgcmUV.
-c     heimbach@mit.edu 05-Nov-2003 Now ecco part of cost
-c
-c     ==================================================================
-c     SUBROUTINE profiles_init_varia
-c     ==================================================================
+C !INTERFACE:
+      SUBROUTINE PROFILES_INIT_VARIA( myThid )
 
-      implicit none
+C     !DESCRIPTION:
+C     Initialise the variable cost function part.
+C     Started: Christian Eckert eckert@mit.edu 30-Jun-1999
+C     Changed: Christian Eckert eckert@mit.edu 18-Apr-2000
+C              - Restructured the code in order to create a package
+C                for the MITgcmUV.
+C              heimbach@mit.edu 05-Nov-2003
+C              - Now ecco part of cost
 
-c     == global variables ==
-
+C     !USES:
+      IMPLICIT NONE
+C     == Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "GRID.h"
@@ -31,44 +28,66 @@ c     == global variables ==
 # include "profiles.h"
 #endif
 
-c     == routine arguments ==
+#ifdef ALLOW_GRDCHK
+# include "netcdf.inc"
+#endif
 
-      integer mythid
+C     !INPUT/OUTPUT PARAMETERS:
+C     myThid: my thread ID number
+      INTEGER myThid
+CEOP
 
-c     == local variables ==
+C     !LOCAL VARIABLES:
+      INTEGER bi,bj
+      INTEGER num_file,num_var
+#ifdef ALLOW_GRDCHK
+      INTEGER err
+#endif /* ALLOW_GRDCHK */
 
-      integer bi,bj
-      integer itlo,ithi
-      integer jtlo,jthi
-      integer num_file,num_var
+C Initialize tiled cost function contributions.
+      DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO num_file = 1, NFILESPROFMAX
+            DO num_var = 1, NVARMAX
+              objf_profiles(num_file,num_var,bi,bj) = 0. _d 0
+              num_profiles(num_file,num_var,bi,bj)  = 0. _d 0
+              profiles_dummy(num_file,num_var,bi,bj) = 0. _d 0
+            ENDDO !DO num_var
+          ENDDO !DO num_file
 
-c     == external functions ==
+          DO num_var = 1,NVARMAX
+            objf_profiles_mean(num_var,bi,bj) = 0. _d 0
+            num_profiles_mean(num_var,bi,bj) = 0. _d 0
+          ENDDO !DO num_var
 
-c     == end of interface ==
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
+#ifdef ALLOW_GRDCHK
+          IF (profilesDoNcOutput) THEN
+            DO num_file = 1, NFILESPROFMAX
+              IF (ProfNo(num_file,bi,bj).GT.0) THEN
+C Write data from buffer to .nc file
+                err = NF_SYNC( fidforward(num_file,bi,bj) )
+                CALL PROFILES_NF_ERROR(
+     &               'INIT_VARIA: NF_SYNC fidforward',
+     &               err,bi,bj,myThid )
 
-c--   Initialize the tiled cost function contributions.
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do num_file=1,NFILESPROFMAX
-           do num_var=1,NVARMAX
-            objf_profiles(num_file,num_var,bi,bj)= 0. _d 0
-            num_profiles(num_file,num_var,bi,bj) = 0. _d 0
-            profiles_dummy(num_file,num_var,bi,bj)=0. _d 0
-           enddo
-          enddo
-          do num_var=1,NVARMAX
-           objf_profiles_mean(num_var,bi,bj)= 0. _d 0
-           num_profiles_mean(num_var,bi,bj) = 0. _d 0
-          enddo
-        enddo
-      enddo
+# ifdef ALLOW_TANGENTLINEAR_RUN
+                IF (TANGENT_SIMULATION) THEN
+                  err = NF_SYNC( fidtangent(num_file,bi,bj) )
+                  CALL PROFILES_NF_ERROR(
+     &                 'INIT_VARIA: NF_SYNC fidtangent',
+     &                 err,bi,bj,myThid )
+                ENDIF
+# endif /* ALLOW_TANGENTLINEAR_RUN */
+
+              ENDIF !IF (ProfNo
+            ENDDO !DO num_file
+          ENDIF !IF (profilesDoNcOutput)
+#endif /* ALLOW_GRDCHK */
+
+        ENDDO !DO bi
+      ENDDO !DO bj
 
       _BARRIER
 
-      return
-      end
-
+      RETURN
+      END

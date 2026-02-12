@@ -1,0 +1,51 @@
+#! /usr/bin/env bash
+
+#- Script to be used with Tapenade in Makefile generated with genmake2 option "-ncad":
+#  Usage:
+#  > append_fwd_src  tap_sfx  FS  FILE_LIST
+#  with:
+#   tap_sfx   :: suffix of Tapenade generated src code, either "_b" (adj) or "_d" (tlm)
+#   FS        :: (fixed-format) Fortran suffix to be used on this platform
+#   FILE_LIST :: list of MITgcm src code to differentiate, i.e., $(AD_FILES)
+#
+#  for all files in FILE_LIST :
+#    get the name of corresponding Tapenade differentiated code with suffix "${tap_sfx}.f"
+#    a) if Tapenade file exist, append original file to it (and rename to "${tap_sfx}.$FS")
+#    b) if not, just copy original file to corresponding file with suffix "${tap_sfx}.$FS"
+
+sfx=$1
+FS=$2
+shift ; shift
+
+if test $FS = f ; then
+#- using default fortran suffix ".f" match Tapenade generated src code: no renaming
+  for ff in $*
+  do
+    bb=`echo $ff | sed "s/\.${FS}$/${sfx}/"`
+    xx=$bb.$FS
+    if test -f $xx ; then
+       #echo " cat $ff >> $xx"
+       cat $ff >> $xx
+    else
+       #- Note: in this case, "-f" is not necessary if it's only used in Makefile
+       #echo " cp $ff $xx"
+       cp -f $ff $xx
+    fi
+  done
+else
+#- using a specific fortran suffix requires to rename Tapenade generated src code
+  for ff in $*
+  do
+    bb=`echo $ff | sed "s/\.${FS}$/${sfx}/"`
+    xx=$bb.$FS
+    #- Note: in this case, "-f" is necessary (if some $xx have been left behind)
+    if test -f $bb.f ; then
+       #echo " cat $ff >> $xx"
+       mv -f $bb.f $xx
+       cat $ff >> $xx
+    else
+       #echo " cp $ff $xx"
+       cp -f $ff $xx
+    fi
+  done
+fi

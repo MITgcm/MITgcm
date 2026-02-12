@@ -59,9 +59,6 @@ C     == GLobal variables ==
 # include "GAD.h"
 # include "GAD_SOM_VARS.h"
 #endif
-#ifdef ALLOW_TIMEAVE
-# include "TIMEAVE_STATV.h"
-#endif
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 #endif
@@ -139,9 +136,6 @@ C   useVariableK :: T when vertical diffusion is not constant
       INTEGER iterNb
 #ifdef ALLOW_ADAMSBASHFORTH_3
       INTEGER m2
-#endif
-#ifdef ALLOW_TIMEAVE
-      LOGICAL useVariableK
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
 C     tkey :: tape key (tile dependent)
@@ -225,13 +219,13 @@ C-    Tracer tendency needs to be set to zero (moved here from gad_calc_rhs):
       ENDDO
 #endif /* ALLOW_AUTODIFF */
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE wFld(:,:,:)         = comlev1_bibj, key=tkey, byte=isbyte
-CADJ STORE theta(:,:,:,bi,bj)  = comlev1_bibj, key=tkey, byte=isbyte
+CADJ STORE wFld(:,:,:)         = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE theta(:,:,:,bi,bj)  = comlev1_bibj, key=tkey, kind=isbyte
 # ifdef ALLOW_ADAMSBASHFORTH_3
-CADJ STORE gtNm(:,:,:,bi,bj,1) = comlev1_bibj, key=tkey, byte=isbyte
-CADJ STORE gtNm(:,:,:,bi,bj,2) = comlev1_bibj, key=tkey, byte=isbyte
+CADJ STORE gtNm(:,:,:,bi,bj,1) = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE gtNm(:,:,:,bi,bj,2) = comlev1_bibj, key=tkey, kind=isbyte
 # else
-CADJ STORE gtNm1(:,:,:,bi,bj)  = comlev1_bibj, key=tkey, byte=isbyte
+CADJ STORE gtNm1(:,:,:,bi,bj)  = comlev1_bibj, key=tkey, kind=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -259,8 +253,8 @@ C Edit GAD_OPTIONS.h and #define DISABLE_MULTIDIM_ADVECTION to
 C disable this section of code.
 #ifdef GAD_ALLOW_TS_SOM_ADV
 # ifdef ALLOW_AUTODIFF_TAMC
-C- Note: inefficient storage, storing nSx*nSy times the full som_T array
-CADJ STORE som_T = comlev1_bibj, key=tkey, byte=isbyte
+C This looks awkward from an F77 point of view, but TAF does the right thing.
+CADJ STORE som_T(:,:,:,bi,bj,:) = comlev1_bibj, key=tkey, kind=isbyte
 # endif
       IF ( tempSOM_Advection ) THEN
 # ifdef ALLOW_DEBUG
@@ -481,16 +475,16 @@ C-    Integrate forward in time, storing in gT_loc:  gT <= T + dt*gT
 C--   Implicit vertical advection & diffusion
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE gT_loc (:,:,:)     = comlev1_bibj, key = tkey, byte = isbyte
+CADJ STORE gT_loc (:,:,:)     = comlev1_bibj, key = tkey, kind = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 #ifdef INCLUDE_IMPLVERTADV_CODE
       IF ( tempImplVertAdv .OR. implicitDiffusion ) THEN
 C     to recover older (prior to 2016-10-05) results:
 c     IF ( tempImplVertAdv ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE wFld(:,:,:)        = comlev1_bibj, key = tkey, byte = isbyte
-CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key = tkey, byte = isbyte
-CADJ STORE recip_hFac(:,:,:)  = comlev1_bibj, key = tkey, byte = isbyte
+CADJ STORE wFld(:,:,:)        = comlev1_bibj, key = tkey, kind = isbyte
+CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key = tkey, kind = isbyte
+CADJ STORE recip_hFac(:,:,:)  = comlev1_bibj, key = tkey, kind = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
         CALL GAD_IMPLICIT_R(
      I         tempImplVertAdv, tempVertAdvScheme, GAD_TEMPERATURE,
@@ -508,17 +502,6 @@ CADJ STORE recip_hFac(:,:,:)  = comlev1_bibj, key = tkey, byte = isbyte
      U         gT_loc,
      I         myThid )
       ENDIF
-
-#ifdef ALLOW_TIMEAVE
-      useVariableK = useKPP .OR. usePP81 .OR. useKL10 .OR. useMY82
-     &       .OR. useGGL90 .OR. useGMredi .OR. ivdc_kappa.NE.0.
-      IF ( taveFreq.GT.0. .AND. useVariableK
-     &                    .AND.implicitDiffusion ) THEN
-        CALL TIMEAVE_CUMUL_DIF_1T( TdiffRtave,
-     I                        gT_loc, kappaRk,
-     I                        Nr, 3, deltaTClock, bi, bj, myThid )
-      ENDIF
-#endif /* ALLOW_TIMEAVE */
 
       IF ( AdamsBashforth_T ) THEN
 C-    Save current tracer field (for AB on tracer) and then update tracer

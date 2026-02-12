@@ -1,10 +1,5 @@
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
 #include "AUTODIFF_OPTIONS.h"
 #include "AD_CONFIG.h"
-#ifdef ALLOW_DIAGNOSTICS
-# include "DIAG_OPTIONS.h"
-#endif
 
 CBOP
 C     !ROUTINE: AUTODIFF_CHECK
@@ -23,8 +18,7 @@ C     \ev
 # include "tamc.h"
 #endif
 #ifdef ALLOW_DIAGNOSTICS
-# include "DIAGNOSTICS_SIZE.h"
-# include "DIAGNOSTICS.h"
+# include "DIAGNOSTICS_P2SHARE.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -34,13 +28,15 @@ C     msgBuf :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
 #ifdef ALLOW_AUTODIFF_TAMC
 
 #ifdef ALLOW_TAMC_CHECKPOINTING
 # if (defined (AUTODIFF_2_LEVEL_CHECKPOINT))
       IF (nchklev_1*nchklev_2 .lt. nTimeSteps) THEN
         WRITE(msgBuf,'(A)')
-     &       'THE_MAIN_LOOP: TAMC checkpointing parameters'
+     &       'THE_MAIN_LOOP: TAF checkpointing parameters'
         CALL PRINT_ERROR( msgBuf , myThid )
         WRITE(msgBuf,'(A,I10)')
      &       'nchklev_1*nchklev_2 = ',
@@ -55,7 +51,7 @@ CEOP
 # elif (defined (AUTODIFF_4_LEVEL_CHECKPOINT))
       IF (nchklev_1*nchklev_2*nchklev_3*nchklev_4 .lt. nTimeSteps) THEN
         WRITE(msgBuf,'(A)')
-     &       'THE_MAIN_LOOP: TAMC checkpointing parameters'
+     &       'THE_MAIN_LOOP: TAF checkpointing parameters'
         CALL PRINT_ERROR( msgBuf , myThid )
         WRITE(msgBuf,'(A,I10)')
      &       'nchklev_1*nchklev_2*nchklev_3*nchklev_4 = ',
@@ -72,7 +68,7 @@ c--   Check the choice of the checkpointing parameters in relation
 c--   to nTimeSteps: (nchklev_1*nchklev_2*nchklev_3 .ge. nTimeSteps)
       IF (nchklev_1*nchklev_2*nchklev_3 .lt. nTimeSteps) THEN
         WRITE(msgBuf,'(A)')
-     &       'THE_MAIN_LOOP: TAMC checkpointing parameters'
+     &       'THE_MAIN_LOOP: TAF checkpointing parameters'
         CALL PRINT_ERROR( msgBuf , myThid )
         WRITE(msgBuf,'(A,I10)')
      &       'nchklev_1*nchklev_2*nchklev_3 = ',
@@ -88,7 +84,7 @@ c--   to nTimeSteps: (nchklev_1*nchklev_2*nchklev_3 .ge. nTimeSteps)
 #else /* undef ALLOW_TAMC_CHECKPOINTING */
       IF (nchklev_1 .lt. nTimeSteps) THEN
         WRITE(msgBuf,'(A)')
-     &       'THE_MAIN_LOOP: TAMC checkpointing parameters'
+     &       'THE_MAIN_LOOP: TAF checkpointing parameters'
         CALL PRINT_ERROR( msgBuf , myThid )
         WRITE(msgBuf,'(A,I10)')
      &       'nchklev_1 = ', nchklev_1

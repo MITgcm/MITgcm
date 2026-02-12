@@ -124,6 +124,8 @@ C--  Seaice-Dynamics parameters
      & 'SEAICEusePicardAsPrecon =', ' /* Picard as preconditioner */')
       CALL WRITE_0D_L ( SEAICEuseLSR, INDEX_NONE,
      & 'SEAICEuseLSR      =', ' /* use default Picard-LSR solver */')
+      CALL WRITE_0D_L ( SEAICEuseLSRflex, INDEX_NONE,
+     & 'SEAICEuseLSRflex  =', ' /* with residual norm criterion */')
       CALL WRITE_0D_L ( SEAICEuseKrylov, INDEX_NONE,
      & 'SEAICEuseKrylov   =', ' /* use Picard-Krylov solver */')
       CALL WRITE_0D_L ( SEAICEuseEVP, INDEX_NONE,
@@ -159,6 +161,14 @@ C--  Seaice-Dynamics parameters
       CALL WRITE_0D_RL( SEAICEbasalDragK2 ,INDEX_NONE,
      &     'SEAICEbasalDragK2 =', ' /* Basal drag parameter */')
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */
+#ifdef SEAICE_ALLOW_SIDEDRAG
+      CALL WRITE_0D_RL( SEAICEsideDrag ,INDEX_NONE,
+     &     'SEAICEsideDrag =', ' /* lateral drag parameter */')
+      CALL WRITE_0D_C( uCoastLineFile, -1, INDEX_NONE,
+     &  'uCoastLineFile =', ' /* u-coastline length file */')
+      CALL WRITE_0D_C( vCoastLineFile, -1, INDEX_NONE,
+     &  'vCoastLineFile =', ' /* v-coastline length file */')
+#endif /* SEAICE_ALLOW_SIDEDRAG */
       CALL WRITE_0D_L ( SEAICEuseTilt, INDEX_NONE,
      & 'SEAICEuseTilt     =', ' /* include surface tilt in dyna. */')
       CALL WRITE_0D_L ( SEAICEuseTEM, INDEX_NONE,
@@ -296,6 +306,8 @@ C--  Seaice-Dynamics parameters
      & 'SEAICEnEVPstarSteps =', ' /* num. of EVP* steps */')
        CALL WRITE_0D_L ( SEAICEuseEVPpickup, INDEX_NONE,
      & 'SEAICEuseEVPpickup=', ' /* start EVP solver with EVP pickup*/')
+       CALL WRITE_0D_RL ( SEAICE_evpAreaReg, INDEX_NONE,
+     & 'SEAICE_evpAreaReg   =', ' /* EVP DenomU/V regularizations*/')
 #endif /* SEAICE_ALLOW_EVP */
       ENDIF
 
@@ -686,21 +698,15 @@ C--  Output related param.
      & 'SEAICE_monFreq  =',' /* monitor frequency */')
       CALL WRITE_0D_RL( SEAICE_dumpFreq   ,INDEX_NONE,
      & 'SEAICE_dumpFreq   =', ' /* dump frequency */')
-      CALL WRITE_0D_RL( SEAICE_taveFreq   ,INDEX_NONE,
-     & 'SEAICE_taveFreq   =', ' /* time-averaging frequency */')
       CALL WRITE_0D_L ( SEAICE_mon_stdio,  INDEX_NONE,
      & 'SEAICE_mon_stdio  =',' /* write monitor to std-outp */')
       CALL WRITE_0D_L ( SEAICE_dump_mdsio,  INDEX_NONE,
      & 'SEAICE_dump_mdsio =',' /* write snap-shot   using MDSIO */')
-      CALL WRITE_0D_L ( SEAICE_tave_mdsio,  INDEX_NONE,
-     & 'SEAICE_tave_mdsio =',' /* write TimeAverage using MDSIO */')
 #ifdef ALLOW_MNC
       CALL WRITE_0D_L ( SEAICE_mon_mnc,  INDEX_NONE,
      & 'SEAICE_mon_mnc    =',' /* write monitor to netcdf file */')
       CALL WRITE_0D_L ( SEAICE_dump_mnc,  INDEX_NONE,
      & 'SEAICE_dump_mnc   =',' /* write snap-shot   using MNC */')
-      CALL WRITE_0D_L ( SEAICE_tave_mnc,  INDEX_NONE,
-     & 'SEAICE_tave_mnc   =',' /* write TimeAverage using MNC */')
 #endif /* ALLOW_MNC */
 
 #ifdef ALLOW_SITRACER

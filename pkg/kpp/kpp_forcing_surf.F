@@ -1,7 +1,4 @@
 #include "KPP_OPTIONS.h"
-#ifdef ALLOW_AUTODIFF
-# include "AUTODIFF_OPTIONS.h"
-#endif
 #ifdef ALLOW_SALT_PLUME
 #include "SALT_PLUME_OPTIONS.h"
 #endif
@@ -198,9 +195,6 @@ C initialize arrays to zero
      &   (surfForcV(i,j,bi,bj) + surfForcV(i,jp1,bi,bj))
        ENDDO
       ENDDO
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ store work3 = comlev1_kpp, key = ikey
-#endif
       epsLocSq = phepsi*phepsi*drF(1)*drF(1)
       epsLoc   = SQRT ( p5*phepsi*drF(1) )
       DO j = jmin, jmax
@@ -234,12 +228,18 @@ CML      ENDDO
      &       SSBETA(i,j,1) * surfForcS(i,j,bi,bj) )
      &       / rhoSurf(i,j)
 CML  &       * work3(i,j)
-        bosol(i,j) = gravity * TTALPHA(i,j,1) * Qsw(i,j,bi,bj) *
-     &       recip_Cp*recip_rhoConst
-     &       / rhoSurf(i,j)
-CML  &       * work3(i,j)
        ENDDO
       ENDDO
+      IF ( selectPenetratingSW .GE. 1 ) THEN
+       DO j = jmin, jmax
+        DO i = imin, imax
+         bosol(i,j) = gravity * TTALPHA(i,j,1) * Qsw(i,j,bi,bj)
+     &       *recip_Cp*recip_rhoConst
+     &       / rhoSurf(i,j)
+CML  &       * work3(i,j)
+        ENDDO
+       ENDDO
+      ENDIF
 
 #ifdef ALLOW_SALT_PLUME
 Catn: need check sign of SPforcT
@@ -276,10 +276,6 @@ CML  &              * recip_rhoConst * work3(i,j)
 #endif /* SALT_PLUME_VOLUME */
       ENDIF
 #endif /* ALLOW_SALT_PLUME */
-
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ store ustar = comlev1_kpp, key = ikey
-#endif
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN

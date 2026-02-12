@@ -5,7 +5,7 @@
 
 C     ==================================================================
 C
-C     adread_adwrite.F: routines to handle the I/O of the TAF/TAMC
+C     adread_adwrite.F: routines to handle the I/O of the TAF
 C                       generated code. All files are direct access files.
 C     Routines:
 C     o  ADREAD    - Read  RL/RS data from file.
@@ -47,9 +47,6 @@ C                 On entry, irec is the record number to be written.
 C     myThid -  integer
 C                 On entry, myThid is the number of the thread or
 C                           instance of the program.
-C
-C     For further details on this see the TAMC Users Manual, Appendix B,
-C     User defined Storage Subroutines.
 C
 C     TAF does not provide the leading argument myThid when compiling
 C     the MITgcmUV code. Instead there is a sed script available that
@@ -100,8 +97,9 @@ C     == global variables ==
 #include "SIZE.h"
 #include "PARAMS.h"
 #ifdef ALLOW_CTRL
-# include "ctrl.h"
-# include "optim.h"
+# include "CTRL_SIZE.h"
+# include "CTRL.h"
+# include "OPTIMCYCLE.h"
 #endif
 C- OpenAD: this header is not converted to a module --> go after the others
 #include "AUTODIFF.h"
@@ -294,8 +292,9 @@ C     == global variables ==
 #include "SIZE.h"
 #include "PARAMS.h"
 #ifdef ALLOW_CTRL
-# include "ctrl.h"
-# include "optim.h"
+# include "CTRL_SIZE.h"
+# include "CTRL.h"
+# include "OPTIMCYCLE.h"
 #endif
 C- OpenAD: this header is not converted to a module --> go after the others
 #include "AUTODIFF.h"

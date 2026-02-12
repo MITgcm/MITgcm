@@ -1,4 +1,7 @@
 #include "OBCS_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: OBCS_INIT_VARIABLES
@@ -42,7 +45,6 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER bi, bj
       INTEGER i, j, k
-      INTEGER fp
 #ifdef ALLOW_PTRACERS
       INTEGER iTracer
 #endif /* ALLOW_PTRACERS */
@@ -51,8 +53,6 @@ C     == Local variables ==
       IF (debugMode) CALL DEBUG_ENTER('OBCS_INIT_VARIABLES',myThid)
 #endif
 
-      fp = readBinaryPrec
-
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
@@ -60,7 +60,7 @@ C     == Local variables ==
         OBCS_ldRec(bi,bj) = 0
 #endif
         DO k=1,Nr
-         DO i=1-Olx,sNx+Olx
+         DO i=1-OLx,sNx+OLx
 #ifdef ALLOW_OBCS_NORTH
           OBNu(i,k,bi,bj)=0. _d 0
           OBNv(i,k,bi,bj)=0. _d 0
@@ -106,7 +106,7 @@ C     == Local variables ==
 #endif /* ALLOW_OBCS_SOUTH */
          ENDDO
 
-         DO j=1-Oly,sNy+Oly
+         DO j=1-OLy,sNy+OLy
 #ifdef ALLOW_OBCS_EAST
           OBEu(j,k,bi,bj)=0. _d 0
           OBEv(j,k,bi,bj)=0. _d 0
@@ -155,7 +155,7 @@ C     == Local variables ==
 
 #ifdef ALLOW_NONHYDROSTATIC
         DO k=1,Nr
-         DO i=1-Olx,sNx+Olx
+         DO i=1-OLx,sNx+OLx
           OBNw (i,k,bi,bj) = 0. _d 0
           OBSw (i,k,bi,bj) = 0. _d 0
 # ifdef ALLOW_OBCS_PRESCRIBE
@@ -165,7 +165,7 @@ C     == Local variables ==
           OBSw1(i,k,bi,bj) = 0. _d 0
 # endif
          ENDDO
-         DO j=1-Oly,sNy+Oly
+         DO j=1-OLy,sNy+OLy
           OBEw (j,k,bi,bj) = 0. _d 0
           OBWw (j,k,bi,bj) = 0. _d 0
 # ifdef ALLOW_OBCS_PRESCRIBE
@@ -179,7 +179,7 @@ C     == Local variables ==
 #endif /* ALLOW_NONHYDROSTATIC */
 
 #ifdef NONLIN_FRSURF
-        DO i=1-Olx,sNx+Olx
+        DO i=1-OLx,sNx+OLx
           OBNeta (i,bi,bj) = 0. _d 0
           OBSeta (i,bi,bj) = 0. _d 0
 # ifdef ALLOW_OBCS_PRESCRIBE
@@ -189,7 +189,7 @@ C     == Local variables ==
           OBSeta1(i,bi,bj) = 0. _d 0
 # endif
         ENDDO
-        DO j=1-Oly,sNy+Oly
+        DO j=1-OLy,sNy+OLy
           OBEeta (j,bi,bj) = 0. _d 0
           OBWeta (j,bi,bj) = 0. _d 0
 # ifdef ALLOW_OBCS_PRESCRIBE
@@ -204,7 +204,7 @@ C     == Local variables ==
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_SEAICE
-        DO i=1-Olx,sNx+Olx
+        DO i=1-OLx,sNx+OLx
 #ifdef ALLOW_OBCS_NORTH
          OBNa (i,bi,bj)=0. _d 0
          OBNh (i,bi,bj)=0. _d 0
@@ -246,7 +246,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
          OBSvice1(i,bi,bj)=0. _d 0
 #endif /* ALLOW_OBCS_SOUTH */
         ENDDO
-        DO j=1-Oly,sNy+Oly
+        DO j=1-OLy,sNy+OLy
 #ifdef ALLOW_OBCS_EAST
          OBEa (j,bi,bj)=0. _d 0
          OBEh (j,bi,bj)=0. _d 0
@@ -296,7 +296,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif
          DO iTracer=1,PTRACERS_numInUse
           DO k=1,Nr
-           DO i=1-Olx,sNx+Olx
+           DO i=1-OLx,sNx+OLx
 #ifdef ALLOW_OBCS_NORTH
             OBNptr (i,k,bi,bj,iTracer)=0. _d 0
 # ifdef ALLOW_OBCS_PRESCRIBE
@@ -314,7 +314,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* ALLOW_OBCS_SOUTH */
            ENDDO
 
-           DO j=1-Oly,sNy+Oly
+           DO j=1-OLy,sNy+OLy
 #ifdef ALLOW_OBCS_EAST
             OBEptr (j,k,bi,bj,iTracer)=0. _d 0
 # ifdef ALLOW_OBCS_PRESCRIBE
@@ -353,63 +353,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        ENDDO
       ENDDO
 
-#ifdef ALLOW_OBCS_TIDES
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO k=1,tidalComponents
-         DO i=1-Olx,sNx+Olx
-# ifdef ALLOW_OBCS_NORTH
-          OBNam (i,k,bi,bj)=0. _d 0
-          OBNph (i,k,bi,bj)=0. _d 0
-# endif
-# ifdef ALLOW_OBCS_SOUTH
-          OBSam (i,k,bi,bj)=0. _d 0
-          OBSph (i,k,bi,bj)=0. _d 0
-# endif
-         ENDDO
-         DO j=1-Oly,sNy+Oly
-# ifdef ALLOW_OBCS_EAST
-          OBEam (j,k,bi,bj)=0. _d 0
-          OBEph (j,k,bi,bj)=0. _d 0
-# endif
-# ifdef ALLOW_OBCS_WEST
-          OBWam (j,k,bi,bj)=0. _d 0
-          OBWph (j,k,bi,bj)=0. _d 0
-# endif
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-      _BARRIER
-# ifdef ALLOW_OBCS_NORTH
-      IF ( OBNamFile .NE. ' '  ) CALL READ_REC_XZ_RL
-     &     (OBNamFile,fp,tidalComponents,OBNam,1,nIter0,myThid )
-      IF ( OBNphFile .NE. ' '  ) CALL READ_REC_XZ_RL
-     &     (OBNphFile,fp,tidalComponents,OBNph,1,nIter0,myThid )
-# endif
-# ifdef ALLOW_OBCS_SOUTH
-      IF ( OBSamFile .NE. ' '  ) CALL READ_REC_XZ_RL
-     &     (OBSamFile,fp,tidalComponents,OBSam,1,nIter0,myThid )
-      IF ( OBSphFile .NE. ' '  ) CALL READ_REC_XZ_RL
-     &     (OBSphFile,fp,tidalComponents,OBSph,1,nIter0,myThid )
-# endif
-# ifdef ALLOW_OBCS_EAST
-      IF ( OBEamFile .NE. ' '  ) CALL READ_REC_YZ_RL
-     &     (OBEamFile,fp,tidalComponents,OBEam,1,nIter0,myThid )
-      IF ( OBEphFile .NE. ' '  ) CALL READ_REC_YZ_RL
-     &     (OBEphFile,fp,tidalComponents,OBEph,1,nIter0,myThid )
-# endif
-# ifdef ALLOW_OBCS_WEST
-      IF ( OBWamFile .NE. ' '  ) CALL READ_REC_YZ_RL
-     &     (OBWamFile,fp,tidalComponents,OBWam,1,nIter0,myThid )
-      IF ( OBWphFile .NE. ' '  ) CALL READ_REC_YZ_RL
-     &     (OBWphFile,fp,tidalComponents,OBWph,1,nIter0,myThid )
-# endif
-      _BARRIER
-#endif /* ALLOW_OBCS_TIDES */
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C     Only needed for Orlanski:
+C     Only needed for Orlanski or Stevens OB:
       IF ( nIter0.NE.0 .OR. pickupSuff.NE.' ' ) THEN
         CALL OBCS_READ_PICKUP( nIter0, myThid )
       ENDIF
@@ -419,6 +364,24 @@ C--   Load/compute OBCS values (initial conditions only)
       IF ( nIter0.EQ.0 .AND. pickupSuff.EQ.' ' ) THEN
 #ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('OBCS_CALC',myThid)
+#endif
+#if ( defined ALLOW_AUTODIFF_TAMC && defined ALLOW_OBCS_STEVENS )
+# ifdef ALLOW_OBCS_EAST
+CADJ STORE OBEsStevens = tapelev_init, key = 1
+CADJ STORE OBEtStevens = tapelev_init, key = 1
+# endif
+# ifdef ALLOW_OBCS_WEST
+CADJ STORE OBWsStevens = tapelev_init, key = 1
+CADJ STORE OBWtStevens = tapelev_init, key = 1
+# endif
+# ifdef ALLOW_OBCS_SOUTH
+CADJ STORE OBSsStevens = tapelev_init, key = 1
+CADJ STORE OBStStevens = tapelev_init, key = 1
+# endif
+# ifdef ALLOW_OBCS_NORTH
+CADJ STORE OBNsStevens = tapelev_init, key = 1
+CADJ STORE OBNtStevens = tapelev_init, key = 1
+# endif
 #endif
        CALL OBCS_CALC( startTime, nIter0,
      &              uVel, vVel, wVel, theta, salt, myThid )
@@ -480,7 +443,7 @@ C     but initialise ptracers differently
           DO bi = myBxLo(myThid), myBxHi(myThid)
             CALL OBCS_APPLY_PTRACER(
      I           bi, bj, 0, iTracer,
-     U           ptracer(1-Olx,1-Oly,1,bi,bj,iTracer),
+     U           pTracer(1-OLx,1-OLy,1,bi,bj,iTracer),
      I           myThid )
           ENDDO
          ENDDO

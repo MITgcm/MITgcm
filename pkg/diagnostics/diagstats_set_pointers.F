@@ -37,7 +37,6 @@ C     == Local variables ==
       LOGICAL found, addMate2List, inList, regListPb
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-
       _BEGIN_MASTER( myThid)
 
 C--   Initialize pointer arrays to zero:
@@ -116,7 +115,7 @@ C-       add this fields to the active list in case regions are differents:
      &    '  space allocated for all stats-diags:',
      &    ndiagcount, ' levels'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT , myThid)
+     &                      SQUEEZE_RIGHT, myThid )
       ELSE
        IF ( ndiagcount.GT.diagSt_size ) THEN
          WRITE(msgBuf,'(2A)')
@@ -168,13 +167,14 @@ C-    check that all selected regions are actually defined
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-        WRITE(msgBuf,'(A)') 'DIAGSTATS_SET_POINTERS: done'
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT , myThid)
-        WRITE(msgBuf,'(2A)')
+      WRITE(msgBuf,'(2A,2(I8,A))') 'DIAGSTATS_SET_POINTERS: done',
+     &  ', use', ndiagcount, ' levels (diagSt_size=', diagSt_size, ' )'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(2A)')
      &   '------------------------------------------------------------'
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT , myThid)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
 
       _END_MASTER( myThid )
 

@@ -36,7 +36,8 @@ C   This option is only relevant (for pack/unpack) with OBCS_CONTROL:
 #undef CTRL_PACK_PRECISE
 #undef CTRL_UNPACK_PRECISE
 #undef CTRL_DELZNORM
-#undef ALLOW_CTRL_WETV
+C   To read-in old (prior to PR #796) packed-ctrl file (specially the header)
+#undef READ_OLD_CTRL_PACK_FILE
 
 C       >>> Other Control.
 C   Allows for GMREDI controls
@@ -54,8 +55,6 @@ C     involves many new dependencies that we would like to avoid in general.
 #ifdef ALLOW_DEPTH_CONTROL
 C   Only relevant within DEPTH_CONTROL code:
 # define USE_SMOOTH_MIN
-# undef ALLOW_HFACC_CONTROL
-# undef ALLOW_HFACC3D_CONTROL
 #endif /* ALLOW_DEPTH_CONTROL */
 
 C       >>> Generic Control.
@@ -64,8 +63,6 @@ C       >>> Generic Control.
 #define ALLOW_GENTIM2D_CONTROL
 # undef ALLOW_UVEL0_CONTROL
 # undef ALLOW_VVEL0_CONTROL
-# undef CTRL_SET_OLD_MAXCVARS_30
-# undef CTRL_SET_OLD_MAXCVARS_40
 
 C       >>> Open boundaries
 #ifdef ALLOW_OBCS

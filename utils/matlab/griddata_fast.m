@@ -8,7 +8,7 @@ function zi = griddata_fast(delau,z,method)
 %   Clay M. Thompson 8-21-95
 %   Copyright 1984-2001 The MathWorks, Inc. 
 
-error(nargchk(2,3,nargin))
+narginchk(2,3)
 
 if nargin<3, method = 'linear'; end
 if ~isstr(method), 

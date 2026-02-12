@@ -19,6 +19,7 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "DIAGNOSTICS_SIZE.h"
+#include "DIAGNOSTICS_P2SHARE.h"
 #include "DIAGNOSTICS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -265,14 +266,14 @@ C-      set Nb of levels to the minimum size of all diag of this list:
           WRITE(msgBuf,'(3A)') 'DIAGNOSTICS_SET_POINTERS: ',
      &      'Set levels for Outp.Stream: ',fnames(ld)
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                        SQUEEZE_RIGHT, myThid)
+     &                        SQUEEZE_RIGHT, myThid )
           suffix = ' Levels:    '
           IF ( fflags(ld)(2:2).EQ.'I' ) suffix = ' Sum Levels:'
           DO k1=1,nlevels(ld),20
             k2 = MIN(nlevels(ld),k1+19)
             WRITE(msgBuf,'(A,20F5.0)') suffix, (levs(k,ld),k=k1,k2)
             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                          SQUEEZE_RIGHT, myThid)
+     &                          SQUEEZE_RIGHT, myThid )
           ENDDO
         ELSEIF ( fflags(ld)(2:2).NE.'P' ) THEN
 C-      if no Vert.Interpolation, check for levels out of range ( > kdiag):
@@ -304,13 +305,14 @@ C- For now, choose to stop, but could change it to just a warning
         ENDIF
       ENDDO
 
-        WRITE(msgBuf,'(A)') 'DIAGNOSTICS_SET_POINTERS: done'
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT , myThid)
-        WRITE(msgBuf,'(2A)')
+      WRITE(msgBuf,'(2A,2(I8,A))') 'DIAGNOSTICS_SET_POINTERS: done',
+     &      ', use', ndiagcount, ' levels (numDiags =', numDiags, ' )'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(2A)')
      &   '------------------------------------------------------------'
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT , myThid)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
 
       _END_MASTER( myThid )
 

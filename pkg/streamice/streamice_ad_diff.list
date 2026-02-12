@@ -14,10 +14,13 @@ streamice_velmask_upd.f
 streamice_visc_beta.f
 streamice_visc_beta_hybrid.f
 streamice_cg_wrapper.f
-streamice_cg_solve.f
 streamice_cg_solve_matfree.f
 streamice_taub.f
+streamice_cost_accum.f
+streamice_cost_reg_accum.f
 streamice_cost_surf_accum.f
+streamice_cost_vel_accum.f
+streamice_cost_final.f
 eta_gl_streamice.f
 eta_gl_prime_streamice.f
 phi_gl_streamice.f
@@ -30,7 +33,7 @@ streamice_read_pickup.f
 streamice_get_vel_resid_err.f
 streamice_get_vel_fp_err.f
 streamice_fields_load.f
-streamice_vel_solve_openad.f
+streamice_vel_solve_fp.f
 streamice_vel_phistage.f
 streamice_vel_phi.f
 streamice_get_fp_err_oad.f

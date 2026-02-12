@@ -24,10 +24,16 @@ C     *============================================================*
 
 #ifdef ALLOW_PETSC
 #ifdef STREAMICE_PETSC_3_8
-C assumes paths
-C {petsc_dir}/include/petsc/finclude/
-C {petsc_dir}/include
-C in the include statement
+
+C     THE FOLLOWING MODULES ARE PART OF THE PETSC
+C     LIBRARY, USED BY STREAMICE WHEN AVAILABLE TO ACCELERATE
+C     SOLVES OF LINEAR SYSTEMS
+
+C     assumes paths
+C     {petsc_dir}/include/petsc/finclude/
+C     {petsc_dir}/include
+C     in the include statement
+
 #include "petsc/finclude/petsc.h"
 #include "petsc/finclude/petscvec.h"
       use petscvec
@@ -37,12 +43,12 @@ C in the include statement
       use petscksp
 #include "petsc/finclude/petscpc.h"
       use petscpc
-      use STREAMICE_PETSC_mod
+#include "STREAMICE_PETSC_MOD.h"
       IMPLICIT NONE
 # else
       IMPLICIT NONE
 #include "finclude/petsc.h"
-#include "STREAMICE_PETSC.h"
+#include "STREAMICE_PETSC_MOD.h"
 #endif
 #endif
 
@@ -50,6 +56,7 @@ C in the include statement
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "STREAMICE.h"
+#include "STREAMICE_FP.h"
 #include "STREAMICE_CG.h"
 
 C     === Global variables ===
@@ -70,8 +77,10 @@ C     cg_Bu, cg_Bv - driving stress
      & A_uv (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
      & A_vv (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1)
 
-#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+#ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_STREAMICE_FP_ADJ
        LOGICAL create_mat, destroy_mat
+#endif
 #endif
 
 #ifdef ALLOW_STREAMICE
@@ -135,7 +144,6 @@ c      PC  pc
       local_offset = 0
 
 #endif
-
 c      call petscInitialize(PETSC_NULL_CHARACTER,ierr)
 
 c----------------------
@@ -202,9 +210,11 @@ c---------------
       call VecAssemblyBegin(solution, ierr)
       call VecAssemblyEnd(solution, ierr)
 
-#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+#ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_STREAMICE_FP_ADJ
 #ifdef ALLOW_PETSC
       if (STREAMICE_need2createmat) then
+#endif
 #endif
 #endif
 
@@ -388,7 +398,7 @@ c     &              A_vv(i,j,bi,bj,colx,coly),INSERT_VALUES,ierr)
        PRINT *, "PETSC PRECOND: SELECTED GAMG"
        call PCSetType(pc, PCGAMG, ierr)
        call PCGAMGSetCoarseEqLim(pc,10000,ierr)
-       call PCGAMGSetSymGraph(pc, PETSC_TRUE,ierr)
+C       call PCGAMGSetSymGraph(pc, PETSC_TRUE,ierr)
        call PCGAMGSetNSmooths(pc, 0,ierr)
 C       call PCGAMGSetThreshold(pc, .001,ierr)
 C       call PCGAMGSetReuseProl(pc,PETSC_FALSE,ierr)
@@ -409,9 +419,11 @@ C       call PCGAMGSetReuseProl(pc,PETSC_FALSE,ierr)
       END SELECT
 
       CALL TIMER_STOP ('STREAMICE_PETSC_SETUP',myThid)
-#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+#ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_STREAMICE_FP_ADJ
 #ifdef ALLOW_PETSC
       endif
+#endif
 #endif
 #endif
 
@@ -448,13 +460,17 @@ C       call PCGAMGSetReuseProl(pc,PETSC_FALSE,ierr)
        ENDDO
       ENDDO
 
-#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+#ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_STREAMICE_FP_ADJ
       if (streamice_need2destroymat) then
+#endif
 #endif
       call KSPDestroy (ksp, ierr)
       call MatDestroy (matrix, ierr)
-#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+#ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_STREAMICE_FP_ADJ
       endif
+#endif
 #endif
       call VecDestroy (rhs, ierr)
       call VecDestroy (solution, ierr)

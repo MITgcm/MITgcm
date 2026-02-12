@@ -21,7 +21,6 @@ c #include "PARAMS.h"
 #include "THSICE_SIZE.h"
 #include "THSICE_PARAMS.h"
 #include "THSICE_VARS.h"
-#include "THSICE_TAVE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -86,14 +85,14 @@ C--
           dWater = dWater - thSIce_deltaT*flxFrac*(ffresh+frwAtm)
           dSalt  = dSalt  - thSIce_deltaT*flxFrac*fsalt
 
-#ifdef ALLOW_TIMEAVE
-          ice_flx2oc_Ave(i,j,bi,bj) = ice_flx2oc_Ave(i,j,bi,bj)
-     &          + dEnerg
-          ice_frw2oc_Ave(i,j,bi,bj) = ice_frw2oc_Ave(i,j,bi,bj)
-     &          + dWater
-          ice_salFx_Ave(i,j,bi,bj) = ice_salFx_Ave(i,j,bi,bj)
-     &          + dSalt
-#endif /*ALLOW_TIMEAVE*/
+c#ifdef ALLOW_TIMEAVE
+c         ice_flx2oc_Ave(i,j,bi,bj) = ice_flx2oc_Ave(i,j,bi,bj)
+c    &          + dEnerg
+c         ice_frw2oc_Ave(i,j,bi,bj) = ice_frw2oc_Ave(i,j,bi,bj)
+c    &          + dWater
+c         ice_salFx_Ave(i,j,bi,bj) = ice_salFx_Ave(i,j,bi,bj)
+c    &          + dSalt
+c#endif /*ALLOW_TIMEAVE*/
 C--
          IF (dBugLoc) WRITE(6,1010) 'ThSI_CHK: resid.H,W,S=',
      &    dEnerg/thSIce_deltaT,dWater/thSIce_deltaT,dSalt/thSIce_deltaT

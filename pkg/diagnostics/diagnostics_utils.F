@@ -6,14 +6,14 @@ C--    o DIAGNOSTICS_COUNT
 C--    o DIAGNOSTICS_GET_DIAG
 C--    o DIAGNOSTICS_GET_POINTERS
 C--    o DIAGNOSTICS_SETKLEV
+C--    o DIAGS_TRACK_DIVA
 C--    o DIAGS_GET_PARMS_I (Function)
 C--    o DIAGS_MK_UNITS (Function)
 C--    o DIAGS_MK_TITLE (Function)
 C--    o DIAGS_RENAMED (Function)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-CBOP 0
+CBOP
 C     !ROUTINE: DIAGNOSTICS_COUNT
 C     !INTERFACE:
       SUBROUTINE DIAGNOSTICS_COUNT( diagName,
@@ -90,8 +90,7 @@ C-    Increment is done
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-CBOP 0
+CBOP
 C     !ROUTINE: DIAGNOSTICS_GET_DIAG
 
 C     !INTERFACE:
@@ -197,8 +196,7 @@ C-      With counter diagnostics => average = Sum / counter:
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-CBOP 0
+CBOP
 C     !ROUTINE: DIAGNOSTICS_GET_POINTERS
 C     !INTERFACE:
       SUBROUTINE DIAGNOSTICS_GET_POINTERS(
@@ -299,8 +297,7 @@ C-    search for this diag. in the active 2D/3D diagnostics list
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-CBOP 0
+CBOP
 C     !ROUTINE: DIAGNOSTICS_SETKLEV
 
 C     !INTERFACE:
@@ -406,8 +403,60 @@ C-    for now, do nothing but just send a warning
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: DIAGS_TRACK_DIVA
 
-CBOP 0
+C     !INTERFACE:
+      SUBROUTINE DIAGS_TRACK_DIVA(
+     O                 divaFirst,
+     I                 myIter, myThid )
+
+C     !DESCRIPTION:
+C     Track status of Divided-Adjoint run by returning
+C     divaFirst=T if first call, and divaFirst=F otherwise
+C     Note:
+C     could figure out this with content of "divided.ctrl" file plus
+C     all nchklev_{1,2,3,4} and (myIter,nIter0,nEndIter) but easier to
+C     just check for first call (this avoids reading file divided.ctrl).
+
+C     !USES:
+      IMPLICIT NONE
+#include "EEPARAMS.h"
+c#include "SIZE.h"
+
+C     !INPUT PARAMETERS:
+C     myIter    :: Current iteration number
+C     myThid    :: my Thread Id number
+      INTEGER myIter
+      INTEGER myThid
+
+C     !OUTPUT PARAMETERS:
+C     divaFirst :: true if first call, otherwise set to false
+      LOGICAL divaFirst
+
+C     !LOCAL VARIABLES:
+C     == Local variables in common block ==
+      INTEGER keepTrackDivaRun(MAX_NO_THREADS)
+      COMMON / LOCAL_DIAGS_TRACK_DIVA / keepTrackDivaRun
+C     == Local variables ==
+CEOP
+
+      IF ( myIter .EQ. -2 ) THEN
+C--   Initialise variable in common block:
+        keepTrackDivaRun(myThid) = 0
+        divaFirst = .FALSE.
+      ELSEIF ( keepTrackDivaRun(myThid).EQ.0 ) THEN
+        divaFirst = .TRUE.
+        keepTrackDivaRun(myThid) = 1
+      ELSE
+        divaFirst = .FALSE.
+      ENDIF
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
 C     !ROUTINE: DIAGS_GET_PARMS_I
 
 C     !INTERFACE:
@@ -458,8 +507,7 @@ c    &  'DIAGS_GET_PARMS_I: parName="',parName,'" , length=',n
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-CBOP 0
+CBOP
 C     !ROUTINE: DIAGS_MK_UNITS
 
 C     !INTERFACE:
@@ -538,8 +586,7 @@ C-    try to reduce length by changing m^2 & m^3 to m2 & m3:
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-CBOP 0
+CBOP
 C     !ROUTINE: DIAGS_MK_TITLE
 
 C     !INTERFACE:
@@ -607,8 +654,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-CBOP 0
+CBOP
 C     !ROUTINE: DIAGS_RENAMED
 
 C     !INTERFACE:

@@ -73,15 +73,9 @@ C--   Print a summary of pTracer parameter values:
       CALL WRITE_0D_RL(PTRACERS_dumpFreq, INDEX_NONE,
      &   'PTRACERS_dumpFreq =',
      &   ' /* Frequency^-1 for snapshot output (s) */')
-      CALL WRITE_0D_RL(PTRACERS_taveFreq, INDEX_NONE,
-     &   'PTRACERS_taveFreq =',
-     &   ' /* Frequency^-1 for time-Aver. output (s) */')
       CALL WRITE_0D_L( PTRACERS_useRecords, INDEX_NONE,
      &   'PTRACERS_useRecords =', ' /* all tracers in 1 file */')
 
-      CALL WRITE_0D_L( PTRACERS_timeave_mnc, INDEX_NONE,
-     &     'PTRACERS_timeave_mnc =',
-     &     ' /* use MNC for Tave output */')
       CALL WRITE_0D_L( PTRACERS_snapshot_mnc, INDEX_NONE,
      &     'PTRACERS_snapshot_mnc =',
      &     ' /* use MNC for snapshot output */')
@@ -235,6 +229,18 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         errCount = errCount + 1
        ENDIF
 #endif /* ndef GAD_SMOLARKIEWICZ_HACK */
+#ifndef PTRACERS_ALLOW_DYN_STATE
+       IF ( PTRACERS_SOM_Advection(iTracer) ) THEN
+        WRITE(msgBuf,'(2A,I4,A)') 'PTRACERS_CHECK:',
+     &    ' PTRACERS_SOM_Advection(', iTracer, ') = T, but'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(3A)') 'PTRACERS_CHECK:',
+     &    ' PTRACERS_ALLOW_DYN_STATE is not defined',
+     &    ' in PTRACERS_OPTIONS.h.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+#endif
       ENDDO
 
       IF ( errCount.GE.1 ) THEN

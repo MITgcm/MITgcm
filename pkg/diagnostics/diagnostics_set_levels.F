@@ -180,7 +180,7 @@ C--   Print to standard output
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     write a summary of the (long) list of all available diagnostics:
-      IF ( debugLevel.GE.debLevA .AND. myProcId.EQ.0 ) THEN
+      IF ( diag_dBugLevel.GE.debLevA .AND. myProcId.EQ.0 ) THEN
 
         WRITE(msgBuf,'(2A)')
      &   ' write list of available Diagnostics to file: ',

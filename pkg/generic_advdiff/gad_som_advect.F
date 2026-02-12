@@ -1,4 +1,7 @@
 #include "GAD_OPTIONS.h"
+#ifdef ALLOW_PTRACERS
+# include "PTRACERS_OPTIONS.h"
+#endif
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
 #endif
@@ -73,6 +76,7 @@ C  gTracer           :: tendency array
       _RL smTr   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,nSOM)
       _RL gTracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
+#if ( defined GAD_ALLOW_TS_SOM_ADV || defined PTRACERS_ALLOW_DYN_STATE )
 C !LOCAL VARIABLES: ====================================================
 C  maskUp        :: 2-D array mask for W points
 C  i,j,k         :: loop indices
@@ -666,6 +670,7 @@ C--   End of k loop for vertical flux
        ENDDO
 C--   end of if not.implicitAdvection block
       ENDIF
+#endif /* GAD_ALLOW_TS_SOM_ADV or PTRACERS_ALLOW_DYN_STATE */
 
       RETURN
       END

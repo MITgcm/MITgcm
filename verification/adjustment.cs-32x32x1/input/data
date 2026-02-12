@@ -23,6 +23,7 @@
 #hFacInf=0.2,
 #hFacSup=1.8,
  exactConserv=.TRUE.,
+ momTidalForcing=.FALSE.,
  momAdvection=.FALSE.,
 #useCoriolis=.FALSE.,
  tempStepping=.FALSE.,

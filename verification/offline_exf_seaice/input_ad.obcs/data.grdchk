@@ -1,0 +1,13 @@
+ &GRDCHK_NML
+ grdchk_eps       = 1.d-6,
+ iglopos          = 10,
+ jglopos          = 10,
+ iGloTile         = 2,
+ jGloTile         = 2,
+ nbeg             = 1,
+ nstep            = 1,
+ nend             = 4,
+#grdchkvarname    = "xx_atemp",
+#grdchkvarname    = "xx_swdown",
+ grdchkvarname    = "xx_siheff",
+ &

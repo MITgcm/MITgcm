@@ -19,15 +19,15 @@ import netCDF4 as nc
 
 grid = nc.Dataset('grid.nc')
 #  1-D fields
-RC = grid['RC'][:]    # vertical grid, cell center locations
+RC = grid['rC'][:]    # vertical grid, cell center locations
 drF = grid['drF'][:]  # vertical spacing of grid cells (thickness of cells)
 #  2-D fields (y,x)
-XC = grid['XC'][:]    # x-location of gridcell centers
-YC = grid['YC'][:]    # y-location of gridcell centers
+XC = grid['xC'][:]    # x-location of gridcell centers
+YC = grid['yC'][:]    # y-location of gridcell centers
 dyG = grid['dyG'][:]  # grid spacing in y-dim (separation between corners)
-rA = grid['rA'][:]    # surface area of gridcells
+rA = grid['rAc'][:]    # surface area of gridcells
 #  3-D fields (z,y,x)
-HFacC = grid['HFacC'][:]  # vertical fraction of cell which is ocean
+HFacC = grid['hFacC'][:]  # vertical fraction of cell which is ocean
 
 # For convenience, load additional dimensional variables from
 # netcdf files (these variables are NOT included in binary output)

@@ -26,6 +26,9 @@ C     !INPUT PARAMETERS:
 CEOP
 
 C     !LOCAL VARIABLES:
+c#ifdef ALLOW_DIVIDED_ADJOINT
+      LOGICAL dummyBoolean
+c#endif
 
 C--   Set number of levels for all available diagnostics
 C     (cannot add diags to list anymore after this call)
@@ -43,13 +46,14 @@ C--   Define region-mask for regional statistics diagnostics
 C--   Calculate pointers for statistics-diags set to non-zero frequency
       CALL DIAGSTATS_SET_POINTERS( myThid )
 
-      CALL DIAGSTATS_INI_IO( myThid )
-
 #ifdef ALLOW_FIZHI
-      if( useFIZHI) then
-      call fizhi_diagalarms(myThid)
-      endif
+      IF ( useFIZHI ) THEN
+        CALL FIZHI_DIAGALARMS( myThid )
+      ENDIF
 #endif
+c#ifdef ALLOW_DIVIDED_ADJOINT
+      CALL DIAGS_TRACK_DIVA( dummyBoolean, -2, myThid )
+c#endif
 
       RETURN
       END

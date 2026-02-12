@@ -1,8 +1,8 @@
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
-#ifdef ALLOW_AUTODIFF
-# include "AUTODIFF_OPTIONS.h"
-#endif
+c#ifdef ALLOW_AUTODIFF
+c# include "AUTODIFF_OPTIONS.h"
+c#endif
 
 CBOP
 C     !ROUTINE: DO_ATMOSPHERIC_PHYS
@@ -40,9 +40,9 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
-#ifdef ALLOW_AUTODIFF_TAMC
-# include "tamc.h"
-#endif /* ALLOW_AUTODIFF_TAMC */
+c#ifdef ALLOW_AUTODIFF_TAMC
+c# include "tamc.h"
+c#endif /* ALLOW_AUTODIFF_TAMC */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -67,10 +67,12 @@ C     i,j,k    :: loop indices
 #endif
 
       IF ( fluidIsAir ) THEN
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE theta = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE salt  = comlev1, key=ikey_dynamics, kind=isbyte
-#endif
+C     These store directives do not seem to be necessary, but we leave
+C     them here as a reminder.
+c#ifdef ALLOW_AUTODIFF_TAMC
+cCADJ STORE theta = comlev1, key=ikey_dynamics, kind=isbyte
+cCADJ STORE salt  = comlev1, key=ikey_dynamics, kind=isbyte
+c#endif
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
 

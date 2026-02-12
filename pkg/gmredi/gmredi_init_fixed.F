@@ -20,6 +20,7 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
+#include "GRID.h"
 #include "GMREDI.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -46,6 +47,12 @@ C--   Initialize arrays in common blocks :
          DO i=1-OLx,sNx+OLx
            GM_isoFac2d(i,j,bi,bj) = 1. _d 0
            GM_bolFac2d(i,j,bi,bj) = 1. _d 0
+#ifdef GM_GEOM_VARIABLE_K
+C     compute depth tapering only once
+           GEOM_taper(i,j,bi,bj) = ( ( oneRL
+     &     - TANH( ( R_low(i,j,bi,bj) - rF(1) + 800. _d 0 )/ 300. _d 0 )
+     &                               )*halfRL )**2
+#endif /* GM_GEOM_VARIABLE_K */
          ENDDO
         ENDDO
        ENDDO

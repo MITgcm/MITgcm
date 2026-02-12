@@ -8,8 +8,7 @@
  sRef = 15*35.,
  viscAr=1.E-3,
  diffKhT=0.,
-#- diffKrT unused when compiled with ALLOW_3D_DIFFKR
-#diffKrT=3.E-5,
+ diffKrT=3.E-5,
  diffKhS=0.,
  diffKrS=3.E-5,
 #ph(
@@ -76,8 +75,6 @@
  dumpFreq=   864000.,
  adjDumpFreq= 432000.,
  adjMonitorFreq=1.,
-# taveFreq=   311040000.,
-# taveFreq=   864000.,
 #monitorFreq=31104000.,
  monitorFreq=1.,
 # 2 months restoring timescale for temperature

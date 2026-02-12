@@ -39,14 +39,18 @@ C     === Global variables ===
 
 #ifdef ALLOW_STREAMICE
 
-      INTEGER i, j, bi, bj, ki, kj
+# if (defined ALLOW_AUTODIFF || defined STREAMICE_ECSECRYO_DOSUM)
+      INTEGER i, j, bi, bj
+# endif
 c       _RL Iratio, Imin_ratio, time_step_remain, local_u_max
 c       _RL ratio, min_ratio
 c       _RL local_v_max, time_step_int, min_time_step
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-       LOGICAL do_vel, tmp_residcheck, tmp_fpcheck
-       _RL sum_square_vel_tile (nSx,nSy)
-       _RL sum_square_vel
+      LOGICAL do_vel
+# ifdef STREAMICE_ECSECRYO_DOSUM
+      _RL sum_square_vel_tile (nSx,nSy)
+      _RL sum_square_vel
+# endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 c**************************************
@@ -123,9 +127,9 @@ c NEW DIRECTIVES - DNG
 
       IF (.not.(STREAMICE_vel_ext.OR.STREAMICE_vel_ext_cgrid)) THEN
 
-#if (defined (ALLOW_STREAMICE_OAD_FP))
+#ifdef ALLOW_STREAMICE_FP_ADJ
 
-       CALL STREAMICE_VEL_SOLVE_OPENAD ( myThid,
+       CALL STREAMICE_VEL_SOLVE_FP ( myThid,
      &                           streamice_max_nl_iter,
      &                           streamice_max_cg_iter,
      &                           myIter )

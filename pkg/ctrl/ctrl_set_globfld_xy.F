@@ -1,96 +1,78 @@
-C
 #include "CTRL_OPTIONS.h"
 
-      subroutine ctrl_set_globfld_xy(
-     I     fname, ivartype, myThid )
+      SUBROUTINE CTRL_SET_GLOBFLD_XY(
+     I                fname, nRecArg, filePrec, myThid )
 
-c     ==================================================================
-c     SUBROUTINE ctrl_set_globfld_xy
-c     ==================================================================
-c
-c     o initialise field
-c
-c     started: heimbach@mit.edu, 16-Aug-2001
-c
-c     changed: heimbach@mit.edu 17-Jun-2003
-c              merged changes from Armin to replace write of
-c              nr * globfld2d by 1 * globfld3d
-c              (ad hoc fix to speed up global I/O)
-c
-c     ==================================================================
+C     ==================================================================
+C     SUBROUTINE ctrl_set_globfld_xy
+C     ==================================================================
+C
+C     o initialise field
+C
+C     started: heimbach@mit.edu, 16-Aug-2001
+C
+C     changed: heimbach@mit.edu 17-Jun-2003
+C              merged changes from Armin to replace write of
+C              nr * globfld2d by 1 * globfld3d
+C              (ad hoc fix to speed up global I/O)
+C
+C     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
-c     == global variables ==
-
+C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#include "PARAMS.h"
+c#include "PARAMS.h"
+c#include "CTRL_SIZE.h"
+c#include "CTRL.h"
+#include "OPTIMCYCLE.h"
 
-#include "ctrl.h"
-#include "optim.h"
+C     == routine arguments ==
+      CHARACTER*(MAX_LEN_FNAM)   fname
+      INTEGER nRecArg
+      INTEGER filePrec
+      INTEGER myThid
 
-c     == routine arguments ==
-
-      character*(MAX_LEN_FNAM)   fname
-      integer ivartype
-      integer myThid
-
-c     == local variables ==
-
-      integer bi,bj
-      integer i,j,k
-      integer itlo,ithi
-      integer jtlo,jthi
-      integer irec,nrec_nl
-
+C     == local variables ==
+      INTEGER bi, bj
+      INTEGER i, j, k
+      INTEGER irec, nrec_nl
       _RL globfld2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL globfld3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
-c     == external ==
+C     == end of interface ==
 
-c     == end of interface ==
-
-      jtlo = myByLo(myThid)
-      jthi = myByHi(myThid)
-      itlo = myBxLo(myThid)
-      ithi = myBxHi(myThid)
-
-c     Initialise temporary file
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-           do j = 1-OLy,sNy+OLy
-             do i = 1-OLx,sNx+OLx
+C     Initialise temporary file
+      DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j = 1-OLy,sNy+OLy
+             DO i = 1-OLx,sNx+OLx
                 globfld2d(i,j,bi,bj) = 0. _d 0
-             enddo
-           enddo
-        enddo
-      enddo
-c     Initialise temporary file
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do k = 1,Nr
-            do j = 1-OLy,sNy+OLy
-              do i = 1-OLx,sNx+OLx
+             ENDDO
+          ENDDO
+          DO k = 1,Nr
+            DO j = 1-OLy,sNy+OLy
+              DO i = 1-OLx,sNx+OLx
                 globfld3d(i,j,k,bi,bj) = 0. _d 0
-              enddo
-            enddo
-          enddo
-        enddo
-      enddo
+              ENDDO
+            ENDDO
+          ENDDO
+        ENDDO
+      ENDDO
 
-      nrec_nl = int(ncvarrecs(ivartype)/Nr)
-      do irec = 1,  nrec_nl
-        CALL WRITE_REC_3D_RL( fname, ctrlprec, Nr,
+      nrec_nl = INT(nRecArg/Nr)
+      DO irec = 1,  nrec_nl
+        CALL WRITE_REC_3D_RL( fname, filePrec, Nr,
      &                        globfld3d,
      &                        irec, optimcycle, myThid )
-      enddo
+      ENDDO
 
-      do irec = nrec_nl*Nr+1, ncvarrecs(ivartype)
-        CALL WRITE_REC_3D_RL( fname, ctrlprec, 1,
+      DO irec = nrec_nl*Nr+1, nRecArg
+        CALL WRITE_REC_3D_RL( fname, filePrec, 1,
      &                        globfld2d,
      &                        irec, optimcycle, myThid )
-      enddo
+      ENDDO
 
       RETURN
       END

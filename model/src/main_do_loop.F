@@ -85,8 +85,8 @@ c**************************************
 
 # ifdef ALLOW_CTRL
 #  include "CTRL_SIZE.h"
-#  include "ctrl.h"
-#  include "ctrl_dummy.h"
+#  include "CTRL.h"
+#  include "CTRL_DUMMY.h"
 #  include "CTRL_GENARR.h"
 #  include "CTRL_OBCS.h"
 # endif
@@ -146,10 +146,6 @@ c**************************************
 # endif
 # ifdef ALLOW_GMREDI
 #  include "GMREDI.h"
-#  include "GMREDI_TAVE.h"
-# endif
-# ifdef ALLOW_TIMEAVE
-#  include "TIMEAVE_STATV.h"
 # endif
 # include "FFIELDS.h"
 # include "DYNVARS.h"

@@ -90,7 +90,6 @@ C     General cylindrical coordinate system
       usingCylindricalGrid= .FALSE.
 C     Coriolis map:
       selectCoriMap       = -1
-      use3dCoriolis       = .TRUE.
 C     grid rotation
       rotateGrid          = .FALSE.
       phiEuler            = 0. _d 0
@@ -201,8 +200,8 @@ C-    viscosity and diffusivity default value:
       saltForcing         = .TRUE.
       salt_stayPositive   = .FALSE.
       addFrictionHeating  = .FALSE.
-      metricTerms         = .TRUE.
       useNHMTerms         = .FALSE.
+      selectMetricTerms   = UNSET_I
       useSmag3D           = .FALSE.
       useFullLeith        = .FALSE.
       useAreaViscLength   = .FALSE.
@@ -229,6 +228,7 @@ C-    viscosity and diffusivity default value:
       multiDimAdvection   = .TRUE.
       useMultiDimAdvec    = .FALSE.
       useCDscheme         = .FALSE.
+      select3dCoriScheme  = UNSET_I
       selectCoriScheme    = UNSET_I
       selectVortScheme    = UNSET_I
       useJamartMomAdv     = .FALSE.
@@ -265,6 +265,7 @@ C--   Set (free)surface-related parameters
       salt_EvPrRn = 0.
       temp_addMass = UNSET_RL
       salt_addMass = UNSET_RL
+      selectPenetratingSW = UNSET_I
       selectBalanceEmPmR  = UNSET_I
       balanceQnet         = .FALSE.
       balancePrintMean    = .FALSE.
@@ -291,6 +292,7 @@ C--   Elliptic solver parameters
       cg2dPreCondFreq    = 1
       cg3dMaxIters       = 150
       cg3dTargetResidual = 1. _d -7
+      cg3dTargetResWunit = -1.
       useNSACGSolver     = .FALSE.
       useSRCGSolver      = .FALSE.
 
@@ -350,12 +352,8 @@ C-    I/O params:
       adjMonitorFreq    = 0.
       monitorSelect     = UNSET_I
       monitor_stdio     = .TRUE.
-      taveFreq          = deltaT*0
-      timeave_mdsio     = .TRUE.
-      tave_lastIter     = 0.5 _d 0
       readBinaryPrec    = precFloat32
       writeBinaryPrec   = precFloat32
-      writeStatePrec    = precFloat64
       rwSuffixType      = 0
 
 C--   Input files

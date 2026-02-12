@@ -5,6 +5,7 @@
 # Continuous equation parameters
  &PARM01
  implicitDiffusion=.TRUE.,
+ ivdc_kappa=1.,
  &
 #
 # Elliptic solver parameters
@@ -22,7 +23,6 @@
  pChkptFreq=3110400000.,
  chkptFreq= 3110400000.,
  dumpFreq=  31104000.,
- taveFreq=  31104000.,
  monitorFreq= 1.,
  periodicExternalForcing=.TRUE.,
  externForcingPeriod=2592000.,
@@ -32,8 +32,8 @@
 # Gridding parameters
  &PARM04
  usingSphericalPolarGrid=.TRUE.,
- delR=  50.,  70., 100., 140., 190., 
-       240., 290., 340., 390., 440., 
+ delR=  50.,  70., 100., 140., 190.,
+       240., 290., 340., 390., 440.,
        490., 540., 590., 640., 690.,
  ygOrigin=-90.,
  dxSpacing=2.8125,

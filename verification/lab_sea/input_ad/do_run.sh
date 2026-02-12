@@ -19,20 +19,38 @@ if test $# = 0 ; then
 #- not MPI run:
     echo "Run $add_DIVA_runs times + final run:"
     for ii in `seq 0 $extraRuns` ; do
+      echo " --> starts DIVA run # $ii :"
       ./mitgcmuv_ad > output_adm.txt.diva_${ii}
-      echo " additional DIVA run # $ii : done"
+      echo -n " <-- DIVA run # $ii : done"
+      if test -f divided.ctrl ; then
+        echo -n ", divided.ctrl :" ; cat divided.ctrl
+      else  echo ", no 'divided.ctrl' file" ; fi
+#     if test $ii = 2 ; then exit $ii ; fi
     done
+    echo " --> Final DIVA run :"
     ./mitgcmuv_ad > output_adm.txt
+    echo -n " <-- Final run : done"
+    if test -f divided.ctrl ; then echo -n ", divided.ctrl :" ; cat divided.ctrl
+    else  echo "" ; fi
 else
   if [ $1 -ge 1 ] ; then
     rm -f costfunction*0000 costfinal divided.ctrl snapshot*
 #- MPI run on $1 procs (note: may need to edit mpirun command):
     echo "Run $add_DIVA_runs times + final run (use 'mpirun -np $1' ):"
     for ii in `seq 0 $extraRuns` ; do
+      echo " --> starts DIVA run # $ii :"
       mpirun -np $1 ./mitgcmuv_ad
-      echo " additional DIVA run # $ii : done"
+      echo -n " <-- DIVA run # $ii : done"
       mv -f STDOUT.0000 STDOUT.0000.diva_${ii}
+      if test -f divided.ctrl ; then
+        echo ", divided.ctrl :"
+        cat divided.ctrl
+      else  echo ", no 'divided.ctrl' file" ; fi
     done
+    echo " --> Final DIVA run :"
     mpirun -np $1 ./mitgcmuv_ad
+    echo -n " <-- Final run : done"
+    if test -f divided.ctrl ; then echo ", divided.ctrl :" ; cat divided.ctrl
+    else  echo "" ; fi
   fi
 fi

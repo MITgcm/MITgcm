@@ -23,7 +23,6 @@
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
  eosType='LINEAR',
- writeStatePrec=64,
  writeBinaryPrec=64,
  readBinaryPrec=64,
  hFacMin=.05,
@@ -40,7 +39,7 @@
  cg2dMaxIters=100,
  cg2dMinItersNSA = 10,
 #cg2dTargetResidual=1.E-13,
- cg2dTargetResWunit=1.E-18,
+ cg2dTargetResWunit=5.E-18,
  useNSACGSolver = .TRUE.,
  &
 # Time stepping parameters

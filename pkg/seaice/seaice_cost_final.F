@@ -30,8 +30,9 @@ C     == global variables ==
 # include "cost.h"
 #endif
 #ifdef ALLOW_CTRL
-# include "ctrl.h"
-# include "optim.h"
+# include "CTRL_SIZE.h"
+# include "CTRL.h"
+# include "OPTIMCYCLE.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:

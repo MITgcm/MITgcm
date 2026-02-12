@@ -31,7 +31,7 @@ def pcol( x, y, data, projection=None, vmin=None, vmax=None, **kwargs):
     >>> import matplotlib.pyplot as plt
     >>> from sq import sq
     >>>
-    >>> x=mit.rdmds('XG'); y=mit.rdmds('YG'); e=mit.rdmds('Eta',np.Inf)
+    >>> x=mit.rdmds('XG'); y=mit.rdmds('YG'); e=mit.rdmds('Eta',np.inf)
     >>> fig = plt.figure();
     >>> mp = Basemap(projection='moll',lon_0 = 0.,
     >>>              resolution = 'l', area_thresh = 1000.)
@@ -180,7 +180,7 @@ def pcol( x, y, data, projection=None, vmin=None, vmax=None, **kwargs):
         # add a reasonable colormap
         m = cm.ScalarMappable(cmap=colmap)
         m.set_array(data)
-        plt.colorbar(m)
+        plt.colorbar(m, ax=ax)
     elif mapit == 0:
         ax = fig.axes[-1]
         ax.axis('image')

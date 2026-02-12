@@ -21,6 +21,7 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "SEAICE_SIZE.h"
+#include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
 #ifdef ALLOW_THSICE
 # include "THSICE_VARS.h"
@@ -59,6 +60,20 @@ CADJ STORE iceheight = comlev1, key=ikey_dynamics, kind=isbyte
         ENDDO
        ENDDO
       ENDDO
+      IF ( SEAICEaddSnowMass ) THEN
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE snowheight = comlev1, key=ikey_dynamics, kind=isbyte
+#endif
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           HSNOW(i,j,bi,bj) = iceMask(i,j,bi,bj)*snowHeight(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
 
 #endif /* ALLOW_THSICE */
       RETURN

@@ -48,11 +48,13 @@ C--   Initialise global variables
             phyto_diaz(i,j,k,bi,bj) = 4. _d -7 / permil
 #endif
           ENDDO
+          chl_sat(i,j,bi,bj)        = 0. _d 0
           gamma_POM_2d(i,j,bi,bj)   = gamma_POM
           wsink0_2d(i,j,bi,bj)      = wsink0
           phi_DOM_2d(i,j,bi,bj)     = phi_DOM
           phi_sm_2d(i,j,bi,bj)      = phi_sm
           phi_lg_2d(i,j,bi,bj)      = phi_lg
+          k0_2d(i,j,bi,bj)          = k0
           Pc_0_2d(i,j,bi,bj)        = Pc_0
           k_Fe_2d(i,j,bi,bj)        = k_Fe
 #ifndef USE_BLING_V1
@@ -66,6 +68,11 @@ C--   Initialise global variables
       ENDDO
 
 C Read in 2d bio related variables
+        IF ( bling_k0_2dFile .NE. ' ' ) THEN
+           CALL READ_FLD_XY_RL( bling_k0_2dFile, ' ',
+     &                          k0_2d, 0, myThid )
+           _EXCH_XY_RL(k0_2d,myThid)
+        ENDIF
         IF ( bling_Pc_2dFile .NE. ' ' ) THEN
            CALL READ_FLD_XY_RL( bling_Pc_2dFile, ' ',
      &                          Pc_0_2d, 0, myThid )
@@ -119,7 +126,22 @@ C Read in 2d bio related variables
         ENDIF
 #endif
 
-C     Now read phyto plankton abundance ICs and exchange
+#ifdef ADVECT_PHYTO
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO k=1,Nr
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            phyto_sm(i,j,k,bi,bj)   = 0.5 _d 0
+            phyto_lg(i,j,k,bi,bj)   = 0.5 _d 0
+            phyto_diaz(i,j,k,bi,bj) = 0. _d 0
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+#else
+C     Read phyto plankton abundance ICs and exchange
       IF (nIter0.EQ.PTRACERS_Iter0) THEN
         IF ( bling_psmFile .NE. ' ' ) THEN
          CALL READ_FLD_XYZ_RL(bling_psmFile,' ',
@@ -139,6 +161,7 @@ C     Now read phyto plankton abundance ICs and exchange
         ENDIF
 #endif
       ENDIF
+#endif /* ifdef ADVECT_PHYTO */
 C     Apply mask
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)

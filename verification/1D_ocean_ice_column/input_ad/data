@@ -114,7 +114,6 @@
  pChkptFreq=0.,
  chkptFreq= 0.,
  dumpFreq = 0.,
- taveFreq = 0.,
 # monitorFreq=86400.,
 # adjDumpFreq=86400.,
 # adjMonitorFreq = 86400.,

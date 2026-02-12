@@ -1,31 +1,33 @@
-c     ==================================================================
-c     CTRL_SIZE.h
-c     ==================================================================
+CBOP
+C     !ROUTINE: CTRL_SIZE.h
+C     !INTERFACE:
+C     #include "CTRL_SIZE.h"
 
-#if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
+C     !DESCRIPTION:
+C     *================================================================*
+C     | CTRL_SIZE.h
+C     | o set maximum number of control variables
+C     *================================================================*
+CEOP
 
 C     Generic control variable array dimension
 C     ----------------------------------------
 C
-C     maxCtrlArr2D :: number of 2-d generic init. ctrl variables
-C     maxCtrlArr3D :: number of 3-d generic init. ctrl variables
-C     maxCtrlTim2D :: number of 2-d generic tim-varying ctrl variables
+C     maxCtrlArr2D :: number of 2-D generic init. ctrl variables
+C     maxCtrlArr3D :: number of 3-D generic init. ctrl variables
+C     maxCtrlTim2D :: number of 2-D generic time-varying ctrl variables
 C     maxCtrlProc  :: number of pre-processing options per ctrl variable
 
-      integer     maxCtrlArr2D
-      parameter ( maxCtrlArr2D = 1 )
+      INTEGER     maxCtrlArr2D
+      PARAMETER ( maxCtrlArr2D = 1 )
 
-      integer     maxCtrlArr3D
-      parameter ( maxCtrlArr3D = 1 )
+      INTEGER     maxCtrlArr3D
+      PARAMETER ( maxCtrlArr3D = 1 )
 
-      integer     maxCtrlTim2D
-      parameter ( maxCtrlTim2D = 1 )
+      INTEGER     maxCtrlTim2D
+      PARAMETER ( maxCtrlTim2D = 1 )
 
-      integer     maxCtrlProc
-      parameter ( maxCtrlProc = 1 )
+      INTEGER     maxCtrlProc
+      PARAMETER ( maxCtrlProc = 1 )
 
-#endif
-
-CEH3 ;;; Local Variables: ***
-CEH3 ;;; mode:fortran ***
-CEH3 ;;; End: ***
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

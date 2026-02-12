@@ -34,18 +34,18 @@ C     === Global variables ===
 # include "tamc.h"
 #endif
 
-      INTEGER myThid, myIter, Gi, Gj
+      INTEGER myThid, myIter
       _RL time_step
       _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS bcMaskx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS bcMasky(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-!      _RL trac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+c      _RL trac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #ifdef ALLOW_STREAMICE
 #ifdef ALLOW_STREAMICE_2DTRACER
 
-      INTEGER i, j, bi, bj
+      INTEGER i, j, bi, bj, Gi, Gj
       _RL thick_bd
       _RL sec_per_year, time_step_loc, MR, SMB, TMB
       _RL BCVALX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -68,8 +68,8 @@ C     === Global variables ===
         DO j=1-3,sNy+3
          DO i=1-3,sNx+3
 
-!          H_streamice_prev(i,j,bi,bj) =
-!     &     H_streamice(i,j,bi,bj)
+c          H_streamice_prev(i,j,bi,bj) =
+c     &     H_streamice(i,j,bi,bj)
 
           ytracflux (i,j,bi,bj) = 0. _d 0
           xtracflux (i,j,bi,bj) = 0. _d 0
@@ -168,12 +168,12 @@ CADJ STORE trac2d  = comlev1, key=ikey_dynamics
 
           IF (STREAMICE_hmask(i,j,bi,bj).eq.1.0 .or.
      &        STREAMICE_hmask(i,j,bi,bj).eq.2.0) THEN
-!           IF (Gi.eq.34.and.Gj.eq.94) THEN
-!            print *, "GOT HERE YFLUX", ytracflux(i,j,bi,bj),
-!     &        ytracflux(i,j+1,bi,bj),trac2d(i,j,bi,bj),
-!     &        vtrans(i,j,bi,bj), vtrans(i,j+1,bi,bj),
-!     &        bcmasky(i,j,bi,bj)
-!           ENDIF
+c           IF (Gi.eq.34.and.Gj.eq.94) THEN
+c            print *, "GOT HERE YFLUX", ytracflux(i,j,bi,bj),
+c     &        ytracflux(i,j+1,bi,bj),trac2d(i,j,bi,bj),
+c     &        vtrans(i,j,bi,bj), vtrans(i,j+1,bi,bj),
+c     &        bcmasky(i,j,bi,bj)
+c           ENDIF
 
 #ifdef STREAMICE_TRACER_AB
            GAD_trac_2d(i,j,bi,bj) = GAD_trac_2d(i,j,bi,bj) -

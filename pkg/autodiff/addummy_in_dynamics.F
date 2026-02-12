@@ -13,7 +13,7 @@ C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE ADDUMMY_IN_DYNAMICS                           |
 C     *==========================================================*
-C     Extract adjoint variable from TAMC/TAF-generated
+C     Extract adjoint variable from TAF-generated
 C     adjoint common blocks, contained in adcommon.h
 C     and write fields to file;
 C     Make sure common blocks in adcommon.h are up-to-date
@@ -97,11 +97,6 @@ C--     Set suffix for this set of data files.
         ELSE
           CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
         ENDIF
-C ==>> Resetting run-time parameter writeBinaryPrec in the middle of a run
-C ==>>  is very very very nasty !!!
-c       writeBinaryPrec = writeStatePrec
-C <<==  If you really want to mess-up with this at your own risk,
-C <<==  uncomment the line above
 
 #ifdef ALLOW_AUTODIFF_MONITOR_DIAG
         IF ( dumpAdVarExch.NE.2 ) THEN

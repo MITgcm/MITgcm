@@ -35,30 +35,28 @@ C     === Global variables ===
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
-C     myThid ::  Number of this instance of INI_PSURF
+C     myThid :: my Thread Id number
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
 C     bi,bj  :: tiles indices
-C     I,J    :: Loop counters
+C     i, j   :: Loop counters
       INTEGER bi, bj
-      INTEGER  I,  J
+      INTEGER i, j
 CEOP
 
 C--   Initialise surface position anomaly to zero
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO J=1-OLy,sNy+OLy
-         DO I=1-OLx,sNx+OLx
-          etaN(I,J,bi,bj) = 0. _d 0
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          etaN(i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
        ENDDO
       ENDDO
 C     Read an initial state
-      IF (pSurfInitFile .NE. ' ') THEN
+      IF ( pSurfInitFile .NE. ' ' ) THEN
        CALL READ_FLD_XY_RL( pSurfInitFile, ' ', etaN, 0, myThid )
 C      fill the overlap (+ BARRIER)
        _EXCH_XY_RL(etaN, myThid)
@@ -68,17 +66,15 @@ C      fill the overlap (+ BARRIER)
 C--   By default, initialize etaNm1 with etaN :
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO J=1-OLy,sNy+OLy
-         DO I=1-OLx,sNx+OLx
-          etaNm1(I,J,bi,bj) = etaN(I,J,bi,bj)
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          etaNm1(i,j,bi,bj) = etaN(i,j,bi,bj)
          ENDDO
         ENDDO
        ENDDO
       ENDDO
-C     _EXCH_XY_RL(etaNm1, myThid)
 #endif
 
-#ifdef EXACT_CONSERV
 C--   By default, initialize etaH with etaN :
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -91,7 +87,6 @@ C--   By default, initialize etaH with etaN :
         ENDDO
        ENDDO
       ENDDO
-#endif /* EXACT_CONSERV */
 
 #ifdef ALLOW_SHELFICE
       IF ( useShelfIce .AND. usingZCoords ) THEN

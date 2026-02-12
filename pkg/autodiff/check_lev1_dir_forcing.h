@@ -10,6 +10,7 @@ C     cases where these stores may become necessary, we just add them
 C     here for all forcing fields under the sun. TAF will pick the
 C     correct directives as they become necessary.
 C
+CADJ STORE gcmSST     = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE sst        = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE sss        = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE qnet       = comlev1, key = ikey_dynamics, kind = isbyte
@@ -79,6 +80,9 @@ CADJ STORE climvstr   = comlev1, key = ikey_dynamics, kind = isbyte
 # endif /* ALLOW_EXF */
 #ifdef ALLOW_GEOTHERMAL_FLUX
 CADJ STORE geothermalFlux = comlev1, key=ikey_dynamics, kind=isbyte
+#endif
+#if ( defined ALLOW_SHELFICE || defined ALLOW_STEEP_ICECAVITY )
+CADJ STORE addMass    = comlev1, key=ikey_dynamics, kind=isbyte
 #endif
 # ifdef ALLOW_BLING
 CADJ STORE wind       = comlev1, key = ikey_dynamics, kind = isbyte

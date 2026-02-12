@@ -38,13 +38,17 @@ myplot(A(:,:,6)')
 
 
 %Colorbar
-subplot(3,10,30)
-x=[0 1];
-y=(0:63)'/63*(cmax-cmin)+cmin;
-pcol(x,y,[y y]);
-set(gca,'XTickLabel',[]);
+%subplot(3,10,30)
+%x=[0 1];
+%y=(0:63)'/63*(cmax-cmin)+cmin;
+%pcolor(x,y,[y y]);
+%set(gca,'XTickLabel',[]);
+subplot(2,4,8)
+caxis([cmin cmax])
+colorbar
+axis off
 
 function [] = myplot( Q )
 global cmin cmax
-pcol( Q );
+pcolor( Q );
 caxis([cmin cmax])

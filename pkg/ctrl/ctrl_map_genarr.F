@@ -17,7 +17,7 @@ C     *=================================================================
 C     | SUBROUTINE CTRL_MAP_GENARR2D
 C     | Add the generic 2D-arrays of the
 C     | control vector to the model state and update the tile halos.
-C     | The control vector is defined in the header file "ctrl.h".
+C     | The control vector is defined in the header file "CTRL.h".
 C     *=================================================================
 C     \ev
 
@@ -31,10 +31,10 @@ C     == global variables ==
 #include "GRID.h"
 
 #include "CTRL_SIZE.h"
-#include "ctrl.h"
-#include "optim.h"
+#include "CTRL.h"
+#include "OPTIMCYCLE.h"
 #include "CTRL_GENARR.h"
-#include "ctrl_dummy.h"
+#include "CTRL_DUMMY.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
       _RL     fld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -215,7 +215,7 @@ C     *=================================================================
 C     | SUBROUTINE CTRL_MAP_GENARR3D
 C     | Add the generic 3D-arrays of the
 C     | control vector to the model state and update the tile halos.
-C     | The control vector is defined in the header file "ctrl.h".
+C     | The control vector is defined in the header file "CTRL.h".
 C     *=================================================================
 C     \ev
 
@@ -229,10 +229,10 @@ C     == global variables ==
 #include "GRID.h"
 
 #include "CTRL_SIZE.h"
-#include "ctrl.h"
-#include "optim.h"
+#include "CTRL.h"
+#include "OPTIMCYCLE.h"
 #include "CTRL_GENARR.h"
-#include "ctrl_dummy.h"
+#include "CTRL_DUMMY.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
       _RL     fld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)

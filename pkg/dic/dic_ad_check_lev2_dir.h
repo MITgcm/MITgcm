@@ -2,12 +2,12 @@
 
 C common CARBON_NEEDS
 CADJ STORE pH                 = tapelev2, key = ilev_2
-CADJ STORE pCO2               = tapelev2, key = ilev_2
-CADJ STORE fIce               = tapelev2, key = ilev_2
-CADJ STORE silicaSurf         = tapelev2, key = ilev_2
+cCADJ STORE pCO2               = tapelev2, key = ilev_2
+cCADJ STORE fIce               = tapelev2, key = ilev_2
+cCADJ STORE silicaSurf         = tapelev2, key = ilev_2
 CADJ STORE atmosPCO2          = tapelev2, key = ilev_2
 
-CADJ STORE gsm_s              = tapelev2, key = ilev_2
+cCADJ STORE gsm_s              = tapelev2, key = ilev_2
 CADJ STORE co2atmos           = tapelev2, key = ilev_2
 CADJ STORE total_atmos_carbon = tapelev2, key = ilev_2
 

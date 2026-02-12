@@ -1,5 +1,8 @@
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: CALC_VISCOSITY
@@ -24,6 +27,11 @@ C     == GLobal variables ==
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
+#ifndef EXCLUDE_PCELL_MIX_CODE
+# ifdef ALLOW_AUTODIFF
+#  include "tamc.h"
+# endif
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -47,6 +55,11 @@ C     i, j, k :: Loop counters
       INTEGER km, mixSurf, mixBott
       _RL pC_kFac
       _RL tmpFac(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+# ifdef ALLOW_AUTODIFF_TAMC
+C     tkey :: tape key (tile dependent)
+C     kkey :: tape key (level and tile dependent)
+      INTEGER tkey, kkey
+# endif
 #endif
 CEOP
 
@@ -120,6 +133,11 @@ C--   end of k loop
       ENDDO
 
 #ifndef EXCLUDE_PCELL_MIX_CODE
+# ifdef ALLOW_AUTODIFF_TAMC
+      tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+CADJ STORE kappaRU = comlev1_bibj, key = tkey, kind = isbyte
+CADJ STORE kappaRV = comlev1_bibj, key = tkey, kind = isbyte
+# endif
       IF ( interViscAr_pCell ) THEN
 C--   This is a hack: alter vertical viscosity (instead of changing many S/R)
 C     in order to account for missing hFac in viscous term
@@ -155,6 +173,9 @@ C     in order to to increase mixing for too thin surface/bottom partial cell
        mixSurf = pCellMix_select/10
        mixBott = MOD(pCellMix_select,10)
        DO k = 2,Nr
+# ifdef ALLOW_AUTODIFF_TAMC
+         kkey = k + (tkey-1)*Nr
+# endif
          km = k - 1
          pC_kFac = 1.
          IF ( pCellMix_delR.LT.drF(k) )
@@ -195,6 +216,14 @@ C-    increase mixing above bottom (by ~(1/hFac)^mixBott) if too thin p-cell
           DO j = 2-OLy, sNy+OLy
            DO i = 2-OLx, sNx+OLx
              tmpFac(i,j) = MIN( tmpFac(i,j), pCellMix_maxFac )
+# ifdef ALLOW_AUTODIFF_TAMC
+           ENDDO
+          ENDDO
+CADJ STORE tmpFac         = comlev1_bibj_k, key = kkey, kind = isbyte
+CADJ STORE kappaRU(:,:,k) = comlev1_bibj_k, key = kkey, kind = isbyte
+          DO j = 2-OLy, sNy+OLy
+           DO i = 2-OLx, sNx+OLx
+# endif
              kappaRU(i,j,k) = MAX( kappaRU(i,j,k),
      &                             pCellMix_viscAr(k)*tmpFac(i,j) )
            ENDDO
@@ -236,6 +265,14 @@ C-    increase mixing above bottom (by ~(1/hFac)^mixBott) if too thin p-cell
           DO j = 2-OLy, sNy+OLy
            DO i = 2-OLx, sNx+OLx
              tmpFac(i,j) = MIN( tmpFac(i,j), pCellMix_maxFac )
+# ifdef ALLOW_AUTODIFF_TAMC
+           ENDDO
+          ENDDO
+CADJ STORE tmpFac         = comlev1_bibj_k, key = kkey, kind = isbyte
+CADJ STORE kappaRV(:,:,k) = comlev1_bibj_k, key = kkey, kind = isbyte
+          DO j = 2-OLy, sNy+OLy
+           DO i = 2-OLx, sNx+OLx
+# endif
              kappaRV(i,j,k) = MAX( kappaRV(i,j,k),
      &                             pCellMix_viscAr(k)*tmpFac(i,j) )
            ENDDO
@@ -279,9 +316,20 @@ C-    Increase KappaRU below surface level:
            ENDDO
           ENDIF
 C-    increase mixing below surface (by ~(1/hFac)^mixSurf) if too thin p-cell
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE tmpFac = comlev1_bibj_k, key = kkey, kind = isbyte
+# endif
           DO j = 2-OLy, sNy+OLy
            DO i = 2-OLx, sNx+OLx
              tmpFac(i,j) = MIN( tmpFac(i,j), pCellMix_maxFac )
+# ifdef ALLOW_AUTODIFF_TAMC
+           ENDDO
+          ENDDO
+CADJ STORE tmpFac         = comlev1_bibj_k, key = kkey, kind = isbyte
+CADJ STORE kappaRU(:,:,k) = comlev1_bibj_k, key = kkey, kind = isbyte
+          DO j = 2-OLy, sNy+OLy
+           DO i = 2-OLx, sNx+OLx
+# endif
              kappaRU(i,j,k) = MAX( kappaRU(i,j,k),
      &                             pCellMix_viscAr(k)*tmpFac(i,j) )
            ENDDO
@@ -321,9 +369,20 @@ C-    Increase KappaRV below surface level:
            ENDDO
           ENDIF
 C-    increase mixing below surface (by ~(1/hFac)^mixSurf) if too thin p-cell
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE tmpFac = comlev1_bibj_k, key = kkey, kind = isbyte
+# endif
           DO j = 2-OLy, sNy+OLy
            DO i = 2-OLx, sNx+OLx
              tmpFac(i,j) = MIN( tmpFac(i,j), pCellMix_maxFac )
+# ifdef ALLOW_AUTODIFF_TAMC
+           ENDDO
+          ENDDO
+CADJ STORE tmpFac         = comlev1_bibj_k, key = kkey, kind = isbyte
+CADJ STORE kappaRV(:,:,k) = comlev1_bibj_k, key = kkey, kind = isbyte
+          DO j = 2-OLy, sNy+OLy
+           DO i = 2-OLx, sNx+OLx
+# endif
              kappaRV(i,j,k) = MAX( kappaRV(i,j,k),
      &                             pCellMix_viscAr(k)*tmpFac(i,j) )
            ENDDO

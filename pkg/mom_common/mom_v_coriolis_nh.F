@@ -5,7 +5,7 @@ C !ROUTINE: MOM_V_CORIOLIS_NH
 
 C !INTERFACE: ==========================================================
       SUBROUTINE MOM_V_CORIOLIS_NH(
-     I               bi,bj,k,wFld,
+     I               bi, bj, k, wFld,
      O               vCoriolisTerm,
      I               myThid )
 
@@ -24,11 +24,11 @@ C !USES: ===============================================================
 #include "GRID.h"
 
 C !INPUT PARAMETERS: ===================================================
-C  bi,bj                :: tile indices
+C  bi, bj               :: tile indices
 C  k                    :: vertical level
 C  wFld                 :: vertical flow
 C  myThid               :: thread number
-      INTEGER bi,bj,k
+      INTEGER bi, bj, k
       _RL wFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER myThid
 
@@ -37,29 +37,48 @@ C  vCoriolisTerm        :: Coriolis term
       _RL vCoriolisTerm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 C !LOCAL VARIABLES: ====================================================
-C  i,j                  :: loop indices
-      INTEGER i,j,kp1
+C  i, j                 :: loop indices
+      INTEGER i, j, kp1
       _RL wMsk
 CEOP
 
+      kp1 = MIN(k+1,Nr)
+      wMsk = 1.
+      IF (k.EQ.Nr) wMsk = 0.
 
-      kp1=min(k+1,Nr)
-      wMsk=1.
-      IF (k.EQ.Nr) wMsk=0.
-
-C Energy conserving discretization of 2*Omega*cos(phi)*w
-      DO j=2-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
-        vCoriolisTerm(i,j) =
-     &   -0.5*( fCoriCos( i ,j,bi,bj)*angleSinC(i, j ,bi,bj)
-     &         *0.5*( wFld( i ,j, k ,bi,bj)*rVel2wUnit( k )
-     &               +wFld( i ,j,kp1,bi,bj)*rVel2wUnit(kp1)*wMsk )
-     &        + fCoriCos(i,j-1,bi,bj)*angleSinC(i,j-1,bi,bj)
-     &         *0.5*( wFld(i,j-1, k ,bi,bj)*rVel2wUnit( k )
-     &               +wFld(i,j-1,kp1,bi,bj)*rVel2wUnit(kp1)*wMsk )
-     &        )*gravitySign
+      IF ( select3dCoriScheme.EQ.1 ) THEN
+C-    Original discretization of 2*Omega*cos(phi)*w
+C     documented as Energy conserving
+       DO j=2-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         vCoriolisTerm(i,j) = -gravitySign*halfRL
+     &       *( fCoriCos(i, j ,bi,bj)*angleSinC(i, j ,bi,bj)*halfRL
+     &           *( wFld(i, j , k ,bi,bj)*rVel2wUnit( k )
+     &            + wFld(i, j ,kp1,bi,bj)*rVel2wUnit(kp1)*wMsk )
+     &        + fCoriCos(i,j-1,bi,bj)*angleSinC(i,j-1,bi,bj)*halfRL
+     &           *( wFld(i,j-1, k ,bi,bj)*rVel2wUnit( k )
+     &            + wFld(i,j-1,kp1,bi,bj)*rVel2wUnit(kp1)*wMsk )
+     &        )
+        ENDDO
        ENDDO
-      ENDDO
+      ELSE
+C-    Using averaged transport:
+       DO j=2-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         vCoriolisTerm(i,j) = -gravitySign*halfRL
+     &    *( fCoriCos(i, j ,bi,bj)*angleSinC(i, j ,bi,bj)
+     &      *( wFld(i, j , k ,bi,bj)*rVel2wUnit( k )*deepFac2F( k )
+     &       + wFld(i, j ,kp1,bi,bj)*rVel2wUnit(kp1)*deepFac2F(kp1)*wMsk
+     &         )*rA(i, j ,bi,bj)*halfRL
+     &     + fCoriCos(i,j-1,bi,bj)*angleSinC(i,j-1,bi,bj)
+     &      *( wFld(i,j-1, k ,bi,bj)*rVel2wUnit( k )*deepFac2F( k )
+     &       + wFld(i,j-1,kp1,bi,bj)*rVel2wUnit(kp1)*deepFac2F(kp1)*wMsk
+     &         )*rA(i,j-1,bi,bj)*halfRL
+     &     )*recip_rAs(i,j,bi,bj)*recip_deepFac2C(k)
+     &      *recip_hFacS(i,j,k,bi,bj)
+        ENDDO
+       ENDDO
+      ENDIF
 
       RETURN
       END

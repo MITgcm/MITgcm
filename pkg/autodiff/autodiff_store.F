@@ -44,6 +44,7 @@ C They provide the fields to be stored.
 #include "SURFACE.h"
 
 #ifdef ALLOW_OBCS
+# include "OBCS_PARAMS.h"
 # include "OBCS_FIELDS.h"
 # include "OBCS_SEAICE.h"
 #endif
@@ -58,7 +59,8 @@ C They provide the fields to be stored.
 # include "SEAICE.h"
 #endif
 #ifdef ALLOW_CTRL
-# include "ctrl.h"
+# include "CTRL_SIZE.h"
+# include "CTRL.h"
 # include "CTRL_OBCS.h"
 #endif
 C     it is important that this file is included after SEAICE_SIZE.h
@@ -118,15 +120,9 @@ C-      2D arrays
           StoreDynVars2D(I,J,bi,bj,18) = 0.
           StoreDynVars2D(I,J,bi,bj,19) = 0.
 #endif
-#ifdef EXACT_CONSERV
           StoreDynVars2D(I,J,bi,bj,20) = etaH(I,J,bi,bj)
           StoreDynVars2D(I,J,bi,bj,21) = dEtaHdt(I,J,bi,bj)
           StoreDynVars2D(I,J,bi,bj,22) = PmEpR(I,J,bi,bj)
-#else
-          StoreDynVars2D(I,J,bi,bj,20) = 0.
-          StoreDynVars2D(I,J,bi,bj,21) = 0.
-          StoreDynVars2D(I,J,bi,bj,22) = 0.
-#endif
          ENDDO
         ENDDO
        ENDDO

@@ -42,7 +42,7 @@ C  none
 C !LOCAL VARIABLES: ====================================================
 C  iTracer :: tracer index
       INTEGER iTracer
-#ifdef ALLOW_AUTODIFF_TAMC
+#if ( defined NONLIN_FRSURF && defined ALLOW_AUTODIFF_TAMC )
 C     kkey :: tape key (depends on levels, tracer, and tiles)
       INTEGER kkey
 #endif
@@ -52,13 +52,13 @@ C Loop over tracers
       DO iTracer=1,PTRACERS_numInUse
        IF ( PTRACERS_StepFwd(iTracer) ) THEN
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#if ( defined NONLIN_FRSURF && defined ALLOW_AUTODIFF_TAMC )
         kkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
         kkey = iTracer + (kkey-1)*PTRACERS_num
         kkey = (kkey-1)*Nr + k
 CADJ STORE pTracer(:,:,k,bi,bj,iTracer)
 CADJ &      = comlev1_bibj_k_ptracers, key=kkey, byte=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif
 
         CALL CONVECTIVELY_MIXTRACER(
      I           bi,bj,k,weightA,weightB,

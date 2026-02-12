@@ -105,6 +105,8 @@ C     former ALLOW_SEAICE_COST_SMR_AREA related flags
       _RL SEAICE_clamp_salt
       _RL SEAICE_clamp_theta
 #endif /* ALLOW_COST */
+      _RL SEAICE_taveFreq
+      LOGICAL SEAICE_tave_mnc
 
 C--   SEAICE parameters
       NAMELIST /SEAICE_PARM01/
@@ -136,8 +138,9 @@ C--   SEAICE parameters
      & SEAICE_evpDampC, SEAICEnEVPstarSteps,
      & SEAICE_evpAlpha, SEAICE_evpBeta,
      & SEAICEaEVPcoeff, SEAICEaEVPcStar, SEAICEaEVPalphaMin,
+     & SEAICE_evpAreaReg,
      & SEAICE_zetaMin, SEAICE_zetaMaxFac, SEAICEusePicardAsPrecon,
-     & SEAICEuseKrylov, SEAICEuseJFNK,
+     & SEAICEuseLSRflex, SEAICEuseKrylov, SEAICEuseJFNK,
      & SEAICEnonLinIterMax, SEAICElinearIterMax, SEAICEnonLinTol,
      & SEAICEnewtonIterMax, SEAICEkrylovIterMax, JFNKgamma_nonlin,
      & SEAICEpreconNL_Iter, SEAICEpreconLinIter,
@@ -163,6 +166,7 @@ C--   SEAICE parameters
      & SEAICE_drag_south, SEAICE_waterDrag_south,
      & SEAICE_dryIceAlb_south, SEAICE_wetIceAlb_south,
      & SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south, HO_south,
+     & SEAICEsideDrag, uCoastLineFile, vCoastLineFile,
      & SEAICE_cBasalStar, SEAICEbasalDragU0, SEAICEbasalDragK1,
      & SEAICEbasalDragK2, SEAICE_wetAlbTemp, SEAICE_waterAlbedo,
      & SEAICE_strength, SEAICE_cStar, SEAICE_eccen,
@@ -333,6 +337,7 @@ c     DIFF1      = .004 _d 0
       SEAICE_deltaTevp   = UNSET_RL
       SEAICEuseBDF2      = .FALSE.
       SEAICEuseKrylov    = .FALSE.
+      SEAICEuseLSRflex   = .FALSE.
 C     JFNK stuff
       SEAICEuseJFNK       = .FALSE.
       SEAICEuseIMEX       = .FALSE.
@@ -371,6 +376,7 @@ C     Hunke, JCP, 2001 use 615 kg/m^2 for this, but does not recommend using it
       SEAICEaEVPcoeff    = UNSET_RL
       SEAICEaEVPcStar    = UNSET_RL
       SEAICEaEVPalphaMin = UNSET_RL
+      SEAICE_evpAreaReg  = -1.
       SEAICE_initialHEFF = ZERO
 #ifdef SEAICE_ITD
 C     Coefficients used to calculate sea ice thickness category limits
@@ -393,6 +399,7 @@ C        c1=1.5/N, c2=42*c1, c3=3.3
       SEAICE_drag        = 0.001  _d 0
       OCEAN_drag         = 0.001  _d 0
       SEAICE_waterDrag   = 0.0055 _d 0
+      SEAICEsideDrag     = 0.0    _d 0
       SEAICEdWatMin      = 0.25   _d 0
       SEAICE_dryIceAlb   = 0.75   _d 0
       SEAICE_wetIceAlb   = 0.66   _d 0
@@ -508,6 +515,8 @@ c     SEAICE_dTempFrz_dS = 0. _d 0
       HeffFile   = ' '
       uIceFile   = ' '
       vIceFile   = ' '
+      uCoastLineFile = ' '
+      vCoastLineFile = ' '
       IMAX_TICE  = 10
       postSolvTempIter = 2
 C     LSR parameters
@@ -545,13 +554,10 @@ C     LSR parameters
       SEAICEwriteState  = .FALSE.
       SEAICE_monFreq    = monitorFreq
       SEAICE_dumpFreq   = dumpFreq
-      SEAICE_taveFreq   = taveFreq
 #ifdef ALLOW_MNC
-      SEAICE_tave_mnc = timeave_mnc
       SEAICE_dump_mnc = snapshot_mnc
       SEAICE_mon_mnc  = monitor_mnc
 #else
-      SEAICE_tave_mnc = .FALSE.
       SEAICE_dump_mnc = .FALSE.
       SEAICE_mon_mnc  = .FALSE.
 #endif
@@ -598,6 +604,8 @@ c     MAX_TICE           = 30.     _d 0
       MAX_HEFF           = UNSET_RL
       SEAICEuseAB2       = .FALSE.
       SEAICE_abEps       = UNSET_RL
+      SEAICE_taveFreq    = UNSET_RL
+      SEAICE_tave_mnc    = .FALSE.
 C-    end retired parameters
 
 #ifdef ALLOW_COST
@@ -865,6 +873,9 @@ C     Euler time stepping scheme of Zhang+Hibler (1997)
 C     Make sure that we have least two pseudo time steps for Picard-LSR
       IF ( SEAICEuseLSR .AND. .NOT. SEAICEusePicardAsPrecon )
      &     SEAICEnonLinIterMax = MAX(SEAICEnonLinIterMax,2)
+
+C     If we do not use the LSR solver, using LSRflex makes no sense
+      IF ( .NOT. SEAICEuseLSR ) SEAICEuseLSRflex = .FALSE.
 
 C-    different defaults for different linear solvers
       IF ( SEAICElinearIterMax .EQ. UNSET_I ) THEN
@@ -1335,6 +1346,25 @@ C-    Retired parameters
        CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
 #endif /* ALLOW_COST */
+      IF ( SEAICE_taveFreq .NE. UNSET_RL ) THEN
+        WRITE(msgBuf,'(2A)') 'SEAICE_READPARMS: "SEAICE_taveFreq"',
+     &    ' is no longer allowed in file "data.seaice"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'SEAICE_READPARMS: ',
+     &    ' since "pkg/timeave" has been removed.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        nRetired = nRetired + 1
+      ENDIF
+      IF ( SEAICE_tave_mnc ) THEN
+        WRITE(msgBuf,'(2A)') 'SEAICE_READPARMS: "SEAICE_tave_mnc"',
+     &    ' is no longer allowed in file "data.seaice"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'SEAICE_READPARMS: ',
+     &    ' since "pkg/timeave" has been removed.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        nRetired = nRetired + 1
+      ENDIF
+
       IF ( nRetired .GT. 0 ) THEN
        WRITE(msgBuf,'(2A)') 'S/R SEAICE_READPARMS: ',
      &  'Error reading parameter file "data.seaice"'
@@ -1368,13 +1398,10 @@ C     facOpenGrow/facOpenMelt
       IF (SEAICE_doOpenWaterMelt)   facOpenMelt = 1. _d 0
 
 C-    Set Output type flags :
-      SEAICE_tave_mdsio = .TRUE.
       SEAICE_dump_mdsio = .TRUE.
       SEAICE_mon_stdio  = .TRUE.
 #ifdef ALLOW_MNC
       IF (useMNC) THEN
-        IF ( .NOT.outputTypesInclusive
-     &       .AND. SEAICE_tave_mnc ) SEAICE_tave_mdsio = .FALSE.
         IF ( .NOT.outputTypesInclusive
      &       .AND. SEAICE_dump_mnc ) SEAICE_dump_mdsio = .FALSE.
         IF ( .NOT.outputTypesInclusive
@@ -1433,6 +1460,17 @@ C     in case of large values
        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
       ENDIF
+
+#ifdef SEAICE_ALLOW_SIDEDRAG
+      IF ( SEAICEsideDrag .NE. 0.0 _d 0 .AND. SEAICE_no_slip ) THEN
+       WRITE(msgBuf,'(3A)') '** WARNING ** SEAICE_READPARMS: ',
+     &      'SEAICEsideDrag .NE. 0.,',
+     &      ' resetting SEAICE_no_slip = .FALSE.'
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+       SEAICE_no_slip = .FALSE.
+      ENDIF
+#endif
 
       IF ( DIFF1 .EQ. UNSET_RL ) THEN
         DIFF1 = 0. _d 0

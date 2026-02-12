@@ -54,7 +54,6 @@
  abEps=0.01,
 #- for testing, reduce amount of output by commenting out output frequencies:
 # pchkptFreq=43200.,
-#taveFreq=7200.,
 #dumpFreq=7200.,
 #diagFreq=7200.,
  monitorSelect=2,

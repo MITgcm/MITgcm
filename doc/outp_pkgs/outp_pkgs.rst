@@ -450,8 +450,8 @@ Currently, the available adjoint state variables are:
    114 |ADJsalt | 15 |       |SMRA    MR|dJ/(g/kg)       |dJ/dSalt: Sensitivity to salinity
    115 |ADJtaux |  1 |   116 |UU A    U1|dJ/(N/m^2)      |dJ/dTaux: Senstivity to zonal surface wind stress
    116 |ADJtauy |  1 |   115 |VV A    U1|dJ/(N/m^2)      |dJ/dTauy: Sensitivity to merid. surface wind stress
-   117 |ADJempmr|  1 |       |SM A    U1|dJ/(kg/m^2/s)   |dJ/dEmPmR: Sensitivity to net surface Fresh-Water flux into the ocean
-   118 |ADJqnet |  1 |       |SM A    U1|dJ/(W/m^2)      |dJ/dQnet: Sensitivity to net surface heat fluxinto the ocean
+   117 |ADJempmr|  1 |       |SM A    U1|dJ/(kg/m^2/s)   |dJ/dEmPmR: Sensitivity to net surface freshwater flux
+   118 |ADJqnet |  1 |       |SM A    U1|dJ/(W/m^2)      |dJ/dQnet: Sensitivity to net surface heat flux
    119 |ADJqsw  |  1 |       |SM A    U1|dJ/(W/m^2)      |dJ/dQsw: Sensitivitiy to net Short-Wave radiation
    120 |ADJsst  |  1 |       |SM A    M1|dJ/K            |dJ/dSST: Sensitivity to Sea Surface Temperature
    121 |ADJsss  |  1 |       |SM A    M1|dJ/(g/kg)       |dJ/dSSS: Sensitivity to Sea Surface Salinity
@@ -1426,6 +1426,7 @@ scripts to manipulate :filelink:`pkg/mnc` output are available at
 More general manipulations can be performed on `netCDF <http://www.unidata.ucar.edu/software/netcdf/>`_  files with
 the NetCDF Operators (“NCO”) at http://nco.sourceforge.net
 or with the Climate Data Operators (“CDO”) at https://code.mpimet.mpg.de/projects/cdo.
+See :ref:`gluemnc <gluemnc>` for post-processing NetCDF output via command line. 
 
 Unlike the older :filelink:`pkg/mdsio` routines, :filelink:`pkg/mnc` reads and writes variables on
 different “grids” depending upon their location in the
@@ -1987,8 +1988,8 @@ and as yet are unpublished and undocumented.
 pkg/mnc utils
 ~~~~~~~~~~~~~
 
-The following scripts and
-utilities have been written to help manipulate `netCDF <http://www.unidata.ucar.edu/software/netcdf/>`_ files:
+The following scripts and utilities have been written to help manipulate 
+`netCDF <http://www.unidata.ucar.edu/software/netcdf/>`_ files:
 
 Tile Assembly:
     A `MATLAB <https://www.mathworks.com/>`_ script
@@ -1996,6 +1997,10 @@ Tile Assembly:
     spatially “assembling” :filelink:`pkg/mnc` output. A convenience wrapper script
     called :filelink:`gluemnc.m <utils/matlab/gluemnc.m>` is also provided. Please use the
     `MATLAB <https://www.mathworks.com/>`_ help facility for more information.
+
+    A bash script :filelink:`gluemnc <utils/scripts/gluemnc>` is available for 
+    spatially “assembling” :filelink:`pkg/mnc` NetCDF output. Please see 
+    :numref:`gluemnc` for details. 
 
 gmt:
     As MITgcm evolves to handle more complicated domains and topologies,

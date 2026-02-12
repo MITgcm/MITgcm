@@ -23,9 +23,20 @@ C     originally implemented in OPA.
 
 C     allow IDEMIX model
 #undef ALLOW_GGL90_IDEMIX
+#ifdef ALLOW_GGL90_IDEMIX
+C     The cvmix version of idemix uses different regularisations for the
+C     Coriolis parameter, buoyancy frequency etc, when used in the denominator
+# define GGL90_IDEMIX_CVMIX_VERSION
+#endif
 
 C     include Langmuir circulation parameterization
 #define ALLOW_GGL90_LANGMUIR
+
+C     Replace MAX(mxl,mxlMin) by SQRT(mxl**2+mxlMin**2) to help adjoint
+#define GGL90_REGULARIZE_MIXINGLENGTH
+
+C     recover old bug prior to Jun 2023
+#undef GGL90_MISSING_HFAC_BUG
 
 #endif /* ALLOW_GGL90 */
 #endif /* GGL90_OPTIONS_H */

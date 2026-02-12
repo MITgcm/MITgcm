@@ -113,9 +113,10 @@ C     shiCDragQuadFld used in shelfice_u/v_drag_coeff
      &     ( nIter0.NE.0 .OR. startTime.NE.baseTime
      &                   .OR. pickupSuff.NE.' ') ) THEN
         CALL SHELFICE_READ_PICKUP( 1, nIter0, myThid )
-c     ENDIF
+      ENDIF
 
-c     IF ( SHELFICEMassStepping ) THEN
+#ifdef ALLOW_SHELFICE_REMESHING
+      IF ( SHI_update_kTopC ) THEN
 C     set/update "kTopC" to agree with changing ice-shelf mass
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -132,6 +133,7 @@ C     set/update "kTopC" to agree with changing ice-shelf mass
          ENDDO
         ENDDO
       ENDIF
+#endif /* ALLOW_SHELFICE_REMESHING */
 
 #ifdef ALLOW_COST
       DO bj = myByLo(myThid), myByHi(myThid)

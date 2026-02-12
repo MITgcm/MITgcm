@@ -26,7 +26,7 @@ C     == global variables ==
 #include "PARAMS.h"
 #ifdef ALLOW_CTRL
 # include "CTRL_SIZE.h"
-# include "ctrl.h"
+# include "CTRL.h"
 # include "CTRL_GENARR.h"
 # include "CTRL_OBCS.h"
 # include "ctrl_local_params.h"

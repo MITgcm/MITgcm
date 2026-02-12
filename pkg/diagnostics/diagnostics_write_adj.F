@@ -1,6 +1,6 @@
 #include "DIAG_OPTIONS.h"
 
-      SUBROUTINE DIAGNOSTICS_WRITE_ADJ (
+      SUBROUTINE DIAGNOSTICS_WRITE_ADJ(
      I                               modelStart,
      I                               myTime, myIter, myThid )
 C***********************************************************************
@@ -103,14 +103,27 @@ C--- No Statistics Diag. Output for adjoint variables
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       IF ( write2file ) THEN
-        IF ( debugLevel.GE.debLevC ) THEN
-          CALL DIAGNOSTICS_SUMMARY( myTime, myIter, myThid )
+        IF ( diag_dBugLevel.GE.debLevC ) THEN
+          CALL DIAGNOSTICS_SUMMARY( -1, myTime, myIter, myThid )
         ENDIF
 C-    wait for everyone before setting arrays to zero:
         _BARRIER
       ENDIF
 
-C--     Clear storage space:
+c     IF ( modelStart ) THEN
+C-    Track diagnostics pkg activation status:
+C  Note: switching off diag_pkgStatus does not work since few ADJ-diags
+C      are filled outside S/R FORWARD_STEP_AD (e.g., "ADJetan " from
+C      initialise_varia_ad -> integr_continuity_ad. -> addummy_for_etan )
+cc      IF ( diag_pkgStatus.NE.ready2fillDiags ) STOP
+c       _BARRIER
+c       _BEGIN_MASTER(myThid)
+c       diag_pkgStatus = 99
+c       _END_MASTER(myThid)
+c       _BARRIER
+c     ENDIF
+
+C--   Clear storage space:
       DO n = 1,nlists
         IF ( writeDiags(n) ) CALL DIAGNOSTICS_CLEAR(n,myThid)
       ENDDO

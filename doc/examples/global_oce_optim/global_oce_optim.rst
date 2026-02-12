@@ -150,9 +150,6 @@ variable in :filelink:`pkg/ctrl` by modifying the following subroutines:
 -  :filelink:`pkg/ctrl/ctrl_map_forcing.F` in which the updated adjustment is added to the
    first guess :math:`Q_\mathrm{netm}`.
 
-Note also some minor changes in :filelink:`pkg/ctrl/ctrl.h`, :filelink:`pkg/ctrl/ctrl_readparms.F`, and
-:filelink:`pkg/ctrl/ctrl_dummy.h` (:varlink:`xx_hfluxm_file`, :varlink:`fname_hfluxm`, :varlink:`xx_hfluxm_dummy`).
-
 Cost functions
 ~~~~~~~~~~~~~~
 

@@ -8,7 +8,7 @@
  nstep            = 1,
  nend             = 3,
 # testing dpH/dALK
- grdchkvarindex   = 204,
+ grdchkvarname    = "xx_ptr2",
  iGloPos  =34,
  jGloPos  =10,
  kGloPos  =1,

@@ -143,8 +143,8 @@ C     == Global variables ===
 # ifdef ALLOW_AUTODIFF_TAMC
 #  include "tamc.h"
 # endif
-# include "ctrl.h"
-# include "optim.h"
+# include "CTRL.h"
+# include "OPTIMCYCLE.h"
 # include "cost.h"
 # include "adcost.h"
 # include "g_cost.h"

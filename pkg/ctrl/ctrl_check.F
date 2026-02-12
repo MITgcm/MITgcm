@@ -12,6 +12,9 @@
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE_OPTIONS.h"
 #endif
+#ifdef ALLOW_OBCS
+# include "OBCS_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: CTRL_CHECK
@@ -33,11 +36,11 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "ctrl.h"
+#include "CTRL_SIZE.h"
+#include "CTRL.h"
 #ifdef ALLOW_EXF
 # include "EXF_PARAM.h"
 #endif
-#include "CTRL_SIZE.h"
 #include "CTRL_GENARR.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -94,11 +97,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef ALLOW_GENTIM2D_CONTROL
       IF ( .NOT.useCAL ) THEN
         WRITE(msgBuf,'(2A)') '** WARNING ** CTRL_CHECK: ',
-     &    'ALLOW_GENTIM2D_CONTROL is'
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-        WRITE(msgBuf,'(2A)') '** WARNING ** ',
-     &    ' unsafe without calendar package (currently: useCAL=F)'
+     &    'ALLOW_GENTIM2D_CONTROL is unsafe'
+     &    //' without pkg/cal (currently: useCAL=F)'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
       ENDIF
@@ -235,6 +235,46 @@ C-    to use KAPREDI_CONTROL, needs to define GM_READ_K3D_REDI in GMREDI_OPTIONS
 # endif /* ndef EXCLUDE_CTRL_PACK */
 #endif /* ALLOW_PACKUNPACK_METHOD2 */
 
+#if ( defined ALLOW_OBCSN_CONTROL && !defined ALLOW_OBCS_NORTH )
+      WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
+     &     'CPP-flag ALLOW_OBCSN_CONTROL is defined,'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
+     &     'but CPP-flag ALLOW_OBCS_NORTH is not defined.'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      errCount = errCount + 1
+#endif
+
+#if ( defined ALLOW_OBCSS_CONTROL && !defined ALLOW_OBCS_SOUTH )
+      WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
+     &     'CPP-flag ALLOW_OBCSS_CONTROL is defined,'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
+     &     'but CPP-flag ALLOW_OBCS_SOUTH is not defined.'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      errCount = errCount + 1
+#endif
+
+#if ( defined ALLOW_OBCSE_CONTROL && !defined ALLOW_OBCS_EAST )
+      WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
+     &     'CPP-flag ALLOW_OBCSE_CONTROL is defined,'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
+     &     'but CPP-flag ALLOW_OBCS_EAST is not defined.'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      errCount = errCount + 1
+#endif
+
+#if ( defined ALLOW_OBCSW_CONTROL && !defined ALLOW_OBCS_WEST )
+      WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
+     &     'CPP-flag ALLOW_OBCSW_CONTROL is defined,'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
+     &     'but CPP-flag ALLOW_OBCS_WEST is not defined.'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      errCount = errCount + 1
+#endif
+
 #ifdef ALLOW_HFLUXM_CONTROL
       WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
      &     'CPP-flag ALLOW_HFLUXM_CONTROL has been retired.'
@@ -248,14 +288,24 @@ C-    to use KAPREDI_CONTROL, needs to define GM_READ_K3D_REDI in GMREDI_OPTIONS
       WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
      &     'to achieve the same thing.'
       CALL PRINT_ERROR( msgBuf, myThid )
-C     For now only print the error message, but do not increase the
-C     error count so that the model does not stop as along as we have to
-C     put up with the OpenAD version of tutorial_global_oce_optim
       errCount = errCount + 1
 #endif /* ALLOW_HFLUXM_CONTROL */
 
+#ifdef ALLOW_HFACC_CONTROL
+      WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
+     &     'CPP-flag ALLOW_HFACC_CONTROL has been retired.'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      errCount = errCount + 1
+#endif
+#ifdef ALLOW_HFACC3D_CONTROL
+      WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
+     &     'CPP-flag ALLOW_HFACC3D_CONTROL has been retired.'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      errCount = errCount + 1
+#endif
+
 #ifdef ALLOW_GENARR2D_CONTROL
-c     Warn user: doscaling must be true to do log10 ctrl
+C     doscaling must be true to do log10 ctrl
       DO iarr = 1, maxCtrlArr2D
         DO k2 = 1, maxCtrlProc
           IF ( (xx_genarr2d_preproc(k2,iarr).EQ.'noscaling') .AND.
@@ -267,7 +317,6 @@ c     Warn user: doscaling must be true to do log10 ctrl
      &      'log10ctrl and noscaling set for xx_genarr2d(',iarr,').'
             CALL PRINT_ERROR( msgBuf, myThid )
             errCount = errCount + 1
-C           STOP 'ABNORMAL END: S/R CTRL_CHECK'
           ENDIF
         ENDDO
       ENDDO
@@ -285,7 +334,6 @@ C     Cannot have shiTransCoeffT/S as control variables in gammafrict form
      &    'is defined'
           CALL PRINT_ERROR( msgBuf, myThid )
           errCount = errCount + 1
-C         STOP 'ABNORMAL END: S/R CTRL_CHECK'
         ENDIF
       ENDDO
 #  else
@@ -303,7 +351,6 @@ C     but is probably not what the user wants or expects.
      &    'is NOT defined'
           CALL PRINT_ERROR( msgBuf, myThid )
           errCount = errCount + 1
-C         STOP 'ABNORMAL END: S/R CTRL_CHECK'
         ENDIF
       ENDDO
 #  endif /* SHI_ALLOW_GAMMAFRICT */
@@ -311,7 +358,7 @@ C         STOP 'ABNORMAL END: S/R CTRL_CHECK'
 #endif /* ALLOW_GENARR2D_CONTROL */
 
 #ifdef ALLOW_GENARR3D_CONTROL
-c     Warn user: doscaling must be true to do log10 ctrl
+C     doscaling must be true to do log10 ctrl
       DO iarr = 1, maxCtrlArr3D
         DO k2 = 1, maxCtrlProc
           IF ( (xx_genarr3d_preproc(k2,iarr).EQ.'noscaling') .AND.
@@ -323,7 +370,6 @@ c     Warn user: doscaling must be true to do log10 ctrl
      &      'log10ctrl and noscaling set for xx_genarr2d(',iarr,'). '
             CALL PRINT_ERROR( msgBuf, myThid )
             errCount = errCount + 1
-C           STOP 'ABNORMAL END: S/R CTRL_CHECK'
           ENDIF
         ENDDO
       ENDDO

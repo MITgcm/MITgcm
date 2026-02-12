@@ -1,4 +1,4 @@
-function G = load_grid(varargin);
+function G = load_grid(varargin)
 % function G = load_grid(dirName,option,nyAxis,nxAxis);
 %
 % load the MITgcm output grid-files into one structure array
@@ -11,8 +11,10 @@ function G = load_grid(varargin);
 %        ncdf = 2,3 : as 0,1 + print elapsed-time for loading files
 %      option >= 10 : only read in Horiz.Grid spacing (without hFac)
 %      option >= 20 : only read in Verti.Grid spacing (without hFac)
+%      nyAxis = number of spacing in 1.D y-axis yAxC (default: nyAxis = grid-Ny)
 %      nxAxis = number of spacing in 1.D x-axis xAxC (default: nxAxis = grid-Nx)
 
+fprintf('entering fct "load_grid" ...');
 if nargin == 0
   rDir = '.';
 else
@@ -25,11 +27,13 @@ else
  ncdf= varargin{2};
  ktyp=floor(ncdf/10); ncdf=rem(ncdf,10);
 end
+% kinp: = 0 : binary file ; = 1 : old MNC file ; = 2 : new MNC file
 
 if ncdf > 1, TimeT0=clock; end
 
 if rem(ncdf,2) == 0,
 %- load MDSIO grid files :
+ kinp=0;
 if ktyp < 2,
  xC=rdmds(fullfile(rDir,'XC'));
  yC=rdmds(fullfile(rDir,'YC'));
@@ -64,7 +68,8 @@ if rem(ktyp,2) == 0,
  rF=rdmds(fullfile(rDir,'RF')); rF=squeeze(rF);
  dRc=rdmds(fullfile(rDir,'DRC')); dRc=squeeze(dRc);
  dRf=rdmds(fullfile(rDir,'DRF')); dRf=squeeze(dRf);
- dims = size(rC);
+ depth=rdmds(fullfile(rDir,'Depth'));
+ dims = [size(depth) length(rC)];
 end
 
 if ktyp == 0,
@@ -72,7 +77,6 @@ if ktyp == 0,
  hFacC=rdmds(fullfile(rDir,'hFacC'));
  hFacW=rdmds(fullfile(rDir,'hFacW'));
  hFacS=rdmds(fullfile(rDir,'hFacS'));
- depth=rdmds(fullfile(rDir,'Depth'));
  dims = size(hFacC);
 end
 
@@ -80,90 +84,119 @@ end
 
 else
 %- load NetCDF grid files :
-%S=rdmnc([rDir,'grid.*.nc']);
  S=rdmnc(fullfile(rDir,'grid.*.nc'));
  if ncdf > 1, TimeT1=clock; end
 
-%-- 
- xC=S.XC;
- yC=S.YC;
- xG=S.XG(1:end-1,1:end-1);
- yG=S.YG(1:end-1,1:end-1);
- rC=S.RC';
- rF=S.RF';
+%--
+ if isfield(S,'XC'),
+  kinp=1; % old MNC grid names until c69h
+  xC=S.XC;
+  yC=S.YC;
+  xG=S.XG(1:end-1,1:end-1);
+  yG=S.YG(1:end-1,1:end-1);
+  rC=S.RC';
+  rF=S.RF';
+  rAc=S.rA;
+  if isfield(S,'AngleCS') & isfield(S,'AngleSN'),
+    csAngle=S.AngleCS;
+    snAngle=S.AngleSN;
+  else
+    fprintf(' no grid orientation (Cos & Sin) in grid file ');
+    csAngle= ones(size(rAc));
+    snAngle=zeros(size(rAc));
+    fprintf(' => set COS=1,SIN=0\n');
+  end
+  hFacC=S.HFacC;
+  hFacW=S.HFacW(1:end-1,:,:);
+  hFacS=S.HFacS(:,1:end-1,:);
+ else
+  kinp=2; % current MNC grid names >=c69h
+  xC=S.xC;
+  yC=S.yC;
+  xG=S.xG(1:end-1,1:end-1);
+  yG=S.yG(1:end-1,1:end-1);
+  rC=S.rC';
+  rF=S.rF';
+  rAc=S.rAc;
+  if isfield(S,'angleCS') & isfield(S,'angleSN'),
+    csAngle=S.angleCS;
+    snAngle=S.angleSN;
+  else
+    fprintf(' no grid orientation (Cos & Sin) in grid file ');
+    csAngle= ones(size(rAc));
+    snAngle=zeros(size(rAc));
+    fprintf(' => set COS=1,SIN=0\n');
+  end
+  hFacC=S.hFacC;
+  hFacW=S.hFacW(1:end-1,:,:);
+  hFacS=S.hFacS(:,1:end-1,:);
+ end
  dXc=S.dxC(1:end-1,:);
  dYc=S.dyC(:,1:end-1);
  dXg=S.dxG(:,1:end-1);
  dYg=S.dyG(1:end-1,:);
  dRc=S.drC';
  dRf=S.drF';
- rAc=S.rA;
  rAw=S.rAw(1:end-1,:);
  rAs=S.rAs(:,1:end-1);
  rAz=S.rAz(1:end-1,1:end-1);
- if isfield(S,'AngleCS') & isfield(S,'AngleSN'), 
-   csAngle=S.AngleCS;
-   snAngle=S.AngleSN;
- else
-   fprintf(' no grid orientation (Cos & Sin) in grid file ');
-   csAngle= ones(size(rAc));
-   snAngle=zeros(size(rAc));
-   fprintf(' => set COS=1,SIN=0\n');
- end
- hFacC=S.HFacC;
- hFacW=S.HFacW(1:end-1,:,:);
- hFacS=S.HFacS(:,1:end-1,:);
  depth=S.Depth;
  dims = size(hFacC);
+
 end
 
-if ncdf > 1, fprintf(' (took %6.4f s)\n',etime(TimeT1,TimeT0)); end
+if ncdf > 1, fprintf(' (took %6.4f s)',etime(TimeT1,TimeT0)); end
 
 if length(dims) == 1, dims(2)=1; end
 if length(dims) == 2, dims(3)=1; end
 
+if rem(ncdf,2) == 1 | ktyp ~= 2,
 %- 1-D axis:
-if nargin < 3,
+  if nargin < 3,
 %- yAxis
-  ny=dims(2);
-  yAxC=yC(1,:)';
-  if rem(ncdf,2) == 0,
-    yAxV=[yG(1,:) 2*yC(1,end)-yG(1,end)]';
+    ny=dims(2);
+    yAxC=yC(1,:)';
+    if kinp == 0,
+      yAxV=[yG(1,:) 2*yC(1,end)-yG(1,end)]';
+    elseif kinp == 1,
+      yAxV=S.YG(1,:)';
+    else
+      yAxV=S.yG(1,:)';
+    end
   else
-    yAxV=S.YG(1,:)';
+    ny=varargin{3};
+    dyAx=(max(yG(:))-min(yG(:)))/ny;
+    yAxV=min(yG(:))+[0:ny]'*dyAx;
+    yAxC=(yAxV(1:ny)+yAxV(2:ny+1))/2;
   end
-else
-  ny=varargin{3};
-  dyAx=(max(yG(:))-min(yG(:)))/ny;
-  yAxV=min(yG(:))+[0:ny]'*dyAx;
-  yAxC=(yAxV(1:ny)+yAxV(2:ny+1))/2;
-end
-if nargin < 4,
-%- xAxis
-  nx=dims(1);
-  xAxC=xC(:,1);
-  if rem(ncdf,2) == 0,
-    xAxU=[xG(:,1)' 2*xC(end,1)-xG(end,1)]';
+  if nargin < 4,
+  %- xAxis
+    nx=dims(1);
+    xAxC=xC(:,1);
+    if kinp == 0,
+      xAxU=[xG(:,1)' 2*xC(end,1)-xG(end,1)]';
+    elseif kinp == 1,
+      xAxU=S.XG(:,1);
+    else
+      xAxU=S.xG(:,1);
+    end
   else
-    xAxU=S.XG(:,1);
+    nx=varargin{4};
+    dxAx=max(max(xG(:)),max(xC(:)))-min(min(xG(:)),min(xC(:)));
+    if dxAx > 360*(1-1/nx), dxAx=360; end
+    dxAx=dxAx/nx;
+    xAxU=min(xG(:))+[0:nx]'*dxAx;
+    xAxC=(xAxU(1:nx)+xAxU(2:nx+1))/2;
   end
-else
-  nx=varargin{4};
-  dxAx=max(max(xG(:)),max(xC(:)))-min(min(xG(:)),min(xC(:)));
-  if dxAx > 360*(1-1/nx), dxAx=360; end
-  dxAx=dxAx/nx;
-  xAxU=min(xG(:))+[0:nx]'*dxAx;
-  xAxC=(xAxU(1:nx)+xAxU(2:nx+1))/2;
-end
 
 %- volume:
-if rem(ncdf,2) == 1 | ktyp == 0,
-%fprintf(' rAc:'); fprintf(' %i',size(rAc)); fprintf('\n');
-%fprintf('dims:'); fprintf(' %i',dims); fprintf('\n');
-%fprintf(' dRf:'); fprintf(' %i',size(dRf)); fprintf('\n');
-%vol=repmat(rAc,[1 1 dims(3)]).*hFacC;
- vol=reshape(rAc,[dims(1)*dims(2) 1])*dRf'; vol=reshape(vol,dims).*hFacC;
+  if rem(ncdf,2) == 1 | ktyp == 0,
+   vol=reshape(rAc,[dims(1)*dims(2) 1])*dRf'; vol=reshape(vol,dims).*hFacC;
+  end
 end
+
+%- clear space:
+if rem(ncdf,2) == 1, clear S ; end
 
 % create the structure
 
@@ -185,7 +218,9 @@ G = struct('dims',dims, ...
 else
 G = struct('dims',dims, ...
     'rC',rC,'rF',rF, ...
-    'dRc',dRc,'dRf',dRf);
+    'dRc',dRc,'dRf',dRf,'depth',depth);
 end
 
-return
+fprintf(' and leaving\n');
+%return
+end

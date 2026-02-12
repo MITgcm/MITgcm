@@ -76,6 +76,10 @@ C Initializing the saltplume depth to bottom topography
        ENDDO
       ENDDO
 
+#ifdef ALLOW_AUTODIFF_TAMC
+C     suppress a warning
+CADJ INCOMPLETE SaltPlumeDepth(:,:,bi,bj), SPIND
+#endif
 C CriterionType 1 = use delta_rho to determine salt plume depth
       IF (CriterionType.EQ.1) THEN
 

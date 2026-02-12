@@ -36,7 +36,6 @@
 #globalFiles=.TRUE.,
  readBinaryPrec=64,
  writeBinaryPrec=64,
- writeStatePrec=64,
  &
 
 # Elliptic solver parameters

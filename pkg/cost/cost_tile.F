@@ -54,9 +54,9 @@ C \ev
 CEOI
 
 CBOP
-C     !ROUTINE: THE_MAIN_LOOP
+C     !ROUTINE: COST_TILE
 C     !INTERFACE:
-      subroutine cost_tile( mytime, myiter, myThid )
+      SUBROUTINE COST_TILE( myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *================================================================*
@@ -67,7 +67,7 @@ C     *================================================================*
 C     \ev
 
 C     !USES:
-      implicit none
+      IMPLICIT NONE
 
 C     == Global variables ===
 #include "SIZE.h"
@@ -87,17 +87,16 @@ C     == Global variables ===
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
-C     myThid - Thread number for this instance of the routine.
+C     myThid :: my Thread Id number
       _RL myTime
-      integer myiter
-      integer myThid
+      INTEGER myIter
+      INTEGER myThid
 
 #ifdef ALLOW_COST
-
 C     !LOCAL VARIABLES:
-C     == Local variables ==
-      integer bi, bj
+#ifdef ALLOW_COST_TRACER
+      INTEGER bi, bj
+#endif
 CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -119,32 +118,33 @@ CADJ &     kind = isbyte
 # endif
 #endif
 
-      IF ( myTime .GT. (EndTime - lastinterval) ) THEN
+      IF ( myTime .GT. (endTime - lastinterval) ) THEN
 
 #if (defined (ALLOW_COST_TEST) || defined (ALLOW_COST_ATLANTIC_HEAT) || defined (ALLOW_COST_TEMP) )
-         CALL COST_ACCUMULATE_MEAN (myThid)
+        CALL COST_ACCUMULATE_MEAN (myThid)
 #endif
 
 #ifdef ALLOW_COST_SHELFICE
-         CALL SHELFICE_COST_ACCUMULATE (myThid)
+        CALL SHELFICE_COST_ACCUMULATE (myThid)
+#endif
+
+#if ( defined(ALLOW_STREAMICE) && defined(ALLOW_COST_STREAMICE) )
+        IF (useStreamIce) CALL STREAMICE_COST_ACCUM (myIter, myThid)
 #endif
 
 #if (defined ALLOW_THSICE && defined ALLOW_THSICE_COST_TEST)
-         IF (useThSIce)
-     &    CALL THSICE_COST_DRIVER (myTime, myIter, myThid)
+        IF (useThSIce) CALL THSICE_COST_DRIVER (myTime, myIter, myThid)
 #endif
 
       ENDIF
 
+#ifdef ALLOW_COST_TRACER
       DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-
-#ifdef ALLOW_COST_TRACER
            CALL COST_TRACER( bi, bj, myThid )
-#endif
-
         ENDDO
       ENDDO
+#endif
 
 #endif /* ALLOW_COST */
 

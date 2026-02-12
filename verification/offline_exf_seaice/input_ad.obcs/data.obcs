@@ -1,0 +1,22 @@
+# ***************
+# Open boundaries
+# ***************
+ &OBCS_PARM01
+ OB_Jsouth =   80*1,
+ OB_Jnorth =   80*-1,
+ OB_Iwest  =   42*1,
+ OB_Ieast  =   42*-1,
+# This flag checks and equalizes topography across open boundaries:
+ OBCSfixTopo = .TRUE.,
+ useOBCSprescribe=.TRUE.,
+ useSeaiceNeumann=.TRUE.,
+#
+ OBSuFile='OBSu.bin',
+ OBSvFile='OBSv.bin',
+ OBNuFile='OBNu.bin',
+ OBNvFile='OBNv.bin',
+ OBWuFile='OBWu.bin',
+ OBWvFile='OBWv.bin',
+ OBEuFile='OBEu.bin',
+ OBEvFile='OBEv.bin',
+ &

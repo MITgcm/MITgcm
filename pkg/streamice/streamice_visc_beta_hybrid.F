@@ -144,19 +144,19 @@ CADJ &     = comlev1_stream_hybrid, key=ikey_1
 
 #ifdef STREAMICE_3D_GLEN_CONST
             IF (.not.STREAMICE_use_log_ctrl) THEN
-             Bglen_val = B_glen(i,j,m,bi,bj)**2
+             Bglen_val = (B_glen(i,j,m,bi,bj))**2
             ELSE
              Bglen_val = exp(B_glen(i,j,m,bi,bj))
             ENDIF
 #else
             IF (.not.STREAMICE_use_log_ctrl) THEN
-             Bglen_val = B_glen(i,j,bi,bj)**2
+             Bglen_val = (B_glen(i,j,bi,bj))**2
             ELSE
              Bglen_val = exp(B_glen(i,j,bi,bj))
             ENDIF
 #endif
 
-#if (defined (ALLOW_STREAMICE_OAD_FP))
+#ifdef ALLOW_STREAMICE_FP_ADJ
             visc_full_new_si(i,j,m,bi,bj) =
 #else
             visc_streamice_full(i,j,m,bi,bj) =
@@ -166,7 +166,7 @@ CADJ &     = comlev1_stream_hybrid, key=ikey_1
 
             visc_streamice (i,j,bi,bj) = visc_streamice (i,j,bi,bj) +
      &       H_streamice(i,j,bi,bj) * streamice_delsigma (m) *
-#if (defined (ALLOW_STREAMICE_OAD_FP))
+#ifdef ALLOW_STREAMICE_FP_ADJ
      &       visc_full_new_si(i,j,m,bi,bj)
 #else
      &       visc_streamice_full(i,j,m,bi,bj)
@@ -174,7 +174,7 @@ CADJ &     = comlev1_stream_hybrid, key=ikey_1
 
             omega_temp (m) = omega_temp(m+1) +
      &       streamice_sigma_coord(m) * streamice_delsigma(m) /
-#if (defined (ALLOW_STREAMICE_OAD_FP))
+#ifdef ALLOW_STREAMICE_FP_ADJ
      &       visc_full_new_si(i,j,m,bi,bj)
 #else
      &       visc_streamice_full(i,j,m,bi,bj)
@@ -226,9 +226,11 @@ CADJ &     = comlev1_stream_hybrid, key=ikey_1
            unorm = sqrt(ub**2+vb**2+eps_u_min**2)
 
            if (.not.STREAMICE_use_log_ctrl) THEN
-            C_fric_val = C_basal_friction(i,j,bi,bj)**2
+            C_fric_val =
+     &      (C_basal_friction(i,j,bi,bj))**2
            else
-            C_fric_val = exp(C_basal_friction(i,j,bi,bj))
+            C_fric_val =
+     &      exp(C_basal_friction(i,j,bi,bj))
            endif
 
 #ifdef STREAMICE_COULOMB_SLIDING

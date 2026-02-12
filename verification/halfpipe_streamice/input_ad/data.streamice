@@ -26,6 +26,7 @@
  STREAMICEtopogFile='topog.box',
  STREAMICEbasalTracConfig='UNIFORM',
  STREAMICEGlenConstConfig='UNIFORM',
+ STREAMICEBdotConfig='FILE',
  &
 
 #&STREAMICE_PARMPETSC

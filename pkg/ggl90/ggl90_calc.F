@@ -1,4 +1,7 @@
 #include "GGL90_OPTIONS.h"
+#ifdef ALLOW_GENERIC_ADVDIFF
+# include "GAD_OPTIONS.h"
+#endif
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
 #endif
@@ -622,7 +625,7 @@ C     add IDEMIX contribution to the turbulent kinetic energy
 
 #ifdef ALLOW_GGL90_LANGMUIR
        IF ( useLANGMUIR ) THEN
-C     add IDEMIX contribution to the turbulent kinetic energy
+C     add Langmuir contribution to the turbulent kinetic energy
         DO j=jMin,jMax
          DO i=iMin,iMax
           GGL90TKE(i,j,k,bi,bj) = GGL90TKE(i,j,k,bi,bj)

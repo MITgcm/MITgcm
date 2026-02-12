@@ -1,6 +1,3 @@
-#ifdef ALLOW_OPENAD
-# include "DIC_OPTIONS.h"
-#endif
 C     *==========================================================*
 C     | DIC_VARS.h
 C     | o Abiotic Carbon Variables
@@ -28,22 +25,30 @@ C                             omegaC, is updated (s).
 C     nIterCO3    :: Number of iterations of the Follows 3D pH solver to
 C                       calculate deep carbonate ion concenetration (no
 C                       effect when using the Munhoven/SolveSapHe solvers).
-C     KierRateK   :: Rate constant (%) for calcite dissolution from
-C                       Kier (1980) Geochem. Cosmochem. Acta.
-C     KierRateExp :: Rate exponent for calcite dissolution from
-C                       Kier (1980) Geochem. Cosmochem. Acta.
+C     calciteDissolRate :: Rate constant (%) for calcite dissolution
+C                       from Keir (1980) Geochem. Cosmochem. Acta.
+C     calciteDissolExp  :: Rate exponent for calcite dissolution
+C                       from Keir (1980) Geochem. Cosmochem. Acta.
 C     WsinkPIC    :: sinking speed (m/s) of particulate inorganic carbon for
 C                    calculation of calcite dissolution through the watercolumn
 C     selectCalciteBottomRemin :: to either remineralize in bottom or top layer
 C                       if flux reaches bottom layer; =0 : bottom, =1 : top
+C  selectCalciteDissolution :: flag to control calcite dissolution rate method:
+C          =0 : Constant dissolution rate;
+C          =1 : Follows (default) ;
+C          =2 : Keir (1980) Geochem. Cosmochem. Acta. ;
+C          =3 : Naviaux et al. 2019, Marine Chemistry
+C     pH_isLoaded(1) :: = T when surface pH is loaded from pickup file
+C     pH_isLoaded(2) :: = T when   3-D   pH is loaded from pickup file
 
        COMMON /CARBON_NEEDS/
      &              AtmospCO2, AtmosP, pH, pCO2, FluxCO2,
      &              wind, fIce, Kwexch_Pre, silicaSurf,
-     &              zca, calcOmegaCalciteFreq,
-     &              KierRateK, KierRateExp, WsinkPIC,
-     &              selectCalciteBottomRemin, nIterCO3,
-     &              useCalciteSaturation
+     &              calciteDissolRate, calciteDissolExp,
+     &              calcOmegaCalciteFreq, zca,
+     &              WsinkPIC, selectCalciteBottomRemin,
+     &              selectCalciteDissolution, nIterCO3,
+     &              useCalciteSaturation, pH_isLoaded
 
       _RL  AtmospCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  AtmosP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -54,21 +59,23 @@ C                       if flux reaches bottom layer; =0 : bottom, =1 : top
       _RL  fIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  Kwexch_Pre(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  silicaSurf(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  zca
+      _RL  calciteDissolRate(2), calciteDissolExp(2)
       _RL  calcOmegaCalciteFreq
-      _RL  KierRateK
-      _RL  KierRateExp
+      _RL  zca
       _RL  WsinkPIC
       INTEGER selectCalciteBottomRemin
+      INTEGER selectCalciteDissolution
       INTEGER nIterCO3
       LOGICAL useCalciteSaturation
+      LOGICAL pH_isLoaded(2)
 
 #ifdef DIC_CALCITE_SAT
 C     silicaDeep  :: 3D-field of silicate concentration for pH and
 C                    carbonate calculations. Read in from file (mol/m3).
 C     omegaC      :: Local saturation state with respect to calcite
        COMMON /DIC_CALCITE_SAT_FIELDS/
-     &              silicaDeep, omegaC
+     &              pH3D, silicaDeep, omegaC
+      _RL  pH3D      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  silicaDeep(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  omegaC    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
@@ -370,42 +377,5 @@ c     _RL feload(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       INTEGER nlev
       LOGICAL QSW_underice
-
-#ifdef ALLOW_TIMEAVE
-C For time-averages output using TIMEAVE pkg:
-C Note: Although some of the Time-Ave arrays are for A-Biotic fields, all these
-C       arrays are only used + filled within ifdef DIC_BIOTIC code, so we keep
-C       them only if DIC_BIOTIC is defined.
-C  BIOave     :: biological productivity [mol P/m3/s]
-C  CARave     :: carbonate changes due to biological productivity
-C                 and remineralization [mol C/m3/s]
-C  SURave     :: tendency of DIC due to air-sea exchange
-C                 and virtual flux [mol C/m3/s]
-C  SUROave    :: tendency of O2 due to air-sea exchange [mol O2/m3/s]
-C  pCO2ave    :: surface ocean pCO2 [uatm]
-C  pHave      :: surface ocean pH
-C  fluxCO2ave :: Air-sea flux of CO2 [mol C/m2/s]
-C  pfluxave   :: changes to PO4 due to flux and remineralization [mol P/m3/s]
-C  epfluxave  :: export flux of PO4 through each layer [mol P/m2/s]
-C  cfluxave   :: carbonate changes due to flux and remineralization [mol C/m3/s]
-C  DIC_timeAve  :: period over which DIC averages are calculated [s]
-
-      COMMON /BIOTIC_TAVE/
-     &     BIOave, CARave, SURave, SUROave, pCO2ave, pHave,
-     &     fluxCO2ave, pfluxave, epfluxave, cfluxave,
-     &     DIC_timeAve
-
-      _RL BIOave    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL CARave    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL SURave    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL SUROave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL pCO2ave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL pHave     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL fluxCO2ave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL pfluxave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL epfluxave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL cfluxave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL DIC_timeAve(nSx,nSy)
-#endif /* ALLOW_TIMEAVE */
 
 #endif /* DIC_BIOTIC */

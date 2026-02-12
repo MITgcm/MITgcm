@@ -1,3 +1,8 @@
+#ifndef AUTODIFF_OPTIONS_H
+#define AUTODIFF_OPTIONS_H
+#include "PACKAGES_CONFIG.h"
+#include "CPP_OPTIONS.h"
+
 CBOP
 C !ROUTINE: AUTODIFF_OPTIONS.h
 C !INTERFACE:
@@ -10,11 +15,6 @@ C | Control which optional features to compile in this package code.
 C *==================================================================*
 CEOP
 
-#ifndef AUTODIFF_OPTIONS_H
-#define AUTODIFF_OPTIONS_H
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
-
 #ifdef ALLOW_AUTODIFF
 #ifdef ECCO_CPPOPTIONS_H
 
@@ -26,10 +26,11 @@ C   are specific to this package are assumed to be set in ECCO_CPPOPTIONS.h
 C   ==================================================================
 C-- Package-specific Options & Macros go here
 
-C o Include/exclude code in order to be able to automatically
-C   differentiate the MITgcmUV by using the Tangent Linear and
-C   Adjoint Model Compiler (TAMC).
+C o Include/exclude code in order to automatically differentiate MITgcm code
+C   using TAF (Transformation of Algorithms in Fortran, http://www.FastOpt.de)
+C   or using TAMC (Tangent Linear & Adjoint Model Compiler, needs both defined):
 #undef ALLOW_AUTODIFF_TAMC
+#undef AUTODIFF_TAMC_COMPATIBILITY
 
 C       >>> Checkpointing as handled by TAMC
 #undef ALLOW_TAMC_CHECKPOINTING
@@ -40,19 +41,19 @@ C       >>> and DYNVARS_DIAG adjoint state
 #undef ALLOW_AUTODIFF_MONITOR_DIAG
 
 C       >>> DO 2-level checkpointing instead of 3-level
-c#undef AUTODIFF_2_LEVEL_CHECKPOINT
+#undef AUTODIFF_2_LEVEL_CHECKPOINT
 
 C extend to 4-level checkpointing
-c#undef AUTODIFF_4_LEVEL_CHECKPOINT
+#undef AUTODIFF_4_LEVEL_CHECKPOINT
 
 C o use divided adjoint to split adjoint computations
 #undef ALLOW_DIVIDED_ADJOINT
 
-#undef ALLOW_PACKUNPACK_METHOD2
-
 C o This flag is incredibly useful as it reduces the number of
 C   tape-files on the disc. Maybe it should even be the default.
 #undef ALLOW_AUTODIFF_WHTAPEIO
+C   and related to above:
+#undef ALLOW_INIT_WHTAPEIO
 
 C o use standard MDSFINDUINTS instead of local pkg/autodiff version for
 C   WHTAPEIO code I/O.
@@ -69,6 +70,10 @@ C   Might still be used for OBCS since WHTAPEIO does not support OBCS fields.
 
 C o allow using viscFacInAd to recompute viscosities in AD
 #define AUTODIFF_ALLOW_VISCFACADJ
+
+C o To remove part of MOM_CALC_VISC (better name would be: MOM_DISABLE_*)
+#undef AUTODIFF_DISABLE_LEITH
+#undef AUTODIFF_DISABLE_REYNOLDS_SCALE
 
 C o for output of AD-variables (ALLOW_AUTODIFF_MONITOR), specific code (e.g.,
 C   in addummy_in_stepping.F) relies on adexch_uv_xy_rs and adexch_xy_rs S/R

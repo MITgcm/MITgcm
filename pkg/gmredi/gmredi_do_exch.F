@@ -55,5 +55,15 @@ C     with GM-bolus 2-D mapping factor (GM_bolFac2d).
       ENDIF
 #endif /* GM_BOLUS_ADVEC */
 
+#ifdef GM_GEOM_VARIABLE_K
+      IF ( GM_useGEOM ) THEN
+       _EXCH_XY_RL( GEOM_EKE , myThid )
+       _BEGIN_MASTER( myThid )
+C     moved here, outside bi,bj loop:
+       IF ( GEOM_startAB .EQ. 0 ) GEOM_startAB = 1
+       _END_MASTER( myThid )
+      ENDIF
+#endif
+
       RETURN
       END

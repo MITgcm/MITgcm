@@ -124,7 +124,7 @@ C                 the current model integration.
       COMMON /ECCO_R/
      &                    m_eta, m_UE, m_VN, m_bp,
      &                    trVol, trHeat, trSalt,
-     &                    eccoVol_0, frame
+     &                    frame
       _RL m_eta    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
       _RL m_UE     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL m_VN     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -132,7 +132,6 @@ C                 the current model integration.
       _RL trVol    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL trHeat   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL trSalt   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL eccoVol_0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL frame    (1-OLx:sNx+OLx,1-OLy:sNy+OLy           )
 
 #ifdef ALLOW_PSBAR_STERIC
@@ -142,8 +141,8 @@ C                 the current model integration.
      &                    RHOsumGlob_0, RHOsumGlob
       _RL sterGloH
       _RL VOLsumGlob_0, VOLsumGlob, RHOsumGlob_0, RHOsumGlob
-#endif
 
+#endif
 #ifdef ATMOSPHERIC_LOADING
 #ifdef ALLOW_IB_CORR
       COMMON /ECCO_R3/
@@ -151,15 +150,24 @@ C                 the current model integration.
      &                    m_eta_dyn
       _RL m_bp_nopabar(1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
       _RL m_eta_dyn   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
+
 #endif
+#endif
+#ifndef ECCO_VARIABLE_AREAVOLGLOB
+      COMMON /ECCO_R4/ eccoVol_0
+      _RL eccoVol_0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
 
 C     Two runtime parameters related to outputting sterGloH
 C     ecco_output_sterGloH :: output sterGloH at each time step if true
 C     ecco_keepTSeriesOutp_open :: keep the sterGloH file open if true
+C     eccoWriteCostFunction :: internal flag to suppress writing
+C                       costfunction multiple times (e.g. with grdchk-pkg)
       COMMON /ECCO_L/
-     &                ecco_output_sterGloH, ecco_keepTSeriesOutp_open
+     &     ecco_output_sterGloH, ecco_keepTSeriesOutp_open,
+     &     eccoWriteCostFunction
       LOGICAL ecco_output_sterGloH, ecco_keepTSeriesOutp_open
+      LOGICAL eccoWriteCostFunction
 
 C     file precision
       COMMON /PREC_TYPE_COST/

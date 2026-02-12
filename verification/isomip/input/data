@@ -15,7 +15,7 @@
  diffKhS=100.0,
  diffKzS=5.E-5,
  bottomDragQuadratic=2.5E-3,
- eosType='JMD95Z', 
+ eosType='JMD95Z',
  HeatCapacity_cp = 3974.0,
  rhoConst=1030.,
  rhoConst=1030.,
@@ -49,7 +49,6 @@
  pChkptFreq=0.0,
  chkptFreq=0.0,
  dumpFreq=0.0,
- taveFreq=0.0,
  monitorFreq=1.,
  monitorSelect=2,
  &

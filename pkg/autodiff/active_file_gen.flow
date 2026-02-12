@@ -6,7 +6,7 @@ C     ==================================================================
 C     active_file_gen.flow
 C     ==================================================================
 C     provides flow directives for routines in active_file_gen.F
-C     required by TAMC/TAF
+C     required by TAF
 C     * ACTIVE_READ_GEN_RL
 C     * ACTIVE_READ_GEN_RS
 C     * ACTIVE_WRITE_GEN_RL
@@ -57,4 +57,3 @@ cadj SUBROUTINE ACTIVE_WRITE_GEN_RS INPUT   = 1, 2, 3, 4, 5, 6, 7, 8, 9
 cadj SUBROUTINE ACTIVE_WRITE_GEN_RS OUTPUT  =                         9
 cadj SUBROUTINE ACTIVE_WRITE_GEN_RS ACTIVE  =    2,                   9
 cadj SUBROUTINE ACTIVE_WRITE_GEN_RS DEPEND  = 1,    3, 4, 5, 6, 7, 8
-

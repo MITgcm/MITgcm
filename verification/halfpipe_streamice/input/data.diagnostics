@@ -16,28 +16,15 @@
  &DIAGNOSTICS_LIST
 # diag_mnc     = .FALSE.,
 # dumpAtLast   = .TRUE.,
-   fields(1:6,1) = 'SI_Uvel ','SI_Vvel ','SI_Thick',
-                 'SI_area ','SI_float','SI_selev'
+   fields(1:6,1) = 'SI_usurf','SI_vsurf','SI_Thick',
+                   'SI_hmask','SI_float','SI_selev',
 #                'SIheff  ','SIarea  ','SIhsnow ','SIatmFW ',
 #                'SHIForcT','SHIForcS',
 #                'surForcT','surForcS','TFLUX   ','SFLUX   ','oceFreez',
 #                 'TRELAX  ','SRELAX  ',
-#                'GM_VisbK',
-   filename(1) = 'land_ice',
-  frequency(1) = 63072000,
-#                'GM_PsiX ','GM_PsiY ',
-#                'GM_Kwx  ','GM_Kwy  ','GM_Kwz  ',
-#                'GM_Kux  ','GM_Kvy  ',
-#                'GM_Kuz  ','GM_Kvz  ',
 #- disable this output list by commenting out the file name
-#  filename(3) = 'diagsEXF',
-# frequency(3) = 1.,
-#  fields(1,4) = 'ADVx_TH ','ADVy_TH ','ADVr_TH ',
-#                'DIFx_TH ','DIFy_TH ','DFrE_TH ',
-#                'DFrI_TH ',
-#                'ADVx_SLT',
-#  filename(4) = 'flxDiag',
-# frequency(4) = 2592000.,
+   filename(1) = 'land_ice',
+  frequency(1) = 63072000.,
  &
 
 # Parameter for Diagnostics of per level statistics:

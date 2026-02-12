@@ -86,16 +86,16 @@ C          --------------------------------------
 C-          Check for empty Diag (= not filled or using empty mask)
             IF ( tmp_Glob(0,0).EQ.0. ) THEN
              _BEGIN_MASTER( myThid )
-             WRITE(msgBuf,'(A,I10,A,I4)')
-     &        '- WARNING - from DIAGSTATS_OUTPUT at iter=', myIter,
-     &        ' , region:', j
+             WRITE(msgBuf,'(2A,I10,A,I4)') '- WARNING -',
+     &         ' from DIAGSTATS_OUTPUT at iter=', myIter,
+     &         ' , region:', j
              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                           SQUEEZE_RIGHT, myThid)
-             WRITE(msgBuf,'(A,I6,3A,I4,2A)')
-     &       '- WARNING - diagSt.#',ndId, ' : ',diagSt_Flds(m,listId),
-     &       ' (#',m,' ) in outp.Stream: ',diagSt_Fname(listId)
+     &                           SQUEEZE_RIGHT, myThid )
+             WRITE(msgBuf,'(2A,I6,3A,I4,2A)') '- WARNING -',
+     &         ' diagSt.#', ndId, ' : ', diagSt_Flds(m,listId),
+     &         ' (#', m, ' ) in outp.Stream: ', diagSt_Fname(listId)
              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                           SQUEEZE_RIGHT, myThid)
+     &                           SQUEEZE_RIGHT, myThid )
              IF ( kdiag(ndId).GT.nLev ) THEN
               WRITE(msgBuf,'(2(A,I4))') '- WARNING - kdiag=',
      &                     kdiag(ndId), ' exceeds local nLev=', nLev
@@ -104,23 +104,25 @@ C-          Check for empty Diag (= not filled or using empty mask)
      &                             ' OR using empty mask/region'
              ENDIF
              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                           SQUEEZE_RIGHT, myThid)
+     &                           SQUEEZE_RIGHT, myThid )
              WRITE(msgBuf,'(A)')
-     &       'WARNING DIAGSTATS_OUTPUT  => write UNDEF instead'
+     &         'WARNING DIAGSTATS_OUTPUT  => write UNDEF instead'
              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                           SQUEEZE_RIGHT, myThid)
+     &                           SQUEEZE_RIGHT, myThid )
              _END_MASTER( myThid )
             ENDIF
 
-            IF ( debugLevel .GE. debLevB ) THEN
+            IF ( diag_dBugLevel .GE. debLevB ) THEN
              _BEGIN_MASTER( myThid )
-              WRITE(ioUnit,'(A,I6,3A,I4,A,1PE10.3,2A)')
-     &         ' Compute Stats, Diag. # ',ndId, '  ', cdiag(ndId),
-     &         '  vol(',j,' ):', statGlob(0,0,j),'  Parms: ',gdiag(ndId)
+              WRITE(ioUnit,'(A,I6,3A,I3,3A,I3,A,1PE10.3)')
+     &          ' Compute Stats, Diag. #', ndId, ' "', cdiag(ndId),
+     &          '" (list#', listId, ') Parms "', gdiag(ndId),
+     &          '", vol(',j,' )=', statGlob(0,0,j)
              IF ( mate.GT.0 ) THEN
-              WRITE(ioUnit,'(A,I6,3A,I4,2(A,1PE10.3))')
-     &         '    use Counter Mate  # ', mate,'  ',cdiag(mate),
-     &         '  vol(',j,' ):',tmp_Glob(0,0), ' integral',tmp_Glob(1,0)
+              WRITE(ioUnit,'(A,I6,3A,I3,2(A,1PE10.3))')
+     &          '     use Counter Mate #', mate, ' "', cdiag(mate),
+     &          '" vol(',j,' )=', tmp_Glob(0,0),
+     &          ', integral=', tmp_Glob(1,0)
              ENDIF
              _END_MASTER( myThid )
             ENDIF

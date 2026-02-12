@@ -21,12 +21,9 @@ C     === Global variables ===
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "CTRL_SIZE.h"
-#include "ctrl.h"
+#include "CTRL.h"
 #include "CTRL_GENARR.h"
-#include "ctrl_dummy.h"
-#ifdef ALLOW_AUTODIFF
-#include "AUTODIFF_MYFIELDS.h"
-#endif
+#include "CTRL_DUMMY.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===

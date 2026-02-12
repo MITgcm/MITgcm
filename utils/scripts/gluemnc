@@ -1,5 +1,13 @@
 #! /usr/bin/env bash
 #
+# Prerequisites: 
+#  - Add utilities directory to your search path
+#  ```
+#  export PATH=$PATH:MITgcm/utils/scripts
+#  ```
+#  - Download NCO libraries to use `ncks`; see documentation for details.
+#
+# Description: 
 # This is a shell script to combine multiple MITgcm mnc output files from
 # different tiles into one global file.
 # All of the variables should be in one directory, where this script is run.
@@ -375,7 +383,7 @@ echo    ncpdq $DEBUG -O -a Xp1,$recname -F -d Xp1,1,$Xp1len $somegloy $somegloy 
 #  varsz=$( ncdump -h $somepre.t001.nc | sed -n 's/^\s*\(double\|float\).* \(\w*\)(Z\w*).*/\2/p' )
   # The OR ("\|") and "\s", "\w" only work for GNU-sed, but not for
   # BSD-sed or SunOS-sed, therefore we need to use some work-arounds:
-  varsz=$( ncdump -h $somepre.t001.nc | egrep "double|float" \
+  varsz=$( ncdump -h $somepre.t001.nc | grep -E "double|float" \
            | grep -v , | sed -n 's/.* \(.*\)(Z.*).*/\1/p' )
   fixed=
   for varz in $varsz
@@ -391,7 +399,6 @@ echo    ncpdq $DEBUG -O -a Xp1,$recname -F -d Xp1,1,$Xp1len $somegloy $somegloy 
 
   cp $somepre.glob.nc $DIRORIG
 done
-
 
 cd $DIRORIG
 rm -rf $DIRNAME
