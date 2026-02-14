@@ -2880,7 +2880,6 @@ rm -f $TMP.links/foo
 if test "x$TAPENADE" != x ; then
     TAP_DONT_TRANSFORM="/dev/null"
     TAPTOOLS="$TOOLSDIR/TAP_support"
-    TAPTOOLSMK='$(TOOLSDIR)/TAP_support'
     echo "  looking for dontTransform file:  "
     for i in "." $MODS $TAPTOOLS ; do
 	if test -r $i"/dontTransform" ; then
@@ -3716,7 +3715,7 @@ TAPENADECMD = ${TAPENADECMD}
 TAPENADE_FLAGS = ${TAPENADE_FLAGS}
 
 TAPENADE_SUPPORT_F90_SRC_FILES = \
-${TAPTOOLS}/diffsizes.F90
+\$(TOOLSDIR)/TAP_support/diffsizes.F90
 
 f95_test_mods.f90: \$(TAPENADE_SUPPORT_F90_SRC_FILES)
 	cat \$^ > \$@

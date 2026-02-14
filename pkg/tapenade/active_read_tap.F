@@ -52,7 +52,7 @@ C     myThid     :: my Thread Id. number
       INTEGER myOptimIter
       INTEGER myThid
       _RL  dummy
-      _RL dummyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL dummyd
 
 C     !LOCAL VARIABLES:
       CHARACTER*(80) fname
@@ -65,12 +65,9 @@ CEOP
       CALL ACTIVE_READ_XY(active_var_file, active_var,
      &                    iRec, doglobalread, lAdInit,
      &                    myOptimIter, myThid, dummy)
-      CALL ACTIVE_READ_XY(fname, dummyd, iRec,
+      CALL ACTIVE_READ_XY(fname, active_vard, iRec,
      &                    doglobalread, lAdInit,
-     &                    myOptimIter, myThid, dummy)
-
-      active_var = 0. _d 0
-      active_vard = dummyd
+     &                    myOptimIter, myThid, dummyd)
 
       RETURN
       END
@@ -119,7 +116,7 @@ C     myThid     :: my Thread Id. number
       INTEGER myOptimIter
       INTEGER myThid
       _RL  dummy
-      _RL dummyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL dummyd
 
 C     !LOCAL VARIABLES:
       CHARACTER*(80) fname
@@ -132,12 +129,9 @@ CEOP
       CALL ACTIVE_READ_XYZ(active_var_file, active_var,
      &                    iRec, doglobalread, lAdInit,
      &                    myOptimIter, myThid, dummy)
-      CALL ACTIVE_READ_XYZ(fname, dummyd, iRec,
+      CALL ACTIVE_READ_XYZ(fname, active_vard, iRec,
      &                    doglobalread, lAdInit,
-     &                    myOptimIter, myThid, dummy)
-
-      active_var = 0. _d 0
-      active_vard = dummyd
+     &                    myOptimIter, myThid, dummyd)
 
       RETURN
       END
