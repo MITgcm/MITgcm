@@ -44,7 +44,7 @@ Quickstart Guide
 **0.** As a precursor, if you have not done so already, set up
 `ssh keys <https://docs.github.com/en/authentication/connecting-to-github-with-ssh/about-ssh>`_ for GitHub
 `command line authentication <https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/about-authentication-to-github#authenticating-with-the-command-line>`_
-(or alteratively, authenticate using a 
+(or alteratively, authenticate using a
 `personal access token <https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token>`_).
 
 **1.** Fork the project on GitHub (using the fork button).
@@ -62,7 +62,6 @@ Alternatively, if you are using a personal access token for authentication:
 ::
 
     % git clone https://github.com/«GITHUB_USERNAME»/MITgcm.git
-
 
 **3.** Move into your local clone directory (cd MITgcm) and and set
 up a remote that points to the original:
@@ -104,9 +103,9 @@ The review team is always happy to discuss their decision, but want to
 avoid people investing extensive effort in code that has a fundamental
 design flaw. As such, we **strongly** suggest opening an
 `issue <https://github.com/MITgcm/MITgcm/issues>`_
-on GitHub to discuss any proposed contributions beforehand.  
+on GitHub to discuss any proposed contributions beforehand.
 
-The current pull request discussion and review team is Jean-Michel Campin, 
+The current pull request discussion and review team is Jean-Michel Campin,
 Ed Doddridge, Chris Hill, Oliver Jahn, Jon Lauderdale,
 Martin Losch, Jeff Scott, Timothy Smith, and Ou Wang. Please
 contact anyone on this team with questions about a proposed pull request.
@@ -234,7 +233,7 @@ as this forked copy will remain permanently in your Github space.)
 Even if you previously downloaded the code through a “git-aware” method
 (i.e., a git clone command, see :numref:`git-aware_download`),
 we **STRONGLY SUGGEST** you download a fresh repository, to a separate
-disk location, for your development work (keeping your research work separate). 
+disk location, for your development work (keeping your research work separate).
 If you are using ssh keys for command line authentication (see above), in your terminal window type:
 
 ::
@@ -246,7 +245,6 @@ Alternatively, if you are using a personal access token for authentication:
 ::
 
     % git clone https://github.com/«GITHUB_USERNAME»/MITgcm.git
-
 
 (technically, here you are copying the forked “origin”
 version from the cloud, not the “upstream” version, but these will be identical at this point).
@@ -415,7 +413,7 @@ on GitHub to discuss any proposed contributions beforehand.
 It is possible for other users (besides the PR review team) to examine
 or even download your pull request; see :ref:`sec_pullreq`.
 
-The current pull request discussion and review team is Jean-Michel Campin, 
+The current pull request discussion and review team is Jean-Michel Campin,
 Ed Doddridge, Chris Hill, Oliver Jahn, Jon Lauderdale,
 Martin Losch, Jeff Scott, Timothy Smith, and Ou Wang. Please feel free
 to contact anyone on this team with questions about a proposed pull request.
@@ -769,7 +767,7 @@ directory «TESTDIR»/run/
 
     - link and rename or remove links to special files with suffix ``.mpi`` or ``.mth`` from ``../input/``
     - link files from ../input/
-    - execute ``../input/prepare_run`` (if it exists)
+    - execute ``./prepare_run`` (if it exists)
 
     The sequence for an adjoint test is similar, with ``../input_ad/`` replacing ``../input/``.
 
@@ -781,9 +779,8 @@ directory «TESTDIR»/tr_run.«OTHER»/
 
     - link and rename or remove links to special files with suffix ``.mpi`` or ``.mth`` from ``../input.OTHER/``
     - link files from ``../input.OTHER/``
-    - execute ``../input.OTHER/prepare_run`` (if it exists)
     - link files from ``../input/``
-    - execute ``../input/prepare_run`` (if it exists)
+    - execute ``./prepare_run`` (if it exists)
 
     The  sequence  for  an  adjoint  test  is  similar,  with ``../input_ad.OTHER/``
     and ``../input_ad/`` replacing ``../input.OTHER/`` and ``../input/``.
