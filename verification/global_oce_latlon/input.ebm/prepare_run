@@ -1,2 +1,6 @@
 #! /usr/bin/env bash
+
+#- this fake script (does nothing) is here to avoid running the "prepare_run" version
+#  from "../input", as this fake version will be linked into run-dir "tr_run.ebm"
+#  and run in place of the "../input" version.
 exit 0
