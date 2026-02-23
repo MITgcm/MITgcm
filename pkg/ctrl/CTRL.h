@@ -66,8 +66,6 @@ C     doPackDiag          :: output diag_pack*/diag_unpack* files during
 C                            ctrl_pack/ctrl_unpack
 C     doSinglePrecTapelev :: reduce precision of ad tape files to float32
 C                            (only used in pkg/autodiff ...)
-C     ctrlWriteCostFunction :: internal parameter to ensure that cost function
-C                            contribution is only written once per run
 
       COMMON /controlparams_l/
      &                       doInitXX,
@@ -79,8 +77,7 @@ C                            contribution is only written once per run
      &                       doMainPack,
      &                       doSinglePrecTapelev,
      &                       doAdmtlmBypassAD,
-     &                       useCtrlCostContribution,
-     &                       ctrlWriteCostFunction
+     &                       useCtrlCostContribution
 
       LOGICAL doInitXX
       LOGICAL doAdmTlm
@@ -92,7 +89,6 @@ C                            contribution is only written once per run
       LOGICAL doSinglePrecTapelev
       LOGICAL doAdmtlmBypassAD
       LOGICAL useCtrlCostContribution
-      LOGICAL ctrlWriteCostFunction
 
 C--   parameters vectors, set in S/R CTRL_INIT_CTRLVAR, that describe
 C     the contorl variables, also used for identification across

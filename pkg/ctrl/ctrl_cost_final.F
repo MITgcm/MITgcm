@@ -6,7 +6,7 @@
 CBOP
 C     !ROUTINE: CTRL_COST_FINAL
 C     !INTERFACE:
-      SUBROUTINE CTRL_COST_FINAL( myThid )
+      SUBROUTINE CTRL_COST_FINAL( ifc, optimcycle, myThid )
 
 C     !DESCRIPTION:
 C     *==========================================================*
@@ -26,17 +26,19 @@ C     == global variables ==
 #include "CTRL_SIZE.h"
 #include "CTRL.h"
 #include "CTRL_GENARR.h"
-#include "OPTIMCYCLE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
+C     ifc        :: file unit for costfunction_ctrlXXXX
+C     optimcycle :: cycle number of the off-line optimization.
+C     myThid     :: my Thread Id number
+      INTEGER ifc
+      INTEGER optimcycle
       INTEGER myThid
 
 #if defined ALLOW_COST && ( defined ALLOW_GENTIM2D_CONTROL || \
                             defined ALLOW_GENARR2D_CONTROL || \
                             defined ALLOW_GENARR3D_CONTROL )
 C     ! FUNCTIONS:
-      LOGICAL  MASTER_CPU_THREAD
-      EXTERNAL MASTER_CPU_THREAD
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
 
@@ -55,7 +57,6 @@ C     !LOCAL VARIABLES:
       _RL no_genarr3d(maxCtrlArr3D)
 # endif
 
-      INTEGER ifc
       CHARACTER*22 cfname
       INTEGER IL
       CHARACTER*(MAX_LEN_FNAM) xx_fname_loc
@@ -63,7 +64,6 @@ C     !LOCAL VARIABLES:
 CEOP
 
       IF ( useCtrlCostContribution ) THEN
-       ifc = 30
 
 C     Initialise cost function variables zo zero
 # ifdef ALLOW_GENTIM2D_CONTROL
@@ -173,7 +173,7 @@ c#ifndef ALLOW_OPENAD
 C     write contributions to costfunction file
 
 C--   Each process has calculated the global part for itself.
-       IF ( MASTER_CPU_THREAD(myThid) .AND. ctrlWriteCostFunction ) THEN
+       IF ( ifc .NE. -1 ) THEN
         WRITE(cfname,'(A,I4.4)') 'costfunction_ctrl',optimcycle
         OPEN(unit=ifc,file=cfname)
         WRITE(msgBuf,'(A,A)')
@@ -223,9 +223,6 @@ C--   Each process has calculated the global part for itself.
         ENDDO
 # endif
         CLOSE(ifc)
-C     Do it only once per run, otherwise grdchk will overwrite or append
-C     files in an uncontrolled way.
-        ctrlWriteCostFunction = .FALSE.
        ENDIF
 
 C     useCtrlCostContribution

@@ -55,9 +55,6 @@ C     local copy of surface layer thickness in meters
 #endif
 CEOP
 
-C     only used for writing cost function files
-      SEAICEwriteCostFunction = .TRUE.
-
       IF ( usingPCoords ) THEN
        kSrf        = Nr
       ELSE

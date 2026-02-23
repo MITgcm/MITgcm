@@ -86,7 +86,6 @@ c     == end of interface ==
 #else
       eccoiter=0
 #endif
-      eccoWriteCostFunction = .TRUE.
       _END_MASTER(myThid)
 
 #ifndef ECCO_VARIABLE_AREAVOLGLOB

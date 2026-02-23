@@ -79,12 +79,19 @@ C     dummy value for this unlikely case
       optimcycle = 0
 #endif
 
+C     ifc = -1 means: do not write output to a file costfunction_${PKG}XXXX
+      ifc = -1
+      IF ( MASTER_CPU_THREAD(myThid) .AND. costWriteCostFunction ) THEN
+       CALL MDSFINDUNIT( ifc, myThid )
+      ENDIF
+
 #ifdef ALLOW_SEAICE
-      IF (useSEAICE) CALL SEAICE_COST_FINAL( myThid )
+      IF (useSEAICE) CALL SEAICE_COST_FINAL( ifc, optimcycle, myThid )
 #endif
 
 #ifdef ALLOW_SHELFICE
-      IF (useShelfice) CALL SHELFICE_COST_FINAL (myThid)
+      IF (useShelfice)
+     &     CALL SHELFICE_COST_FINAL( ifc, optimcycle, myThid )
 #endif
 
 #if (defined(ALLOW_STREAMICE) && defined(ALLOW_COST_STREAMICE))
@@ -92,30 +99,28 @@ C     dummy value for this unlikely case
 #endif
 
 #ifdef ALLOW_THSICE
-      IF (useThSIce) CALL THSICE_COST_FINAL( myThid )
+      IF (useThSIce) CALL THSICE_COST_FINAL( ifc, optimcycle, myThid )
 #endif
 
-C     It is important to do the ecco part first, because it creates a
-C     file costfunctionXXXX that will be reopened again by the ctrl and
-C     obcs contributions if available.
 #ifdef ALLOW_ECCO
-      IF (useECCO) CALL ECCO_COST_FINAL( myThid )
+      IF (useECCO) CALL ECCO_COST_FINAL( ifc, optimcycle, myThid )
 #endif
 
 #ifdef ALLOW_PROFILES
-      IF (usePROFILES) CALL PROFILES_COST_FINAL( myThid )
+      IF (usePROFILES)
+     &     CALL PROFILES_COST_FINAL( ifc, optimcycle, myThid )
 #endif
 
 #ifdef ALLOW_OBSFIT
-      IF (useOBSFIT) CALL OBSFIT_COST_FINAL( myThid )
+      IF (useOBSFIT) CALL OBSFIT_COST_FINAL( ifc, optimcycle, myThid )
 #endif
 
 #ifdef ALLOW_CTRL
-      IF (useCTRL) CALL CTRL_COST_FINAL( myThid )
+      IF (useCTRL) CALL CTRL_COST_FINAL( ifc, optimcycle, myThid )
 #endif
 
 #ifdef ALLOW_OBCS
-      IF (useOBCS) CALL OBCS_COST_FINAL( myThid )
+      IF (useOBCS) CALL OBCS_COST_FINAL( ifc, optimcycle, myThid )
 #endif
 
 #ifdef ALLOW_COST_STATE_FINAL
@@ -222,8 +227,7 @@ cph-- quickly for testing
       fc = totcost
 #endif
 
-      IF ( MASTER_CPU_THREAD(myThid) .AND. costWriteCostFunction ) THEN
-       ifc = 30
+      IF ( ifc .NE. -1 ) THEN
        WRITE(cfname,'(A,I4.4)') 'costfunction',optimcycle
        WRITE(msgBuf,'(A,A)')
      &      'Writing global cost function info to ', cfname
@@ -232,7 +236,7 @@ cph-- quickly for testing
        WRITE(UNIT=ifc,FMT='(A,D22.15)') 'fc =', fc
 C     Collect and copy other cost function contributions in a separate
 C     file to hide irreducible statements from TAF
-       CALL COST_COPY_FILE(ifc, myThid)
+       CALL COST_COPY_FILE(ifc, optimcycle, myThid)
 
        CLOSE(ifc)
 C     Do not ever write this cost function again to cfname

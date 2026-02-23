@@ -10,7 +10,7 @@ CBOP
 C !ROUTINE: OBCS_COST_FINAL
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE OBCS_COST_FINAL( myThid )
+      SUBROUTINE OBCS_COST_FINAL( ifc, optimcycle, myThid )
 
 C !DESCRIPTION:
 C     Compute cost function contribution (Tikhonov regularisation)
@@ -26,31 +26,28 @@ C     == Global variables ==
 #endif
 #ifdef ALLOW_CTRL
 # include "CTRL_OBCS.h"
-# include "OPTIMCYCLE.h"
 #endif
 
 C !INPUT PARAMETERS: ===================================================
+C     ifc        :: file unit for costfunction_obcsXXXX
+C     optimcycle :: cycle number of the off-line optimization.
+C     myThid     :: my Thread Id number
+      INTEGER ifc
+      INTEGER optimcycle
       INTEGER myThid
 
 #ifdef ALLOW_COST
 C    defined ALLOW_OBCS_CONTROL
 C    defined ALLOW_OBCS_COST_CONTRIBUTION
 
-C !FUNCTIONS: ==========================================================
-      LOGICAL  MASTER_CPU_THREAD
-      EXTERNAL MASTER_CPU_THREAD
-
 C !LOCAL VARIABLES: ====================================================
       INTEGER bi, bj
       _RL f_obcsn, f_obcss, f_obcsw, f_obcse, f_ageos
       _RL no_obcsn, no_obcss, no_obcsw, no_obcse, no_ageos
 
-      INTEGER ifc
       CHARACTER*22 cfname
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
-
-      ifc = 30
 
       f_obcsn  = 0. _d 0
       f_obcss  = 0. _d 0
@@ -130,7 +127,7 @@ C     start printing to STDOUT
 C     write contributions to costfunction file
 
 C--   Each process has calculated the global part for itself.
-      IF ( MASTER_CPU_THREAD(myThid) .AND. obcsWriteCostFunction ) THEN
+      IF ( ifc .NE. -1 ) THEN
        WRITE(cfname,'(A,I4.4)') 'costfunction_obcs',optimcycle
        OPEN(unit=ifc,file=cfname)
        WRITE(msgBuf,'(A,A)')
@@ -151,9 +148,6 @@ C--   Each process has calculated the global part for itself.
      &      'f_ageos =', f_ageos, no_ageos, mult_ageos
 # endif
        CLOSE(ifc)
-C     Do it only once per run, otherwise grdchk will overwrite or append
-C     files in an uncontrolled way.
-       obcsWriteCostFunction = .FALSE.
       ENDIF
 
 #endif /* ALLOW_COST etc */

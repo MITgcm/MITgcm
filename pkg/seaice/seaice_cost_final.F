@@ -9,7 +9,7 @@
 CBOP
 C     !ROUTINE: SEAICE_COST_FINAL
 C     !INTERFACE:
-      SUBROUTINE SEAICE_COST_FINAL( myThid )
+      SUBROUTINE SEAICE_COST_FINAL( ifc, optimcycle, myThid )
 
 C     !DESCRIPTION:
 C     *==========================================================*
@@ -32,27 +32,24 @@ C     == global variables ==
 #ifdef ALLOW_CTRL
 # include "CTRL_SIZE.h"
 # include "CTRL.h"
-# include "OPTIMCYCLE.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
+C     ifc        :: file unit for costfunction_seaiceXXXX
+C     optimcycle :: cycle number of the off-line optimization.
+C     myThid     :: my Thread Id number
+      INTEGER ifc
+      INTEGER optimcycle
       INTEGER myThid
 
 #if (defined ALLOW_COST && defined ALLOW_COST_ICE)
-C     ! FUNCTIONS:
-      LOGICAL  MASTER_CPU_THREAD
-      EXTERNAL MASTER_CPU_THREAD
-
 C     !LOCAL VARIABLES:
       INTEGER bi, bj
-      INTEGER ifc
       _RL f_ice
       _RL no_ice
       CHARACTER*23 cfname
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
-
-      ifc = 30
 
       f_ice      = 0. _d 0
       no_ice     = 0. _d 0
@@ -83,7 +80,7 @@ C--   Do global summation for each part of the cost function
      &     ' --> f_ice     =',f_ice, no_ice, mult_ice
 
 C--   Each process has calculated the global part for itself.
-      IF ( MASTER_CPU_THREAD(myThid).AND.SEAICEwriteCostFunction ) THEN
+      IF ( ifc .NE. -1 ) THEN
 
         WRITE(cfname,'(A,i4.4)') 'costfunction_seaice',optimcycle
         OPEN(unit=ifc,file=cfname)
@@ -94,10 +91,6 @@ c       WRITE(ifc,*) 'fc =', fc
      &       'f_ice   =', f_ice, no_ice, mult_ice
 
         CLOSE(ifc)
-
-C     Do it only once per run, otherwise grdchk will overwrite or append
-C     files in an uncontrolled way.
-        SEAICEwriteCostFunction = .FALSE.
 
       ENDIF
 

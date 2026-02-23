@@ -14,4 +14,4 @@ C$TAF COMMON cost_dic_cost_ctrl ADNAME = adcost_dic_cost_ctrl
 C------------------------------------------
 C subroutine cost_copy_file
 C------------------------------------------
-C$TAF SUBROUTINE cost_copy_file INPUT = 1,2
+C$TAF SUBROUTINE cost_copy_file INPUT = 1,2,3

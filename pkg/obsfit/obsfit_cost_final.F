@@ -6,7 +6,7 @@
 CBOP
 C     !ROUTINE: OBSFIT_COST_FINAL
 C     !INTERFACE:
-      SUBROUTINE OBSFIT_COST_FINAL( myThid )
+      SUBROUTINE OBSFIT_COST_FINAL( ifc, optimcycle, myThid )
 
 C     !DESCRIPTION:
 C     *==========================================================*
@@ -23,19 +23,19 @@ C     == global variables ==
 #ifdef ALLOW_COST
 # include "cost.h"
 #endif
-#ifdef ALLOW_CTRL
-# include "OPTIMCYCLE.h"
-#endif
 #include "OBSFIT_SIZE.h"
 #include "OBSFIT.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
+C     ifc        :: file unit for costfunction_obsfitXXXX
+C     optimcycle :: cycle number of the off-line optimization.
+C     myThid     :: my Thread Id number
+      INTEGER ifc
+      INTEGER optimcycle
       INTEGER myThid
 
 #ifdef ALLOW_COST
 C     ! FUNCTIONS:
-      LOGICAL  MASTER_CPU_THREAD
-      EXTERNAL MASTER_CPU_THREAD
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
 
@@ -44,13 +44,10 @@ C     !LOCAL VARIABLES:
       _RL f_obsfit(NFILESMAX_OBS)
       _RL no_obsfit(NFILESMAX_OBS)
 
-      INTEGER ifc
       CHARACTER*23 cfname
       INTEGER IL
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
-
-      ifc = 30
 
 c--   Each process has calculated the global part for itself.
       DO num_file_obs=1,NFILESMAX_OBS
@@ -88,8 +85,8 @@ C     start printing to STDOUT
 c--   Each process has calculated the global part for itself.
 
 C     only master thread of master CPU open and write to file
-      IF ( MASTER_CPU_THREAD(myThid)
-     &     .AND. obsfitWriteCostFunction ) THEN
+      IF ( ifc .NE. -1 ) THEN
+
        WRITE(cfname,'(A,I4.4)') 'costfunction_obsfit',optimcycle
        OPEN(unit=ifc,file=cfname)
        WRITE(msgBuf,'(A,A)')
@@ -108,11 +105,7 @@ C     only master thread of master CPU open and write to file
         ENDIF
        ENDDO
        CLOSE(ifc)
-C     Do it only once per run, otherwise grdchk will overwrite or append
-C     files in an uncontrolled way.
-       obsfitWriteCostFunction = .FALSE.
 
-C     MASTER_CPU_THREAD .AND. obsfitWriteCostFunction
       ENDIF
 
 #endif /* ALLOW_COST */

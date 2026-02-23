@@ -3,7 +3,7 @@
 # include "CTRL_OPTIONS.h"
 #endif
 
-      SUBROUTINE ECCO_COST_FINAL( myThid )
+      SUBROUTINE ECCO_COST_FINAL( ifc, optimcycle, myThid )
 
 c     ==================================================================
 c     SUBROUTINE cost_final
@@ -33,18 +33,20 @@ c     == global variables ==
 
 c     == routine arguments ==
 
+C     ifc        :: file unit for costfunction_eccoXXXX
+C     optimcycle :: cycle number of the off-line optimization (same as eccoiter)
+C     myThid     :: my Thread Id number
+      INTEGER ifc
+      INTEGER optimcycle
       INTEGER myThid
 
 C     === Functions ====
-      LOGICAL  MASTER_CPU_THREAD
-      EXTERNAL MASTER_CPU_THREAD
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
 
 c     == local variables ==
 
       INTEGER bi,bj
-      INTEGER ifc
       INTEGER num_var
 
       _RL locfc
@@ -55,8 +57,6 @@ c     == local variables ==
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 c     == end of interface ==
-
-      ifc = 30
 
       locfc = 0. _d 0
 
@@ -114,15 +114,17 @@ C     start printing to STDOUT
       ENDDO
 #endif
 
-C     only master thread of master CPU open and write to file
-      IF ( MASTER_CPU_THREAD(myThid) ) THEN
+C     only master thread of master CPU open and write to file with file unit > 0
+      IF ( ifc .NE. -1 ) THEN
 
-       WRITE(cfname,'(A,i4.4)') 'costfunction_ecco',eccoiter
-       IF ( eccoWriteCostFunction ) THEN
+C     For consistency we use variable optimcycle rather than eccoiter,
+C     but they have the same value.
+C       WRITE(cfname,'(A,i4.4)') 'costfunction_ecco',eccoiter
+        WRITE(cfname,'(A,i4.4)') 'costfunction_ecco',optimcycle
         WRITE(msgBuf,'(A,A)')
      &           'Writing ecco cost function info to ', cfname
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
+     &                     SQUEEZE_RIGHT, myThid )
         OPEN(unit=ifc,file=cfname)
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
@@ -139,18 +141,14 @@ C     only master thread of master CPU open and write to file
 #endif
 
         CLOSE(ifc)
-C     Do not ever write this cost function again to cfname
-        eccoWriteCostFunction = .FALSE.
 
-       ELSE
+      ELSE
         WRITE(msgBuf,'(A,A)')
      &           'Not writing ecco cost function info to ', cfname
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
-C     eccoWriteCostFunction
-       ENDIF
 
-C     MASTER_CPU_THREAD
+C     ifc .ne. -1
       ENDIF
 
 #ifdef ECCO_VERBOSE

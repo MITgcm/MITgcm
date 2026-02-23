@@ -9,7 +9,7 @@
 CBOP
 C     !ROUTINE: SHELFICE_COST_FINAL
 C     !INTERFACE:
-      SUBROUTINE SHELFICE_COST_FINAL( myThid )
+      SUBROUTINE SHELFICE_COST_FINAL( ifc, optimcycle, myThid )
 
 C     !DESCRIPTION:
 C     *==========================================================*
@@ -31,24 +31,20 @@ C     == Global variables ===
 
 #ifdef ALLOW_COST
 # include "cost.h"
-# ifndef ALLOW_OPENAD
-#  include "OPTIMCYCLE.h"
-# endif
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     myThid :: Thread number for this instance of the routine.
+C     ifc        :: file unit for costfunction_shelficeXXXX
+C     optimcycle :: cycle number of the off-line optimization.
+C     myThid     :: Thread number for this instance of the routine.
+      INTEGER ifc
+      INTEGER optimcycle
       INTEGER myThid
 
 #ifdef ALLOW_COST
-C     ! FUNCTIONS:
-      LOGICAL  MASTER_CPU_THREAD
-      EXTERNAL MASTER_CPU_THREAD
-
 C     !LOCAL VARIABLES:
       INTEGER bi, bj
 #ifndef ALLOW_OPENAD
-      INTEGER ifc
       CHARACTER*(25) cfname
 #endif
 
@@ -101,10 +97,8 @@ cML      CALL GLOBAL_SUM_TILE_RL( num_shelfice, no_shelfice, myThid )
 
 # ifndef ALLOW_OPENAD
 C--   Each process has calculated the global part for itself.
-      IF ( MASTER_CPU_THREAD(myThid)
-     &     .AND. SHELFICEwriteCostFunction ) THEN
+      IF ( ifc .NE. -1 ) THEN
 
-       ifc = 30
        WRITE(cfname,'(A,i4.4)') 'costfunction_shelfice',optimcycle
        OPEN(unit=ifc,file=cfname)
 
@@ -115,10 +109,6 @@ cML       WRITE(ifc,*) 'f_shelfice =', f_shelfice, no_shelfice
      &      'f_shelfice =', f_shelfice, mult_shelfice
 
        CLOSE(ifc)
-
-C     Do it only once per run, otherwise grdchk will overwrite or append
-C     files in an uncontrolled way.
-       SHELFICEwriteCostFunction = .FALSE.
 
       ENDIF
 # endif /* ALLOW_OPENAD */

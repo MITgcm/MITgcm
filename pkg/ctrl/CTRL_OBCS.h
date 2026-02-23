@@ -35,11 +35,6 @@ C--
      &     num_obcsn, num_obcss, num_obcsw, num_obcse,
      &     num_obcsvol, num_ageos
 
-C     obcsWriteCostFunction :: internal parameter to ensure that cost function
-C                              contribution is only written once per run
-      COMMON /OBCS_COST_L/ obcsWriteCostFunction
-      LOGICAL obcsWriteCostFunction
-
       COMMON /ih_modes/ modesv
       _RL modesv (Nr,Nr,Nr)
       COMMON /ctrl_dummy_obcs/
