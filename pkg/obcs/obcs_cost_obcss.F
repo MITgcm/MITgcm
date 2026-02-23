@@ -24,6 +24,10 @@ C     == Global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #ifdef ALLOW_CTRL
+# ifndef ALLOW_AUTODIFF
+#  include "CTRL_SIZE.h"
+#  include "CTRL.h"
+# endif
 # include "OPTIMCYCLE.h"
 # include "CTRL_OBCS.h"
 #endif
@@ -50,7 +54,9 @@ C !LOCAL VARIABLES: ====================================================
       INTEGER igg
       _RL fctile
       _RL fcthread
+#ifdef ALLOW_AUTODIFF
       _RL dummy
+#endif
       _RL gg
       _RL tmpx
       _RL tmpfield (1-OLx:sNx+OLx,Nr,nSx,nSy)

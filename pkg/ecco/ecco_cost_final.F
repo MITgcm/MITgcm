@@ -40,6 +40,7 @@ C     myThid     :: my Thread Id number
       INTEGER optimcycle
       INTEGER myThid
 
+#ifdef ALLOW_COST
 C     === Functions ====
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
@@ -167,6 +168,8 @@ C     ifc .ne. -1
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
 #endif
+
+#endif /*  ALLOW_COST */
 
       RETURN
       END

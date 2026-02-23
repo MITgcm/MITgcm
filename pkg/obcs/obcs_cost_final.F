@@ -36,7 +36,7 @@ C     myThid     :: my Thread Id number
       INTEGER optimcycle
       INTEGER myThid
 
-#ifdef ALLOW_COST
+#if defined ALLOW_COST && defined ALLOW_CTRL
 C    defined ALLOW_OBCS_CONTROL
 C    defined ALLOW_OBCS_COST_CONTRIBUTION
 
