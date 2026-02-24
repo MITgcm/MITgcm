@@ -59,9 +59,6 @@ C     dummy parameter for this unlikely case
       INTEGER ifc
       INTEGER ioUnit
       CHARACTER*16 cfname
-#ifdef ALLOW_OBSFIT
-      INTEGER num_file_obs
-#endif
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       ioUnit = standardMessageUnit
@@ -95,7 +92,7 @@ C     ifc = -1 means: do not write output to a file costfunction_${PKG}XXXX
 #endif
 
 #if (defined(ALLOW_STREAMICE) && defined(ALLOW_COST_STREAMICE))
-      IF (useStreamice) CALL STREAMICE_COST_FINAL (myThid)
+      IF (useStreamice) CALL STREAMICE_COST_FINAL( myThid )
 #endif
 
 #ifdef ALLOW_THSICE
@@ -124,7 +121,7 @@ C     ifc = -1 means: do not write output to a file costfunction_${PKG}XXXX
 #endif
 
 #ifdef ALLOW_COST_STATE_FINAL
-      CALL COST_STATE_FINAL (myThid)
+      CALL COST_STATE_FINAL( myThid )
 cgf : effectively using this in adjoint requires the
 c     use of adjoint_state_final. That will activate the
 c     objf_state_final vector in place of the fc scalar.
@@ -133,24 +130,24 @@ c     objf_state_final is therefore not added to fc.
 
 #ifdef ALLOW_COST_VECTOR
 cgf : same idea as for ALLOW_COST_STATE_FINAL
-      CALL COST_VECTOR (myThid)
+      CALL COST_VECTOR( myThid )
 #endif
 
 # ifdef ALLOW_COST_TEST
-      CALL COST_TEST (myThid)
+      CALL COST_TEST( myThid )
 # endif
 
 # ifdef ALLOW_COST_ATLANTIC_HEAT
-      CALL COST_ATLANTIC_HEAT (myThid)
+      CALL COST_ATLANTIC_HEAT( myThid )
 # endif
 
 #ifdef ALLOW_COST_HFLUXM
-      CALL COST_HFLUX (myThid)
+      CALL COST_HFLUX( myThid )
 cgf : to compile previous line user is expected to provide cost_hflux.F
 #endif
 
 #ifdef ALLOW_COST_TEMP
-      CALL COST_TEMP (myThid)
+      CALL COST_TEMP( myThid )
 cgf : to compile previous line user is expected to provide cost_temp.F
 #endif
 

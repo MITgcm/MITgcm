@@ -69,7 +69,7 @@ C     that the character variables need to be all of the same length.
         DO WHILE ( .TRUE. )
          READ( iUnit, FMT='(A)', END=1001 ) RECORD
          IL = MAX(ILNBLNK( RECORD ),1)
-         WRITE( oUnit, FMT='(A)') RECORD(:IL)
+         WRITE( oUnit, FMT='(A)') RECORD(1:IL)
         ENDDO
  1001   CONTINUE
 
