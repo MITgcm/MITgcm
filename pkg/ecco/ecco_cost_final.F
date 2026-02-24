@@ -144,8 +144,7 @@ C       WRITE(cfname,'(A,i4.4)') 'costfunction_ecco',eccoiter
         CLOSE(ifc)
 
       ELSE
-        WRITE(msgBuf,'(A,A)')
-     &           'Not writing ecco cost function info to ', cfname
+        WRITE(msgBuf,'(A)') ' skip writing to costfunction_eccoXXXX'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
 
