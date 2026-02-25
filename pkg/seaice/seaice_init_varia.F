@@ -21,6 +21,7 @@ C     === Global variables ===
 #include "FFIELDS.h"
 #include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
+#include "SEAICE_GRID.h"
 #include "SEAICE.h"
 #include "SEAICE_TRACER.h"
 #ifdef OBCS_UVICE_OLD
