@@ -38,7 +38,7 @@ C !INPUT PARAMETERS: ===================================================
       INTEGER myIter
       INTEGER myThid
 
-#if defined ALLOW_CTRL && defined ALLOW_OBCSS_CONTROL
+#if defined ALLOW_CTRL && defined ALLOW_OBCSS_CONTROL && defined ALLOW_COST
 C !FUNCTIONS: ==========================================================
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK

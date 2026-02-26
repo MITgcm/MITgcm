@@ -33,7 +33,7 @@ C !INPUT PARAMETERS: ===================================================
       INTEGER myIter
       INTEGER myThid
 
-#ifdef ALLOW_CTRL
+#if defined ALLOW_CTRL && defined ALLOW_COST
 C !LOCAL VARIABLES: ====================================================
       INTEGER startrec
       INTEGER endrec
@@ -100,7 +100,7 @@ c     I                    myTime, myIter, myThid )
 c      ENDIF
 #endif
 
-#endif /* ALLOW_CTRL */
+#endif /* ALLOW_CTRL and ALLOW_COST */
 
       RETURN
       END
