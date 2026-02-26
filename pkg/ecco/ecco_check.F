@@ -208,6 +208,13 @@ c ============ retired compile option checks
      &                     SQUEEZE_RIGHT , myThid )
        nRetired = nRetired + 1
 #endif
+#ifdef ALLOW_OBCS_COST_CONTRIBUTION
+       WRITE(msgBuf,'(2A)') '** WARNING ** ECCO_CHECK:',
+     &      'ALLOW_OBCS_COST_CONTRIBUTION has been retired'
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+       nRetired = nRetired + 1
+#endif
 #ifdef ALLOW_OBCSN_COST_CONTRIBUTION
        WRITE(msgBuf,'(2A)') '** WARNING ** ECCO_CHECK:',
      &      'ALLOW_OBCSN_COST_CONTRIBUTION has been retired'
