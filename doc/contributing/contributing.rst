@@ -106,9 +106,9 @@ design flaw. As such, we **strongly** suggest opening an
 on GitHub to discuss any proposed contributions beforehand.
 
 The current pull request discussion and review team is Jean-Michel Campin,
-Ed Doddridge, Chris Hill, Oliver Jahn, Jon Lauderdale,
-Martin Losch, Jeff Scott, Timothy Smith, and Ou Wang. Please
-contact anyone on this team with questions about a proposed pull request.
+Ed Doddridge, Ivana Escobar, Chris Hill, Oliver Jahn, Jon Lauderdale,
+Martin Losch, An Nguyen, Jeff Scott, Timothy Smith, Ariane Verdy and Ou Wang.
+Please contact anyone on this team with questions about a proposed pull request.
 
 If you want to update your code branch before submitting a PR (or any point
 in development), follow the recipe below. It will ensure that your GitHub
