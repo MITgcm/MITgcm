@@ -1,7 +1,4 @@
 #include "ECCO_OPTIONS.h"
-#ifdef ALLOW_CTRL
-# include "CTRL_OPTIONS.h"
-#endif
 
 C--  File ecco_check.F:
 C--   Contents
@@ -26,15 +23,8 @@ C     *==========================================================*
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "PARAMS.h"
-#include "DYNVARS.h"
-#include "GRID.h"
-#ifdef ALLOW_CAL
-# include "cal.h"
-#endif
-#ifdef ALLOW_ECCO
-# include "ecco_cost.h"
-#endif
+#include "ECCO_SIZE.h"
+#include "ECCO.h"
 
 C     === Routine arguments ===
 C     myThid -  Number of this instances
@@ -218,6 +208,34 @@ c ============ retired compile option checks
      &                     SQUEEZE_RIGHT , myThid )
        nRetired = nRetired + 1
 #endif
+#ifdef ALLOW_OBCSN_COST_CONTRIBUTION
+       WRITE(msgBuf,'(2A)') '** WARNING ** ECCO_CHECK:',
+     &      'ALLOW_OBCSN_COST_CONTRIBUTION has been retired'
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+       nRetired = nRetired + 1
+#endif
+#ifdef ALLOW_OBCSS_COST_CONTRIBUTION
+       WRITE(msgBuf,'(2A)') '** WARNING ** ECCO_CHECK:',
+     &      'ALLOW_OBCSS_COST_CONTRIBUTION has been retired'
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+       nRetired = nRetired + 1
+#endif
+#ifdef ALLOW_OBCSW_COST_CONTRIBUTION
+       WRITE(msgBuf,'(2A)') '** WARNING ** ECCO_CHECK:',
+     &      'ALLOW_OBCSW_COST_CONTRIBUTION has been retired'
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+       nRetired = nRetired + 1
+#endif
+#ifdef ALLOW_OBCSE_COST_CONTRIBUTION
+       WRITE(msgBuf,'(2A)') '** WARNING ** ECCO_CHECK:',
+     &      'ALLOW_OBCSE_COST_CONTRIBUTION has been retired'
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+       nRetired = nRetired + 1
+#endif
 
       IF ( nRetired .GT. 0 ) THEN
        WRITE(msgBuf,'(2A)') 'S/R ECCO_CHECK: ',
@@ -327,7 +345,7 @@ c--
                using_gencost(k)=.FALSE.
                il = ILNBLNK(gencost_name(k))
                WRITE(msgBuf,'(4A)')
-     &           '** WARNING ** ECCO_CHECK_FILES: missing error file',
+     &           '** WARNING ** ECCO_CHECK: missing error file',
      &           ' so ',gencost_name(k)(1:il),' gets switched off'
                CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                    SQUEEZE_RIGHT , myThid)
@@ -392,7 +410,7 @@ c but need errfile. at the moment do not accomodate variaweight.
               using_gencost(k)=.FALSE.
               il = ILNBLNK(gencost_name(k))
               WRITE(msgBuf,'(4A)')
-     &          '** WARNING ** ECCO_CHECK_FILES: missing error file',
+     &          '** WARNING ** ECCO_CHECK: missing error file',
      &          ' so ',gencost_name(k)(1:il),' gets switched off'
               CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                   SQUEEZE_RIGHT , myThid)
@@ -401,7 +419,7 @@ c but need errfile. at the moment do not accomodate variaweight.
              using_gencost(k)=.FALSE.
              il = ILNBLNK(gencost_name(k))
              WRITE(msgBuf,'(4A)')
-     &        '** WARNING ** ECCO_CHECK_FILES: error file not defined',
+     &        '** WARNING ** ECCO_CHECK: error file not defined',
      &        ' so ',gencost_name(k)(1:il),' gets switched off'
              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                  SQUEEZE_RIGHT , myThid)
@@ -429,7 +447,7 @@ c-- also not checked for variwei at the moment
               using_gencost(k)=.FALSE.
               il = ILNBLNK(gencost_name(k))
               WRITE(msgBuf,'(4A)')
-     &          '** WARNING ** ECCO_CHECK_FILES: gencost_mask is',
+     &          '** WARNING ** ECCO_CHECK: gencost_mask is',
      &          ' undefined so ',gencost_name(k)(1:il),
      &          ' gets switched off'
               CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
@@ -445,7 +463,7 @@ c-- also not checked for variwei at the moment
                using_gencost(k)=.FALSE.
                il = ILNBLNK(gencost_name(k))
                WRITE(msgBuf,'(4A)')
-     &           '** WARNING ** ECCO_CHECK_FILES: missing mask C file',
+     &           '** WARNING ** ECCO_CHECK: missing mask C file',
      &           ' so ',gencost_name(k)(1:il),' gets switched off'
                CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                    SQUEEZE_RIGHT , myThid)
@@ -461,7 +479,7 @@ c-- also not checked for variwei at the moment
                using_gencost(k)=.FALSE.
                il = ILNBLNK(gencost_name(k))
                WRITE(msgBuf,'(4A)')
-     &           '** WARNING ** ECCO_CHECK_FILES: missing mask W file',
+     &           '** WARNING ** ECCO_CHECK: missing mask W file',
      &           ' so ',gencost_name(k)(1:il),' gets switched off'
                CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                    SQUEEZE_RIGHT , myThid)
@@ -474,7 +492,7 @@ c
                using_gencost(k)=.FALSE.
                il = ILNBLNK(gencost_name(k))
                WRITE(msgBuf,'(4A)')
-     &           '** WARNING ** ECCO_CHECK_FILES: missing mask S file',
+     &           '** WARNING ** ECCO_CHECK: missing mask S file',
      &           ' so ',gencost_name(k)(1:il),' gets switched off'
                CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                    SQUEEZE_RIGHT , myThid)
@@ -571,7 +589,7 @@ C ---
             using_gencost(k)=.FALSE.
             il = ILNBLNK(gencost_name(k))
             WRITE(msgBuf,'(4A)')
-     &        '** WARNING ** ECCO_CHECK_FILES: gencost_mask is',
+     &        '** WARNING ** ECCO_CHECK: gencost_mask is',
      &        ' undefined so ',gencost_name(k)(1:il),
      &        ' gets switched off'
             CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
@@ -589,7 +607,7 @@ c-- West ----------------------
            IF (.NOT.exst) THEN
              using_gencost(k)=.FALSE.
              WRITE(msgBuf,'(2A)')
-     &         '** WARNING ** ECCO_CHECK_FILES: missing mask file: ',
+     &         '** WARNING ** ECCO_CHECK: missing mask file: ',
      &         tempfile(1:il+1)
              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                  SQUEEZE_RIGHT , myThid)
@@ -610,7 +628,7 @@ c-- South --------------------
            IF (.NOT.exst) THEN
              using_gencost(k)=.FALSE.
              WRITE(msgBuf,'(2A)')
-     &         '** WARNING ** ECCO_CHECK_FILES: missing mask file: ',
+     &         '** WARNING ** ECCO_CHECK: missing mask file: ',
      &         tempfile(1:il+1)
              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                  SQUEEZE_RIGHT , myThid)
@@ -772,7 +790,6 @@ C     *==========================================================*
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "PARAMS.h"
 #include "ECCO_SIZE.h"
 #include "ECCO.h"
 #ifdef ALLOW_CAL
