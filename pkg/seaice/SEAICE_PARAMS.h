@@ -56,6 +56,8 @@ C                          default is false
 C     SEAICEuseTilt     :: If true then include surface tilt term in dynamics
 C     SEAICEuseMetricTerms :: use metric terms for dynamics solver
 C                          (default = .true. )
+C     SEAICEuseExtraMetricTerms :: use extra metric terms for dynamics solver
+C                          (default = .true. )
 C     SEAICE_no_slip    :: apply no slip boundary conditions to seaice velocity
 C     SEAICE_2ndOrderBC :: apply 2nd order no slip boundary conditions (works
 C                          only with EVP, JFNK or KRYLOV solver, default=F)
@@ -140,7 +142,8 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICEusePicardAsPrecon,
      &     useHibler79IceStrength, SEAICEsimpleRidging,
      &     SEAICEuseLinRemapITD, SEAICEuseTD, SEAICEusePL,
-     &     SEAICEuseTEM, SEAICEuseTilt, SEAICEuseMetricTerms,
+     &     SEAICEuseTEM, SEAICEuseTilt,
+     &     SEAICEuseMetricTerms, SEAICEuseExtraMetricTerms,
      &     SEAICEuseMCS, SEAICEuseMCE,
      &     SEAICE_no_slip, SEAICE_2ndOrderBC,
      &     SEAICE_maskRHS, SEAICEscaleSurfStress,
@@ -170,7 +173,8 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICEusePicardAsPrecon,
      &     useHibler79IceStrength, SEAICEsimpleRidging,
      &     SEAICEuseLinRemapITD, SEAICEuseTD, SEAICEusePL,
-     &     SEAICEuseTEM, SEAICEuseTilt, SEAICEuseMetricTerms,
+     &     SEAICEuseTEM, SEAICEuseTilt,
+     &     SEAICEuseMetricTerms, SEAICEuseExtraMetricTerms,
      &     SEAICEuseMCS, SEAICEuseMCE,
      &     SEAICE_no_slip, SEAICE_2ndOrderBC,
      &     SEAICE_maskRHS, SEAICEscaleSurfStress,

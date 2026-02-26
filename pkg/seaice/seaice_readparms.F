@@ -112,7 +112,8 @@ C--   SEAICE parameters
       NAMELIST /SEAICE_PARM01/
      & SEAICEuseDYNAMICS, SEAICEuseFREEDRIFT, SEAICEuseStrImpCpl,
      & SEAICEuseMCS, SEAICEuseMCE, SEAICEuseTD, SEAICEusePL,
-     & SEAICEuseTEM, SEAICEuseMetricTerms, SEAICEuseTilt,
+     & SEAICEuseTEM, SEAICEuseTilt,
+     & SEAICEuseMetricTerms, SEAICEuseExtraMetricTerms,
      & useHB87stressCoupling, SEAICEupdateOceanStress,
      & usePW79thermodynamics, useMaykutSatVapPoly, SEAICEuseFlooding,
      & SEAICErestoreUnderIce, SEAICE_growMeltByConv,
@@ -254,6 +255,7 @@ C--   set default sea ice parameters
       SEAICEuseTD        = .FALSE.
       SEAICEusePL        = .FALSE.
       SEAICEuseMetricTerms = .TRUE.
+      SEAICEuseExtraMetricTerms = .TRUE.
       SEAICEuseEVPpickup = .TRUE.
       SEAICEuseEVPstar   = .TRUE.
       SEAICEuseEVPrev    = .TRUE.
@@ -908,7 +910,23 @@ C     2nd order boundary conditions require one more row of overlap for the addi
        SEAICE_OLy = OLy-3
       ENDIF
 
-C-    The old ways of specifying mcPheeTaper, mcPheePiston & frazilFrac:
+      IF ( SEAICEuseExtraMetricTerms
+     &     .AND. .NOT. SEAICEuseMetricTerms ) THEN
+       WRITE(msgBuf,'(A,A,A)')
+     &      '** WARNING ** SEAICE_READPARMS:',
+     &      ' SEAICEuseExtraMetricTerms = T with',
+     &      ' SEAICEuseMetricTerms = F makes little sense.'
+      CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+       WRITE(msgBuf,'(A,A)')
+     &      '** WARNING ** SEAICE_READPARMS:',
+     &      ' Resetting SEAICEuseExtraMetricTerms = F'
+      CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+       SEAICEuseExtraMetricTerms = SEAICEuseMetricTerms
+      ENDIF
+
+C     -    The old ways of specifying mcPheeTaper, mcPheePiston & frazilFrac:
 C     a) prevent multiple specification of the same coeff;
 C     b) if specified, then try to recover old way of setting & default.
       IF ( SEAICE_mcPheeTaper .EQ. UNSET_RL ) THEN

@@ -1654,7 +1654,9 @@ C
 C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     i,j  :: Loop counters
+C     eplus, eminus :: convenient abbreviations for e11+e22, e11-e22
       INTEGER i,j
+      _RL eplus, eminus
       _RL hFacM
       _RL sig11(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sig12(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -1735,6 +1737,29 @@ C     contribution to the rhs part of grad(sigma)_x
        ENDDO
       ENDDO
 
+C     add extra metric terms
+      IF ( SEAICEuseExtraMetricTerms ) THEN
+C     to save memory we re-use sig11 as sig22, hopefully without confusion
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+         eplus = e11(i,j,bi,bj) + e22(i,j,bi,bj)
+         eminus= e11(i,j,bi,bj) - e22(i,j,bi,bj)
+         sig11(i,j) = zeta(i,j,bi,bj)*eplus - eta(i,j,bi,bj)*eminus
+     &        - 0.5 _d 0 * press(i,j,bi,bj)
+         sig12(i,j) = 2. _d 0 * e12(i,j,bi,bj) * etaZ(i,j,bi,bj)
+        ENDDO
+       ENDDO
+
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         rhsU(i,j,bi,bj) = rhsU(i,j,bi,bj)
+     &        + seaiceMaskU(i,j,bi,bj) * halfRL *
+     &        ( k2AtU(i,j,bi,bj) * ( sig12(i,j) + sig12(i,j+1) )
+     &        - k1AtU(i,j,bi,bj) * ( sig11(i,j) + sig11(i-1,j) ) )
+        ENDDO
+       ENDDO
+      ENDIF
+
       RETURN
       END
 
@@ -1784,7 +1809,9 @@ C
 C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     i,j  :: Loop counters
+C     eplus, eminus :: convenient abbreviations for e11+e22, e11-e22
       INTEGER i,j
+      _RL eplus, eminus
       _RL hFacM
       _RL sig22(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sig12(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -1865,6 +1892,28 @@ C     contribution to the rhs part of grad(sigma)_y
      &       - _dxF(i  ,j-1,bi,bj) * sig22(i  ,j-1) )
        ENDDO
       ENDDO
+
+      IF ( SEAICEuseExtraMetricTerms ) THEN
+C     to save memory we re-use sig22 as sig11, hopefully without confusion
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+         eplus = e11(i,j,bi,bj) + e22(i,j,bi,bj)
+         eminus= e11(i,j,bi,bj) - e22(i,j,bi,bj)
+         sig22(i,j) = zeta(i,j,bi,bj)*eplus + eta(i,j,bi,bj)*eminus
+     &        - 0.5 _d 0 * press(i,j,bi,bj)
+         sig12(i,j) = 2. _d 0 * e12(i,j,bi,bj) * etaZ(i,j,bi,bj)
+        ENDDO
+       ENDDO
+
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         rhsV(i,j,bi,bj) = rhsV(i,j,bi,bj)
+     &        + seaiceMaskU(i,j,bi,bj) * halfRL *
+     &        ( k1AtV(i,j,bi,bj) * ( sig12(i,j) + sig12(i+1,j) )
+     &        - k2AtV(i,j,bi,bj) * ( sig22(i,j) + sig22(i,j-1) ) )
+        ENDDO
+       ENDDO
+      ENDIF
 
       RETURN
       END

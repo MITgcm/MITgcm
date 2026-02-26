@@ -1292,7 +1292,7 @@ discretized as:
       - k_{1,i,j}^{Z}\frac{v_{i,j}+v_{i-1,j}}{2}
       - k_{2,i,j}^{Z}\frac{u_{i,j}+u_{i,j-1}}{2}
       \biggr),
-      \end{aligned}
+    \end{aligned}
 
 so that the diagonal terms of the strain rate tensor are naturally defined at
 C-points and the symmetric off-diagonal term at Z-points.  No-slip boundary
@@ -1310,23 +1310,48 @@ approximated by finite differences of the cell widths:
 .. math::
    \begin{aligned}
      k_{1,i,j}^{C} &= \frac{1}{\Delta{y}_{i,j}^{F}}
-     \frac{\Delta{y}_{i+1,j}^{G}-\Delta{y}_{i,j}^{G}}{\Delta{x}_{i,j}^{F}} \\
-     k_{2,i,j}^{C} &= \frac{1}{\Delta{x}_{i,j}^{F}}
+     \frac{\Delta{y}_{i+1,j}^{G}-\Delta{y}_{i,j}^{G}}{\Delta{x}_{i,j}^{F}},
+     \quad
+     k_{2,i,j}^{C}  = \frac{1}{\Delta{x}_{i,j}^{F}}
      \frac{\Delta{x}_{i,j+1}^{G}-\Delta{x}_{i,j}^{G}}{\Delta{y}_{i,j}^{F}} \\
+     k_{1,i,j}^{U} &= \frac{1}{\Delta{y}_{i,j}^{G}}
+     \frac{\Delta{y}_{i,j}^{F}-\Delta{y}_{i-1,j}^{F}}{\Delta{x}_{i,j}^{C}},
+     \quad
+     k_{2,i,j}^{U}  = \frac{1}{\Delta{x}_{i,j}^{C}}
+     \frac{\Delta{x}_{i,j+1}^{V}-\Delta{x}_{i,j}^{V}}{\Delta{y}_{i,j}^{G}} \\
+     k_{1,i,j}^{V} &= \frac{1}{\Delta{y}_{i,j}^{C}}
+     \frac{\Delta{y}_{i+1,j}^{U}-\Delta{y}_{i,j}^{U}}{\Delta{x}_{i,j}^{G}},
+     \quad
+     k_{2,i,j}^{V}  = \frac{1}{\Delta{x}_{i,j}^{G}}
+     \frac{\Delta{x}_{i,j}^{F}-\Delta{x}_{i,j-1}^{F}}{\Delta{y}_{i,j}^{C}} \\
      k_{1,i,j}^{Z} &= \frac{1}{\Delta{y}_{i,j}^{U}}
-     \frac{\Delta{y}_{i,j}^{C}-\Delta{y}_{i-1,j}^{C}}{\Delta{x}_{i,j}^{V}} \\
-     k_{2,i,j}^{Z} &= \frac{1}{\Delta{x}_{i,j}^{V}}
+     \frac{\Delta{y}_{i,j}^{C}-\Delta{y}_{i-1,j}^{C}}{\Delta{x}_{i,j}^{V}},
+     \quad
+     k_{2,i,j}^{Z}  = \frac{1}{\Delta{x}_{i,j}^{V}}
      \frac{\Delta{x}_{i,j}^{C}-\Delta{x}_{i,j-1}^{C}}{\Delta{y}_{i,j}^{U}}
-     \end{aligned}
+   \end{aligned}
 
 The stress tensor is given by the constitutive viscous-plastic relation
 :math:`\sigma_{\alpha\beta} = 2\eta\dot{\epsilon}_{\alpha\beta} +
-[(\zeta-\eta)\dot{\epsilon}_{\gamma\gamma} - P/2 ]\delta_{\alpha\beta}` . The
-stress tensor divergence :math:`(\nabla\sigma)_{\alpha} =
-\partial_\beta\sigma_{\beta\alpha}`, is discretized in finite volumes . This
-conveniently avoids dealing with further metric terms, as these are “hidden” in
-the differential cell widths. For the :math:`u`-equation (:math:`\alpha=1`) we
-have:
+[(\zeta-\eta)\dot{\epsilon}_{\gamma\gamma} - P/2 ]\delta_{\alpha\beta}`.
+
+The stress tensor divergence :math:`(\nabla\sigma)` is discretized in finite
+volumes. This conveniently avoids dealing with some (but not all) of the metric
+terms, as these are "hidden" in the differential cell widths. Extra metric
+terms still appear because of the differentiation of the unit vectors. These
+are
+
+.. math::
+   \begin{aligned}
+     k_2\sigma_{12} - k_1\sigma_{22} &\quad \text{for the u-equation, and }\\
+     k_1\sigma_{12} - k_2\sigma_{11} &\quad \text{for the v-equation.}\\
+   \end{aligned}
+   :label: eq_si_extrametricterms
+
+Without these extra terms, the remaining stress tensor divergence
+:math:`(\nabla\sigma)_{\alpha} = \partial_\beta\sigma_{\beta\alpha}`,
+discretized in finite volumes for the :math:`u`-equation
+(:math:`\alpha=1`) is:
 
 .. math::
    \begin{aligned}
@@ -1428,6 +1453,18 @@ with
      & + \Delta{x}_{i,j}^{F}(\zeta + \eta)^{C}_{i,j}
      k_{1,i,j}^{C}\frac{u_{i+1,j}+u_{i,j}}{2} \\ \notag
      & -\Delta{x}_{i,j}^{F} \frac{P}{2}\end{aligned}
+
+The extra metric terms in :eq:`eq_si_extrametricterms` involve averages:
+
+.. math::
+   \begin{aligned}
+     u:\quad k_2\sigma_{12} - k_1\sigma_{22} &\approx
+       k_{2,i,j}^{U} \frac{\sigma_{12,i,j}+\sigma_{12,i,j+1}}{2}
+     - k_{1,i,j}^{U} \frac{\sigma_{22,i,j}+\sigma_{22,i-1,j}}{2} \\
+     v:\quad k_1\sigma_{12} - k_2\sigma_{11} &\approx
+       k_{1,i,j}^{V} \frac{\sigma_{12,i,j}+\sigma_{12,i+1,j}}{2}
+     - k_{2,i,j}^{V} \frac{\sigma_{11,i,j}+\sigma_{11,i,j-1}}{2}
+   \end{aligned}
 
 Again, no-slip boundary conditions are realized via ghost points and
 :math:`u_{i,j-1}+u_{i,j}=0` and :math:`v_{i-1,j}+v_{i,j}=0` across

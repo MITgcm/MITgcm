@@ -356,6 +356,21 @@ C     approximation
         ENDIF
 #endif /* SEAICE_CGRID or SEAICE_BGRID_DYNAMICS */
 
+#ifdef SEAICE_CGRID
+        IF ( .NOT. SEAICEuseExtraMetricTerms ) THEN
+C     Resetting metric factors at U,V-pointw to zero removes the extra
+C     terms
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           k1AtU(i,j,bi,bj) = 0.0 _d 0
+           k2AtU(i,j,bi,bj) = 0.0 _d 0
+           k1AtV(i,j,bi,bj) = 0.0 _d 0
+           k2AtV(i,j,bi,bj) = 0.0 _d 0
+          ENDDO
+         ENDDO
+        ENDIF
+#endif /* SEAICE_CGRID */
+
 #ifdef SEAICE_BGRID_DYNAMICS
 C--   Choose a proxy level for geostrophic velocity,
         DO j=1-OLy,sNy+OLy

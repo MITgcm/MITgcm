@@ -205,6 +205,8 @@ C--  Seaice-Dynamics parameters
      & 'SEAICE_waterTurnAngle  =',' /* ice-water turning angle */')
       CALL WRITE_0D_L ( SEAICEuseMetricTerms, INDEX_NONE,
      & 'SEAICEuseMetricTerms =', ' /* use metric terms */')
+      CALL WRITE_0D_L ( SEAICEuseExtraMetricTerms, INDEX_NONE,
+     & 'SEAICEuseExtraMetricTerms =', ' /* use extra metric terms */')
       CALL WRITE_0D_L ( SEAICE_no_slip, INDEX_NONE,
      & 'SEAICE_no_slip    =', ' /* no slip boundary conditions */')
       CALL WRITE_0D_L ( SEAICE_2ndOrderBC, INDEX_NONE,
