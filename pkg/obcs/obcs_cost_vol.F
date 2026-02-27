@@ -3,18 +3,18 @@
 # include "CTRL_OPTIONS.h"
 #endif
 
-      subroutine cost_obcsvol(
-     I                         startrec, endrec,
-     I                         mytime, myiter, mythid )
+      subroutine obcs_cost_vol(
+     I                          startrec, endrec,
+     I                          mytime, myiter, mythid )
 
 c     ==================================================================
-c     SUBROUTINE cost_obcsvol
+c     SUBROUTINE obcs_cost_vol
 c     ==================================================================
 c
 c     o cost function contribution obc -- Volume flux imbalance.
 c
 c     ==================================================================
-c     SUBROUTINE cost_obcsvol
+c     SUBROUTINE obcs_cost_vol
 c     ==================================================================
 
       implicit none
@@ -91,7 +91,7 @@ c     == local variables ==
 #endif
 c     == end of interface ==
 
-      stop 's/r cost_obcsvol needs to be fixed'
+      stop 's/r obcs_cost_vol needs to be fixed'
 
       jtlo = myByLo(mythid)
       jthi = myByHi(mythid)
@@ -126,7 +126,7 @@ cgg   Added a factor of 1000 because its very important to me.
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a,i9.8)')
-     &  ' cost_obcsvol: number of records to process: ',nrec
+     &  ' obcs_cost_vol: number of records to process: ',nrec
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a)') ' '

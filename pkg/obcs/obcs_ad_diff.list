@@ -36,3 +36,5 @@ obcs_cost_obcss.f
 obcs_cost_obcsw.f
 obcs_cost_obcse.f
 obcs_cost_final.f
+obcs_cost_ageos.f
+obcs_cost_vol.f

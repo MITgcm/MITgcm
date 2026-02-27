@@ -93,9 +93,9 @@ cgg   South boundary contribution to cost function.
 
 #ifdef OBCS_VOLFLUX_COST_CONTRIBUTION
       STOP 'CPP-flag OBCS_VOLFLUX_COST_CONTRIBUTION defined: '//
-     &     'S/R COST_OBCSVOL needs to be fixed!'
+     &     'S/R OBCS_COST_VOL needs to be fixed!'
 c      IF ( ( iobcsN+iobcsS+iobcsE+iobcsW ) .GT.0 ) THEN
-c       CALL COST_OBCSVOL( startrec, endrec,
+c       CALL OBCS_COST_VOL( startrec, endrec,
 c     I                    myTime, myIter, myThid )
 c      ENDIF
 #endif
