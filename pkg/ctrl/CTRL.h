@@ -66,6 +66,13 @@ C     doPackDiag          :: output diag_pack*/diag_unpack* files during
 C                            ctrl_pack/ctrl_unpack
 C     doSinglePrecTapelev :: reduce precision of ad tape files to float32
 C                            (only used in pkg/autodiff ...)
+C     doZscaleUnpack      :: compute norm based on delta Z, both flags
+C     doZscalePack        :: have currently no effect and could be removed
+C     doAdmTlm            :: parameters to turn/off non-functional
+C     doAdmtlmBypassAD    :: package pkg/admtlm (needs work)
+C     useCtrlCostContribution :: internal parameter that is set to True
+C                            if at least one generic control mulitplier
+C                            (mult_genarr2/3, mult_gentim2d) is non-zero
 
       COMMON /controlparams_l/
      &                       doInitXX,

@@ -55,7 +55,7 @@ c--     Set default values.
         multUvel              =      0. _d 0
         multVvel              =      0. _d 0
         multEtan              =      0. _d 0
-        mult_depth            =      0. _d 0
+        mult_depth            =      UNSET_RL
 #ifdef ALLOW_COST_HFLUXM
         mult_temp_tut         =      0. _d 0
         mult_hflux_tut        =      0. _d 0
@@ -98,7 +98,7 @@ c-- get the weights for the cost functions
 cgf : to compile previous line user is expected to provide cost_weights.F
 #endif
 
-      IF ( mult_depth .NE. 0. _d 0 ) THEN
+      IF ( mult_depth .NE. UNSET_RL ) THEN
        WRITE(msgBuf,'(a)')
      & 'S/R COST_READPARMS: mult_depth is now longer allow in data.cost'
        CALL PRINT_ERROR( msgBuf, myThid )

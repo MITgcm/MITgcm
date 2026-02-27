@@ -770,9 +770,9 @@ c--   Compute all cost function contributions.
       CALL TIMER_STOP ('COST_DRIVER        [THE_MAIN_LOOP]', myThid)
 
 c--   Sum all cost function contributions.
-      CALL TIMER_START('COST_FINAL         [ADJOINT SPIN-DOWN]', myThid)
+      CALL TIMER_START('COST_FINAL         [THE_MAIN_LOOP]', myThid)
       CALL COST_FINAL ( myThid )
-      CALL TIMER_STOP ('COST_FINAL         [ADJOINT SPIN-DOWN]', myThid)
+      CALL TIMER_STOP ('COST_FINAL         [THE_MAIN_LOOP]', myThid)
 
 # ifdef ALLOW_OPENAD
 c$openad DEPENDENT(fc)

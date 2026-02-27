@@ -18,22 +18,26 @@ C--
       INTEGER nobcs
       PARAMETER ( nobcs = 4 )
 
+#ifdef ALLOW_COST
       _RL  objf_obcsn(nSx,nSy), objf_obcss(nSx,nSy)
       _RL  objf_obcsw(nSx,nSy), objf_obcse(nSx,nSy)
       _RL  objf_obcsvol, objf_ageos(nSx,nSy)
-      _RL  mult_obcsn, mult_obcss
-      _RL  mult_obcsw, mult_obcse
-      _RL  mult_obcsvol, mult_ageos
       _RL  num_obcsn(nSx,nSy), num_obcss(nSx,nSy)
       _RL  num_obcsw(nSx,nSy), num_obcse(nSx,nSy)
       _RL  num_obcsvol, num_ageos(nSx,nSy)
-      COMMON /obcs_cost_weights_obcs/
+      COMMON /ctrl_cost_weights_obcs/
      &     objf_obcsn, objf_obcss, objf_obcsw, objf_obcse,
      &     objf_obcsvol, objf_ageos,
-     &     mult_obcsn, mult_obcss, mult_obcsw, mult_obcse,
-     &     mult_obcsvol, mult_ageos,
      &     num_obcsn, num_obcss, num_obcsw, num_obcse,
      &     num_obcsvol, num_ageos
+#endif
+
+      COMMON /ctrl_cost_mult_obcs/
+     &     mult_obcsn, mult_obcss, mult_obcsw, mult_obcse,
+     &     mult_obcsvol, mult_ageos
+      _RL  mult_obcsn, mult_obcss
+      _RL  mult_obcsw, mult_obcse
+      _RL  mult_obcsvol, mult_ageos
 
       COMMON /ih_modes/ modesv
       _RL modesv (Nr,Nr,Nr)
@@ -117,10 +121,13 @@ C     parameter used (by obcs ctrl parameters)
       CHARACTER*(MAX_LEN_FNAM) obcs_data_errfile
 
 #ifdef ALLOW_OBCSN_CONTROL
-      COMMON /obcs_cost_weights_obcsn/
-     &                      wobcsn, wobcsnLev
-      _RL wobcsn     (                      Nr,nobcs)
+      COMMON /ctrl_cost_weights_obcsn/
+     &       wobcsn
+# ifdef ALLOW_OBCS_WEIGHTS2D
+     &     , wobcsnLev
       _RL wobcsnLev  (1-OLx:sNx+OLx,Nr,nSx,nSy,nobcs)
+# endif
+      _RL wobcsn     (                      Nr,nobcs)
       COMMON /controlaux_obcsn_r/
      &                      xx_obcsn0,
      &                      xx_obcsn1
@@ -129,10 +136,13 @@ C     parameter used (by obcs ctrl parameters)
 #endif
 
 #ifdef ALLOW_OBCSS_CONTROL
-      COMMON /obcs_cost_weights_obcss/
-     &                      wobcss, wobcssLev
-      _RL wobcss     (                      Nr,nobcs)
+      COMMON /ctrl_cost_weights_obcss/
+     &       wobcss
+# ifdef ALLOW_OBCS_WEIGHTS2D
+     &     , wobcssLev
       _RL wobcssLev  (1-OLx:sNx+OLx,Nr,nSx,nSy,nobcs)
+# endif
+      _RL wobcss     (                      Nr,nobcs)
       COMMON /controlaux_obcss_r/
      &                      xx_obcss0,
      &                      xx_obcss1
@@ -141,10 +151,13 @@ C     parameter used (by obcs ctrl parameters)
 #endif
 
 #ifdef ALLOW_OBCSW_CONTROL
-      COMMON /obcs_cost_weights_obcsw/
-     &                      wobcsw, wobcswLev
-      _RL wobcsw     (                      Nr,nobcs)
+      COMMON /ctrl_cost_weights_obcsw/
+     &       wobcsw
+# ifdef ALLOW_OBCS_WEIGHTS2D
+     &     , wobcswLev
       _RL wobcswLev  (1-OLy:sNy+OLy,Nr,nSx,nSy,nobcs)
+# endif
+      _RL wobcsw     (                      Nr,nobcs)
       COMMON /controlaux_obcsw_r/
      &                      xx_obcsw0,
      &                      xx_obcsw1
@@ -153,10 +166,13 @@ C     parameter used (by obcs ctrl parameters)
 #endif
 
 #ifdef ALLOW_OBCSE_CONTROL
-      COMMON /obcs_cost_weights_obcse/
-     &                      wobcse, wobcseLev
-      _RL wobcse     (                      Nr,nobcs)
+      COMMON /ctrl_cost_weights_obcse/
+     &     wobcse
+# ifdef ALLOW_OBCS_WEIGHTS2D
+     &     , wobcseLev
       _RL wobcseLev  (1-OLy:sNy+OLy,Nr,nSx,nSy,nobcs)
+# endif
+      _RL wobcse     (                      Nr,nobcs)
       COMMON /controlaux_obcse_r/
      &                      xx_obcse0,
      &                      xx_obcse1

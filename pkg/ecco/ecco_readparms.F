@@ -480,12 +480,12 @@ C--   retired parameters
         topexmeanfile   =    ' '
         using_cost_bp   = .FALSE.
         using_cost_scat = .FALSE.
-        mult_obcsn      =  0. _d 0
-        mult_obcss      =  0. _d 0
-        mult_obcsw      =  0. _d 0
-        mult_obcse      =  0. _d 0
-        mult_obcsvol    =  0. _d 0
-        mult_ageos      =  0. _d 0
+        mult_obcsn      =  UNSET_RL
+        mult_obcss      =  UNSET_RL
+        mult_obcsw      =  UNSET_RL
+        mult_obcse      =  UNSET_RL
+        mult_obcsvol    =  UNSET_RL
+        mult_ageos      =  UNSET_RL
 
 c--     Next, read the data.ecco file.
         WRITE(msgBuf,'(A)') 'ECCO_READPARMS: opening data.ecco'
@@ -506,9 +506,9 @@ c--     Next, read the data.ecco file.
 
 C--   Check parameters:
 C-    retired parameters:
-        IF ( mult_obcsn .NE. 0. _d 0 .OR. mult_obcsn .NE. 0. _d 0 .OR.
-     &       mult_obcsw .NE. 0. _d 0 .OR. mult_obcse .NE. 0. _d 0 .OR.
-     &       mult_obcsvol .NE. 0. _d 0 .OR. mult_ageos .NE. 0. _d 0
+        IF ( mult_obcsn.NE.UNSET_RL .OR. mult_obcsn.NE.UNSET_RL .OR.
+     &       mult_obcsw.NE.UNSET_RL .OR. mult_obcse.NE.UNSET_RL .OR.
+     &       mult_ageos.NE.UNSET_RL .OR. mult_obcsvol.NE.UNSET_RL
      &       ) THEN
        WRITE(msgBuf,'(2A)') 'S/R ECCO_READPARMS: "mult_obcs*" and ',
      &  '"mult_ageos" are no longer allowed in file "data.ecco"'

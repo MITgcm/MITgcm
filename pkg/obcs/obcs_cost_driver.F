@@ -54,6 +54,24 @@ C     Find ctrl-indices
         IF ( ncvarindex(ivar) .EQ. 4 ) iobcsW = ivar
        ENDIF
       ENDDO
+#ifdef ALLOW_OBCSE_CONTROL
+      IF ( iobcsE.GT.0 ) THEN
+cgg   East boundary contribution to cost function.
+       startrec = ncvarrecstart(iobcsE)
+       endrec   = ncvarrecsend(iobcsE)
+       CALL OBCS_COST_OBCSE( startrec, endrec,
+     I                       myTime, myIter, myThid )
+      ENDIF
+#endif
+#ifdef ALLOW_OBCSW_CONTROL
+      IF ( iobcsW.GT.0 ) THEN
+cgg   West boundary contribution to cost function.
+       startrec = ncvarrecstart(iobcsW)
+       endrec   = ncvarrecsend(iobcsW)
+       CALL OBCS_COST_OBCSW( startrec, endrec,
+     I                       myTime, myIter, myThid )
+      ENDIF
+#endif
 #ifdef ALLOW_OBCSN_CONTROL
       IF ( iobcsN.GT.0 ) THEN
 cgg   North boundary contribution to cost function.
@@ -69,24 +87,6 @@ cgg   South boundary contribution to cost function.
        startrec = ncvarrecstart(iobcsS)
        endrec   = ncvarrecsend(iobcsS)
        CALL OBCS_COST_OBCSS( startrec, endrec,
-     I                       myTime, myIter, myThid )
-      ENDIF
-#endif
-#ifdef ALLOW_OBCSW_CONTROL
-      IF ( iobcsW.GT.0 ) THEN
-cgg   West boundary contribution to cost function.
-       startrec = ncvarrecstart(iobcsW)
-       endrec   = ncvarrecsend(iobcsW)
-       CALL OBCS_COST_OBCSW( startrec, endrec,
-     I                       myTime, myIter, myThid )
-      ENDIF
-#endif
-#ifdef ALLOW_OBCSE_CONTROL
-      IF ( iobcsE.GT.0 ) THEN
-cgg   East boundary contribution to cost function.
-       startrec = ncvarrecstart(iobcsE)
-       endrec   = ncvarrecsend(iobcsE)
-       CALL OBCS_COST_OBCSE( startrec, endrec,
      I                       myTime, myIter, myThid )
       ENDIF
 #endif

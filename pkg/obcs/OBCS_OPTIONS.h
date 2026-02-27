@@ -64,7 +64,11 @@ C     Compute rather than specify seaice velocities at the edges.
 C     Smooth the tracer sea-ice variables near the edges.
 #undef OBCS_SEAICE_SMOOTH_EDGE
 
-C o Allow Open-Boundary cost contributions
+C o Flags related to Open-Boundary cost contributions
+C     Enable code for 2D (horizontal,vertical) weights for obcs;
+C     this code is incomplete (fields are defined but not used anywhere)
+#undef ALLOW_OBCS_WEIGHTS2D
+
 C o these flags refer to untested and potentially broken code
 #undef OBCS_AGEOS_COST_CONTRIBUTION
 #undef OBCS_VOLFLUX_COST_CONTRIBUTION
