@@ -83,7 +83,7 @@ ccc        end do
 C--   Sum up all contributions.
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        WRITE(standardMessageUnit,'(A,D22.15,1X,E8.2)')
+        WRITE(standardMessageUnit,'(A,1PE22.14,1X,1PE9.2)')
      &       ' --> objf_shelfice(bi,bj) = ',
      &       objf_shelfice(bi,bj), mult_shelfice
         tile_fc(bi,bj) = tile_fc(bi,bj)
@@ -105,7 +105,7 @@ C--   Each process has calculated the global part for itself.
 C     makes little sense to print this now, because it is zero at this point
 c       WRITE(ifc,*) 'fc =', fc
 cML       WRITE(ifc,*) 'f_shelfice =', f_shelfice, no_shelfice
-       WRITE(ifc,'(A,D22.15,1X,E8.2)')
+       WRITE(ifc,'(A,1PE22.14,1X,1PE9.2)')
      &      'f_shelfice =', f_shelfice, mult_shelfice
 
        CLOSE(ifc)

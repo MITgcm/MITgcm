@@ -61,13 +61,13 @@ C--   Do global summation for each part of the cost function
 c     CALL GLOBAL_SUM_TILE_RL( objf_thsice, f_thsice, myThid )
 c     CALL GLOBAL_SUM_TILE_RL( num_thsice, no_thsice, myThid )
 
-      WRITE(standardMessageUnit,'(A,D22.15)')
+      WRITE(standardMessageUnit,'(A,1PE22.14)')
      &     ' --> f_thsice     = ', f_thsice
 
 c     IF ( ifc .NE. -1 ) THEN
 c       WRITE(cfname,'(A,i4.4)') 'costfunction_thsice',optimcycle
 c       OPEN(unit=ifc,file=cfname)
-c       WRITE(ifc,'(A,2D22.15,1X,E8.2)')
+c       WRITE(ifc,'(A,1PE22.14,1PE22.14,1X,1PE9.2)')
 c    &       'f_thsice =', f_thsice, no_thsice, mult_thsice
 c       CLOSE(ifc)
 c     ENDIF

@@ -50,29 +50,29 @@ c     == local variables ==
       INTEGER bi,bj
       INTEGER num_var
 
+#ifdef ECCO_VERBOSE
       _RL locfc
+#endif
+#ifdef ALLOW_GENCOST_CONTRIBUTION
       _RL f_gencost(NGENCOST)
       _RL no_gencost(NGENCOST)
+#endif
       INTEGER IL
       CHARACTER*22 cfname
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 c     == end of interface ==
 
-      locfc = 0. _d 0
-
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       DO num_var=1,NGENCOST
        f_gencost(num_var) = 0. _d 0
        no_gencost(num_var)= 0. _d 0
       ENDDO
-#endif
 
 c--   Sum up all contributions.
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
-#ifdef ALLOW_GENCOST_CONTRIBUTION
         DO num_var=1,NGENCOST
          tile_fc(bi,bj) = tile_fc(bi,bj)
      &            + mult_gencost(num_var)
@@ -82,30 +82,22 @@ c--   Sum up all contributions.
          no_gencost(num_var)=no_gencost(num_var)
      &            +num_gencost(bi,bj,num_var)
         ENDDO
-#endif
 
 C-   end bi,bj loops
        ENDDO
       ENDDO
 
-c local copy used in print statements, for
-c which we always want to do the global sum.
-      CALL GLOBAL_SUM_TILE_RL( tile_fc, locfc, myThid )
-
 c--   Do global summation for each part of the cost function
-#ifdef ALLOW_GENCOST_CONTRIBUTION
       DO num_var=1,NGENCOST
        _GLOBAL_SUM_RL(f_gencost(num_var), myThid )
        _GLOBAL_SUM_RL(no_gencost(num_var), myThid )
       ENDDO
-#endif
 
 C     start printing to STDOUT
-#ifdef ALLOW_GENCOST_CONTRIBUTION
       DO num_var=1,NGENCOST
        IF (no_gencost(num_var).GT.0) THEN
         IL  = ILNBLNK( gencost_name(num_var) )
-        WRITE(msgBuf,'(A,D22.15,I3,1X,E8.2,3A)')
+        WRITE(msgBuf,'(A,1PE22.14,I3,1X,1PE9.2,3A)')
      &     ' --> f_gencost  =', f_gencost(num_var), num_var,
      &     mult_gencost(num_var),
      &     ' (', gencost_name(num_var)(1:IL), ')'
@@ -133,7 +125,7 @@ C       WRITE(cfname,'(A,i4.4)') 'costfunction_ecco',eccoiter
          IF (no_gencost(num_var).GT.0) THEN
           IL  = ILNBLNK( gencost_name(num_var) )
           IL  = max (IL,15)
-          WRITE(ifc,'(2A,I3.0,A,2D22.15,1X,E8.2)')
+          WRITE(ifc,'(2A,I3.0,A,1PE22.14,1PE22.14,1X,1PE9.2)')
      &    gencost_name(num_var)(1:IL),' (gencost ', num_var, ') = ',
      &    f_gencost(num_var),
      &    no_gencost(num_var), mult_gencost(num_var)
@@ -152,7 +144,12 @@ C     ifc .ne. -1
       ENDIF
 
 #ifdef ECCO_VERBOSE
-      WRITE(msgBuf,'(a,D22.15)')
+c local copy used in print statements, for
+c which we always want to do the global sum.
+      locfc = 0. _d 0
+      CALL GLOBAL_SUM_TILE_RL( tile_fc, locfc, myThid )
+
+      WRITE(msgBuf,'(a,1PE22.14)')
      &  ' cost_Final: ecco cost function = ',locfc
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )

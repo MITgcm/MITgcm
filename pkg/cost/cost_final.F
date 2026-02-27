@@ -151,7 +151,7 @@ cgf : to compile previous line user is expected to provide cost_hflux.F
 cgf : to compile previous line user is expected to provide cost_temp.F
 #endif
 
-      WRITE(msgBuf,'(A,D22.15)') '  early fc = ', fc
+      WRITE(msgBuf,'(A,1PE22.14)') '  early fc = ', fc
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 
 c--   Sum up all other contributions.
@@ -160,27 +160,27 @@ c--   Sum up all other contributions.
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
 #ifdef ALLOW_COST_TEST
-        WRITE(UNIT=ioUnit,FMT='(A,D22.15,1X,E8.2)')
+        WRITE(UNIT=ioUnit,FMT='(A,1PE22.14,1X,1PE9.2)')
      &       ' --> objf_test(bi,bj)      = ',
      &       objf_test(bi,bj), mult_test
 #endif
 #ifdef ALLOW_COST_TRACER
-        WRITE(UNIT=ioUnit,FMT='(A,D22.15,1X,E8.2)')
+        WRITE(UNIT=ioUnit,FMT='(A,1PE22.14,1X,1PE9.2)')
      &       ' --> objf_tracer(bi,bj)    = ',
      &       objf_tracer(bi,bj), mult_tracer
 #endif
 #ifdef ALLOW_COST_ATLANTIC_HEAT
-        WRITE(UNIT=ioUnit,FMT='(A,D22.15,1X,E8.2)')
+        WRITE(UNIT=ioUnit,FMT='(A,1PE22.14,1X,1PE9.2)')
      &       ' --> objf_atl(bi,bj)       = ',
      &       objf_atl(bi,bj), mult_atl
 #endif
 #ifdef ALLOW_COST_TEMP
-        WRITE(UNIT=ioUnit,FMT='(A,D22.15,1X,E8.2)')
+        WRITE(UNIT=ioUnit,FMT='(A,1PE22.14,1X,1PE9.2)')
      &       ' --> objf_temp_tut(bi,bj)  = ',
      &       objf_temp_tut(bi,bj), mult_temp_tut
 #endif
 #ifdef ALLOW_COST_HFLUXM
-        WRITE(UNIT=ioUnit,FMT='(A,D22.15,1X,E8.2)')
+        WRITE(UNIT=ioUnit,FMT='(A,1PE22.14,1X,1PE9.2)')
      &       ' --> objf_hflux_tut(bi,bj) = ',
      &       objf_hflux_tut(bi,bj), mult_hflux_tut
 #endif
@@ -207,7 +207,7 @@ c--   Sum up all other contributions.
        ENDDO
       ENDDO
 
-      WRITE(msgBuf,'(A,D22.15)') '  local fc = ', loc_fc
+      WRITE(msgBuf,'(A,1PE22.14)') '  local fc = ', loc_fc
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 
 c--   Do global summation.
@@ -230,7 +230,7 @@ cph-- quickly for testing
      &      'Writing global cost function info to ', cfname
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
        OPEN(UNIT=ifc,FILE=cfname)
-       WRITE(UNIT=ifc,FMT='(A,D22.15)') 'fc =', fc
+       WRITE(UNIT=ifc,FMT='(A,1PE22.14)') 'fc =', fc
 C     Collect and copy other cost function contributions in a separate
 C     file to hide irreducible statements from TAF
        CALL COST_COPY_FILE(ifc, optimcycle, myThid)
@@ -240,7 +240,7 @@ C     Do not ever write this cost function again to cfname
        costWriteCostFunction = .FALSE.
       ENDIF
 
-      WRITE(msgBuf,'(A,D22.15)') ' global fc = ', fc
+      WRITE(msgBuf,'(A,1PE22.14)') ' global fc = ', fc
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 
       WRITE(msgBuf,'(A)')

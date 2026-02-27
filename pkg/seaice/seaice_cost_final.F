@@ -76,7 +76,7 @@ C--   Do global summation for each part of the cost function
       CALL GLOBAL_SUM_TILE_RL( objf_ice,     f_ice,     myThid )
       CALL GLOBAL_SUM_TILE_RL( num_ice,     no_ice,     myThid )
 
-      WRITE(standardMessageUnit,'(A,2D22.15,1X,E8.2)')
+      WRITE(standardMessageUnit,'(A,1PE22.14,1PE22.14,1X,1PE9.2)')
      &     ' --> f_ice     =',f_ice, no_ice, mult_ice
 
 C--   Each process has calculated the global part for itself.
@@ -87,7 +87,7 @@ C--   Each process has calculated the global part for itself.
 
 C     makes little sense to print this now, because it is zero at this point
 c       WRITE(ifc,*) 'fc =', fc
-        WRITE(ifc,'(A,2D22.15,1X,E8.2)')
+        WRITE(ifc,'(A,1PE22.14,1PE22.14,1X,1PE9.2)')
      &       'f_ice   =', f_ice, no_ice, mult_ice
 
         CLOSE(ifc)

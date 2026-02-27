@@ -54,6 +54,8 @@ C     !LOCAL VARIABLES:
 #ifdef HAVE_SYSTEM
       INTEGER pIL
 #endif
+C     auxillary variable to simplify code
+      _RL mult_default
 C     retired parameters (others are in ctrl_local_params.h)
       LOGICAL ctrlUseGen
       LOGICAL ctrlSmoothCorrel3D
@@ -230,7 +232,7 @@ C     flag is defined
 #endif
          write(xx_genarr2d_weight(iarr)(1:MAX_LEN_FNAM),'(a)') ' '
          genarr2dPrecond(iarr)  = 1. _d 0
-         mult_genarr2d(iarr)    =-1. _d 0
+         mult_genarr2d(iarr)    = UNSET_RL
          do jarr = 1, 5
            xx_genarr2d_bounds(jarr,iarr) = 0. _d 0
          enddo
@@ -251,7 +253,7 @@ C     flag is defined
 #endif
          write(xx_genarr3d_weight(iarr)(1:MAX_LEN_FNAM),'(a)') ' '
          genarr3dPrecond(iarr)  = 1. _d 0
-         mult_genarr3d(iarr)    =-1. _d 0
+         mult_genarr3d(iarr)    = UNSET_RL
          do jarr = 1, 5
            xx_genarr3d_bounds(jarr,iarr) = 0. _d 0
          enddo
@@ -282,8 +284,8 @@ C     flag is defined
           xx_gentim2d_preproc_i(jarr,iarr) = 0
           xx_gentim2d_preproc_r(jarr,iarr) = 0. _d 0
          enddo
-         mult_gentim2d(iarr)          =-1. _d 0
          gentim2dPrecond(iarr)        = 1. _d 0
+         mult_gentim2d(iarr)          = UNSET_RL
          do jarr = 1, 5
            xx_gentim2d_bounds(jarr,iarr) = 0. _d 0
          enddo
@@ -463,28 +465,24 @@ C--     Next, read the cost data file.
 #endif /* SINGLE_DISK_IO */
 
 C--   Set defaults for backwards compatibility
+        mult_default = 0. _d 0
+        IF ( useECCO ) mult_default = 1. _d 0
 #ifdef ALLOW_GENARR2D_CONTROL
         DO iarr = 1, maxCtrlArr2D
-         IF ( mult_genarr2d(iarr) .EQ. -1. ) THEN
-          mult_genarr2d(iarr) = 0.
-          IF ( useECCO ) mult_genarr2d(iarr) = 1.
-         ENDIF
+         IF ( mult_genarr2d(iarr) .EQ. UNSET_RL )
+     &        mult_genarr2d(iarr) = mult_default
         ENDDO
 #endif
 #ifdef ALLOW_GENARR3D_CONTROL
         DO iarr = 1, maxCtrlArr3D
-         IF ( mult_genarr3d(iarr) .EQ. -1. ) THEN
-          mult_genarr3d(iarr) = 0.
-          IF ( useECCO ) mult_genarr3d(iarr) = 1.
-         ENDIF
+         IF ( mult_genarr3d(iarr) .EQ. UNSET_RL )
+     &        mult_genarr3d(iarr) = mult_default
         ENDDO
 #endif
 #ifdef ALLOW_GENTIM2D_CONTROL
         DO iarr = 1, maxCtrlTim2D
-         IF ( mult_gentim2d(iarr) .EQ. -1. ) THEN
-          mult_gentim2d(iarr) = 0.
-          IF ( useECCO ) mult_gentim2d(iarr) = 1.
-         ENDIF
+         IF ( mult_gentim2d(iarr) .EQ. UNSET_RL )
+     &        mult_gentim2d(iarr) = mult_default
         ENDDO
 #endif
 

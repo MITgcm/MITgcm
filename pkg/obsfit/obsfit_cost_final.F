@@ -74,7 +74,7 @@ CML      ENDDO
 C     start printing to STDOUT
       DO num_file_obs=1,NFILESMAX_OBS
        IF ( no_obsfit(num_file_obs).GT.zeroRL ) THEN
-        WRITE(msgBuf,'(A,D22.15,I2,1X,E8.2)')
+        WRITE(msgBuf,'(A,1PE22.14,I2,1X,1PE9.2)')
      &       ' --> f_obsfit =', f_obsfit(num_file_obs), num_file_obs,
      &       mult_obsfit(num_file_obs)
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -98,7 +98,7 @@ C     only master thread of master CPU open and write to file
         IF ( no_obsfit(num_file_obs).GT.zeroRL ) THEN
          IL = ILNBLNK( obsfitfiles(num_file_obs) )
          IL = MAX(IL,30)
-         WRITE(ifc,'(4A,2D22.15,1X,E8.2)')
+         WRITE(ifc,'(4A,1PE22.14,1PE22.14,1X,1PE9.2)')
      &        obsfitfiles(num_file_obs)(1:IL), ' ', obsfit_nameval,
      &        ' = ', f_obsfit(num_file_obs), no_obsfit(num_file_obs),
      &        mult_obsfit(num_file_obs)
