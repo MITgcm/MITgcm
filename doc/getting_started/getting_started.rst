@@ -1067,11 +1067,15 @@ type (assuming you are still in the ``build`` directory):
     % cp ../build/mitgcmuv .
     % ./mitgcmuv
 
-Here, we are making a link to all the support data files (in ``../input/``)
-needed by the MITgcm for this experiment, and then copying the executable from
-the the build directory. The ``./`` in the last step is a safe-guard to make
+Here, we are making a link to support files (in ``../input/``)
+needed by MITgcm for this experiment, and then copying the executable from
+the build directory. Many of our :filelink:`verification/` experiment input
+directories also include a ``prepare_run`` script which should be executed
+at this time; this script will link and/or prepare any additional files needed
+for the setup (to execute this script type ``./prepare_run``).
+The precursor ``./`` in the final step above is a safe-guard to make
 sure you use the local executable in case you have others that might exist in
-your ``$PATH``. The above command will spew out many lines of text output to
+your ``$PATH``. Running the model will spew out many lines of text output to
 your screen. This output contains details such as parameter values as well as
 diagnostics such as mean kinetic energy, largest CFL number, etc. It is
 worth keeping this text output with the binary output so we normally
