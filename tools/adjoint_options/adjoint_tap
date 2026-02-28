@@ -4,6 +4,8 @@
 
 DEFINES="$DEFINES -DDEFAULT_R8"
 
-DIFF_FLAGS="-ext '../../../tools/TAP_support/flow_tap' -head 'the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)'"
+# Note: in Makefile, we want TAPENADE_FLAGS to use Makefile variable $(TOOLSDIR)
+#       so we use backslash here to prevent parameter expansion of $(TOOLSDIR)
+DIFF_FLAGS="-ext \$(TOOLSDIR)/TAP_support/flow_tap -head 'the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)'"
 
 TAPENADE_FLAGS="$DIFF_FLAGS $TAPENADE_FLAGS"

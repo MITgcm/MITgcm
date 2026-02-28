@@ -439,12 +439,7 @@ C [llh]  where A is (Auu, Auv, Avu, Avv), x is (xu,xv), b is (bu,bv)
      &                        cg_Bu, cg_Bub, cg_Bv, cg_Bvb,
      &                        A_uu, A_uub, A_uv, A_uvb,
      &                        A_vu, A_vub, A_vv, A_vvb,
-#ifdef ALLOW_PETSC
-     &                        tolerance, toleranceb,
-#else
-     &                        tolerance,
-#endif
-     &                        iters, maxIter, myThid)
+     &                        tolerance, iters, maxIter, myThid )
 
       IMPLICIT NONE
 
