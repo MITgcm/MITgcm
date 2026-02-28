@@ -82,7 +82,7 @@ To run primary test:
 ```
   cd run
   ln -s ../input_oad/* .
-  ../input_oad/prepare_run
+  ./prepare_run
   ../build/mitgcmuv_ad > output_oadm.txt
   cd ..
 ```
@@ -124,7 +124,7 @@ To run primary test:
 ```
   cd run
   ln -s ../input_ad/* .
-  ../input_ad/prepare_run
+  ./prepare_run
   ../build/mitgcmuv_ad > output_adm.txt
   cd ..
 ```
