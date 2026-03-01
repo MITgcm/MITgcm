@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint69l (2026/03/01)
 o verification:
   - for secondary tests, change testreport to only run a single "prepare_run"
     from run-dir, after linking files from both ../input.${sfx}/ and ../input/.
