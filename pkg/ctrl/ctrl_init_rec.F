@@ -89,8 +89,8 @@ c     initialise some output
       elseif ( fldperiod .EQ. 0. ) then
        startrec = 1
        endrec   = 1*nfac
-      else
 # ifdef ALLOW_CAL
+      ELSEIF ( useCAL ) THEN
        call cal_FullDate( startdate_1, startdate_2,
      &                        modelBaseDate , mythid )
        call cal_FullDate( fldstartdate1, fldstartdate2,
@@ -106,10 +106,10 @@ c     This is the case of obcs.
         startrec = (startrec - 1)*nfac + 1
         endrec   = endrec*nfac
        endif
-# else /* ndef ALLOW_CAL */
+#endif /* ALLOW_CAL */
+      ELSE
        startrec = 1
        endrec   = (int((endTime - startTime)/fldperiod) + 1)*nfac
-#endif /* ALLOW_CAL */
       endif
       diffrec  = endrec - startrec + 1
 

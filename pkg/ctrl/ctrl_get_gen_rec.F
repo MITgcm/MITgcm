@@ -49,9 +49,7 @@ C     == routine arguments ==
       integer myThid
 
 C     == local variables ==
-
 #ifdef ALLOW_CAL
-
       integer mydate(4)
       integer previousdate(4)
       integer difftime(4)
@@ -67,13 +65,12 @@ C     == local variables ==
 
       integer year0
       integer year1
+#endif /* ALLOW_CAL */
 
-#else
 C     Declarations for code, adapted from external_fields_load,
 C     for simplied default model calendar without exf/cal
       _RL myRelTime, tmpFac
       INTEGER countP
-#endif
 
       INTEGER shiftRec
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -81,6 +78,7 @@ C     for simplied default model calendar without exf/cal
 C     == end of interface ==
 
       shiftRec = 0
+      IF ( useCAL ) THEN
 #ifdef ALLOW_CAL
       fldperiod = 0.
 
@@ -167,7 +165,10 @@ C           MITgcm estimation program.
 
 C     fldperiod .ne. 0.
       endif
-#else /* not ALLOW_CAL */
+#endif /* ALLOW_CAL */
+      ELSE
+C-    case useCAL=F
+
 C     Code, adapted from external_fields_load, for simplied
 C     default model calendar without exf/cal, but
 C     based on myTime, myIter, deltaTClock, externForcingCycle, and startTime
@@ -199,7 +200,8 @@ C--   Now calculate whether it is time to update the forcing arrays
 
       endif
 
-#endif /* ALLOW_CAL */
+C-    end if/else useCAL
+      ENDIF
 
       IF ( debugLevel.GE.debLevC ) THEN
 C     Do some printing for the protocol.
