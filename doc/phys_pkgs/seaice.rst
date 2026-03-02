@@ -769,7 +769,7 @@ non-normal flow rule as described in Ringeisen et al. (2020)
 with the abbreviation
 
 .. math::
-     \Delta = \sqrt{(\dot{\epsilon}_{11}-\dot{\epsilon}_{22})^2
+     \Delta = \sqrt{(\dot{\epsilon}_{11} + \dot{\epsilon}_{22})^2
        +\frac{e_F^2}{e_G^4}((\dot{\epsilon}_{11}
        -\dot{\epsilon}_{22})^2+4\,\dot{\epsilon}_{12}^2)}.
 
@@ -1074,8 +1074,8 @@ physical ocean model time step (although this parameter is under debate), to
 allow for elastic waves to disappear. Because the scheme does not require a
 matrix inversion it is fast in spite of the small internal timestep and simple
 to implement on parallel computers. For completeness, we repeat the equations
-for the components of the stress tensor :math:`\sigma_{1} =
-\sigma_{11}+\sigma_{22}`, :math:`\sigma_{2}= \sigma_{11}-\sigma_{22}`, and
+for the components of the stress tensor :math:`\sigma_{+} =
+\sigma_{11}+\sigma_{22}`, :math:`\sigma_{-}= \sigma_{11}-\sigma_{22}`, and
 :math:`\sigma_{12}`. Introducing the divergence :math:`D_D =
 \dot{\epsilon}_{11}+\dot{\epsilon}_{22}`, and the horizontal tension and
 shearing strain rates, :math:`D_T = \dot{\epsilon}_{11}-\dot{\epsilon}_{22}`
@@ -1083,17 +1083,17 @@ and :math:`D_S = 2\dot{\epsilon}_{12}`, respectively, and using the above
 abbreviations, the equations :eq:`eq_evpequation` can be written as:
 
 .. math::
-   \frac{\partial\sigma_{1}}{\partial{t}} + \frac{\sigma_{1}}{2T} +
+   \frac{\partial\sigma_{+}}{\partial{t}} + \frac{\sigma_{+}}{2T} +
    \frac{P}{2T} = \frac{P}{2T\Delta} D_D
    :label: eq_evpstresstensor1
 
 .. math::
-   \frac{\partial\sigma_{2}}{\partial{t}} + \frac{\sigma_{2} e^{2}}{2T}
+   \frac{\partial\sigma_{-}}{\partial{t}} + \frac{e^{2}\sigma_{-}}{2T}
    = \frac{P}{2T\Delta} D_T
   :label: eq_evpstresstensor2
 
 .. math::
-  \frac{\partial\sigma_{12}}{\partial{t}} + \frac{\sigma_{12} e^{2}}{2T}
+  \frac{\partial\sigma_{12}}{\partial{t}} + \frac{ e^{2}\sigma_{12}}{2T}
   = \frac{P}{4T\Delta} D_S
   :label: eq_evpstresstensor12
 
@@ -1258,10 +1258,130 @@ the stress formulation of Hibler and Bryan (1987) :cite:`hibler:87`, set
 Finite-volume discretization of the stress tensor divergence
 ------------------------------------------------------------
 
+The stress tensor is given by the constitutive viscous-plastic relation
+
+.. math::
+      \sigma_{\alpha\beta} = 2\eta\,\dot{\epsilon}_{\alpha\beta} +
+      \left[(\zeta-\eta)\,\dot{\epsilon}_{\gamma\gamma}
+      - \frac{P}{2} \right]\delta_{\alpha\beta},
+   :label: eq_sigma_tensor
+
+where summation over repeating indices is implied, so that
+
+.. math::
+   \begin{aligned}
+     \sigma_{11} &= (\zeta+\eta)\,\dot{\epsilon}_{11}
+                   +(\zeta-\eta)\,\dot{\epsilon}_{22} - \frac{P}{2} \\
+     \sigma_{22} &= (\zeta-\eta)\,\dot{\epsilon}_{11}
+                   +(\zeta+\eta)\,\dot{\epsilon}_{22} - \frac{P}{2} \\
+     \sigma_{+} =
+     \sigma_{11} + \sigma_{22} &= 2\zeta \left( \dot{\epsilon}_{11}
+                   + \dot{\epsilon}_{22} \right) - P \\
+     \sigma_{-} =
+     \sigma_{11} - \sigma_{22} &= 2\eta  \left( \dot{\epsilon}_{11}
+                   +\dot{\epsilon}_{22} \right) \\
+     \sigma_{12} &= 2\eta\,\dot{\epsilon}_{12}.
+   \end{aligned}
+
+The divergence of this tensor can be written as
+
+..
+   \begin{aligned}
+     \mathrm{div}\,\sigma
+     &= \frac{1}{h_{\alpha}h_{\beta}}\biggl\{
+       \partial_{\alpha}
+       \left(h_{\alpha}\sigma_{\gamma\alpha}\vec{e}_{\gamma}\right)
+     + \partial_{\beta}
+       \left(h_{\beta}\sigma_{\gamma\beta}\vec{e}_{\gamma}\right)
+     \biggr\} \\
+     &= \frac{1}{h_{\alpha}h_{\beta}}\biggl\{
+       \partial_{\alpha}
+       \left(h_{\alpha}\sigma_{\gamma\alpha}\right)\vec{e}_{\gamma}
+     + \partial_{\beta}
+       \left(h_{\beta}\sigma_{\gamma\beta}\right)\vec{e}_{\gamma} \\
+     &\phantom{=\frac{1}{h_{\alpha}h_{\beta}}\biggl\{}
+     + h_{\alpha}\sigma_{\gamma\alpha}\partial_{\alpha}\vec{e}_{\gamma}
+     + h_{\beta} \sigma_{\gamma\beta} \partial_{\beta} \vec{e}_{\gamma}
+       \biggr\},
+   \end{aligned}
+   :label: eq_div_sigma_tensor
+
+.. math::
+   \begin{aligned}
+     \mathrm{div}\,\sigma
+     &= \frac{1}{h_{\alpha}h_{\beta}}\biggl\{
+     \partial_{\alpha}
+       \left(h_{\beta}\sigma_{\gamma\alpha}\vec{e}_{\gamma}\right)
+     + \partial_{\beta}
+       \left(h_{\alpha} \sigma_{\gamma\beta} \vec{e}_{\gamma}\right)
+     \biggr\} \\
+     &= \frac{1}{h_{\alpha}h_{\beta}}\biggl\{
+       \partial_{\alpha}
+       \left(h_{\beta} \sigma_{\gamma\alpha}\right)\,\vec{e}_{\gamma}
+     + \partial_{\beta}
+       \left(h_{\alpha}\sigma_{\gamma\beta}\right) \,\vec{e}_{\gamma}
+     \\ &\phantom{=\frac{1}{h_{\alpha}h_{\beta}}\biggl\{}
+     + h_{\beta} \sigma_{\gamma\alpha}\partial_{\alpha}\vec{e}_{\gamma}
+     + h_{\alpha}\sigma_{\gamma\beta} \partial_{\beta} \vec{e}_{\gamma}
+     \biggr\},
+   \end{aligned}
+   :label: eq_div_sigma_tensor
+
+where :math:`h_{\alpha}` is the metric length of direction :math:`\alpha` and
+:math:`\vec{e}_{\gamma}` are the canonical unit vectors, which also need to be
+differentiated. The summation over :math:`\gamma` index is implied (but not
+:math:`\alpha` or :math:`\beta`). The stress tensor divergence is discretized
+in finite volumes. This conveniently avoids dealing with some (but not all) of
+the metric terms, as these are "hidden" in the differential cell widths (first
+two terms in flux form in :eq:`eq_div_sigma_tensor`). Extra metric terms still
+appear because of the differentiation of the unit vectors (last two termns in
+:eq:`eq_div_sigma_tensor`). These are
+
+.. math::
+   \begin{aligned}
+     k_2\sigma_{12} - k_1\sigma_{22} &\quad \text{for the u-equation, and }\\
+     k_1\sigma_{12} - k_2\sigma_{11} &\quad \text{for the v-equation.}\\
+   \end{aligned}
+   :label: eq_si_extrametricterms
+
+The coefficients of the metric terms are defined as :math:`k_1 =
+(1/h_2)\,(\partial{h_2}/\partial{x_1})` and :math:`k_2 =
+(1/h_1)\,(\partial{h_1}/\partial{x_2})`.  For a spherical polar grid,
+they are :math:`k_{1}=0` and :math:`k_{2}=-\tan\phi/a`, with the
+spherical radius :math:`a` and the latitude :math:`\phi`;
+:math:`\Delta{x}_1 = \Delta{x} = a\cos\phi \Delta\lambda`, and
+:math:`\Delta{x}_2 = \Delta{y}=a\Delta\phi`. For a general orthogonal
+curvilinear grid, :math:`k_{1}` and :math:`k_{2}` can be approximated
+by finite differences of the cell widths of the Arakawa C_grid:
+
+.. math::
+   \begin{aligned}
+     k_{1,i,j}^{C} &= \frac{1}{\Delta{y}_{i,j}^{F}}
+     \frac{\Delta{y}_{i+1,j}^{G}-\Delta{y}_{i,j}^{G}}{\Delta{x}_{i,j}^{F}},
+     \quad
+     k_{2,i,j}^{C}  = \frac{1}{\Delta{x}_{i,j}^{F}}
+     \frac{\Delta{x}_{i,j+1}^{G}-\Delta{x}_{i,j}^{G}}{\Delta{y}_{i,j}^{F}} \\
+     k_{1,i,j}^{U} &= \frac{1}{\Delta{y}_{i,j}^{G}}
+     \frac{\Delta{y}_{i,j}^{F}-\Delta{y}_{i-1,j}^{F}}{\Delta{x}_{i,j}^{C}},
+     \quad
+     k_{2,i,j}^{U}  = \frac{1}{\Delta{x}_{i,j}^{C}}
+     \frac{\Delta{x}_{i,j+1}^{V}-\Delta{x}_{i,j}^{V}}{\Delta{y}_{i,j}^{G}} \\
+     k_{1,i,j}^{V} &= \frac{1}{\Delta{y}_{i,j}^{C}}
+     \frac{\Delta{y}_{i+1,j}^{U}-\Delta{y}_{i,j}^{U}}{\Delta{x}_{i,j}^{G}},
+     \quad
+     k_{2,i,j}^{V}  = \frac{1}{\Delta{x}_{i,j}^{G}}
+     \frac{\Delta{x}_{i,j}^{F}-\Delta{x}_{i,j-1}^{F}}{\Delta{y}_{i,j}^{C}} \\
+     k_{1,i,j}^{Z} &= \frac{1}{\Delta{y}_{i,j}^{U}}
+     \frac{\Delta{y}_{i,j}^{C}-\Delta{y}_{i-1,j}^{C}}{\Delta{x}_{i,j}^{V}},
+     \quad
+     k_{2,i,j}^{Z}  = \frac{1}{\Delta{x}_{i,j}^{V}}
+     \frac{\Delta{x}_{i,j}^{C}-\Delta{x}_{i,j-1}^{C}}{\Delta{y}_{i,j}^{U}}
+   \end{aligned}
+
 On an Arakawa C grid, ice thickness and concentration and thus ice strength
 :math:`P` and bulk and shear viscosities :math:`\zeta` and :math:`\eta` are
 naturally defined a C-points in the center of the grid cell. Discretization
-requires only averaging of :math:`\zeta` and :math:`\eta` to vorticity or
+requires averaging of :math:`\zeta` and :math:`\eta` to vorticity or
 Z-points (or :math:`\zeta`-points, but here we use Z in order avoid confusion
 with the bulk viscosity) at the bottom left corner of the cell to give
 :math:`\overline{\zeta}^{Z}` and :math:`\overline{\eta}^{Z}`. In the following,
@@ -1300,58 +1420,10 @@ conditions (:math:`u_{i,j-1}+u_{i,j}=0` and :math:`v_{i-1,j}+v_{i,j}=0` across
 boundaries) are implemented via “ghost-points”; for free slip boundary
 conditions :math:`(\epsilon_{12})^Z=0` on boundaries.
 
-For a spherical polar grid, the coefficients of the metric terms are
-:math:`k_{1}=0` and :math:`k_{2}=-\tan\phi/a`, with the spherical radius
-:math:`a` and the latitude :math:`\phi`; :math:`\Delta{x}_1 = \Delta{x} =
-a\cos\phi \Delta\lambda`, and :math:`\Delta{x}_2 = \Delta{y}=a\Delta\phi`. For
-a general orthogonal curvilinear grid, :math:`k_{1}` and :math:`k_{2}` can be
-approximated by finite differences of the cell widths:
-
-.. math::
-   \begin{aligned}
-     k_{1,i,j}^{C} &= \frac{1}{\Delta{y}_{i,j}^{F}}
-     \frac{\Delta{y}_{i+1,j}^{G}-\Delta{y}_{i,j}^{G}}{\Delta{x}_{i,j}^{F}},
-     \quad
-     k_{2,i,j}^{C}  = \frac{1}{\Delta{x}_{i,j}^{F}}
-     \frac{\Delta{x}_{i,j+1}^{G}-\Delta{x}_{i,j}^{G}}{\Delta{y}_{i,j}^{F}} \\
-     k_{1,i,j}^{U} &= \frac{1}{\Delta{y}_{i,j}^{G}}
-     \frac{\Delta{y}_{i,j}^{F}-\Delta{y}_{i-1,j}^{F}}{\Delta{x}_{i,j}^{C}},
-     \quad
-     k_{2,i,j}^{U}  = \frac{1}{\Delta{x}_{i,j}^{C}}
-     \frac{\Delta{x}_{i,j+1}^{V}-\Delta{x}_{i,j}^{V}}{\Delta{y}_{i,j}^{G}} \\
-     k_{1,i,j}^{V} &= \frac{1}{\Delta{y}_{i,j}^{C}}
-     \frac{\Delta{y}_{i+1,j}^{U}-\Delta{y}_{i,j}^{U}}{\Delta{x}_{i,j}^{G}},
-     \quad
-     k_{2,i,j}^{V}  = \frac{1}{\Delta{x}_{i,j}^{G}}
-     \frac{\Delta{x}_{i,j}^{F}-\Delta{x}_{i,j-1}^{F}}{\Delta{y}_{i,j}^{C}} \\
-     k_{1,i,j}^{Z} &= \frac{1}{\Delta{y}_{i,j}^{U}}
-     \frac{\Delta{y}_{i,j}^{C}-\Delta{y}_{i-1,j}^{C}}{\Delta{x}_{i,j}^{V}},
-     \quad
-     k_{2,i,j}^{Z}  = \frac{1}{\Delta{x}_{i,j}^{V}}
-     \frac{\Delta{x}_{i,j}^{C}-\Delta{x}_{i,j-1}^{C}}{\Delta{y}_{i,j}^{U}}
-   \end{aligned}
-
-The stress tensor is given by the constitutive viscous-plastic relation
-:math:`\sigma_{\alpha\beta} = 2\eta\dot{\epsilon}_{\alpha\beta} +
-[(\zeta-\eta)\dot{\epsilon}_{\gamma\gamma} - P/2 ]\delta_{\alpha\beta}`.
-
-The stress tensor divergence :math:`(\nabla\sigma)` is discretized in finite
-volumes. This conveniently avoids dealing with some (but not all) of the metric
-terms, as these are "hidden" in the differential cell widths. Extra metric
-terms still appear because of the differentiation of the unit vectors. These
-are
-
-.. math::
-   \begin{aligned}
-     k_2\sigma_{12} - k_1\sigma_{22} &\quad \text{for the u-equation, and }\\
-     k_1\sigma_{12} - k_2\sigma_{11} &\quad \text{for the v-equation.}\\
-   \end{aligned}
-   :label: eq_si_extrametricterms
-
-Without these extra terms, the remaining stress tensor divergence
-:math:`(\nabla\sigma)_{\alpha} = \partial_\beta\sigma_{\beta\alpha}`,
-discretized in finite volumes for the :math:`u`-equation
-(:math:`\alpha=1`) is:
+Without the extra metric terms :eq:`eq_si_extrametricterms`, the stress tensor
+divergence :math:`(\nabla\sigma)_{\alpha} = \partial_{\beta}
+(h_{\beta}\sigma_{\alpha\beta})`, discretized in finite volumes for the
+:math:`u`-equation (:math:`\alpha=1`) is:
 
 .. math::
    \begin{aligned}
@@ -1401,7 +1473,7 @@ with
      k_{2,i,j}^{Z}\frac{u_{i,j}+u_{i,j-1}}{2} \\ \notag
      & - \Delta{x}_{i,j}^{V}\overline{\eta}^{Z}_{i,j}
      k_{1,i,j}^{Z}\frac{v_{i,j}+v_{i-1,j}}{2}
-     \end{aligned}
+   \end{aligned}
 
 Similarly, we have for the :math:`v`-equation (:math:`\alpha=2`):
 
@@ -1426,7 +1498,8 @@ Similarly, we have for the :math:`v`-equation (:math:`\alpha=2`):
      \\ \notag
      \phantom{=}& \phantom{\frac{1}{A_{i,j}^s} \biggl\{}
      + (\Delta{x}_1\sigma_{22})_{i,j}^C - (\Delta{x}_1\sigma_{22})_{i,j-1}^C
-     \biggr\} \end{aligned}
+     \biggr\}
+   \end{aligned}
 
 with
 
@@ -1452,20 +1525,23 @@ with
      \frac{v_{i,j+1}-v_{i,j}}{\Delta{y}_{i,j}^{F}} \\ \notag
      & + \Delta{x}_{i,j}^{F}(\zeta + \eta)^{C}_{i,j}
      k_{1,i,j}^{C}\frac{u_{i+1,j}+u_{i,j}}{2} \\ \notag
-     & -\Delta{x}_{i,j}^{F} \frac{P}{2}\end{aligned}
+     & -\Delta{x}_{i,j}^{F} \frac{P}{2}
+   \end{aligned}
 
 The extra metric terms in :eq:`eq_si_extrametricterms` involve averages:
 
 .. math::
    \begin{aligned}
      u:\quad k_2\sigma_{12} - k_1\sigma_{22} &\approx
-       k_{2,i,j}^{U} \frac{\sigma_{12,i,j}+\sigma_{12,i,j+1}}{2}
-     - k_{1,i,j}^{U} \frac{\sigma_{22,i,j}+\sigma_{22,i-1,j}}{2} \\
+       k_{2,i,j}^{U}\frac{(\sigma_{12}^{Z})_{i,j}+(\sigma_{12}^{Z})_{i,j+1}}{2}
+     - k_{1,i,j}^{U}\frac{(\sigma_{22}^{C})_{i,j}+(\sigma_{22}^{C})_{i-1,j}}{2}
+       \\
      v:\quad k_1\sigma_{12} - k_2\sigma_{11} &\approx
-       k_{1,i,j}^{V} \frac{\sigma_{12,i,j}+\sigma_{12,i+1,j}}{2}
-     - k_{2,i,j}^{V} \frac{\sigma_{11,i,j}+\sigma_{11,i,j-1}}{2}
+       k_{1,i,j}^{V}\frac{(\sigma_{12}^{Z})_{i,j}+(\sigma_{12}^{Z})_{i+1,j}}{2}
+     - k_{2,i,j}^{V}\frac{(\sigma_{11}^{C})_{i,j}+(\sigma_{11}^{C})_{i,j-1}}{2}
    \end{aligned}
 
+that are added most easily to the right-hand-sides of the momentum equations.
 Again, no-slip boundary conditions are realized via ghost points and
 :math:`u_{i,j-1}+u_{i,j}=0` and :math:`v_{i-1,j}+v_{i,j}=0` across
 boundaries. For free-slip boundary conditions the lateral stress is set to
