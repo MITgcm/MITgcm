@@ -78,7 +78,7 @@ C                         fresh water flux, 0 otherwise
 C     rFWinBL          :: = 1 when realFreshWaterFlux is used with BoundaryLayer
 C     sFac             :: auxillary field to help avoid division by zero
 C     auxiliary variables and abbreviations:
-C     a0, a1, a2, b, c0
+C     a0, a1, a2, b0, c0
 C     eps1, eps2, eps3, eps3a, eps4, eps6, eps7, eps8, epsq
 C     aqe, bqe, cqe, discrim, recip_aqe
 C     drKp1, recip_drLoc
@@ -96,7 +96,7 @@ C     drKp1, recip_drLoc
 #ifdef ALLOW_ISOMIP_TD
       _RL convertFW2SaltLoc
 #endif
-      _RL a0, a1, a2, b, c0
+      _RL a0, a1, a2, b0, c0
       _RL eps1, eps2, eps3, eps3a, eps4, eps6, eps7, eps8, epsq
       _RL cFac, rFac, dFac, fwflxFac, rFWinBL
       _RL aqe, bqe, cqe, discrim, recip_aqe
@@ -186,14 +186,14 @@ C     linear dependence of freezing point on salinity
       a1 =  0.0      _d -0
       a2 =  0.0      _d -0
       c0 =  0.0901   _d  0
-      b  =  -7.61    _d -4
+      b0 =  -7.61    _d -4
 #ifdef ALLOW_ISOMIP_TD
       IF ( useISOMIPTD ) THEN
 C     non-linear dependence of freezing point on salinity
        a0 = -0.0575   _d  0
        a1 = 1.710523  _d -3
        a2 = -2.154996 _d -4
-       b  = -7.53     _d -4
+       b0 = -7.53     _d -4
        c0 = 0. _d 0
       ENDIF
       convertFW2SaltLoc = convertFW2Salt
@@ -515,7 +515,7 @@ CADJ &     key=ikey, byte=isbyte
 C--   Calculate freezing temperature as a function of salinity and pressure
             thetaFreeze =
      &           sLoc(I,J) * ( a0 + a1*sqrt(sLoc(I,J)) + a2*sLoc(I,J) )
-     &           + b*pLoc(I,J) + c0
+     &           + b0*pLoc(I,J) + c0
 C--   Calculate the upward heat and  fresh water fluxes
             shelfIceHeatFlux(I,J,bi,bj) = maskC(I,J,K,bi,bj)
      &           * shiTransCoeffT(i,j,bi,bj)
@@ -564,7 +564,7 @@ C     (in German).
            IF ( K .NE. 0 .AND. pLoc(I,J) .GT. 0. _d 0 ) THEN
 C     heat flux into the ice shelf, default is diffusive flux
 C     (Holland and Jenkins, 1999, eq.21)
-            thetaFreeze = a0*sLoc(I,J)+c0+b*pLoc(I,J)
+            thetaFreeze = a0*sLoc(I,J)+c0+b0*pLoc(I,J)
             fwflxFac    = 0. _d 0
             IF ( tLoc(I,J) .GT. thetaFreeze ) fwflxFac = dFac
 C     a few abbreviations
@@ -584,7 +584,7 @@ C     code of type (pLoc-const)/pLoc
             eps3a = rhoShelfIce*SHELFICEheatCapacity_Cp
      &           * SHELFICEkappa *  ( 1. _d 0 - dFac )
             eps3 = eps3a/pLoc(I,J)
-            eps4 = b*pLoc(I,J) + c0
+            eps4 = b0*pLoc(I,J) + c0
             eps6 = eps4 - tLoc(I,J)
             eps7 = eps4 - SHELFICEthetaSurface
             eps8 = rUnit2mass*SHELFICEheatCapacity_Cp
@@ -632,8 +632,18 @@ C     coefficents of the quadratic equations for saltFreeze
             IF ( saltFreeze .LT. 0. _d 0 )
      &           saltFreeze = (- bqe + SQRT(discrim))*recip_aqe
             thetaFreeze = a0*saltFreeze + eps4
+#ifdef SHI_SALTBAL_FWFLX
 C--   upward fresh water flux due to melting (in kg/m^2/s)
-#ifdef SHELFICE_USE_HEATBALANCE_FOR_FRESHWATERFLUX
+cph change to identical form
+cph            freshWaterFlux = rUnit2mass
+cph     &           * shiTransCoeffS(i,j,bi,bj)
+cph     &           * ( saltFreeze - sLoc(I,J) ) / saltFreeze
+            freshWaterFlux = rUnit2mass * shiTransCoeffS(i,j,bi,bj)
+C     Catch unlikely case of saltFreeze = 0 (often when sLoc=0)
+            IF ( saltFreeze .NE. 0. _d 0 )
+     &           freshWaterFlux = freshWaterFlux
+     &           * ( 1. _d 0 - sLoc(I,J) / saltFreeze )
+#else /* ndef SHI_SALTBAL_FWFLX */
 C     This formulation of fwflux, derived from the heat balance equation
 C     instead of the salt balance equation, can handle the case when the
 C     salinity of the ocean, boundary layer, and ice are identical.
@@ -649,17 +659,7 @@ C     1999). fwFlxFac = 0 or freezing and 1 for melting conditions.
      &           ) / ( SHELFICElatentHeat
      &                + fwFlxFac * SHELFICEheatCapacity_Cp*
      &                  (thetaFreeze - SHELFICEthetaSurface) )
-#else /* ndef SHELFICE_USE_HEATBALANCE_FOR_FRESHWATERFLUX */
-cph change to identical form
-cph            freshWaterFlux = rUnit2mass
-cph     &           * shiTransCoeffS(i,j,bi,bj)
-cph     &           * ( saltFreeze - sLoc(I,J) ) / saltFreeze
-            freshWaterFlux = rUnit2mass * shiTransCoeffS(i,j,bi,bj)
-C     Catch unlikely case of saltFreeze = 0 (often when sLoc=0)
-            IF ( saltFreeze .NE. 0. _d 0 )
-     &           freshWaterFlux = freshWaterFlux
-     &           * ( 1. _d 0 - sLoc(I,J) / saltFreeze )
-#endif /* ndef SHELFICE_USE_HEATBALANCE_FOR_FRESHWATERFLUX */
+#endif /* ndef SHI_SALTBAL_FWFLX */
 
 #ifdef ALLOW_GENTIM2D_CONTROL
             freshWaterFlux = freshWaterFlux + xx_shifwflx_loc(I,J,bi,bj)
