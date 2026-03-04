@@ -26,6 +26,10 @@ C     == Global variables ===
 # include "GAD.h"
 #endif
 
+#ifdef ALLOW_ADDFLUID
+#include "FFIELDS.h"
+#endif
+
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     selectVars :: select which group of dianostics variables to fill-in
@@ -443,6 +447,10 @@ C--   fill tracer state-var diagnostics:
 
         CALL DIAGNOSTICS_FILL(theta,'THETA   ',0,Nr,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(salt, 'SALT    ',0,Nr,0,1,1,myThid)
+
+#ifdef ALLOW_ADDFLUID
+        CALL DIAGNOSTICS_FILL(addMass,'addMass ',0,Nr,0,1,1,myThid)
+#endif /* ALLOW_ADDFLUID */
 
 #ifdef ALLOW_FIZHI
       IF ( useFIZHI .AND. DIAGNOSTICS_IS_ON('RELHUM  ',myThid) ) THEN
