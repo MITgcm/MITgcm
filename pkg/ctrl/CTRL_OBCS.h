@@ -30,7 +30,6 @@ C--
      &     objf_obcsvol, objf_ageos,
      &     num_obcsn, num_obcss, num_obcsw, num_obcse,
      &     num_obcsvol, num_ageos
-#endif
 
       COMMON /ctrl_cost_mult_obcs/
      &     mult_obcsn, mult_obcss, mult_obcsw, mult_obcse,
@@ -38,6 +37,7 @@ C--
       _RL  mult_obcsn, mult_obcss
       _RL  mult_obcsw, mult_obcse
       _RL  mult_obcsvol, mult_ageos
+#endif
 
       COMMON /ih_modes/ modesv
       _RL modesv (Nr,Nr,Nr)

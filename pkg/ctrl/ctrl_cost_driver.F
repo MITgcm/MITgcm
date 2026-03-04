@@ -36,7 +36,7 @@ C myThid    :: my Thread Id number
 
 C !OUTPUT PARAMETERS: ==================================================
 
-#ifdef ALLOW_CTRL
+#ifdef ALLOW_COST
 C !LOCAL VARIABLES: ====================================================
       INTEGER ivar
 #ifdef ALLOW_GENTIM2D_CONTROL
@@ -159,7 +159,7 @@ C --- Get appropriate mask for field
 C     useCtrlCostContribution
       endif
 
-#endif /* ALLOW_CTRL */
+#endif /* ALLOW_COST */
 
       RETURN
       END

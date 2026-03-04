@@ -1,5 +1,10 @@
 #include "CTRL_OPTIONS.h"
 #include "AD_CONFIG.h"
+#if (      defined ALLOW_GENARR2D_CONTROL \
+        || defined ALLOW_GENARR3D_CONTROL \
+        || defined ALLOW_GENTIM2D_CONTROL )
+# define ALLOW_GENARR_CONTROL
+#endif
 C--  File ctrl_readparms.F:
 C--   Contents
 C--   o CTRL_READPARMS
@@ -46,7 +51,7 @@ C     !LOCAL VARIABLES:
       INTEGER iUnit
       INTEGER nRetired
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-#if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
+#ifdef ALLOW_GENARR_CONTROL
       INTEGER iarr,jarr
 #endif
       CHARACTER*(MAX_LEN_FNAM) namBuf
@@ -60,6 +65,17 @@ C     retired parameters (others are in ctrl_local_params.h)
       LOGICAL ctrlUseGen
       LOGICAL ctrlSmoothCorrel3D
       LOGICAL ctrlSmoothCorrel2D
+#ifndef ALLOW_COST
+C     dummy values, so that namelist need not change
+      _RL  mult_obcsn, mult_obcss
+      _RL  mult_obcsw, mult_obcse
+      _RL  mult_obcsvol, mult_ageos
+# ifdef ALLOW_GENARR_CONTROL
+      _RL  mult_gentim2d(maxCtrlTim2D)
+      _RL  mult_genarr2d(maxCtrlArr2D)
+      _RL  mult_genarr3d(maxCtrlArr3D)
+# endif
+#endif
 CEOP
 
 C--   Read the namelist input.
@@ -142,7 +158,7 @@ cHFLUXM_CONTROL
      &  yadmark, yctrlid, yctrlposunpack, yctrlpospack,
      &  ctrlname, costname, scalname, maskname, metaname
 
-#if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
+#ifdef ALLOW_GENARR_CONTROL
       NAMELIST /CTRL_NML_GENARR/
      &  xx_genarr2d_file, xx_genarr3d_file, xx_gentim2d_file,
      &  xx_genarr2d_weight, xx_genarr3d_weight, xx_gentim2d_weight,
@@ -222,7 +238,7 @@ C     flag is defined
         xx_gen2d_file      = 'xx_gen2d'
         xx_gen3d_file      = 'xx_gen3d'
 
-#if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
+#ifdef ALLOW_GENARR_CONTROL
         do iarr = 1, maxCtrlArr2D
          write(xx_genarr2d_file(iarr)(1:MAX_LEN_FNAM),'(a)') ' '
 #ifdef ALLOW_OPENAD
@@ -447,9 +463,7 @@ C--     Next, read the cost data file.
 
         READ(unit = iUnit, nml = ctrl_nml)
         READ(unit = iUnit, nml = ctrl_packnames)
-#if (      defined ALLOW_GENARR2D_CONTROL \
-        || defined ALLOW_GENARR3D_CONTROL \
-        || defined ALLOW_GENTIM2D_CONTROL )
+#ifdef ALLOW_GENARR_CONTROL
         READ(unit = iUnit, nml = ctrl_nml_genarr)
 #endif
 

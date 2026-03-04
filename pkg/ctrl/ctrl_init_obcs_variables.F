@@ -98,6 +98,7 @@ c     == end of interface ==
       enddo
 #endif
 
+#ifdef ALLOW_COST
       do bj = myByLo(myThid), myByHi(myThid)
         do bi = myBxLo(myThid), myBxHi(myThid)
           do k = 1,Nr
@@ -122,6 +123,7 @@ C--   Initialise the "global" parts of the cost function.
         objf_obcsvol = 0. _d 0
         num_obcsvol  = 0. _d 0
       _END_MASTER( myThid )
+#endif /* ALLOW_COST */
 
 #endif /* ALLOW_OBCS */
 
