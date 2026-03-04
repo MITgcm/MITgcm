@@ -534,7 +534,7 @@ by the diffusive-advective heat flux through the ice, approximated by
 
 with :math:`\phi_m=1` in case of melting and :math:`0` in case of
 freezing :cite:`holland:99`. In this case, :eq:`solvedmeltrate`
-assumes the more complicated form
+assumes the slightly more complicated form
 
 .. math::
    \begin{aligned}
@@ -548,7 +548,7 @@ assumes the more complicated form
    \end{aligned}
    :label: solvedmeltrateagain
 
-which substituted in :eq:`hellmersaltbalance` leads to
+Substituting this in :eq:`hellmersaltbalance` leads to
 
 .. math::
    \begin{aligned}
@@ -587,8 +587,10 @@ diagnose the freshwater flux. More generally:
    q = \frac{ \epsilon_{1}\,( T_{b} - T ) + \epsilon_{3}\,( T_{b} - T_{S} ) }
    { L + \phi_m c_{p,I}\, ( T_{b} - T_{S} )}
 
-Define :varlink:`SHELFICE_USE_HEATBALANCE_FOR_FRESHWATERFLUX` to use this
-method of computing the freshwater flux `q`.
+This is now the default method. To recover the (old) method to compute
+:math:`q` from :eq:`hellmersaltbalance`, define
+:varlink:`SHI_SALTBAL_FWFLX` in :filelink:`SHELFICE_OPTIONS.h
+<pkg/shelfice/SHELFICE_OPTIONS.h>`.
 
 .. _shelfice_isomip:
 
