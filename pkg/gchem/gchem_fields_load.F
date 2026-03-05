@@ -42,7 +42,10 @@ C  myThid               :: thread number
 
 #ifdef GCHEM_ALLOW_FFIELDS
 C !LOCAL VARIABLES: ===================================================
-      INTEGER bi, bj, i, j, k
+      INTEGER bi, bj, i, j
+# ifdef GCHEM_3D_SILICA
+      INTEGER k
+# endif
       INTEGER intimeP, intime0, intime1
       _RL aWght,bWght
 CEOP
