@@ -1738,7 +1738,7 @@ C     contribution to the rhs part of grad(sigma)_x
       ENDDO
 
 C     add extra metric terms
-      IF ( SEAICEuseExtraMetricTerms ) THEN
+      IF ( SEAICEselectMetricTerms .GE. 2 ) THEN
 C     to save memory we re-use sig11 as sig22, hopefully without confusion
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
@@ -1893,7 +1893,7 @@ C     contribution to the rhs part of grad(sigma)_y
        ENDDO
       ENDDO
 
-      IF ( SEAICEuseExtraMetricTerms ) THEN
+      IF ( SEAICEselectMetricTerms .GE. 2 ) THEN
 C     to save memory we re-use sig22 as sig11, hopefully without confusion
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx

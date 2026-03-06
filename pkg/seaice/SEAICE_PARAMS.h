@@ -54,10 +54,6 @@ C     SEAICEusePL       :: to use the parabolic lens yield curve (Zhang and
 C                          Rothrock, 2005) set this parameter to true,
 C                          default is false
 C     SEAICEuseTilt     :: If true then include surface tilt term in dynamics
-C     SEAICEuseMetricTerms :: use metric terms for dynamics solver
-C                          (default = .true. )
-C     SEAICEuseExtraMetricTerms :: use extra metric terms for dynamics solver
-C                          (default = .true. )
 C     SEAICE_no_slip    :: apply no slip boundary conditions to seaice velocity
 C     SEAICE_2ndOrderBC :: apply 2nd order no slip boundary conditions (works
 C                          only with EVP, JFNK or KRYLOV solver, default=F)
@@ -143,7 +139,6 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     useHibler79IceStrength, SEAICEsimpleRidging,
      &     SEAICEuseLinRemapITD, SEAICEuseTD, SEAICEusePL,
      &     SEAICEuseTEM, SEAICEuseTilt,
-     &     SEAICEuseMetricTerms, SEAICEuseExtraMetricTerms,
      &     SEAICEuseMCS, SEAICEuseMCE,
      &     SEAICE_no_slip, SEAICE_2ndOrderBC,
      &     SEAICE_maskRHS, SEAICEscaleSurfStress,
@@ -174,7 +169,6 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     useHibler79IceStrength, SEAICEsimpleRidging,
      &     SEAICEuseLinRemapITD, SEAICEuseTD, SEAICEusePL,
      &     SEAICEuseTEM, SEAICEuseTilt,
-     &     SEAICEuseMetricTerms, SEAICEuseExtraMetricTerms,
      &     SEAICEuseMCS, SEAICEuseMCE,
      &     SEAICE_no_slip, SEAICE_2ndOrderBC,
      &     SEAICE_maskRHS, SEAICEscaleSurfStress,
@@ -204,6 +198,11 @@ C                         0 = none, i.e., from last iter
 C                         1 = use linearized approx (consistent with tsurf
 C                             finding)
 C                         2 = full non-lin form
+C     SEAICEselectMetricTerms :: selector for metric terms in stress divergence
+C                         0 = none, (only implicit metric terms in
+C                             FV discretisation of stress divergence)
+C                         1 = in addition use metric terms in strain rates
+C                         2 = use all metric terms (default)
 C     SOLV_NCHECK         :: iteration interval for LSR-solver convergence test
 C     SEAICEnonLinIterMax :: number of allowed non-linear solver iterations
 C                            for implicit solvers (JFNK and Picard) (>= 2)
@@ -269,6 +268,7 @@ C     SEAICE_debugPointI :: I,J index for seaice-specific debuggin
 C     SEAICE_debugPointJ
 C
       INTEGER IMAX_TICE, postSolvTempIter
+      INTEGER SEAICEselectMetricTerms
       INTEGER SOLV_NCHECK
       INTEGER SEAICEnonLinIterMax, SEAICElinearIterMax
       INTEGER SEAICEpreconLinIter, SEAICEpreconNL_Iter
@@ -296,6 +296,7 @@ C
       INTEGER SEAICEridgingIterMax
       COMMON /SEAICE_PARM_I/
      &     IMAX_TICE, postSolvTempIter, SOLV_NCHECK,
+     &     SEAICEselectMetricTerms,
      &     SEAICEnonLinIterMax, SEAICElinearIterMax,
      &     SEAICEpreconLinIter, SEAICEpreconNL_Iter,
      &     LSR_mixIniGuess,

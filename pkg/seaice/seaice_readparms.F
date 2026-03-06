@@ -74,11 +74,13 @@ C     MAX_TICE          :: maximum ice temperature   (deg C)
 C     LAD               :: time stepping used for sea-ice advection:
 C                          1 = LEAPFROG,  2 = BACKWARD EULER.
 C     SEAICE_freeze     :: FREEZING TEMP. OF SEA WATER
+C     SEAICEuseMetricTerms :: replaced by SEAICEselectMetricTerms
       _RL SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce
       _RL SEAICE_salinity, SIsalFRAC, SIsal0
       _RL SEAICE_lhSublim, SEAICE_freeze, MAX_HEFF
       _RL areaMin, areaMax, A22, hiceMin, MAX_TICE
       LOGICAL SEAICEadvAge
+      LOGICAL SEAICEuseMetricTerms
       INTEGER SEAICEadvSchAge, LAD, SEAICEturbFluxFormula
       INTEGER NPSEUDOTIMESTEPS, SOLV_MAX_ITERS
       INTEGER SEAICEnewtonIterMax, SEAICEkrylovIterMax
@@ -113,7 +115,7 @@ C--   SEAICE parameters
      & SEAICEuseDYNAMICS, SEAICEuseFREEDRIFT, SEAICEuseStrImpCpl,
      & SEAICEuseMCS, SEAICEuseMCE, SEAICEuseTD, SEAICEusePL,
      & SEAICEuseTEM, SEAICEuseTilt,
-     & SEAICEuseMetricTerms, SEAICEuseExtraMetricTerms,
+     & SEAICEuseMetricTerms, SEAICEselectMetricTerms,
      & useHB87stressCoupling, SEAICEupdateOceanStress,
      & usePW79thermodynamics, useMaykutSatVapPoly, SEAICEuseFlooding,
      & SEAICErestoreUnderIce, SEAICE_growMeltByConv,
@@ -254,8 +256,8 @@ C--   set default sea ice parameters
       SEAICEuseMCE       = .FALSE.
       SEAICEuseTD        = .FALSE.
       SEAICEusePL        = .FALSE.
-      SEAICEuseMetricTerms = .TRUE.
-      SEAICEuseExtraMetricTerms = .TRUE.
+      SEAICEuseMetricTerms = .FALSE.
+      SEAICEselectMetricTerms = UNSET_I
       SEAICEuseEVPpickup = .TRUE.
       SEAICEuseEVPstar   = .TRUE.
       SEAICEuseEVPrev    = .TRUE.
@@ -904,26 +906,30 @@ C     and EVP, JFNK, and Krylov solvers
       IF ( .NOT. SEAICE_no_slip ) SEAICE_2ndOrderBC = .FALSE.
       IF ( SEAICEuseLSR ) SEAICE_2ndOrderBC = .FALSE.
 
-C     2nd order boundary conditions require one more row of overlap for the additive Schwartz method
+C     2nd order boundary conditions require one more row of overlap for
+C     the additive Schwartz method
       IF ( SEAICE_2ndOrderBC ) THEN
        SEAICE_OLx = OLx-3
        SEAICE_OLy = OLy-3
       ENDIF
 
-      IF ( SEAICEuseExtraMetricTerms
-     &     .AND. .NOT. SEAICEuseMetricTerms ) THEN
-       WRITE(msgBuf,'(A,A,A)')
-     &      '** WARNING ** SEAICE_READPARMS:',
-     &      ' SEAICEuseExtraMetricTerms = T with',
-     &      ' SEAICEuseMetricTerms = F makes little sense.'
-      CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
-       WRITE(msgBuf,'(A,A)')
-     &      '** WARNING ** SEAICE_READPARMS:',
-     &      ' Resetting SEAICEuseExtraMetricTerms = F'
-      CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
-       SEAICEuseExtraMetricTerms = SEAICEuseMetricTerms
+      IF ( SEAICEselectMetricTerms .EQ. UNSET_I ) THEN
+       SEAICEselectMetricTerms = 2
+      ENDIF
+      IF ( SEAICEuseMetricTerms ) THEN
+       SEAICEselectMetricTerms = MAX( SEAICEselectMetricTerms, 1)
+      ELSE
+       SEAICEselectMetricTerms = MAX( SEAICEselectMetricTerms, 0)
+      ENDIF
+      IF ( SEAICEselectMetricTerms .LT. 0 .OR.
+     &     SEAICEselectMetricTerms .GT. 2 ) THEN
+       WRITE(msgBuf,'(2A,I2)') 'S/R SEAICE_READPARMS: ',
+     &      'SEAICEselectMetricTerms = ', SEAICEselectMetricTerms
+       CALL PRINT_ERROR( msgBuf , myThid)
+       WRITE(msgBuf,'(2A)') 'S/R SEAICE_READPARMS: ',
+     &      'SEAICEselectMetricTerms needs to be >=0 and <= 2'
+       CALL PRINT_ERROR( msgBuf , myThid)
+       nError = nError + 1
       ENDIF
 
 C     -    The old ways of specifying mcPheeTaper, mcPheePiston & frazilFrac:

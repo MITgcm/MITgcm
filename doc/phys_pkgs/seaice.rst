@@ -130,7 +130,8 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICEuseStrImpCpl`      |     FALSE                    | use strength implicit coupling in LSR/JFNK                              |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`SEAICEuseMetricTerms`    |     TRUE                     | use metric terms in dynamics                                            |
+  | :varlink:`SEAICEselectMetricTerms` |     2                        | select metric terms in stress divergence (on top of the ones implied by |
+  |                                    |                              | the FV discretisation). 0: none, 1: for strain rates only, 2: all       |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICEuseEVPpickup`      |     TRUE                     | use EVP pickups                                                         |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
