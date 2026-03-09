@@ -1,4 +1,4 @@
-#include "ECCO_OPTIONS.h"
+#include "OBCS_OPTIONS.h"
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
@@ -26,6 +26,7 @@ c     ==================================================================
 
 c     == global variables ==
 
+#ifdef OBCS_AGEOS_COST_CONTRIBUTION
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "GRID.h"
@@ -47,6 +48,7 @@ c     == global variables ==
 # include "CTRL_DUMMY.h"
 # include "OPTIMCYCLE.h"
 # include "CTRL_OBCS.h"
+#endif
 #endif
 
 c     == routine arguments ==
