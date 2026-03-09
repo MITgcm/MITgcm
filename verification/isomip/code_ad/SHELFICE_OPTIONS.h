@@ -23,7 +23,7 @@ C     following Holland and Jenkins, JPO, 1999
 
 C     Use old formulation of fresh water flux, derived from the salt
 C     balance equation instead of the heat balance equation. Ill-defined
-C     when all salinities (ice, ocean, boundary layer) are is zero,
+C     when all salinities (ice, ocean, boundary layer) are zero,
 C     therefore deprecated.
 #undef SHI_SALTBAL_FWFLX
 

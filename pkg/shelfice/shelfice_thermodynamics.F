@@ -590,11 +590,12 @@ C     code of type (pLoc-const)/pLoc
             eps8 = rUnit2mass*SHELFICEheatCapacity_Cp
      &           *shiTransCoeffS(i,j,bi,bj) * fwflxFac
             epsq = eps1*eps6 + eps3*eps7
-C     coefficents of the quadratic equations for saltFreeze
-            aqe = a0  *(eps1+eps3-eps8)
+C     coefficients of the quadratic equations for saltFreeze
+            aqe = a0*(eps1+eps3-eps8)
             recip_aqe = 0. _d 0
             IF ( aqe .NE. 0. _d 0 ) recip_aqe = 0.5 _d 0/aqe
-            bqe = epsq - eps2  + eps8*( a0*sLoc(I,J) - eps7 )
+            bqe = epsq - eps2 + eps8*( a0*sLoc(I,J) - eps7 )
+     &           - a0*(eps1+eps3)*SHELFICEsalinity
             cqe = ( eps2 + eps8*eps7 )*sLoc(I,J) - epsq*SHELFICEsalinity
             discrim = bqe*bqe - 4. _d 0*aqe*cqe
 #undef ALLOW_SHELFICE_DEBUG
@@ -652,7 +653,7 @@ C     through the ice (Holland and Jenkins, 1999, Section 2).
 C     Here, via eps3=0 and fwFlxFac, we also cover the case of a nonlinear
 C     temperature gradient through the ice (Holland and Jenkins, 1999,
 C     Section 3), but only for melting (Eq. 31 of Holland and Jenkins,
-C     1999). fwFlxFac = 0 or freezing and 1 for melting conditions.
+C     1999). fwFlxFac = 0 for freezing and 1 for melting conditions.
             freshWaterFlux = (
      &             eps1*( thetaFreeze - tLoc(i,j) )
      &           + eps3*( thetaFreeze - SHELFICEthetaSurface )

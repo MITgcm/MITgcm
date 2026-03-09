@@ -363,7 +363,7 @@ ice to water:
 .. math::
    {\rho_I} \, c_{p,I} \, \kappa_{I,T}
    \frac{\partial{T_I}}{\partial{z}}\biggl|_{b}
-   = \rho_c \, c_{p} \, \gamma_{T} ( T_{b} - T ) - L q.
+   = \rho_c \, c_{p} \, \gamma_{T} ( T_{b} - T ) - L q,
    :label: jenkinsheatbudget
 
 where :math:`\kappa_{I,T}` is the thermal ice diffusivity
@@ -379,8 +379,7 @@ and Jenkins (1999) :cite:`holland:99` (see
 sea-water :math:`T_{f}`, which is computed from a linear equation of state:
 
 .. math::
-   T_{f} = (0.0901 - 0.0575\ S_{b})
-   - 7.61 \times 10^{-4} p_{b}.
+   T_{f} = (0.0901 - 0.0575\ S_{b}) - 7.61 \times 10^{-4} p_{b},
    :label: hellmerfreeze
 
 where :math:`T_f` is given in :sup:`o`\ C and :math:`p_{b}` is in dBar. In
