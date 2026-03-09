@@ -2,10 +2,13 @@
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
+#ifdef ALLOW_ECCO
+# include "ECCO_OPTIONS.h"
+#endif
 
 C     This routine is not called from anywhere and likely not maintained
 
-      subroutine obcs_cost_ageos( myiter, mytime, mythid )
+      subroutine obcs_cost_ageos( mytime, myiter, mythid )
 
 c     ==================================================================
 c     SUBROUTINE obcs_cost_ageos
@@ -52,9 +55,8 @@ c     == global variables ==
 #endif
 
 c     == routine arguments ==
-
-      integer myiter
       _RL     mytime
+      integer myiter
       integer mythid
 
 #if (defined (ALLOW_CTRL) && \
