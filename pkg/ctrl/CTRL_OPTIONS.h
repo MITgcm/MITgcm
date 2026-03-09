@@ -81,6 +81,9 @@ C  o Set ALLOW_OBCS_CONTROL (Do not edit/modify):
      defined (ALLOW_OBCSW_CONTROL) || \
      defined (ALLOW_OBCSE_CONTROL))
 # define ALLOW_OBCS_CONTROL
+C     Enable code for 2D (horizontal,vertical) weights for obcs;
+C     this code is incomplete (fields are defined but not used anywhere)
+# undef ALLOW_OBCS_WEIGHTS2D
 #endif
 
 C  o Impose bounds on controls
