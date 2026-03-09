@@ -123,10 +123,6 @@ C     parameter used (by obcs ctrl parameters)
 #ifdef ALLOW_OBCSN_CONTROL
       COMMON /ctrl_cost_weights_obcsn/
      &       wobcsn
-# ifdef ALLOW_OBCS_WEIGHTS2D
-     &     , wobcsnLev
-      _RL wobcsnLev  (1-OLx:sNx+OLx,Nr,nSx,nSy,nobcs)
-# endif
       _RL wobcsn     (                      Nr,nobcs)
       COMMON /controlaux_obcsn_r/
      &                      xx_obcsn0,
@@ -138,10 +134,6 @@ C     parameter used (by obcs ctrl parameters)
 #ifdef ALLOW_OBCSS_CONTROL
       COMMON /ctrl_cost_weights_obcss/
      &       wobcss
-# ifdef ALLOW_OBCS_WEIGHTS2D
-     &     , wobcssLev
-      _RL wobcssLev  (1-OLx:sNx+OLx,Nr,nSx,nSy,nobcs)
-# endif
       _RL wobcss     (                      Nr,nobcs)
       COMMON /controlaux_obcss_r/
      &                      xx_obcss0,
@@ -153,10 +145,6 @@ C     parameter used (by obcs ctrl parameters)
 #ifdef ALLOW_OBCSW_CONTROL
       COMMON /ctrl_cost_weights_obcsw/
      &       wobcsw
-# ifdef ALLOW_OBCS_WEIGHTS2D
-     &     , wobcswLev
-      _RL wobcswLev  (1-OLy:sNy+OLy,Nr,nSx,nSy,nobcs)
-# endif
       _RL wobcsw     (                      Nr,nobcs)
       COMMON /controlaux_obcsw_r/
      &                      xx_obcsw0,
@@ -168,14 +156,23 @@ C     parameter used (by obcs ctrl parameters)
 #ifdef ALLOW_OBCSE_CONTROL
       COMMON /ctrl_cost_weights_obcse/
      &     wobcse
-# ifdef ALLOW_OBCS_WEIGHTS2D
-     &     , wobcseLev
-      _RL wobcseLev  (1-OLy:sNy+OLy,Nr,nSx,nSy,nobcs)
-# endif
       _RL wobcse     (                      Nr,nobcs)
       COMMON /controlaux_obcse_r/
      &                      xx_obcse0,
      &                      xx_obcse1
       _RL xx_obcse0 (1-OLy:sNy+OLy,Nr,nSx,nSy,nobcs)
       _RL xx_obcse1 (1-OLy:sNy+OLy,Nr,nSx,nSy,nobcs)
+#endif
+
+#ifdef ALLOW_OBCS_CONTROL
+# ifdef ALLOW_OBCS_WEIGHTS2D
+C     These fields are not used anywhere in the code so they are not
+C     defined by default.
+      COMMON /ctrl_cost_weights2d/
+     &     wobcseLev, wobcswLev, wobcssLev, wobcsnLev
+      _RL wobcseLev(1-OLy:sNy+OLy,Nr,nSx,nSy,nobcs)
+      _RL wobcswLev(1-OLy:sNy+OLy,Nr,nSx,nSy,nobcs)
+      _RL wobcssLev(1-OLx:sNx+OLx,Nr,nSx,nSy,nobcs)
+      _RL wobcsnLev(1-OLx:sNx+OLx,Nr,nSx,nSy,nobcs)
+# endif
 #endif
