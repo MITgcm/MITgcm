@@ -59,7 +59,7 @@ C     Find ctrl-indices
 cgg   North boundary contribution to cost function.
        startrec = ncvarrecstart(iobcsN)
        endrec   = ncvarrecsend(iobcsN)
-       CALL OBCS_COST_OBCSN( startrec, endrec,
+       CALL OBCS_COST_OB_N( startrec, endrec,
      I                       myTime, myIter, myThid )
       ENDIF
 #endif
@@ -68,7 +68,7 @@ cgg   North boundary contribution to cost function.
 cgg   South boundary contribution to cost function.
        startrec = ncvarrecstart(iobcsS)
        endrec   = ncvarrecsend(iobcsS)
-       CALL OBCS_COST_OBCSS( startrec, endrec,
+       CALL OBCS_COST_OB_S( startrec, endrec,
      I                       myTime, myIter, myThid )
       ENDIF
 #endif
@@ -77,7 +77,7 @@ cgg   South boundary contribution to cost function.
 cgg   East boundary contribution to cost function.
        startrec = ncvarrecstart(iobcsE)
        endrec   = ncvarrecsend(iobcsE)
-       CALL OBCS_COST_OBCSE( startrec, endrec,
+       CALL OBCS_COST_OB_E( startrec, endrec,
      I                       myTime, myIter, myThid )
       ENDIF
 #endif
@@ -86,7 +86,7 @@ cgg   East boundary contribution to cost function.
 cgg   West boundary contribution to cost function.
        startrec = ncvarrecstart(iobcsW)
        endrec   = ncvarrecsend(iobcsW)
-       CALL OBCS_COST_OBCSW( startrec, endrec,
+       CALL OBCS_COST_OB_W( startrec, endrec,
      I                       myTime, myIter, myThid )
       ENDIF
 #endif

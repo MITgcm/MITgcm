@@ -4,16 +4,16 @@
 #endif
 
 CBOP
-C !ROUTINE: OBCS_COST_OBCSE
+C !ROUTINE: OBCS_COST_OB_E
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE OBCS_COST_OBCSE(
+      SUBROUTINE OBCS_COST_OB_E(
      I                           startrec, endrec,
      I                           myTime, myIter, myThid )
 
 C !DESCRIPTION:
 C     - Calculatesd cost function contribution (Tikhonov regulariation)
-C       of eastern boundary
+C       of eastern open-boundary
 C     - modified from pkg/ecco/cost_obcse.F
 
 C !USES: ===============================================================
@@ -89,7 +89,7 @@ c     ip1 = 1
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(a,i9.8)')
-     &      ' OBCS_COST_OBCSE: number of records to process: ',nrec
+     &      ' OBCS_COST_OB_E: number of records to process: ',nrec
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(a)') ' '
@@ -164,7 +164,7 @@ c--     Print cost function for all tiles.
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
         WRITE(msgBuf,'(a,i8.8)')
-     &    ' OBCS_COST_OBCSE: irec = ',irec
+     &    ' OBCS_COST_OB_E: irec = ',irec
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
         WRITE(msgBuf,'(a,a,d22.15)')
