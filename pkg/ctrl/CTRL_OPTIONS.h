@@ -67,20 +67,24 @@ C       >>> Generic Control.
 C       >>> Open boundaries
 #ifdef ALLOW_OBCS
 C    Control of Open-Boundaries is meaningless without compiling pkg/obcs
-C    Note: Make sure that corresponding OBCS N/S/W/E Option is defined
+C    Note: Make sure that corresponding OBCS N/S/E/W Option is defined
 # define ALLOW_OBCSN_CONTROL
 # define ALLOW_OBCSS_CONTROL
-# define ALLOW_OBCSW_CONTROL
 # define ALLOW_OBCSE_CONTROL
-# undef ALLOW_OBCS_CONTROL_MODES
+# define ALLOW_OBCSW_CONTROL
 #endif /* ALLOW_OBCS */
 
 C  o Set ALLOW_OBCS_CONTROL (Do not edit/modify):
 #if (defined (ALLOW_OBCSN_CONTROL) || \
      defined (ALLOW_OBCSS_CONTROL) || \
-     defined (ALLOW_OBCSW_CONTROL) || \
-     defined (ALLOW_OBCSE_CONTROL))
+     defined (ALLOW_OBCSE_CONTROL) || \
+     defined (ALLOW_OBCSW_CONTROL))
 # define ALLOW_OBCS_CONTROL
+#endif
+
+#ifdef ALLOW_OBCS_CONTROL
+C     Untested code:
+# undef ALLOW_OBCS_CONTROL_MODES
 C     Enable code for 2D (horizontal,vertical) weights for obcs;
 C     this code is incomplete (fields are defined but not used anywhere)
 # undef ALLOW_OBCS_WEIGHTS2D
