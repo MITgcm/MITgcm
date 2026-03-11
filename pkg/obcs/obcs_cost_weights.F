@@ -19,7 +19,6 @@ c     ==================================================================
       IMPLICIT NONE
 
 c     == global variables ==
-
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #ifdef ALLOW_CTRL
@@ -27,12 +26,16 @@ c     == global variables ==
 #endif
 
 c     == routine arguments ==
-
       INTEGER  myThid
 
 #ifdef ALLOW_OBCS_CONTROL
-c     == local variables ==
+c     == external ==
+      INTEGER  IFNBLNK
+      EXTERNAL IFNBLNK
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 
+c     == local variables ==
       INTEGER k
       INTEGER gwUnit
       INTEGER ilo,ihi
@@ -42,13 +45,6 @@ c     == local variables ==
       _RL dummy
       logical  exst
 
-c     == external ==
-
-      INTEGER  IFNBLNK
-      EXTERNAL IFNBLNK
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
 c     == end of interface ==
 
 c--   Initialize variance (weight) fields.
@@ -56,16 +52,16 @@ c--   Initialize variance (weight) fields.
        DO k = 1, Nr
         weights(k,iobcs)= 0. _d 0
 CML#ifdef ALLOW_OBCSN_CONTROL
-CML        wobcsn(k,iobcs) = 0. _d 0
+CML        wobcsN(k,iobcs) = 0. _d 0
 CML#endif
 CML#ifdef ALLOW_OBCSS_CONTROL
-CML        wobcss(k,iobcs) = 0. _d 0
-CML#endif
-CML#ifdef ALLOW_OBCSW_CONTROL
-CML        wobcsw(k,iobcs) = 0. _d 0
+CML        wobcsS(k,iobcs) = 0. _d 0
 CML#endif
 CML#ifdef ALLOW_OBCSE_CONTROL
-CML        wobcse(k,iobcs) = 0. _d 0
+CML        wobcsE(k,iobcs) = 0. _d 0
+CML#endif
+CML#ifdef ALLOW_OBCSW_CONTROL
+CML        wobcsW(k,iobcs) = 0. _d 0
 CML#endif
        ENDDO
       ENDDO
@@ -101,42 +97,42 @@ c--   Read error information and set up weight matrices.
 
       DO iobcs = 1,nobcs
        DO k = 1, Nr
-#  ifdef ALLOW_OBCSN_CONTROL
-        wobcsn(k,iobcs) = weights(k,iobcs)
-        IF (wobcsn(k,iobcs) .NE. 0.) THEN
-         wobcsn(k,iobcs) =
-     &        ratio/wobcsn(k,iobcs)/wobcsn(k,iobcs)
+# ifdef ALLOW_OBCSN_CONTROL
+        wobcsN(k,iobcs) = weights(k,iobcs)
+        IF (wobcsN(k,iobcs) .NE. 0.) THEN
+         wobcsN(k,iobcs) =
+     &        ratio/wobcsN(k,iobcs)/wobcsN(k,iobcs)
         ELSE
-         wobcsn(k,iobcs) = 0.0 _d 0
+         wobcsN(k,iobcs) = 0.0 _d 0
         ENDIF
-#  endif
-#  ifdef ALLOW_OBCSS_CONTROL
-        wobcss(k,iobcs) = weights(k,iobcs)
-        IF (wobcss(k,iobcs) .NE. 0.) THEN
-         wobcss(k,iobcs) =
-     &        ratio/wobcss(k,iobcs)/wobcss(k,iobcs)
+# endif
+# ifdef ALLOW_OBCSS_CONTROL
+        wobcsS(k,iobcs) = weights(k,iobcs)
+        IF (wobcsS(k,iobcs) .NE. 0.) THEN
+         wobcsS(k,iobcs) =
+     &        ratio/wobcsS(k,iobcs)/wobcsS(k,iobcs)
         ELSE
-         wobcss(k,iobcs) = 0.0 _d 0
+         wobcsS(k,iobcs) = 0.0 _d 0
         ENDIF
-#  endif
-#  ifdef ALLOW_OBCSW_CONTROL
-        wobcsw(k,iobcs) = weights(k,iobcs)
-        IF (wobcsw(k,iobcs) .NE. 0.) THEN
-         wobcsw(k,iobcs) =
-     &        ratio/wobcsw(k,iobcs)/wobcsw(k,iobcs)
+# endif
+# ifdef ALLOW_OBCSE_CONTROL
+        wobcsE(k,iobcs) = weights(k,iobcs)
+        IF (wobcsE(k,iobcs) .NE. 0.) THEN
+         wobcsE(k,iobcs) =
+     &        ratio/wobcsE(k,iobcs)/wobcsE(k,iobcs)
         ELSE
-         wobcsw(k,iobcs) = 0.0 _d 0
+         wobcsE(k,iobcs) = 0.0 _d 0
         ENDIF
-#  endif
-#  ifdef ALLOW_OBCSE_CONTROL
-        wobcse(k,iobcs) = weights(k,iobcs)
-        IF (wobcse(k,iobcs) .NE. 0.) THEN
-         wobcse(k,iobcs) =
-     &        ratio/wobcse(k,iobcs)/wobcse(k,iobcs)
+# endif
+# ifdef ALLOW_OBCSW_CONTROL
+        wobcsW(k,iobcs) = weights(k,iobcs)
+        IF (wobcsW(k,iobcs) .NE. 0.) THEN
+         wobcsW(k,iobcs) =
+     &        ratio/wobcsW(k,iobcs)/wobcsW(k,iobcs)
         ELSE
-         wobcse(k,iobcs) = 0.0 _d 0
+         wobcsW(k,iobcs) = 0.0 _d 0
         ENDIF
-#  endif
+# endif
        ENDDO
       ENDDO
 

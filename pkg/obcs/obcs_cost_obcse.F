@@ -99,9 +99,9 @@ c     ip1 = 1
       ENDIF
 
       IF (optimcycle .GE. 0) THEN
-       ilfld=ILNBLNK( xx_obcse_file )
+       ilfld=ILNBLNK( xx_obcsE_file )
        WRITE(fnamefld,'(2a,i10.10)')
-     &      xx_obcse_file(1:ilfld), '.', optimcycle
+     &      xx_obcsE_file(1:ilfld), '.', optimcycle
       ENDIF
 
 c--   Loop over records.
@@ -110,7 +110,7 @@ c--   Loop over records.
 #ifdef ALLOW_AUTODIFF
        CALL ACTIVE_READ_YZ( fnamefld, tmpfield, irec,
      &                      doglobalread, ladinit, optimcycle,
-     &                      myThid, xx_obcse_dummy )
+     &                      myThid, xx_obcsE_dummy )
 #else
        CALL READ_REC_YZ_RL( fnamefld, ctrlprec, Nr,
      &                      tmpfield, irec, 1, myThid )
@@ -142,17 +142,17 @@ c--   Determine the weights to be used.
 c          i = OB_Iw(j,bi,bj)
 cgg        IF (maskW(i+ip1,j,k,bi,bj) .NE. 0.) THEN
            tmpx = tmpfield(j,k,bi,bj)
-CMM        fctile = fctile + wobcse2(j,k,bi,bj,iobcs)
-           fctile = fctile + wobcse(k,iobcs)
+CMM        fctile = fctile + wobcsE2(j,k,bi,bj,iobcs)
+           fctile = fctile + wobcsE(k,iobcs)
      &          *tmpx*tmpx*maskyz(j,k,bi,bj)
 cgg        ENDIF
-CMM        IF (wobcse2(j,k,bi,bj,iobcs)*maskyz(j,k,bi,bj).NE.0.)
-           IF (wobcse(k,iobcs)*maskyz(j,k,bi,bj).NE.0.)
-     &          num_obcse(bi,bj) = num_obcse(bi,bj) + 1. _d 0
+CMM        IF (wobcsE2(j,k,bi,bj,iobcs)*maskyz(j,k,bi,bj).NE.0.)
+           IF (wobcsE(k,iobcs)*maskyz(j,k,bi,bj).NE.0.)
+     &          num_obcsE(bi,bj) = num_obcsE(bi,bj) + 1. _d 0
           ENDDO
          ENDDO
 
-         objf_obcse(bi,bj) = objf_obcse(bi,bj) + fctile
+         objf_obcsE(bi,bj) = objf_obcsE(bi,bj) + fctile
          fcthread          = fcthread + fctile
         ENDDO
        ENDDO
@@ -169,7 +169,7 @@ c--     Print cost function for all tiles.
      &                      SQUEEZE_RIGHT, myThid )
         WRITE(msgBuf,'(a,a,d22.15)')
      &    ' global cost function value',
-     &    ' (obcse) = ',fcthread
+     &    ' (obcsE) = ',fcthread
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
         WRITE(msgBuf,'(a)') ' '

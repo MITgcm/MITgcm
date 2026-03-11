@@ -67,8 +67,8 @@ C     retired parameters (others are in ctrl_local_params.h)
       LOGICAL ctrlSmoothCorrel2D
 #ifndef ALLOW_COST
 C     dummy values, so that namelist need not change
-      _RL  mult_obcsn, mult_obcss
-      _RL  mult_obcsw, mult_obcse
+      _RL  mult_obcsN, mult_obcsS
+      _RL  mult_obcsE, mult_obcsW
       _RL  mult_obcsvol, mult_ageos
 # ifdef ALLOW_GENARR_CONTROL
       _RL  mult_gentim2d(maxCtrlTim2D)
@@ -119,14 +119,14 @@ C--   Read the namelist input.
      &  xx_vwindstartdate1, xx_vwindstartdate2, xx_vwindperiod,
      &  xx_aqh_mean_file, xx_atemp_mean_file, xx_precip_mean_file,
      &  xx_swdown_mean_file, xx_uwind_mean_file, xx_vwind_mean_file,
-     &  xx_obcsn_file,
-     &  xx_obcsnstartdate1,  xx_obcsnstartdate2,  xx_obcsnperiod,
-     &  xx_obcss_file,
-     &  xx_obcssstartdate1,  xx_obcssstartdate2,  xx_obcssperiod,
-     &  xx_obcsw_file,
-     &  xx_obcswstartdate1,  xx_obcswstartdate2,  xx_obcswperiod,
-     &  xx_obcse_file,
-     &  xx_obcsestartdate1,  xx_obcsestartdate2,  xx_obcseperiod,
+     &  xx_obcsN_file,
+     &  xx_obcsNstartdate1,  xx_obcsNstartdate2,  xx_obcsNperiod,
+     &  xx_obcsS_file,
+     &  xx_obcsSstartdate1,  xx_obcsSstartdate2,  xx_obcsSperiod,
+     &  xx_obcsE_file,
+     &  xx_obcsEstartdate1,  xx_obcsEstartdate2,  xx_obcsEperiod,
+     &  xx_obcsW_file,
+     &  xx_obcsWstartdate1,  xx_obcsWstartdate2,  xx_obcsWperiod,
      &  xx_diffkr_file, xx_kapgm_file, xx_kapredi_file, xx_tr1_file,
      &  xx_sst_file, xx_sst_remo_intercept, xx_sst_remo_slope,
      &  xx_sss_file, xx_sss_remo_intercept, xx_sss_remo_slope,
@@ -140,7 +140,7 @@ C--   Read the namelist input.
      &  xx_shifwflx_file,
      &  xx_shifwflx_remo_intercept, xx_shifwflx_remo_slope,
      &  xx_shifwflxstartdate1, xx_shifwflxstartdate2, xx_shifwflxperiod,
-     &  mult_obcsn, mult_obcss, mult_obcsw, mult_obcse,
+     &  mult_obcsN, mult_obcsS, mult_obcsE, mult_obcsW,
      &  mult_obcsvol, mult_ageos,
      &  obcs_data_errfile,
      &  doInitXX, ctrlSmoothCorrel3D, ctrlSmoothCorrel2D, ctrlUseGen,
@@ -308,30 +308,30 @@ C     flag is defined
         enddo
 #endif
 
-        xx_obcsnstartdate1  =   0
-        xx_obcsnstartdate2  =   0
-        xx_obcsnperiod      =   0. _d 0
-        xx_obcsn_file       = 'xx_obcsn'
+        xx_obcsNstartdate1  =   0
+        xx_obcsNstartdate2  =   0
+        xx_obcsNperiod      =   0. _d 0
+        xx_obcsN_file       = 'xx_obcsn'
 
-        xx_obcssstartdate1  =   0
-        xx_obcssstartdate2  =   0
-        xx_obcssperiod      =   0. _d 0
-        xx_obcss_file       = 'xx_obcss'
+        xx_obcsSstartdate1  =   0
+        xx_obcsSstartdate2  =   0
+        xx_obcsSperiod      =   0. _d 0
+        xx_obcsS_file       = 'xx_obcss'
 
-        xx_obcswstartdate1  =   0
-        xx_obcswstartdate2  =   0
-        xx_obcswperiod      =   0. _d 0
-        xx_obcsw_file       = 'xx_obcsw'
+        xx_obcsEstartdate1  =   0
+        xx_obcsEstartdate2  =   0
+        xx_obcsEperiod      =   0. _d 0
+        xx_obcsE_file       = 'xx_obcse'
 
-        xx_obcsestartdate1  =   0
-        xx_obcsestartdate2  =   0
-        xx_obcseperiod      =   0. _d 0
-        xx_obcse_file       = 'xx_obcse'
+        xx_obcsWstartdate1  =   0
+        xx_obcsWstartdate2  =   0
+        xx_obcsWperiod      =   0. _d 0
+        xx_obcsW_file       = 'xx_obcsw'
 
-        mult_obcsn          =   0. _d 0
-        mult_obcss          =   0. _d 0
-        mult_obcsw          =   0. _d 0
-        mult_obcse          =   0. _d 0
+        mult_obcsN          =   0. _d 0
+        mult_obcsS          =   0. _d 0
+        mult_obcsE          =   0. _d 0
+        mult_obcsW          =   0. _d 0
         mult_obcsvol        =   0. _d 0
         mult_ageos          =   0. _d 0
 

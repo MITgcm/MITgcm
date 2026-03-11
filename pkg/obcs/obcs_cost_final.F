@@ -42,22 +42,22 @@ C    defined ALLOW_OBCS_COST_CONTRIBUTION
 
 C !LOCAL VARIABLES: ====================================================
       INTEGER bi, bj
-      _RL f_obcsn, f_obcss, f_obcsw, f_obcse, f_ageos
-      _RL no_obcsn, no_obcss, no_obcsw, no_obcse, no_ageos
+      _RL f_obcsN, f_obcsS, f_obcsE, f_obcsW, f_ageos
+      _RL no_obcsN, no_obcsS, no_obcsE, no_obcsW, no_ageos
 
       CHARACTER*22 cfname
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
-      f_obcsn  = 0. _d 0
-      f_obcss  = 0. _d 0
-      f_obcsw  = 0. _d 0
-      f_obcse  = 0. _d 0
+      f_obcsN  = 0. _d 0
+      f_obcsS  = 0. _d 0
+      f_obcsE  = 0. _d 0
+      f_obcsW  = 0. _d 0
       f_ageos  = 0. _d 0
-      no_obcsn = 0. _d 0
-      no_obcss = 0. _d 0
-      no_obcsw = 0. _d 0
-      no_obcse = 0. _d 0
+      no_obcsN = 0. _d 0
+      no_obcsS = 0. _d 0
+      no_obcsE = 0. _d 0
+      no_obcsW = 0. _d 0
       no_ageos = 0. _d 0
 
 c--   Sum up all contributions.
@@ -65,21 +65,21 @@ c--   Sum up all contributions.
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
         tile_fc(bi,bj) = tile_fc(bi,bj)
-     &         + mult_obcsn   * objf_obcsn(bi,bj)
-     &         + mult_obcss   * objf_obcss(bi,bj)
-     &         + mult_obcsw   * objf_obcsw(bi,bj)
-     &         + mult_obcse   * objf_obcse(bi,bj)
+     &         + mult_obcsN   * objf_obcsN(bi,bj)
+     &         + mult_obcsS   * objf_obcsS(bi,bj)
+     &         + mult_obcsE   * objf_obcsE(bi,bj)
+     &         + mult_obcsW   * objf_obcsW(bi,bj)
 # ifdef OBCS_AGEOS_COST_CONTRIBUTION
      &         + mult_ageos   * objf_ageos(bi,bj)
 # endif
-        f_obcsn  = f_obcsn + objf_obcsn(bi,bj)
-        f_obcss  = f_obcss + objf_obcss(bi,bj)
-        f_obcsw  = f_obcsw + objf_obcsw(bi,bj)
-        f_obcse  = f_obcse + objf_obcse(bi,bj)
-        no_obcsn = no_obcsn + num_obcsn(bi,bj)
-        no_obcss = no_obcss + num_obcss(bi,bj)
-        no_obcse = no_obcse + num_obcse(bi,bj)
-        no_obcsw = no_obcsw + num_obcsw(bi,bj)
+        f_obcsN  = f_obcsN + objf_obcsN(bi,bj)
+        f_obcsS  = f_obcsS + objf_obcsS(bi,bj)
+        f_obcsE  = f_obcsE + objf_obcsE(bi,bj)
+        f_obcsW  = f_obcsW + objf_obcsW(bi,bj)
+        no_obcsN = no_obcsN + num_obcsN(bi,bj)
+        no_obcsS = no_obcsS + num_obcsS(bi,bj)
+        no_obcsE = no_obcsE + num_obcsE(bi,bj)
+        no_obcsW = no_obcsW + num_obcsW(bi,bj)
 # ifdef OBCS_AGEOS_COST_CONTRIBUTION
         f_ageos  = f_ageos + objf_ageos(bi,bj)
         no_ageos = no_ageos + num_ageos(bi,bj)
@@ -87,14 +87,14 @@ c--   Sum up all contributions.
        ENDDO
       ENDDO
 
-      _GLOBAL_SUM_RL( f_obcsn , myThid )
-      _GLOBAL_SUM_RL( f_obcss , myThid )
-      _GLOBAL_SUM_RL( f_obcsw , myThid )
-      _GLOBAL_SUM_RL( f_obcse , myThid )
-      _GLOBAL_SUM_RL( no_obcsn, myThid )
-      _GLOBAL_SUM_RL( no_obcss, myThid )
-      _GLOBAL_SUM_RL( no_obcsw, myThid )
-      _GLOBAL_SUM_RL( no_obcse, myThid )
+      _GLOBAL_SUM_RL( f_obcsN , myThid )
+      _GLOBAL_SUM_RL( f_obcsS , myThid )
+      _GLOBAL_SUM_RL( f_obcsE , myThid )
+      _GLOBAL_SUM_RL( f_obcsW , myThid )
+      _GLOBAL_SUM_RL( no_obcsN, myThid )
+      _GLOBAL_SUM_RL( no_obcsS, myThid )
+      _GLOBAL_SUM_RL( no_obcsE, myThid )
+      _GLOBAL_SUM_RL( no_obcsW, myThid )
 # ifdef OBCS_AGEOS_COST_CONTRIBUTION
       _GLOBAL_SUM_RL( f_ageos , myThid )
       _GLOBAL_SUM_RL( no_ageos, myThid )
@@ -102,19 +102,19 @@ c--   Sum up all contributions.
 
 C     start printing to STDOUT
       WRITE(msgBuf,'(A,1PE22.14,1X,1PE9.2)')
-     &     ' --> f_obcsn    =', f_obcsn, mult_obcsn
+     &     ' --> f_obcsN    =', f_obcsN, mult_obcsN
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A,1PE22.14,1X,1PE9.2)')
-     &     ' --> f_obcss    =', f_obcss, mult_obcss
+     &     ' --> f_obcsS    =', f_obcsS, mult_obcsS
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A,1PE22.14,1X,1PE9.2)')
-     &     ' --> f_obcsw    =', f_obcsw, mult_obcsw
+     &     ' --> f_obcsE    =', f_obcsE, mult_obcsE
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A,1PE22.14,1X,1PE9.2)')
-     &     ' --> f_obcse    =', f_obcse, mult_obcse
+     &     ' --> f_obcsW    =', f_obcsW, mult_obcsW
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
 # ifdef OBCS_AGEOS_COST_CONTRIBUTION
@@ -136,13 +136,13 @@ C--   Each process has calculated the global part for itself.
      &                     SQUEEZE_RIGHT, myThid )
 
        WRITE(ifc,'(A,1PE22.14,1PE22.14,1X,1PE9.2)')
-     &      'f_obcsn =', f_obcsn, no_obcsn, mult_obcsn
+     &      'f_obcsN =', f_obcsN, no_obcsN, mult_obcsN
        WRITE(ifc,'(A,1PE22.14,1PE22.14,1X,1PE9.2)')
-     &      'f_obcss =', f_obcss, no_obcss, mult_obcss
+     &      'f_obcsS =', f_obcsS, no_obcsS, mult_obcsS
        WRITE(ifc,'(A,1PE22.14,1PE22.14,1X,1PE9.2)')
-     &      'f_obcsw =', f_obcsw, no_obcsw, mult_obcsw
+     &      'f_obcsE =', f_obcsE, no_obcsE, mult_obcsE
        WRITE(ifc,'(A,1PE22.14,1PE22.14,1X,1PE9.2)')
-     &      'f_obcse =', f_obcse, no_obcse, mult_obcse
+     &      'f_obcsW =', f_obcsW, no_obcsW, mult_obcsW
 # ifdef OBCS_AGEOS_COST_CONTRIBUTION
        WRITE(ifc,'(A,1PE22.14,1PE22.14,1X,1PE9.2)')
      &      'f_ageos =', f_ageos, no_ageos, mult_ageos
