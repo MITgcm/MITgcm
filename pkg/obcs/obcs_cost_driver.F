@@ -54,42 +54,48 @@ C     Find ctrl-indices
         IF ( ncvarindex(ivar) .EQ. 4 ) iobcsW = ivar
        ENDIF
       ENDDO
+
+      IF ( useObcsCostContribution ) THEN
+
 #ifdef ALLOW_OBCSN_CONTROL
-      IF ( iobcsN.GT.0 ) THEN
+       IF ( iobcsN.GT.0 ) THEN
 cgg   North boundary contribution to cost function.
-       startrec = ncvarrecstart(iobcsN)
-       endrec   = ncvarrecsend(iobcsN)
-       CALL OBCS_COST_OB_N( startrec, endrec,
+        startrec = ncvarrecstart(iobcsN)
+        endrec   = ncvarrecsend(iobcsN)
+        CALL OBCS_COST_OB_N( startrec, endrec,
      I                       myTime, myIter, myThid )
-      ENDIF
+       ENDIF
 #endif
 #ifdef ALLOW_OBCSS_CONTROL
-      IF ( iobcsS.GT.0 ) THEN
+       IF ( iobcsS.GT.0 ) THEN
 cgg   South boundary contribution to cost function.
-       startrec = ncvarrecstart(iobcsS)
-       endrec   = ncvarrecsend(iobcsS)
-       CALL OBCS_COST_OB_S( startrec, endrec,
+        startrec = ncvarrecstart(iobcsS)
+        endrec   = ncvarrecsend(iobcsS)
+        CALL OBCS_COST_OB_S( startrec, endrec,
      I                       myTime, myIter, myThid )
-      ENDIF
+       ENDIF
 #endif
 #ifdef ALLOW_OBCSE_CONTROL
-      IF ( iobcsE.GT.0 ) THEN
+       IF ( iobcsE.GT.0 ) THEN
 cgg   East boundary contribution to cost function.
-       startrec = ncvarrecstart(iobcsE)
-       endrec   = ncvarrecsend(iobcsE)
-       CALL OBCS_COST_OB_E( startrec, endrec,
+        startrec = ncvarrecstart(iobcsE)
+        endrec   = ncvarrecsend(iobcsE)
+        CALL OBCS_COST_OB_E( startrec, endrec,
      I                       myTime, myIter, myThid )
-      ENDIF
+       ENDIF
 #endif
 #ifdef ALLOW_OBCSW_CONTROL
-      IF ( iobcsW.GT.0 ) THEN
+       IF ( iobcsW.GT.0 ) THEN
 cgg   West boundary contribution to cost function.
-       startrec = ncvarrecstart(iobcsW)
-       endrec   = ncvarrecsend(iobcsW)
-       CALL OBCS_COST_OB_W( startrec, endrec,
+        startrec = ncvarrecstart(iobcsW)
+        endrec   = ncvarrecsend(iobcsW)
+        CALL OBCS_COST_OB_W( startrec, endrec,
      I                       myTime, myIter, myThid )
-      ENDIF
+       ENDIF
 #endif
+
+C     useObcsCostContribution
+      ENDIF
 
 #ifdef OBCS_VOLFLUX_COST_CONTRIBUTION
       STOP 'CPP-flag OBCS_VOLFLUX_COST_CONTRIBUTION defined: '//

@@ -34,6 +34,9 @@ c     == global variables ==
       || defined ALLOW_GENTIM2D_CONTROL  )
 #  include "CTRL_GENARR.h"
 # endif
+# ifdef ALLOW_OBCS
+#  include "CTRL_OBCS.h"
+# endif
 #endif
 
 c     == routine arguments ==
@@ -302,6 +305,15 @@ C
         call print_error( msgbuf, myThid )
         stop 'ABNORMAL END: S/R CTRL_SUMMARY'
       endif
+
+      CALL WRITE_0D_L( useCtrlCostContribution, INDEX_NONE,
+     &     'useCtrlCostContribution =',
+     &     '  /* compute regularisation for gen. ctrls */')
+#ifdef ALLOW_OBCS
+      CALL WRITE_0D_L( useObcsCostContribution, INDEX_NONE,
+     &     'useObcsCostContribution =',
+     &     '  /* compute regularisation for obcs ctrls */')
+#endif
 
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardMessageUnit,

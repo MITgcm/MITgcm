@@ -504,23 +504,32 @@ C--   if all multipliers are zero, we do not need to calculate the cost
 C     function contribution of the ctrl-variables (no Tikhonov
 C     regularisation)
         useCtrlCostContribution = .FALSE.
-#ifdef ALLOW_GENARR2D_CONTROL
+        useObcsCostContribution = .FALSE.
+#ifdef ALLOW_COST
+# ifdef ALLOW_GENARR2D_CONTROL
         DO iarr = 1, maxCtrlArr2D
          useCtrlCostContribution = useCtrlCostContribution
      &        .OR. mult_genarr2d(iarr) .GT. 0. _d 0
         ENDDO
-#endif
-#ifdef ALLOW_GENARR3D_CONTROL
+# endif
+# ifdef ALLOW_GENARR3D_CONTROL
         DO iarr = 1, maxCtrlArr3D
          useCtrlCostContribution = useCtrlCostContribution
      &        .OR. mult_genarr3d(iarr) .GT. 0. _d 0
         ENDDO
-#endif
-#ifdef ALLOW_GENTIM2D_CONTROL
+# endif
+# ifdef ALLOW_GENTIM2D_CONTROL
         DO iarr = 1, maxCtrlTim2D
          useCtrlCostContribution = useCtrlCostContribution
      &        .OR. mult_gentim2d(iarr) .GT. 0. _d 0
         ENDDO
+# endif
+# ifdef ALLOW_OBCS
+        IF ( mult_obcsN .GT. 0. _d 0 .OR. mult_obcsS .GT. 0. _d 0 .OR.
+     &       mult_obcsE .GT. 0. _d 0 .OR. mult_obcsW .GT. 0. _d 0 .OR.
+     &       mult_obcsvol.GT.0. _d 0 .OR. mult_ageos .GT. 0. _d 0 )
+     &       useObcsCostContribution = .TRUE.
+# endif
 #endif
 
 C-- Create ctrlDir if necessary

@@ -37,7 +37,13 @@ C--
       _RL  mult_obcsN, mult_obcsS
       _RL  mult_obcsE, mult_obcsW
       _RL  mult_obcsvol, mult_ageos
+
 #endif
+C     useObcsCostContribution :: internal parameter that is set to True
+C                                if at least one of the mult_*  is non-zero
+
+      COMMON /ctrl_obcs_params_l/ useObcsCostContribution
+      LOGICAL useObcsCostContribution
 
       COMMON /ih_modes/ modesv
       _RL modesv (Nr,Nr,Nr)
