@@ -35,7 +35,7 @@ C     == global variables ==
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     ifc        :: file unit for costfunction_seaiceXXXX
+C     ifc        :: file unit for costfunction_seaice.XXXX
 C     optimcycle :: cycle number of the off-line optimization.
 C     myThid     :: my Thread Id number
       INTEGER ifc
@@ -47,7 +47,7 @@ C     !LOCAL VARIABLES:
       INTEGER bi, bj
       _RL f_ice
       _RL no_ice
-      CHARACTER*23 cfname
+      CHARACTER*24 cfname
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
@@ -82,7 +82,7 @@ C--   Do global summation for each part of the cost function
 C--   Each process has calculated the global part for itself.
       IF ( ifc .NE. -1 ) THEN
 
-        WRITE(cfname,'(A,i4.4)') 'costfunction_seaice',optimcycle
+        WRITE(cfname,'(A,i4.4)') 'costfunction_seaice.',optimcycle
         OPEN(unit=ifc,file=cfname)
 
 C     makes little sense to print this now, because it is zero at this point

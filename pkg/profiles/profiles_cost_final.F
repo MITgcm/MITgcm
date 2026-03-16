@@ -27,7 +27,7 @@ C     == global variables ==
 #include "profiles.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     ifc        :: file unit for costfunction_profilesXXXX
+C     ifc        :: file unit for costfunction_profiles.XXXX
 C     optimcycle :: cycle number of the off-line optimization.
 C     myThid     :: my Thread Id number
       INTEGER ifc
@@ -47,7 +47,7 @@ C     !LOCAL VARIABLES:
       _RL no_profiles(NFILESPROFMAX,NVARMAX)
       _RL no_profiles_mean(NVARMAX)
 
-      CHARACTER*25 cfname
+      CHARACTER*26 cfname
       INTEGER IL
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
@@ -128,7 +128,7 @@ c--   Each process has calculated the global part for itself.
 C     only master thread of master CPU open and write to file
       IF ( ifc .NE. -1 ) THEN
 
-       WRITE(cfname,'(A,I4.4)') 'costfunction_profiles',optimcycle
+       WRITE(cfname,'(A,I4.4)') 'costfunction_profiles.',optimcycle
        OPEN(unit=ifc,file=cfname)
        WRITE(msgBuf,'(A,A)')
      &      'Writing profiles cost function info to ', cfname

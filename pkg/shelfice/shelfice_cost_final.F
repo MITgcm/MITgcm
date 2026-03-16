@@ -34,7 +34,7 @@ C     == Global variables ===
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     ifc        :: file unit for costfunction_shelficeXXXX
+C     ifc        :: file unit for costfunction_shelfice.XXXX
 C     optimcycle :: cycle number of the off-line optimization.
 C     myThid     :: Thread number for this instance of the routine.
       INTEGER ifc
@@ -45,7 +45,7 @@ C     myThid     :: Thread number for this instance of the routine.
 C     !LOCAL VARIABLES:
       INTEGER bi, bj
 #ifndef ALLOW_OPENAD
-      CHARACTER*(25) cfname
+      CHARACTER*(26) cfname
 #endif
 
       _RL f_shelfice
@@ -99,7 +99,7 @@ cML      CALL GLOBAL_SUM_TILE_RL( num_shelfice, no_shelfice, myThid )
 C--   Each process has calculated the global part for itself.
       IF ( ifc .NE. -1 ) THEN
 
-       WRITE(cfname,'(A,i4.4)') 'costfunction_shelfice',optimcycle
+       WRITE(cfname,'(A,i4.4)') 'costfunction_shelfice.',optimcycle
        OPEN(unit=ifc,file=cfname)
 
 C     makes little sense to print this now, because it is zero at this point

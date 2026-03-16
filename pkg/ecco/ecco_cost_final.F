@@ -33,7 +33,7 @@ c     == global variables ==
 
 c     == routine arguments ==
 
-C     ifc        :: file unit for costfunction_eccoXXXX
+C     ifc        :: file unit for costfunction_ecco.XXXX
 C     optimcycle :: cycle number of the off-line optimization (same as eccoiter)
 C     myThid     :: my Thread Id number
       INTEGER ifc
@@ -58,7 +58,7 @@ c     == local variables ==
       _RL no_gencost(NGENCOST)
 #endif
       INTEGER IL
-      CHARACTER*22 cfname
+      CHARACTER*23 cfname
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 c     == end of interface ==
@@ -112,8 +112,8 @@ C     only master thread of master CPU open and write to file with file unit > 0
 
 C     For consistency we use variable optimcycle rather than eccoiter,
 C     but they have the same value.
-C       WRITE(cfname,'(A,i4.4)') 'costfunction_ecco',eccoiter
-        WRITE(cfname,'(A,i4.4)') 'costfunction_ecco',optimcycle
+C       WRITE(cfname,'(A,i4.4)') 'costfunction_ecco.',eccoiter
+        WRITE(cfname,'(A,i4.4)') 'costfunction_ecco.',optimcycle
         WRITE(msgBuf,'(A,A)')
      &           'Writing ecco cost function info to ', cfname
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -136,7 +136,7 @@ C       WRITE(cfname,'(A,i4.4)') 'costfunction_ecco',eccoiter
         CLOSE(ifc)
 
       ELSE
-        WRITE(msgBuf,'(A)') ' skip writing to costfunction_eccoXXXX'
+        WRITE(msgBuf,'(A)') ' skip writing to costfunction_ecco.XXXX'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
 

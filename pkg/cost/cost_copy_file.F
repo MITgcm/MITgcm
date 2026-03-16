@@ -8,7 +8,7 @@ C !INTERFACE:
       SUBROUTINE COST_COPY_FILE( oUnit, optimcycle, myThid )
 C !DESCRIPTION:
 C     Helper routine to hide irreducible statements from TAF:
-C     Copy content of costfunction_${pkg}XXXX to oUnit
+C     Copy content of costfunction_${pkg}.XXXX to oUnit
 
 C     !USES:
       IMPLICIT NONE
@@ -54,8 +54,8 @@ C     that the character variables need to be all of the same length.
       DO ipkg = 1, nPkg
        cfexist = .FALSE.
        IL = ILNBLNK( pkgNames(ipkg) )
-       WRITE(cfname,'(A,A,I4.4)')
-     &      'costfunction_',pkgNames(ipkg)(1:IL),optimcycle
+       WRITE(cfname,'(3A,I4.4)')
+     &      'costfunction_',pkgNames(ipkg)(1:IL),'.',optimcycle
        IL = ILNBLNK( cfname )
        INQUIRE(FILE=cfname(1:IL), EXIST=cfexist)
        IF ( cfexist ) THEN

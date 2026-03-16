@@ -28,7 +28,7 @@ C     == global variables ==
 #include "CTRL_GENARR.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     ifc        :: file unit for costfunction_ctrlXXXX
+C     ifc        :: file unit for costfunction_ctrl.XXXX
 C     optimcycle :: cycle number of the off-line optimization.
 C     myThid     :: my Thread Id number
       INTEGER ifc
@@ -57,7 +57,7 @@ C     !LOCAL VARIABLES:
       _RL no_genarr3d(maxCtrlArr3D)
 # endif
 
-      CHARACTER*22 cfname
+      CHARACTER*23 cfname
       INTEGER IL
       CHARACTER*(MAX_LEN_FNAM) xx_fname_loc
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -174,7 +174,7 @@ C     write contributions to costfunction file
 
 C--   Each process has calculated the global part for itself.
        IF ( ifc .NE. -1 ) THEN
-        WRITE(cfname,'(A,I4.4)') 'costfunction_ctrl',optimcycle
+        WRITE(cfname,'(A,I4.4)') 'costfunction_ctrl.',optimcycle
         OPEN(unit=ifc,file=cfname)
         WRITE(msgBuf,'(A,A)')
      &       'Writing generic ctrl cost function info to ', cfname

@@ -25,7 +25,7 @@ C     == global variables ==
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     ifc        :: file unit for costfunction_thsiceXXXX
+C     ifc        :: file unit for costfunction_thsice.XXXX
 C     optimcycle :: cycle number of the off-line optimization.
 C     myThid     :: my Thread Id number
       INTEGER ifc
@@ -37,7 +37,7 @@ C     !LOCAL VARIABLES:
       INTEGER bi,bj
       _RL f_thsice
       _RL no_thsice
-c     CHARACTER*23 cfname
+c     CHARACTER*24 cfname
 CEOP
 
 c     print *, 'ph-2 in thsice_cost_final'
@@ -65,7 +65,7 @@ c     CALL GLOBAL_SUM_TILE_RL( num_thsice, no_thsice, myThid )
      &     ' --> f_thsice     = ', f_thsice
 
 c     IF ( ifc .NE. -1 ) THEN
-c       WRITE(cfname,'(A,i4.4)') 'costfunction_thsice',optimcycle
+c       WRITE(cfname,'(A,i4.4)') 'costfunction_thsice.',optimcycle
 c       OPEN(unit=ifc,file=cfname)
 c       WRITE(ifc,'(A,1PE22.14,1PE22.14,1X,1PE9.2)')
 c    &       'f_thsice =', f_thsice, no_thsice, mult_thsice

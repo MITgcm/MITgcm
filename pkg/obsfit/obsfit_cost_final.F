@@ -27,7 +27,7 @@ C     == global variables ==
 #include "OBSFIT.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     ifc        :: file unit for costfunction_obsfitXXXX
+C     ifc        :: file unit for costfunction_obsfit.XXXX
 C     optimcycle :: cycle number of the off-line optimization.
 C     myThid     :: my Thread Id number
       INTEGER ifc
@@ -44,7 +44,7 @@ C     !LOCAL VARIABLES:
       _RL f_obsfit(NFILESMAX_OBS)
       _RL no_obsfit(NFILESMAX_OBS)
 
-      CHARACTER*23 cfname
+      CHARACTER*24 cfname
       INTEGER IL
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
@@ -87,7 +87,7 @@ c--   Each process has calculated the global part for itself.
 C     only master thread of master CPU open and write to file
       IF ( ifc .NE. -1 ) THEN
 
-       WRITE(cfname,'(A,I4.4)') 'costfunction_obsfit',optimcycle
+       WRITE(cfname,'(A,I4.4)') 'costfunction_obsfit.',optimcycle
        OPEN(unit=ifc,file=cfname)
        WRITE(msgBuf,'(A,A)')
      &      'Writing obsfit cost function info to ', cfname

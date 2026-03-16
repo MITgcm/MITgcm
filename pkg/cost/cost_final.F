@@ -58,7 +58,7 @@ C     dummy parameter for this unlikely case
 #endif
       INTEGER ifc
       INTEGER ioUnit
-      CHARACTER*16 cfname
+      CHARACTER*17 cfname
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       ioUnit = standardMessageUnit
@@ -76,7 +76,7 @@ C     dummy value for this unlikely case
       optimcycle = 0
 #endif
 
-C     ifc = -1 means: do not write output to a file costfunction_${PKG}XXXX
+C     ifc = -1 means: do not write output to a file costfunction_${PKG}.XXXX
       ifc = -1
       IF ( MASTER_CPU_THREAD(myThid) .AND. costWriteCostFunction ) THEN
        CALL MDSFINDUNIT( ifc, myThid )
@@ -225,7 +225,7 @@ cph-- quickly for testing
 #endif
 
       IF ( ifc .NE. -1 ) THEN
-       WRITE(cfname,'(A,I4.4)') 'costfunction',optimcycle
+       WRITE(cfname,'(A,I4.4)') 'costfunction.',optimcycle
        WRITE(msgBuf,'(A,A)')
      &      'Writing global cost function info to ', cfname
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )

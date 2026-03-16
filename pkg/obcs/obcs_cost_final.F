@@ -29,7 +29,7 @@ C     == Global variables ==
 #endif
 
 C !INPUT PARAMETERS: ===================================================
-C     ifc        :: file unit for costfunction_obcsXXXX
+C     ifc        :: file unit for costfunction_obcs.XXXX
 C     optimcycle :: cycle number of the off-line optimization.
 C     myThid     :: my Thread Id number
       INTEGER ifc
@@ -45,7 +45,7 @@ C !LOCAL VARIABLES: ====================================================
       _RL f_obcsN, f_obcsS, f_obcsE, f_obcsW, f_ageos
       _RL no_obcsN, no_obcsS, no_obcsE, no_obcsW, no_ageos
 
-      CHARACTER*22 cfname
+      CHARACTER*23 cfname
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
@@ -128,7 +128,7 @@ C     write contributions to costfunction file
 
 C--   Each process has calculated the global part for itself.
       IF ( ifc .NE. -1 ) THEN
-       WRITE(cfname,'(A,I4.4)') 'costfunction_obcs',optimcycle
+       WRITE(cfname,'(A,I4.4)') 'costfunction_obcs.',optimcycle
        OPEN(unit=ifc,file=cfname)
        WRITE(msgBuf,'(A,A)')
      &      'Writing obcs ctrl cost function info to ', cfname
