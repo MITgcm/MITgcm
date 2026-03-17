@@ -41,21 +41,21 @@ C !LOCAL VARIABLES: ====================================================
       INTEGER iobcsN, iobcsS, iobcsE, iobcsW
 CEOP
 
-C     Find ctrl-indices
-      iobcsN = 0
-      iobcsS = 0
-      iobcsE = 0
-      iobcsW = 0
-      DO ivar = 1, maxcvars
-       IF ( ncvargrd(ivar) .EQ. 'm' ) THEN
-        IF ( ncvarindex(ivar) .EQ. 1 ) iobcsN = ivar
-        IF ( ncvarindex(ivar) .EQ. 2 ) iobcsS = ivar
-        IF ( ncvarindex(ivar) .EQ. 3 ) iobcsE = ivar
-        IF ( ncvarindex(ivar) .EQ. 4 ) iobcsW = ivar
-       ENDIF
-      ENDDO
-
       IF ( useObcsCostContribution ) THEN
+
+C     Find ctrl-indices
+       iobcsN = 0
+       iobcsS = 0
+       iobcsE = 0
+       iobcsW = 0
+       DO ivar = 1, maxcvars
+        IF ( ncvargrd(ivar) .EQ. 'm' ) THEN
+         IF ( ncvarindex(ivar) .EQ. 1 ) iobcsN = ivar
+         IF ( ncvarindex(ivar) .EQ. 2 ) iobcsS = ivar
+         IF ( ncvarindex(ivar) .EQ. 3 ) iobcsE = ivar
+         IF ( ncvarindex(ivar) .EQ. 4 ) iobcsW = ivar
+        ENDIF
+       ENDDO
 
 #ifdef ALLOW_OBCSN_CONTROL
        IF ( iobcsN.GT.0 ) THEN
@@ -94,17 +94,17 @@ cgg   West boundary contribution to cost function.
        ENDIF
 #endif
 
+#ifdef OBCS_VOLFLUX_COST_CONTRIBUTION
+       STOP 'CPP-flag OBCS_VOLFLUX_COST_CONTRIBUTION defined: '//
+     &      'S/R OBCS_COST_VOL needs to be fixed!'
+c       IF ( ( iobcsN+iobcsS+iobcsE+iobcsW ) .GT.0 ) THEN
+c        CALL OBCS_COST_VOL( startrec, endrec,
+c     I                      myTime, myIter, myThid )
+c       ENDIF
+#endif
+
 C     useObcsCostContribution
       ENDIF
-
-#ifdef OBCS_VOLFLUX_COST_CONTRIBUTION
-      STOP 'CPP-flag OBCS_VOLFLUX_COST_CONTRIBUTION defined: '//
-     &     'S/R OBCS_COST_VOL needs to be fixed!'
-c      IF ( ( iobcsN+iobcsS+iobcsE+iobcsW ) .GT.0 ) THEN
-c       CALL OBCS_COST_VOL( startrec, endrec,
-c     I                    myTime, myIter, myThid )
-c      ENDIF
-#endif
 
 #endif /* ALLOW_CTRL and ALLOW_COST */
 

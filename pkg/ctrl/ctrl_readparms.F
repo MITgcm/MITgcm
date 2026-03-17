@@ -569,6 +569,22 @@ C      create directory
 
 C-- Check retired parameters
       nRetired = 0
+#ifdef ALLOW_OBCS
+C     not really retired, but safer to stop straight away
+      IF ( mult_obcsvol .NE. 0. _d 0 ) THEN
+       WRITE(msgBuf,'(2A)') 'S/R CTRL_READPARMS: "mult_obcsvol" ',
+     &      'currently has not effect; code needs fixing.'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       nRetired = nRetired + 1
+      ENDIF
+      IF ( mult_ageos.NE.0. _d 0 ) THEN
+       WRITE(msgBuf,'(2A)') 'S/R CTRL_READPARMS: "mult_ageos" ',
+     &      'currently has no effect; code needs fixing.'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       nRetired = nRetired + 1
+      ENDIF
+C
+#endif
       IF ( ctrlSmoothCorrel2D ) THEN
        WRITE(msgBuf,'(2A)') 'S/R CTRL_READPARMS: ',
      &  'ctrlSmoothCorrel2D no longer allowed in file "data.ctrl"'
