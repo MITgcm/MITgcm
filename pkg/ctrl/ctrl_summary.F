@@ -313,6 +313,19 @@ C
       CALL WRITE_0D_L( useObcsCostContribution, INDEX_NONE,
      &     'useObcsCostContribution =',
      &     '  /* compute regularisation for obcs ctrls */')
+C-    these 2 following params are related to currently disabled code:
+      IF ( mult_obcsvol .NE. 0. _d 0 ) THEN
+       WRITE(msgBuf,'(2A)') '** WARNING ** CTRL_SUMMARY: ',
+     &   '"mult_obcsvol" currently has not effect; code needs fixing.'
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+      ENDIF
+      IF ( mult_ageos.NE.0. _d 0 ) THEN
+       WRITE(msgBuf,'(2A)') '** WARNING ** CTRL_SUMMARY: ',
+     &   '"mult_ageos" currently has no effect; code needs fixing.'
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+      ENDIF
 #endif
 
       write(msgbuf,'(a)') ' '
