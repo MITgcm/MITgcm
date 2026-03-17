@@ -35,12 +35,6 @@ C       >>> Cost function contributions
 
 #define ALLOW_COST_TEST
 #undef ALLOW_COST_TSQUARED
-C     It seems counterintuitive that ALLOW_COST_DEPTH is now undefined,
-C     but because depth is a control parameter in this experiment, the
-C     cost function contribution by changes in depth is actually covered
-C     by s/r ctrl_cost_driver and ctrl_cost_final. ALLOW_COST_DEPTH
-C     should be removed entirely
-#undef ALLOW_COST_DEPTH
 #undef ALLOW_COST_TRACER
 
 C   List these options here:
@@ -48,6 +42,7 @@ C   List these options here:
 #undef ALLOW_COST_HFLUXM
 #undef ALLOW_DIC_COST
 #undef ALLOW_THSICE_COST_TEST
+#undef ALLOW_COST_STREAMICE
 #undef ALLOW_COST_SHELFICE
 
 C   ==================================================================
