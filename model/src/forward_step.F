@@ -649,6 +649,11 @@ CADJ STORE pTracer    = comlev1, key = ikey_dynamics, kind = isbyte
 # endif /* ALLOW_PTRACERS */
 # ifdef ALLOW_DEPTH_CONTROL
 CADJ STORE hFacC      = comlev1, key = ikey_dynamics, kind = isbyte
+#  ifdef ALLOW_SEAICE
+CADJ STORE hFacS      = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE hFacW      = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE recip_hFacC= comlev1, key = ikey_dynamics, kind = isbyte
+#  endif
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 

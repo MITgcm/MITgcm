@@ -1,19 +1,22 @@
 # *********************
-# ECCO controlvariables
+# pkg/ctrl parameters
 # *********************
  &CTRL_NML
  &
-#
+
 # *********************
 # names for ctrl_pack/unpack
 # *********************
  &CTRL_PACKNAMES
  &
-#
+
 # *********************
 # names for CTRL_GENARR
 # *********************
  &CTRL_NML_GENARR
  xx_genarr2d_file(1)       = 'xx_depth',
  xx_genarr2d_weight(1)     = 'ones_64b.bin',
+#- no contribution to global cost-function from depth-control:
+#  note: this is the default with useECCO=F
+ mult_genarr2d(1)          = 0.,
  &
