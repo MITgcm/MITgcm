@@ -63,10 +63,10 @@ Each example experiment directory has the following subdirectories:
 
 -  ``run``: this directory is initially empty and should be used to run the
    executable. From the (empty) run directory, link files from ``input``
-   using the command ``ln -s ../input/* .``, then execute the file ``../input/prepare_run`` if it exists.
+   using the command ``ln -s ../input/* .``, then execute the file ``./prepare_run`` if it exists.
    If you are running one of the experiment variations, i.e., using ``input.«OTHER»``,
-   first link files from ``input.«OTHER»`` (running ``../input.«OTHER»/prepare_run`` if it exists) and next link files from ``input``
-   (and run ``../input/prepare_run``). Following this procedure, file links
+   first link files from ``input.«OTHER»`` and next link files from ``input``
+   (and run ``./prepare_run`` if it exists). Following this procedure, file links
    from ``input.«OTHER»`` will NOT be overwritten by identically named files in ``input``.
 
 .. raw:: html
