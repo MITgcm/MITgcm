@@ -31,7 +31,7 @@ C     aC3d     :: 3D operator main diagonal term.
 C     zMC, zML, zMU :: preconditioner 3D solver
 C     cg3dNorm :: matrix normalisation factor, units: 1/(s.r-Unit)
 C     cg3dTolerance_sq :: square of cg3d solver Tolerance (units depends on
-C                 cg3dNormaliseRHS=F/T, cg2d_x-unit ^2 = (m2/s2)^2 or no unit)
+C                 cg3dNormaliseRHS=T/F, no unit or cg3d_x-unit ^2 = (m2/s2)^2)
       COMMON /CG3D_RS/
      &      aW3d, aS3d, aV3d, aC3d,
      &      zMC, zML, zMU

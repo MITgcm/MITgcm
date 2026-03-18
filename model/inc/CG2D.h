@@ -29,7 +29,7 @@ C     pS       :: North-south off-diagonal term of preconditioner.
 C     pC       :: Main diagonal term of preconditioner.
 C     cg2dNorm :: matrix normalisation factor, units: 1/(s.r-Unit)
 C     cg2dTolerance_sq :: square of cg2d solver Tolerance (units depends on
-C                 cg2dNormaliseRHS=F/T, cg2d_x-unit ^2 = (m2/s2)^2 or no unit)
+C                 cg2dNormaliseRHS=T/F, no unit or cg2d_x-unit ^2 = (m2/s2)^2)
       COMMON /CG2D_I_RS/
      &      aW2d, aS2d, aC2d,
      &      pW, pS, pC
