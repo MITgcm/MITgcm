@@ -1,12 +1,17 @@
-#include "ECCO_OPTIONS.h"
+#include "OBCS_OPTIONS.h"
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
+#ifdef ALLOW_ECCO
+# include "ECCO_OPTIONS.h"
+#endif
 
-      subroutine cost_obcs_ageos( myiter, mytime, mythid )
+C     This routine is not called from anywhere and likely not maintained
+
+      subroutine obcs_cost_ageos( mytime, myiter, mythid )
 
 c     ==================================================================
-c     SUBROUTINE cost_obcs_ageos
+c     SUBROUTINE obcs_cost_ageos
 c     ==================================================================
 c
 c     o cost function contribution obc -- Ageostrophic boundary flow.
@@ -17,13 +22,14 @@ c     warning: masks redundantly assume no gradient of topography at
 c              boundary.
 c
 c     ==================================================================
-c     SUBROUTINE cost_obcs_ageos
+c     SUBROUTINE obcs_cost_ageos
 c     ==================================================================
 
       implicit none
 
 c     == global variables ==
 
+#ifdef OBCS_AGEOS_COST_CONTRIBUTION
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "GRID.h"
@@ -46,11 +52,11 @@ c     == global variables ==
 # include "OPTIMCYCLE.h"
 # include "CTRL_OBCS.h"
 #endif
+#endif
 
 c     == routine arguments ==
-
-      integer myiter
       _RL     mytime
+      integer myiter
       integer mythid
 
 #if (defined (ALLOW_CTRL) && \
@@ -125,7 +131,7 @@ c--   Read tiled data.
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
         write(msgbuf,'(a,i8.8)')
-     &    ' cost_obcs_ageos: number of records to process = ',nmonsrec
+     &    ' obcs_cost_ageos: number of records to process = ',nmonsrec
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
         write(msgbuf,'(a)') ' '
@@ -248,7 +254,7 @@ cgg    All these points need to be wet.
 
 C-- jmc: both calls below are wrong if more than 1 tile => stop here
        IF ( bi.NE.1 .OR. bj.NE.1 )
-     &  STOP 'COST_OBCS_AGEOS wrong with more than 1 tile/proc'
+     &  STOP 'OBCS_COST_AGEOS wrong with more than 1 tile/proc'
               call find_rho_2d(
      I                         iMin, iMax, jMin, jMax, k,
      I                         tbar(1-OLx,1-OLy,k,bi,bj),
@@ -317,7 +323,7 @@ cgg    All these points need to be wet.
 
 C-- jmc: both calls below are wrong if more than 1 tile => stop here
        IF ( bi.NE.1 .OR. bj.NE.1 )
-     &  STOP 'COST_OBCS_AGEOS wrong with more than 1 tile/proc'
+     &  STOP 'OBCS_COST_AGEOS wrong with more than 1 tile/proc'
               call find_rho_2d(
      I                         iMin, iMax, jMin, jMax, k,
      I                         tbar(1-OLx,1-OLy,k,bi,bj),
@@ -385,7 +391,7 @@ cgg    All these points need to be wet.
             do k = 1,Nr
 
        IF ( bi.NE.1 .OR. bj.NE.1 )
-     &  STOP 'COST_OBCS_AGEOS wrong with more than 1 tile/proc'
+     &  STOP 'OBCS_COST_AGEOS wrong with more than 1 tile/proc'
               call find_rho_2d(
      I                         iMin, iMax, jMin, jMax, k,
      I                         tbar(1-OLx,1-OLy,k,bi,bj),
@@ -452,7 +458,7 @@ cgg    All these points need to be wet.
             do k = 1,Nr
 
        IF ( bi.NE.1 .OR. bj.NE.1 )
-     &  STOP 'COST_OBCS_AGEOS wrong with more than 1 tile/proc'
+     &  STOP 'OBCS_COST_AGEOS wrong with more than 1 tile/proc'
               call find_rho_2d(
      I                         iMin, iMax, jMin, jMax, k,
      I                         tbar(1-OLx,1-OLy,k,bi,bj),
