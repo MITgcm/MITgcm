@@ -1259,7 +1259,8 @@ the stress formulation of Hibler and Bryan (1987) :cite:`hibler:87`, set
 Finite-volume discretization of the stress tensor divergence
 ------------------------------------------------------------
 
-The stress tensor is given by the constitutive viscous-plastic relation
+The physical components of the stress tensor are given by the constitutive
+viscous-plastic relation
 
 .. math::
       \sigma_{\alpha\beta} = 2\eta\,\dot{\epsilon}_{\alpha\beta} +
@@ -1267,7 +1268,8 @@ The stress tensor is given by the constitutive viscous-plastic relation
       - \frac{P}{2} \right]\delta_{\alpha\beta},
    :label: eq_sigma_tensor
 
-where summation over repeating indices is implied, so that
+where summation over repeating directional indices :math:`\alpha,\beta \in
+[1,2]` is implied, so that
 
 .. math::
    \begin{aligned}
@@ -1275,16 +1277,24 @@ where summation over repeating indices is implied, so that
                    +(\zeta-\eta)\,\dot{\epsilon}_{22} - \frac{P}{2} \\
      \sigma_{22} &= (\zeta-\eta)\,\dot{\epsilon}_{11}
                    +(\zeta+\eta)\,\dot{\epsilon}_{22} - \frac{P}{2} \\
+     \sigma_{12} &= 2\eta\,\dot{\epsilon}_{12}.
+   \end{aligned}
+
+In the code, we often use this combination of the diagnonal terms (global
+variables :varlink:`seaice_sigma1` and :varlink:`seaice_sigma2`):
+
+.. math::
+   \begin{aligned}
      \sigma_{+} =
      \sigma_{11} + \sigma_{22} &= 2\zeta \left( \dot{\epsilon}_{11}
                    + \dot{\epsilon}_{22} \right) - P \\
      \sigma_{-} =
      \sigma_{11} - \sigma_{22} &= 2\eta  \left( \dot{\epsilon}_{11}
-                   +\dot{\epsilon}_{22} \right) \\
-     \sigma_{12} &= 2\eta\,\dot{\epsilon}_{12}.
+                   +\dot{\epsilon}_{22} \right).
    \end{aligned}
 
-The divergence of this tensor can be written as
+The divergence of the tensor :math:`\mathbf{\sigma}` in terms of these
+physical components can be written as
 
 ..
    \begin{aligned}
@@ -1309,34 +1319,67 @@ The divergence of this tensor can be written as
 
 .. math::
    \begin{aligned}
-     \mathrm{div}\,\sigma
-     &= \frac{1}{h_{\alpha}h_{\beta}}\biggl\{
-     \partial_{\alpha}
-       \left(h_{\beta}\sigma_{\gamma\alpha}\vec{e}_{\gamma}\right)
-     + \partial_{\beta}
-       \left(h_{\alpha} \sigma_{\gamma\beta} \vec{e}_{\gamma}\right)
+     \mathrm{div}\,\mathbf{\sigma}
+     &= \frac{1}{h_{1}h_{2}} \partial_{\alpha}
+     \left(\frac{h_{1}h_{2}}{h_{\alpha}} \sigma_{\alpha\beta}
+     \,\vec{e}_{\beta}\right) \\
+     &= \frac{1}{h_{1}h_{2}} \biggl\{
+       \partial_{1} \left(h_{2} \sigma_{1\beta} \,\vec{e}_{\beta}\right)
+     + \partial_{2} \left(h_{1} \sigma_{2\beta} \,\vec{e}_{\beta}\right)
      \biggr\} \\
-     &= \frac{1}{h_{\alpha}h_{\beta}}\biggl\{
-       \partial_{\alpha}
-       \left(h_{\beta} \sigma_{\gamma\alpha}\right)\,\vec{e}_{\gamma}
-     + \partial_{\beta}
-       \left(h_{\alpha}\sigma_{\gamma\beta}\right) \,\vec{e}_{\gamma}
-     \\ &\phantom{=\frac{1}{h_{\alpha}h_{\beta}}\biggl\{}
-     + h_{\beta} \sigma_{\gamma\alpha}\partial_{\alpha}\vec{e}_{\gamma}
-     + h_{\alpha}\sigma_{\gamma\beta} \partial_{\beta} \vec{e}_{\gamma}
+     &= \frac{1}{h_{1}h_{2}}\biggl\{
+       \bigl[ \partial_{1} \left(h_{2} \sigma_{1\beta}\right)
+            + \partial_{2} \left(h_{1} \sigma_{2\beta}\right)
+       \bigr]\,\vec{e}_{\beta}
+     \\ &\phantom{=\frac{1}{h_{1}h_{2}}\biggl\{}
+     + h_{2} \sigma_{1\beta} \partial_{1} \vec{e}_{\beta}
+     + h_{1} \sigma_{2\beta} \partial_{2} \vec{e}_{\beta}
      \biggr\},
+   \end{aligned}
+   :label: eq_div_sigma_tensor_general
+
+where :math:`h_{1}`, :math:`h_{2}`, :math:`h_{\alpha}` are scale factors and
+:math:`\vec{e}_{\beta}` are the orthogonal basis vectors, which also need to be
+differentiated. The summation over repeating indices is implied and the
+differentiation is with respect to curvilinear coordinates
+:math:`q_{\alpha}=x_{\alpha}/h_{\alpha}`.
+
+To compute the physical components of the divergence to be used in momentum
+equations we multiply :eq:`eq_div_sigma_tensor_general` by the basis vector
+:math:`\vec{e}_{\beta}` and use :math:`\sigma_{12}=\sigma_{21}` to get
+
+.. math::
+   \begin{aligned}
+     \left(\mathrm{div}\,\mathbf{\sigma}\right) \cdot \vec{e}_{1}
+     &= \frac{1}{h_{1}h_{2}}\biggl\{
+              \partial_{1} \left(h_{2} \sigma_{11}\right)
+            + \partial_{2} \left(h_{1} \sigma_{12}\right)
+     + \sigma_{12} \partial_{2} h_{1} - \sigma_{22} \partial_{1} h_{2}
+     \biggr\} \\
+     &= \frac{1}{h_{1}h_{2}}\biggl[
+              \partial_{1} \left(h_{2} \sigma_{11}\right)
+            + \partial_{2} \left(h_{1} \sigma_{12}\right)
+     \biggr]
+     + k_{2} \sigma_{12} - k_{1} \sigma_{22}, \\
+     \left(\mathrm{div}\,\mathbf{\sigma}\right) \cdot \vec{e}_{2}
+     &= \frac{1}{h_{1}h_{2}}\biggl\{
+              \partial_{1} \left(h_{2} \sigma_{12}\right)
+            + \partial_{2} \left(h_{1} \sigma_{22}\right)
+     + \sigma_{12} \partial_{1} h_{2} - \sigma_{11} \partial_{2} h_{1}
+     \biggr\} \\
+     &= \frac{1}{h_{1}h_{2}}\biggl[
+              \partial_{1} \left(h_{2} \sigma_{12}\right)
+            + \partial_{2} \left(h_{1} \sigma_{22}\right)
+     \biggr]
+     + k_{1} \sigma_{12} - k_{2} \sigma_{11}.
    \end{aligned}
    :label: eq_div_sigma_tensor
 
-where :math:`h_{\alpha}` is the metric length of direction :math:`\alpha` and
-:math:`\vec{e}_{\gamma}` are the canonical unit vectors, which also need to be
-differentiated. The summation over :math:`\gamma` index is implied (but not
-:math:`\alpha` or :math:`\beta`). The stress tensor divergence is discretized
+The terms in the square brackets in :eq:`eq_div_sigma_tensor` are discretized
 in finite volumes. This conveniently avoids dealing with some (but not all) of
-the metric terms, as these are "hidden" in the differential cell widths (first
-two terms in flux form in :eq:`eq_div_sigma_tensor`). Extra metric terms still
-appear because of the differentiation of the unit vectors (last two termns in
-:eq:`eq_div_sigma_tensor`). These are
+the metric terms, as these are "hidden" in the differential cell widths. Extra
+metric terms still appear because of the differentiation of the orthonormal
+basis vectors (last two terms in :eq:`eq_div_sigma_tensor`). These are
 
 .. math::
    \begin{aligned}
@@ -1421,17 +1464,18 @@ conditions (:math:`u_{i,j-1}+u_{i,j}=0` and :math:`v_{i-1,j}+v_{i,j}=0` across
 boundaries) are implemented via “ghost-points”; for free slip boundary
 conditions :math:`(\epsilon_{12})^Z=0` on boundaries.
 
-Without the extra metric terms :eq:`eq_si_extrametricterms`, the stress tensor
-divergence :math:`(\nabla\sigma)_{\alpha} = \partial_{\beta}
-(h_{\beta}\sigma_{\alpha\beta})`, discretized in finite volumes for the
-:math:`u`-equation (:math:`\alpha=1`) is:
+Disregarding the extra metric terms :eq:`eq_si_extrametricterms` for now, the
+stress tensor divergence terms in square brackets in :eq:`eq_div_sigma_tensor`
+are discretized in finite volumes, where the :math:`\Delta{x}` and
+:math:`\Delta{y}` already contain the scale factors implicitly with
+:math:`dx_i=h_idq_i`:
 
 .. math::
    \begin{aligned}
-     (\nabla\sigma)_{1}: \phantom{=}&
+     (\mathrm{div}\sigma)_{1}: \phantom{=}&
      \frac{1}{A_{i,j}^w}
-     \int_{\mathrm{cell}}(\partial_1\sigma_{11}+\partial_2\sigma_{21})
-     \,dx_1\,dx_2  \\\notag
+     \int_{\mathrm{cell}}(\partial_1 h_2 \sigma_{11}+\partial_2 h_1 \sigma_{21})
+     \,dq_1\,dq_2  \\\notag
      =& \frac{1}{A_{i,j}^w} \biggl\{
      \int_{x_2}^{x_2+\Delta{x}_2}\sigma_{11}dx_2\biggl|_{x_{1}}^{x_{1}
      +\Delta{x}_{1}}
@@ -1449,7 +1493,28 @@ divergence :math:`(\nabla\sigma)_{\alpha} = \partial_{\beta}
      \phantom{=}& \phantom{\frac{1}{A_{i,j}^w} \biggl\{}
      + (\Delta{x}_1\sigma_{21})_{i,j+1}^Z - (\Delta{x}_1\sigma_{21})_{i,j}^Z
      \biggr\}
-     \end{aligned}
+     \\
+     (\mathrm{div}\sigma)_{2}: \phantom{=}&
+     \frac{1}{A_{i,j}^s}
+     \int_{\mathrm{cell}}(\partial_1 h_2 \sigma_{12}+\partial_2 h_1 \sigma_{22})
+     \,dq_1\,dq_2 \\\notag
+     =& \frac{1}{A_{i,j}^s} \biggl\{
+     \int_{x_2}^{x_2+\Delta{x}_2}\sigma_{12}dx_2\biggl|_{x_{1}}^{x_{1}
+     +\Delta{x}_{1}}
+     + \int_{x_1}^{x_1+\Delta{x}_1}\sigma_{22}dx_1\biggl|_{x_{2}}^{x_{2}
+     +\Delta{x}_{2}}
+     \biggr\} \\ \notag
+     \approx& \frac{1}{A_{i,j}^s} \biggl\{
+     \Delta{x}_2\sigma_{12}\biggl|_{x_{1}}^{x_{1}+\Delta{x}_{1}}
+     + \Delta{x}_1\sigma_{22}\biggl|_{x_{2}}^{x_{2}+\Delta{x}_{2}}
+     \biggr\} \\ \notag
+     =& \frac{1}{A_{i,j}^s} \biggl\{
+     (\Delta{x}_2\sigma_{12})_{i+1,j}^Z - (\Delta{x}_2\sigma_{12})_{i,j}^Z
+     \\ \notag
+     \phantom{=}& \phantom{\frac{1}{A_{i,j}^s} \biggl\{}
+     + (\Delta{x}_1\sigma_{22})_{i,j}^C - (\Delta{x}_1\sigma_{22})_{i,j-1}^C
+     \biggr\}
+   \end{aligned}
 
 with
 
@@ -1474,38 +1539,7 @@ with
      k_{2,i,j}^{Z}\frac{u_{i,j}+u_{i,j-1}}{2} \\ \notag
      & - \Delta{x}_{i,j}^{V}\overline{\eta}^{Z}_{i,j}
      k_{1,i,j}^{Z}\frac{v_{i,j}+v_{i-1,j}}{2}
-   \end{aligned}
-
-Similarly, we have for the :math:`v`-equation (:math:`\alpha=2`):
-
-.. math::
-   \begin{aligned}
-     (\nabla\sigma)_{2}: \phantom{=}&
-     \frac{1}{A_{i,j}^s}
-     \int_{\mathrm{cell}}(\partial_1\sigma_{12}+\partial_2\sigma_{22})
-     \,dx_1\,dx_2 \\\notag
-     =& \frac{1}{A_{i,j}^s} \biggl\{
-     \int_{x_2}^{x_2+\Delta{x}_2}\sigma_{12}dx_2\biggl|_{x_{1}}^{x_{1}
-     +\Delta{x}_{1}}
-     + \int_{x_1}^{x_1+\Delta{x}_1}\sigma_{22}dx_1\biggl|_{x_{2}}^{x_{2}
-     +\Delta{x}_{2}}
-     \biggr\} \\ \notag
-     \approx& \frac{1}{A_{i,j}^s} \biggl\{
-     \Delta{x}_2\sigma_{12}\biggl|_{x_{1}}^{x_{1}+\Delta{x}_{1}}
-     + \Delta{x}_1\sigma_{22}\biggl|_{x_{2}}^{x_{2}+\Delta{x}_{2}}
-     \biggr\} \\ \notag
-     =& \frac{1}{A_{i,j}^s} \biggl\{
-     (\Delta{x}_2\sigma_{12})_{i+1,j}^Z - (\Delta{x}_2\sigma_{12})_{i,j}^Z
-     \\ \notag
-     \phantom{=}& \phantom{\frac{1}{A_{i,j}^s} \biggl\{}
-     + (\Delta{x}_1\sigma_{22})_{i,j}^C - (\Delta{x}_1\sigma_{22})_{i,j-1}^C
-     \biggr\}
-   \end{aligned}
-
-with
-
-.. math::
-   \begin{aligned}
+     \\
      (\Delta{x}_1\sigma_{12})_{i,j}^Z =& \phantom{+}
      \Delta{y}_{i,j}^{U}\overline{\eta}^{Z}_{i,j}
      \frac{u_{i,j}-u_{i,j-1}}{\Delta{y}_{i,j}^{U}}
@@ -1535,16 +1569,16 @@ The extra metric terms in :eq:`eq_si_extrametricterms` involve averages:
    \begin{aligned}
      u:\quad k_2\sigma_{12} - k_1\sigma_{22} &\approx
        k_{2,i,j}^{U}\frac{(\sigma_{12}^{Z})_{i,j}+(\sigma_{12}^{Z})_{i,j+1}}{2}
-     - k_{1,i,j}^{U}\frac{(\sigma_{22}^{C})_{i,j}+(\sigma_{22}^{C})_{i-1,j}}{2}
+     - k_{1,i,j}^{U}\frac{(\sigma_{22}^{C})_{i,j}+(\sigma_{22}^{C})_{i-1,j}}{2},
        \\
      v:\quad k_1\sigma_{12} - k_2\sigma_{11} &\approx
        k_{1,i,j}^{V}\frac{(\sigma_{12}^{Z})_{i,j}+(\sigma_{12}^{Z})_{i+1,j}}{2}
-     - k_{2,i,j}^{V}\frac{(\sigma_{11}^{C})_{i,j}+(\sigma_{11}^{C})_{i,j-1}}{2}
+     - k_{2,i,j}^{V}\frac{(\sigma_{11}^{C})_{i,j}+(\sigma_{11}^{C})_{i,j-1}}{2}.
    \end{aligned}
 
-that are added most easily to the right-hand-sides of the momentum equations.
-Again, no-slip boundary conditions are realized via ghost points and
-:math:`u_{i,j-1}+u_{i,j}=0` and :math:`v_{i-1,j}+v_{i,j}=0` across
+These terms are added most easily to the right-hand-sides of the momentum
+equations. Again, no-slip boundary conditions are realized via ghost points
+and :math:`u_{i,j-1}+u_{i,j}=0` and :math:`v_{i-1,j}+v_{i,j}=0` across
 boundaries. For free-slip boundary conditions the lateral stress is set to
 zeros. In analogy to :math:`(\epsilon_{12})^Z=0` on boundaries, we set
 :math:`\sigma_{21}^{Z}=0`, or equivalently :math:`\eta_{i,j}^{Z}=0`, on
