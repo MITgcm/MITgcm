@@ -2,28 +2,28 @@
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      subroutine ctrl_init_rec(
+      SUBROUTINE CTRL_INIT_REC(
      I     fldname,
      I     fldstartdate1, fldstartdate2, fldperiod, nfac,
      O     fldstartdate, diffrec, startrec, endrec,
-     I     mythid )
+     I     myThid )
 
-c     ==================================================================
-c     SUBROUTINE ctrl_init_rec
-c     ==================================================================
-c
-c     helper routine to compute the first and last record of a
-c     time dependent control variable
-c
-c     Martin.Losch@awi.de, 2011-Mar-15
-c
-c     ==================================================================
-c     SUBROUTINE ctrl_init_rec
-c     ==================================================================
+C     ==================================================================
+C     SUBROUTINE CTRL_INIT_REC
+C     ==================================================================
+C
+C     helper routine to compute the first and last record of a
+C     time dependent control variable
+C
+C     Martin.Losch@awi.de, 2011-Mar-15
+C
+C     ==================================================================
+C     SUBROUTINE CTRL_INIT_REC
+C     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
-c     == global variables ==
+C     == global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -31,98 +31,98 @@ c     == global variables ==
 # include "cal.h"
 #endif
 
-c     == input variables ==
-c     fldstartdate1/2 : start time (date/time) of fld
-c     fldperod        : sampling interval of fld
-c     nfac            : factor for the case that fld is an obcs variable
-c                       in this case nfac = 4, otherwise nfac = 1
-c     mythid          : thread ID of this instance
-      character*(*) fldname
-      integer fldstartdate1
-      integer fldstartdate2
+C     == input variables ==
+C     fldstartdate1/2 :: start time (date/time) of fld
+C     fldperod        :: sampling interval of fld
+C     nfac            :: factor for the case that fld is an obcs variable
+C                        in this case nfac = 4, otherwise nfac = 1
+C     myThid          :: my thread Id number
+      CHARACTER*(*) fldname
+      INTEGER fldstartdate1
+      INTEGER fldstartdate2
       _RL     fldperiod
-      integer nfac
-      integer mythid
+      INTEGER nfac
+      INTEGER myThid
 
-c     == output variables ==
-c     fldstartdate : full date from fldstartdate1 and 2
-c     startrec     : first record of ctrl variable
-c     startrec     : last record of ctrl variable
-c     diffrec      : difference between first and last record of ctrl variable
-      integer fldstartdate(4)
-      integer startrec
-      integer endrec
-      integer diffrec
+C     == output variables ==
+C     fldstartdate :: full date from fldstartdate1 and 2
+C     startrec     :: first record of ctrl variable
+C     startrec     :: last record of ctrl variable
+C     diffrec      :: difference between first and last record of ctrl variable
+      INTEGER fldstartdate(4)
+      INTEGER startrec
+      INTEGER endrec
+      INTEGER diffrec
 
-c     == local variables ==
-      integer i
+C     == functions ==
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
+C     == local variables ==
+      INTEGER i
 #ifdef ALLOW_CAL
-      integer difftime(4)
+      INTEGER difftime(4)
       INTEGER modelBaseDate(4)
       _RL     diffsecs
 #endif /* ALLOW_CAL */
-      character*(max_len_mbuf) msgbuf
-      integer il
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER il
 
-c     == functions ==
-      integer  ilnblnk
-      external ilnblnk
-
-      if ( debugLevel .GE. debLevB ) then
-       il=ilnblnk(fldname)
+      IF ( debugLevel .GE. debLevB ) THEN
+       il = ILNBLNK(fldname)
        WRITE( msgBuf,'(A,A)')
      &     'CTRL_INIT_REC: Getting record indices for ',fldname(1:il)
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &      SQUEEZE_RIGHT , myThid )
-      endif
+     &                     SQUEEZE_RIGHT, myThid )
+      ENDIF
 
-c     initialise some output
-      do i = 1,4
+C     initialise some output
+      DO i = 1,4
        fldstartdate(i) = 0
-      end do
+      ENDDO
       startrec = 0
       endrec   = 0
       diffrec  = 0
-      if ( fldperiod .EQ. -12. ) then
+      IF ( fldperiod .EQ. -12. ) THEN
        startrec = 1
        endrec   = 12*nfac
-      elseif ( fldperiod .EQ. 0. ) then
+      ELSEIF ( fldperiod .EQ. 0. ) THEN
        startrec = 1
        endrec   = 1*nfac
 # ifdef ALLOW_CAL
       ELSEIF ( useCAL ) THEN
-       call cal_FullDate( startdate_1, startdate_2,
-     &                        modelBaseDate , mythid )
-       call cal_FullDate( fldstartdate1, fldstartdate2,
-     &                        fldstartdate , mythid )
-       call cal_TimePassed( modelBaseDate, fldstartdate,
-     &                           difftime, mythid )
-       call cal_ToSeconds ( difftime, diffsecs, mythid )
+       CALL cal_FullDate( startdate_1, startdate_2,
+     &                        modelBaseDate , myThid )
+       CALL cal_FullDate( fldstartdate1, fldstartdate2,
+     &                        fldstartdate , myThid )
+       CALL cal_TimePassed( modelBaseDate, fldstartdate,
+     &                           difftime, myThid )
+       CALL cal_ToSeconds ( difftime, diffsecs, myThid )
        startrec = int((modelstart - diffsecs)/fldperiod) + 1
        endrec   = int((modelend   - diffsecs + modelstep/2)
      &                                       /fldperiod) + 2
-       if ( nfac .ne. 1 ) then
-c     This is the case of obcs.
+       IF ( nfac .NE. 1 ) THEN
+C     This is the case of obcs.
         startrec = (startrec - 1)*nfac + 1
         endrec   = endrec*nfac
-       endif
+       ENDIF
 #endif /* ALLOW_CAL */
       ELSE
        startrec = 1
        endrec   = (int((endTime - startTime)/fldperiod) + 1)*nfac
-      endif
+      ENDIF
       diffrec  = endrec - startrec + 1
 
-      if ( debugLevel .GE. debLevB ) then
+      IF ( debugLevel .GE. debLevB ) THEN
        WRITE( msgBuf,'(A,A,A)')
      &      'CTRL_INIT_REC: Record indices for ',fldname(1:il),':'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &      SQUEEZE_RIGHT , myThid )
+     &                     SQUEEZE_RIGHT, myThid )
        WRITE( msgBuf,'(A,I10,A,I10)')
      &      'CTRL_INIT_REC: startrec = ',startrec,', endrec = ',endrec
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &      SQUEEZE_RIGHT , myThid )
-      endif
+     &                     SQUEEZE_RIGHT, myThid )
+      ENDIF
 
-      return
-      end
+      RETURN
+      END
