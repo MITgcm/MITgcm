@@ -44,6 +44,7 @@ C     myThid     :: Thread number for this instance of the routine.
 #ifdef ALLOW_COST
 C     !LOCAL VARIABLES:
       INTEGER bi, bj
+      CHARACTER*9  til9c
 #ifndef ALLOW_OPENAD
       CHARACTER*(26) cfname
 #endif
@@ -83,8 +84,9 @@ ccc        end do
 C--   Sum up all contributions.
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        WRITE(standardMessageUnit,'(A,1PE22.14,1X,1PE9.2)')
-     &       ' --> objf_shelfice(bi,bj) = ',
+        WRITE(til9c,'(2(A,I3),A)') '=', bi, ',', bj, ')'
+        WRITE(standardMessageUnit,'(3A,1PE22.14,1X,1PE9.2)')
+     &       ' --> objf_shelfice (bi,bj', til9c, ' =',
      &       objf_shelfice(bi,bj), mult_shelfice
         tile_fc(bi,bj) = tile_fc(bi,bj)
      &       + mult_shelfice * objf_shelfice(bi,bj)
