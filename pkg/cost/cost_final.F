@@ -164,27 +164,27 @@ C--   Sum up all other contributions.
         WRITE(til9c,'(2(A,I3),A)') '=', bi, ',', bj, ')'
 
 #ifdef ALLOW_COST_TEST
-        WRITE(UNIT=ioUnit,'(3A,1PE22.14,1X,1PE9.2)')
+        WRITE(ioUnit,'(3A,1PE22.14,1X,1PE9.2)')
      &       ' --> objf_test     (bi,bj', til9c, ' =',
      &       objf_test(bi,bj), mult_test
 #endif
 #ifdef ALLOW_COST_TRACER
-        WRITE(UNIT=ioUnit,'(3A,1PE22.14,1X,1PE9.2)')
+        WRITE(ioUnit,'(3A,1PE22.14,1X,1PE9.2)')
      &       ' --> objf_tracer   (bi,bj', til9c, ' =',
      &       objf_tracer(bi,bj), mult_tracer
 #endif
 #ifdef ALLOW_COST_ATLANTIC_HEAT
-        WRITE(UNIT=ioUnit,'(3A,1PE22.14,1X,1PE9.2)')
+        WRITE(ioUnit,'(3A,1PE22.14,1X,1PE9.2)')
      &       ' --> objf_atl      (bi,bj', til9c, ' =',
      &       objf_atl(bi,bj), mult_atl
 #endif
 #ifdef ALLOW_COST_TEMP
-        WRITE(UNIT=ioUnit,'(3A,1PE22.14,1X,1PE9.2)')
+        WRITE(ioUnit,'(3A,1PE22.14,1X,1PE9.2)')
      &       ' --> objf_temp_tut (bi,bj', til9c, ' =',
      &       objf_temp_tut(bi,bj), mult_temp_tut
 #endif
 #ifdef ALLOW_COST_HFLUXM
-        WRITE(UNIT=ioUnit,'(3A,1PE22.14,1X,1PE9.2)')
+        WRITE(ioUnit,'(3A,1PE22.14,1X,1PE9.2)')
      &       ' --> objf_hflux_tut(bi,bj', til9c, ' =',
      &       objf_hflux_tut(bi,bj), mult_hflux_tut
 #endif
@@ -234,7 +234,7 @@ Cph-- quickly for testing
      &      'Writing global cost function info to ', cfname
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
        OPEN(UNIT=ifc,FILE=cfname)
-       WRITE(UNIT=ifc,'(A,1PE22.14)') 'fc =', fc
+       WRITE(ifc,'(A,1PE22.14)') 'fc =', fc
 C     Collect and copy other cost function contributions in a separate
 C     file to hide irreducible statements from TAF
        CALL COST_COPY_FILE( ifc, optimcycle, myThid )
