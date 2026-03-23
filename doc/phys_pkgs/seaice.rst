@@ -577,12 +577,40 @@ viscous-plastic (VP) constitutive law:
    - \frac{P}{2}\delta_{ij}
    :label: eq_vpequation
 
+so that
+
+.. math::
+   \begin{aligned}
+     \sigma_{11} &= (\zeta+\eta)\,\dot{\epsilon}_{11}
+                   +(\zeta-\eta)\,\dot{\epsilon}_{22} - \frac{P}{2} \\
+     \sigma_{22} &= (\zeta-\eta)\,\dot{\epsilon}_{11}
+                   +(\zeta+\eta)\,\dot{\epsilon}_{22} - \frac{P}{2} \\
+     \sigma_{12} &= 2\eta\,\dot{\epsilon}_{12}.
+   \end{aligned}
+
+In the code, we often use this combination of the diagnonal terms (global
+variables :varlink:`seaice_sigma1` and :varlink:`seaice_sigma2`):
+
+.. math::
+   \begin{aligned}
+     \sigma_{+} =
+     \sigma_{11} + \sigma_{22} &= 2\zeta \left( \dot{\epsilon}_{11}
+                   + \dot{\epsilon}_{22} \right) - P \\
+     \sigma_{-} =
+     \sigma_{11} - \sigma_{22} &= 2\eta  \left( \dot{\epsilon}_{11}
+                   +\dot{\epsilon}_{22} \right).
+   \end{aligned}
+
 The ice strain rate is given by
 
 .. math::
    \dot{\epsilon}_{ij} = \frac{1}{2}\left(
        \frac{\partial{u_{i}}}{\partial{x_{j}}} +
        \frac{\partial{u_{j}}}{\partial{x_{i}}}\right)
+       + \text{ metric terms.}
+
+See section :numref:`para_phys_pkg_seaice_discretization` for details on the
+metric terms.
 
 The maximum ice pressure :math:`P_{\max}` (variable :varlink:`PRESS0` in the
 code), a measure of ice strength, depends on both thickness :math:`h` and
@@ -1255,98 +1283,51 @@ the stress formulation of Hibler and Bryan (1987) :cite:`hibler:87`, set
 
 .. _para_phys_pkg_seaice_discretization:
 
-
 Finite-volume discretization of the stress tensor divergence
 ------------------------------------------------------------
 
 The physical components of the stress tensor are given by the constitutive
-viscous-plastic relation
+viscous-plastic relation :eq:`eq_vpequation`
 
 .. math::
-      \sigma_{\alpha\beta} = 2\eta\,\dot{\epsilon}_{\alpha\beta} +
-      \left[(\zeta-\eta)\,\dot{\epsilon}_{\gamma\gamma}
-      - \frac{P}{2} \right]\delta_{\alpha\beta},
+      \sigma_{ij} = 2\eta\,\dot{\epsilon}_{ij} +
+      \left[(\zeta-\eta)\,(\dot{\epsilon}_{11}+\dot{\epsilon}_{22})
+      - \frac{P}{2} \right]\delta_{ij},
    :label: eq_sigma_tensor
 
-where summation over repeating directional indices :math:`\alpha,\beta \in
-[1,2]` is implied, so that
-
-.. math::
-   \begin{aligned}
-     \sigma_{11} &= (\zeta+\eta)\,\dot{\epsilon}_{11}
-                   +(\zeta-\eta)\,\dot{\epsilon}_{22} - \frac{P}{2} \\
-     \sigma_{22} &= (\zeta-\eta)\,\dot{\epsilon}_{11}
-                   +(\zeta+\eta)\,\dot{\epsilon}_{22} - \frac{P}{2} \\
-     \sigma_{12} &= 2\eta\,\dot{\epsilon}_{12}.
-   \end{aligned}
-
-In the code, we often use this combination of the diagnonal terms (global
-variables :varlink:`seaice_sigma1` and :varlink:`seaice_sigma2`):
-
-.. math::
-   \begin{aligned}
-     \sigma_{+} =
-     \sigma_{11} + \sigma_{22} &= 2\zeta \left( \dot{\epsilon}_{11}
-                   + \dot{\epsilon}_{22} \right) - P \\
-     \sigma_{-} =
-     \sigma_{11} - \sigma_{22} &= 2\eta  \left( \dot{\epsilon}_{11}
-                   +\dot{\epsilon}_{22} \right).
-   \end{aligned}
-
-The divergence of the tensor :math:`\mathbf{\sigma}` in terms of these
-physical components can be written as
-
-..
-   \begin{aligned}
-     \mathrm{div}\,\sigma
-     &= \frac{1}{h_{\alpha}h_{\beta}}\biggl\{
-       \partial_{\alpha}
-       \left(h_{\alpha}\sigma_{\gamma\alpha}\vec{e}_{\gamma}\right)
-     + \partial_{\beta}
-       \left(h_{\beta}\sigma_{\gamma\beta}\vec{e}_{\gamma}\right)
-     \biggr\} \\
-     &= \frac{1}{h_{\alpha}h_{\beta}}\biggl\{
-       \partial_{\alpha}
-       \left(h_{\alpha}\sigma_{\gamma\alpha}\right)\vec{e}_{\gamma}
-     + \partial_{\beta}
-       \left(h_{\beta}\sigma_{\gamma\beta}\right)\vec{e}_{\gamma} \\
-     &\phantom{=\frac{1}{h_{\alpha}h_{\beta}}\biggl\{}
-     + h_{\alpha}\sigma_{\gamma\alpha}\partial_{\alpha}\vec{e}_{\gamma}
-     + h_{\beta} \sigma_{\gamma\beta} \partial_{\beta} \vec{e}_{\gamma}
-       \biggr\},
-   \end{aligned}
-   :label: eq_div_sigma_tensor
+with :math:`i,j\in [1,2]`. The divergence of the tensor :math:`\mathbf{\sigma}`
+in terms of these physical components can be written as
 
 .. math::
    \begin{aligned}
      \mathrm{div}\,\mathbf{\sigma}
-     &= \frac{1}{h_{1}h_{2}} \partial_{\alpha}
-     \left(\frac{h_{1}h_{2}}{h_{\alpha}} \sigma_{\alpha\beta}
-     \,\vec{e}_{\beta}\right) \\
+     &= \frac{1}{h_{1}h_{2}} \partial_{i}
+     \left(\frac{h_{1}h_{2}}{h_{i}} \sigma_{ij}
+     \,\vec{e}_{j}\right) \\
      &= \frac{1}{h_{1}h_{2}} \biggl\{
-       \partial_{1} \left(h_{2} \sigma_{1\beta} \,\vec{e}_{\beta}\right)
-     + \partial_{2} \left(h_{1} \sigma_{2\beta} \,\vec{e}_{\beta}\right)
+       \partial_{1} \left(h_{2} \sigma_{1j} \,\vec{e}_{j}\right)
+     + \partial_{2} \left(h_{1} \sigma_{2j} \,\vec{e}_{j}\right)
      \biggr\} \\
      &= \frac{1}{h_{1}h_{2}}\biggl\{
-       \bigl[ \partial_{1} \left(h_{2} \sigma_{1\beta}\right)
-            + \partial_{2} \left(h_{1} \sigma_{2\beta}\right)
-       \bigr]\,\vec{e}_{\beta}
+       \bigl[ \partial_{1} \left(h_{2} \sigma_{1j}\right)
+            + \partial_{2} \left(h_{1} \sigma_{2j}\right)
+       \bigr]\,\vec{e}_{j}
      \\ &\phantom{=\frac{1}{h_{1}h_{2}}\biggl\{}
-     + h_{2} \sigma_{1\beta} \partial_{1} \vec{e}_{\beta}
-     + h_{1} \sigma_{2\beta} \partial_{2} \vec{e}_{\beta}
+     + h_{2} \sigma_{1j} \partial_{1} \vec{e}_{j}
+     + h_{1} \sigma_{2j} \partial_{2} \vec{e}_{j}
      \biggr\},
    \end{aligned}
    :label: eq_div_sigma_tensor_general
 
-where :math:`h_{1}`, :math:`h_{2}`, :math:`h_{\alpha}` are scale factors and
-:math:`\vec{e}_{\beta}` are the orthogonal basis vectors, which also need to be
+where :math:`h_{1}`, :math:`h_{2}`, :math:`h_{i}` are scale factors and
+:math:`\vec{e}_{j}` are the orthogonal basis vectors, which also need to be
 differentiated. The summation over repeating indices is implied and the
 differentiation is with respect to curvilinear coordinates
-:math:`q_{\alpha}=x_{\alpha}/h_{\alpha}`.
+:math:`q_{i}=x_{i}/h_{i}`.
 
-To compute the physical components of the divergence to be used in momentum
+To compute the physical components of the divergence to be used in the momentum
 equations we multiply :eq:`eq_div_sigma_tensor_general` by the basis vector
-:math:`\vec{e}_{\beta}` and use :math:`\sigma_{12}=\sigma_{21}` to get
+:math:`\vec{e}_{j}` and use :math:`\sigma_{12}=\sigma_{21}` to get
 
 .. math::
    \begin{aligned}
@@ -1387,40 +1368,6 @@ basis vectors (last two terms in :eq:`eq_div_sigma_tensor`). These are
      k_1\sigma_{12} - k_2\sigma_{11} &\quad \text{for the v-equation.}\\
    \end{aligned}
    :label: eq_si_extrametricterms
-
-The coefficients of the metric terms are defined as :math:`k_1 =
-(1/h_2)\,(\partial{h_2}/\partial{x_1})` and :math:`k_2 =
-(1/h_1)\,(\partial{h_1}/\partial{x_2})`.  For a spherical polar grid,
-they are :math:`k_{1}=0` and :math:`k_{2}=-\tan\phi/a`, with the
-spherical radius :math:`a` and the latitude :math:`\phi`;
-:math:`\Delta{x}_1 = \Delta{x} = a\cos\phi \Delta\lambda`, and
-:math:`\Delta{x}_2 = \Delta{y}=a\Delta\phi`. For a general orthogonal
-curvilinear grid, :math:`k_{1}` and :math:`k_{2}` can be approximated
-by finite differences of the cell widths of the Arakawa C_grid:
-
-.. math::
-   \begin{aligned}
-     k_{1,i,j}^{C} &= \frac{1}{\Delta{y}_{i,j}^{F}}
-     \frac{\Delta{y}_{i+1,j}^{G}-\Delta{y}_{i,j}^{G}}{\Delta{x}_{i,j}^{F}},
-     \quad
-     k_{2,i,j}^{C}  = \frac{1}{\Delta{x}_{i,j}^{F}}
-     \frac{\Delta{x}_{i,j+1}^{G}-\Delta{x}_{i,j}^{G}}{\Delta{y}_{i,j}^{F}} \\
-     k_{1,i,j}^{U} &= \frac{1}{\Delta{y}_{i,j}^{G}}
-     \frac{\Delta{y}_{i,j}^{F}-\Delta{y}_{i-1,j}^{F}}{\Delta{x}_{i,j}^{C}},
-     \quad
-     k_{2,i,j}^{U}  = \frac{1}{\Delta{x}_{i,j}^{C}}
-     \frac{\Delta{x}_{i,j+1}^{V}-\Delta{x}_{i,j}^{V}}{\Delta{y}_{i,j}^{G}} \\
-     k_{1,i,j}^{V} &= \frac{1}{\Delta{y}_{i,j}^{C}}
-     \frac{\Delta{y}_{i+1,j}^{U}-\Delta{y}_{i,j}^{U}}{\Delta{x}_{i,j}^{G}},
-     \quad
-     k_{2,i,j}^{V}  = \frac{1}{\Delta{x}_{i,j}^{G}}
-     \frac{\Delta{x}_{i,j}^{F}-\Delta{x}_{i,j-1}^{F}}{\Delta{y}_{i,j}^{C}} \\
-     k_{1,i,j}^{Z} &= \frac{1}{\Delta{y}_{i,j}^{U}}
-     \frac{\Delta{y}_{i,j}^{C}-\Delta{y}_{i-1,j}^{C}}{\Delta{x}_{i,j}^{V}},
-     \quad
-     k_{2,i,j}^{Z}  = \frac{1}{\Delta{x}_{i,j}^{V}}
-     \frac{\Delta{x}_{i,j}^{C}-\Delta{x}_{i,j-1}^{C}}{\Delta{y}_{i,j}^{U}}
-   \end{aligned}
 
 On an Arakawa C grid, ice thickness and concentration and thus ice strength
 :math:`P` and bulk and shear viscosities :math:`\zeta` and :math:`\eta` are
@@ -1463,6 +1410,39 @@ C-points and the symmetric off-diagonal term at Z-points.  No-slip boundary
 conditions (:math:`u_{i,j-1}+u_{i,j}=0` and :math:`v_{i-1,j}+v_{i,j}=0` across
 boundaries) are implemented via “ghost-points”; for free slip boundary
 conditions :math:`(\epsilon_{12})^Z=0` on boundaries.
+
+The coefficients of the metric terms are defined as :math:`k_1 =
+(1/h_2)\,(\partial{h_2}/\partial{x_1})` and :math:`k_2 =
+(1/h_1)\,(\partial{h_1}/\partial{x_2})`.  For a spherical polar grid, they are
+:math:`k_{1}=0` and :math:`k_{2}=-\tan\phi/a`, with the spherical radius
+:math:`a` and the latitude :math:`\phi`; :math:`\Delta{x}_1 = \Delta{x} =
+a\cos\phi \Delta\lambda`, and :math:`\Delta{x}_2 = \Delta{y}=a\Delta\phi`. For
+a general orthogonal curvilinear grid, :math:`k_{1}` and :math:`k_{2}` can be
+approximated by finite differences of the cell widths of the Arakawa C_grid:
+
+.. math::
+   \begin{aligned}
+     k_{1,i,j}^{C} &= \frac{1}{\Delta{y}_{i,j}^{F}}
+     \frac{\Delta{y}_{i+1,j}^{G}-\Delta{y}_{i,j}^{G}}{\Delta{x}_{i,j}^{F}},
+     \quad
+     k_{2,i,j}^{C}  = \frac{1}{\Delta{x}_{i,j}^{F}}
+     \frac{\Delta{x}_{i,j+1}^{G}-\Delta{x}_{i,j}^{G}}{\Delta{y}_{i,j}^{F}} \\
+     k_{1,i,j}^{U} &= \frac{1}{\Delta{y}_{i,j}^{G}}
+     \frac{\Delta{y}_{i,j}^{F}-\Delta{y}_{i-1,j}^{F}}{\Delta{x}_{i,j}^{C}},
+     \quad
+     k_{2,i,j}^{U}  = \frac{1}{\Delta{x}_{i,j}^{C}}
+     \frac{\Delta{x}_{i,j+1}^{V}-\Delta{x}_{i,j}^{V}}{\Delta{y}_{i,j}^{G}} \\
+     k_{1,i,j}^{V} &= \frac{1}{\Delta{y}_{i,j}^{C}}
+     \frac{\Delta{y}_{i+1,j}^{U}-\Delta{y}_{i,j}^{U}}{\Delta{x}_{i,j}^{G}},
+     \quad
+     k_{2,i,j}^{V}  = \frac{1}{\Delta{x}_{i,j}^{G}}
+     \frac{\Delta{x}_{i,j}^{F}-\Delta{x}_{i,j-1}^{F}}{\Delta{y}_{i,j}^{C}} \\
+     k_{1,i,j}^{Z} &= \frac{1}{\Delta{y}_{i,j}^{U}}
+     \frac{\Delta{y}_{i,j}^{C}-\Delta{y}_{i-1,j}^{C}}{\Delta{x}_{i,j}^{V}},
+     \quad
+     k_{2,i,j}^{Z}  = \frac{1}{\Delta{x}_{i,j}^{V}}
+     \frac{\Delta{x}_{i,j}^{C}-\Delta{x}_{i,j-1}^{C}}{\Delta{y}_{i,j}^{U}}
+   \end{aligned}
 
 Disregarding the extra metric terms :eq:`eq_si_extrametricterms` for now, the
 stress tensor divergence terms in square brackets in :eq:`eq_div_sigma_tensor`
