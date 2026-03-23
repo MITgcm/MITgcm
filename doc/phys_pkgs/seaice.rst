@@ -1591,6 +1591,11 @@ Thermodynamics
 
 **NOTE: THIS SECTION IS STILL NOT COMPLETE**
 
+.. _para_phys_pkg_seaice_zero_layer:
+
+Zero-layer thermodynamics
+-------------------------
+
 In its original formulation the sea ice model uses simple 0-layer
 thermodynamics following the appendix of Semtner (1976)
 :cite:`semtner:76`. This formulation neglects storage of heat, that is, the
@@ -1609,26 +1614,39 @@ Washington (1979) :cite:`parkinson:79` and Manabe et al. (1979)
 :cite:`manabe:79`. The resulting equation for surface temperature is
 
 .. math::
-   \begin{aligned}
-   \frac{K}{h}(T_{0}-T_{\rm fr}) &= Q_{\rm SW\downarrow}(1-\mathrm{albedo}) \\
-   & + \epsilon Q_{\rm LW\downarrow} - Q_{\rm LW\uparrow}(T_{0}) \\
-   & + Q_{\rm LH}(T_{0}) + Q_{\rm SH}(T_{0}),
-   \end{aligned}
+   \frac{K}{h}(T_{0}-T_{\rm fr}) = (1-\alpha)\,Q_{\mathrm{SW}\downarrow}
+   + Q_{\mathrm{LW}\downarrow} - Q_{\mathrm{LW}\uparrow}(T_{0})
+   + Q_{\mathrm{LH}}(T_{0}) + Q_{\mathrm{SH}}(T_{0}),
    :label: eq_zerolayerheatbalance
 
-where :math:`\epsilon` is the emissivity of the surface (snow or ice),
-:math:`Q_{\rm S/LW\downarrow}` the downwelling shortwave and longwave radiation to
-be prescribed, and :math:`Q_{\rm LW\uparrow}=\epsilon\sigma_B T_{0}^4` the emitted
-long wave radiation with the Stefan-Boltzmann constant :math:`\sigma_B`. With
-explicit expressions in :math:`T_0` for the turbulent fluxes of latent and
-sensible heat
+where :math:`\alpha` is the albedo and :math:`\epsilon` the emissivity of the
+surface (snow or ice), :math:`Q_{\mathrm{S/LW}\downarrow}` the downwelling
+shortwave and longwave radiation to be prescribed, and
+:math:`Q_{\mathrm{LW}\uparrow}=\epsilon\sigma_B T_{0}^4 +
+rQ_{\mathrm{LW}\downarrow}` the long wave exitance, i.e., the out-going long
+wave radiation, consisting of the emitted radiation with the Stefan-Boltzmann
+constant :math:`\sigma_B` and the reflection of the incoming longwave
+radiation. For conservation reasons, the reflectivity :math:`r = 1-\epsilon`,
+because the sum of emissivity, reflectivity, and transmissivity must be one,
+and transmissivity is zero in our case as long wave radiation does not
+penetrate the ice surface. The net longwave radiation (positive downward) then
+simplifies to
+
+.. math::
+   Q_{\mathrm{net}\downarrow}
+   = Q_{\mathrm{LW}\downarrow} - Q_{\mathrm{LW}\uparrow}(T_{0})
+   = \epsilon Q_{\mathrm{LW}\downarrow} - \epsilon\sigma_B T_{0}^4.
+   :label: eq_seaice_qnetdw
+
+With explicit expressions in :math:`T_0` for the turbulent fluxes of latent
+and sensible heat
 
 .. math::
    \begin{aligned}
-   Q_{\rm LH} &= \rho_\mathrm{air} C_E (\Lambda_v + \Lambda_f)
+   Q_{\mathrm{LH}} &= \rho_\mathrm{air} C_E (\Lambda_v + \Lambda_f)
    |\mathbf{U}_\mathrm{air}|
    \left[ q_\mathrm{air} - q_\mathrm{sat}(T_0)\right] \\
-   Q_{\rm SH} &= \rho_\mathrm{air} c_p C_E |\mathbf{U}_\mathrm{air}|
+   Q_{\mathrm{SH}} &= \rho_\mathrm{air} c_p C_E |\mathbf{U}_\mathrm{air}|
    \left[ T_\mathrm{10m} - T_{0} \right],
    \end{aligned}
 
@@ -1640,7 +1658,7 @@ coefficient for sensible and latent heat (parameter :varlink:`SEAICE_dalton`),
 :math:`\Lambda_v` and :math:`\Lambda_f` are the latent heat of vaporization and
 fusion, respectively (parameters :varlink:`SEAICE_lhEvap` and
 :varlink:`SEAICE_lhFusion`), and :math:`c_p` is the specific heat of air
-(parameter :varlink:`SEAICE_cpAir`). For the latent heat :math:`Q_{\rm LH}` a
+(parameter :varlink:`SEAICE_cpAir`). For the latent heat :math:`Q_{\rm LH}`, a
 choice can be made between the old polynomial expression for saturation
 humidity :math:`q_\mathrm{sat}(T_0)` (by setting
 :varlink:`useMaykutSatVapPoly` to ``.TRUE.``) and the default exponential
