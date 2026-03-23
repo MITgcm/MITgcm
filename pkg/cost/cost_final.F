@@ -58,7 +58,7 @@ C     dummy parameter for this unlikely case
 #endif
       INTEGER ifc
       INTEGER ioUnit
-      CHARACTER*9  til9c
+      CHARACTER*15 tile15c
       CHARACTER*17 cfname
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
@@ -158,34 +158,33 @@ Cgf : same idea as for ALLOW_COST_STATE_FINAL
 
 C--   Sum up all other contributions.
       loc_fc = 0.
-      til9c = ')        '
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        WRITE(til9c,'(2(A,I3),A)') '=', bi, ',', bj, ')'
+        WRITE(tile15c,'(2(A,I3),A)') '(bi,bj=', bi, ',', bj, ')'
 
 #ifdef ALLOW_COST_TEST
         WRITE(ioUnit,'(3A,1PE22.14,1X,1PE9.2)')
-     &       ' --> objf_test     (bi,bj', til9c, ' =',
+     &       ' --> objf_test     ', tile15c, ' =',
      &       objf_test(bi,bj), mult_test
 #endif
 #ifdef ALLOW_COST_TRACER
         WRITE(ioUnit,'(3A,1PE22.14,1X,1PE9.2)')
-     &       ' --> objf_tracer   (bi,bj', til9c, ' =',
+     &       ' --> objf_tracer   ', tile15c, ' =',
      &       objf_tracer(bi,bj), mult_tracer
 #endif
 #ifdef ALLOW_COST_ATLANTIC_HEAT
         WRITE(ioUnit,'(3A,1PE22.14,1X,1PE9.2)')
-     &       ' --> objf_atl      (bi,bj', til9c, ' =',
+     &       ' --> objf_atl      ', tile15c, ' =',
      &       objf_atl(bi,bj), mult_atl
 #endif
 #ifdef ALLOW_COST_TEMP
         WRITE(ioUnit,'(3A,1PE22.14,1X,1PE9.2)')
-     &       ' --> objf_temp_tut (bi,bj', til9c, ' =',
+     &       ' --> objf_temp_tut ', tile15c, ' =',
      &       objf_temp_tut(bi,bj), mult_temp_tut
 #endif
 #ifdef ALLOW_COST_HFLUXM
         WRITE(ioUnit,'(3A,1PE22.14,1X,1PE9.2)')
-     &       ' --> objf_hflux_tut(bi,bj', til9c, ' =',
+     &       ' --> objf_hflux_tut', tile15c, ' =',
      &       objf_hflux_tut(bi,bj), mult_hflux_tut
 #endif
 
