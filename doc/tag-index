@@ -1,6 +1,21 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/cost,ctrl,ecco,obcs:
+  - final cost-function always computed in "cost_final.F" (even if useECCO=T),
+    calling individual {PKG}_COST_FINAL, each writing its own "costfunction_*"
+    summary file. Similar changes in new "cost_driver.F", calling individual
+    pkg "{pkg}_cost_driver.F";
+  - make ctrl-cost (and obcs-ctrl-cost) available without pkg/ecco ; move all
+    obcs-cost S/R from pkg/ecco to pkg/obcs ; and move+rename "data_errfile"
+    (formerly in data.ecco) to "obcs_data_errfile" in "data.ctrl";
+  - retire ALLOW_COST_DEPTH (covered by generic controls);
+  - no changes to results ; adjust few namelists for special cases (obcs_ctrl,
+    bottom_ctrl_5x5);
+  - adjust store directives for combinations of pkgs kpp, seaice, shelfice
+    with ALLOW_DEPTH_CONTROL.
+
+checkpoint69l (2026/03/01)
 o verification:
   - for secondary tests, change testreport to only run a single "prepare_run"
     from run-dir, after linking files from both ../input.${sfx}/ and ../input/.

@@ -42,10 +42,10 @@ c     ==================================================================
 c     SUBROUTINE seaice_cost_test
 c     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
+#if (defined ALLOW_COST && defined ALLOW_COST_ICE)
 c     == global variables ==
-#ifdef ALLOW_COST_ICE
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "GRID.h"
@@ -55,27 +55,23 @@ c     == global variables ==
 #include "SEAICE.h"
 #include "DYNVARS.h"
 #include "cost.h"
-#endif /* ALLOW_COST_ICE */
+#endif /* ALLOW_COST & ALLOW_COST_ICE */
 
 c     == routine arguments ==
-
       _RL     mytime
       integer myiter
       integer mythid
 
-#ifdef ALLOW_COST_ICE
+#if (defined ALLOW_COST && defined ALLOW_COST_ICE)
+c     == external functions ==
+      integer  ilnblnk
+      external ilnblnk
 
 c     == local variables ==
-
 c     msgBuf      - Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       integer bi,bj,i,j,kSrf
       _RL tempVar
-
-c     == external functions ==
-
-      integer  ilnblnk
-      external ilnblnk
 
 c     == end of interface ==
 
@@ -235,7 +231,7 @@ cph(
       write(standardMessageUnit,*) 'ph-ice C ', myiter, objf_ice(1,1)
 cph)
 
-#endif /* ALLOW_COST_ICE */
+#endif /* ALLOW_COST & ALLOW_COST_ICE */
 
-      return
-      end
+      RETURN
+      END

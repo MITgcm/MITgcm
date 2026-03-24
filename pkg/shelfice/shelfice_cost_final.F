@@ -9,7 +9,7 @@
 CBOP
 C     !ROUTINE: SHELFICE_COST_FINAL
 C     !INTERFACE:
-      SUBROUTINE SHELFICE_COST_FINAL( myThid )
+      SUBROUTINE SHELFICE_COST_FINAL( ifc, optimcycle, myThid )
 
 C     !DESCRIPTION:
 C     *==========================================================*
@@ -31,24 +31,22 @@ C     == Global variables ===
 
 #ifdef ALLOW_COST
 # include "cost.h"
-# ifndef ALLOW_OPENAD
-#  include "OPTIMCYCLE.h"
-# endif
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     myThid :: Thread number for this instance of the routine.
+C     ifc        :: file unit for costfunction_shelfice.XXXX
+C     optimcycle :: cycle number of the off-line optimization.
+C     myThid     :: Thread number for this instance of the routine.
+      INTEGER ifc
+      INTEGER optimcycle
       INTEGER myThid
 
 #ifdef ALLOW_COST
-C     ! FUNCTIONS:
-      LOGICAL  MASTER_CPU_THREAD
-      EXTERNAL MASTER_CPU_THREAD
-
 C     !LOCAL VARIABLES:
       INTEGER bi, bj
-      INTEGER ifc
-      CHARACTER*(25) cfname
+#ifndef ALLOW_OPENAD
+      CHARACTER*(26) cfname
+#endif
 
       _RL f_shelfice
       _RL f_shifwflx
@@ -85,8 +83,9 @@ ccc        end do
 C--   Sum up all contributions.
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        write(standardmessageunit,'(A,D22.15)')
-     &       ' --> objf_shelfice(bi,bj) = ', objf_shelfice(bi,bj)
+        WRITE(standardMessageUnit,'(A,1PE22.14,1X,1PE9.2)')
+     &       ' --> objf_shelfice(bi,bj) = ',
+     &       objf_shelfice(bi,bj), mult_shelfice
         tile_fc(bi,bj) = tile_fc(bi,bj)
      &       + mult_shelfice * objf_shelfice(bi,bj)
 
@@ -98,15 +97,16 @@ cML      CALL GLOBAL_SUM_TILE_RL( num_shelfice, no_shelfice, myThid )
 
 # ifndef ALLOW_OPENAD
 C--   Each process has calculated the global part for itself.
-      IF ( MASTER_CPU_THREAD(myThid) ) THEN
+      IF ( ifc .NE. -1 ) THEN
 
-       ifc = 30
-       WRITE(cfname,'(A,i4.4)') 'costfunction_shelfice',optimcycle
+       WRITE(cfname,'(A,i4.4)') 'costfunction_shelfice.',optimcycle
        OPEN(unit=ifc,file=cfname)
 
-       WRITE(ifc,*) 'fc =', fc
+C     makes little sense to print this now, because it is zero at this point
+c       WRITE(ifc,*) 'fc =', fc
 cML       WRITE(ifc,*) 'f_shelfice =', f_shelfice, no_shelfice
-       WRITE(ifc,*) 'f_shelfice =', f_shelfice
+       WRITE(ifc,'(A,1PE22.14,1X,1PE9.2)')
+     &      'f_shelfice =', f_shelfice, mult_shelfice
 
        CLOSE(ifc)
 
