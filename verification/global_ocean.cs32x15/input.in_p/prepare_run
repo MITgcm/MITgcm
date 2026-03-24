@@ -55,7 +55,7 @@ fi
 #- from this dir:
 fromDir="../input.seaice"
 
-fileList=`( cd $fromDir ; ls *.bin data.cal data.exf data.seaice )`
+fileList=`( cd $fromDir ; ls *.bin data.exf data.seaice )`
 
 #- and do a symbolic link in the current directory
 #   (if the file does not already exist)
