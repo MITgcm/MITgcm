@@ -27,7 +27,7 @@ C     == Global variables ===
 #ifdef ALLOW_DIC
 # include "DIC_COST.h"
 #endif
-#ifdef ALLOW_COST_SHELFICE
+#if ( defined ALLOW_SHELFICE && defined ALLOW_COST_SHELFICE )
 # include "SHELFICE_COST.h"
 #endif
 #ifdef ALLOW_PROFILES
@@ -112,12 +112,12 @@ C--   final cost from remaining individual pkgs:
 #ifdef ALLOW_SEAICE
       IF (useSEAICE) CALL SEAICE_COST_FINAL( ifc, optimcycle, myThid )
 #endif
-#ifdef ALLOW_SHELFICE
-      IF (useShelfice)
+#if ( defined ALLOW_SHELFICE && defined ALLOW_COST_SHELFICE )
+      IF (useShelfIce)
      &     CALL SHELFICE_COST_FINAL( ifc, optimcycle, myThid )
 #endif
 
-#if (defined(ALLOW_STREAMICE) && defined(ALLOW_COST_STREAMICE))
+#if ( defined ALLOW_STREAMICE && defined ALLOW_COST_STREAMICE )
       IF (useStreamice) CALL STREAMICE_COST_FINAL( myThid )
 #endif
 
@@ -132,12 +132,10 @@ C--   final cost from customized/testing code:
 
 #ifdef ALLOW_COST_HFLUXM
       CALL COST_HFLUX( myThid )
-Cgf : to compile previous line user is expected to provide cost_hflux.F
 #endif
 
 #ifdef ALLOW_COST_TEMP
       CALL COST_TEMP( myThid )
-Cgf : to compile previous line user is expected to provide cost_temp.F
 #endif
 
 C--   final cost with alternative cost-function:
@@ -222,7 +220,7 @@ C--   Add contributions from global mean constraints (includes pkg/obsfit)
       fc = fc + glofc
       _END_MASTER( myThid )
 
-#ifdef ALLOW_DIC_COST
+#if ( defined ALLOW_DIC && defined ALLOW_DIC_COST )
 Cph-- quickly for testing
       fc = totcost
 #endif
