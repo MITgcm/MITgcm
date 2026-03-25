@@ -137,6 +137,9 @@ C     Loop over tiles and scale fldArr
            DO j = 1,sNy
             DO i = 1,sNx
               fldArr(i,j,bi,bj) = fld_inScale*fldArr(i,j,bi,bj)
+C     copy to auxillary fields in case we need them
+              fld0  (i,j,bi,bj) = fldArr(i,j,bi,bj)
+              fld1  (i,j,bi,bj) = fldArr(i,j,bi,bj)
             ENDDO
            ENDDO
           ENDDO
