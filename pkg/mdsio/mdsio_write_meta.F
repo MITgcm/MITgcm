@@ -27,6 +27,10 @@ C     !USES:
 C     == Global variables / common blocks
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#ifdef ALLOW_CAL
+# include "PARAMS.h"
+# include "cal.h"
+#endif
 
 C     !INPUT PARAMETERS:
 C     mFileName (string ) :: complete name of meta-file
@@ -75,6 +79,11 @@ C     !LOCAL VARIABLES:
       INTEGER mUnit
 c     LOGICAL exst
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+#ifdef ALLOW_CAL
+      _RL     myTime
+      INTEGER myDate(4)
+      INTEGER year, month, day, hour, minute, second
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -165,6 +174,31 @@ C     keeping. If the timestep number is less than 0 then we assume
 C     that the information is superfluous and do not write it.
       IF ( myIter.GE.0 )
      & WRITE(mUnit,'(1X,A,I10,A)') 'timeStepNumber = [ ',myIter,' ];'
+
+#ifdef ALLOW_CAL
+      IF ( useCal .AND. myIter.GE.0 ) THEN
+C     add the date and time according to pkg/cal that corresponds to the
+C     current timestep myIter,
+C     First recover current time and get date in pkg/cal-format
+       myTime = modelStart + myIter*modelStep
+       CALL CAL_GETDATE( myIter, myTime, myDate, myThid )
+CMLC     this is simpler, but not so easy to read
+CML       WRITE(mUnit,'(1X,A,I8.8,A,I6.6,A)')
+CML     &      "timeStepDate (YYYYMMDDTHHmmss) = [ '",
+CML     &      myDate(1),"T",myDate(2),"' ];"
+C     Follow ISO 8601
+       day    = MOD(myDate(1),100)
+       month  = MOD(myDate(1)/100,100)
+       year   = myDate(1)/10000
+       second = MOD(myDate(2),100)
+       minute = MOD(myDate(2)/100,100)
+       hour   = myDate(2)/10000
+       WRITE(mUnit,'(1X,A,I4.4,A,I2.2,A,I2.2,A,I2.2,A,I2.2,A,I2.2,A)')
+     &      "timeStepDate = [ '",
+     &      year,"-",month,"-",day,"T",hour,":",minute,":",second,
+     &      "Z' ];"
+      ENDIf
+#endif
 
 C-    Write list of Time records
 C note: format might change once we have a better idea of what will
