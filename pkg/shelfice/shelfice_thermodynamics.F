@@ -35,7 +35,6 @@ C     === Global variables ===
 #include "DYNVARS.h"
 #include "FFIELDS.h"
 #include "SHELFICE.h"
-#include "SHELFICE_COST.h"
 #ifdef ALLOW_CTRL
 # include "CTRL_SIZE.h"
 # include "CTRL.h"

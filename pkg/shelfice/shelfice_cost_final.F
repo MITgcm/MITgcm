@@ -2,9 +2,6 @@
 #ifdef ALLOW_COST
 # include "COST_OPTIONS.h"
 #endif
-#ifdef ALLOW_CTRL
-# include "CTRL_OPTIONS.h"
-#endif
 
 CBOP
 C     !ROUTINE: SHELFICE_COST_FINAL
@@ -62,24 +59,22 @@ CEOP
 cML      no_shelfice= 0. _d 0
       no_shifwflx= 0. _d 0
 
-      IF ( .NOT. useECCO ) THEN
 C--   Calculate cost function on tile of this instance
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
 ccc        do klev = 1, Nr
-          DO j=1,sNy
-           DO i=1,sNx
+         DO j=1,sNy
+          DO i=1,sNx
 
-             objf_shelfice(bi,bj) = objf_shelfice(bi,bj)
+            objf_shelfice(bi,bj) = objf_shelfice(bi,bj)
      &            + cMeanSHIforS(i,j,bi,bj)/lastinterval/rhoConstFresh
      &            *_rA(i,j,bi,bj)
 
-           ENDDO
           ENDDO
+         ENDDO
 ccc        end do
-        ENDDO
        ENDDO
-      ENDIF
+      ENDDO
 
 C--   Sum up all contributions.
       DO bj = myByLo(myThid), myByHi(myThid)
