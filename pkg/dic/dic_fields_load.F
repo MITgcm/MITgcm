@@ -16,6 +16,7 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "DYNVARS.h"
 #include "DIC_VARS.h"
 #include "DIC_LOAD.h"
 #ifdef GCHEM_ALLOW_FFIELDS
@@ -33,7 +34,7 @@ C  myThid               :: thread number
 #ifdef ALLOW_DIC
 
 c !LOCAL VARIABLES: ===================================================
-      INTEGER bi, bj, i, j
+      INTEGER bi, bj, i, j, kLev
       INTEGER intimeP, intime0, intime1
       _RL aWght,bWght
 #ifdef DIC_CALCITE_SAT
@@ -82,12 +83,31 @@ C     Atm pressure in Pascals, convert to atm
 #ifdef LIGHT_CHL
           CHL(i,j,bi,bj)        = gchemCHL(i,j,bi,bj)
 #endif
+          dicSST(i,j,bi,bj)     = gchemSST(i,j,bi,bj)
+          dicSSS(i,j,bi,bj)     = gchemSSS(i,j,bi,bj)
          ENDDO
         ENDDO
        ENDDO
       ENDDO
 #else /* GCHEM_ALLOW_FFIELDS */
       IF (  DIC_forcingCycle.GT.0. _d 0 ) THEN
+C Get SST and SSS from the main model        
+        if ( usingPCoords ) then
+          kLev = Nr
+        else
+          kLev = 1
+        endif
+
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            dicSST(i,j,bi,bj) = theta(i,j,kLev,bi,bj)
+            dicSSS(i,j,bi,bj) = salt (i,j,kLev,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
 
 C--   Now calculate whether it is time to update the forcing arrays
        CALL GET_PERIODIC_INTERVAL(

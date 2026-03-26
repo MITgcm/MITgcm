@@ -18,7 +18,6 @@ C  following external_forcing_dic.F (OCMIP run) from Mick
 C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
@@ -72,7 +71,11 @@ C     tkey :: tape key (tile dependent)
 #endif
 CEOP
 
-      kLev = 1
+      IF ( usingPCoords ) THEN
+        kLev = Nr
+      ELSE
+        kLev = 1
+      ENDIF
 
 cC if coupled to atmsopheric model, use the
 cC Co2 value passed from the coupler
@@ -111,14 +114,14 @@ C for non-interactive Si
           surfsi(i,j)   = silicaSurf(i,j,bi,bj)*maskC(i,j,kLev,bi,bj)
 #ifdef DIC_BOUNDS
           surftemp(i,j) = MAX( -4. _d 0,
-     &                         MIN( 50. _d 0, theta(i,j,kLev,bi,bj) ) )
+     &                         MIN( 50. _d 0, dicSST(i,j,bi,bj) ) )
           surfsalt(i,j) = MAX( 4. _d 0,
-     &                         MIN( 50. _d 0, salt(i,j,kLev,bi,bj) ) )
+     &                         MIN( 50. _d 0, dicSSS(i,j,bi,bj) ) )
           surfdic(i,j)  = MAX( 0.4 _d 0,
      &                         MIN( 10. _d 0, PTR_CO2(i,j,kLev) ) )
 #else
-          surftemp(i,j) = theta(i,j,kLev,bi,bj)
-          surfsalt(i,j) = salt(i,j,kLev,bi,bj)
+          surftemp(i,j) = dicSST(i,j,bi,bj)
+          surfsalt(i,j) = dicSSS(i,j,bi,bj)
           surfdic(i,j)  = PTR_CO2(i,j,kLev)
 #endif
         ENDDO
@@ -227,10 +230,10 @@ CADJ STORE pCO2(:,:,bi,bj) = comlev1_bibj, key = tkey, kind = isbyte
 C calculate SCHMIDT NO. for CO2
             SchmidtNoDIC(i,j) =
      &            sca1
-     &          + sca2 * theta(i,j,kLev,bi,bj)
-     &          + sca3 * theta(i,j,kLev,bi,bj)*theta(i,j,kLev,bi,bj)
-     &          + sca4 * theta(i,j,kLev,bi,bj)*theta(i,j,kLev,bi,bj)
-     &                *theta(i,j,kLev,bi,bj)
+     &          + sca2 * surftemp(i,j,bi,bj)
+     &          + sca3 * surftemp(i,j,bi,bj)*surftemp(i,j,bi,bj)
+     &          + sca4 * surftemp(i,j,bi,bj)*surftemp(i,j,bi,bj)
+     &                 * surftemp(i,j,bi,bj)
 C make sure Schmidt number is not negative (will happen if temp>39C)
             SchmidtNoDIC(i,j) = MAX( 1.0 _d -2, SchmidtNoDIC(i,j) )
 

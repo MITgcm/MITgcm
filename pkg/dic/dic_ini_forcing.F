@@ -16,6 +16,7 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "DYNVARS.h"
 #include "DIC_VARS.h"
 #ifdef GCHEM_ALLOW_FFIELDS
 # include "GCHEM_FIELDS.h"
@@ -31,7 +32,7 @@ CEOP
 #ifdef ALLOW_DIC
 
 c !LOCAL VARIABLES: ====================================================
-       INTEGER bi, bj, i, j
+       INTEGER bi, bj, i, j, kLev
        INTEGER intimeP, intime0, intime1
        _RL aWght, bWght
 #ifdef DIC_CALCITE_SAT
@@ -55,6 +56,8 @@ C-    Initialise DIC_VARS.h forcing-field arrays from reasonable values in pkg/g
          CHL       (i,j,bi,bj) = gchemCHL(i,j,bi,bj)
          InputFe   (i,j,bi,bj) = gchemFe(i,j,bi,bj)
 #endif
+         dicSST    (i,j,bi,bj) = gchemSST(i,j,bi,bj)
+         dicSSS    (i,j,bi,bj) = gchemSSS(i,j,bi,bj)
 #if defined(DIC_CALCITE_SAT) && defined(GCHEM_3D_SILICA) 
          IF ( useCalciteSaturation ) THEN
           DO k = 1,Nr
@@ -71,7 +74,6 @@ C end bi,bj loops
 C--   Initialise forcing arrays in common blocks
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-
 C-    Initialise DIC_VARS.h forcing-field arrays:
         DO j = 1-OLy,sNy+OLy
          DO i = 1-OLx,sNx+OLx
@@ -79,6 +81,8 @@ C-    Initialise DIC_VARS.h forcing-field arrays:
            fIce      (i,j,bi,bj) = 0. _d 0
            AtmosP    (i,j,bi,bj) = 0. _d 0
            silicaSurf(i,j,bi,bj) = 0. _d 0
+           dicSST    (i,j,bi,bj) = 0. _d 0
+           dicSSS    (i,j,bi,bj) = 0. _d 0
 #ifdef DIC_BIOTIC
            par       (i,j,bi,bj) = 0. _d 0
            CHL       (i,j,bi,bj) = 0. _d 0
@@ -137,6 +141,12 @@ C-   end bi,bj loops:
 
 C ======================================================================
 C--   Set reasonable values to those that need at least something
+      IF ( usingPCoords ) THEN
+       kLev = Nr
+      ELSE
+       kLev = 1
+      ENDIF
+
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j = 1-OLy,sNy+OLy
@@ -155,6 +165,8 @@ C If the chlorophyll climatology is not provided, use this default value.
 #ifdef ALLOW_FE
           InputFe(i,j,bi,bj)    = 1. _d -11*maskC(i,j,1,bi,bj)
 #endif
+          dicSST(i,j,bi,bj)     = theta(i,j,kLev,bi,bj)
+          dicSSS(i,j,bi,bj)     = salt (i,j,kLev,bi,bj)
          ENDDO
         ENDDO
 #ifdef DIC_CALCITE_SAT
