@@ -45,8 +45,8 @@ C-  User needs to provide "cost_hflux.F" code before defining following option:
 C-  The following option contains some hacks (reset cost-function):
 #undef ALLOW_DIC_COST
 #undef ALLOW_THSICE_COST_TEST
-#undef ALLOW_COST_STREAMICE
 #undef ALLOW_COST_SHELFICE
+#undef ALLOW_COST_STREAMICE
 
 C   ==================================================================
 #endif /* ndef ECCO_CPPOPTIONS_H */
