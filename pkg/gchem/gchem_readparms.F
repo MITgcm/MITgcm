@@ -134,12 +134,12 @@ C
      &     gchem_chlperiod, gchem_chlRepCycle, gchem_chlStartTime,
      &     gchem_chlstartdate1, gchem_chlstartdate2,
      &     gchem_chl_exfremo_intercept, gchem_chl_exfremo_slope,
-     &     gchem_chlMask, gchem_inscal_chl
+     &     gchem_chlMask, gchem_inscal_chl,
 C
      &     gchem_SSTPeriod, gchem_SSTRepCycle, gchem_SSTStartTime,
      &     gchem_SSTStartDate1, gchem_SSTStartDate2,
      &     gchem_SST_exfremo_intercept, gchem_SST_exfremo_slope,
-     &     gchem_SSTMask, gchem_inscal_SST
+     &     gchem_SSTMask, gchem_inscal_SST,
 C
      &     gchem_SSSPeriod, gchem_SSSRepCycle, gchem_SSSStartTime,
      &     gchem_SSSStartDate1, gchem_SSSStartDate2,
@@ -246,9 +246,8 @@ C     some sensible defaults
       gchem_Fe_const    =    0.      _d 0
       gchem_apco2_const =  280.      _d -6
       gchem_chl_const   =    0.      _d 0
-      gchem_SST_const =    4.      _d 0
-      gchem_SSS_const  =   34.5     _d 0
-
+      gchem_SST_const   =    4.      _d 0
+      gchem_SSS_const   =   34.5     _d 0
 
 C  default periodic forcing to same as for physics
        gchem_ForcingPeriod=externForcingPeriod
@@ -613,13 +612,13 @@ C     gchem_useEXF and useExfYearlyFields
        ENDIF
        IF ( gchem_SSTRepCycle.NE.0. ) THEN
         WRITE(msgBuf,'(2A)') 'GCHEM_READPARMS: The use of ',
-     &      'useExfYearlyFields AND gchem_SSTRepCycle is not implemented'
+     &    'useExfYearlyFields AND gchem_SSTRepCycle is not implemented'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
        IF ( gchem_SSSRepCycle.NE.0. ) THEN
         WRITE(msgBuf,'(2A)') 'GCHEM_READPARMS: The use of ',
-     &      'useExfYearlyFields AND gchem_SSSRepCycle is not implemented'
+     &    'useExfYearlyFields AND gchem_SSSRepCycle is not implemented'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF

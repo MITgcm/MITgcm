@@ -40,23 +40,20 @@ C !LOCAL VARIABLES: ====================================================
 C  i,j,k,bi,bj          :: loop indices
 C  jTr                  :: ptracer number
       INTEGER bi,bj
-      INTEGER i,j
+      INTEGER i,j,k
 #ifdef GCHEM_ALLOW_FFIELDS
       INTEGER m
       INTEGER intimeP, intime0, intime1
       _RL aWght,bWght
-# ifdef GCHEM_3D_SILICA
-      INTEGER k
-# endif
 # ifdef ALLOW_EXF
       _RL myLocTime
 # endif
 #endif /* GCHEM_ALLOW_FFIELDS */
 #ifdef GCHEM_ADD2TR_TENDENCY
-      INTEGER k
       INTEGER jTr
 #endif /* GCHEM_ADD2TR_TENDENCY */
-
+      INTEGER iUnit
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 C--   Initialise GCHEM variables:
 
 #ifdef GCHEM_ADD2TR_TENDENCY
@@ -97,8 +94,8 @@ C     set reasonable values fields that need at least something
 #endif
           gchemIce   (i,j,bi,bj) = gchem_ice_const  *maskC(i,j,1,bi,bj)
           gchemChl   (i,j,bi,bj) = gchem_chl_const  *maskC(i,j,1,bi,bj)
-          gchemSST (i,j,bi,bj)   = gchem_SST_const  *maskC(i,j,1,bi,bj)
-          gchemSSS  (i,j,bi,bj)  = gchem_SSS_const  *maskC(i,j,1,bi,bj)
+          gchemSST   (i,j,bi,bj) = gchem_SST_const  *maskC(i,j,1,bi,bj)
+          gchemSSS   (i,j,bi,bj) = gchem_SSS_const  *maskC(i,j,1,bi,bj)
          ENDDO
         ENDDO
        ENDDO
@@ -129,6 +126,7 @@ C     set reasonable values fields that need at least something
         CALL LEF_ZERO( gchemSST1, myThid )
         CALL LEF_ZERO( gchemSSS0,  myThid )
         CALL LEF_ZERO( gchemSSS1,  myThid )
+
 C--   Now calculate whether it is time to update the forcing arrays
         CALL GET_PERIODIC_INTERVAL(
      O                   intimeP, intime0, intime1, bWght, aWght,
@@ -585,40 +583,6 @@ C     useEXF
       ENDIF
 # endif /* ALLOW_EXF */
 
-C if there are not SST or SSS files, we need to initialize the fields 
-C  from the main model
-      IF ( gchem_SSTFile .EQ. ' ' ) THEN
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           gchemSST(i,j,bi,bj) = theta(i,j,k,bi,bj)
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDIF
-
-C If there is no SSS file given in data.gchem, get fields from
-C  the main model so we can initialize pH/pCO2 correctly.
-      IF ( usingPCoords ) THEN
-        k = Nr
-      ELSE
-        k = 1
-      ENDIF
-
-      IF ( gchem_SSSFile .EQ. ' ' ) THEN
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           gchemSSS(i,j,bi,bj) = salt(i,j,k,bi,bj)
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDIF
-
       _EXCH_XY_RL( gchemSi, myThid )
 # ifdef GCHEM_3D_SILICA
       _EXCH_XYZ_RL( gchemSi3D, myThid )
@@ -632,6 +596,46 @@ C  the main model so we can initialize pH/pCO2 correctly.
       _EXCH_XY_RL( gchemchl, myThid )
       _EXCH_XY_RL( gchemSST, myThid )
       _EXCH_XY_RL( gchemSSS, myThid )
+
+      IF (usingPCoords) THEN
+        k = Nr
+      ELSE
+        k = 1
+      ENDIF
+
+C If there is no SST file given in data.gchem, get fields from
+C  the main model so we can initialize pH/pCO2 correctly.
+      IF ( gchem_SSTFile .EQ. ' ' ) THEN
+        WRITE(msgBuf,'(A)') ' GCHEM_INIT_VARIA: gchemSST<-THETA'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            gchemSST(i,j,bi,bj) = theta(i,j,k,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+      ENDIF
+
+C If there is no SSS file given in data.gchem, get fields from
+C  the main model so we can initialize pH/pCO2 correctly.
+      IF ( gchem_SSSFile .EQ. ' ' ) THEN
+        WRITE(msgBuf,'(A)') ' GCHEM_INIT_VARIA: gchemSSS<-SALT'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            gchemSSS(i,j,bi,bj) = salt(i,j,k,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+      ENDIF
 #endif /* GCHEM_ALLOW_FFIELDS */
 
 C--   Initialise other Geo-Chemistry pkg variables:

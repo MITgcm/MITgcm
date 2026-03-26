@@ -27,6 +27,8 @@ C !USES: ===============================================================
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
       INTEGER myThid
+      INTEGER iUnit
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
 #ifdef ALLOW_DIC
@@ -56,6 +58,9 @@ C-    Initialise DIC_VARS.h forcing-field arrays from reasonable values in pkg/g
          CHL       (i,j,bi,bj) = gchemCHL(i,j,bi,bj)
          InputFe   (i,j,bi,bj) = gchemFe(i,j,bi,bj)
 #endif
+         WRITE(msgBuf,'(A)') ' DIC_INIT_FORCING: dicSST<-gchemSST'
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
          dicSST    (i,j,bi,bj) = gchemSST(i,j,bi,bj)
          dicSSS    (i,j,bi,bj) = gchemSSS(i,j,bi,bj)
 #if defined(DIC_CALCITE_SAT) && defined(GCHEM_3D_SILICA) 
@@ -151,22 +156,27 @@ C--   Set reasonable values to those that need at least something
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j = 1-OLy,sNy+OLy
          DO i = 1-OLx,sNx+OLx
-          wind(i,j,bi,bj)       = 5. _d 0*maskC(i,j,1,bi,bj)
-          AtmosP(i,j,bi,bj)     = 1. _d 0*maskC(i,j,1,bi,bj)
-          silicaSurf(i,j,bi,bj) = 7.6838 _d -3*maskC(i,j,1,bi,bj)
+          wind(i,j,bi,bj)       = 5. _d 0*maskC(i,j,kLev,bi,bj)
+          AtmosP(i,j,bi,bj)     = 1. _d 0*maskC(i,j,kLev,bi,bj)
+          silicaSurf(i,j,bi,bj) = 7.6838 _d -3*maskC(i,j,kLev,bi,bj)
           fIce(i,j,bi,bj)       = 0. _d 0
 #ifdef READ_PAR
-          par(i,j,bi,bj)        = 100. _d 0*maskC(i,j,1,bi,bj)
+          par(i,j,bi,bj)        = 100. _d 0*maskC(i,j,kLev,bi,bj)
 #endif
 #ifdef LIGHT_CHL
 C If the chlorophyll climatology is not provided, use this default value.
-          CHL(i,j,bi,bj)        = 1. _d -2*maskC(i,j,1,bi,bj)
+          CHL(i,j,bi,bj)        = 1. _d -2*maskC(i,j,kLev,bi,bj)
 #endif
 #ifdef ALLOW_FE
-          InputFe(i,j,bi,bj)    = 1. _d -11*maskC(i,j,1,bi,bj)
+          InputFe(i,j,bi,bj)    = 1. _d -11*maskC(i,j,kLev,bi,bj)
 #endif
+          WRITE(msgBuf,'(A)') ' DIC_INIT_FORCING: dicSST<-model THETA'
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
           dicSST(i,j,bi,bj)     = theta(i,j,kLev,bi,bj)
+     &                                     *maskC(i,j,kLev,bi,bj)
           dicSSS(i,j,bi,bj)     = salt (i,j,kLev,bi,bj)
+     &                                     *maskC(i,j,kLev,bi,bj)
          ENDDO
         ENDDO
 #ifdef DIC_CALCITE_SAT
