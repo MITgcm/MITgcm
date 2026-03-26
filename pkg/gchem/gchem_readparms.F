@@ -78,9 +78,11 @@ C  to test the flag before any corresponding pkg S/R call
      &           gchem_SiFile, gchem_Si3DFile, gchem_parFile,
      &           gchem_FeFile, gchem_apco2File, gchem_windFile,
      &           gchem_apresFile, gchem_iceFile, gchem_chlFile,
+     &           gchem_SSTFile, gchem_SSSFile,
      &           gchem_Si_const, gchem_Si3D_const, gchem_par_const,
      &           gchem_Fe_const, gchem_apco2_const, gchem_wind_const,
      &           gchem_apres_const, gchem_ice_const, gchem_chl_const,
+     &           gchem_SST_const, gchem_SSS_const,
      &           gchem_secondsPerYear,
      &           tIter0
 
@@ -133,6 +135,16 @@ C
      &     gchem_chlstartdate1, gchem_chlstartdate2,
      &     gchem_chl_exfremo_intercept, gchem_chl_exfremo_slope,
      &     gchem_chlMask, gchem_inscal_chl
+C
+     &     gchem_SSTPeriod, gchem_SSTRepCycle, gchem_SSTStartTime,
+     &     gchem_SSTStartDate1, gchem_SSTStartDate2,
+     &     gchem_SST_exfremo_intercept, gchem_SST_exfremo_slope,
+     &     gchem_SSTMask, gchem_inscal_SST
+C
+     &     gchem_SSSPeriod, gchem_SSSRepCycle, gchem_SSSStartTime,
+     &     gchem_SSSStartDate1, gchem_SSSStartDate2,
+     &     gchem_SSS_exfremo_intercept, gchem_SSS_exfremo_slope,
+     &     gchem_SSSMask, gchem_inscal_SSS
 #  ifdef USE_EXF_INTERPOLATION
       NAMELIST /GCHEM_INTERP_PARAMS/
      &     gchem_exf_output_interp,
@@ -159,10 +171,16 @@ C
      &     ice_lon_inc, ice_lat_inc, ice_interpMethod,
 C
      &     apres_lon0, apres_lat0, apres_nlon, apres_nlat,
-     &     apres_lon_inc, apres_lat_inc, apres_interpMethod
+     &     apres_lon_inc, apres_lat_inc, apres_interpMethod,
 C
      &     chl_lon0, chl_lat0, chl_nlon, chl_nlat,
-     &     chl_lon_inc, chl_lat_inc, chl_interpMethod
+     &     chl_lon_inc, chl_lat_inc, chl_interpMethod,
+C
+     &     SST_lon0, SST_lat0, SST_nlon, SST_nlat,
+     &     SST_lon_inc, SST_lat_inc, SST_interpMethod,
+C
+     &     SSS_lon0, SSS_lat0, SSS_nlon, SSS_nlat,
+     &     SSS_lon_inc, SSS_lat_inc, SSS_interpMethod
 #  endif
 # endif /* ALLOW_EXF */
 
@@ -215,6 +233,9 @@ C     some predefined forcing fields and constants
       gchem_FeFile    = ' '
       gchem_apco2File = ' '
       gchem_chlFile   = ' '
+      gchem_SSTFile = ' '
+      gchem_SSSFile  = ' '
+
 C     some sensible defaults
       gchem_ice_const   =    0.      _d 0
       gchem_wind_const  =    0.      _d 0
@@ -225,6 +246,9 @@ C     some sensible defaults
       gchem_Fe_const    =    0.      _d 0
       gchem_apco2_const =  280.      _d -6
       gchem_chl_const   =    0.      _d 0
+      gchem_SST_const =    4.      _d 0
+      gchem_SSS_const  =   34.5     _d 0
+
 
 C  default periodic forcing to same as for physics
        gchem_ForcingPeriod=externForcingPeriod
@@ -346,6 +370,26 @@ C- Open and read the data.gchem file
        gchem_chlMask                 = 'c'
        gchem_inscal_chl              = 1. _d 0
 
+       gchem_SSTPeriod               = 0.0 _d 0
+       gchem_SSTRepCycle             = repeatPeriod
+       gchem_SSTStartTime            = UNSET_RL
+       gchem_SSTStartDate1           = 0
+       gchem_SSTStartDate2           = 0
+       gchem_SST_exfremo_intercept   = 0.0 _d 0
+       gchem_SST_exfremo_slope       = 0.0 _d 0
+       gchem_SSTMask                 = 'c'
+       gchem_inscal_SST              = 1. _d 0
+
+       gchem_SSSPeriod               = 0.0 _d 0
+       gchem_SSSRepCycle             = repeatPeriod
+       gchem_SSSStartTime            = UNSET_RL
+       gchem_SSSStartDate1           = 0
+       gchem_SSSStartDate2           = 0
+       gchem_SSS_exfremo_intercept   = 0.0 _d 0
+       gchem_SSS_exfremo_slope       = 0.0 _d 0
+       gchem_SSSMask                 = 'c'
+       gchem_inscal_SSS              = 1. _d 0
+
 C     If useEXF=F, s/r exf_readparms is not called and exf-parameters
 C     are not initialiased properly. The following few exf-related
 C     parameters need to have a defined value to be used in s/r
@@ -449,6 +493,18 @@ C     This is done in s/r exf_init_interp only if useEXF=T
        chl_lon_inc = inp_dLon
        chl_interpMethod  = 1
 
+       SST_lat0 = inp_lat0
+       SST_nlon = inp_gNx
+       SST_nlat = inp_gNy
+       SST_lon_inc = inp_dLon
+       SST_interpMethod  = 1
+
+       SSS_lat0 = inp_lat0
+       SSS_nlon = inp_gNx
+       SSS_nlat = inp_gNy
+       SSS_lon_inc = inp_dLon
+       SSS_interpMethod  = 1
+
        DO j=1,MAX_LAT_INC
         Si_lat_inc(j)    = inp_dLat(j)
         Si3D_lat_inc(j)  = inp_dLat(j)
@@ -459,6 +515,8 @@ C     This is done in s/r exf_init_interp only if useEXF=T
         ice_lat_inc(j)   = inp_dLat(j)
         apres_lat_inc(j) = inp_dLat(j)
         chl_lat_inc(j)   = inp_dLat(j)
+        SST_lat_inc(j) = inp_dLat(j)
+        SSS_lat_inc(j)  = inp_dLat(j)
        ENDDO
 
        gchem_exf_output_interp = .FALSE.
@@ -550,6 +608,18 @@ C     gchem_useEXF and useExfYearlyFields
        IF ( gchem_chlRepCycle.NE.0. ) THEN
         WRITE(msgBuf,'(2A)') 'GCHEM_READPARMS: The use of ',
      &    'useExfYearlyFields AND gchem_chlRepCycle is not implemented'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+       IF ( gchem_SSTRepCycle.NE.0. ) THEN
+        WRITE(msgBuf,'(2A)') 'GCHEM_READPARMS: The use of ',
+     &      'useExfYearlyFields AND gchem_SSTRepCycle is not implemented'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+       IF ( gchem_SSSRepCycle.NE.0. ) THEN
+        WRITE(msgBuf,'(2A)') 'GCHEM_READPARMS: The use of ',
+     &      'useExfYearlyFields AND gchem_SSSRepCycle is not implemented'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF

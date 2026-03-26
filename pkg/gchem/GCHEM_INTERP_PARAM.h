@@ -114,3 +114,39 @@ C Atmos pressure forcing parameters for exf
       _RL apres_lat0
       _RL apres_lon_inc
       _RL apres_lat_inc(MAX_LAT_INC)
+
+C Chlorophyll forcing parameters for exf
+      COMMON/gchem_interp_chl_i/
+     &    chl_nlon, chl_nlat, chl_interpMethod
+      COMMON/gchem_interp_chl_r/
+     &    chl_lon0, chl_lat0, chl_lon_inc,
+     &    chl_lat_inc
+      INTEGER chl_interpMethod, chl_nlon, chl_nlat
+      _RL chl_lon0
+      _RL chl_lat0
+      _RL chl_lon_inc
+      _RL chl_lat_inc(MAX_LAT_INC)
+
+C SST forcing parameters for exf
+      COMMON/gchem_interp_SST_i/
+     &    SST_nlon, SST_nlat, SST_interpMethod
+      COMMON/gchem_interp_SST_r/
+     &    SST_lon0, SST_lat0, SST_lon_inc,
+     &    SST_lat_inc
+      INTEGER SST_interpMethod, SST_nlon, SST_nlat
+      _RL SST_lon0
+      _RL SST_lat0
+      _RL SST_lon_inc
+      _RL SST_lat_inc(MAX_LAT_INC)
+
+C SSS forcing parameters for exf
+      COMMON/gchem_interp_SSS_i/
+     &    SSS_nlon, SSS_nlat, SSS_interpMethod
+      COMMON/gchem_interp_SSS_r/
+     &    SSS_lon0, SSS_lat0, SSS_lon_inc,
+     &    SSS_lat_inc  
+      INTEGER SSS_interpMethod, SSS_nlon, SSS_nlat
+      _RL SSS_lon0
+      _RL SSS_lat0
+      _RL SSS_lon_inc
+      _RL SSS_lat_inc(MAX_LAT_INC)

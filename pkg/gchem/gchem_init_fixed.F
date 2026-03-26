@@ -189,6 +189,28 @@ c      ENDIF
      U                   gchem_chlStartTime, errCount,
      I                   myThid )
        ENDIF
+
+       IF ( gchem_SSTFile .NE. ' ' ) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START SST',myThid)
+# endif
+        CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                   'gchem', 'SST', gchem_SSTPeriod,
+     I                   gchem_SSTStartDate1, gchem_SSTStartDate2,
+     U                   gchem_SSTStartTime, errCount,
+     I                   myThid )
+       ENDIF
+
+            IF ( gchem_SSSFile .NE. ' ' ) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START SSS',myThid)
+# endif
+        CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                   'gchem', 'SSS', gchem_SSSPeriod,
+     I                   gchem_SSSStartDate1, gchem_SSSStartDate2,
+     U                   gchem_SSSStartTime, errCount,
+     I                   myThid )
+       ENDIF
        
        _END_MASTER( myThid )
 

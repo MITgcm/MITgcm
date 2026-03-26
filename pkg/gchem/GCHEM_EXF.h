@@ -194,3 +194,44 @@ C Chlorophyll forcing parameters for exf
       _RL gchem_chl_exfremo_intercept
       _RL gchem_chl_exfremo_slope
       _RL gchem_inscal_chl
+
+C SST forcing parameters for exf
+      COMMON/gchem_forcing_SST_c/
+     &    gchem_SSTMask
+      COMMON/gchem_forcing_SST_i/
+     &    gchem_SSTStartDate1, gchem_SSTStartDate2
+      COMMON/gchem_forcing_SST_r/
+     &    gchem_SSTStartTime,
+     &    gchem_SSTPeriod, gchem_SSTRepCycle,
+     &    gchem_SST_exfremo_intercept, gchem_SST_exfremo_slope,
+     &    gchem_inscal_SST
+      CHARACTER*1 gchem_SSTMask
+      INTEGER gchem_SSTStartDate1
+      INTEGER gchem_SSTStartDate2
+      _RL gchem_SSTStartTime
+      _RL gchem_SSTPeriod
+      _RL gchem_SSTRepCycle
+      _RL gchem_SST_exfremo_intercept
+      _RL gchem_SST_exfremo_slope
+      _RL gchem_inscal_SST
+
+C SSS forcing parameters for exf
+      COMMON/gchem_forcing_SSS_c/
+     &    gchem_SSSMask
+      COMMON/gchem_forcing_SSS_i/
+     &    gchem_SSSStartDate1, gchem_SSSStartDate2
+      COMMON/gchem_forcing_SSS_r/
+     &    gchem_SSSStartTime,
+     &    gchem_SSSPeriod, gchem_SSSRepCycle,
+     &    gchem_SSS_exfremo_intercept, gchem_SSS_exfremo_slope,
+     &    gchem_inscal_SSS
+      CHARACTER*1 gchem_SSSMask
+      INTEGER gchem_SSSStartDate1
+      INTEGER gchem_SSSStartDate2
+      _RL gchem_SSSStartTime
+      _RL gchem_SSSPeriod
+      _RL gchem_SSSRepCycle
+      _RL gchem_SSS_exfremo_intercept
+      _RL gchem_SSS_exfremo_slope
+      _RL gchem_inscal_SSS
+      

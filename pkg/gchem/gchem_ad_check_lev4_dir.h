@@ -17,4 +17,10 @@ CADJ STORE gchemSi1    = tapelev4, key = ilev_4
 CADJ STORE gchemWind   = tapelev4, key = ilev_4
 CADJ STORE gchemWind0  = tapelev4, key = ilev_4
 CADJ STORE gchemWind1  = tapelev4, key = ilev_4
+CADJ STORE gchemSST    = tapelev4, key = ilev_4
+CADJ STORE gchemSST0   = tapelev4, key = ilev_4
+CADJ STORE gchemSST1   = tapelev4, key = ilev_4
+CADJ STORE gchemSSS    = tapelev4, key = ilev_4
+CADJ STORE gchemSSS0   = tapelev4, key = ilev_4
+CADJ STORE gchemSSS1   = tapelev4, key = ilev_4
 #endif

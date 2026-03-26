@@ -29,7 +29,9 @@ CEOP
      &    gchemIce,
      &    gchemWind,
      &    gchemAtmosP,
-     &    gchemChl
+     &    gchemChl,
+     &    gchemSST,
+     &    gchemSSS
 
 #ifdef GCHEM_3D_SILICA
       _RL gchemSi3D  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -42,6 +44,8 @@ CEOP
       _RL gchemWind  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL gchemAtmosP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL gchemChl   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL gchemSST   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL gchemSSS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif /* GCHEM_ALLOW_FFIELDS */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

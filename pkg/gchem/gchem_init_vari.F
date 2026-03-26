@@ -16,9 +16,9 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#ifdef ALLOW_AUTODIFF
+C#ifdef ALLOW_AUTODIFF
 # include "DYNVARS.h"
-#endif /* ALLOW_AUTODIFF */
+C#endif /* ALLOW_AUTODIFF */
 #include "GCHEM.h"
 #include "GCHEM_SIZE.h"
 #include "GCHEM_FIELDS.h"
@@ -97,6 +97,8 @@ C     set reasonable values fields that need at least something
 #endif
           gchemIce   (i,j,bi,bj) = gchem_ice_const  *maskC(i,j,1,bi,bj)
           gchemChl   (i,j,bi,bj) = gchem_chl_const  *maskC(i,j,1,bi,bj)
+          gchemSST (i,j,bi,bj)   = gchem_SST_const  *maskC(i,j,1,bi,bj)
+          gchemSSS  (i,j,bi,bj)  = gchem_SSS_const  *maskC(i,j,1,bi,bj)
          ENDDO
         ENDDO
        ENDDO
@@ -123,7 +125,10 @@ C     set reasonable values fields that need at least something
         CALL LEF_ZERO( gchemapCO21, myThid )
         CALL LEF_ZERO( gchemchl0,   myThid )
         CALL LEF_ZERO( gchemchl1,   myThid )
-
+        CALL LEF_ZERO( gchemSST0, myThid )
+        CALL LEF_ZERO( gchemSST1, myThid )
+        CALL LEF_ZERO( gchemSSS0,  myThid )
+        CALL LEF_ZERO( gchemSSS1,  myThid )
 C--   Now calculate whether it is time to update the forcing arrays
         CALL GET_PERIODIC_INTERVAL(
      O                   intimeP, intime0, intime1, bWght, aWght,
@@ -195,6 +200,20 @@ C--   Now calculate whether it is time to update the forcing arrays
      &         nIter0,myThid )
         ENDIF
 
+        IF ( gchem_SSTFile .NE. ' ' ) THEN
+          CALL READ_REC_XY_RS( gchem_SSTFile,gchemSST0,intime0,
+     &         nIter0,myThid )
+          CALL READ_REC_XY_RS( gchem_SSTFile,gchemSST1,intime1,
+     &         nIter0,myThid )
+        ENDIF
+
+        IF ( gchem_SSSFile .NE. ' ' ) THEN
+          CALL READ_REC_XY_RS( gchem_SSSFile,gchemSSS0,intime0,
+     &         nIter0,myThid )
+          CALL READ_REC_XY_RS( gchem_SSSFile,gchemSSS1,intime1,
+     &         nIter0,myThid )
+        ENDIF
+
         _EXCH_XY_RS(gchemWind0, myThid )
         _EXCH_XY_RS(gchemWind1, myThid )
         _EXCH_XY_RS(gchemSi0, myThid )
@@ -215,6 +234,10 @@ C--   Now calculate whether it is time to update the forcing arrays
         _EXCH_XY_RS(gchemApres1, myThid )
         _EXCH_XY_RS(gchemCHL0, myThid ) 
         _EXCH_XY_RS(gchemCHL1, myThid )
+        _EXCH_XY_RS(gchemSST0, myThid )
+        _EXCH_XY_RS(gchemSST1, myThid )
+        _EXCH_XY_RS(gchemSSS0, myThid )
+        _EXCH_XY_RS(gchemSSS1, myThid )
 
         IF ( gchem_WindFile .NE. ' '  ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
@@ -336,6 +359,32 @@ C--   Now calculate whether it is time to update the forcing arrays
           ENDDO
          ENDDO
         ENDIF
+
+        IF ( GCHEM_SSTFile .NE. ' ' ) THEN
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             gchemSST(i,j,bi,bj) = bWght*gchemSST0(i,j,bi,bj)
+     &                             + aWght*gchemSST1(i,j,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDIF
+
+        IF ( GCHEM_SSSFile .NE. ' ' ) THEN
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             gchemSSS(i,j,bi,bj) = bWght*gchemSSS0(i,j,bi,bj)
+     &                            + aWght*gchemSSS1(i,j,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDIF
 C     if not gchem_useEXF
       ENDIF
 
@@ -344,12 +393,12 @@ C     if not gchem_useEXF
 
        IF ( gchem_SiFile .NE. ' ' ) THEN
 C     This would be the exf-way to initialise a forcing field: just use
-C     a constant value. But, because in pkg/bling (and maybe elsewhere)
-C     gchemSi is already used before the first timestep and before
-C     gchem_fields_load is called, gchemSi needs to have the correct
-C     value with respect to the current timestep (nIter0) and myTime
-C     (startTime + deltaTClock*nIter0). Therefore, we do not call
-C     exf_init_fld but exf_set_fld instead.
+C     a constant value. But, because in pkg/bling and pkg/dic
+C     gchemSi is already used before the first timestep (to initialize 
+C     pH/pCO2) and before gchem_fields_load is called, gchemSi needs 
+C     to have the correct value with respect to the current timestep 
+C     (nIter0) and myTime (startTime + deltaTClock*nIter0). Therefore, 
+C     we do not call exf_init_fld but exf_set_fld instead.
 c        CALL EXF_INIT_FLD (
 c     &     'gchemSi', gchem_SiFile, gchem_SiMask,
 c     &     gchem_SiPeriod, gchem_inscal_Si, gchem_Si_const,
@@ -377,7 +426,44 @@ c     &     mythid )
      &     myLocTime, nIter0, mythid )
        ENDIF
 
+C    Do the same for SST and SSS, which are also used before 
+C    the first timestep to initialize pH/pCO2
+       IF ( gchem_SSTFile .NE. ' ' ) THEN
+        myLocTime = startTime + deltaTClock*nIter0
+        CALL EXF_SET_FLD(
+     &     'gchemSST', gchem_SSTFile, gchem_SSTMask,
+     &     gchem_SSTStartTime, gchem_SSTPeriod, gchem_SSTRepCycle,
+     &     gchem_inscal_SST,
+     &     gchem_SST_exfremo_intercept, gchem_SST_exfremo_slope,
+     &     gchemSST, gchemSST0, gchemSST1,
+# ifdef USE_EXF_INTERPOLATION
+     &     SST_lon0, SST_lon_inc,
+     &     SST_lat0, SST_lat_inc,
+     &     SST_nlon, SST_nlat, xC, yC,
+     &     SST_interpMethod,
+# endif
+     &     myLocTime, nIter0, mythid )
+       ENDIF
+       
+       IF ( gchem_SSSFile .NE. ' ' ) THEN
+        myLocTime = startTime + deltaTClock*nIter0
+        CALL EXF_SET_FLD(
+     &     'gchemSSS', gchem_SSSFile, gchem_SSSMask,
+     &     gchem_SSSStartTime, gchem_SSSPeriod, gchem_SSSRepCycle,
+     &     gchem_inscal_SSS,
+     &     gchem_SSS_exfremo_intercept, gchem_SSS_exfremo_slope,
+     &     gchemSSS, gchemSSS0, gchemSSS1,
+# ifdef USE_EXF_INTERPOLATION
+     &     SSS_lon0, SSS_lon_inc,
+     &     SSS_lat0, SSS_lat_inc,
+     &     SSS_nlon, SSS_nlat, xC, yC,
+     &     SSS_interpMethod,
+# endif
+     &     myLocTime, nIter0, mythid )
+       ENDIF
+
 #ifdef GCHEM_3D_SILICA
+       myLocTime = startTime + deltaTClock*nIter0
        IF ( gchem_Si3DFile .NE. ' ' ) THEN
          CALL EXF_SET_FLD3D(
      &      'gchemSi3D', gchem_Si3DFile, gchem_Si3DMask,
@@ -402,12 +488,12 @@ c     &     mythid )
      &     'gchemWind', gchem_WindFile, gchem_WindMask,
      &     gchem_WindPeriod, gchem_inscal_Wind, gchem_wind_const,
      &     gchemWind, gchemWind0, gchemWind1,
-#ifdef USE_EXF_INTERPOLATION
+# ifdef USE_EXF_INTERPOLATION
      &     wind_lon0, wind_lon_inc,
      &     wind_lat0, wind_lat_inc,
      &     wind_nlon, wind_nlat, xC, yC,
      &     wind_interpMethod,
-#endif
+# endif
      &     mythid )
        ENDIF
 
@@ -416,12 +502,12 @@ c     &     mythid )
      &     'gchemAtmosP', gchem_apresFile, gchem_apresMask,
      &     gchem_apresPeriod, gchem_inscal_apres, gchem_apres_const,
      &     gchemAtmosP, gchemApres0, gchemApres1,
-#ifdef USE_EXF_INTERPOLATION
+# ifdef USE_EXF_INTERPOLATION
      &     apres_lon0, apres_lon_inc,
      &     apres_lat0, apres_lat_inc,
      &     apres_nlon, apres_nlat, xC, yC,
      &     apres_interpMethod,
-#endif
+# endif
      &     mythid )
        ENDIF
 
@@ -430,12 +516,12 @@ c     &     mythid )
      &     'gchemIce', gchem_iceFile, gchem_iceMask,
      &     gchem_icePeriod, gchem_inscal_ice, gchem_ice_const,
      &     gchemIce, gchemIce0, gchemIce1,
-#ifdef USE_EXF_INTERPOLATION
+# ifdef USE_EXF_INTERPOLATION
      &     ice_lon0, ice_lon_inc,
      &     ice_lat0, ice_lat_inc,
      &     ice_nlon, ice_nlat, xC, yC,
      &     ice_interpMethod,
-#endif
+# endif
      &     mythid )
        ENDIF
 
@@ -444,12 +530,12 @@ c     &     mythid )
      &     'gchemPAR', gchem_parFile, gchem_parMask,
      &     gchem_parPeriod, gchem_inscal_par, gchem_par_const,
      &     gchemPAR, gchemPAR0, gchemPAR1,
-#ifdef USE_EXF_INTERPOLATION
+# ifdef USE_EXF_INTERPOLATION
      &     par_lon0, par_lon_inc,
      &     par_lat0, par_lat_inc,
      &     par_nlon, par_nlat, xC, yC,
      &     par_interpMethod,
-#endif
+# endif
      &     mythid )
        ENDIF
 
@@ -458,12 +544,12 @@ c     &     mythid )
      &     'gchemFe', gchem_FeFile, gchem_FeMask,
      &     gchem_FePeriod, gchem_inscal_Fe, gchem_Fe_const,
      &     gchemFe, gchemFe0, gchemFe1,
-#ifdef USE_EXF_INTERPOLATION
+# ifdef USE_EXF_INTERPOLATION
      &     Fe_lon0, Fe_lon_inc,
      &     Fe_lat0, Fe_lat_inc,
      &     Fe_nlon, Fe_nlat, xC, yC,
      &     Fe_interpMethod,
-#endif
+# endif
      &     mythid )
        ENDIF
 
@@ -472,12 +558,12 @@ c     &     mythid )
      &     'gchemapCO2', gchem_apco2File, gchem_apco2Mask,
      &     gchem_apco2Period, gchem_inscal_apco2, gchem_apco2_const,
      &     gchemapCO2, gchemApco20, gchemApco21,
-#ifdef USE_EXF_INTERPOLATION
+# ifdef USE_EXF_INTERPOLATION
      &     apco2_lon0, apco2_lon_inc,
      &     apco2_lat0, apco2_lat_inc,
      &     apco2_nlon, apco2_nlat, xC, yC,
      &     apco2_interpMethod,
-#endif
+# endif
      &     mythid )
        ENDIF
 
@@ -486,23 +572,57 @@ c     &     mythid )
      &     'gchemCHL', gchem_chlFile, gchem_chlMask,
      &     gchem_chlPeriod, gchem_inscal_chl, gchem_chl_const,
      &     gchemchl, gchemchl0, gchemchl1,
-#ifdef USE_EXF_INTERPOLATION
+# ifdef USE_EXF_INTERPOLATION
      &     chl_lon0, chl_lon_inc,
      &     chl_lat0, chl_lat_inc,
      &     chl_nlon, chl_nlat, xC, yC,
      &     chl_interpMethod,
-#endif
+# endif
      &     mythid )
        ENDIF
 
 C     useEXF
       ENDIF
-#endif /* ALLOW_EXF */
+# endif /* ALLOW_EXF */
+
+C if there are not SST or SSS files, we need to initialize the fields 
+C  from the main model
+      IF ( gchem_SSTFile .EQ. ' ' ) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           gchemSST(i,j,bi,bj) = theta(i,j,k,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+
+C If there is no SSS file given in data.gchem, get fields from
+C  the main model so we can initialize pH/pCO2 correctly.
+      IF ( usingPCoords ) THEN
+        k = Nr
+      ELSE
+        k = 1
+      ENDIF
+
+      IF ( gchem_SSSFile .EQ. ' ' ) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           gchemSSS(i,j,bi,bj) = salt(i,j,k,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
 
       _EXCH_XY_RL( gchemSi, myThid )
-#ifdef GCHEM_3D_SILICA
+# ifdef GCHEM_3D_SILICA
       _EXCH_XYZ_RL( gchemSi3D, myThid )
-#endif
+# endif
       _EXCH_XY_RL( gchemWind, myThid )
       _EXCH_XY_RL( gchemIce, myThid )
       _EXCH_XY_RL( gchemAtmosP, myThid )
@@ -510,6 +630,8 @@ C     useEXF
       _EXCH_XY_RL( gchemFe, myThid )
       _EXCH_XY_RL( gchemapCO2, myThid )
       _EXCH_XY_RL( gchemchl, myThid )
+      _EXCH_XY_RL( gchemSST, myThid )
+      _EXCH_XY_RL( gchemSSS, myThid )
 #endif /* GCHEM_ALLOW_FFIELDS */
 
 C--   Initialise other Geo-Chemistry pkg variables:

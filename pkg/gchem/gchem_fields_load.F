@@ -17,6 +17,7 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
+#include "DYNVARS.h"
 #include "GCHEM_SIZE.h"
 #include "GCHEM.h"
 #include "GCHEM_FIELDS.h"
@@ -159,6 +160,18 @@ C     data for the period ahead and the period behind myTime.
           CALL READ_REC_XY_RS( gchem_chlFile,gchemchl1,intime1,
      &         myIter,myThid )
          ENDIF
+         IF ( gchem_SSTFile .NE. ' ' ) THEN
+          CALL READ_REC_XY_RS( gchem_SSTFile,gchemSST0,intime0,
+     &         myIter,myThid )
+          CALL READ_REC_XY_RS( gchem_SSTFile,gchemSST1,intime1,
+     &         myIter,myThid )
+         ENDIF
+         IF ( gchem_SSSFile .NE. ' ' ) THEN
+          CALL READ_REC_XY_RS( gchem_SSSFile,gchemSSS0,intime0,
+     &         myIter,myThid )
+          CALL READ_REC_XY_RS( gchem_SSSFile,gchemSSS1,intime1,
+     &         myIter,myThid )
+         ENDIF
 
 C--   fill-in overlap after loading temp arrays:
          _EXCH_XY_RS(gchemWind0, myThid )
@@ -183,6 +196,10 @@ C--   fill-in overlap after loading temp arrays:
          _EXCH_XY_RS(gchemApco21, myThid )
          _EXCH_XY_RS(gchemchl0, myThid )
          _EXCH_XY_RS(gchemchl1, myThid )
+         _EXCH_XY_RS(gchemSST0, myThid )
+         _EXCH_XY_RS(gchemSST1, myThid )
+         _EXCH_XY_RS(gchemSSS0, myThid )
+         _EXCH_XY_RS(gchemSSS1, myThid )
 
 C-    save newly loaded time-record
          DO bj = myByLo(myThid), myByHi(myThid)
@@ -280,7 +297,27 @@ C-     end if-bloc (time to load new fields)
             ENDDO
            ENDDO
           ENDIF
+
+          IF ( gchem_SSTFile .NE. ' ' ) THEN
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             gchemSST(i,j,bi,bj) = bWght*gchemSST0(i,j,bi,bj)
+     &                           + aWght*gchemSST1(i,j,bi,bj)    
+            ENDDO
+           ENDDO
+          ENDIF
+
+          IF ( gchem_SSSFile .NE. ' ' ) THEN
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             gchemSSS(i,j,bi,bj) = bWght*gchemSSS0(i,j,bi,bj)
+     &                           + aWght*gchemSSS1(i,j,bi,bj)
+            ENDDO
+           ENDDO
+          ENDIF
+C end bi-loop
          ENDDO
+C end bj-loop
         ENDDO
 C--   endif for GCHEM_forcingCycle
        ENDIF
@@ -309,10 +346,10 @@ C If a wind file is given in data.gchem, read it
      &     mytime, myiter, mythid )
 C Otherwise get winds from PKG/EXF
        ELSEIF ( useEXF
-     &   .AND. ( uwindfile .NE. ' ' .AND.
+     &   .AND. (( uwindfile .NE. ' ' .AND.
      &           vwindfile .NE. ' ' )
      &  .OR. ( ustressfile .NE. ' ' .AND.
-     &         vstressfile .NE. ' ' )) THEN
+     &         vstressfile .NE. ' ' ))) THEN
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
@@ -484,6 +521,40 @@ C     forcing load fields with pkg/exf tools
 # endif
      &     mytime, myiter, mythid )
        ENDIF
+
+       IF ( gchem_SSTFile .NE. ' ' ) THEN
+C     forcing load fields with pkg/exf tools
+        CALL EXF_SET_FLD(
+     &     'gchemSST', gchem_SSTfile, gchem_SSTmask,
+     &     gchem_SSTStartTime, gchem_SSTPeriod, gchem_SSTRepCycle,
+     &     gchem_inscal_SST,
+     &     gchem_SST_exfremo_intercept, gchem_SST_exfremo_slope,
+     &     gchemSST, gchemSST0, gchemSST1,
+# ifdef USE_EXF_INTERPOLATION
+     &     SST_lon0, SST_lon_inc,
+     &     SST_lat0, SST_lat_inc,
+     &     SST_nlon, SST_nlat, xC, yC,
+     &     SST_interpMethod,
+# endif
+     &     mytime, myiter, mythid )
+       ENDIF
+
+       IF ( gchem_SSSFile .NE. ' ' ) THEN
+C     forcing load fields with pkg/exf tools
+        CALL EXF_SET_FLD(
+     &     'gchemSSS', gchem_SSSfile, gchem_SSSmask,
+     &     gchem_SSSStartTime, gchem_SSSPeriod, gchem_SSSRepCycle,
+     &     gchem_inscal_SSS,
+     &     gchem_SSS_exfremo_intercept, gchem_SSS_exfremo_slope,
+     &     gchemSSS, gchemSSS0, gchemSSS1,
+# ifdef USE_EXF_INTERPOLATION
+     &     SSS_lon0, SSS_lon_inc,
+     &     SSS_lat0, SSS_lat_inc,
+     &     SSS_nlon, SSS_nlat, xC, yC,
+     &     SSS_interpMethod,
+# endif
+     &     mytime, myiter, mythid )
+       ENDIF
 C     endif gchem_useEXF
       ENDIF
 #endif /* ALLOW_EXF */
@@ -516,6 +587,39 @@ C pkg/seaice/thsIce
         ENDDO
        ENDDO
       ENDIF
+
+      IF ( usingPCoords ) THEN
+        k = Nr
+      ELSE
+        k = 1
+      ENDIF
+
+C If there is no SST file given in data.gchem, get fields from
+C  the main model      
+      IF ( gchem_SSTFile .EQ. ' ' ) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           gchemSST(i,j,bi,bj) = theta(i,j,k,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+
+C If there is no SSS file given in data.gchem, get fields from
+C  the main model
+      IF ( gchem_SSSFile .EQ. ' ' ) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           gchemSSS(i,j,bi,bj) = salt(i,j,k,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
 #endif /* GCHEM_ALLOW_FFIELDS */
 
 C     now the various BGC packages can use the gchem fields

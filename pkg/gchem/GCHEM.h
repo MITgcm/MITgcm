@@ -82,6 +82,8 @@ C--   COMMON /GCHEM_FIELDS_C/
      &    gchem_FeFile,
      &    gchem_apco2File,
      &    gchem_chlFile,
+     &    gchem_SSTFile,
+     &    gchem_SSSFile,
      &    gchem_Si3DFile
 
       CHARACTER*128 gchem_iceFile
@@ -92,13 +94,16 @@ C--   COMMON /GCHEM_FIELDS_C/
       CHARACTER*128 gchem_apco2File
       CHARACTER*128 gchem_apresFile
       CHARACTER*128 gchem_chlFile
+      CHARACTER*128 gchem_SSTFile
+      CHARACTER*128 gchem_SSSFile
       CHARACTER*128 gchem_Si3DFile
 
 C--   COMMON /GCHEM_FIELDS_R/
       COMMON /GCHEM_FIELDS_R/
      &     gchem_Si_const, gchem_Si3D_const, gchem_par_const, 
      &     gchem_Fe_const, gchem_apco2_const, gchem_wind_const, 
-     &     gchem_apres_const, gchem_chl_const, gchem_ice_const
+     &     gchem_apres_const, gchem_chl_const, gchem_ice_const,
+     &     gchem_SST_const, gchem_SSS_const
 
       _RL gchem_Si_const
       _RL gchem_Si3D_const
@@ -109,5 +114,7 @@ C--   COMMON /GCHEM_FIELDS_R/
       _RL gchem_apres_const
       _RL gchem_chl_const
       _RL gchem_ice_const
-
+      _RL gchem_SST_const
+      _RL gchem_SSS_const
+      
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
