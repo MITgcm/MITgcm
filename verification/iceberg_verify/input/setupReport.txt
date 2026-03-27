@@ -1,0 +1,159 @@
+====== Welcome to the mélange building script =====
+
+finModel is a smaller verion of a fjord for running on mac locally
+
+Use icebergs and a subglacial plume
+
+You should only have to build, then run.
+
+Directory: verify 
+	makeDirs: True, writeFiles: True
+run_config is {'ncpus_xy': [1, 1], 'run_name': 'verify', 'ndays': 1, 'test': False, 'horiz_res_m': 500, 'Lx_m': 15000, 'Ly_m': 5000, 'terminus_m': 0, 'make_icebergs': True, 'use_GMRedi': False, 'periodic_forcing': True, 'use_MPI': False, 'lf': '\r\n', 'exps_dir': '../experiments', 'run_dir': '../experiments/verify'}
+run directory and subdirectories:
+../experiments/verify
+['makeBuild.sh', 'submitBatch.sh', 'input', 'figs', 'code', 'results', 'makeRun.sh', 'build', 'couplingResults']
+====== Domain Size and Parameters =====
+Nx: 30.0
+Ny: 10.0
+sNx: 30.0
+sNy: 10.0
+Grid parameters
+{'Nr': 12, 'nSx': 1, 'nSy': 1, 'nTx': 1, 'nTy': 1, 'OLx': 3, 'OLy': 3, 'nPx': 1, 'nPy': 1, 'Nx': 30, 'Ny': 10, 'sNx': 30, 'sNy': 10}
+dz: 
+ [12.5        19.31818182 26.13636364 32.95454545 39.77272727 46.59090909
+ 53.40909091 60.22727273 67.04545455 73.86363636 80.68181818 87.5       ]
+z: 
+ [ 12.5         31.81818182  57.95454545  90.90909091 130.68181818
+ 177.27272727 230.68181818 290.90909091 357.95454545 431.81818182
+ 512.5        600.        ]
+====== Stability Check =====
+S_adv: <0.5 , S_in: <0.5 , S_lv: <0.6
+S_adv: 0.0500, S_in: 0.0034, S_lv: 0.0001
+S_adv: 0.0833, S_in: 0.0034, S_lv: 0.0002
+Diagnostic Settings
+{'diag_mnc': False, 'fields(1:5,1)': "THETA','SALT','UVEL','WVEL','VVEL", 'fileName(1)': 'dynDiag', 'frequency(1)': 3600, 'timePhase(1)': 0.0, 'fields(1:6,2)': "BRGfwFlx','BRGhtFlx','BRGmltRt','BRG_TauX','BRG_TauY','BRGhFacC", 'fileName(2)': 'BRGFlx', 'frequency(2)': 3600, 'timePhase(2)': 0.0, 'fields(1:5,3)': "icefrntW','icefrntT','icefrntS','icefrntA','icefrntR", 'fileName(3)': 'plumeDiag', 'frequency(3)': 3600, 'timePhase(3)': 0.0, 'fields(1:2,4)': "TRAC01','TRAC02", 'fileName(4)': 'ptraceDiag', 'frequency(4)': 3600, 'timePhase(4)': 0.0}
+====== Boundary Conditions =====
+====== Domain Initialization =====
+fjord end: 14
+bathymetry.bin (10, 30)
+Sample BC Temp change, mid depth:
+[3.41627789 3.41627789 3.41627789 3.41627789 3.41627789 3.41627789
+ 3.41627789 3.41627789 3.41627789 3.41627789 3.41627789 3.41627789
+ 3.41627789 3.41627789 3.41627789 3.41627789 3.41627789 3.41627789
+ 3.41627789 3.41627789 3.41627789 3.41627789 3.41627789 3.41627789
+ 3.41627789 3.41627789 3.41627789 3.41627789 3.41627789 3.41627789
+ 3.41627789 3.41627789 3.41627789 3.41627789 3.41627789 3.41627789
+ 3.41627789 3.41627789 3.41627789 3.41627789 3.41627789 3.41627789
+ 3.41627789 3.41627789 3.41627789 3.41627789 3.41627789 3.41627789]
+T.init (12, 10, 30)
+S.init (12, 10, 30)
+EBCs.bin (48, 12, 10)
+EBCt.bin (48, 12, 10)
+EBCv.bin (48, 12, 10)
+NsBCs.bin (48, 12, 30)
+NsBCt.bin (48, 12, 30)
+NsBCv.bin (48, 12, 30)
+NsBCW.bin (48, 12, 30)
+NsBCptr.bin (48, 12, 30)
+EBCptr.bin (48, 12, 10)
+====== Plume =====
+Runoff is:
+[500. 500. 500. 500. 500. 500. 500. 500. 500. 500. 500. 500. 500. 500.
+ 500. 500. 500. 500. 500. 500. 500. 500. 500. 500. 500. 500. 500. 500.
+ 500. 500. 500. 500. 500. 500. 500. 500. 500. 500. 500. 500. 500. 500.
+ 500. 500. 500. 500. 500. 500.]
+Plume Location: 5 discharge: 500.000000
+runoffVel.bin (48, 10, 30)
+runoffRad.bin (48, 10, 30)
+plumeMask.bin (10, 30)
+pTracerMask.bin (2, 10, 30)
+fjordMouthVelocity is:
+[0.00016667 0.00016667 0.00016667 0.00016667 0.00016667 0.00016667
+ 0.00016667 0.00016667 0.00016667 0.00016667 0.00016667 0.00016667
+ 0.00016667 0.00016667 0.00016667 0.00016667 0.00016667 0.00016667
+ 0.00016667 0.00016667 0.00016667 0.00016667 0.00016667 0.00016667
+ 0.00016667 0.00016667 0.00016667 0.00016667 0.00016667 0.00016667
+ 0.00016667 0.00016667 0.00016667 0.00016667 0.00016667 0.00016667
+ 0.00016667 0.00016667 0.00016667 0.00016667 0.00016667 0.00016667
+ 0.00016667 0.00016667 0.00016667 0.00016667 0.00016667 0.00016667]
+EBCu.bin (48, 12, 10)
+====== Making mélange =====
+Area where bergs live: 18000000.0 m^2
+Desired berg area: 7200000.0 m^2
+Ratio: 40.0%
+Making bergs, this can take a few loops...
+random seed set, not really random anymore
+	numberOfBergs: 100
+		2.10 % Bergs
+		areaResidual 94.75 %
+	numberOfBergs: 195
+		4.65 % Bergs
+		areaResidual 88.38 %
+	numberOfBergs: 367
+		11.03 % Bergs
+		areaResidual 72.41 %
+	numberOfBergs: 633
+		16.34 % Bergs
+		areaResidual 59.16 %
+	numberOfBergs: 1007
+		23.48 % Bergs
+		areaResidual 41.30 %
+	numberOfBergs: 1423
+		Bergs clipped: 3 for width, 2 for length
+		39.06 % Bergs
+		areaResidual 2.35 %
+	numberOfBergs: 1457
+		33.74 % Bergs
+		areaResidual 15.65 %
+	numberOfBergs: 1685
+		Bergs clipped: 2 for width, 2 for length
+		41.34 % Bergs
+		areaResidual -3.34 %
+	numberOfBergs: 1629
+		Bergs clipped: 1 for width, 0 for length
+		41.27 % Bergs
+		areaResidual -3.18 %
+	numberOfBergs: 1577
+		Bergs clipped: 2 for width, 1 for length
+		40.13 % Bergs
+		areaResidual -0.32 %
+====== Success! Found our bergs =====
+Width min/mean/max: 40.010447/62.104688/474.331649 [m]
+Depth min/mean/max: 20.842303/60.735337/231.593004 [m]
+Total Berg Area 7223067.292262
+Total Berg fract: 40.13 %
+72 cells with bergs
+	 Randomly missed, will force into cell with room: 36
+	 Randomly missed, will force into cell with room: 23
+	 Randomly missed, will force into cell with room: 37
+Bergs per cell and filled faction at surface for spot check
+[32 35 38 24  4 30 23 11 16 28 14 19 34 30 14 12 34 25 28 34 12 29 15  1
+ 32 10 21 30 29 21 33 20 30 21 13 38  1  1 22  6 14 36 24 14 34 32  9  5
+ 27  9  6  6 32 41 29 28 31 23  9 23 26 32 20 10 36 23 14 18 24 22 20 30]
+[0.38 0.39 0.4  0.28 0.4  0.4  0.41 0.41 0.4  0.34 0.41 0.41 0.39 0.3
+ 0.4  0.41 0.4  0.38 0.4  0.4  0.41 0.41 0.4  0.9  0.4  0.41 0.4  0.4
+ 0.4  0.4  0.37 0.4  0.32 0.4  0.4  0.34 0.48 0.82 0.4  0.4  0.4  0.41
+ 0.39 0.41 0.39 0.32 0.41 0.41 0.37 0.41 0.4  0.41 0.37 0.4  0.4  0.32
+ 0.3  0.4  0.4  0.41 0.4  0.39 0.4  0.4  0.37 0.23 0.4  0.41 0.38 0.41
+ 0.4  0.4 ]
+Max fill is: 90.00%
+bergMask.bin (10, 30)
+bergMaskNums.bin (10, 30)
+numBergsPerCell.bin (10, 30)
+openFrac.bin (12, 10, 30)
+totalBergArea.bin (12, 10, 30)
+meltMask.bin (10, 30)
+driftMask.bin (10, 30)
+barrierMask.bin (10, 30)
+icebergs_depths.bin (500, 10, 30)
+icebergs_widths.bin (500, 10, 30)
+icebergs_length.bin (500, 10, 30)
+brg_tracerMask.bin (2, 10, 30)
+Berg setup is done.
+====== Cleaning up input/ files =====
+====== sbatch script and settings =====
+===== Wall Clock Time =====
+Estimated run time is 0.04 hours for one CPU
+Estimated run time is 0.05 hours for 1 CPUs
+
+previous setupReport.txt deleted in ../experiments/verify/input/
