@@ -1,6 +1,11 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/cost:
+  - change ordering of calls in `cost_final.F`, profiles before ecco, as
+    before PR 946 ; refine printing of cost per tile value to STDOUT.
+  - drop condition on "useECCO" in shelfice_cost_final.F ; fix few missing
+    or inconsistent CPP #ifdef.
 o verification/global_ocean.cs32x15 & offline_exf_seaice:
   - in exp. "global_ocean.cs32x15", turn off useCAL in remaining FWD and AD
     tests and skip compilation of pkg/cal in FWD built. Also shift "nIter0"
