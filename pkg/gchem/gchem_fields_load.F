@@ -44,7 +44,9 @@ C  myThid               :: thread number
 #ifdef GCHEM_ALLOW_FFIELDS
 C !LOCAL VARIABLES: ===================================================
       INTEGER bi, bj, i, j
+#ifdef GCHEM_3D_SILICA
       INTEGER k
+#endif
       INTEGER intimeP, intime0, intime1
       _RL aWght,bWght
       INTEGER iUnit
@@ -558,74 +560,6 @@ C     forcing load fields with pkg/exf tools
 C     endif gchem_useEXF
       ENDIF
 #endif /* ALLOW_EXF */
-
-C------------------------------------------------------------
-C If there is no ice file given in data.gchem, try fields from
-C pkg/seaice/thsIce
-      IF ( gchem_IceFile .EQ. ' ' ) THEN
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-#ifdef ALLOW_SEAICE
-         IF ( useSEAICE ) THEN
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-            gchemIce(i,j,bi,bj) = AREA(i,j,bi,bj)
-           ENDDO
-          ENDDO
-         ENDIF
-#endif
-#ifdef ALLOW_THSICE
-         IF ( useThSIce ) THEN
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-            gchemIce(i,j,bi,bj) = iceMask(i,j,bi,bj)
-           ENDDO
-          ENDDO
-         ENDIF
-#endif
-        ENDDO
-       ENDDO
-C endif empty gchem_IceFile       
-      ENDIF
-
-      IF ( usingPCoords ) THEN
-        k = Nr
-      ELSE
-        k = 1
-      ENDIF
-C If there is no SST file given in data.gchem, get fields from
-C  the main model so we can initialize pH/pCO2 correctly.
-      IF ( gchem_SSTFile .EQ. ' ' ) THEN
-        WRITE(msgBuf,'(A)') ' GCHEM_FIELDS_LOAD: gchemSST<-THETA'
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-            gchemSST(i,j,bi,bj) = theta(i,j,k,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-      ENDIF
-
-C If there is no SSS file given in data.gchem, get fields from
-C  the main model so we can initialize pH/pCO2 correctly.
-      IF ( gchem_SSSFile .EQ. ' ' ) THEN
-        WRITE(msgBuf,'(A)') ' GCHEM_FIELDS_LOAD: gchemSSS<-SALT'
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-            gchemSSS(i,j,bi,bj) = salt(i,j,k,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-      ENDIF
 #endif /* GCHEM_ALLOW_FFIELDS */
 
 C     now the various BGC packages can use the gchem fields

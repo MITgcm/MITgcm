@@ -71,11 +71,7 @@ C     tkey :: tape key (tile dependent)
 #endif
 CEOP
 
-      IF ( usingPCoords ) THEN
-        kLev = Nr
-      ELSE
-        kLev = 1
-      ENDIF
+      kLev = 1
 
 cC if coupled to atmsopheric model, use the
 cC Co2 value passed from the coupler

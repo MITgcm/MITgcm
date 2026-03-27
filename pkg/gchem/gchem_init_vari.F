@@ -597,12 +597,6 @@ C     useEXF
       _EXCH_XY_RL( gchemSST, myThid )
       _EXCH_XY_RL( gchemSSS, myThid )
 
-      IF (usingPCoords) THEN
-        k = Nr
-      ELSE
-        k = 1
-      ENDIF
-
 C If there is no SST file given in data.gchem, get fields from
 C  the main model so we can initialize pH/pCO2 correctly.
       IF ( gchem_SSTFile .EQ. ' ' ) THEN
@@ -613,7 +607,7 @@ C  the main model so we can initialize pH/pCO2 correctly.
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-            gchemSST(i,j,bi,bj) = theta(i,j,k,bi,bj)
+            gchemSST(i,j,bi,bj) = theta(i,j,1,bi,bj)
            ENDDO
           ENDDO
          ENDDO
@@ -630,7 +624,7 @@ C  the main model so we can initialize pH/pCO2 correctly.
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-            gchemSSS(i,j,bi,bj) = salt(i,j,k,bi,bj)
+            gchemSSS(i,j,bi,bj) = salt(i,j,1,bi,bj)
            ENDDO
           ENDDO
          ENDDO

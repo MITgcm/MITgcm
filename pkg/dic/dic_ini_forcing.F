@@ -27,8 +27,6 @@ C !USES: ===============================================================
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
       INTEGER myThid
-      INTEGER iUnit
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
 #ifdef ALLOW_DIC
@@ -58,9 +56,6 @@ C-    Initialise DIC_VARS.h forcing-field arrays from reasonable values in pkg/g
          CHL       (i,j,bi,bj) = gchemCHL(i,j,bi,bj)
          InputFe   (i,j,bi,bj) = gchemFe(i,j,bi,bj)
 #endif
-         WRITE(msgBuf,'(A)') ' DIC_INIT_FORCING: dicSST<-gchemSST'
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
          dicSST    (i,j,bi,bj) = gchemSST(i,j,bi,bj)
          dicSSS    (i,j,bi,bj) = gchemSSS(i,j,bi,bj)
 #if defined(DIC_CALCITE_SAT) && defined(GCHEM_3D_SILICA) 
@@ -146,11 +141,7 @@ C-   end bi,bj loops:
 
 C ======================================================================
 C--   Set reasonable values to those that need at least something
-      IF ( usingPCoords ) THEN
-       kLev = Nr
-      ELSE
-       kLev = 1
-      ENDIF
+      kLev = 1
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -170,9 +161,7 @@ C If the chlorophyll climatology is not provided, use this default value.
 #ifdef ALLOW_FE
           InputFe(i,j,bi,bj)    = 1. _d -11*maskC(i,j,kLev,bi,bj)
 #endif
-          WRITE(msgBuf,'(A)') ' DIC_INIT_FORCING: dicSST<-model THETA'
-          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
+C Get SST and SSS from the main model
           dicSST(i,j,bi,bj)     = theta(i,j,kLev,bi,bj)
      &                                     *maskC(i,j,kLev,bi,bj)
           dicSSS(i,j,bi,bj)     = salt (i,j,kLev,bi,bj)

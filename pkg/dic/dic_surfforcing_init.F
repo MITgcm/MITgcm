@@ -50,12 +50,7 @@ CEOP
 
 C =================================================================
 
-      IF ( usingPCoords ) THEN
-        kLev = Nr
-      ELSE
-        kLev = 1
-      ENDIF
-
+      kLev = 1
       jMin=1
       jMax=sNy
       iMin=1
