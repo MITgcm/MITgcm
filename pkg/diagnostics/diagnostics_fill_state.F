@@ -25,6 +25,9 @@ C     == Global variables ===
 #ifdef ALLOW_GENERIC_ADVDIFF
 # include "GAD.h"
 #endif
+#ifdef ALLOW_LAYERS
+# include "LAYERS_SWITCH.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -387,7 +390,11 @@ C     (next fill for these diagnostics will NOT allow counter to be incremented)
         CALL DIAGNOSTICS_SCALE_FILL( vVel, tmpFac, 1,
      &                              'TOTVTEND',0,Nr,0,1,1,myThid )
 
-        IF ( DIAGNOSTICS_IS_ON('TOTTTEND',myThid) ) THEN
+        IF ( DIAGNOSTICS_IS_ON('TOTTTEND',myThid)
+#ifdef ALLOW_LAYERS
+     &     .OR. layers_useThermo
+#endif
+     &     ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO k=1,Nr
@@ -402,13 +409,17 @@ C     (next fill for these diagnostics will NOT allow counter to be incremented)
          ENDDO
          CALL DIAGNOSTICS_FILL(tmpMk,'TOTTTEND',0,Nr,0,1,1,myThid)
 #ifdef ALLOW_LAYERS
-         IF ( useLayers ) THEN
-           CALL LAYERS_FILL(tmpMk,1,'TOT',0,Nr,0,1,1,myThid)
+         IF ( layers_useThermo ) THEN
+          CALL LAYERS_FILL(tmpMk,1,'TOT',0,Nr,0,1,1,myThid)
          ENDIF
 #endif /* ALLOW_LAYERS */
         ENDIF
 
-        IF ( DIAGNOSTICS_IS_ON('TOTSTEND',myThid) ) THEN
+        IF ( DIAGNOSTICS_IS_ON('TOTSTEND',myThid)
+#ifdef ALLOW_LAYERS
+     &     .OR. layers_useThermo
+#endif
+     &     ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO k=1,Nr
@@ -423,8 +434,8 @@ C     (next fill for these diagnostics will NOT allow counter to be incremented)
          ENDDO
          CALL DIAGNOSTICS_FILL(tmpMk,'TOTSTEND',0,Nr,0,1,1,myThid)
 #ifdef ALLOW_LAYERS
-         IF ( useLayers ) THEN
-           CALL LAYERS_FILL(tmpMk,2,'TOT',0,Nr,0,1,1,myThid)
+         IF ( layers_useThermo ) THEN
+          CALL LAYERS_FILL(tmpMk,2,'TOT',0,Nr,0,1,1,myThid)
          ENDIF
 #endif /* ALLOW_LAYERS */
         ENDIF
@@ -695,7 +706,11 @@ C     (previous fill for these diagnostics DID allow counter to be incremented)
          ENDDO
         ENDDO
 
-        IF ( DIAGNOSTICS_IS_ON('TOTTTEND',myThid) ) THEN
+        IF ( DIAGNOSTICS_IS_ON('TOTTTEND',myThid)
+#ifdef ALLOW_LAYERS
+     &     .OR. layers_useThermo
+#endif
+     &     ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO k=1,Nr
@@ -708,15 +723,19 @@ C     (previous fill for these diagnostics DID allow counter to be incremented)
            ENDDO
            CALL DIAGNOSTICS_FILL(tmpMk,'TOTTTEND',0,Nr,-1,bi,bj,myThid)
 #ifdef ALLOW_LAYERS
-           IF ( useLayers ) THEN
-             CALL LAYERS_FILL(tmpMk,1,'TOT',0,Nr,-1,bi,bj,myThid)
+           IF ( layers_useThermo ) THEN
+            CALL LAYERS_FILL(tmpMk,1,'TOT',0,Nr,-1,bi,bj,myThid)
            ENDIF
 #endif /* ALLOW_LAYERS */
           ENDDO
          ENDDO
         ENDIF
 
-        IF ( DIAGNOSTICS_IS_ON('TOTSTEND',myThid) ) THEN
+        IF ( DIAGNOSTICS_IS_ON('TOTSTEND',myThid)
+#ifdef ALLOW_LAYERS
+     &     .OR. layers_useThermo
+#endif
+     &     ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO k=1,Nr
@@ -729,7 +748,7 @@ C     (previous fill for these diagnostics DID allow counter to be incremented)
            ENDDO
            CALL DIAGNOSTICS_FILL(tmpMk,'TOTSTEND',0,Nr,-1,bi,bj,myThid)
 #ifdef ALLOW_LAYERS
-           IF ( useLayers ) THEN
+           IF ( layers_useThermo ) THEN
             CALL LAYERS_FILL(tmpMk,2,'TOT',0,Nr,-1,bi,bj,myThid)
            ENDIF
 #endif /* ALLOW_LAYERS */

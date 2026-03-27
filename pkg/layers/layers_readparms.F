@@ -11,6 +11,7 @@ C     Read LAYERS parameters from data file.
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "LAYERS_SIZE.h"
+#include "LAYERS_SWITCH.h"
 #include "LAYERS.h"
 
 C     INPUT PARAMETERS:
@@ -41,6 +42,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &       LAYER_nb, layers_kref, useBOLUS, layers_bolus,
      &       layers_name, layers_bounds, layers_krho
 
+       _BEGIN_MASTER(myThid)
+       layers_useThermo = .FALSE.
+       _END_MASTER(myThid)
+
       IF ( .NOT.useLayers ) THEN
 C-    pkg LAYERS is not used
         _BEGIN_MASTER(myThid)
@@ -56,7 +61,11 @@ C     print a (weak) warning if data.layers is found
       layers_taveFreq = UNSET_RL
 
 C--   Default values for LAYERS
-
+#ifdef LAYERS_THERMODYNAMICS
+C-    Currently, there is no run-time switch for doing the "layers thermodynamics"
+C       part and this is turned on at compile time (with CPP option above):
+      layers_useThermo = .TRUE.
+#endif
       layers_diagFreq = dumpFreq
 C     The MNC stuff is not working yet
       layers_MNC = .FALSE.
@@ -238,7 +247,7 @@ C     Fix to avoid running without getting any output:
 C--   Everyone else must wait for the parameters to be loaded
       _BARRIER
 
-#endif /* ALLOW_MYPACKAGE */
+#endif /* ALLOW_LAYERS */
 
       RETURN
       END
