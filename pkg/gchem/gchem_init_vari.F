@@ -52,8 +52,6 @@ C  jTr                  :: ptracer number
 #ifdef GCHEM_ADD2TR_TENDENCY
       INTEGER jTr
 #endif /* GCHEM_ADD2TR_TENDENCY */
-      INTEGER iUnit
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
 C--   Initialise GCHEM variables:
 
 #ifdef GCHEM_ADD2TR_TENDENCY
@@ -600,9 +598,6 @@ C     useEXF
 C If there is no SST file given in data.gchem, get fields from
 C  the main model so we can initialize pH/pCO2 correctly.
       IF ( gchem_SSTFile .EQ. ' ' ) THEN
-        WRITE(msgBuf,'(A)') ' GCHEM_INIT_VARIA: gchemSST<-THETA'
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
@@ -617,9 +612,6 @@ C  the main model so we can initialize pH/pCO2 correctly.
 C If there is no SSS file given in data.gchem, get fields from
 C  the main model so we can initialize pH/pCO2 correctly.
       IF ( gchem_SSSFile .EQ. ' ' ) THEN
-        WRITE(msgBuf,'(A)') ' GCHEM_INIT_VARIA: gchemSSS<-SALT'
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
