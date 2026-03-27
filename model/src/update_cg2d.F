@@ -1,5 +1,6 @@
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#include "BACKWARD_COMPAT_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: UPDATE_CG2D
@@ -48,7 +49,7 @@ C     i,j,k  :: Loop counters
 C     faceArea :: Temporary used to hold cell face areas.
       INTEGER bi, bj
       INTEGER i, j, k, ks
-      _RL     faceArea
+      _RL     faceArea, tmpFac
       _RL     pW_tmp, pS_tmp
       LOGICAL updatePreCond
 CEOP
@@ -60,10 +61,20 @@ C--   Decide when to update cg2d Preconditioner :
         updatePreCond = ( myIter.EQ.nIter0 )
         IF ( MOD(myIter,cg2dPreCondFreq).EQ.0 ) updatePreCond=.TRUE.
       ENDIF
+      IF ( implicDiv2DFlow.GT.zeroRL ) THEN
+        tmpFac = freeSurfFac*cg2dNorm/(implicDiv2DFlow*deltaTFreeSurf)
+      ELSE
+        tmpFac = 0. _d 0
+      ENDIF
 
 C--   Initialise laplace operator
+#ifdef PRESERVE_C69C_OUTPUT
 C     aW2d: integral in Z Ax/dX
 C     aS2d: integral in Z Ay/dY
+#else
+C     aW2d: integral in Z Ax/dX *deltaT
+C     aS2d: integral in Z Ay/dY *deltaT
+#endif
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
@@ -116,12 +127,20 @@ C  deep-model: *deepFacC (faceArea), /deepFacC (recip_dx,y): => no net effect
         DO j=1,sNy+1
          DO i=1,sNx+1
           aW2d(i,j,bi,bj) = aW2d(i,j,bi,bj)*cg2dNorm
+#ifdef PRESERVE_C69C_OUTPUT
      &                     *implicSurfPress*implicDiv2DFlow
+#else
+     &                     *implicSurfPress*deltaTMom
+#endif
 #ifdef ALLOW_OBCS
      &                  *maskInC(i,j,bi,bj)*maskInC(i-1,j,bi,bj)
 #endif
           aS2d(i,j,bi,bj) = aS2d(i,j,bi,bj)*cg2dNorm
+#ifdef PRESERVE_C69C_OUTPUT
      &                     *implicSurfPress*implicDiv2DFlow
+#else
+     &                     *implicSurfPress*deltaTMom
+#endif
 #ifdef ALLOW_OBCS
      &                  *maskInC(i,j,bi,bj)*maskInC(i,j-1,bi,bj)
 #endif
@@ -135,8 +154,12 @@ C--   compute matrix main diagonal :
            aC2d(i,j,bi,bj) = -(
      &       aW2d(i,j,bi,bj) + aW2d(i+1, j ,bi,bj)
      &      +aS2d(i,j,bi,bj) + aS2d( i ,j+1,bi,bj)
+#ifdef PRESERVE_C69C_OUTPUT
      &      +freeSurfFac*cg2dNorm*recip_Bo(i,j,bi,bj)*deepFac2F(ks)
      &                  *rA(i,j,bi,bj)/deltaTMom/deltaTFreeSurf
+#else
+     &      +tmpFac*recip_Bo(i,j,bi,bj)*rA(i,j,bi,bj)*deepFac2F(ks)
+#endif
      &                        )
           ENDDO
          ENDDO
@@ -146,8 +169,12 @@ C--   compute matrix main diagonal :
            aC2d(i,j,bi,bj) = -(
      &       aW2d(i,j,bi,bj) + aW2d(i+1, j ,bi,bj)
      &      +aS2d(i,j,bi,bj) + aS2d( i ,j+1,bi,bj)
+#ifdef PRESERVE_C69C_OUTPUT
      &      +freeSurfFac*cg2dNorm*recip_Bo(i,j,bi,bj)
      &                  *rA(i,j,bi,bj)/deltaTMom/deltaTFreeSurf
+#else
+     &      +tmpFac*recip_Bo(i,j,bi,bj)*rA(i,j,bi,bj)
+#endif
      &                        )
           ENDDO
          ENDDO

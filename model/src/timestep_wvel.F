@@ -60,31 +60,38 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         DO k=1,Nr
          km1 = MAX( k-1, 1 )
 
-         IF ( implicitNHPress.NE.1. _d 0 ) THEN
+         IF ( solveForDeltaP .OR. implicitNHPress.NE.oneRL ) THEN
 C--   add explicit part of NH pressure gradient:
-          tmpFac = pfFacMom*(1. _d 0 - implicitNHPress)
-     &           * wUnit2rVel(k)*wUnit2rVel(k)*recip_rhoFacF(k)
+          tmpFac = pfFacMom*wUnit2rVel(k)*wUnit2rVel(k)
+     &            *recip_rhoFacF(k)*recip_drC(k)*rkSign
+          IF ( .NOT.solveForDeltaP )
+     &         tmpFac = tmpFac*(1. _d 0 - implicitNHPress)
           IF ( k.GE.2 ) THEN
            DO j=jMin,jMax
             DO i=iMin,iMax
              gW(i,j,k,bi,bj) = gW(i,j,k,bi,bj)
-     &              - tmpFac*rkSign*recip_drC(k)
-     &              *( phi_nh(i,j,k,bi,bj) - phi_nh(i,j,k-1,bi,bj) )
+     &        - tmpFac*( phi_nh(i,j,k,bi,bj) - phi_nh(i,j,k-1,bi,bj) )
+            ENDDO
+           ENDDO
+          ELSEIF ( selectNHfreeSurf.GE.1 .AND. solveForDeltaP ) THEN
+           DO j=jMin,jMax
+            DO i=iMin,iMax
+             gW(i,j,k,bi,bj) = gW(i,j,k,bi,bj)
+     &        - tmpFac * phi_nh(i,j,k,bi,bj)
             ENDDO
            ENDDO
           ELSEIF ( selectNHfreeSurf.GE.1 ) THEN
            DO j=jMin,jMax
             DO i=iMin,iMax
              gW(i,j,k,bi,bj) = gW(i,j,k,bi,bj)
-     &              - tmpFac*rkSign*recip_drC(k)
-     &              *( phi_nh(i,j,k,bi,bj) - dPhiNH(i,j,bi,bj) )
+     &        - tmpFac*( phi_nh(i,j,k,bi,bj) - dPhiNH(i,j,bi,bj) )
             ENDDO
            ENDDO
           ENDIF
          ENDIF
 C     apply mask to gW and keep a copy of wVel in gW:
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
             gWtmp(i,j) = gW(i,j,k,bi,bj)
      &             *maskC(i,j,k,bi,bj)*maskC(i,j,km1,bi,bj)
             gW(i,j,k,bi,bj) = wVel(i,j,k,bi,bj)
@@ -97,7 +104,7 @@ C     Step forward vertical velocity
          DO j=jMin,jMax
           DO i=iMin,iMax
             wVel(i,j,k,bi,bj) = wVel(i,j,k,bi,bj)
-     &                        + deltaTmom*tmpFac*gWtmp(i,j)
+     &                        + deltaTMom*tmpFac*gWtmp(i,j)
           ENDDO
          ENDDO
 
@@ -109,8 +116,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ELSEIF ( implicitIntGravWave ) THEN
 C     keep a copy of wVel in gW:
         DO k=1,Nr
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
             gW(i,j,k,bi,bj) = wVel(i,j,k,bi,bj)
           ENDDO
          ENDDO

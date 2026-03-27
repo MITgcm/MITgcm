@@ -247,13 +247,14 @@ C-    viscosity and diffusivity default value:
       ENDIF
 
 C--   Set (free)surface-related parameters
-      implicitFreeSurface = .FALSE.
       rigidLid            = .FALSE.
+      implicitFreeSurface = .FALSE.
       implicSurfPress     = 1. _d 0
       implicDiv2DFlow     = 1. _d 0
       exactConserv        = .FALSE.
-      linFSConserveTr     = .FALSE.
+      solveForDeltaP      = .FALSE.
       uniformLin_PhiSurf  = .TRUE.
+      linFSConserveTr     = .FALSE.
       nonlinFreeSurf      = 0
       hFacInf             = 0.2 _d 0
       hFacSup             = 2.0 _d 0
