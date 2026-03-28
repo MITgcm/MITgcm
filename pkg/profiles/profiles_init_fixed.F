@@ -680,7 +680,7 @@ C     If yes then store prof_time and interpolation coeffs and indices:
                  ProfNo_tile = ProfNo_tile+1
                  prof_time(num_file,ProfNo_tile,bi,bj) = diffsecs
 # ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
-                 prof_ind_avgbin(num_file,rofNo_tile,bi,bj)
+                 prof_ind_avgbin(num_file,ProfNo_tile,bi,bj)
      &                = tmp_avgbin(ic)
 # endif /* ALLOW_PROFILES_SAMPLESPLIT_COST */
                  prof_interp_xC11(num_file,ProfNo_tile,bi,bj)

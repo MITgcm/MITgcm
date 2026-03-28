@@ -173,8 +173,8 @@ C-  when using a normalisation of RHS, tolerance has no unit => no conversion
       ELSE
 C-  convert Target-Residual (in W unit) to cg3d-solver residual unit [m^2/s^2]
         cg3dTolerance = cg3dNorm * cg3dTargetResWunit
-     &                           * implicDiv2DFlow
-     &                           * globalArea / deltaTMom
+     &                           * implicDiv2DFlow / deltaTMom
+     &                           * rAc_3dMean * SQRT( n3dWetPts )
       ENDIF
       cg3dTolerance_sq = cg3dTolerance*cg3dTolerance
 C-- print param values:
@@ -184,7 +184,8 @@ C-- print param values:
      &                     SQUEEZE_RIGHT, myThid )
        IF (.NOT.cg3dNormaliseRHS) THEN
         WRITE(msgBuf,'(2A,1PE22.15,A,1PE16.10,A)') 'INI_CG3D: ',
-     &      'cg3dTolerance =', cg3dTolerance, ' (Area=',globalArea,')'
+     &      'cg3dTolerance =', cg3dTolerance,
+     &      ' (Area=', rAc_3dMean*SQRT(n3dWetPts), ')'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
        ENDIF

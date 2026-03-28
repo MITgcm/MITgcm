@@ -13,7 +13,7 @@ Configure and compile the code:
 To run:
   cd run
   ln -s ../input_ad/* .
-  ../input_ad/prepare_run
+  ./prepare_run
   ln -s ../build/mitgcmuv_ad .
   ./mitgcmuv_ad > output_adm.txt
   cd ..
@@ -21,7 +21,7 @@ To run:
 There is comparison output in the directory:
   results/output_adm.txt
 grep for grdchk output:
-  grep 'precision_grdchk_result' output_adm.txt
+  grep 'grdchk output' output_adm.txt
 
 Comments:
   The input data is real*4

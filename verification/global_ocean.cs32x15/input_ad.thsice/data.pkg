@@ -2,8 +2,8 @@
  &PACKAGES
  useGMRedi = .TRUE.,
  useEXF    = .TRUE.,
- useCAL    = .TRUE.,
- useTHSICE = .TRUE.,
+#useCAL    = .TRUE.,
+ useThSIce = .TRUE.,
 #useDiagnostics=.TRUE.,
 #useMNC=.TRUE.,
  useGrdchk=.TRUE.,
