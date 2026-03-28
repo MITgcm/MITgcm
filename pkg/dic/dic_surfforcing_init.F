@@ -14,7 +14,6 @@ C  Calculate first guess of pH
 C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
@@ -111,14 +110,14 @@ C for non-interactive Si
             surfsi(i,j)   = silicaSurf(i,j,bi,bj)*maskC(i,j,kLev,bi,bj)
 #ifdef DIC_BOUNDS
             surftemp(i,j) = MAX( -4. _d 0,
-     &                      MIN( 50. _d 0, theta(i,j,kLev,bi,bj) ) )
+     &                      MIN( 50. _d 0, dicSST(i,j,bi,bj) ) )
             surfsalt(i,j) = MAX( 4. _d 0,
-     &                      MIN( 50. _d 0, salt(i,j,kLev,bi,bj) ) )
+     &                      MIN( 50. _d 0, dicSSS(i,j,bi,bj) ) )
             surfdic(i,j)  = MAX( 0.4 _d 0,
      &                      MIN( 10. _d 0, PTRACER(i,j,kLev,bi,bj,1) ) )
 #else
-            surftemp(i,j) = theta(i,j,kLev,bi,bj)
-            surfsalt(i,j) = salt(i,j,kLev,bi,bj)
+            surftemp(i,j) = dicSST(i,j,bi,bj)
+            surfsalt(i,j) = dicSSS(i,j,bi,bj)
             surfdic(i,j)  = PTRACER(i,j,kLev,bi,bj,1)
      &                    * maskC(i,j,kLev,bi,bj)
 #endif
@@ -228,8 +227,8 @@ cC$TAF STORE surfalk(i,j), surfphos(i,j), surfsi(i,j)   = dic_surf
           jprt = MIN(20,sNy)
           WRITE(msgBuf,'(4(A,F9.6),2(A,F11.8),A,F9.6)')
      &        ' first guess pH=', pH(iprt,jprt,bi,bj),
-     &        ', Temp=',theta(iprt,jprt,1,bi,bj),
-     &        ', Salt=',salt(iprt,jprt,1,bi,bj),
+     &        ', Temp=',surftemp(iprt,jprt),
+     &        ', Salt=',surfsalt(iprt,jprt),
      &        ', DIC=', surfdic(iprt,jprt),
      &        ', PO4=', surfphos(iprt,jprt),
      &        ', SiT=', surfsi(iprt,jprt),
@@ -237,8 +236,8 @@ cC$TAF STORE surfalk(i,j), surfphos(i,j), surfsi(i,j)   = dic_surf
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                        SQUEEZE_RIGHT, myThid )
 c         WRITE(standardMessageUnit,*) 'QQ first guess pH ',
-c    &        pH(iprt,jprt,bi,bj),' Temp ',theta(iprt,jprt,1,bi,bj),
-c    &        ' Salt ',salt(iprt,jprt,1,bi,bj),
+c    &        pH(iprt,jprt,bi,bj),' Temp ',surftemp(iprt,jprt),
+c    &        ' Salt ',surfsalt(iprt,jprt),
 c    &        ' DIC ' ,surfdic(iprt,jprt),
 c    &        ' PO4 ' ,surfphos(iprt,jprt),
 c    &        ' SiT ' ,surfsi(iprt,jprt),

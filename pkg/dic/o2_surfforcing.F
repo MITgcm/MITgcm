@@ -55,8 +55,8 @@ C Solubility relation coefficients
       _RL  aTS4
       _RL  aTS5
       _RL  o2s
-      _RL  ttemp
-      _RL  stemp
+      _RL  surftemp
+      _RL  surfsalt
       _RL  oCnew
 CEOP
 
@@ -66,14 +66,14 @@ C calculate SCHMIDT NO. for O2
         DO j=jmin,jmax
           DO i=imin,imax
             IF (maskC(i,j,k,bi,bj).NE.0.) THEN
-              ttemp = theta(i,j,k,bi,bj)
-              stemp = salt(i,j,k,bi,bj)
+              surftemp = dicSST(i,j,bi,bj)
+              surfsalt = dicSSS(i,j,bi,bj)
 
               SchmidtNoO2(i,j) =
      &            sox1
-     &          + sox2 * ttemp
-     &          + sox3 * ttemp*ttemp
-     &          + sox4 * ttemp*ttemp*ttemp
+     &          + sox2 * surftemp
+     &          + sox3 * surftemp*surftemp
+     &          + sox4 * surftemp*surftemp*surftemp
 
 C Determine surface flux of O2
 C exchange coeff accounting for ice cover and Schmidt no.
@@ -84,8 +84,8 @@ C Kwexch_Pre= pisvel*(1-fice): previously computed in dic_surfforcing.F
 
 C determine saturation O2
 C using Garcia and Gordon (1992), L&O (mistake in original ?)
-              aTT  = 298.15 _d 0 -ttemp
-              aTK  = 273.15 _d 0 +ttemp
+              aTT  = 298.15 _d 0 -surftemp
+              aTK  = 273.15 _d 0 +surftemp
               aTS  = log(aTT/aTK)
               aTS2 = aTS*aTS
               aTS3 = aTS2*aTS
@@ -94,8 +94,8 @@ C using Garcia and Gordon (1992), L&O (mistake in original ?)
 
               oCnew  = oA0 + oA1*aTS + oA2*aTS2 + oA3*aTS3 +
      &            oA4*aTS4 + oA5*aTS5
-     &          + stemp*(oB0 + oB1*aTS + oB2*aTS2 + oB3*aTS3)
-     &          + oC0*(stemp*stemp)
+     &          + surfsalt*(oB0 + oB1*aTS + oB2*aTS2 + oB3*aTS3)
+     &          + oC0*(surfsalt*surfsalt)
 
               o2s = EXP(oCnew)
 
