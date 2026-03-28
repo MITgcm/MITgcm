@@ -203,8 +203,9 @@ C--  Seaice-Dynamics parameters
      & 'SEAICE_airTurnAngle    =',' /* air-ice turning angle */')
       CALL WRITE_0D_RL( SEAICE_waterTurnAngle,INDEX_NONE,
      & 'SEAICE_waterTurnAngle  =',' /* ice-water turning angle */')
-      CALL WRITE_0D_L ( SEAICEuseMetricTerms, INDEX_NONE,
-     & 'SEAICEuseMetricTerms =', ' /* use metric terms */')
+      CALL WRITE_0D_I ( SEAICEselectMetricTerms, INDEX_NONE,
+     & 'SEAICEselectMetricTerms =',
+     & ' /* metric terms selector for div(sigma) */')
       CALL WRITE_0D_L ( SEAICE_no_slip, INDEX_NONE,
      & 'SEAICE_no_slip    =', ' /* no slip boundary conditions */')
       CALL WRITE_0D_L ( SEAICE_2ndOrderBC, INDEX_NONE,
@@ -598,6 +599,9 @@ c
 #ifndef SEAICE_ITD
       CALL WRITE_0D_I (SEAICE_multDim,INDEX_NONE,'SEAICE_multDim    ='
      & , ' /* number of ice categories (1 or 7) */')
+      CALL WRITE_0D_L (SEAICE_useMultDimSnow, INDEX_NONE,
+     &     'SEAICE_useMultDimSnow =',
+     &     ' /* use separate snow thickness for each category */')
 #endif
       CALL WRITE_1D_RL( SEAICE_PDF,nITD,INDEX_K, 'SEAICE_PDF        =',
      &  ' /* sea-ice distribution (-) */')

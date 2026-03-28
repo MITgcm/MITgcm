@@ -28,6 +28,7 @@ c#include "GRID.h"
 #include "OBCS_SEAICE.h"
 #ifdef ALLOW_SEAICE
 # include "SEAICE_SIZE.h"
+# include "SEAICE_GRID.h"
 # include "SEAICE.h"
 #endif
 

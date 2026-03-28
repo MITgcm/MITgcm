@@ -23,6 +23,9 @@ C     === Global variables ===
 #ifdef ALLOW_EXF
 # include "EXF_FIELDS.h"
 # include "EXF_PARAM.h"
+# ifdef ALLOW_ATM_TEMP
+#  include "SEAICE_GRID.h"
+# endif
 #endif
 C     === Routine arguments ===
 C     myTime - Simulation time
