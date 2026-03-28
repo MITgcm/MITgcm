@@ -1,4 +1,7 @@
 #include "EXF_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -305,6 +308,19 @@ C     Interpolate linearly onto the  time.
            ENDDO
           ENDDO
          ENDDO
+
+#ifdef ALLOW_GENTIM2D_CONTROL
+      ELSEIF ( fldFile .NE. ' ' .AND. fldPeriod .EQ. 0. ) THEN
+         DO bj = myByLo(myThid),myByHi(myThid)
+          DO bi = myBxLo(myThid),myBxHi(myThid)
+           DO j = 1,sNy
+            DO i = 1,sNx
+             fldArr(i,j,bi,bj) = fld0(i,j,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+#endif
 
       ENDIF
 
