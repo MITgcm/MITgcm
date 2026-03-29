@@ -1,9 +1,0 @@
- simulation = { 'Tutorial Biogeo' };
- nDims = [   2 ];
- dimList = [
-   128,    1,  128,
-    64,    1,   64
- ];
- dataprec = [ 'float64' ];
- nrecords = [    61 ];
- timeStepNumber = [    5184004 ];
