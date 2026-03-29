@@ -18,6 +18,9 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GCHEM.h"
+#ifdef ALLOW_CAL
+# include "cal.h"
+#endif
 #ifdef ALLOW_EXF
 # include "EXF_PARAM.h"
 # include "GCHEM_EXF.h"
@@ -25,9 +28,6 @@ C !USES: ===============================================================
 #  include "EXF_INTERP_SIZE.h"
 #  include "EXF_INTERP_PARAM.h"
 #  include "GCHEM_INTERP_PARAM.h"
-# endif
-# ifdef ALLOW_CAL
-#  include "cal.h"
 # endif
 #endif
 
@@ -277,7 +277,7 @@ C- Open and read the data.gchem file
 
       IF ( gchem_useEXF ) THEN
 
-       IF ( .not. useEXF ) repeatPeriod = gchem_ForcingCycle
+       IF ( .NOT. useEXF ) repeatPeriod = gchem_ForcingCycle
 
        gchem_SiPeriod             = 0.0 _d 0
        gchem_SiRepCycle           = repeatPeriod
@@ -409,7 +409,7 @@ C     exf_set_fld.
 
 #  ifdef USE_EXF_INTERPOLATION
 
-       IF ( .not. useEXF ) THEN
+       IF ( .NOT. useEXF ) THEN
 C     This is done in s/r exf_init_interp only if useEXF=T
 # ifdef ALLOW_EXCH2
         inp_gNx = exch2_mydNx(1)
@@ -530,7 +530,6 @@ C     This is done in s/r exf_init_interp only if useEXF=T
 C     gchem_useEXF
       ENDIF
 # endif /* ALLOW_EXF */
-
 
       WRITE(msgBuf,'(A)')
      &  ' GCHEM_READPARMS: finished reading data.gchem'
