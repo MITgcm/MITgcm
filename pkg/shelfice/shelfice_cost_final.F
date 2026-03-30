@@ -2,9 +2,6 @@
 #ifdef ALLOW_COST
 # include "COST_OPTIONS.h"
 #endif
-#ifdef ALLOW_CTRL
-# include "CTRL_OPTIONS.h"
-#endif
 
 CBOP
 C     !ROUTINE: SHELFICE_COST_FINAL
@@ -44,6 +41,7 @@ C     myThid     :: Thread number for this instance of the routine.
 #ifdef ALLOW_COST
 C     !LOCAL VARIABLES:
       INTEGER bi, bj
+      CHARACTER*15  tile15c
 #ifndef ALLOW_OPENAD
       CHARACTER*(26) cfname
 #endif
@@ -61,30 +59,29 @@ CEOP
 cML      no_shelfice= 0. _d 0
       no_shifwflx= 0. _d 0
 
-      IF ( .NOT. useECCO ) THEN
 C--   Calculate cost function on tile of this instance
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
 ccc        do klev = 1, Nr
-          DO j=1,sNy
-           DO i=1,sNx
+         DO j=1,sNy
+          DO i=1,sNx
 
-             objf_shelfice(bi,bj) = objf_shelfice(bi,bj)
+            objf_shelfice(bi,bj) = objf_shelfice(bi,bj)
      &            + cMeanSHIforS(i,j,bi,bj)/lastinterval/rhoConstFresh
      &            *_rA(i,j,bi,bj)
 
-           ENDDO
           ENDDO
+         ENDDO
 ccc        end do
-        ENDDO
        ENDDO
-      ENDIF
+      ENDDO
 
 C--   Sum up all contributions.
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        WRITE(standardMessageUnit,'(A,1PE22.14,1X,1PE9.2)')
-     &       ' --> objf_shelfice(bi,bj) = ',
+        WRITE(tile15c,'(2(A,I3),A)') '(bi,bj=', bi, ',', bj, ')'
+        WRITE(standardMessageUnit,'(3A,1PE22.14,1X,1PE9.2)')
+     &       ' --> objf_shelfice ', tile15c, ' =',
      &       objf_shelfice(bi,bj), mult_shelfice
         tile_fc(bi,bj) = tile_fc(bi,bj)
      &       + mult_shelfice * objf_shelfice(bi,bj)
