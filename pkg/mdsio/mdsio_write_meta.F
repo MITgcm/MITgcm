@@ -29,7 +29,6 @@ C     == Global variables / common blocks
 #include "EEPARAMS.h"
 #ifdef ALLOW_CAL
 # include "PARAMS.h"
-# include "cal.h"
 #endif
 
 C     !INPUT PARAMETERS:
@@ -180,7 +179,7 @@ C     that the information is superfluous and do not write it.
 C     add the date and time according to pkg/cal that corresponds to the
 C     current timestep myIter,
 C     First recover current time and get date in pkg/cal-format
-       myTime = modelStart + myIter*modelStep
+       myTime = baseTime + myIter*deltaTClock
        CALL CAL_GETDATE( myIter, myTime, myDate, myThid )
 CMLC     this is simpler, but not so easy to read
 CML       WRITE(mUnit,'(1X,A,I8.8,A,I6.6,A)')
