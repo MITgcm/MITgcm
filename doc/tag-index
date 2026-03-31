@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint69m (2026/03/30)
 o pkg/cost:
   - change ordering of calls in `cost_final.F`, profiles before ecco, as
     before PR 946 ; refine printing of cost per tile value to STDOUT.
