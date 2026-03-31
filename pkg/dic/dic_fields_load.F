@@ -34,7 +34,7 @@ C  myThid               :: thread number
 #ifdef ALLOW_DIC
 
 c !LOCAL VARIABLES: ===================================================
-      INTEGER bi, bj, i, j, kLev
+      INTEGER bi, bj, i, j
       INTEGER intimeP, intime0, intime1
       _RL aWght,bWght
 #ifdef DIC_CALCITE_SAT

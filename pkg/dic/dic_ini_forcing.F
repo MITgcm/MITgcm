@@ -32,7 +32,7 @@ CEOP
 #ifdef ALLOW_DIC
 
 c !LOCAL VARIABLES: ====================================================
-       INTEGER bi, bj, i, j, kLev
+       INTEGER bi, bj, i, j
        INTEGER intimeP, intime0, intime1
        _RL aWght, bWght
 #ifdef DIC_CALCITE_SAT
@@ -141,31 +141,29 @@ C-   end bi,bj loops:
 
 C ======================================================================
 C--   Set reasonable values to those that need at least something
-      kLev = 1
-
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j = 1-OLy,sNy+OLy
          DO i = 1-OLx,sNx+OLx
-          wind(i,j,bi,bj)       = 5. _d 0*maskC(i,j,kLev,bi,bj)
-          AtmosP(i,j,bi,bj)     = 1. _d 0*maskC(i,j,kLev,bi,bj)
-          silicaSurf(i,j,bi,bj) = 7.6838 _d -3*maskC(i,j,kLev,bi,bj)
+          wind(i,j,bi,bj)       = 5. _d 0*maskC(i,j,1,bi,bj)
+          AtmosP(i,j,bi,bj)     = 1. _d 0*maskC(i,j,1,bi,bj)
+          silicaSurf(i,j,bi,bj) = 7.6838 _d -3*maskC(i,j,1,bi,bj)
           fIce(i,j,bi,bj)       = 0. _d 0
 #ifdef READ_PAR
-          par(i,j,bi,bj)        = 100. _d 0*maskC(i,j,kLev,bi,bj)
+          par(i,j,bi,bj)        = 100. _d 0*maskC(i,j,1,bi,bj)
 #endif
 #ifdef LIGHT_CHL
 C If the chlorophyll climatology is not provided, use this default value.
-          CHL(i,j,bi,bj)        = 1. _d -2*maskC(i,j,kLev,bi,bj)
+          CHL(i,j,bi,bj)        = 1. _d -2*maskC(i,j,1,bi,bj)
 #endif
 #ifdef ALLOW_FE
-          InputFe(i,j,bi,bj)    = 1. _d -11*maskC(i,j,kLev,bi,bj)
+          InputFe(i,j,bi,bj)    = 1. _d -11*maskC(i,j,1,bi,bj)
 #endif
 C Get SST and SSS from the main model
-          dicSST(i,j,bi,bj)     = theta(i,j,kLev,bi,bj)
-     &                                     *maskC(i,j,kLev,bi,bj)
-          dicSSS(i,j,bi,bj)     = salt (i,j,kLev,bi,bj)
-     &                                     *maskC(i,j,kLev,bi,bj)
+          dicSST(i,j,bi,bj)     = theta(i,j,1,bi,bj)
+     &                                     *maskC(i,j,1,bi,bj)
+          dicSSS(i,j,bi,bj)     = salt (i,j,1,bi,bj)
+     &                                     *maskC(i,j,1,bi,bj)
          ENDDO
         ENDDO
 #ifdef DIC_CALCITE_SAT

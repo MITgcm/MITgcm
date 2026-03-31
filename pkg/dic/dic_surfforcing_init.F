@@ -30,7 +30,7 @@ C  myThid               :: thread number
 #ifdef ALLOW_DIC
 
 C !LOCAL VARIABLES: ====================================================
-      INTEGER i,j, kLev, it
+      INTEGER i, j, it
       INTEGER iMin,iMax,jMin,jMax, bi, bj
        _RL co3dummy
 C local variables for carbon chem
@@ -49,8 +49,6 @@ C     msgBuf     :: Informational/error message buffer
 CEOP
 
 C =================================================================
-
-      kLev = 1
       jMin=1
       jMax=sNy
       iMin=1
@@ -90,36 +88,36 @@ C determine inorganic carbon chem coefficients
 #ifdef DIC_BIOTIC
 #ifdef DIC_BOUNDS
             surfalk(i,j)  = MAX( 0.4 _d 0,
-     &                      MIN( 10. _d 0, PTRACER(i,j,kLev,bi,bj,2) ) )
-     &                    * maskC(i,j,kLev,bi,bj)
+     &                      MIN( 10. _d 0, PTRACER(i,j,1,bi,bj,2) ) )
+     &                    * maskC(i,j,1,bi,bj)
             surfphos(i,j) = MAX( 1.0 _d -11,
-     &                      MIN( 1. _d -1, PTRACER(i,j,kLev,bi,bj,3) ) )
-     &                    * maskC(i,j,kLev,bi,bj)
+     &                      MIN( 1. _d -1, PTRACER(i,j,1,bi,bj,3) ) )
+     &                    * maskC(i,j,1,bi,bj)
 #else
-            surfalk(i,j)  = PTRACER(i,j,kLev,bi,bj,2)
-     &                    * maskC(i,j,kLev,bi,bj)
-            surfphos(i,j) = PTRACER(i,j,kLev,bi,bj,3)
-     &                    * maskC(i,j,kLev,bi,bj)
+            surfalk(i,j)  = PTRACER(i,j,1,bi,bj,2)
+     &                    * maskC(i,j,1,bi,bj)
+            surfphos(i,j) = PTRACER(i,j,1,bi,bj,3)
+     &                    * maskC(i,j,1,bi,bj)
 #endif
 #else /* DIC_BIOTIC */
-            surfalk(i,j)  = 2.366595 _d 0 *salt(i,j,kLev,bi,bj)/35. _d 0
-     &                    * maskC(i,j,kLev,bi,bj)
-            surfphos(i,j) = 5.1225 _d -4 * maskC(i,j,kLev,bi,bj)
+            surfalk(i,j)  = 2.366595 _d 0 *salt(i,j,1,bi,bj)/35. _d 0
+     &                    * maskC(i,j,1,bi,bj)
+            surfphos(i,j) = 5.1225 _d -4 * maskC(i,j,1,bi,bj)
 #endif /* DIC_BIOTIC */
 C for non-interactive Si
-            surfsi(i,j)   = silicaSurf(i,j,bi,bj)*maskC(i,j,kLev,bi,bj)
+            surfsi(i,j)   = silicaSurf(i,j,bi,bj)*maskC(i,j,1,bi,bj)
 #ifdef DIC_BOUNDS
             surftemp(i,j) = MAX( -4. _d 0,
      &                      MIN( 50. _d 0, dicSST(i,j,bi,bj) ) )
             surfsalt(i,j) = MAX( 4. _d 0,
      &                      MIN( 50. _d 0, dicSSS(i,j,bi,bj) ) )
             surfdic(i,j)  = MAX( 0.4 _d 0,
-     &                      MIN( 10. _d 0, PTRACER(i,j,kLev,bi,bj,1) ) )
+     &                      MIN( 10. _d 0, PTRACER(i,j,1,bi,bj,1) ) )
 #else
             surftemp(i,j) = dicSST(i,j,bi,bj)
             surfsalt(i,j) = dicSSS(i,j,bi,bj)
-            surfdic(i,j)  = PTRACER(i,j,kLev,bi,bj,1)
-     &                    * maskC(i,j,kLev,bi,bj)
+            surfdic(i,j)  = PTRACER(i,j,1,bi,bj,1)
+     &                    * maskC(i,j,1,bi,bj)
 #endif
          ENDDO
         ENDDO
@@ -158,7 +156,7 @@ C$TAF LOOP = parallel
           DO j=jMin,jMax
 C$TAF LOOP = parallel
            DO i=iMin,iMax
-            IF ( maskC(i,j,kLev,bi,bj) .NE. 0. _d 0) THEN
+            IF ( maskC(i,j,1,bi,bj) .NE. 0. _d 0) THEN
 C$TAF init dic_surf = static, 10
 #ifdef CARBONCHEM_SOLVESAPHE
              IF ( selectPHsolver.GT.0 ) THEN
@@ -172,7 +170,7 @@ C call AHINI_FOR_AT to get better initial guess of pH
      I           surfdic(i,j)*permil,
      I           bt(i,j,bi,bj),
      U           pH(i,j,bi,bj),
-     I           i,j,kLev,bi,bj,nIter0,myThid )
+     I           i,j,1,bi,bj,nIter0,myThid )
 
 C$TAF STORE pH(i,j,bi,bj)                              = dic_surf
 C$TAF STORE surfalk(i,j), surfphos(i,j), surfsi(i,j)   = dic_surf
@@ -186,7 +184,7 @@ C$TAF STORE surfalk(i,j), surfphos(i,j), surfsi(i,j)   = dic_surf
      I         surfdic(i,j), surfphos(i,j),
      I         surfsi(i,j),surfalk(i,j),
      U         pH(i,j,bi,bj),pCO2(i,j,bi,bj),co3dummy,
-     I         i,j,kLev,bi,bj, debugPrt, nIter0, myThid )
+     I         i,j,1,bi,bj, debugPrt, nIter0, myThid )
               debugPrt = .FALSE.
              ELSE
 C Use the original Follows et al. (2006) solver
@@ -212,7 +210,7 @@ cC$TAF STORE surfalk(i,j), surfphos(i,j), surfsi(i,j)   = dic_surf
      I          ff(i,j,bi,bj),
      I          bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
      U          pH(i,j,bi,bj),pCO2(i,j,bi,bj),co3dummy,
-     I          i,j,kLev,bi,bj, it ,  myThid )
+     I          i,j,1,bi,bj, it ,  myThid )
               ENDDO
 #ifdef CARBONCHEM_SOLVESAPHE
              ENDIF

@@ -46,7 +46,7 @@ C GDC                   :: tendency due to air-sea exchange
 #ifdef ALLOW_DIC
 
 C !LOCAL VARIABLES: ====================================================
-       INTEGER i,j, kLev
+       INTEGER i, j
        LOGICAL debugPrt
        _RL co3dummy
 C Number of iterations for pCO2 solvers...
@@ -71,8 +71,6 @@ C     tkey :: tape key (tile dependent)
 #endif
 CEOP
 
-      kLev = 1
-
 cC if coupled to atmsopheric model, use the
 cC Co2 value passed from the coupler
 c#ifndef USE_ATMOSCO2
@@ -92,33 +90,33 @@ C determine inorganic carbon chem coefficients
 cQQQQ check ptracer numbers
 #ifdef DIC_BOUNDS
           surfalk(i,j)  = MAX( 0.4 _d 0,
-     &                         MIN( 10. _d 0, PTR_ALK(i,j,klev) ) )
-     &                  * maskC(i,j,kLev,bi,bj)
+     &                         MIN( 10. _d 0, PTR_ALK(i,j,1) ) )
+     &                  * maskC(i,j,1,bi,bj)
           surfphos(i,j) = MAX( 1.0 _d -11,
-     &                         MIN( 1. _d -1, PTR_PO4(i,j,klev) ) )
-     &                  * maskC(i,j,kLev,bi,bj)
+     &                         MIN( 1. _d -1, PTR_PO4(i,j,1) ) )
+     &                  * maskC(i,j,1,bi,bj)
 #else
-          surfalk(i,j)  = PTR_ALK(i,j,klev)*maskC(i,j,kLev,bi,bj)
-          surfphos(i,j) = PTR_PO4(i,j,klev)*maskC(i,j,kLev,bi,bj)
+          surfalk(i,j)  = PTR_ALK(i,j,1)*maskC(i,j,1,bi,bj)
+          surfphos(i,j) = PTR_PO4(i,j,1)*maskC(i,j,1,bi,bj)
 #endif
 #else /* DIC_BIOTIC */
-          surfalk(i,j)  = 2.366595 _d 0 * salt(i,j,kLev,bi,bj)/gsm_s
-     &                  * maskC(i,j,kLev,bi,bj)
-          surfphos(i,j) = 5.1225 _d -4 * maskC(i,j,kLev,bi,bj)
+          surfalk(i,j)  = 2.366595 _d 0 * salt(i,j,1,bi,bj)/gsm_s
+     &                  * maskC(i,j,1,bi,bj)
+          surfphos(i,j) = 5.1225 _d -4 * maskC(i,j,1,bi,bj)
 #endif /* DIC_BIOTIC */
 C for non-interactive Si
-          surfsi(i,j)   = silicaSurf(i,j,bi,bj)*maskC(i,j,kLev,bi,bj)
+          surfsi(i,j)   = silicaSurf(i,j,bi,bj)*maskC(i,j,1,bi,bj)
 #ifdef DIC_BOUNDS
           surftemp(i,j) = MAX( -4. _d 0,
      &                         MIN( 50. _d 0, dicSST(i,j,bi,bj) ) )
           surfsalt(i,j) = MAX( 4. _d 0,
      &                         MIN( 50. _d 0, dicSSS(i,j,bi,bj) ) )
           surfdic(i,j)  = MAX( 0.4 _d 0,
-     &                         MIN( 10. _d 0, PTR_CO2(i,j,kLev) ) )
+     &                         MIN( 10. _d 0, PTR_CO2(i,j,1) ) )
 #else
           surftemp(i,j) = dicSST(i,j,bi,bj)
           surfsalt(i,j) = dicSSS(i,j,bi,bj)
-          surfdic(i,j)  = PTR_CO2(i,j,kLev)
+          surfdic(i,j)  = PTR_CO2(i,j,1)
 #endif
         ENDDO
        ENDDO
@@ -171,7 +169,7 @@ C$TAF LOOP = parallel
        DO j=jMin,jMax
 C$TAF LOOP = parallel
         DO i=iMin,iMax
-          IF ( maskC(i,j,kLev,bi,bj).NE.0. _d 0 ) THEN
+          IF ( maskC(i,j,1,bi,bj).NE.0. _d 0 ) THEN
 #ifdef CARBONCHEM_SOLVESAPHE
             IF ( selectPHsolver.GT.0 ) THEN
 C Use Munhoven (2013) Solvesaphe routine to calculate pH and pCO2
@@ -184,7 +182,7 @@ C Use Munhoven (2013) Solvesaphe routine to calculate pH and pCO2
      I          surfdic(i,j), surfphos(i,j),
      I          surfsi(i,j),surfalk(i,j),
      U          pH(i,j,bi,bj),pCO2(i,j,bi,bj),co3dummy,
-     I          i,j,kLev,bi,bj, debugPrt, myIter, myThid )
+     I          i,j,1,bi,bj, debugPrt, myIter, myThid )
               debugPrt = .FALSE.
             ELSE
 C Use the original Follows et al. (2006) solver
@@ -206,7 +204,7 @@ C Use the original Follows et al. (2006) solver
      I          ff(i,j,bi,bj),
      I          bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
      U          pH(i,j,bi,bj),pCO2(i,j,bi,bj),co3dummy,
-     I          i,j,kLev,bi,bj,myIter, myThid )
+     I          i,j,1,bi,bj,myIter, myThid )
 #ifdef CARBONCHEM_SOLVESAPHE
             ENDIF
 #endif /* CARBONCHEM_SOLVESAPHE */
@@ -222,7 +220,7 @@ CADJ STORE pCO2(:,:,bi,bj) = comlev1_bibj, key = tkey, kind = isbyte
        DO j=jMin,jMax
         DO i=iMin,iMax
 
-          IF ( maskC(i,j,kLev,bi,bj).NE.0. _d 0 ) THEN
+          IF ( maskC(i,j,1,bi,bj).NE.0. _d 0 ) THEN
 C calculate SCHMIDT NO. for CO2
             SchmidtNoDIC(i,j) =
      &            sca1
@@ -271,7 +269,7 @@ C convert flux (mol kg-1 m s-1) to (mol m-2 s-1)
           FluxCO2(i,j,bi,bj) = FluxCO2(i,j,bi,bj)/permil
 
 #ifdef ALLOW_OLD_VIRTUALFLUX
-          IF (maskC(i,j,kLev,bi,bj).NE.0. _d 0) THEN
+          IF (maskC(i,j,1,bi,bj).NE.0. _d 0) THEN
 C calculate virtual flux
 C EminusPforV = dS/dt*(1/Sglob)
 C NOTE: Be very careful with signs here!
@@ -293,7 +291,7 @@ C              VirtualFlux(i,j)=0.d0
 C update tendency
        DO j=jMin,jMax
         DO i=iMin,iMax
-           GDC(i,j)= recip_drF(kLev)*recip_hFacC(i,j,kLev,bi,bj)
+           GDC(i,j)= recip_drF(1)*recip_hFacC(i,j,1,bi,bj)
      &              *(FluxCO2(i,j,bi,bj)
 #ifdef ALLOW_OLD_VIRTUALFLUX
      &              + VirtualFlux(i,j)
