@@ -29,6 +29,10 @@ C     \ev
 C     !CALLING SEQUENCE:
 C     LOAD_FIELDS_DRIVER
 C       |
+C       |-- CONVERT_CT2PT  (TEOS10 case)
+C       |
+C       |-- CTRL_MAP_GENTIM2D
+C       |
 C       |-- BULKF_FIELDS_LOAD
 C       |
 C       |-- EXF_GETFORCING
@@ -180,8 +184,13 @@ C     apply mask (because theta=0 will lead to gcmSST<0)
 
 C--   Map generic time varying controls to xx_gentim2d
 #ifdef ALLOW_CTRL
-      if (useCTRL) CALL CTRL_MAP_GENTIM2D( myTime, myIter, myThid )
+      IF ( useCTRL ) THEN
+#ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('CTRL_MAP_GENTIM2D',myThid)
 #endif
+        CALL CTRL_MAP_GENTIM2D( myTime, myIter, myThid )
+      ENDIF
+#endif /* ALLOW_CTRL */
 
 #ifdef ALLOW_BULK_FORCE
       IF ( useBulkForce ) THEN

@@ -192,6 +192,9 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICEaEVPalphaMin`      | 5.0                          | aEVP lower limit of alpha and beta (non-dim.), see :cite:`kimmritz:16`  |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`SEAICE_evpAreaReg`       | -1.0                         | a minimun ice fraction for regularizations of denomU/V in EVP;          |
+  |                                    |                              | off by default (-1), 1.E-5 is a useful value for high-res simulation    |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICE_elasticParm`      | 0.33333333                   | EVP parameter :math:`E_0` (non-dim.), sets relaxation timescale         |
   |                                    |                              | :varlink:`SEAICE_evpTauRelax` =                                         |
   |                                    |                              | :varlink:`SEAICE_elasticParm` * :varlink:`SEAICE_deltaTdyn`             |

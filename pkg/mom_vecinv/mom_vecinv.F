@@ -43,9 +43,6 @@ C     == Global variables ==
 #if ( defined ALLOW_GGL90 && defined ALLOW_GGL90_LANGMUIR )
 # include "GGL90.h"
 #endif
-#ifdef ALLOW_TIMEAVE
-# include "TIMEAVE_STATV.h"
-#endif
 #ifdef ALLOW_MNC
 # include "MNC_PARAMS.h"
 #endif
@@ -815,14 +812,6 @@ CADJ STORE vcf(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
 #endif /*  ALLOW_MNC  */
        ENDIF
 
-#ifdef ALLOW_TIMEAVE
-       IF (taveFreq.GT.0.) THEN
-         CALL TIMEAVE_CUMUL_1K1T(uZetatave,vCf,deltaTClock,
-     &                           Nr, k, bi, bj, myThid)
-         CALL TIMEAVE_CUMUL_1K1T(vZetatave,uCf,deltaTClock,
-     &                           Nr, k, bi, bj, myThid)
-       ENDIF
-#endif /* ALLOW_TIMEAVE */
 #ifdef ALLOW_DIAGNOSTICS
        IF ( useDiagnostics ) THEN
          CALL DIAGNOSTICS_FILL(uCf,'Um_AdvZ3',k,1,2,bi,bj,myThid)

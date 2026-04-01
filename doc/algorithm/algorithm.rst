@@ -299,7 +299,7 @@ method is then replaced by the time discretization of
 where the use of flow at time level :math:`n+1` makes the method
 implicit and backward in time. This is the preferred scheme since it
 still filters the fast unresolved wave motions by damping them. A
-centered scheme, such as Crank-Nicholson (see
+centered scheme, such as Crank-Nicolson (see
 :numref:`crank-nicolson_baro`), would alias the energy of the fast modes onto
 slower modes of motion.
 
@@ -965,7 +965,7 @@ Variants on the Free Surface
 ============================
 
 We now describe the various formulations of the free-surface that
-include non-linear forms, implicit in time using Crank-Nicholson,
+include non-linear forms, implicit in time using Crank-Nicolson,
 explicit and [one day] split-explicit. First, we’ll reiterate the
 underlying algorithm but this time using the notation consistent with
 the more general vertical coordinate :math:`r`. The elliptic equation

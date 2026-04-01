@@ -3,143 +3,187 @@
 # include "CTRL_OPTIONS.h"
 #endif
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C !ROUTINE: COST_FINAL
+
+C !INTERFACE:
       SUBROUTINE COST_FINAL( myThid )
 
-c     ==================================================================
-c     SUBROUTINE cost_final
-c     ==================================================================
-c
-c     o Sum of all cost function contributions.
-c
-c     ==================================================================
-c     SUBROUTINE cost_final
-c     ==================================================================
+C     !DESCRIPTION:
+C     Sum of all cost function contributions.
 
+C     !USES:
       IMPLICIT NONE
-
-c     == global variables ==
+C     == Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
 
 #include "cost.h"
 #ifdef ALLOW_CTRL
-# include "CTRL_SIZE.h"
-# include "CTRL.h"
+# include "OPTIMCYCLE.h"
 #endif
 #ifdef ALLOW_DIC
 # include "DIC_COST.h"
 #endif
-#ifdef ALLOW_COST_SHELFICE
+#if ( defined ALLOW_SHELFICE && defined ALLOW_COST_SHELFICE )
 # include "SHELFICE_COST.h"
 #endif
-
 #ifdef ALLOW_PROFILES
 # include "PROFILES_SIZE.h"
 # include "profiles.h"
 #endif
+#ifdef ALLOW_OBSFIT
+# include "OBSFIT_SIZE.h"
+# include "OBSFIT.h"
+#endif
 
-c     == routine arguments ==
+C     !INPUT/OUTPUT PARAMETERS:
+C     myThid ::  my Thread Id number
       INTEGER myThid
+CEOP
 
 #ifdef ALLOW_COST
-c     == local variables ==
+C     !FUNCTIONS:
+      LOGICAL  MASTER_CPU_THREAD
+      EXTERNAL MASTER_CPU_THREAD
+
+C     !LOCAL VARIABLES:
       INTEGER bi,bj
       _RL glob_fc, loc_fc
-#ifdef ALLOW_PROFILES
-      INTEGER num_file,num_var
+#ifndef ALLOW_CTRL
+C     dummy parameter for this unlikely case
+      INTEGER optimcycle
 #endif
+      INTEGER ifc
+      INTEGER ioUnit
+      CHARACTER*15 tile15c
+      CHARACTER*17 cfname
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-c     == end of interface ==
+      ioUnit = standardMessageUnit
+      WRITE(msgBuf,'(A)')
+     &  '// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)') '// Start of S/R COST_FINAL'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)')
+     &  '// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 
-#ifdef ALLOW_SEAICE
-      IF (useSEAICE) CALL SEAICE_COST_FINAL( myThid )
+#ifndef ALLOW_CTRL
+C     dummy value for this unlikely case
+      optimcycle = 0
 #endif
 
-#ifdef ALLOW_SHELFICE
-      IF (useShelfice) CALL SHELFICE_COST_FINAL (myThid)
+C     ifc = -1 means: do not write output to a file costfunction_${PKG}.XXXX
+      ifc = -1
+      IF ( MASTER_CPU_THREAD(myThid) .AND. costWriteCostFunction ) THEN
+       CALL MDSFINDUNIT( ifc, myThid )
+      ENDIF
+
+C--   final cost from comparison-to-obs pkgs:
+#ifdef ALLOW_PROFILES
+      IF (usePROFILES)
+     &     CALL PROFILES_COST_FINAL( ifc, optimcycle, myThid )
+#endif
+#ifdef ALLOW_OBSFIT
+      IF (useOBSFIT) CALL OBSFIT_COST_FINAL( ifc, optimcycle, myThid )
 #endif
 
-#if (defined(ALLOW_STREAMICE) && defined(ALLOW_COST_STREAMICE))
-      IF (useStreamice) CALL STREAMICE_COST_FINAL (myThid)
-#endif
-
-#ifdef ALLOW_THSICE
-      IF (useThSIce) CALL THSICE_COST_FINAL (myThid)
-#endif
-
+C--   final cost from generic-cost pkg, i.e., pkg/ecco:
 #ifdef ALLOW_ECCO
-      IF (useECCO) CALL ECCO_COST_FINAL (myThid)
+      IF (useECCO) CALL ECCO_COST_FINAL( ifc, optimcycle, myThid )
 #endif
 
-#ifdef ALLOW_COST_STATE_FINAL
-      CALL COST_STATE_FINAL (myThid)
-cgf : effectively using this in adjoint requires the
-c     use of adjoint_state_final. That will activate the
-c     objf_state_final vector in place of the fc scalar.
-c     objf_state_final is therefore not added to fc.
+C--   final cost from control (Tikhonov regularisation), i.e., ctrl & obcs:
+#ifdef ALLOW_CTRL
+      IF (useCTRL) CALL CTRL_COST_FINAL( ifc, optimcycle, myThid )
+#endif
+#ifdef ALLOW_OBCS
+      IF (useOBCS) CALL OBCS_COST_FINAL( ifc, optimcycle, myThid )
 #endif
 
-#ifdef ALLOW_COST_VECTOR
-cgf : same idea as for ALLOW_COST_STATE_FINAL
-      CALL COST_VECTOR (myThid)
+C--   final cost from remaining individual pkgs:
+#ifdef ALLOW_THSICE
+      IF (useThSIce) CALL THSICE_COST_FINAL( ifc, optimcycle, myThid )
+#endif
+#ifdef ALLOW_SEAICE
+      IF (useSEAICE) CALL SEAICE_COST_FINAL( ifc, optimcycle, myThid )
+#endif
+#if ( defined ALLOW_SHELFICE && defined ALLOW_COST_SHELFICE )
+      IF (useShelfIce)
+     &     CALL SHELFICE_COST_FINAL( ifc, optimcycle, myThid )
 #endif
 
+#if ( defined ALLOW_STREAMICE && defined ALLOW_COST_STREAMICE )
+      IF (useStreamice) CALL STREAMICE_COST_FINAL( myThid )
+#endif
+
+C--   final cost from customized/testing code:
 # ifdef ALLOW_COST_TEST
-      CALL COST_TEST (myThid)
+      CALL COST_TEST( myThid )
 # endif
 
 # ifdef ALLOW_COST_ATLANTIC_HEAT
-      CALL COST_ATLANTIC_HEAT (myThid)
+      CALL COST_ATLANTIC_HEAT( myThid )
 # endif
 
 #ifdef ALLOW_COST_HFLUXM
-      CALL COST_HFLUX (myThid)
-cgf : to compile previous line user is expected to provide cost_hflux.F
+      CALL COST_HFLUX( myThid )
 #endif
 
 #ifdef ALLOW_COST_TEMP
-      CALL COST_TEMP (myThid)
-cgf : to compile previous line user is expected to provide cost_temp.F
+      CALL COST_TEMP( myThid )
 #endif
 
-#ifdef ALLOW_COST_DEPTH
-      CALL COST_DEPTH( myThid )
+C--   final cost with alternative cost-function:
+#ifdef ALLOW_COST_STATE_FINAL
+      CALL COST_STATE_FINAL( myThid )
+Cgf : effectively using this in adjoint requires the use of adjoint_state_final.
+C     That will activate the objf_state_final vector in place of the fc scalar.
+C     objf_state_final is therefore not added to fc.
 #endif
 
-      WRITE(msgBuf,'(A,D22.15)') '  early fc = ', fc
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
+#ifdef ALLOW_COST_VECTOR
+Cgf : same idea as for ALLOW_COST_STATE_FINAL
+      CALL COST_VECTOR( myThid )
+#endif
 
-c--   Sum up all contributions.
+      WRITE(msgBuf,'(A,1PE22.14)') '  early fc = ', fc
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+
+C--   Sum up all other contributions.
       loc_fc = 0.
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
+        WRITE(tile15c,'(2(A,I3),A)') '(bi,bj=', bi, ',', bj, ')'
 
 #ifdef ALLOW_COST_TEST
-         WRITE(standardMessageUnit,'(A,D22.15)')
-     &       ' --> objf_test(bi,bj)        = ', objf_test(bi,bj)
+        WRITE(ioUnit,'(3A,1PE22.14,1X,1PE9.2)')
+     &       ' --> objf_test     ', tile15c, ' =',
+     &       objf_test(bi,bj), mult_test
 #endif
 #ifdef ALLOW_COST_TRACER
-         WRITE(standardMessageUnit,'(A,D22.15)')
-     &         ' --> objf_tracer(bi,bj)    = ', objf_tracer(bi,bj)
+        WRITE(ioUnit,'(3A,1PE22.14,1X,1PE9.2)')
+     &       ' --> objf_tracer   ', tile15c, ' =',
+     &       objf_tracer(bi,bj), mult_tracer
 #endif
 #ifdef ALLOW_COST_ATLANTIC_HEAT
-         WRITE(standardMessageUnit,'(A,D22.15)')
-     &         ' --> objf_atl(bi,bj)       = ', objf_atl(bi,bj)
+        WRITE(ioUnit,'(3A,1PE22.14,1X,1PE9.2)')
+     &       ' --> objf_atl      ', tile15c, ' =',
+     &       objf_atl(bi,bj), mult_atl
 #endif
 #ifdef ALLOW_COST_TEMP
-         WRITE(standardMessageUnit,'(A,D22.15)')
-     &         ' --> objf_temp_tut(bi,bj)  = ', objf_temp_tut(bi,bj)
+        WRITE(ioUnit,'(3A,1PE22.14,1X,1PE9.2)')
+     &       ' --> objf_temp_tut ', tile15c, ' =',
+     &       objf_temp_tut(bi,bj), mult_temp_tut
 #endif
 #ifdef ALLOW_COST_HFLUXM
-         WRITE(standardMessageUnit,'(A,D22.15)')
-     &         ' --> objf_hflux_tut(bi,bj) = ', objf_hflux_tut(bi,bj)
-#endif
-#ifdef ALLOW_COST_DEPTH
-         WRITE(standardMessageUnit,'(A,D22.15)')
-     &         ' --> objf_depth(bi,bj)     = ', objf_depth(bi,bj)
+        WRITE(ioUnit,'(3A,1PE22.14,1X,1PE9.2)')
+     &       ' --> objf_hflux_tut', tile15c, ' =',
+     &       objf_hflux_tut(bi,bj), mult_hflux_tut
 #endif
 
          tile_fc(bi,bj) = tile_fc(bi,bj)
@@ -158,53 +202,59 @@ c--   Sum up all contributions.
 #ifdef ALLOW_COST_HFLUXM
      &            + mult_hflux_tut * objf_hflux_tut(bi,bj)
 #endif
-#ifdef ALLOW_COST_DEPTH
-     &            + mult_depth     * objf_depth(bi,bj)
-#endif
-
-#ifdef ALLOW_PROFILES
-         IF (.NOT.useECCO) THEN
-          DO num_file=1,NFILESPROFMAX
-           DO num_var=1,NVARMAX
-            tile_fc(bi,bj) = tile_fc(bi,bj)
-     &            + mult_profiles(num_file,num_var)
-     &            *objf_profiles(num_file,num_var,bi,bj)
-           ENDDO
-          ENDDO
-         ENDIF
-#endif
 
          loc_fc = loc_fc + tile_fc(bi,bj)
 
        ENDDO
       ENDDO
 
-      WRITE(msgBuf,'(A,D22.15)') '  local fc = ', loc_fc
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A,1PE22.14)') '  local fc = ', loc_fc
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 
-c--   Do global summation.
+C--   Do global summation.
       CALL GLOBAL_SUM_TILE_RL( tile_fc, glob_fc, myThid )
       _BEGIN_MASTER( myThid )
       fc = fc + glob_fc
-      _END_MASTER( myThid )
 
-c--   Add contributions from global mean constraints
-      _BEGIN_MASTER( myThid )
+C--   Add contributions from global mean constraints (includes pkg/obsfit)
       fc = fc + glofc
       _END_MASTER( myThid )
 
-#ifdef ALLOW_DIC_COST
-cph-- quickly for testing
+#if ( defined ALLOW_DIC && defined ALLOW_DIC_COST )
+Cph-- quickly for testing
       fc = totcost
 #endif
 
-      WRITE(msgBuf,'(A,D22.15)') ' global fc = ', fc
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
+      IF ( ifc .NE. -1 ) THEN
+       WRITE(cfname,'(A,I4.4)') 'costfunction.',optimcycle
+       WRITE(msgBuf,'(A,A)')
+     &      'Writing global cost function info to ', cfname
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+       OPEN(UNIT=ifc,FILE=cfname)
+       WRITE(ifc,'(A,1PE22.14)') 'fc =', fc
+C     Collect and copy other cost function contributions in a separate
+C     file to hide irreducible statements from TAF
+       CALL COST_COPY_FILE( ifc, optimcycle, myThid )
 
-c--   to avoid re-write of output in reverse checkpointing loops,
-c--   switch off output flag :
+       CLOSE(ifc)
+C     Do not ever write this cost function again to cfname
+       costWriteCostFunction = .FALSE.
+      ENDIF
+
+      WRITE(msgBuf,'(A,1PE22.14)') ' global fc = ', fc
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+
+      WRITE(msgBuf,'(A)')
+     &  '// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)') '// End of S/R COST_FINAL'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)')
+     &  '// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+
+C--   to avoid re-write of output in reverse checkpointing loops,
+C--   switch off output flag :
       CALL TURNOFF_MODEL_IO( 0, myThid )
 
 #endif /* ALLOW_COST */

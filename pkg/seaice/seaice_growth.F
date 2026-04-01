@@ -94,8 +94,11 @@ C       OCeaN surface, or providing heat to the OCeaN surface).
 
 C     i,j,bi,bj :: Loop counters
       INTEGER i, j, bi, bj
-C     number of surface interface layer
+C     number of surface interface layer, and second interface layer
       INTEGER kSurface
+#ifdef SHORTWAVE_HEATING
+      INTEGER kSrfS
+#endif
 C     IT        :: ice thickness category index (MULTICATEGORIES and ITD code)
       INTEGER IT
 C     msgBuf    :: Informational/error message buffer
@@ -335,12 +338,19 @@ C ===================================================================
        kSurface = 1
        dzSurf   = drF(kSurface)
       ENDIF
+#ifdef SHORTWAVE_HEATING
+      IF ( usingPCoords ) THEN
+       kSrfS    = Nr
+      ELSE
+       kSrfS    = 2
+      ENDIF
+#endif
 
 C     avoid unnecessary divisions in loops
-      recip_multDim        = SEAICE_multDim
-      recip_multDim        = ONE / recip_multDim
+      recip_multDim     = SEAICE_multDim
+      recip_multDim     = ONE / recip_multDim
 C     above/below: double/single precision calculation of recip_multDim
-c     recip_multDim        = 1./float(SEAICE_multDim)
+c     recip_multDim     = 1.  / float(SEAICE_multDim)
       recip_deltaTtherm = ONE / SEAICE_deltaTtherm
       recip_rhoIce      = ONE / SEAICE_rhoIce
 
@@ -1572,61 +1582,69 @@ CADJ STORE a_QSWbyATM_open = comlev1_bibj,key=tkey,byte=isbyte
         DO j=1,sNy
          DO i=1,sNx
 #ifdef SEAICE_ITD
-C         HEFF will be updated at the end of PART 3,
-C         hence sum of tendencies so far is needed
+C     HEFF will be updated at the end of PART 3,
+C     hence sum of tendencies so far is needed
           tmpscal4 = HEFFpreTH(i,j)
      &             + d_HEFFbySublim(i,j)
      &             + d_HEFFbyOCNonICE(i,j)
      &             + d_HEFFbyATMonOCN(i,j)
 #else /* ndef SEAICE_ITD */
-C         HEFF is updated step by step throughout seaice_growth
+C     HEFF is updated step by step throughout seaice_growth
           tmpscal4 = HEFF(i,j,bi,bj)
 #endif /* SEAICE_ITD */
-C           Initial ice growth is triggered by open water
-C           heat flux overcoming potential melt by ocean
-            tmpscal1=r_QbyATM_open(i,j)+r_QbyOCN(i,j) *
-     &            (1.0 _d 0 - AREApreTH(i,j))
-C           Penetrative shortwave flux beyond first layer
-C           that is therefore not available to ice growth/melt
-            tmpscal2=SEAICE_SWFrac * a_QSWbyATM_open(i,j)
-C           impose -HEFF as the maxmum melting if SEAICE_doOpenWaterMelt
-C           or 0. otherwise (no melting if not SEAICE_doOpenWaterMelt)
-            tmpscal3=facOpenGrow*MAX(tmpscal1-tmpscal2,
-     &           -tmpscal4*facOpenMelt)*HEFFM(i,j,bi,bj)
+C     Initial ice growth is triggered by open water
+C     heat flux overcoming potential melt by ocean
+          tmpscal1=r_QbyATM_open(i,j)+r_QbyOCN(i,j) *
+     &         (1.0 _d 0 - AREApreTH(i,j))
+C     Penetrative shortwave flux beyond first layer
+C     that is therefore not available to ice growth/melt
+#ifdef SHORTWAVE_HEATING
+C     Here we do not use the runtime parameter within the i/j-loops for
+C     better performance. If selectPenetratingSW < 1, then
+C     SWFrac3D(kSrfS) = 0 anyway.
+          tmpscal2 = SWFrac3D(i,j,kSrfS,bi,bj) * a_QSWbyATM_open(i,j)
+#else
+          tmpscal2 = 0. _d 0
+#endif
+C     impose -HEFF as the maxmum melting if SEAICE_doOpenWaterMelt
+C     or 0. otherwise (no melting if not SEAICE_doOpenWaterMelt)
+          tmpscal3=facOpenGrow*MAX(tmpscal1-tmpscal2,
+     &         -tmpscal4*facOpenMelt)*HEFFM(i,j,bi,bj)
 #if defined ( ALLOW_SITRACER ) && defined ( SEAICE_GREASE )
-C Grease ice is a tracer or "bucket" for newly formed frazil ice
-C  that instead of becoming solid sea ice instantly has a half-time
-C  of 1 day (see greaseDecayTime) before solidifying.
-C The most important effect is that for fluxes the grease ice area/volume
-C  acts like open water.
+C     Grease ice is a tracer or "bucket" for newly formed frazil ice
+C     that instead of becoming solid sea ice instantly has a half-time
+C     of 1 day (see greaseDecayTime) before solidifying.
+C     The most important effect is that for fluxes the grease ice
+C     area/volume acts like open water.
 C
-C store freezing/melting condition:
+C     store freezing/melting condition:
           greaseNewFrazil = max(0.0 _d 0, tmpscal3)
 C
 C 1) mechanical removal of grease by ridging:
-C    if there is no open water left after advection, there cannot be any grease ice
+C     if there is no open water left after advection, there cannot be
+C     any grease ice
           IF ((1.0 _d 0 - AREApreTH(i,j)).LE.siEps) THEN
            tmpscal3 = tmpscal3 + SItracer(i,j,bi,bj,iTrGrease)
            SItracer(i,j,bi,bj,iTrGrease) = 0. _d 0
 
           ELSEIF (greaseNewFrazil .GT. 0. _d 0) THEN
-C    new ice growth goes into grease tracer not HEFF:
+C     new ice growth goes into grease tracer not HEFF:
            tmpscal3=0. _d 0
 C
 C 2) solidification of "old" grease ice
-C    (only when cold enough for ice growth)
+C     (only when cold enough for ice growth)
 C
-C    time scale dependent solidification
-C    (50%  of grease ice area become solid ice within 24h):
+C     time scale dependent solidification
+C     (50%  of grease ice area become solid ice within 24h):
            tmpscal1=exp(-SEAICE_deltaTtherm/greaseDecayTime)
-C    gain in solid sea ice volume due to solidified grease:
+C     gain in solid sea ice volume due to solidified grease:
            d_HEFFbyGREASE(i,j) =
      &             SItracer(i,j,bi,bj,iTrGrease)
      &           * (1.0 _d 0 - tmpscal1)
-C    ... and related loss of grease ice (tracer) volume
+C     ... and related loss of grease ice (tracer) volume
            SItracer(i,j,bi,bj,iTrGrease) =
      &             SItracer(i,j,bi,bj,iTrGrease) * tmpscal1
-C    the solidified grease ice volume needs to be added to HEFF:
+C     the solidified grease ice volume needs to be added to HEFF:
            SItrBucket(i,j,bi,bj,iTrGrease) =
      &             SItrBucket(i,j,bi,bj,iTrGrease)
      &           + d_HEFFbyGREASE(i,j)
@@ -1638,11 +1656,11 @@ C
           ENDIF
 C 4) mapping SItrBucket to external variable, in this case HEFF, ...
           tmpscal3=tmpscal3+SItrBucket(i,j,bi,bj,iTrGrease)
-C    ... and empty SItrBucket for tracer 'grease'
+C     ... and empty SItrBucket for tracer 'grease'
           SItrBucket(i,j,bi,bj,iTrGrease)=0. _d 0
 #endif /* SEAICE_GREASE */
 #ifdef SEAICE_ITD
-C         ice growth in open water adds to first category
+C     ice growth in open water adds to first category
           d_HEFFbyATMonOCN_open_ITD(i,j,1)=tmpscal3
           d_HEFFbyATMonOCN_ITD(i,j,1)     =d_HEFFbyATMonOCN_ITD(i,j,1)
      &                                    +tmpscal3

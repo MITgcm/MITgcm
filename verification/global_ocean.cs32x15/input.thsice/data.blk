@@ -5,7 +5,7 @@
  &
 
  &BULKF_PARM01
-# set blk_nIter=0 to use the original FORMULA_LANL: 
+# set blk_nIter=0 to use the original FORMULA_LANL:
  blk_nIter= 0,
 #RainFile=       'ncep_precip_cs.bin',
  RainFile=       'ncep_pr_scal_cs.bin',
@@ -20,7 +20,6 @@
  QnetFile=       ' ',
  EmPFile=        ' ',
  CloudFile=      ' ',
-#blk_taveFreq=864000.,
  &
 
  &BULKF_PARM02

@@ -12,11 +12,6 @@ C     | o Initialisation routine for arrays that are used to
 C     |   buffer data that interfaces to the coupling layer.
 C     | - Oceanic version -
 C     *==========================================================*
-C     | For now this routine sets these arrays to the right
-C     | state for an initial start-up. Eventually it should
-C     | include some way to load this data from non-volatile
-C     | external storage if they are needed during a restart.
-C     *==========================================================*
 C     \ev
 
 C     !USES:
@@ -28,23 +23,21 @@ C     == Global variables ==
 #include "PARAMS.h"
 #include "CPL_PARAMS.h"
 #include "OCNCPL.h"
-#include "CPL_TAVE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid :: my Thread Id Number
       INTEGER myThid
-CEOP
 
 #ifdef COMPONENT_MODULE
-
 C     !LOCAL VARIABLES:
 C     i,j,bi,bj :: Loop counters
       INTEGER i,j,bi,bj
+CEOP
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO J=1-OLy,sNy+OLy
-         DO I=1-OLx,sNx+OLx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
 C.        Export fields
           ocMxlD2cpl(i,j,bi,bj) = 0.
           SSTocn2cpl(i,j,bi,bj) = 0.
@@ -89,34 +82,6 @@ C-        Import fields
      &                   .OR. pickupSuff .NE. ' ' ) THEN
        CALL OCN_CPL_READ_PICKUP( nIter0, myThid )
       ENDIF
-
-#ifdef ALLOW_TIMEAVE
-C     Initialise diagnostic counters ( these are cleared on model start
-C      i.e. not loaded from history file for now ).
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-         CALL TIMEAVE_RESET( SLPtave,  1, bi, bj, myThid )
-         CALL TIMEAVE_RESET( HFtave ,  1, bi, bj, myThid )
-         CALL TIMEAVE_RESET( QSWtave,  1, bi, bj, myThid )
-         CALL TIMEAVE_RESET( TXtave ,  1, bi, bj, myThid )
-         CALL TIMEAVE_RESET( TYtave ,  1, bi, bj, myThid )
-         CALL TIMEAVE_RESET( FWtave ,  1, bi, bj, myThid )
-         CALL TIMEAVE_RESET( SFxtave,  1, bi, bj, myThid )
-         CALL TIMEAVE_RESET( SICtave,  1, bi, bj, myThid )
-         CALL TIMEAVE_RESET( MXLtave,  1, bi, bj, myThid )
-         CALL TIMEAVE_RESET( SSTtave,  1, bi, bj, myThid )
-         CALL TIMEAVE_RESET( SSStave,  1, bi, bj, myThid )
-         CALL TIMEAVE_RESET( vSqtave,  1, bi, bj, myThid )
-#ifdef ALLOW_DIC
-         CALL TIMEAVE_RESET( aCO2tave, 1, bi, bj, myThid )
-         CALL TIMEAVE_RESET( sWSpdtave,1, bi, bj, myThid )
-         CALL TIMEAVE_RESET( iceftave, 1, bi, bj, myThid )
-         CALL TIMEAVE_RESET( fCO2tave, 1, bi, bj, myThid )
-#endif
-         CPL_timeAve(bi,bj) = 0.
-       ENDDO
-      ENDDO
-#endif /* ALLOW_TIMEAVE */
 
 #endif /* COMPONENT_MODULE */
 

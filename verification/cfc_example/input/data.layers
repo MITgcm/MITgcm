@@ -1,5 +1,4 @@
  &LAYERS_PARM01
- layers_taveFreq=0.,
  layers_diagFreq=0.,
 
  layers_name(1) ='TH',

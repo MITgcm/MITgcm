@@ -18,7 +18,6 @@ C--   AIM interface parameter (namelist AIM_PARAMS):
 #     aim_swcFile  :: file name for Soil Water content  (F.M. surfBC)
 #     aim_dragStrato :: stratospheric-drag damping time scale (s)
 #     aim_clrSkyDiag :: compute clear-sky radiation for diagnostics
-#     aim_taveFreq :: Frequency^-1 for time-average output (s)
 #     aim_diagFreq :: Frequency^-1 for diagnostic output (s)
 #     aim_tendFreq :: Frequency^-1 for tendencies output (s)
  &AIM_PARAMS

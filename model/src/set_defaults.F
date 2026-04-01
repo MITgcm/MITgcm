@@ -265,6 +265,7 @@ C--   Set (free)surface-related parameters
       salt_EvPrRn = 0.
       temp_addMass = UNSET_RL
       salt_addMass = UNSET_RL
+      selectPenetratingSW = UNSET_I
       selectBalanceEmPmR  = UNSET_I
       balanceQnet         = .FALSE.
       balancePrintMean    = .FALSE.
@@ -351,9 +352,6 @@ C-    I/O params:
       adjMonitorFreq    = 0.
       monitorSelect     = UNSET_I
       monitor_stdio     = .TRUE.
-      taveFreq          = deltaT*0
-      timeave_mdsio     = .TRUE.
-      tave_lastIter     = 0.5 _d 0
       readBinaryPrec    = precFloat32
       writeBinaryPrec   = precFloat32
       rwSuffixType      = 0

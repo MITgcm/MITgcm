@@ -12,8 +12,6 @@ CEOP
 
 C--   COMMON /PTRACERS_PARAMS_R/ PTRACERS real-type parameters:
 C     PTRACERS_dTLev    :: Timestep for ptracers ( s ), function of level k
-C     PTRACERS_taveFreq :: Frequency with which time-averaged PTRACERS
-C                          are written to post-processing files.
 C     PTRACERS_ref      :: vertical profile for passive tracers, in
 C                          analogy to tRef and sRef, hence the name
 C     PTRACERS_EvPrRn   :: tracer concentration in Rain, Evap & RunOff
@@ -25,7 +23,6 @@ C     PTRACERS_resetPhase   :: Phase (s) to reset ptracers
 
       _RL PTRACERS_dTLev(Nr)
       _RL PTRACERS_dumpFreq
-      _RL PTRACERS_taveFreq
       _RL PTRACERS_monitorFreq
       _RL PTRACERS_diffKh(PTRACERS_num)
       _RL PTRACERS_diffK4(PTRACERS_num)
@@ -38,7 +35,6 @@ C     PTRACERS_resetPhase   :: Phase (s) to reset ptracers
       COMMON /PTRACERS_PARAMS_R/
      &     PTRACERS_dTLev,
      &     PTRACERS_dumpFreq,
-     &     PTRACERS_taveFreq,
      &     PTRACERS_monitorFreq,
      &     PTRACERS_diffKh,
      &     PTRACERS_diffK4,
@@ -106,10 +102,9 @@ C     PTRACERS_useRecords    :: snap-shot output: put all pTracers in one file
       LOGICAL PTRACERS_calcSurfCor
       LOGICAL PTRACERS_useRecords
       LOGICAL
-     &     PTRACERS_monitor_mnc, PTRACERS_monitor_stdio,
-     &     PTRACERS_timeave_mdsio, PTRACERS_snapshot_mdsio,
+     &     PTRACERS_monitor_stdio, PTRACERS_monitor_mnc,
+     &     PTRACERS_snapshot_mdsio, PTRACERS_snapshot_mnc,
      &     PTRACERS_pickup_write_mdsio, PTRACERS_pickup_read_mdsio,
-     &     PTRACERS_timeave_mnc, PTRACERS_snapshot_mnc,
      &     PTRACERS_pickup_write_mnc, PTRACERS_pickup_read_mnc
       COMMON /PTRACERS_PARAMS_L/
      &     PTRACERS_ImplVertAdv,
@@ -123,10 +118,9 @@ C     PTRACERS_useRecords    :: snap-shot output: put all pTracers in one file
      &     PTRACERS_startAllTrc,
      &     PTRACERS_calcSurfCor,
      &     PTRACERS_useRecords,
-     &     PTRACERS_timeave_mdsio, PTRACERS_snapshot_mdsio,
-     &     PTRACERS_pickup_write_mdsio, PTRACERS_pickup_read_mdsio,
+     &     PTRACERS_snapshot_mdsio, PTRACERS_snapshot_mnc,
      &     PTRACERS_monitor_stdio, PTRACERS_monitor_mnc,
-     &     PTRACERS_timeave_mnc, PTRACERS_snapshot_mnc,
+     &     PTRACERS_pickup_write_mdsio, PTRACERS_pickup_read_mdsio,
      &     PTRACERS_pickup_write_mnc, PTRACERS_pickup_read_mnc
 
 C--   COMMON /PTRACERS_PARAMS_C/ PTRACERS character-type parameters:

@@ -18,7 +18,7 @@ C     KPPdiffKzS - Vertical diffusion coefficient for salt and tracers(m^2/s)
 C     KPPdiffKzT - Vertical diffusion coefficient for heat            (m^2/s)
 C     KPPghat    - Nonlocal transport coefficient                     (s/m^2)
 C     KPPhbl     - Mixing layer depth                                     (m)
-C     KPPfrac    - Fraction of short-wave flux penetrating mixing layer
+C     KPPfrac    - Fraction of short-wave flux heating the mixing layer
 C     KPPplumefrac - Fraction of saltplume penetrating mixing layer
 C
 C-----------------------------------------------------------------------

@@ -156,6 +156,7 @@ C ==========================================================
      &          bling_psmFile, bling_plgFile, bling_PdiazFile,
      &          bling_forcingPeriod, bling_forcingCycle,
      &          bling_Pc_2dFile, bling_Pc_2d_diazFile,
+     &          bling_k0_2dFile,
      &          bling_alpha_photo2dFile,bling_phi_DOM2dFile,
      &          bling_k_Fe2dFile, bling_k_Fe_diaz2dFile,
      &          bling_gamma_POM2dFile, bling_wsink0_2dFile,
@@ -387,6 +388,7 @@ C     Default values
       bling_pdiazFile        = ' '
       bling_Pc_2dFile        = ' '
       bling_Pc_2d_diazFile   = ' '
+      bling_k0_2dFile        = ' '
       bling_alpha_photo2dFile= ' '
       bling_k_Fe2dFile       = ' '
       bling_k_Fe_diaz2dFile  = ' '
@@ -477,7 +479,7 @@ C     retired parameters
       IF ( selectBTconst    .NE. UNSET_I ) THEN
        nRetired = nRetired + 1
        WRITE(msgBuf,'(A,A)') 'S/R BLING_READPARMS: "selectBTconst" ',
-     &      'is no longer allowed in file "data.dic"'
+     &      'is no longer allowed in file "data.bling"'
        CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)')
      &  'S/R BLING_READPARMS: use "data.gchem" instead.'
@@ -486,7 +488,7 @@ C     retired parameters
       IF ( selectFTconst   .NE. UNSET_I ) THEN
        nRetired = nRetired + 1
        WRITE(msgBuf,'(A,A)') 'S/R BLING_READPARMS: "selectFTconst" ',
-     &      'is no longer allowed in file "data.dic"'
+     &      'is no longer allowed in file "data.bling"'
        CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)')
      &  'S/R BLING_READPARMS: use "data.gchem" instead.'
@@ -495,7 +497,7 @@ C     retired parameters
       IF ( selectHFconst   .NE. UNSET_I ) THEN
        nRetired = nRetired + 1
        WRITE(msgBuf,'(A,A)') 'S/R BLING_READPARMS: "selectHFconst" ',
-     &      'is no longer allowed in file "data.dic"'
+     &      'is no longer allowed in file "data.bling"'
        CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)')
      &  'S/R BLING_READPARMS: use "data.gchem" instead.'
@@ -504,7 +506,7 @@ C     retired parameters
       IF ( selectK1K2const .NE. UNSET_I ) THEN
        nRetired = nRetired + 1
        WRITE(msgBuf,'(A,A)') 'S/RF BLING_READPARMS: "selectK1K2const" ',
-     &      'is no longer allowed in file "data.dic"'
+     &      'is no longer allowed in file "data.bling"'
        CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)')
      &  'S/R BLING_READPARMS: use "data.gchem" instead.'
@@ -513,7 +515,7 @@ C     retired parameters
       IF ( selectPHsolver  .NE. UNSET_I ) THEN
        nRetired = nRetired + 1
        WRITE(msgBuf,'(A,A)') 'S/R BLING_READPARMS: "selectPHsolver" ',
-     &      'is no longer allowed in file "data.dic"'
+     &      'is no longer allowed in file "data.bling"'
        CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)')
      &  'S/R BLING_READPARMS: use "data.gchem" instead.'

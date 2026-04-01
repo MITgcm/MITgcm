@@ -13,8 +13,6 @@ C     | SUBROUTINE OCN_EXPORT_DATA
 C     | o Routine for controlling
 C     |   - export of ocean coupling data to coupler layer
 C     |     but only if using Sequential coupling.
-C     |   - diagnostics of coupling fields (timeave pkg only),
-C     |     whether Synchronous or Sequential coupling.
 C     *==========================================================*
 C     | This version talks to the MIT Coupler. It uses the MIT
 C     | Coupler "checkpoint1" library calls.
@@ -65,14 +63,6 @@ C     Sequential coupling: Send data to coupling layer
 
         CALL OCN_EXPORT_FIELDS ( myIter, myThid )
 
-      ENDIF
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-      IF ( cpl_taveFreq.GT.0. _d 0 ) THEN
-C--   note: will move this "if" inside OCN_CPL_DIAGS when other diags
-C           than time-ave are computed within OCN_CPL_DIAGS.
-        CALL OCN_CPL_DIAGS( myTime, myIter, myThid )
       ENDIF
 
 #endif /* COMPONENT_MODULE */

@@ -41,11 +41,9 @@ CADJ STORE pload0 = tapelev2, key = ilev_2
 CADJ STORE pload1 = tapelev2, key = ilev_2
 # endif
 #endif /* ndef EXCLUDE_FFIELDS_LOAD */
-#ifdef EXACT_CONSERV
 CADJ STORE etaH = tapelev2, key = ilev_2
 CADJ STORE dEtaHdt = tapelev2, key = ilev_2
 CADJ STORE PmEpR = tapelev2, key = ilev_2
-#endif
 c
 #ifdef ALLOW_ADAMSBASHFORTH_3
 CADJ STORE gtnm  = tapelev2, key = ilev_2
@@ -66,10 +64,6 @@ CADJ STORE wvel  = tapelev2, key = ilev_2
 CADJ STORE totphihyd     = tapelev2, key = ilev_2
 c
 #endif /* AUTODIFF_USE_STORE_RESTORE */
-
-#ifdef EXACT_CONSERV
-cphCADJ STORE hDivFlow   = tapelev2, key = ilev_2
-#endif /* EXACT_CONSERV */
 
 #ifdef NONLIN_FRSURF
 CADJ STORE hfac_surfc    = tapelev2, key = ilev_2

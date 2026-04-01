@@ -40,7 +40,7 @@ C ENUM_FLUX_LIMIT :: Non-linear flux limiter
       INTEGER ENUM_FLUX_LIMIT
       PARAMETER(ENUM_FLUX_LIMIT=77)
 
-C ENUM_DST3 :: 3rd Order Direst Space and Time
+C ENUM_DST3 :: 3rd Order Direct Space and Time
       INTEGER ENUM_DST3
       PARAMETER(ENUM_DST3=30)
 

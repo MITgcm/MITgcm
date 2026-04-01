@@ -780,7 +780,7 @@ linkdata()
 	    inpMPI=`(cd ../$1 ; find . -name "*.mpi" -print | sed 's:^\./::')`
 	    for xx in $inpMPI ; do
 	      if test -r "../"$1"/"$xx ; then
-		# found 1 _mpi sfx file in 1rst input dir and it is readable
+		# found 1 .mpi sfx file in 1rst input dir and it is readable
 		yy=`echo $xx | sed 's:\.mpi$::'`
 		if test "x$MPI" = "x0" ; then
 		    # not mpi test: remove symbolic link
@@ -822,15 +822,13 @@ linkdata()
 			    fi
 			fi
 		    done
-		    printf ' ;' 1>&2
-		    if test -x "../"$ldir"/"prepare_run ; then
-			"../"$ldir"/"prepare_run 1>&2
-		    else
-			echo '' 1>&2
-		    fi
+		    printf ' ;\n' 1>&2
 		fi
 		prevDir=$ldir
 	    done
+	    if test -x prepare_run ; then
+		./prepare_run 1>&2
+	    fi
 	)
     fi
 }
@@ -909,7 +907,7 @@ runmodel()
 	    ENDVAL=`tail $OUTPUTFILE | grep -c 'PROGRAM MAIN: Execution ended Normally'`
 	    touch $RUNLOG
 	    if test -f run.log_tmp ; then cat run.log_tmp >> $RUNLOG ; fi
-	    echo "---------->> $OUTPUTFILE is up to date " >> $RUNLOG 2>&1
+	    echo "---------->> $OUTPUTFILE is up to date" >> $RUNLOG 2>&1
 	  fi
 	fi
 	rm -f run.log_tmp
@@ -1869,7 +1867,8 @@ for dir in $TESTDIRS ; do
 	      if test -f $gmkLog ; then
 		ADtool=`grep '^Tapenade ' $gmkLog | tail -n 1`
 		echo "from '$gmkLog', get: $ADtool" >> $DRESULTS/genmake_state
-		ADvers=`echo $ADtool | awk '{print $2,$3}'`
+		#ADvers=`echo $ADtool | awk '{print $2,$3}'`
+		ADvers=`echo $ADtool | sed -e 's/^Tapenade //' -e 's/ [0-9]*:[0-9][0-9] .*$//'`
 		sed "s/ by Tapenade/ by Tapenade $ADvers/" $SUMMARY > tmp.tr_log
 		mv -f tmp.tr_log $SUMMARY
 	      fi

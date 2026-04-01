@@ -34,7 +34,7 @@ C Include hooks to sponge layer treatment of pkg/seaice variables
 C balance barotropic velocity
 #undef ALLOW_OBCS_BALANCE
 
-C add tidal contributions to normal OB flow
+C Allow to add barotropic tidal contributions to OB velocity
 #undef ALLOW_OBCS_TIDES
 
 C Use older implementation of obcs in seaice-dynamics
@@ -63,6 +63,11 @@ C     Compute rather than specify seaice velocities at the edges.
 
 C     Smooth the tracer sea-ice variables near the edges.
 #undef OBCS_SEAICE_SMOOTH_EDGE
+
+C o Flags related to Open-Boundary cost contributions
+C o these flags refer to untested and potentially broken code
+#undef OBCS_AGEOS_COST_CONTRIBUTION
+#undef OBCS_VOLFLUX_COST_CONTRIBUTION
 
 #endif /* ALLOW_OBCS */
 #endif /* OBCS_OPTIONS_H */

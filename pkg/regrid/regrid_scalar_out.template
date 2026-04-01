@@ -89,7 +89,7 @@ C     Create the MNC definition for the variable
           CALL MNC_CW_ADD_VNAME('regrid_levels', 'regrid_levels',
      &         0,0, myThid)
           CALL MNC_CW_ADD_VATTR_TEXT('regrid_levels','description',
-     &         'Idicies of vertical levels within the source arrays',
+     &         'Indicies of vertical levels within the source arrays',
      &         myThid)
 
           CALL MNC_CW_I_W('I',mnc_bname,bi,bj,

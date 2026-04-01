@@ -1,6 +1,191 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint69m (2026/03/30)
+o pkg/cost:
+  - change ordering of calls in `cost_final.F`, profiles before ecco, as
+    before PR 946 ; refine printing of cost per tile value to STDOUT.
+  - drop condition on "useECCO" in shelfice_cost_final.F ; fix few missing
+    or inconsistent CPP #ifdef.
+o verification/global_ocean.cs32x15 & offline_exf_seaice:
+  - in exp. "global_ocean.cs32x15", turn off useCAL in remaining FWD and AD
+    tests and skip compilation of pkg/cal in FWD built. Also shift "nIter0"
+    + rename pickup files in few secondary tests.
+  - similarly, in exp. offline_exf_seaice, turn off and skip compilation of
+    of pkg/cal in AD tests.
+  - fix missing useCAL in 2 pkg/ctrl src files.
+o pkg/cost,ctrl,ecco,obcs:
+  - final cost-function always computed in "cost_final.F" (even if useECCO=T),
+    calling individual {PKG}_COST_FINAL, each writing its own "costfunction_*"
+    summary file. Similar changes in new "cost_driver.F", calling individual
+    pkg "{pkg}_cost_driver.F";
+  - make ctrl-cost (and obcs-ctrl-cost) available without pkg/ecco ; move all
+    obcs-cost S/R from pkg/ecco to pkg/obcs ; and move+rename "data_errfile"
+    (formerly in data.ecco) to "obcs_data_errfile" in "data.ctrl";
+  - retire ALLOW_COST_DEPTH (covered by generic controls);
+  - no changes to results ; adjust few namelists for special cases (obcs_ctrl,
+    bottom_ctrl_5x5);
+  - adjust store directives for combinations of pkgs kpp, seaice, shelfice
+    with ALLOW_DEPTH_CONTROL.
+
+checkpoint69l (2026/03/01)
+o verification:
+  - for secondary tests, change testreport to only run a single "prepare_run"
+    from run-dir, after linking files from both ../input.${sfx}/ and ../input/.
+  - adjust several verification exp. secondary tests accordingly and update
+    instructions in README files + in the docs.
+o pkg/streamice:
+  - fix typo and S/R argument list within #ifdef ALLOW_PETSC adjoint code.
+o tools:
+  - fix PR 949 changes (location of "flow_tap") in Tapenade ad-optfile by
+    using Makefile variable "TOOLSDIR".
+o pkg/tapenade:
+  - fix for Tang-Lin: add missing handwritten code for some pkg/streamice S/R
+    and fix issues in ACTIVE_READ_XY/XYZ_D ;
+  - turn back on Tapenade TLM test for experiment halfpipe_streamice.
+o tapenade & genmake2:
+  - in genmake2, import Tapenade command arguments from ad-optfile (adjoint_tap)
+  - allow additional extra arguments with TAP_EXTRA, which can also be set using
+    new command line option "-tap_extra" ;
+  - add support for Tapenade to skip checkpointing with new "_FWD" and "_BWD"
+    versions of manually written subroutine derivatives ;
+  - test new "no-checkpointing" feature in halfpipe_streamice experiment
+    with new reference output.
+o pkg/gmredi:
+  - remove OLD_VISBECK_CALC code ; rename S/R GMREDI_CALC_PSI_B ;
+  - unless restricted to only uniform Kappa (including 2-D & 1-D scaling),
+    define local 3-d vars for Kappa-Redi and Kappa-GM to simplify Tensor
+    setting and Psi-Bolus code.
+
+checkpoint69k (2026/01/25)
+o model/src:
+  - fix scaling from cg2g/cg3d TargetResWunit to CG-Tolerance (exact scaling
+    if rAc is uniform) by using few more domain global quantities (in GRID.h).
+  - adjust accordingly cg2g/cg3d TargetResWunit in all forward test exp. to keep
+    identical results but switch off cg2dTargetResWunit in most AD exp. (except
+    if using useNSACGSolver=T) to use cg2gTargetResidual (normalize cg2d RHS).
+o verification:
+  - after moving/merging (PR 944) fwd & adm tests from global_ocean_ebm into new
+    host-exp global_oce_latlon, move former input dir and ref. output to replace
+    sym-link in new host-exp and remove remaining files/dir in global_ocean_ebm.
+o pkg/obsfit:
+  - fix allocation of 2 local vars in obsfit_init_fixed.F
+o pkg/profiles:
+  - fix typo ; this allows to compile ALLOW_PROFILES_SAMPLESPLIT_COST code.
+o pkg/gchem:
+  - new routine gchem_insolation.F to replace pkg/bling & pkg/dic code,
+    and now also usable on Curvilinear-Grid.
+o tools/ci:
+  - add two tapenade AD test experiments to GitHub action CI test.
+
+checkpoint69j (2025/12/20)
+o optim:
+  - fix outdated ALLOW_SHIFWFLX_CONTROL option in "optim_read/writedata.F".
+o pkg/obsfit:
+  - new package "obsfit" for for model-observations comparisons (and cost
+    contribution);
+  - add secondary "obsfit" test in TAF-AD exp. global_oce_biogeo_bling.
+o verification:
+  - move "global_ocean_ebm" experiment forward tests to "global_oce_latlon" and
+    adjust AD test for merging in global_oce_latlon, as a secondary "ebm" test.
+  - disable test of global_ocean_ebm (to be removed later).
+o pkg/seaice:
+  - fix compilation of untested SEAICE_MODIFY_GROWTH_ADJ code.
+o model/src:
+  - add a STOP if using selectPenetratingSW > 0 in Atmospheric set-up.
+o pkg/streamice & Tapenade:
+  - introduce fixed-point treatment of Goldberg et al 2016 (GMD) for streamice
+    nonlinear solver using Tapenade FP-LOOP pragma ; used in halfpipe_streamice
+    exp. (with #define ALLOW_STREAMICE_FP_ADJ) ;
+  - rename: streamice_vel_solve_openad.F --> streamice_vel_solve_fp.F
+    + CPP option  ALLOW_STREAMICE_OAD_FP --> ALLOW_STREAMICE_FP_ADJ
+  - skip differentiation of streamice_cg_solve.F with Tapenade, calling instead
+    adstreamice_cg_solve (update "flow_tap" and stubs_tap_adj.F, add
+    adFixedPoint.c in  ADFirstAidKit/ + links in pkg/tapenade);
+  - for now, disable halfpipe_streamice exp. Tapenade Tang.-Lin test.
+o pkg/grdchk:
+  - fix grdchk location to allow to span several vertical level k ; test this
+    in secondary test exp. "global_ocean.90x40x15.kapredi".
+o pkg/mnc:
+  - update grid-variable names in pkg/mnc NetCDF files (mostly matching GRID.h)
+    and provide backwards compatibility in MATLab "load_grid.m" and for Python
+    MITgcmutils (restore_MNC_keys).
+o pkg/seaice:
+  - new parameter "SEAICE_evpAreaReg" for regularizations of denomU/V in EVP
+    solver ; tested in exp. seaice_obcs new secondary test "regDenom".
+
+checkpoint69i (2025/11/14)
+o pkg/cost:
+  - fix multi-proc initialization of Tapenade adjoint cost-function.
+o pkg & model:
+  - remove pkg/timeave ; remove all ALLOW_TIMEAVE code ; remove all timeave
+    related parameters from common blocks (in header files) and from src code
+    and disable/retire these params.
+  - also updates model_ad.flow, TAP_support/flow_tap, OAD_support and most
+    */code_oad/cb2mFiles from verification.
+o tools (Tapenade):
+  - implement "-ncad" genmake2 option for Tapenade Makefile (similar to TAF),
+    to append each forward src file to corresponding Tapenade-generated AD file,
+    using new short script "append_fwd_src"; otherwise (default), put all
+    adjoint (or Tang.Lin.) tapenade  fortran files "_b.f" (or "_d.f") into a
+    single "adj/tlm/_tap_all.f" file, to be compiled to get an object file.
+  - simply add symbolic-links within pkg/tapenade/ to the few files from
+    "tools/TAP_support/ADFirstAidKit/" that are needed.
+  - fix for case-insensitive file systems (e.g., on Mac-OS) and update optfile
+    "darwin_arm64_gfortran" to use Tapenade on Mac-OS using with "docker".
+o pkg/diagnostics:
+  - add diagnostic "VSHEARSQ" for the square of vertical shear.
+
+checkpoint69h (2025/10/23)
+o pkg/ctrl:
+  - account for shift in record number between original xx_gentim2d_file full
+    time-series and "effective" sub-set version ; this was previously missing.
+    Also enable some debug print from ctrl_get_gen_rec.F (if debugLevel >= 3).
+o pkg/seaice:
+  - fix compilation of seaice_growth_adx.F (left from PR #750).
+o model, pkgs:
+  - remove code within "#ifndef EXACT_CONSERV / #endif" bracket and remove
+    completely CPP option EXACT_CONSERV.
+o pkg/bling:
+  - allows to specify a 2D field of light attenuation coefficient (k0_2d) from
+    file "bling_k0_2dFile".
+
+checkpoint69g (2025/09/12)
+o verification/short_surf_wave:
+  - fix Non-Hydrostatic pressure initialization issue with implicSurfPress=1/2
+    by re-starting (nIter0=1) from pickup generated with implicSurfPress=1.
+o tools/mpack-1.6:
+  - fix compilation for recent version of gcc, to pass the compiler test in
+    "configure" and md5 compilation with v15 (comply with C23 standard).
+o pkg/streamice:
+  - for OpenAD, adjust streamice_write_pickup.F to only write the forward
+    components of state arrays to the binary pickups for later use.
+o verification:
+  - remove all pkg/timeave params from all exp. and no longer compile this
+    pkg in any exp. ; also skip pkg/mnc compilation in 4 fwd test exp ;
+  - switch few remaining exp. to #define EXACT_CONSERV so that no exp is
+    compiled with this option undefined anymore.
+o pkg/profiles:
+  - fix "profilesDoNcOutput" feature (writing NetCDF model equivalents) so
+    that it can be use with pkg/grdchk. Switch profilesDoNcOutput" to True in
+    adjoint test exp.  global_oce_biogeo_bling (both in TAF & Tapenade test).
+  - improve code readability, rename cost_profiles.F to profiles_cost.F
+    and fix obvious multi-threading issues.
+
+checkpoint69f (2025/07/10)
+o model/src, pkg/kpp:
+  - store shortwave penetration fraction in 3D field SWFrac3D and add run-time
+    params "selectPenetratingSW" to chose between different short-wave heating
+    options (only =1 currently implemented);
+  - remove local (buggy) solution in pkg/seaice ;
+  - add runtime-flag "KPPuseSWfrac3D", set to F by default, because this code
+    can only approximately replace the original pkg/kpp-code ;
+  - update TAF directives in pkg/kpp (mostly related to the code changes);
+  - fix "global_ocean.cs32x15" exp bug in "in_p" and "seaice" tests, update FWD,
+    ADM & TLM ref. output ; set KPPuseSWfrac3D to True in "1D_ocean_ice_column"
+    (both FWD & ADM) test exp. with updated ref. output.
+o pkg/streamice:
+  - fix "new_partial" initialisation in streamice_adv_front.f (helps Tapenade)
 o pkg/bling, pkg/dic:
   - additional store directives to avoid hidden recomputations.
 o pkg/longstep:

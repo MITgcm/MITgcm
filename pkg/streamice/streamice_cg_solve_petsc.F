@@ -56,6 +56,7 @@ C     in the include statement
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "STREAMICE.h"
+#include "STREAMICE_FP.h"
 #include "STREAMICE_CG.h"
 
 C     === Global variables ===
@@ -76,8 +77,10 @@ C     cg_Bu, cg_Bv - driving stress
      & A_uv (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
      & A_vv (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1)
 
-#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+#ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_STREAMICE_FP_ADJ
        LOGICAL create_mat, destroy_mat
+#endif
 #endif
 
 #ifdef ALLOW_STREAMICE
@@ -141,7 +144,6 @@ c      PC  pc
       local_offset = 0
 
 #endif
-
 c      call petscInitialize(PETSC_NULL_CHARACTER,ierr)
 
 c----------------------
@@ -208,9 +210,11 @@ c---------------
       call VecAssemblyBegin(solution, ierr)
       call VecAssemblyEnd(solution, ierr)
 
-#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+#ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_STREAMICE_FP_ADJ
 #ifdef ALLOW_PETSC
       if (STREAMICE_need2createmat) then
+#endif
 #endif
 #endif
 
@@ -415,9 +419,11 @@ C       call PCGAMGSetReuseProl(pc,PETSC_FALSE,ierr)
       END SELECT
 
       CALL TIMER_STOP ('STREAMICE_PETSC_SETUP',myThid)
-#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+#ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_STREAMICE_FP_ADJ
 #ifdef ALLOW_PETSC
       endif
+#endif
 #endif
 #endif
 
@@ -454,13 +460,17 @@ C       call PCGAMGSetReuseProl(pc,PETSC_FALSE,ierr)
        ENDDO
       ENDDO
 
-#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+#ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_STREAMICE_FP_ADJ
       if (streamice_need2destroymat) then
+#endif
 #endif
       call KSPDestroy (ksp, ierr)
       call MatDestroy (matrix, ierr)
-#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+#ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_STREAMICE_FP_ADJ
       endif
+#endif
 #endif
       call VecDestroy (rhs, ierr)
       call VecDestroy (solution, ierr)

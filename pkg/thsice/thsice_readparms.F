@@ -43,6 +43,9 @@ C     iUnit     :: Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(20) fmtR, fmtI, fmtL, fmtC
       INTEGER iUnit
+C-    retired parameters:
+      _RL thSIce_taveFreq
+      LOGICAL thSIce_tave_mnc
 
 C--   Th-Sea-ICE parameter
       NAMELIST /THSICE_CONST/
@@ -91,15 +94,6 @@ C     print a (weak) warning if data.ice is found
       ENDIF
 
       _BEGIN_MASTER(myThid)
-
-      WRITE(msgBuf,'(A)') ' THSICE_READPARMS: opening data.ice'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
-
-      CALL OPEN_COPY_DATA_FILE(
-     I                          'data.ice', 'THSICE_READPARMS',
-     O                          iUnit,
-     I                          myThid )
 
 C--   Default values (constants)
       rhos     = 330. _d 0
@@ -161,17 +155,14 @@ C--   Default values (parameters)
       stressReduction = 1. _d 0
       IF ( useSEAICE ) stressReduction = 0. _d 0
       thSIceBalanceAtmFW  = 0
-      thSIce_taveFreq = taveFreq
       thSIce_diagFreq = dumpFreq
       thSIce_monFreq  = monitorFreq
 #ifdef ALLOW_MNC
-      thSIce_tave_mnc     = timeave_mnc
-      thSIce_snapshot_mnc = snapshot_mnc
-      thSIce_mon_mnc      = monitor_mnc
-      thSIce_pickup_read_mnc  = pickup_read_mnc
-      thSIce_pickup_write_mnc = pickup_write_mnc
+      thSIce_snapshot_mnc = useMNC .AND. snapshot_mnc
+      thSIce_mon_mnc      = useMNC .AND. monitor_mnc
+      thSIce_pickup_read_mnc  = useMNC .AND. pickup_read_mnc
+      thSIce_pickup_write_mnc = useMNC .AND. pickup_write_mnc
 #else
-      thSIce_tave_mnc     = .FALSE.
       thSIce_snapshot_mnc = .FALSE.
       thSIce_mon_mnc      = .FALSE.
       thSIce_pickup_read_mnc  = .FALSE.
@@ -188,6 +179,20 @@ C--   Default values (parameters)
       thsice_cost_ice_flag = 1
       mult_thsice = 0. _d 0
 #endif
+C-    retired params default:
+      thSIce_taveFreq = UNSET_RL
+      thSIce_tave_mnc = .FALSE.
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      WRITE(msgBuf,'(A)') ' THSICE_READPARMS: opening data.ice'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+
+      CALL OPEN_COPY_DATA_FILE(
+     I                          'data.ice', 'THSICE_READPARMS',
+     O                          iUnit,
+     I                          myThid )
 
 C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=THSICE_CONST)
@@ -214,6 +219,31 @@ C--   Close the open data file
       CLOSE(iUnit,STATUS='DELETE')
 #endif /* SINGLE_DISK_IO */
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C--   Check for retired parameters:
+      IF ( thSIce_taveFreq .NE. UNSET_RL ) THEN
+        WRITE(msgBuf,'(2A)') 'THSICE_READPARMS: "thSIce_taveFreq"',
+     &    ' is no longer allowed in file "data.ice"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'THSICE_READPARMS: ',
+     &    ' since "pkg/timeave" has been removed.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+c       errCount = errCount + 1
+        STOP 'ABNORMAL END: S/R THSICE_READPARMS'
+      ENDIF
+      IF ( thSIce_tave_mnc ) THEN
+        WRITE(msgBuf,'(2A)') 'THSICE_READPARMS: "thSIce_tave_mnc"',
+     &    ' is no longer allowed in file "data.ice"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'THSICE_READPARMS: ',
+     &    ' since "pkg/timeave" has been removed.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+c       errCount = errCount + 1
+        STOP 'ABNORMAL END: S/R THSICE_READPARMS'
+      ENDIF
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-    neutral default:
       IF ( hNewIceMax .EQ. UNSET_RL ) hNewIceMax = hiMax
 
@@ -231,23 +261,19 @@ C-    Define other constants (from previous ones):
       floodFac = (rhosw - rhoi)/rhos
 
 C     Set I/O parameters
-      thSIce_tave_mdsio     = .TRUE.
-      thSIce_snapshot_mdsio = .TRUE.
-      thSIce_mon_stdio      = .TRUE.
+      thSIce_snapshot_mdsio     = .TRUE.
+      thSIce_mon_stdio          = .TRUE.
       thSIce_pickup_write_mdsio = .TRUE.
 #ifdef ALLOW_MNC
-      IF (useMNC) THEN
-        IF ( .NOT.outputTypesInclusive
-     &       .AND. thSIce_tave_mnc ) thSIce_tave_mdsio = .FALSE.
-        IF ( .NOT.outputTypesInclusive
-     &       .AND. thSIce_snapshot_mnc )
-     &       thSIce_snapshot_mdsio = .FALSE.
-        IF ( .NOT.outputTypesInclusive
-     &       .AND. thSIce_mon_mnc  ) thSIce_mon_stdio  = .FALSE.
-        IF ( .NOT.outputTypesInclusive
-     &       .AND. thSIce_pickup_write_mnc  )
-     &       thSIce_pickup_write_mdsio = .FALSE.
-      ENDIF
+      thSIce_snapshot_mnc     = useMNC .AND. thSIce_snapshot_mnc
+      thSIce_mon_mnc          = useMNC .AND. thSIce_mon_mnc
+      thSIce_pickup_write_mnc = useMNC .AND. thSIce_pickup_write_mnc
+      thSIce_snapshot_mdsio     = ( .NOT.thSIce_snapshot_mnc )
+     &                        .OR. outputTypesInclusive
+      thSIce_mon_stdio          = ( .NOT.thSIce_mon_mnc )
+     &                        .OR. outputTypesInclusive
+      thSIce_pickup_write_mdsio = ( .NOT.thSIce_pickup_write_mnc )
+     &                        .OR. outputTypesInclusive
 #endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -340,7 +366,6 @@ c     OPEN(iUnit,file='thsice_check_params',status='unknown')
       WRITE(iUnit,fmtR) 'ThSI:','hMxL_default      =',hMxL_default
       WRITE(iUnit,fmtR) 'ThSI:','sMxL_default      =',sMxL_default
       WRITE(iUnit,fmtR) 'ThSI:','vMxL_default      =',vMxL_default
-      WRITE(iUnit,fmtR) 'ThSI:','thSIce_taveFreq   =',thSIce_taveFreq
       WRITE(iUnit,fmtR) 'ThSI:','thSIce_diagFreq   =',thSIce_diagFreq
       WRITE(iUnit,fmtR) 'ThSI:','thSIce_monFreq    =',thSIce_monFreq
       WRITE(iUnit,fmtI) 'ThSI:','startIceModel     =',startIceModel

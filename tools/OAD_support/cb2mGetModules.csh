@@ -59,8 +59,7 @@ if ( ${fileName} == 'DIAGSTATS_REGIONS' || ${fileName} == 'DIAGNOSTICS' ) then
   echo '      use DIAGNOSTICS_SIZE_mod'     >> ${fileName}_temp
 endif
 if ( ${fileName} == 'PTRACERS_FIELDS' || ${fileName} == 'PTRACERS_PARAMS' || \
-     ${fileName} == 'PTRACERS_START' || ${fileName} == 'PTRACERS_TAVE' || \
-     ${fileName} == 'GCHEM_FIELDS' ) then
+     ${fileName} == 'PTRACERS_START' || ${fileName} == 'GCHEM_FIELDS' ) then
   echo '      use PTRACERS_SIZE_mod' >> ${fileName}_temp
 endif
 if ( ${fileName} == 'RBCS_FIELDS' ) then

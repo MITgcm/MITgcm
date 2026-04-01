@@ -4,9 +4,7 @@ calcite_saturation.f
 car_flux.f
 car_flux_omega_top.f
 dic_atmos.f
-dic_biotic_diags.f
 dic_biotic_forcing.f
-dic_biotic_init.f
 dic_cost.f
 dic_fields_load.f
 dic_fields_update.f
@@ -20,6 +18,5 @@ dic_store_fluxco2.f
 dic_surfforcing.f
 dic_surfforcing_init.f
 fe_chem.f
-insol.f
 o2_surfforcing.f
 phos_flux.f

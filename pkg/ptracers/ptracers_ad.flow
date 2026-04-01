@@ -17,9 +17,3 @@ C subroutine  ptracers_debug
 C----------------------------------------
 CADJ SUBROUTINE ptracers_debug  INPUT  = 1
 CADJ SUBROUTINE ptracers_debug  OUTPUT =
-
-C----------------------------------------
-C subroutine  ptracers_timeave
-C----------------------------------------
-CADJ SUBROUTINE ptracers_timeave  INPUT  = 1,2,3,4,5
-CADJ SUBROUTINE ptracers_timeave  OUTPUT =

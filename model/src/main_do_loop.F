@@ -146,10 +146,6 @@ c**************************************
 # endif
 # ifdef ALLOW_GMREDI
 #  include "GMREDI.h"
-#  include "GMREDI_TAVE.h"
-# endif
-# ifdef ALLOW_TIMEAVE
-#  include "TIMEAVE_STATV.h"
 # endif
 # include "FFIELDS.h"
 # include "DYNVARS.h"

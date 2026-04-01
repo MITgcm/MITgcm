@@ -78,11 +78,9 @@ C--   fill momentum state-var diagnostics:
 
         CALL DIAGNOSTICS_SCALE_FILL( etaN, oneRL, 2,
      &                              'ETANSQ  ',0, 1,0,1,1,myThid)
-
-#ifdef EXACT_CONSERV
         CALL DIAGNOSTICS_SCALE_FILL( dEtaHdt, oneRL, 2,
      &                              'DETADT2 ',0, 1,0,1,1,myThid)
-#endif
+
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( use3Dsolver ) THEN
           CALL DIAGNOSTICS_FILL( phi_nh,'PHI_NH  ',0,Nr,0,1,1,myThid )
@@ -106,6 +104,37 @@ C--   fill momentum state-var diagnostics:
      &                              'WVELSQ  ',0,Nr,0,1,1,myThid)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+        IF ( DIAGNOSTICS_IS_ON('VSHEARSQ',myThid) ) THEN
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j = 1,sNy
+            DO i = 1,sNx
+              tmpMk(i,j,1,bi,bj) = 0. _d 0
+            ENDDO
+           ENDDO
+           DO k=2,Nr
+            DO j = 1,sNy+1
+             DO i = 1,sNx+1
+              tmpU(i,j) = ( uVel(i,j,k,bi,bj) - uVel(i,j,k-1,bi,bj) )
+c                       * maskW(i,j,k,bi,bj)*maskW(i,j,k-1,bi,bj)
+              tmpV(i,j) = ( vVel(i,j,k,bi,bj) - vVel(i,j,k-1,bi,bj) )
+c                       * maskS(i,j,k,bi,bj)*maskS(i,j,k-1,bi,bj)
+             ENDDO
+            ENDDO
+            DO j = 1,sNy
+             DO i = 1,sNx
+              tmpMk(i,j,k,bi,bj) = recip_drC(k)*recip_drC(k)*halfRL
+     &           *( ( tmpU(i,j)*tmpU(i,j) + tmpU(i+1,j)*tmpU(i+1,j) )
+     &            + ( tmpV(i,j)*tmpV(i,j) + tmpV(i,j+1)*tmpV(i,j+1) )
+     &            )
+             ENDDO
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+         CALL DIAGNOSTICS_FILL(tmpMk,'VSHEARSQ',0,Nr,0,1,1,myThid)
+        ENDIF
 
         IF ( DIAGNOSTICS_IS_ON('UE_VEL_C',myThid) .OR.
      &       DIAGNOSTICS_IS_ON('VN_VEL_C',myThid) .OR.
