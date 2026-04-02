@@ -33,7 +33,7 @@ C !INPUT PARAMETERS: ===================================================
       INTEGER myIter
       INTEGER myThid
 
-#if defined ALLOW_CTRL && defined ALLOW_COST
+#if defined ALLOW_CTRL && defined ALLOW_COST && ALLOW_OBCS_CONTROL
 C !LOCAL VARIABLES: ====================================================
       INTEGER startrec
       INTEGER endrec
