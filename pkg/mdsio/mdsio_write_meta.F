@@ -192,7 +192,7 @@ C     Follow ISO 8601
        second = MOD(myDate(2),100)
        minute = MOD(myDate(2)/100,100)
        hour   = myDate(2)/10000
-       WRITE(mUnit,'(1X,A,I4.4,A,I2.2,A,I2.2,A,I2.2,A,I2.2,A,I2.2,A)')
+       WRITE(mUnit,'(1X,A,I4.4,A,5(I2.2,A))')
      &      "timeStepDate = [ '",
      &      year,"-",month,"-",day,"T",hour,":",minute,":",second,
      &      "Z' ];"
