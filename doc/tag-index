@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/obcs:
+  - fix CPP logic in obcs_cost_driver.F to avoid compilation error.
+
 checkpoint69m (2026/03/30)
 o pkg/cost:
   - change ordering of calls in `cost_final.F`, profiles before ecco, as
