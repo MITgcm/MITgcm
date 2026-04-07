@@ -467,7 +467,7 @@ def rdmds(fnamearg,itrs=-1,machineformat='b',rec=None,fill_value=0,
         if tsdate is not None:
             # np.datetime64 does not support timezones, so remove the
             # timezone Z (Zulu time) to avoid the warning
-            timeStepDates.append(np.datetime64(tsdate[0].replace("Z", "")))
+            timeStepDates.append(np.datetime64(tsdate[0].replace('Z','')))
 
         if timeinterval is not None:
             timeIntervals.append(timeinterval)
@@ -478,6 +478,8 @@ def rdmds(fnamearg,itrs=-1,machineformat='b',rec=None,fill_value=0,
 
     if len(timeStepDates):
         metaref['timeStepDate'] = timeStepDates
+        # hardwire time zone
+        metaref['timeZone'] = [ 'Z' ]
 
     if len(timeIntervals):
         metaref['timeInterval'] = timeIntervals
