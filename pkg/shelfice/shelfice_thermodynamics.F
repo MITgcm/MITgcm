@@ -648,15 +648,15 @@ C     instead of the salt balance equation, can handle the case when the
 C     salinity of the ocean, boundary layer, and ice are identical.
 C     Default thermodynamics specify a linear temperature gradient
 C     through the ice (Holland and Jenkins, 1999, Section 2).
-C     Here, via eps3=0 and fwFlxFac, we also cover the case of a nonlinear
+C     Here, via eps3=0 and fwflxFac, we also cover the case of a nonlinear
 C     temperature gradient through the ice (Holland and Jenkins, 1999,
 C     Section 3), but only for melting (Eq. 31 of Holland and Jenkins,
-C     1999). fwFlxFac = 0 for freezing and 1 for melting conditions.
+C     1999). fwflxFac = 0 for freezing and 1 for melting conditions.
             freshWaterFlux = (
      &             eps1*( thetaFreeze - tLoc(i,j) )
      &           + eps3*( thetaFreeze - SHELFICEthetaSurface )
      &           ) / ( SHELFICElatentHeat
-     &                + fwFlxFac * SHELFICEheatCapacity_Cp*
+     &                + fwflxFac * SHELFICEheatCapacity_Cp*
      &                  (thetaFreeze - SHELFICEthetaSurface) )
 #endif /* ndef SHI_SALTBAL_FWFLX */
 
