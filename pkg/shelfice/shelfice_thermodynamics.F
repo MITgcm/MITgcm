@@ -307,7 +307,7 @@ C-    Original averaging expression for uStar:
      &         ( uVel(i,  j,k,bi,bj) * _hFacW(i,  j,k,bi,bj)
      &         + uVel(i+1,j,k,bi,bj) * _hFacW(i+1,j,k,bi,bj) )
            vLoc(i,j) = recip_hFacC(i,j,k,bi,bj) * halfRL *
-     &         ( vVel(i,j,  K,bi,bj) * _hFacS(i,j,  K,bi,bj)
+     &         ( vVel(i,j,  k,bi,bj) * _hFacS(i,j,  k,bi,bj)
      &         + vVel(i,j+1,k,bi,bj) * _hFacS(i,j+1,k,bi,bj) )
            velSq(i,j) = uLoc(i,j)*uLoc(i,j)+vLoc(i,j)*vLoc(i,j)
           ENDDO
@@ -326,10 +326,10 @@ C-    New (more accurate) averaging expression for uStar:
      &     uVel( i, j,k,bi,bj)*uVel( i, j,k,bi,bj)*_hFacW( i, j,k,bi,bj)
      &   + uVel(i+1,j,k,bi,bj)*uVel(i+1,j,k,bi,bj)*_hFacW(i+1,j,k,bi,bj)
      &                  )/tmpFac
-           tmpFac = _hFacS(i,j,  K,bi,bj) + _hFacS(i,j+1,k,bi,bj)
+           tmpFac = _hFacS(i,j,  k,bi,bj) + _hFacS(i,j+1,k,bi,bj)
            IF ( tmpFac.GT.0. _d 0 )
      &     velSq(i,j) = velSq(i,j) + (
-     &     vVel(i, j, K,bi,bj)*vVel(i, j, K,bi,bj)*_hFacS(i, j, K,bi,bj)
+     &     vVel(i, j, k,bi,bj)*vVel(i, j, k,bi,bj)*_hFacS(i, j, k,bi,bj)
      &   + vVel(i,j+1,k,bi,bj)*vVel(i,j+1,k,bi,bj)*_hFacS(i,j+1,k,bi,bj)
      &                               )/tmpFac
           ENDDO
@@ -409,7 +409,7 @@ c           u_topDr(i,j) =
 c    &           ( uVel(i,j,k,bi,bj)*drF(k)*_hFacW(i,j,k,bi,bj)
 c    &           + uVel(i,j,kp1,bi,bj)*drKp1
 c    &           )*recip_drLoc
-           ELSEIF (K.EQ.Nr) THEN
+           ELSEIF (k.EQ.Nr) THEN
             uLoc(i,j) = uVel(i,j,k,bi,bj)
            ELSE
             uLoc(i,j) = 0. _d 0
@@ -430,7 +430,7 @@ c           v_topDr(i,j) =
 c    &           ( vVel(i,j,k,bi,bj)*drF(k)*_hFacS(i,j,k,bi,bj)
 c    &           + vVel(i,j,kp1,bi,bj)*drKp1
 c    &           )*recip_drLoc
-           ELSEIF (K.EQ.Nr) THEN
+           ELSEIF (k.EQ.Nr) THEN
             vLoc(i,j) = vVel(i,j,k,bi,bj)
            ELSE
             vLoc(i,j) = 0. _d 0
