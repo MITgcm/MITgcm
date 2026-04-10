@@ -1,6 +1,12 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/shelfice:
+  - use alternative way to compute freshWaterFlux based on heat balance ;
+    keep old code under CPP option SHI_SALTBAL_FWFLX, and define this option
+    in verification exp. shelfice_2d_remesh; update docs;
+  - fix potential division by zero in saltFreeze & freshWaterFlux expressions;
+  - fix bug related to SHELFICEadvDiffHeatFlux=T.
 o pkg/obcs:
   - fix CPP logic in obcs_cost_driver.F to avoid compilation error.
 
