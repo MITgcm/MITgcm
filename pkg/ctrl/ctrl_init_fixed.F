@@ -128,14 +128,14 @@ C----------------------------------------------------------------------
 
 #ifdef ALLOW_OBCSN_CONTROL
 C--   Northern obc.
-      CALL ctrl_init_rec ( xx_obcsn_file,
-     I     xx_obcsnstartdate1, xx_obcsnstartdate2, xx_obcsnperiod, 4,
-     O     xx_obcsnstartdate, diffrec, startrec, endrec,
+      CALL CTRL_INIT_REC ( xx_obcsN_file,
+     I     xx_obcsNstartdate1, xx_obcsNstartdate2, xx_obcsNperiod, 4,
+     O     xx_obcsNstartdate, diffrec, startrec, endrec,
      I     myThid )
       ivar = ivar + 1
       iarr = 1
-      CALL ctrl_init_ctrlvar (
-     I     xx_obcsn_file, ivar, iarr, diffrec, startrec, endrec,
+      CALL CTRL_INIT_CTRLVAR (
+     I     xx_obcsN_file, ivar, iarr, diffrec, startrec, endrec,
      I     sNx, 1, Nr, 'm', 'SecXZ', costFinalExist, myThid )
 #endif /* ALLOW_OBCSN_CONTROL */
 
@@ -143,14 +143,14 @@ C----------------------------------------------------------------------
 
 #ifdef ALLOW_OBCSS_CONTROL
 C--   Southern obc.
-      CALL ctrl_init_rec ( xx_obcss_file,
-     I     xx_obcssstartdate1, xx_obcssstartdate2, xx_obcssperiod, 4,
-     O     xx_obcssstartdate, diffrec, startrec, endrec,
+      CALL CTRL_INIT_REC ( xx_obcsS_file,
+     I     xx_obcsSstartdate1, xx_obcsSstartdate2, xx_obcsSperiod, 4,
+     O     xx_obcsSstartdate, diffrec, startrec, endrec,
      I     myThid )
       ivar = ivar+1
       iarr = 2
-      CALL ctrl_init_ctrlvar (
-     I     xx_obcss_file, ivar, iarr, diffrec, startrec, endrec,
+      CALL CTRL_INIT_CTRLVAR (
+     I     xx_obcsS_file, ivar, iarr, diffrec, startrec, endrec,
      I     sNx, 1, Nr, 'm', 'SecXZ', costFinalExist, myThid )
 #endif /* ALLOW_OBCSS_CONTROL */
 
@@ -158,14 +158,14 @@ C----------------------------------------------------------------------
 
 #ifdef ALLOW_OBCSW_CONTROL
 C--   Western obc.
-      CALL ctrl_init_rec ( xx_obcsw_file,
-     I     xx_obcswstartdate1, xx_obcswstartdate2, xx_obcswperiod, 4,
-     O     xx_obcswstartdate, diffrec, startrec, endrec,
+      CALL CTRL_INIT_REC ( xx_obcsW_file,
+     I     xx_obcsWstartdate1, xx_obcsWstartdate2, xx_obcsWperiod, 4,
+     O     xx_obcsWstartdate, diffrec, startrec, endrec,
      I     myThid )
       ivar = ivar+1
       iarr = 4
-      CALL ctrl_init_ctrlvar (
-     I     xx_obcsw_file, ivar, iarr, diffrec, startrec, endrec,
+      CALL CTRL_INIT_CTRLVAR (
+     I     xx_obcsW_file, ivar, iarr, diffrec, startrec, endrec,
      I     1, sNy, Nr, 'm', 'SecYZ', costFinalExist, myThid )
 #endif  /* ALLOW_OBCSW_CONTROL */
 
@@ -173,14 +173,14 @@ C----------------------------------------------------------------------
 
 #ifdef ALLOW_OBCSE_CONTROL
 C--   Eastern obc.
-      CALL ctrl_init_rec ( xx_obcse_file,
-     I     xx_obcsestartdate1, xx_obcsestartdate2, xx_obcseperiod, 4,
-     O     xx_obcsestartdate, diffrec, startrec, endrec,
+      CALL CTRL_INIT_REC ( xx_obcsE_file,
+     I     xx_obcsEstartdate1, xx_obcsEstartdate2, xx_obcsEperiod, 4,
+     O     xx_obcsEstartdate, diffrec, startrec, endrec,
      I     myThid )
       ivar = ivar+1
       iarr = 3
-      CALL ctrl_init_ctrlvar (
-     I     xx_obcse_file, ivar, iarr, diffrec, startrec, endrec,
+      CALL CTRL_INIT_CTRLVAR (
+     I     xx_obcsE_file, ivar, iarr, diffrec, startrec, endrec,
      I     1, sNy, Nr, 'm', 'SecYZ', costFinalExist, myThid )
 #endif /* ALLOW_OBCSE_CONTROL */
 
@@ -231,7 +231,7 @@ C      Under iceshelf, use maskSHI for these
        IF (xx_genarr2d_weight(iarr).NE.' ') THEN
 #endif
         ivar = ivar+1
-        CALL ctrl_init_ctrlvar (
+        CALL CTRL_INIT_CTRLVAR (
      I       xx_genarr2d_file(iarr),
      I       ivar, iarr, 1, 1, 1,
      I       sNx, sNy, 1, ncvargrdtmp, 'Arr2D', costFinalExist,
@@ -251,7 +251,7 @@ C----------------------------------------------------------------------
        IF (xx_genarr3d_weight(iarr).NE.' ') THEN
 #endif
         ivar = ivar+1
-        CALL ctrl_init_ctrlvar (
+        CALL CTRL_INIT_CTRLVAR (
      I       xx_genarr3d_file(iarr),
      I       ivar, iarr, 1, 1, 1,
      I       sNx, sNy, Nr, ncvargrdtmp, 'Arr3D', costFinalExist,
@@ -284,7 +284,7 @@ C      Under iceshelf, use maskSHI for these
        IF (xx_gentim2d_file(iarr)(1:5).EQ.'xx_fv')
      &       ncvargrdtmp='s'
 
-       CALL ctrl_init_rec ( xx_gentim2d_file(iarr),
+       CALL CTRL_INIT_REC ( xx_gentim2d_file(iarr),
      I       xx_gentim2d_startdate1(iarr),
      I       xx_gentim2d_startdate2(iarr),
      I       xx_gentim2d_period(iarr),
@@ -320,7 +320,7 @@ C      Under iceshelf, use maskSHI for these
         ilgen = ILNBLNK( xx_gentim2d_file(iarr) )
         WRITE(fnamegen,'(2a)')
      &       xx_gentim2d_file(iarr)(1:ilgen),'.effective'
-        CALL ctrl_init_ctrlvar (
+        CALL CTRL_INIT_CTRLVAR (
      I       fnamegen,
      I       0, iarr,
      I       diffrecFull, startrec, endrecFull,
@@ -329,7 +329,7 @@ C      Under iceshelf, use maskSHI for these
 
         WRITE(fnamegen,'(2a)')
      &       xx_gentim2d_file(iarr)(1:ilgen),'.tmp'
-        CALL ctrl_init_ctrlvar (
+        CALL CTRL_INIT_CTRLVAR (
      I       fnamegen,
      I       0, iarr,
      I       diffrecFull, startrec, endrecFull,
@@ -337,7 +337,7 @@ C      Under iceshelf, use maskSHI for these
      I       myThid )
 
 C     The length of adxx-files needs to be 1:endrec
-        CALL ctrl_init_ctrlvar (
+        CALL CTRL_INIT_CTRLVAR (
      I       xx_gentim2d_file(iarr),
      I       ivar, iarr,
      I       endrec, 1, endrec,
