@@ -217,7 +217,22 @@ C     1) Read the number of profiles and available dimensions:
           CALL PROFILES_NF_ERROR(
      &         'INIT_FIXED: NF_INQ_DIMLEN ProfDepthNo',
      &         err,bi,bj,myThid )
-
+          IF ( ProfDepthNo(num_file,bi,bj) .GT. NLEVELMAX ) THEN
+           WRITE(msgBuf,'(2A)')
+     &      'PROFILES_INIT_FIXED: # of depth levels in file exceeds',
+     &      ' NLEVELMAX'
+           CALL PRINT_ERROR( msgBuf, myThid )
+           WRITE(msgBuf,'(A,I5,A,I5)')
+     &      'ProfDepthNo=', ProfDepthNo(num_file,bi,bj),
+     &      ' > NLEVELMAX=', NLEVELMAX
+           CALL PRINT_ERROR( msgBuf, myThid )
+           WRITE(msgBuf,'(2A)')
+     &      'PROFILES_INIT_FIXED: increase NLEVELMAX in',
+     &      ' PROFILES_SIZE.h and recompile'                            
+           CALL PRINT_ERROR( msgBuf, myThid )
+           stopProfiles = 1
+          ENDIF  
+           
           err = NF_INQ_DIMID( fid, 'iINTERP', dimId )
           IF (err.EQ.NF_NOERR) THEN
            err = NF_INQ_DIMLEN( fid, dimId, iINTERP )
