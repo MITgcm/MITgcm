@@ -1740,8 +1740,8 @@ C     contribution to the rhs part of grad(sigma)_x
 C     add extra metric terms
       IF ( SEAICEselectMetricTerms .GE. 2 ) THEN
 C     to save memory we re-use sig11 as sig22, hopefully without confusion
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          eplus = e11(i,j,bi,bj) + e22(i,j,bi,bj)
          eminus= e11(i,j,bi,bj) - e22(i,j,bi,bj)
          sig11(i,j) = zeta(i,j,bi,bj)*eplus - eta(i,j,bi,bj)*eminus
@@ -1895,8 +1895,8 @@ C     contribution to the rhs part of grad(sigma)_y
 
       IF ( SEAICEselectMetricTerms .GE. 2 ) THEN
 C     to save memory we re-use sig22 as sig11, hopefully without confusion
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          eplus = e11(i,j,bi,bj) + e22(i,j,bi,bj)
          eminus= e11(i,j,bi,bj) - e22(i,j,bi,bj)
          sig22(i,j) = zeta(i,j,bi,bj)*eplus + eta(i,j,bi,bj)*eminus
