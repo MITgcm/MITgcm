@@ -256,7 +256,7 @@ C--   set default sea ice parameters
       SEAICEuseMCE       = .FALSE.
       SEAICEuseTD        = .FALSE.
       SEAICEusePL        = .FALSE.
-      SEAICEuseMetricTerms = .FALSE.
+      SEAICEuseMetricTerms = .TRUE.
       SEAICEselectMetricTerms = UNSET_I
       SEAICEuseEVPpickup = .TRUE.
       SEAICEuseEVPstar   = .TRUE.
@@ -914,12 +914,22 @@ C     the additive Schwartz method
       ENDIF
 
       IF ( SEAICEselectMetricTerms .EQ. UNSET_I ) THEN
-       SEAICEselectMetricTerms = 2
-      ENDIF
-      IF ( SEAICEuseMetricTerms ) THEN
-       SEAICEselectMetricTerms = MAX( SEAICEselectMetricTerms, 1)
-      ELSE
-       SEAICEselectMetricTerms = MAX( SEAICEselectMetricTerms, 0)
+       IF ( SEAICEuseMetricTerms ) THEN
+        SEAICEselectMetricTerms = 2
+       ELSE
+C-    just for backward compatibility:
+        SEAICEselectMetricTerms = 0
+       ENDIF
+      ELSEIF ( .NOT.SEAICEuseMetricTerms .AND.
+     &         SEAICEselectMetricTerms .GT. 0  ) THEN
+C-    inconsistent setting:
+       WRITE(msgBuf,'(2A)') 'S/R SEAICE_READPARMS: ',
+     &      'Cannot set both: SEAICEuseMetricTerms= False'
+       CALL PRINT_ERROR( msgBuf , myThid)
+       WRITE(msgBuf,'(2A,I2)') 'S/R SEAICE_READPARMS: ',
+     &      ' AND SEAICEselectMetricTerms =', SEAICEselectMetricTerms
+       CALL PRINT_ERROR( msgBuf , myThid)
+       nError = nError + 1
       ENDIF
       IF ( SEAICEselectMetricTerms .LT. 0 .OR.
      &     SEAICEselectMetricTerms .GT. 2 ) THEN
@@ -931,6 +941,8 @@ C     the additive Schwartz method
        CALL PRINT_ERROR( msgBuf , myThid)
        nError = nError + 1
       ENDIF
+C-    to skip some compution of metric terms (all zero on Cartesian-Grid)
+      IF ( usingCartesianGrid ) SEAICEselectMetricTerms = 0
 
 C     -    The old ways of specifying mcPheeTaper, mcPheePiston & frazilFrac:
 C     a) prevent multiple specification of the same coeff;
