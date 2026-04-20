@@ -75,6 +75,13 @@ C       depend on hFacZ which is not only function of boundary hFac values.
      &     CALL OBCS_APPLY_ETA( bi, bj, etaH, myThid )
 #endif /* ALLOW_OBCS */
 
+#ifdef ALLOW_RBCS
+C--    Apply RBCS to etaH
+        IF ( useRBCS.AND.nonlinFreeSurf.GT.0 )
+     &      CALL RBCS_APPLY_ETA( bi, bj, etaH, myTime, myIter, myThid )
+#endif
+
+
 C- end bi,bj loop.
        ENDDO
       ENDDO
