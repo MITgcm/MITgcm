@@ -12,7 +12,7 @@ C     Check dependances with other packages
 #include "PARAMS.h"
 #include "EOS.h"
 #include "LAYERS_SIZE.h"
-#include "LAYERS_SWITCH.h"
+#include "LAYERS_P2SHARE.h"
 #include "LAYERS.h"
 
 C     myThid   :: my Thread Id number

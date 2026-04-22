@@ -26,7 +26,7 @@ C     == Global variables ===
 # include "GAD.h"
 #endif
 #ifdef ALLOW_LAYERS
-# include "LAYERS_SWITCH.h"
+# include "LAYERS_P2SHARE.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:

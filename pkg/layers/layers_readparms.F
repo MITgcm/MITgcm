@@ -11,7 +11,7 @@ C     Read LAYERS parameters from data file.
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "LAYERS_SIZE.h"
-#include "LAYERS_SWITCH.h"
+#include "LAYERS_P2SHARE.h"
 #include "LAYERS.h"
 
 C     INPUT PARAMETERS:
