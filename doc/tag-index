@@ -1,6 +1,50 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/shelfice:
+  - use alternative way to compute freshWaterFlux based on heat balance ;
+    keep old code under CPP option SHI_SALTBAL_FWFLX, and define this option
+    in verification exp. shelfice_2d_remesh; update docs;
+  - fix potential division by zero in saltFreeze & freshWaterFlux expressions;
+  - fix bug related to SHELFICEadvDiffHeatFlux=T.
+o pkg/obcs:
+  - fix CPP logic in obcs_cost_driver.F to avoid compilation error.
+
+checkpoint69m (2026/03/30)
+o pkg/cost:
+  - change ordering of calls in `cost_final.F`, profiles before ecco, as
+    before PR 946 ; refine printing of cost per tile value to STDOUT.
+  - drop condition on "useECCO" in shelfice_cost_final.F ; fix few missing
+    or inconsistent CPP #ifdef.
+o verification/global_ocean.cs32x15 & offline_exf_seaice:
+  - in exp. "global_ocean.cs32x15", turn off useCAL in remaining FWD and AD
+    tests and skip compilation of pkg/cal in FWD built. Also shift "nIter0"
+    + rename pickup files in few secondary tests.
+  - similarly, in exp. offline_exf_seaice, turn off and skip compilation of
+    of pkg/cal in AD tests.
+  - fix missing useCAL in 2 pkg/ctrl src files.
+o pkg/cost,ctrl,ecco,obcs:
+  - final cost-function always computed in "cost_final.F" (even if useECCO=T),
+    calling individual {PKG}_COST_FINAL, each writing its own "costfunction_*"
+    summary file. Similar changes in new "cost_driver.F", calling individual
+    pkg "{pkg}_cost_driver.F";
+  - make ctrl-cost (and obcs-ctrl-cost) available without pkg/ecco ; move all
+    obcs-cost S/R from pkg/ecco to pkg/obcs ; and move+rename "data_errfile"
+    (formerly in data.ecco) to "obcs_data_errfile" in "data.ctrl";
+  - retire ALLOW_COST_DEPTH (covered by generic controls);
+  - no changes to results ; adjust few namelists for special cases (obcs_ctrl,
+    bottom_ctrl_5x5);
+  - adjust store directives for combinations of pkgs kpp, seaice, shelfice
+    with ALLOW_DEPTH_CONTROL.
+
+checkpoint69l (2026/03/01)
+o verification:
+  - for secondary tests, change testreport to only run a single "prepare_run"
+    from run-dir, after linking files from both ../input.${sfx}/ and ../input/.
+  - adjust several verification exp. secondary tests accordingly and update
+    instructions in README files + in the docs.
+o pkg/streamice:
+  - fix typo and S/R argument list within #ifdef ALLOW_PETSC adjoint code.
 o tools:
   - fix PR 949 changes (location of "flow_tap") in Tapenade ad-optfile by
     using Makefile variable "TOOLSDIR".
