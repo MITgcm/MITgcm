@@ -21,6 +21,9 @@ C     == Global data ==
 #include "GRID.h"
 #include "SURFACE.h"
 #include "GAD.h"
+#ifdef ALLOW_LAYERS
+# include "LAYERS_P2SHARE.h"
+#endif
 
 C !INPUT/OUTPUT PARAMETERS:
 C == Routine Arguments ==
@@ -288,9 +291,15 @@ C--   Set diagnostic suffix for the current tracer
         diagName = 'DFrI'//diagSufx
         diagDif = implicitDiffusion
         IF ( diagDif ) diagDif = DIAGNOSTICS_IS_ON(diagName,myThid)
+#ifdef ALLOW_LAYERS
+     &       .OR. layers_useThermo
+#endif
         diagName = 'ADVr'//diagSufx
         diagAdv = implicitAdvection
         IF ( diagAdv ) diagAdv = DIAGNOSTICS_IS_ON(diagName,myThid)
+#ifdef ALLOW_LAYERS
+     &       .OR. layers_useThermo
+#endif
 
         IF ( diagDif .OR. diagAdv ) THEN
          DO j=1-OLy,sNy+OLy
@@ -331,7 +340,7 @@ C         since skipping k=1 DIAGNOSTICS_FILL call.
            CALL DIAGNOSTICS_FILL(df,diagName, k,1, 2,bi,bj, myThid)
            IF ( k.EQ.2 ) CALL DIAGNOSTICS_COUNT(diagName,bi,bj,myThid)
 #ifdef ALLOW_LAYERS
-           IF ( useLayers ) THEN
+           IF ( layers_useThermo ) THEN
              CALL LAYERS_FILL( df, tracerIdentity, 'DFR',
      &                           k, 1, 2,bi,bj, myThid )
            ENDIF
@@ -429,7 +438,7 @@ cc#endif
            diagName = 'ADVr'//diagSufx
            CALL DIAGNOSTICS_FILL(af,diagName, k,1, 2,bi,bj, myThid)
 #ifdef ALLOW_LAYERS
-           IF ( useLayers ) THEN
+           IF ( layers_useThermo ) THEN
              CALL LAYERS_FILL(af,tracerIdentity,'AFR',
      &                            k,1,2,bi,bj,myThid)
            ENDIF
