@@ -662,7 +662,7 @@ C    inaccurate linFSConserveTr and "surfExpan_" monitor.
      &                          diagName, k,1, 2,bi,bj, myThid )
         ENDIF
 #ifdef ALLOW_LAYERS
-        IF ( layers_useTherm ) THEN
+        IF ( layers_useThermo ) THEN
           CALL LAYERS_FILL(afr,tracerIdentity,'AFR',
      &                     k,1,2,bi,bj,myThid)
         ENDIF
