@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/mdsio:
+  - when using pkg/cal, add date and time to ".meta" output file.
 o pkg/shelfice:
   - use alternative way to compute freshWaterFlux based on heat balance ;
     keep old code under CPP option SHI_SALTBAL_FWFLX, and define this option
