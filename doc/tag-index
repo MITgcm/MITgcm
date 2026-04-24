@@ -1,6 +1,21 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/shelfice:
+  - use alternative way to compute freshWaterFlux based on heat balance ;
+    keep old code under CPP option SHI_SALTBAL_FWFLX, and define this option
+    in verification exp. shelfice_2d_remesh; update docs;
+  - fix potential division by zero in saltFreeze & freshWaterFlux expressions;
+  - fix bug related to SHELFICEadvDiffHeatFlux=T.
+o pkg/obcs:
+  - fix CPP logic in obcs_cost_driver.F to avoid compilation error.
+
+checkpoint69m (2026/03/30)
+o pkg/cost:
+  - change ordering of calls in `cost_final.F`, profiles before ecco, as
+    before PR 946 ; refine printing of cost per tile value to STDOUT.
+  - drop condition on "useECCO" in shelfice_cost_final.F ; fix few missing
+    or inconsistent CPP #ifdef.
 o verification/global_ocean.cs32x15 & offline_exf_seaice:
   - in exp. "global_ocean.cs32x15", turn off useCAL in remaining FWD and AD
     tests and skip compilation of pkg/cal in FWD built. Also shift "nIter0"

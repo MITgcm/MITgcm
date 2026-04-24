@@ -23,8 +23,6 @@ C     == Global variables ==
 #ifdef ALLOW_CTRL
 # include "CTRL_SIZE.h"
 # include "CTRL.h"
-#endif
-#ifdef ALLOW_OBCS_CONTROL
 # include "CTRL_OBCS.h"
 #endif
 
@@ -35,10 +33,11 @@ C !INPUT PARAMETERS: ===================================================
 
 #if defined ALLOW_CTRL && defined ALLOW_COST
 C !LOCAL VARIABLES: ====================================================
-      INTEGER startrec
-      INTEGER endrec
       INTEGER ivar
       INTEGER iobcsN, iobcsS, iobcsE, iobcsW
+# ifdef ALLOW_OBCS_CONTROL
+      INTEGER startrec, endrec
+# endif
 CEOP
 
       IF ( useObcsCostContribution ) THEN
