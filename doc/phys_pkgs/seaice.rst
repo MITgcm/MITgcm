@@ -1556,7 +1556,7 @@ The extra metric terms in :eq:`eq_si_extrametricterms` involve averages:
      - k_{2,i,j}^{V}\frac{(\sigma_{11}^{C})_{i,j}+(\sigma_{11}^{C})_{i,j-1}}{2}.
    \end{aligned}
 
-These terms are added most easily to the right-hand-sides of the momentum
+These terms are added most easily to the right-hand sides of the momentum
 equations. Again, no-slip boundary conditions are realized via ghost points
 and :math:`u_{i,j-1}+u_{i,j}=0` and :math:`v_{i-1,j}+v_{i,j}=0` across
 boundaries. For free-slip boundary conditions the lateral stress is set to
@@ -1599,16 +1599,16 @@ Washington (1979) :cite:`parkinson:79` and Manabe et al. (1979)
    + Q_{\mathrm{LH}}(T_{0}) + Q_{\mathrm{SH}}(T_{0}),
    :label: eq_zerolayerheatbalance
 
-where :math:`\alpha` is the albedo and :math:`\epsilon` the emissivity of the
-surface (snow or ice), :math:`Q_{\mathrm{S/LW}\downarrow}` the downwelling
-shortwave and longwave radiation to be prescribed, and
+where :math:`\alpha` is the albedo, :math:`Q_{\mathrm{S/LW}\downarrow}` the
+downwelling shortwave and longwave radiation to be prescribed, and
 :math:`Q_{\mathrm{LW}\uparrow}=\epsilon\sigma_B T_{0}^4 +
-rQ_{\mathrm{LW}\downarrow}` the long wave exitance, i.e., the out-going long
-wave radiation, consisting of the emitted radiation with the Stefan-Boltzmann
-constant :math:`\sigma_B` and the reflection of the incoming longwave
+rQ_{\mathrm{LW}\downarrow}` the longwave exitance, i.e., the outgoing
+longwave radiation, consisting of the emitted radiation with Stefan-Boltzmann
+constant :math:`\sigma_B`, emissivity :math:`\epsilon`  of the
+surface (snow or ice),  and reflectivity :math:`r` of the incoming longwave
 radiation. For conservation reasons, the reflectivity :math:`r = 1-\epsilon`,
 because the sum of emissivity, reflectivity, and transmissivity must be one,
-and transmissivity is zero in our case as long wave radiation does not
+and transmissivity is zero in our case as longwave radiation does not
 penetrate the ice surface. The net longwave radiation (positive downward) then
 simplifies to
 
