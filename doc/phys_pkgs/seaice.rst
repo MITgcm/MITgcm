@@ -130,7 +130,8 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICEuseStrImpCpl`      |     FALSE                    | use strength implicit coupling in LSR/JFNK                              |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`SEAICEuseMetricTerms`    |     TRUE                     | use metric terms in dynamics                                            |
+  | :varlink:`SEAICEselectMetricTerms` |     2                        | select metric terms in stress divergence (on top of the ones implied by |
+  |                                    |                              | the FV discretisation). 0: none, 1: for strain rates only, 2: all       |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICEuseEVPpickup`      |     TRUE                     | use EVP pickups                                                         |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
@@ -576,12 +577,40 @@ viscous-plastic (VP) constitutive law:
    - \frac{P}{2}\delta_{ij}
    :label: eq_vpequation
 
+so that
+
+.. math::
+   \begin{aligned}
+     \sigma_{11} &= (\zeta+\eta)\,\dot{\epsilon}_{11}
+                   +(\zeta-\eta)\,\dot{\epsilon}_{22} - \frac{P}{2} \\
+     \sigma_{22} &= (\zeta-\eta)\,\dot{\epsilon}_{11}
+                   +(\zeta+\eta)\,\dot{\epsilon}_{22} - \frac{P}{2} \\
+     \sigma_{12} &= 2\eta\,\dot{\epsilon}_{12}.
+   \end{aligned}
+
+In the code, we often use this combination of the diagnonal terms (global
+variables :varlink:`seaice_sigma1` and :varlink:`seaice_sigma2`):
+
+.. math::
+   \begin{aligned}
+     \sigma_{+} =
+     \sigma_{11} + \sigma_{22} &= 2\zeta \left( \dot{\epsilon}_{11}
+                   + \dot{\epsilon}_{22} \right) - P \\
+     \sigma_{-} =
+     \sigma_{11} - \sigma_{22} &= 2\eta  \left( \dot{\epsilon}_{11}
+                   +\dot{\epsilon}_{22} \right).
+   \end{aligned}
+
 The ice strain rate is given by
 
 .. math::
    \dot{\epsilon}_{ij} = \frac{1}{2}\left(
        \frac{\partial{u_{i}}}{\partial{x_{j}}} +
        \frac{\partial{u_{j}}}{\partial{x_{i}}}\right)
+       + \text{ metric terms.}
+
+See section :numref:`para_phys_pkg_seaice_discretization` for details on the
+metric terms.
 
 The maximum ice pressure :math:`P_{\max}` (variable :varlink:`PRESS0` in the
 code), a measure of ice strength, depends on both thickness :math:`h` and
@@ -769,7 +798,7 @@ non-normal flow rule as described in Ringeisen et al. (2020)
 with the abbreviation
 
 .. math::
-     \Delta = \sqrt{(\dot{\epsilon}_{11}-\dot{\epsilon}_{22})^2
+     \Delta = \sqrt{(\dot{\epsilon}_{11} + \dot{\epsilon}_{22})^2
        +\frac{e_F^2}{e_G^4}((\dot{\epsilon}_{11}
        -\dot{\epsilon}_{22})^2+4\,\dot{\epsilon}_{12}^2)}.
 
@@ -1074,8 +1103,8 @@ physical ocean model time step (although this parameter is under debate), to
 allow for elastic waves to disappear. Because the scheme does not require a
 matrix inversion it is fast in spite of the small internal timestep and simple
 to implement on parallel computers. For completeness, we repeat the equations
-for the components of the stress tensor :math:`\sigma_{1} =
-\sigma_{11}+\sigma_{22}`, :math:`\sigma_{2}= \sigma_{11}-\sigma_{22}`, and
+for the components of the stress tensor :math:`\sigma_{+} =
+\sigma_{11}+\sigma_{22}`, :math:`\sigma_{-}= \sigma_{11}-\sigma_{22}`, and
 :math:`\sigma_{12}`. Introducing the divergence :math:`D_D =
 \dot{\epsilon}_{11}+\dot{\epsilon}_{22}`, and the horizontal tension and
 shearing strain rates, :math:`D_T = \dot{\epsilon}_{11}-\dot{\epsilon}_{22}`
@@ -1083,17 +1112,17 @@ and :math:`D_S = 2\dot{\epsilon}_{12}`, respectively, and using the above
 abbreviations, the equations :eq:`eq_evpequation` can be written as:
 
 .. math::
-   \frac{\partial\sigma_{1}}{\partial{t}} + \frac{\sigma_{1}}{2T} +
+   \frac{\partial\sigma_{+}}{\partial{t}} + \frac{\sigma_{+}}{2T} +
    \frac{P}{2T} = \frac{P}{2T\Delta} D_D
    :label: eq_evpstresstensor1
 
 .. math::
-   \frac{\partial\sigma_{2}}{\partial{t}} + \frac{\sigma_{2} e^{2}}{2T}
+   \frac{\partial\sigma_{-}}{\partial{t}} + \frac{e^{2}\sigma_{-}}{2T}
    = \frac{P}{2T\Delta} D_T
   :label: eq_evpstresstensor2
 
 .. math::
-  \frac{\partial\sigma_{12}}{\partial{t}} + \frac{\sigma_{12} e^{2}}{2T}
+  \frac{\partial\sigma_{12}}{\partial{t}} + \frac{ e^{2}\sigma_{12}}{2T}
   = \frac{P}{4T\Delta} D_S
   :label: eq_evpstresstensor12
 
@@ -1254,14 +1283,96 @@ the stress formulation of Hibler and Bryan (1987) :cite:`hibler:87`, set
 
 .. _para_phys_pkg_seaice_discretization:
 
-
 Finite-volume discretization of the stress tensor divergence
 ------------------------------------------------------------
+
+The physical components of the stress tensor are given by the constitutive
+viscous-plastic relation :eq:`eq_vpequation`
+
+.. math::
+      \sigma_{ij} = 2\eta\,\dot{\epsilon}_{ij} +
+      \left[(\zeta-\eta)\,(\dot{\epsilon}_{11}+\dot{\epsilon}_{22})
+      - \frac{P}{2} \right]\delta_{ij},
+   :label: eq_sigma_tensor
+
+with :math:`i,j\in [1,2]`. The divergence of the tensor :math:`\mathbf{\sigma}`
+in terms of these physical components can be written as
+
+.. math::
+   \begin{aligned}
+     \mathrm{div}\,\mathbf{\sigma}
+     &= \frac{1}{h_{1}h_{2}} \partial_{i}
+     \left(\frac{h_{1}h_{2}}{h_{i}} \sigma_{ij}
+     \,\vec{e}_{j}\right) \\
+     &= \frac{1}{h_{1}h_{2}} \biggl\{
+       \partial_{1} \left(h_{2} \sigma_{1j} \,\vec{e}_{j}\right)
+     + \partial_{2} \left(h_{1} \sigma_{2j} \,\vec{e}_{j}\right)
+     \biggr\} \\
+     &= \frac{1}{h_{1}h_{2}}\biggl\{
+       \bigl[ \partial_{1} \left(h_{2} \sigma_{1j}\right)
+            + \partial_{2} \left(h_{1} \sigma_{2j}\right)
+       \bigr]\,\vec{e}_{j}
+     \\ &\phantom{=\frac{1}{h_{1}h_{2}}\biggl\{}
+     + h_{2} \sigma_{1j} \partial_{1} \vec{e}_{j}
+     + h_{1} \sigma_{2j} \partial_{2} \vec{e}_{j}
+     \biggr\},
+   \end{aligned}
+   :label: eq_div_sigma_tensor_general
+
+where :math:`h_{1}`, :math:`h_{2}`, :math:`h_{i}` are scale factors and
+:math:`\vec{e}_{j}` are the orthogonal basis vectors, which also need to be
+differentiated. The summation over repeating indices is implied and the
+differentiation is with respect to curvilinear coordinates
+:math:`q_{i}=x_{i}/h_{i}`.
+
+To compute the physical components of the divergence to be used in the momentum
+equations we multiply :eq:`eq_div_sigma_tensor_general` by the basis vector
+:math:`\vec{e}_{j}` and use :math:`\sigma_{12}=\sigma_{21}` to get
+
+.. math::
+   \begin{aligned}
+     \left(\mathrm{div}\,\mathbf{\sigma}\right) \cdot \vec{e}_{1}
+     &= \frac{1}{h_{1}h_{2}}\biggl\{
+              \partial_{1} \left(h_{2} \sigma_{11}\right)
+            + \partial_{2} \left(h_{1} \sigma_{12}\right)
+     + \sigma_{12} \partial_{2} h_{1} - \sigma_{22} \partial_{1} h_{2}
+     \biggr\} \\
+     &= \frac{1}{h_{1}h_{2}}\biggl[
+              \partial_{1} \left(h_{2} \sigma_{11}\right)
+            + \partial_{2} \left(h_{1} \sigma_{12}\right)
+     \biggr]
+     + k_{2} \sigma_{12} - k_{1} \sigma_{22}, \\
+     \left(\mathrm{div}\,\mathbf{\sigma}\right) \cdot \vec{e}_{2}
+     &= \frac{1}{h_{1}h_{2}}\biggl\{
+              \partial_{1} \left(h_{2} \sigma_{12}\right)
+            + \partial_{2} \left(h_{1} \sigma_{22}\right)
+     + \sigma_{12} \partial_{1} h_{2} - \sigma_{11} \partial_{2} h_{1}
+     \biggr\} \\
+     &= \frac{1}{h_{1}h_{2}}\biggl[
+              \partial_{1} \left(h_{2} \sigma_{12}\right)
+            + \partial_{2} \left(h_{1} \sigma_{22}\right)
+     \biggr]
+     + k_{1} \sigma_{12} - k_{2} \sigma_{11}.
+   \end{aligned}
+   :label: eq_div_sigma_tensor
+
+The terms in the square brackets in :eq:`eq_div_sigma_tensor` are discretized
+in finite volumes. This conveniently avoids dealing with some (but not all) of
+the metric terms, as these are "hidden" in the differential cell widths. Extra
+metric terms still appear because of the differentiation of the orthonormal
+basis vectors (last two terms in :eq:`eq_div_sigma_tensor`). These are
+
+.. math::
+   \begin{aligned}
+     k_2\sigma_{12} - k_1\sigma_{22} &\quad \text{for the u-equation, and }\\
+     k_1\sigma_{12} - k_2\sigma_{11} &\quad \text{for the v-equation.}\\
+   \end{aligned}
+   :label: eq_si_extrametricterms
 
 On an Arakawa C grid, ice thickness and concentration and thus ice strength
 :math:`P` and bulk and shear viscosities :math:`\zeta` and :math:`\eta` are
 naturally defined a C-points in the center of the grid cell. Discretization
-requires only averaging of :math:`\zeta` and :math:`\eta` to vorticity or
+requires averaging of :math:`\zeta` and :math:`\eta` to vorticity or
 Z-points (or :math:`\zeta`-points, but here we use Z in order avoid confusion
 with the bulk viscosity) at the bottom left corner of the cell to give
 :math:`\overline{\zeta}^{Z}` and :math:`\overline{\eta}^{Z}`. In the following,
@@ -1292,7 +1403,7 @@ discretized as:
       - k_{1,i,j}^{Z}\frac{v_{i,j}+v_{i-1,j}}{2}
       - k_{2,i,j}^{Z}\frac{u_{i,j}+u_{i,j-1}}{2}
       \biggr),
-      \end{aligned}
+    \end{aligned}
 
 so that the diagonal terms of the strain rate tensor are naturally defined at
 C-points and the symmetric off-diagonal term at Z-points.  No-slip boundary
@@ -1300,40 +1411,51 @@ conditions (:math:`u_{i,j-1}+u_{i,j}=0` and :math:`v_{i-1,j}+v_{i,j}=0` across
 boundaries) are implemented via “ghost-points”; for free slip boundary
 conditions :math:`(\epsilon_{12})^Z=0` on boundaries.
 
-For a spherical polar grid, the coefficients of the metric terms are
+The coefficients of the metric terms are defined as :math:`k_1 =
+(1/h_2)\,(\partial{h_2}/\partial{x_1})` and :math:`k_2 =
+(1/h_1)\,(\partial{h_1}/\partial{x_2})`.  For a spherical polar grid, they are
 :math:`k_{1}=0` and :math:`k_{2}=-\tan\phi/a`, with the spherical radius
 :math:`a` and the latitude :math:`\phi`; :math:`\Delta{x}_1 = \Delta{x} =
 a\cos\phi \Delta\lambda`, and :math:`\Delta{x}_2 = \Delta{y}=a\Delta\phi`. For
 a general orthogonal curvilinear grid, :math:`k_{1}` and :math:`k_{2}` can be
-approximated by finite differences of the cell widths:
+approximated by finite differences of the cell widths of the Arakawa C_grid:
 
 .. math::
    \begin{aligned}
      k_{1,i,j}^{C} &= \frac{1}{\Delta{y}_{i,j}^{F}}
-     \frac{\Delta{y}_{i+1,j}^{G}-\Delta{y}_{i,j}^{G}}{\Delta{x}_{i,j}^{F}} \\
-     k_{2,i,j}^{C} &= \frac{1}{\Delta{x}_{i,j}^{F}}
+     \frac{\Delta{y}_{i+1,j}^{G}-\Delta{y}_{i,j}^{G}}{\Delta{x}_{i,j}^{F}},
+     \quad
+     k_{2,i,j}^{C}  = \frac{1}{\Delta{x}_{i,j}^{F}}
      \frac{\Delta{x}_{i,j+1}^{G}-\Delta{x}_{i,j}^{G}}{\Delta{y}_{i,j}^{F}} \\
+     k_{1,i,j}^{U} &= \frac{1}{\Delta{y}_{i,j}^{G}}
+     \frac{\Delta{y}_{i,j}^{F}-\Delta{y}_{i-1,j}^{F}}{\Delta{x}_{i,j}^{C}},
+     \quad
+     k_{2,i,j}^{U}  = \frac{1}{\Delta{x}_{i,j}^{C}}
+     \frac{\Delta{x}_{i,j+1}^{V}-\Delta{x}_{i,j}^{V}}{\Delta{y}_{i,j}^{G}} \\
+     k_{1,i,j}^{V} &= \frac{1}{\Delta{y}_{i,j}^{C}}
+     \frac{\Delta{y}_{i+1,j}^{U}-\Delta{y}_{i,j}^{U}}{\Delta{x}_{i,j}^{G}},
+     \quad
+     k_{2,i,j}^{V}  = \frac{1}{\Delta{x}_{i,j}^{G}}
+     \frac{\Delta{x}_{i,j}^{F}-\Delta{x}_{i,j-1}^{F}}{\Delta{y}_{i,j}^{C}} \\
      k_{1,i,j}^{Z} &= \frac{1}{\Delta{y}_{i,j}^{U}}
-     \frac{\Delta{y}_{i,j}^{C}-\Delta{y}_{i-1,j}^{C}}{\Delta{x}_{i,j}^{V}} \\
-     k_{2,i,j}^{Z} &= \frac{1}{\Delta{x}_{i,j}^{V}}
+     \frac{\Delta{y}_{i,j}^{C}-\Delta{y}_{i-1,j}^{C}}{\Delta{x}_{i,j}^{V}},
+     \quad
+     k_{2,i,j}^{Z}  = \frac{1}{\Delta{x}_{i,j}^{V}}
      \frac{\Delta{x}_{i,j}^{C}-\Delta{x}_{i,j-1}^{C}}{\Delta{y}_{i,j}^{U}}
-     \end{aligned}
+   \end{aligned}
 
-The stress tensor is given by the constitutive viscous-plastic relation
-:math:`\sigma_{\alpha\beta} = 2\eta\dot{\epsilon}_{\alpha\beta} +
-[(\zeta-\eta)\dot{\epsilon}_{\gamma\gamma} - P/2 ]\delta_{\alpha\beta}` . The
-stress tensor divergence :math:`(\nabla\sigma)_{\alpha} =
-\partial_\beta\sigma_{\beta\alpha}`, is discretized in finite volumes . This
-conveniently avoids dealing with further metric terms, as these are “hidden” in
-the differential cell widths. For the :math:`u`-equation (:math:`\alpha=1`) we
-have:
+Disregarding the extra metric terms :eq:`eq_si_extrametricterms` for now, the
+stress tensor divergence terms in square brackets in :eq:`eq_div_sigma_tensor`
+are discretized in finite volumes, where the :math:`\Delta{x}` and
+:math:`\Delta{y}` already contain the scale factors implicitly with
+:math:`dx_i=h_idq_i`:
 
 .. math::
    \begin{aligned}
-     (\nabla\sigma)_{1}: \phantom{=}&
+     (\mathrm{div}\sigma)_{1}: \phantom{=}&
      \frac{1}{A_{i,j}^w}
-     \int_{\mathrm{cell}}(\partial_1\sigma_{11}+\partial_2\sigma_{21})
-     \,dx_1\,dx_2  \\\notag
+     \int_{\mathrm{cell}}(\partial_1 h_2 \sigma_{11}+\partial_2 h_1 \sigma_{21})
+     \,dq_1\,dq_2  \\\notag
      =& \frac{1}{A_{i,j}^w} \biggl\{
      \int_{x_2}^{x_2+\Delta{x}_2}\sigma_{11}dx_2\biggl|_{x_{1}}^{x_{1}
      +\Delta{x}_{1}}
@@ -1351,7 +1473,28 @@ have:
      \phantom{=}& \phantom{\frac{1}{A_{i,j}^w} \biggl\{}
      + (\Delta{x}_1\sigma_{21})_{i,j+1}^Z - (\Delta{x}_1\sigma_{21})_{i,j}^Z
      \biggr\}
-     \end{aligned}
+     \\
+     (\mathrm{div}\sigma)_{2}: \phantom{=}&
+     \frac{1}{A_{i,j}^s}
+     \int_{\mathrm{cell}}(\partial_1 h_2 \sigma_{12}+\partial_2 h_1 \sigma_{22})
+     \,dq_1\,dq_2 \\\notag
+     =& \frac{1}{A_{i,j}^s} \biggl\{
+     \int_{x_2}^{x_2+\Delta{x}_2}\sigma_{12}dx_2\biggl|_{x_{1}}^{x_{1}
+     +\Delta{x}_{1}}
+     + \int_{x_1}^{x_1+\Delta{x}_1}\sigma_{22}dx_1\biggl|_{x_{2}}^{x_{2}
+     +\Delta{x}_{2}}
+     \biggr\} \\ \notag
+     \approx& \frac{1}{A_{i,j}^s} \biggl\{
+     \Delta{x}_2\sigma_{12}\biggl|_{x_{1}}^{x_{1}+\Delta{x}_{1}}
+     + \Delta{x}_1\sigma_{22}\biggl|_{x_{2}}^{x_{2}+\Delta{x}_{2}}
+     \biggr\} \\ \notag
+     =& \frac{1}{A_{i,j}^s} \biggl\{
+     (\Delta{x}_2\sigma_{12})_{i+1,j}^Z - (\Delta{x}_2\sigma_{12})_{i,j}^Z
+     \\ \notag
+     \phantom{=}& \phantom{\frac{1}{A_{i,j}^s} \biggl\{}
+     + (\Delta{x}_1\sigma_{22})_{i,j}^C - (\Delta{x}_1\sigma_{22})_{i,j-1}^C
+     \biggr\}
+   \end{aligned}
 
 with
 
@@ -1376,37 +1519,7 @@ with
      k_{2,i,j}^{Z}\frac{u_{i,j}+u_{i,j-1}}{2} \\ \notag
      & - \Delta{x}_{i,j}^{V}\overline{\eta}^{Z}_{i,j}
      k_{1,i,j}^{Z}\frac{v_{i,j}+v_{i-1,j}}{2}
-     \end{aligned}
-
-Similarly, we have for the :math:`v`-equation (:math:`\alpha=2`):
-
-.. math::
-   \begin{aligned}
-     (\nabla\sigma)_{2}: \phantom{=}&
-     \frac{1}{A_{i,j}^s}
-     \int_{\mathrm{cell}}(\partial_1\sigma_{12}+\partial_2\sigma_{22})
-     \,dx_1\,dx_2 \\\notag
-     =& \frac{1}{A_{i,j}^s} \biggl\{
-     \int_{x_2}^{x_2+\Delta{x}_2}\sigma_{12}dx_2\biggl|_{x_{1}}^{x_{1}
-     +\Delta{x}_{1}}
-     + \int_{x_1}^{x_1+\Delta{x}_1}\sigma_{22}dx_1\biggl|_{x_{2}}^{x_{2}
-     +\Delta{x}_{2}}
-     \biggr\} \\ \notag
-     \approx& \frac{1}{A_{i,j}^s} \biggl\{
-     \Delta{x}_2\sigma_{12}\biggl|_{x_{1}}^{x_{1}+\Delta{x}_{1}}
-     + \Delta{x}_1\sigma_{22}\biggl|_{x_{2}}^{x_{2}+\Delta{x}_{2}}
-     \biggr\} \\ \notag
-     =& \frac{1}{A_{i,j}^s} \biggl\{
-     (\Delta{x}_2\sigma_{12})_{i+1,j}^Z - (\Delta{x}_2\sigma_{12})_{i,j}^Z
-     \\ \notag
-     \phantom{=}& \phantom{\frac{1}{A_{i,j}^s} \biggl\{}
-     + (\Delta{x}_1\sigma_{22})_{i,j}^C - (\Delta{x}_1\sigma_{22})_{i,j-1}^C
-     \biggr\} \end{aligned}
-
-with
-
-.. math::
-   \begin{aligned}
+     \\
      (\Delta{x}_1\sigma_{12})_{i,j}^Z =& \phantom{+}
      \Delta{y}_{i,j}^{U}\overline{\eta}^{Z}_{i,j}
      \frac{u_{i,j}-u_{i,j-1}}{\Delta{y}_{i,j}^{U}}
@@ -1427,10 +1540,25 @@ with
      \frac{v_{i,j+1}-v_{i,j}}{\Delta{y}_{i,j}^{F}} \\ \notag
      & + \Delta{x}_{i,j}^{F}(\zeta + \eta)^{C}_{i,j}
      k_{1,i,j}^{C}\frac{u_{i+1,j}+u_{i,j}}{2} \\ \notag
-     & -\Delta{x}_{i,j}^{F} \frac{P}{2}\end{aligned}
+     & -\Delta{x}_{i,j}^{F} \frac{P}{2}
+   \end{aligned}
 
-Again, no-slip boundary conditions are realized via ghost points and
-:math:`u_{i,j-1}+u_{i,j}=0` and :math:`v_{i-1,j}+v_{i,j}=0` across
+The extra metric terms in :eq:`eq_si_extrametricterms` involve averages:
+
+.. math::
+   \begin{aligned}
+     u:\quad k_2\sigma_{12} - k_1\sigma_{22} &\approx
+       k_{2,i,j}^{U}\frac{(\sigma_{12}^{Z})_{i,j}+(\sigma_{12}^{Z})_{i,j+1}}{2}
+     - k_{1,i,j}^{U}\frac{(\sigma_{22}^{C})_{i,j}+(\sigma_{22}^{C})_{i-1,j}}{2},
+       \\
+     v:\quad k_1\sigma_{12} - k_2\sigma_{11} &\approx
+       k_{1,i,j}^{V}\frac{(\sigma_{12}^{Z})_{i,j}+(\sigma_{12}^{Z})_{i+1,j}}{2}
+     - k_{2,i,j}^{V}\frac{(\sigma_{11}^{C})_{i,j}+(\sigma_{11}^{C})_{i,j-1}}{2}.
+   \end{aligned}
+
+These terms are added most easily to the right-hand sides of the momentum
+equations. Again, no-slip boundary conditions are realized via ghost points
+and :math:`u_{i,j-1}+u_{i,j}=0` and :math:`v_{i-1,j}+v_{i,j}=0` across
 boundaries. For free-slip boundary conditions the lateral stress is set to
 zeros. In analogy to :math:`(\epsilon_{12})^Z=0` on boundaries, we set
 :math:`\sigma_{21}^{Z}=0`, or equivalently :math:`\eta_{i,j}^{Z}=0`, on
@@ -1442,6 +1570,11 @@ Thermodynamics
 ==============
 
 **NOTE: THIS SECTION IS STILL NOT COMPLETE**
+
+.. _para_phys_pkg_seaice_zero_layer:
+
+Zero-layer thermodynamics
+-------------------------
 
 In its original formulation the sea ice model uses simple 0-layer
 thermodynamics following the appendix of Semtner (1976)
@@ -1461,26 +1594,39 @@ Washington (1979) :cite:`parkinson:79` and Manabe et al. (1979)
 :cite:`manabe:79`. The resulting equation for surface temperature is
 
 .. math::
-   \begin{aligned}
-   \frac{K}{h}(T_{0}-T_{\rm fr}) &= Q_{\rm SW\downarrow}(1-\mathrm{albedo}) \\
-   & + \epsilon Q_{\rm LW\downarrow} - Q_{\rm LW\uparrow}(T_{0}) \\
-   & + Q_{\rm LH}(T_{0}) + Q_{\rm SH}(T_{0}),
-   \end{aligned}
+   \frac{K}{h}(T_{0}-T_{\rm fr}) = (1-\alpha)\,Q_{\mathrm{SW}\downarrow}
+   + Q_{\mathrm{LW}\downarrow} - Q_{\mathrm{LW}\uparrow}(T_{0})
+   + Q_{\mathrm{LH}}(T_{0}) + Q_{\mathrm{SH}}(T_{0}),
    :label: eq_zerolayerheatbalance
 
-where :math:`\epsilon` is the emissivity of the surface (snow or ice),
-:math:`Q_{\rm S/LW\downarrow}` the downwelling shortwave and longwave radiation to
-be prescribed, and :math:`Q_{\rm LW\uparrow}=\epsilon\sigma_B T_{0}^4` the emitted
-long wave radiation with the Stefan-Boltzmann constant :math:`\sigma_B`. With
-explicit expressions in :math:`T_0` for the turbulent fluxes of latent and
-sensible heat
+where :math:`\alpha` is the albedo, :math:`Q_{\mathrm{S/LW}\downarrow}` the
+downwelling shortwave and longwave radiation to be prescribed, and
+:math:`Q_{\mathrm{LW}\uparrow}=\epsilon\sigma_B T_{0}^4 +
+rQ_{\mathrm{LW}\downarrow}` the longwave exitance, i.e., the outgoing
+longwave radiation, consisting of the emitted radiation with Stefan-Boltzmann
+constant :math:`\sigma_B`, emissivity :math:`\epsilon`  of the
+surface (snow or ice),  and reflectivity :math:`r` of the incoming longwave
+radiation. For conservation reasons, the reflectivity :math:`r = 1-\epsilon`,
+because the sum of emissivity, reflectivity, and transmissivity must be one,
+and transmissivity is zero in our case as longwave radiation does not
+penetrate the ice surface. The net longwave radiation (positive downward) then
+simplifies to
+
+.. math::
+   Q_{\mathrm{net}\downarrow}
+   = Q_{\mathrm{LW}\downarrow} - Q_{\mathrm{LW}\uparrow}(T_{0})
+   = \epsilon Q_{\mathrm{LW}\downarrow} - \epsilon\sigma_B T_{0}^4.
+   :label: eq_seaice_qnetdw
+
+With explicit expressions in :math:`T_0` for the turbulent fluxes of latent
+and sensible heat
 
 .. math::
    \begin{aligned}
-   Q_{\rm LH} &= \rho_\mathrm{air} C_E (\Lambda_v + \Lambda_f)
+   Q_{\mathrm{LH}} &= \rho_\mathrm{air} C_E (\Lambda_v + \Lambda_f)
    |\mathbf{U}_\mathrm{air}|
    \left[ q_\mathrm{air} - q_\mathrm{sat}(T_0)\right] \\
-   Q_{\rm SH} &= \rho_\mathrm{air} c_p C_E |\mathbf{U}_\mathrm{air}|
+   Q_{\mathrm{SH}} &= \rho_\mathrm{air} c_p C_E |\mathbf{U}_\mathrm{air}|
    \left[ T_\mathrm{10m} - T_{0} \right],
    \end{aligned}
 
@@ -1492,7 +1638,7 @@ coefficient for sensible and latent heat (parameter :varlink:`SEAICE_dalton`),
 :math:`\Lambda_v` and :math:`\Lambda_f` are the latent heat of vaporization and
 fusion, respectively (parameters :varlink:`SEAICE_lhEvap` and
 :varlink:`SEAICE_lhFusion`), and :math:`c_p` is the specific heat of air
-(parameter :varlink:`SEAICE_cpAir`). For the latent heat :math:`Q_{\rm LH}` a
+(parameter :varlink:`SEAICE_cpAir`). For the latent heat :math:`Q_{\rm LH}`, a
 choice can be made between the old polynomial expression for saturation
 humidity :math:`q_\mathrm{sat}(T_0)` (by setting
 :varlink:`useMaykutSatVapPoly` to ``.TRUE.``) and the default exponential
