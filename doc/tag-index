@@ -1,6 +1,13 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - move seaice grid-variables from SEAICE.h into new header "SEAICE_GRID.h";
+  - add missing metric terms to stress divergence (bug fix); new run-time parms
+    SEAICEselectMetricTerms, default=2, =1 recover previous partial metric-terms
+    (i.e., old results), tested in lab_sea.salt_plume ;
+  - update all affected reference output (in cpl_aim+ocn, global_ocean.cs32x15,
+    lab_sea & seaice_obcs, 19 total).
 o pkg/mdsio:
   - when using pkg/cal, add date and time to ".meta" output file.
 o pkg/shelfice:
