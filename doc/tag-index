@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint69n (2026/05/08)
 o pkg/seaice:
   - move seaice grid-variables from SEAICE.h into new header "SEAICE_GRID.h";
   - add missing metric terms to stress divergence (bug fix); new run-time parms
