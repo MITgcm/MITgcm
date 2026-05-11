@@ -181,10 +181,11 @@ def readmeta(f):
     # remove file-specific parameters
     timeInterval = meta.pop('timeInterval', None)
     timeStepNumber = meta.pop('timeStepNumber', None)
+    timeStepDate = meta.pop('timeStepDate', None)
     map2gl = meta.pop('map2glob', None)
     # put back only global dimensions
     meta['dimList'] = list(gdims[::-1])
-    return gdims,i0s,ies,timeStepNumber,timeInterval,map2gl,meta
+    return gdims,i0s,ies,timeStepNumber,timeStepDate,timeInterval,map2gl,meta
 
 
 _typeprefixes = {'ieee-be':'>',
@@ -336,6 +337,7 @@ def rdmds(fnamearg,itrs=-1,machineformat='b',rec=None,fill_value=0,
     arr = None
     metaref = {}
     timeStepNumbers = []
+    timeStepDates = []
     timeIntervals = []
     for iit,it in enumerate(itrs):
         if additrs:
@@ -352,7 +354,7 @@ def rdmds(fnamearg,itrs=-1,machineformat='b',rec=None,fill_value=0,
         if debug: warning('Found',len(metafiles),'metafiles for iteration',it)
 
         for metafile in metafiles:
-            gdims,i0s,ies,timestep,timeinterval,map2gl,meta = readmeta(metafile)
+            gdims,i0s,ies,timestep,tsdate,timeinterval,map2gl,meta = readmeta(metafile)
             if arr is None:
                 # initialize, allocate
                 try:
@@ -462,12 +464,22 @@ def rdmds(fnamearg,itrs=-1,machineformat='b',rec=None,fill_value=0,
         if timestep is not None:
             timeStepNumbers.extend(timestep)
 
+        if tsdate is not None:
+            # np.datetime64 does not support timezones, so remove the
+            # timezone Z (Zulu time) to avoid the warning
+            timeStepDates.append(np.datetime64(tsdate[0].replace('Z','')))
+
         if timeinterval is not None:
             timeIntervals.append(timeinterval)
 
     # put list of iteration numbers back into metadata dictionary
     if len(timeStepNumbers):
         metaref['timeStepNumber'] = timeStepNumbers
+
+    if len(timeStepDates):
+        metaref['timeStepDate'] = timeStepDates
+        # hardwire time zone
+        metaref['timeZone'] = [ 'Z' ]
 
     if len(timeIntervals):
         metaref['timeInterval'] = timeIntervals
@@ -634,4 +646,3 @@ def wrmds(fbase, arr, itr=None, dataprec='float32', ndims=None, nrecords=None,
             f.write(" };\n")
 
     arr.astype(tp).tofile(fbase + '.data')
-

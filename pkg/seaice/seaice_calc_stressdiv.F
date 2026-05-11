@@ -31,6 +31,7 @@ C !USES: ===============================================================
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "GRID.h"
+#include "SEAICE_GRID.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -82,12 +83,18 @@ C     compute divergence of stress tensor
      &       + sig12(i  ,j+1) * _dxV(i,j+1,bi,bj)
      &       - sig12(i  ,j  ) * _dxV(i,j  ,bi,bj)
      &       ) * recip_rAw(i,j,bi,bj)
+C     extra metric terms
+     &       + k2AtU(i,j,bi,bj) * halfRL*( sig12(i,j) + sig12(i,j+1) )
+     &       - k1AtU(i,j,bi,bj) * halfRL*( sig22(i,j) + sig22(i-1,j) )
         stressDivergenceY(i,j,bi,bj) =
      &       ( sig22(i  ,j  ) * _dxF(i,j  ,bi,bj)
      &       - sig22(i  ,j-1) * _dxF(i,j-1,bi,bj)
      &       + sig12(i+1,j  ) * _dyU(i+1,j,bi,bj)
      &       - sig12(i  ,j  ) * _dyU(i  ,j,bi,bj)
      &       ) * recip_rAs(i,j,bi,bj)
+C     extra metric terms
+     &       + k1AtV(i,j,bi,bj) * halfRL*( sig12(i,j) + sig12(i+1,j) )
+     &       - k2AtV(i,j,bi,bj) * halfRL*( sig11(i,j) + sig11(i,j-1) )
        ENDDO
       ENDDO
 
