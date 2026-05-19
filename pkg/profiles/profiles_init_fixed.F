@@ -223,11 +223,11 @@ C     1) Read the number of profiles and available dimensions:
      &         err,bi,bj,myThid )
 C      Check that maximum number of vertical levels is not exceeded
           IF ( ProfDepthNo(num_file,bi,bj) .GT. NLEVELMAX ) THEN
-           WRITE(msgBuf,'(5A,I8)')
+           WRITE(msgBuf,'(4A,I4,A,I4)')
      &      'PROFILES_INIT_FIXED: ',profilesfile(1:IL),
      &      '.nc was not read properly. ',
-     &      'Number of depth levels exceeds ',
-     &      'NLEVELMAX = ', NLEVELMAX
+     &      'Number of depth levels = ', ProfDepthNo(num_file,bi,bj),
+     &      ' exceeds NLEVELMAX = ', NLEVELMAX
            CALL PRINT_ERROR( msgBuf, myThid )
            WRITE(msgBuf,'(2A)')
      &      'PROFILES_INIT_FIXED: increase NLEVELMAX in ',
