@@ -292,13 +292,13 @@ C--   Set diagnostic suffix for the current tracer
         diagDif = implicitDiffusion
         IF ( diagDif ) diagDif = DIAGNOSTICS_IS_ON(diagName,myThid)
 #ifdef ALLOW_LAYERS
-     &       .OR. layers_useThermo
+     &                      .OR. layers_useThermo
 #endif
         diagName = 'ADVr'//diagSufx
         diagAdv = implicitAdvection
         IF ( diagAdv ) diagAdv = DIAGNOSTICS_IS_ON(diagName,myThid)
 #ifdef ALLOW_LAYERS
-     &       .OR. layers_useThermo
+     &                      .OR. layers_useThermo
 #endif
 
         IF ( diagDif .OR. diagAdv ) THEN
