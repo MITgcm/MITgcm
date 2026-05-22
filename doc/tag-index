@@ -1,6 +1,12 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/layers:
+  - new header file "LAYERS_P2SHARE.h" with new parameter "layers_useThermo"
+    allows calling S/R layers_fill only when it is necessary;
+  - fix bug that leads to zero output for some of the LAYERS_THERMODYNAMCS
+    diagnostics (LaTz, LaSz, LTto, LSto,LaTs,LaSs).
+
 checkpoint69n (2026/05/08)
 o pkg/seaice:
   - move seaice grid-variables from SEAICE.h into new header "SEAICE_GRID.h";
