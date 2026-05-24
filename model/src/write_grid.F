@@ -110,9 +110,9 @@ C     Write 3D geometry arrays
          CALL WRITE_FLD_XY_RS( 'rSurfW',' ',rSurfW, -1,myThid)
          CALL WRITE_FLD_XY_RS( 'rSurfS',' ',rSurfS, -1,myThid)
         ENDIF
-        CALL WRITE_FLD_XYZ_RS( 'hFacC',' ',hFacC, 0,myThid)
-        CALL WRITE_FLD_XYZ_RS( 'hFacW',' ',hFacW, 0,myThid)
-        CALL WRITE_FLD_XYZ_RS( 'hFacS',' ',hFacS, 0,myThid)
+        CALL WRITE_FLD_XYZ_RS( 'hFacC',' ',hFacC, -1, myThid )
+        CALL WRITE_FLD_XYZ_RS( 'hFacW',' ',hFacW, -1, myThid )
+        CALL WRITE_FLD_XYZ_RS( 'hFacS',' ',hFacS, -1, myThid )
         IF ( fluidIsAir )
      &    CALL WRITE_FLD_XY_RS( 'topo_P',' ',Ro_surf,-1,myThid)
         IF ( useOBCS ) THEN

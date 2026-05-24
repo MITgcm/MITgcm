@@ -24,6 +24,9 @@ C     == Global variables ===
 #include "DYNVARS.h"
 #include "SURFACE.h"
 #include "FFIELDS.h"
+#ifdef ALLOW_LAYERS
+# include "LAYERS_P2SHARE.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -109,8 +112,12 @@ C-    surForcS (=model surface forcing for Salinity, [g/m2/s], >0 increases S
       ENDIF
 
 C-    TFLUX (=total heat flux, match heat-content variations, [W/m2])
-      IF ( fluidIsWater .AND.
-     &     DIAGNOSTICS_IS_ON('TFLUX   ',myThid) ) THEN
+      IF ( fluidIsWater .AND. (
+     &     DIAGNOSTICS_IS_ON('TFLUX   ',myThid)
+#ifdef ALLOW_LAYERS
+     &     .OR. layers_useThermo
+#endif
+     &     ) ) THEN
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j = 1,sNy
@@ -144,15 +151,19 @@ C-    TFLUX (=total heat flux, match heat-content variations, [W/m2])
        ENDDO
        CALL DIAGNOSTICS_FILL( tmp1k,'TFLUX   ',0,1,0,1,1,myThid )
 #ifdef ALLOW_LAYERS
-       IF ( useLayers ) THEN
+       IF ( layers_useThermo ) THEN
         CALL LAYERS_FILL( tmp1k, 1, 'SUR', 0,1,0,1,1,myThid )
        ENDIF
 #endif /* ALLOW_LAYERS */
       ENDIF
 
 C-    SFLUX (=total salt flux, match salt-content variations [g/m2/s])
-      IF ( fluidIsWater .AND.
-     &     DIAGNOSTICS_IS_ON('SFLUX   ',myThid) ) THEN
+      IF ( fluidIsWater .AND. (
+     &     DIAGNOSTICS_IS_ON('SFLUX   ',myThid)
+#ifdef ALLOW_LAYERS
+     &     .OR. layers_useThermo
+#endif
+     &     ) ) THEN
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j = 1,sNy
@@ -178,7 +189,7 @@ C-    SFLUX (=total salt flux, match salt-content variations [g/m2/s])
        ENDDO
        CALL DIAGNOSTICS_FILL( tmp1k,'SFLUX   ',0,1,0,1,1,myThid )
 #ifdef ALLOW_LAYERS
-       IF ( useLayers ) THEN
+       IF ( layers_useThermo ) THEN
         CALL LAYERS_FILL( tmp1k, 2, 'SUR', 0,1,0,1,1,myThid )
        ENDIF
 #endif /* ALLOW_LAYERS */
