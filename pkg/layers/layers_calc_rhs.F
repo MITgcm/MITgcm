@@ -1,5 +1,5 @@
 #include "LAYERS_OPTIONS.h"
-C--  File layers_thermodynamics.F:
+C--  File layers_calc_rhs.F:
 C--   Contents
 C--   o LAYERS_CALC_RHS
 

@@ -1,8 +1,9 @@
 #include "LAYERS_OPTIONS.h"
-C--  File layers_save.F:
+C--  File layers_fill.F:
 C--   Contents
 C--   o LAYERS_FILL
 C--   o LAYERS_FILL_FIELD
+C--   o LAYERS_CUMULATE
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -331,4 +332,3 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       RETURN
       END
-
