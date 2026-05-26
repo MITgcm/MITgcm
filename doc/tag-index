@@ -2,6 +2,8 @@
     ==============================
 
 o pkg/layers:
+  - fix bug in LAYERS_THERMODYNAMCS surface term code for LinFSConserveTr=F
+o pkg/layers:
   - new header file "LAYERS_P2SHARE.h" with new parameter "layers_useThermo"
     allows calling S/R layers_fill only when it is necessary;
   - fix bug that leads to zero output for some of the LAYERS_THERMODYNAMCS
