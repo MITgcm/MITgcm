@@ -915,6 +915,14 @@ describing the package:
 -  :filelink:`pkg/ptracers`: :ref:`available diagnostics <ptracers_diagnostics>`
 
 
+.. _pkg_layers:
+
+pkg/layers - Diagnosing Water Mass Transformation
+=================================================
+
+Introduction
+------------
+
 .. _pkg_mdsio:
 
 Fortran Native I/O: pkg/mdsio and pkg/rw
