@@ -114,7 +114,11 @@ C     msgBuf     :: Informational/error message buffer
 #endif /* USE_EXF_INTERPOLATION */
 CEOP
 
+#ifdef ALLOW_GENTIM2D_CONTROL
+      IF ( fldFile .NE. ' ' ) THEN
+#else
       IF ( fldFile .NE. ' ' .AND. fldPeriod .NE. 0. ) THEN
+#endif
 
          IF ( exf_debugLev.GE.debLevD ) THEN
            _BEGIN_MASTER( myThid )
@@ -309,7 +313,7 @@ C     Interpolate linearly onto the  time.
           ENDDO
          ENDDO
 
-#ifdef ALLOW_GENTIM2D_CONTROL
+#ifdef SKIP_ALLOW_GENTIM2D_CONTROL
       ELSEIF ( fldFile .NE. ' ' .AND. fldPeriod .EQ. 0. ) THEN
          DO bj = myByLo(myThid),myByHi(myThid)
           DO bi = myBxLo(myThid),myBxHi(myThid)
