@@ -38,12 +38,15 @@ C       >>> Cost function contributions
 #undef ALLOW_COST_TRACER
 
 C   List these options here:
+C-  User needs to provide "cost_temp.F"  code before defining following option:
 #undef ALLOW_COST_TEMP
+C-  User needs to provide "cost_hflux.F" code before defining following option:
 #undef ALLOW_COST_HFLUXM
+C-  The following option contains some hacks (reset cost-function):
 #undef ALLOW_DIC_COST
 #undef ALLOW_THSICE_COST_TEST
-#undef ALLOW_COST_STREAMICE
 #undef ALLOW_COST_SHELFICE
+#undef ALLOW_COST_STREAMICE
 
 C   ==================================================================
 #endif /* ndef ECCO_CPPOPTIONS_H */
