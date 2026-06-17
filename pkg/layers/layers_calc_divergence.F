@@ -1,17 +1,14 @@
 #include "LAYERS_OPTIONS.h"
-C--  File layers_calc_rhs.F:
-C--   Contents
-C--   o LAYERS_CALC_RHS
 
 CBOP 0
-C     !ROUTINE: LAYERS_CALC_RHS
+C     !ROUTINE: LAYERS_CALC_DIVERGENCE
 C     !INTERFACE:
-      SUBROUTINE LAYERS_CALC_RHS(
+      SUBROUTINE LAYERS_CALC_DIVERGENCE(
      I                  myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE LAYERS_CALC_RHS
+C     | SUBROUTINE LAYERS_CALC_DIVERGENCE
 C     | Recalculate the divergence of the RHS terms in T and S eqns.
 C     | Replaces the values of layers_surfflux, layers_df? IN PLACE
 C     | with the corresponding tendencies (same units as GT and GS)
@@ -244,4 +241,4 @@ C     ENDDO
 #endif /* USE_LAYERS */
       RETURN
       END
-C -- end of S/R LAYERS_CALC_RHS
+C -- end of S/R LAYERS_CALC_DIVERGENCE
