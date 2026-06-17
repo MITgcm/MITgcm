@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/obcs(sponge):
+  - fix bug in sponge relaxation time-scale for Salinity at the Southern OB;
+  - remove special condition (non zero T / S) for temp and salt relaxation.
 o pkg/layers:
   - fix bug in LAYERS_THERMODYNAMCS surface term code for LinFSConserveTr=F
 o pkg/layers:
