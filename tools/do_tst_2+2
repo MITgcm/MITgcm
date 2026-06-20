@@ -272,23 +272,27 @@ if test "x$ADDRESS" != xNONE -a "x$ADDRESS" != x ; then
     fi
     if test "x$SENDCMD" != x ; then
         sendOpt='' ; nb=`echo $SENDCMD | grep -c '\<scp\>'`
-        if [ $nb -eq 0 ] ; then sendOpt='-s MITgcm-test -m 3555000' ; fi
-        #echo " run: $SENDCMD $sendOpt ${SAVDIR}/${DRESULTS}".tar.gz" $ADDRESSES"
-        tar -cf  ${SAVDIR}/${DRESULTS}".tar" $DRESULTS > /dev/null 2>&1 \
-            && gzip  ${SAVDIR}/${DRESULTS}".tar" \
-            && $SENDCMD $sendOpt ${SAVDIR}/${DRESULTS}".tar.gz" $ADDRESS
+        if [ $nb -eq 0 ] ; then
+           sendOpt='-s MITgcm-test -m 3555000'
+           tarFile="${SAVDIR}/${DRESULTS}.tar"
+        else
+           tarFile="${SAVDIR}/${DRESULTS}.$$.tar"
+        fi
+        #echo " run: $SENDCMD $sendOpt ${tarFile}.gz $ADDRESSES"
+        tar -cf ${tarFile} $DRESULTS > /dev/null 2>&1 \
+            && gzip ${tarFile} \
+            && $SENDCMD $sendOpt ${tarFile}".gz" $ADDRESS
         out=$?
+        echo
         if test "x$out" != x0 ; then
-            echo
             echo "Warning: The tar, gzip, & mpack step failed.  Please send email"
             echo "  to <MITgcm-support@mitgcm.org> for help.  You may copy the "
             echo "  summary of results from the directory \"$DRESULTS\"."
         else
-            echo
             echo "An email containing results was sent to the following address:"
             echo "  \"$ADDRESS\""
-            test -f ${SAVDIR}/${DRESULTS}".tar" &&  rm -f ${SAVDIR}/${DRESULTS}".tar"
-            test -f ${SAVDIR}/${DRESULTS}".tar.gz" &&  rm -f ${SAVDIR}/${DRESULTS}".tar.gz"
+            test -f ${tarFile}      &&  rm -f ${tarFile}
+            test -f ${tarFile}".gz" &&  rm -f ${tarFile}".gz"
         fi
     fi
 fi
