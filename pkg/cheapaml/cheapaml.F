@@ -572,11 +572,7 @@ C update edges
        _EXCH_XY_RL(Cheaptracer,myThid)
       ENDIF
       IF ( .NOT.useStressOption ) THEN
-c      IF ( FluxFormula.EQ.'COARE3' ) THEN
-        _EXCH_XY_RL( surfDrag, myThid )
-c      ELSE
-c       CALL EXCH_UV_AGRID_3D_RL( ustress, vstress, .TRUE., 1, myThid )
-c      ENDIF
+       _EXCH_XY_RL( surfDrag, myThid )
       ENDIF
 
 C reset edges to open boundary profiles
@@ -619,9 +615,7 @@ c     CALL PLOT_FIELD_XYRS( Qnet, 'S/R CHEAPAML Qnet',1,myThid)
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
-c       IF ( .NOT.useStressOption .AND. FluxFormula.EQ.'COARE3' ) THEN
         IF ( .NOT.useStressOption ) THEN
-
           DO j = 1-OLy+1,sNy+OLy
            DO i = 1-OLx+1,sNx+OLx
             fu(i,j,bi,bj) = maskW(i,j,1,bi,bj)*halfRL
