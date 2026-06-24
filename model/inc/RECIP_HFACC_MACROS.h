@@ -1,18 +1,18 @@
-C
-CBOP
-C    !ROUTINE: RECIP_HFACC_MACROS.h
-C    !INTERFACE:
-C    include RECIP_HFACC_MACROS.h
-C    !DESCRIPTION: \bv
-C     *==========================================================*
-C     | RECIP_HFACC_MACROS.h                                      
-C     *==========================================================*
-C     | These macros are used to reduce memory requirement and/or 
-C     | memory references when variables are fixed along a given  
-C     | axis or axes.                                             
-C     *==========================================================*
-C     \ev
-CEOP
+!
+!BOP
+!    !ROUTINE: RECIP_HFACC_MACROS.h
+!    !INTERFACE:
+!    include RECIP_HFACC_MACROS.h
+!    !DESCRIPTION: \bv
+! *==========================================================*
+! | RECIP_HFACC_MACROS.h
+! *==========================================================*
+! | These macros are used to reduce memory requirement and/or
+! | memory references when variables are fixed along a given
+! | axis or axes.
+! *==========================================================*
+! \ev
+!EOP
 
 #ifdef RECIP_HFACC_CONST
 #define  _recip_hFacC(i,j,k,bi,bj) recip_hFacC(1,1,1,1,1)
