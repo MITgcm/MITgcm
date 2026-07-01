@@ -1648,10 +1648,10 @@ argument list automatically.
 Adjoint code generation using OpenAD
 ====================================
 
-**IMPORTANT NOTE** As OpenAD is not longer maintained (latest OpenAD snapshot
+**IMPORTANT NOTE:** As OpenAD is not longer maintained (latest OpenAD snapshot
 at Argone National Lab was from March 2014), MITgcm stopped to support
 OpenAD interface after ``checkpoint69o`` tag (from July 2026). In case you need
-to use OpenAD for a specific application, please use the latest OpenAD supported
+to use OpenAD for a specific application, please use the last OpenAD supported
 code:
 
 ::
