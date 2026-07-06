@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint69o (2026/07/05)
+o testreport:
+  - add process-id number to tar-file name when sending output with "scp".
 o pkg/obcs(sponge):
   - fix bug in sponge relaxation time-scale for Salinity at the Southern OB;
   - remove special condition (non zero T / S) for temp and salt relaxation.
