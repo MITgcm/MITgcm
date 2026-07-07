@@ -52,9 +52,9 @@ fi
 
 #- And to simplify maintenance, take parameter files
 #- from this dir:
-fromDir="../input_oad"
+fromDir="../input_ad"
 
-fileList=`( cd $fromDir ; echo data* eedata )`
+fileList=`( cd $fromDir ; echo data.* eedata )`
 
 #echo 'fileList=' $fileList
 
