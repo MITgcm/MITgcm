@@ -715,6 +715,13 @@ C Penetrating SW radiation
      I                   k, bi, bj, myTime, myIter, myThid )
 #endif /* ALLOW_ICEFRONT */
 
+#ifdef ALLOW_ICEBERG
+      IF ( useICEBERG )
+     &     CALL ICEBERG_TENDENCY_APPLY_T(
+     U                   gT_arr,
+     I                   k, bi, bj, myTime, 0, myThid )
+#endif /* ALLOW_ICEBERG */
+
 #ifdef ALLOW_SALT_PLUME
       IF ( useSALT_PLUME )
      &     CALL SALT_PLUME_TENDENCY_APPLY_T(
@@ -946,6 +953,13 @@ C     Ocean: Add salinity surface forcing (e.g., fresh-water) in surface level
      U                   gS_arr,
      I                   k, bi, bj, myTime, myIter, myThid )
 #endif /* ALLOW_ICEFRONT */
+
+#ifdef ALLOW_ICEBERG
+      IF ( useICEBERG )
+     &     CALL ICEBERG_TENDENCY_APPLY_S(
+     U                   gS_arr,
+     I                   k, bi, bj, myTime, 0, myThid )
+#endif /* ALLOW_ICEBERG */
 
 #ifdef ALLOW_SALT_PLUME
       IF ( useSALT_PLUME )

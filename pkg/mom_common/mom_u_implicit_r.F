@@ -204,6 +204,29 @@ C-   End k loop
        ENDIF
 #endif /* ALLOW_SHELFICE */
 
+#ifdef ALLOW_ICEBERG
+       IF ( useIceberg ) THEN
+C--   Add iceberg drag coeff to main diagonal "c5d":
+        DO k=1,Nr
+          CALL ICEBERG_U_DRAG_COEFF( bi, bj, k, .FALSE.,
+     I                     uVel(1-OLx,1-OLy,k,bi,bj),
+     I                     vVel(1-OLx,1-OLy,k,bi,bj),
+     I                     kappaRU,
+     U                     KE2d,
+     O                     cDrag,
+     I                     myIter, myThid )
+          DO j=jMin,jMax
+           DO i=iMin,iMax
+             c5d(i,j,k) = c5d(i,j,k)
+     &                  + cDrag(i,j)*deltaTMom
+     &                  *_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
+           ENDDO
+          ENDDO
+C-   End k loop
+        ENDDO
+       ENDIF
+#endif /* ALLOW_ICEBERG */
+
 C--   end if selectImplicitDrag > 0
       ENDIF
 

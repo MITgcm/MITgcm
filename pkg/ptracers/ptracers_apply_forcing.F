@@ -120,6 +120,14 @@ c       DO i=iMin,iMax
       ENDIF
 #endif /* ALLOW_RBCS */
 
+#ifdef ALLOW_ICEBERG
+      IF ( useICEBERG )
+     &     CALL ICEBERG_TENDENCY_APPLY_PTRACERS(
+     U                   gPtracer,
+     I                   k, bi, bj, iTracer, myTime, 0, myThid )
+#endif /* ALLOW_ICEBERG */
+
+
 #endif /* ALLOW_PTRACERS */
 
       RETURN
