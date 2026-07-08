@@ -1,7 +1,0 @@
-# Packages
- &PACKAGES
- useSHAP_FILT = .TRUE.,
-## useDiagnostics=.TRUE.,
- useGrdchk    = .TRUE.,
- useMYPACKAGE = .TRUE.,
- &
