@@ -13,7 +13,7 @@ C     !INTERFACE:
       SUBROUTINE G_ACTIVE_READ_OBS_TILE(
      I                                   active_num_file,
      O                                   active_var,
-     I                                   g_active_var,
+     O                                   g_active_var,
      I                                   irec,
      I                                   lAdInit,
      I                                   myOptimIter,
@@ -150,9 +150,9 @@ C     !INTERFACE:
       SUBROUTINE G_ACTIVE_READ_OBS_GLOB(
      I                                   active_num_file,
      O                                   active_var,
-     I                                   g_active_var,
+     O                                   g_active_var,
      O                                   active_mask,
-     I                                   g_active_mask,
+     O                                   g_active_mask,
      I                                   irec,
      I                                   lAdInit,
      I                                   myOptimIter,

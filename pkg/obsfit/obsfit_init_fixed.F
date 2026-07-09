@@ -50,7 +50,7 @@ C     diffsecs     :: absolute time
       INTEGER ic, ip, iq, kLev, iINTERP
       INTEGER chunkObs, chunk
       INTEGER iUnit
-      INTEGER stopObsfit, stopGenericGrid
+      INTEGER stopObsfit(NFILESMAX_OBS), stopGenericGrid(NFILESMAX_OBS)
       INTEGER loopThroughSamples, weighSamples, readDelT
       INTEGER obsIsInRunTime, sampleIsInTile, sampleIsValid
       INTEGER fid, dimid, varID(2)
@@ -119,8 +119,12 @@ c     _RL xy_buffer_r8(0:sNx+1,0:sNy+1)
       WRITE(msgbuf,'(A)' ) ' '
       CALL PRINT_MESSAGE( msgbuf, iUnit, SQUEEZE_RIGHT, myThid )
 
-      stopObsfit=0
-      stopGenericGrid=0
+      DO num_file = 1, NFILESMAX_OBS
+       stopObsfit(num_file) = 0
+      ENDDO
+      DO num_file = 1, NFILESMAX_OBS
+       stopGenericGrid(num_file) = 0
+      ENDDO
 
       IF ( (.NOT.obsfitDoGenGrid) .AND.
      &     (.NOT.usingSphericalPolarGrid .OR. rotateGrid) ) THEN
@@ -228,7 +232,7 @@ C Read number of interpolation points (generic grid only):
          IF ( debugLevel .GE. debLevA ) THEN
           WRITE( msgBuf,'(3A,I3)' )
      &         'S/R OBSFIT_INIT_FIXED: ',
-     &         'no iINTERP dim in data file using iINTERP ',
+     &         'no iINTERP dim in data file; using iINTERP ',
      &         '= NUM_INTERP_POINTS =', NUM_INTERP_PTS_OBS
           CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
          ENDIF
@@ -249,7 +253,7 @@ C Read number of samples (if missing, assume it's 1):
          loopThroughSamples = 0
 
          WRITE( msgbuf,'(2A)' )
-     &        '      input obsfit file does not have NP ',
+     &        '      input obsfit file does not include NP ',
      &        '      (num. samples); assume NP=1 for all obs '
          CALL PRINT_MESSAGE( msgbuf, iUnit, SQUEEZE_RIGHT, myThid )
 
@@ -279,7 +283,7 @@ C Read the info for observations:
      &        'OBSFIT_INIT_FIXED: file ', obsfitFile(1:IL),
      &        '.nc is not in the pkg/obsfit format'
          CALL PRINT_ERROR( msgBuf, myThid )
-         stopObsfit = 1
+         stopObsfit(num_file) = 1
         ENDIF
 
         readDelT = 1
@@ -288,7 +292,7 @@ C Time interval (if missing, assume instantaneous):
         IF (err.NE.NF_NOERR) THEN
          readDelT = 0
          WRITE( msgbuf,'(2A)' )
-     &        '      input obsfit file does not have time interval;',
+     &        '      input obsfit file does not include time interval;',
      &        '      assume observations are instantaneous '
          CALL PRINT_MESSAGE( msgbuf, iUnit, SQUEEZE_RIGHT, myThid )
         ENDIF
@@ -299,15 +303,15 @@ C Read the info for samples:
         CALL OBSFIT_NF_ERROR(
      &       'INIT_FIXED: NF_INQ_DIMID sample_type',err,0,0,myThid )
         err = NF_INQ_VARID( fid,'sample_lon', varID3a )
-        nerr = err
+        nerr = nerr + err
         CALL OBSFIT_NF_ERROR(
      &       'INIT_FIXED: NF_INQ_DIMID sample_lon',err,0,0,myThid )
         err = NF_INQ_VARID( fid,'sample_lat', varID3b )
-        nerr = err
+        nerr = nerr + err
         CALL OBSFIT_NF_ERROR(
      &       'INIT_FIXED: NF_INQ_DIMID sample_lat',err,0,0,myThid )
         err = NF_INQ_VARID( fid,'sample_depth', varID4 )
-        nerr = err
+        nerr = nerr + err
         CALL OBSFIT_NF_ERROR(
      &       'INIT_FIXED: NF_INQ_DIMID sample_depth',err,0,0,myThid )
 
@@ -317,7 +321,7 @@ C Read the info for samples:
      &        'OBSFIT_INIT_FIXED: file ', obsfitFile(1:IL),
      &        '.nc is not in the pkg/obsfit format'
          CALL PRINT_ERROR( msgBuf, myThid )
-         stopObsfit=1
+         stopObsfit(num_file) = 1
         ENDIF
 
         weighSamples = 1
@@ -326,7 +330,7 @@ C Weight for each sample (if missing, assume all samples weigh equally):
         IF (err.NE.NF_NOERR) THEN
          weighSamples = 0
          WRITE( msgbuf,'(2A)' )
-     &        '      input obsfit file does not have sample weight;',
+     &        '      input obsfit file does not include sample weight;',
      &        '      assume all samples are weighed evenly '
          CALL PRINT_MESSAGE( msgbuf, iUnit, SQUEEZE_RIGHT, myThid )
         ENDIF
@@ -347,7 +351,7 @@ C Read interpolation information (grid points, fractions, etc.)
      &         'OBSFIT_INIT_FIXED: file ', obsfitFile(1:IL), '.nc is',
      &         ' missing interpolation information (obsfitDoGenGrid)'
           CALL PRINT_ERROR( msgBuf, myThid )
-          stopGenericGrid=2
+          stopGenericGrid(num_file)=2
          ENDIF
         ENDIF
 
@@ -512,7 +516,7 @@ C Read a chunk
      &          'OBSFIT_INIT_FIXED: file ', obsfitFile(1:IL),
      &          '.nc was not read properly (case 1).'
            CALL PRINT_ERROR( msgBuf, myThid )
-           stopObsfit = 1
+           stopObsfit(num_file) = 1
           ENDIF
 
 C Read time
@@ -536,13 +540,13 @@ C Read number of samples per obs
      &          'OBSFIT_INIT_FIXED: file ', obsfitFile(1:IL),
      &          '.nc was not read properly (case 2).'
            CALL PRINT_ERROR( msgBuf, myThid )
-           stopObsfit = 1
+           stopObsfit(num_file) = 1
           ENDIF
 
 C Loop through this chunk
           DO ic = 1, MIN(1000,ObsNo(num_file)-chunk)
 
-           IF ( stopObsfit .EQ. 0 ) THEN
+           IF ( stopObsfit(num_file) .EQ. 0 ) THEN
             obsIsInRunTime = 1
 
 CAV if obs starts before model run, will be ignored even if it ends after
@@ -599,12 +603,53 @@ C delT=0: instantaneous
             ENDIF
 
             IF ( obsIsInRunTime.EQ.1 ) THEN
-C If yes then store obs index position and number of samples:
+C If yes then store obs index position and number of samples
              ObsNo_valid = ObsNo_valid+1
+C Check that the maximum number of obs per file is not exceeded
+             IF ( ObsNo_valid .GT. NOBSMAX_OBS ) THEN
+              WRITE(msgbuf,'(5A,I8)')
+     &         'OBSFIT_INIT_FIXED: file ', obsfitFile(1:IL),
+     &         '.nc was not read properly. ',
+     &         ' Number of valid observations in one file ',
+     &         ' exceeds NOBSMAX_OBS=', NOBSMAX_OBS
+              CALL PRINT_ERROR( msgbuf, myThid )
+              WRITE(msgbuf,'(A)')
+     &         'Increase NOBSMAX_OBS in OBSFIT_SIZE.h and recompile'
+              CALL PRINT_ERROR( msgbuf, myThid )
+              stopObsfit(num_file) = 1
+             ENDIF
              obs_ind_glob(num_file,ObsNo_valid) = ic+chunk
 C Number of samples in each valid observation
              obs_np(num_file,ObsNo_valid) = np_cur
-             IF ( np_cur.GT.obs_np_max ) obs_np_max = np_cur
+C Check that the maximum number of samples per obs is not exceeded
+             IF ( np_cur .GT. NSAMP_PER_OBS_MAX ) THEN
+              WRITE(msgbuf,'(5A,I8)')
+     &         'OBSFIT_INIT_FIXED: file ', obsfitFile(1:IL),
+     &         '.nc was not read properly. ',
+     &         ' Number of samples in one observation ',
+     &         ' exceeds NSAMP_PER_OBS_MAX=', NSAMP_PER_OBS_MAX
+              CALL PRINT_ERROR( msgbuf, myThid )
+              WRITE(msgbuf,'(2A)')
+     &        'Increase NSAMP_PER_OBS_MAX in OBSFIT_SIZE.h ',
+     &        'and recompile'
+              CALL PRINT_ERROR( msgbuf, myThid )
+              stopObsfit(num_file) = 1
+             ENDIF
+C Check that the maximum number of samples per file is not exceededed
+             IF ( sample_cnt+np_cur-1 .GT. NSAMPLES_MAX_GLO ) THEN
+              WRITE(msgbuf,'(5A,I8)')
+     &         'OBSFIT_INIT_FIXED: file ', obsfitFile(1:IL),
+     &         '.nc was not read properly. ',
+     &         'Total number of samples in file ',
+     &         ' exceeds NSAMPLES_MAX_GLO=', NSAMPLES_MAX_GLO
+              CALL PRINT_ERROR( msgbuf, myThid )
+              WRITE(msgbuf,'(2A)')
+     &         'Increase NSAMPLES_MAX_GLO in OBSFIT_SIZE.h ',
+     &         'and recompile'
+              CALL PRINT_ERROR( msgbuf, myThid )
+              stopObsfit(num_file) = 1
+             ENDIF
+
 C Position of first sample
              obs_sample1_ind(num_file,ObsNo_valid) = sample_cnt
              obs_delT(num_file,ObsNo_valid) = delT_cur
@@ -619,26 +664,7 @@ C and assign time to samples
              sample_cnt = sample_cnt+1
             ENDDO
 
-C Check that maximum size was not reached:
-            IF ( ObsNo_valid.GT.NOBSMAX_OBS ) THEN
-             WRITE( msgBuf,'(3A)' )
-     &            'OBSFIT_INIT_FIXED: file ', obsfitFile(1:IL),
-     &            '.nc was not read properly (increase NOBSMAX_OBS).'
-             CALL PRINT_ERROR( msgBuf, myThid )
-             stopObsfit = 1
-            ENDIF
-
-C Check that maximum NP was not reached:
-            IF ( obs_np_max.GT.NSAMP_PER_OBS_MAX ) THEN
-             WRITE( msgBuf,'(3A)' )
-     &           'OBSFIT_INIT_FIXED: file ', obsfitFile(1:IL),
-     &           '.nc  was not read properly ',
-     &           '(increase NSAMP_PER_OBS_MAX).'
-             CALL PRINT_ERROR( msgBuf, myThid )
-             stopObsfit = 1
-            ENDIF
-
-           ENDIF !stopObsfit
+           ENDIF !stopObsfit(num_file)
           ENDDO !ic
          ENDIF !chunk
         ENDDO !chunkObs
@@ -713,7 +739,7 @@ C Read a chunk
      &            'OBSFIT_INIT_FIXED: file ', obsfitFile(1:IL),
      &            '.nc was not read properly (case 3).'
              CALL PRINT_ERROR( msgBuf, myThid )
-             stopObsfit = 1
+             stopObsfit(num_file) = 1
             ENDIF
 
             err = NF_GET_VARA_INT( fid,varID2,vec_start,
@@ -762,13 +788,13 @@ C and indices
      &            'OBSFIT_INIT_FIXED: file ', obsfitFile(1:IL),
      &            '.nc was not read properly (case 4).'
              CALL PRINT_ERROR( msgBuf, myThid )
-             stopObsfit = 1
+             stopObsfit(num_file) = 1
             ENDIF
 
 C Loop through this chunk
             DO ic = 1, MIN(1000,sampleNo(num_file,bi,bj)-chunk)
 
-             IF ( stopObsfit .EQ. 0) THEN
+             IF ( stopObsfit(num_file) .EQ. 0) THEN
 
               sampleIsValid = 1
               sampleIsInTile = 1
@@ -921,7 +947,19 @@ C Value of i, west of the data point:
                IF ( sampleIsInTile.EQ.1 ) THEN
 C If yes then store sample index position and number of samples:
                 sampleNo_tile = sampleNo_tile+1
-                sample_ind_glob(num_file,sampleNo_tile,bi,bj)
+C Check that the maximum number of samples per tile is not exceeded
+             IF ( sampleNo_tile .GT. NSAMP_PER_TILE_MAX ) THEN
+              WRITE(msgbuf,'(2A,I8)')
+     &         'OBSFIT_INIT_FIXED: number of samples in one tile ',
+     &         ' exceeds NSAMP_PER_TILE_MAX=', NSAMP_PER_TILE_MAX
+              CALL PRINT_ERROR( msgbuf, myThid )
+              WRITE(msgbuf,'(2A)')
+     &         'Increase NSAMP_PER_TILE_MAX in OBSFIT_SIZE.h',
+     &         ' and recompile'
+              CALL PRINT_ERROR( msgbuf, myThid )
+              STOP 'ABNORMAL END: S/R OBSFIT_INIT_FIXED'
+             ENDIF
+             sample_ind_glob(num_file,sampleNo_tile,bi,bj)
      &           = ic+chunk
                 sample_timeS(num_file,sampleNo_tile,bi,bj)=
      &           tmp_sample_time(ic+chunk)
@@ -1056,7 +1094,7 @@ C===========================================================
 C Determine whether sample is in current tile domain
               ELSEIF ( sampleIsValid.EQ.1 ) THEN
 
-               IF ( stopGenericGrid.EQ.0 ) THEN
+               IF ( stopGenericGrid(num_file).EQ.0 ) THEN
 
                 IF ( (abs(tmp_xC11(ic) - xC(1,1,bi,bj))
      &               .LT.0.0001 _d 0 ).AND.
@@ -1126,7 +1164,7 @@ C interpolation information consistent (self and with grid)
      &                  '.nc includes inconsistent interpolation ',
      &                  ' points (obsfitDoGenGrid; out of tile)'
                    CALL PRINT_ERROR( msgBuf, myThid )
-                    stopGenericGrid = 1
+                    stopGenericGrid(num_file) = 1
                   ENDIF
 #ifdef ALLOW_OBSFIT_EXCLUDE_CORNERS
                   IF ( tmp_frac(ic,iq) .NE. 0. _d 0) THEN
@@ -1144,7 +1182,7 @@ C interpolation information consistent (self and with grid)
      &                   '.nc includes inconsistent interpolation ',
      &                   ' points (obsfitDoGenGrid; overlap corners)'
                     CALL PRINT_ERROR( msgBuf, myThid )
-                     stopGenericGrid = 1
+                     stopGenericGrid(num_file) = 1
                    ENDIF
                   ENDIF
 #endif /* ALLOW_OBSFIT_EXCLUDE_CORNERS */
@@ -1156,7 +1194,7 @@ C interpolation information consistent (self and with grid)
      &                   '.nc includes inconsistent interpolation ',
      &                   ' points (obsfitDoGenGrid; sum not 0-1)'
                    CALL PRINT_ERROR( msgBuf, myThid )
-                   stopGenericGrid = 1
+                   stopGenericGrid(num_file) = 1
                   ENDIF
                  ENDDO! iq
 
@@ -1168,29 +1206,29 @@ C interpolation information consistent (self and with grid)
      &                 '.nc includes inconsistent interpolation ',
      &                 ' weights (obsfitDoGenGrid; sum not 1)'
                   CALL PRINT_ERROR( msgBuf, myThid )
-                  stopGenericGrid = 1
+                  stopGenericGrid(num_file) = 1
                  ENDIF
 
                  sample_ind_glob(num_file,sampleNo_tile,bi,bj)
      &            =ic+chunk
 
                 ENDIF !sampleIsInTile
-               ENDIF !stopGenericGrid
+               ENDIF !stopGenericGrid(num_file)
               ENDIF !obsfitDoGenGrid)
 
 C ==============================================================================
 
-C Check that maximum size was not reached:
+C Check that maximum number of samples per tile is not exceeded
               IF ( sampleNo_tile.GT.NSAMP_PER_TILE_MAX ) THEN
                WRITE( msgBuf,'(3A)' )
      &              'OBSFIT_INIT_FIXED: file ', obsfitFile(1:IL),
      &              '.nc was not read properly ',
      &              '(increase NSAMP_PER_TILE_MAX).'
                CALL PRINT_ERROR( msgBuf, myThid )
-               stopObsfit = 1
+               stopObsfit(num_file) = 1
               ENDIF
 
-             ENDIF !stopObsfit
+             ENDIF !stopObsfit(num_file)
             ENDDO !ic
            ENDIF !chunk
           ENDDO !chunkObs
@@ -1217,7 +1255,7 @@ C Number of valid samples in the file
      &           'includes both SSH and non-SSH observations; ',
      &           'this is not currently supported.'
             CALL PRINT_ERROR( msgBuf, myThid )
-            stopObsfit = 1
+            stopObsfit(num_file) = 1
            ELSE
             obs_is_ssh_loc = obs_is_ssh_loc+1
            ENDIF
@@ -1407,7 +1445,8 @@ C===========================================================
 c1) you want to provide interpolation information
 
 C For generic grid. Needs to go inside bi,bj loop
-      IF ( stopGenericGrid.EQ.2 ) THEN
+      DO num_file = 1, NFILESMAX_OBS
+      IF ( stopGenericGrid(num_file).EQ.2 ) THEN
 c         iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
 c         jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
 ccgf XC grid
@@ -1463,25 +1502,36 @@ c       close(fid)
        WRITE( msgBuf,'(A)' )
      &      'use the grid info in profiles*incl1PointOverlap*data'
        CALL PRINT_ERROR( msgBuf, myThid )
-       stopObsfit=1
+       DO obs_num = 1, NFILESMAX_OBS
+        stopObsfit(obs_num) = 1
+       ENDDO
 
       ENDIF
+      ENDDO
 
       _END_MASTER( myThid )
       _BARRIER
 
 c2) stop after other kind of errors
-      CALL GLOBAL_SUM_INT( stopObsfit , myThid )
-      IF ( stopObsfit.GE.1) THEN
-       CALL ALL_PROC_DIE( myThid )
-       STOP 'ABNORMAL END: S/R OBSFIT_INIT_FIXED'
-      ENDIF
+      DO num_file = 1, NFILESMAX_OBS
+       CALL GLOBAL_SUM_INT( stopObsfit(num_file), myThid )
+      ENDDO
+      DO num_file = 1, NFILESMAX_OBS
+       IF ( stopObsfit(num_file).GE.1) THEN
+        CALL ALL_PROC_DIE( myThid )
+        STOP 'ABNORMAL END: S/R OBSFIT_INIT_FIXED'
+       ENDIF
+      ENDDO
 
-      CALL GLOBAL_SUM_INT( stopGenericGrid , myThid )
-      IF ( stopGenericGrid.GE.1) THEN
-       CALL ALL_PROC_DIE( myThid )
-       STOP 'ABNORMAL END: S/R OBSFIT_INIT_FIXED'
-      ENDIF
+      DO num_file = 1, NFILESMAX_OBS
+       CALL GLOBAL_SUM_INT( stopGenericGrid(num_file), myThid )
+      ENDDO
+      DO num_file = 1, NFILESMAX_OBS
+       IF ( stopGenericGrid(num_file).GE.1) THEN
+        CALL ALL_PROC_DIE( myThid )
+        STOP 'ABNORMAL END: S/R OBSFIT_INIT_FIXED'
+       ENDIF
+      ENDDO
 
       WRITE(msgbuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgbuf, iUnit, SQUEEZE_RIGHT, myThid )
