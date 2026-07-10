@@ -8,12 +8,13 @@ Introduction
 
 This packages computes the horizontal fluxes of volume/mass within the layers
 specified by either THETA (potential temperature or conservative temperature),
-salinity, or potential density referenced to a specific k-level. (Unfortunately
-we cannot specify a reference pressure that is independent of the position of
-the vertical grid points. For example, if one really wants to have the
-potential density defined relative to 2000 dbar, then one needs to make sure
-that the vertical grid is chosen in a way that has a tracer point at exactly
-2000 dbar (= :varlink:`gravity`:varlink:`rhoConst`:varlink:`rC(k)`).)
+salinity, or potential density referenced to a specific k-level. Unfortunately
+in MITgcm, we cannot specify a reference pressure that is independent of the
+position of the vertical grid points. For example, if one really wants to have
+the potential density defined relative to 2000 dbar, then one needs to make
+sure that the vertical grid is chosen so that there is a tracer point at
+exactly 2000 dbar (= :varlink:`gravity` * :varlink:`rhoConst` *
+:varlink:`rC(k)`).
 
 For this code to work, and to compute a density layers averaged meridional
 overturning circulation from the results, the CPP-flags
