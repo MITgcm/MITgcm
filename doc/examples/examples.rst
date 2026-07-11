@@ -658,7 +658,7 @@ whereas Tapenaade requires directories ``code_tap`` and ``input_tap`` respective
 
    - using package :filelink:`exf <pkg/exf>`
      (:filelink:`input_ad.w_exf <verification/global_oce_latlon/input_ad.w_exf>`,
-      :filelink:`input_tap.w_exf <verification/global_oce_latlon/input_tap.w_exf>`,
+     :filelink:`input_tap.w_exf <verification/global_oce_latlon/input_tap.w_exf>`,
      formerly :filelink:`global_with_exf <verification/global_with_exf>`)
 
    - using package :filelink:`ebm <pkg/ebm>`
