@@ -313,19 +313,6 @@ C     Interpolate linearly onto the  time.
           ENDDO
          ENDDO
 
-#ifdef SKIP_ALLOW_GENTIM2D_CONTROL
-      ELSEIF ( fldFile .NE. ' ' .AND. fldPeriod .EQ. 0. ) THEN
-         DO bj = myByLo(myThid),myByHi(myThid)
-          DO bi = myBxLo(myThid),myBxHi(myThid)
-           DO j = 1,sNy
-            DO i = 1,sNx
-             fldArr(i,j,bi,bj) = fld0(i,j,bi,bj)
-            ENDDO
-           ENDDO
-          ENDDO
-         ENDDO
-#endif
-
       ENDIF
 
       RETURN
