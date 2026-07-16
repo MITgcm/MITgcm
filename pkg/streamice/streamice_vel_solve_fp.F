@@ -173,7 +173,18 @@ c      ENDDO
 
       ENDDO
 
-#ifdef ALLOW_OPENAD
+#ifndef ALLOW_OPENAD
+      CALL STREAMICE_VEL_PHISTAGE (
+     I                   myThid,
+     I                   maxNLIter,
+     I                   maxCGiter,
+     O                   cgtol,
+     O                   nL_iter,
+     O                   CONVERGED,
+     O                   err_last_change,
+     O                   err_init,
+     I                   isinloop2)
+#else
       CALL STREAMICE_VEL_PHISTAGE (
      I                   myThid,
      I                   maxNLIter,
