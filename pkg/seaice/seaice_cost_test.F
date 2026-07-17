@@ -86,8 +86,8 @@ c     == end of interface ==
      &             / deltaTClock )
 
 cph(
-      write(standardMessageUnit,*) 'ph-ice B ', myiter,
-     &        theta(4,4,kSrf,1,1), area(4,4,1,1), heff(4,4,1,1)
+c     write(standardMessageUnit,*) 'ph-ice B ', myiter,
+c    &        theta(4,4,kSrf,1,1), area(4,4,1,1), heff(4,4,1,1)
 cph)
          if ( cost_ice_flag .eq. 1 ) then
 c     sea-ice volume
@@ -228,7 +228,7 @@ c     assumed that measurements are AREA=0.5 at all times everywhere.
       endif
 
 cph(
-      write(standardMessageUnit,*) 'ph-ice C ', myiter, objf_ice(1,1)
+c     write(standardMessageUnit,*) 'ph-ice C ', myiter, objf_ice(1,1)
 cph)
 
 #endif /* ALLOW_COST & ALLOW_COST_ICE */
