@@ -1,11 +1,15 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf:
+  - fix time-invariant exf field (fldPeriod=0) when used as ctrl variables
+    (xx_gentim2d), by resetting it (ALLOW_GENTIM2D_CONTROL) from fld0,fld1 in
+    exf_set_fld.F ; simplify "data.exf" in AD experiment "offline_exf_seaice".
 o tools/ci:
   - remove OpenAD tests from GitHub actions; add other Adjoint Tapenade test
     experiments to CI (only run with label "adjoint"); update docs.
 
-checkpoint69o (2026/07/05) last version to support OpenAD
+checkpoint69o (2026/07/06) last version to support OpenAD
 o testreport:
   - add process-id number to tar-file name when sending output with "scp".
 o pkg/obcs(sponge):
