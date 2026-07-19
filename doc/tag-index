@@ -1,6 +1,16 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools/ci:
+  - remove OpenAD tests from GitHub actions; add other Adjoint Tapenade test
+    experiments to CI (only run with label "adjoint"); update docs.
+
+checkpoint69o (2026/07/05) last version to support OpenAD
+o testreport:
+  - add process-id number to tar-file name when sending output with "scp".
+o pkg/obcs(sponge):
+  - fix bug in sponge relaxation time-scale for Salinity at the Southern OB;
+  - remove special condition (non zero T / S) for temp and salt relaxation.
 o pkg/layers:
   - fix bug in LAYERS_THERMODYNAMCS surface term code for LinFSConserveTr=F
 o pkg/layers:
