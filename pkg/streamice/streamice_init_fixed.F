@@ -325,9 +325,9 @@ C         INIT VALUES FOR METRIC TERMS
           IF (.not.usingCartesianGrid) THEN
 
            k1AtC_str(i,j,bi,bj) = recip_rA(i,j,bi,bj) *
-     &      (dxG(i,j+1,bi,bj)-dxG(i,j,bi,bj))
-           k2AtC_str(i,j,bi,bj) = recip_rA(i,j,bi,bj) *
      &      (dyG(i+1,j,bi,bj)-dyG(i,j,bi,bj))
+           k2AtC_str(i,j,bi,bj) = recip_rA(i,j,bi,bj) *
+     &      (dxG(i,j+1,bi,bj)-dxG(i,j,bi,bj))
 
           ELSE
 
