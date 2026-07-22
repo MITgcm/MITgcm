@@ -3,13 +3,8 @@
 # *********************
  &EXF_NML_01
  useExfCheckRange  = .TRUE.,
-#- We cannot use "xx_gentim2d" on an exf air-surface fields with {fld}period=0.
-#  since {fld}period=0 by-pass the update of the exf-field (in EXF_SET_FLD) but
-#  keep adding to the field the xx_gentim2d perturbation (in EXF_GETFFIELDS)
-#  that will accumulate over the run !
-#  So we set all the {fld}period below to the same value as repeatPeriod;
-#  this way only 1 time-record is used and we get a constant forcing.
- repeatPeriod      = 8640000.,
+# this is the default
+#repeatPeriod      = 0.,
  exf_iprec         = 64,
  exf_monFreq       = 86400000.,
 #useRelativeWind = .TRUE.,
@@ -18,16 +13,17 @@
 # *********************
  &EXF_NML_02
 
- atempperiod       = 8640000.,
- aqhperiod         = 8640000.,
- uwindperiod       = 8640000.,
- vwindperiod       = 8640000.,
- precipperiod      = 8640000.,
- swdownperiod      = 8640000.,
- lwdownperiod      = 8640000.,
+# zero is the default for all periods
+ atempperiod       = 0.,
+ aqhperiod         = 0.,
+ uwindperiod       = 0.,
+ vwindperiod       = 0.,
+ precipperiod      = 0.,
+ swdownperiod      = 0.,
+ lwdownperiod      = 0.,
 
- climsstperiod     = 8640000.,
- climsssperiod     = 8640000.,
+ climsstperiod     = 0.,
+ climsssperiod     = 0.,
  climsstTauRelax   = 2592000.,
 #climsssTauRelax   = 2592000.,
 
