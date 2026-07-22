@@ -116,6 +116,8 @@ C         STOP 'ABNORMAL END: S/R LAYERS_FILL'
       END
 C end of S/R LAYERS_FILL
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       SUBROUTINE LAYERS_FILL_FIELD(
      I               df, trIdentity, myNr,
      U               layers_saved_flux,
@@ -279,6 +281,8 @@ C        ENDIF
       RETURN
       END
 C end of S/R LAYERS_FILL_FIELD
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE LAYERS_CUMULATE(
      U                  cumFld,
