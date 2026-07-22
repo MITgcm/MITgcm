@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/streamice:
+  - fix Tapenade adjoint for simple SOLVE_FP use (same fix as for OpenAD)
+    and update halfpipe_streamice Tap adj & tlm ref. output.
 o pkg/seaice:
   - comment out debug print in seaice_cost_test.F and reduce overlap size
     (from 3 to 2) in experiment "1D_ocean_ice_column".
