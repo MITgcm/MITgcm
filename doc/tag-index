@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - comment out debug print in seaice_cost_test.F and reduce overlap size
+    (from 3 to 2) in experiment "1D_ocean_ice_column".
 o pkg/exf:
   - fix time-invariant exf field (fldPeriod=0) when used as ctrl variables
     (xx_gentim2d), by resetting it (ALLOW_GENTIM2D_CONTROL) from fld0,fld1 in
