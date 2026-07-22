@@ -397,8 +397,8 @@ C     k         :: index array (output)
 C     myThid    :: my Thread Id number
       INTEGER n,m,sNx,sNy
       _RL     xx(1:n+1)
-      _RL     x(snx+1,sny+1)
-      INTEGER k(snx+1,sny+1)
+      _RL     x(sNx+1,sNy+1)
+      INTEGER k(sNx+1,sNy+1)
       INTEGER myThid
 
 C !LOCAL VARIABLES:
