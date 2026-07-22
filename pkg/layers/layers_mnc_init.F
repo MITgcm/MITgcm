@@ -37,7 +37,6 @@ C           'V_xy_Hn__G__t'
      &       'Northward Velocity Integrated Over Isopycnal Layer',
      &       myThid)
 
-
       ENDIF
 
 #endif /* ALLOW_LAYERS and ALLOW_MNC */

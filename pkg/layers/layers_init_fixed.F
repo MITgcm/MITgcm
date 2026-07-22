@@ -55,7 +55,6 @@ C     for now, just use up the entire available array for ZZ
 C     Z and ZZ are INCREASING DOWNWARD!!!
 C     Maybe this is dumb but it will work as long as we are consistent
 
-
 C     Each dF cell is split into FineGridFact fine cells
 C     Calculate dZZf on the fine grid
       kkinit = 1
