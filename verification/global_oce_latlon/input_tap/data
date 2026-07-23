@@ -15,34 +15,29 @@
  rhoConst=1035.,
  rotationPeriod=86400.,
  gravity=9.81,
- eosType = 'POLY3',
+ eosType = 'JMD95Z',
  ivdc_kappa=100.,
  implicitDiffusion=.TRUE.,
  allowFreezing=.TRUE.,
  useRealFreshWaterFlux=.TRUE.,
  useCDscheme=.TRUE.,
- useNHMTerms=.TRUE.,
 # turn on looped cells
  hFacMin=.05,
  hFacMindr=50.,
 # set precision of data files
  readBinaryPrec=32,
-#- not safe to use globalFiles in multi-processors runs
-#globalFiles=.TRUE.
- useSingleCpuIO=.TRUE.
  &
 
 # Elliptic solver parameters
  &PARM02
- cg2dMaxIters=500,
- cg2dTargetResidual=1.E-13,
- useSRCGSolver = .TRUE.,
+ cg2dMaxIters=1000,
+ cg2dTargetResidual=1.E-19,
  &
 
 # Time stepping parameters
  &PARM03
- nIter0 =      0,
- nTimeSteps = 20,
+ nIter0 =     0,
+ nTimeSteps = 4,
 # 100 years of integration will yield a reasonable flow field
 # startTime = 0.,
 # endTime   = 3110400000.,
@@ -56,10 +51,18 @@
 # equilibrium:
 # deltaTFreeSurf = 172800.,
  abEps = 0.1,
- pChkptFreq= 311040000.,
- dumpFreq=   311040000.,
- dumpFreq=   864000.,
- monitorFreq=1.,
+ pChkptFreq = 311040000.,
+ dumpFreq    =  2592000.,
+ adjDumpFreq =  2592000.,
+ monitorFreq    = 0.,
+ adjMonitorFreq = 0.,
+# 2 months restoring timescale for temperature
+ tauThetaClimRelax = 5184000.,
+# 6 months restoring timescale for salinity
+ tauSaltClimRelax = 15552000.,
+ periodicExternalForcing=.TRUE.,
+ externForcingPeriod= 2592000.,
+ externForcingCycle= 31104000.,
  &
 
 # Gridding parameters
@@ -78,4 +81,12 @@
  bathyFile=      'bathymetry.bin',
  hydrogThetaFile='lev_t.bin',
  hydrogSaltFile= 'lev_s.bin',
+ zonalWindFile=  'trenberth_taux.bin',
+ meridWindFile=  'trenberth_tauy.bin',
+ thetaClimFile=  'lev_sst.bin',
+ saltClimFile=   'lev_sss.bin',
+ surfQnetFile=   'ncep_qnet.bin',
+# fresh water flux is turned off, uncomment next line to turn on
+# (not recommened together with surface salinity restoring)
+# EmPmRFile=      'ncep_emp.bin',
  &
