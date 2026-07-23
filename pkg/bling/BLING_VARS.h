@@ -5,9 +5,6 @@ C ==========================================================
        COMMON /CARBON_NEEDS/
      &                      apCO2, AtmosP, pH, pCO2, FluxCO2,
      &                      wind, FIce, Silica
-#ifdef ALLOW_EXF
-     &                      , apco20, apco21
-#endif
       _RL  apCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  AtmosP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  pH(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -16,10 +13,6 @@ C ==========================================================
       _RL  wind(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  FIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  Silica(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#ifdef ALLOW_EXF
-      _RL  apco20(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  apco21(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif
 
 C ==========================================================
 C   Carbon and oxygen chemistry parameters
@@ -86,7 +79,6 @@ C     =1 :: use the GENERAL solver ;  =2 :: use SEC solver ;
 C     =3 :: use FAST solver routine.
 
        COMMON /CARBONCHEM_SOLVESAPHE_ARIANE/
-cav     &                     cat, akn, akhs, aphscale, Ksp_TP_Arag,
      &                     cat, akn, akhs, aphscale,
      &                     at_maxniter,
      &                     selectBTconst,selectFTconst,
@@ -97,7 +89,6 @@ cav     &                     cat, akn, akhs, aphscale, Ksp_TP_Arag,
       _RL  akn(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  akhs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  aphscale(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-cav      _RL  Ksp_TP_Arag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       INTEGER at_maxniter
       INTEGER selectBTconst
@@ -136,18 +127,6 @@ C      Schmidt number coefficients
       _RL  sca1,sca2,sca3,sca4
       _RL  sox1,sox2,sox3,sox4
 
-#ifdef ALLOW_EXF
-      integer apco2startdate1
-      integer apco2startdate2
-      _RL     apco2StartTime
-      _RL     apco2period
-      _RL     apco2RepCycle
-      _RL     apco2const
-      _RL     apco2_exfremo_intercept
-      _RL     apco2_exfremo_slope
-      CHARACTER*1 apco2mask
-#endif
-
 C ==========================================================
 C   Bling inputs (specified in data.bling)
 C
@@ -158,11 +137,8 @@ C        value k0 (default= 0.04 m^-1) is applied for entire domain.
 C ==========================================================
 
        COMMON /BLING_INPUTS/
-     &        bling_windFile, bling_atmospFile, bling_iceFile,
-     &        bling_ironFile, bling_silicaFile,
      &        bling_psmFile, bling_plgFile, bling_pdiazFile,
      &        bling_forcingPeriod, bling_forcingCycle,
-     &        bling_pCO2,
      &        river_conc_po4, river_dom_to_nut,
      &        bling_Pc_2dFile, bling_Pc_2d_diazFile,
      &        bling_k0_2dFile,
@@ -170,34 +146,15 @@ C ==========================================================
      &        bling_k_Fe2dFile, bling_k_Fe_diaz2dFile,
      &        bling_gamma_POM2dFile, bling_wsink0_2dFile,
      &        bling_phi_lg2dFile, bling_phi_sm2dFile
-#ifdef ALLOW_EXF
-     &       ,apco2startdate1,apco2startdate2,
-     &        apco2StartTime, apco2period, apco2RepCycle,
-     &        apco2const,
-     &        apco2_exfremo_intercept,
-     &        apco2_exfremo_slope,
-     &        apco2file, apco2mask
-#endif
 
-C      bling_windFile      :: file name of wind speeds
-C      bling_atmospFile    :: file name of atmospheric pressure
-C      bling_iceFile       :: file name of sea ice fraction
-C      bling_ironFile      :: file name of aeolian iron flux
-C      bling_silicaFile    :: file name of surface silica
 C      bling_psmFile       :: file name of init small phyto biomass
 C      bling_plgFile       :: file name of init lg phyto biomass
 C      bling_pdiazFile     :: file name of init diaz biomass
 C      bling_forcingPeriod :: period of forcing for biogeochemistry (seconds)
 C      bling_forcingCycle  :: periodic forcing parameter for biogeochemistry
-C      bling_pCO2          :: Atmospheric pCO2 to be read in data.bling
 C      river_conc_trac     :: River concentration, bgc tracers
 C      apco2               :: Atmospheric pCO2 to be read in with exf pkg
 
-      CHARACTER*(MAX_LEN_FNAM) bling_windFile
-      CHARACTER*(MAX_LEN_FNAM) bling_atmospFile
-      CHARACTER*(MAX_LEN_FNAM) bling_iceFile
-      CHARACTER*(MAX_LEN_FNAM) bling_ironFile
-      CHARACTER*(MAX_LEN_FNAM) bling_silicaFile
       CHARACTER*(MAX_LEN_FNAM) bling_psmFile
       CHARACTER*(MAX_LEN_FNAM) bling_plgFile
       CHARACTER*(MAX_LEN_FNAM) bling_pdiazFile
@@ -212,41 +169,10 @@ C      apco2               :: Atmospheric pCO2 to be read in with exf pkg
       CHARACTER*(MAX_LEN_FNAM) bling_phi_DOM2dFile
       CHARACTER*(MAX_LEN_FNAM) bling_phi_lg2dFile
       CHARACTER*(MAX_LEN_FNAM) bling_phi_sm2dFile
-#ifdef ALLOW_EXF
-      CHARACTER*(MAX_LEN_FNAM) apco2file
-#endif
       _RL     bling_forcingPeriod
       _RL     bling_forcingCycle
-      _RL     bling_pCO2
       _RL     river_conc_po4
       _RL     river_dom_to_nut
-
-C ==========================================================
-C   EXF input/output scaling factors for unit conversion if needed
-C ==========================================================
-#ifdef ALLOW_EXF
-      _RL     exf_inscal_apco2
-      _RL     exf_outscal_apco2
-      COMMON /BLG_PARAM_SCAL/
-     &                    exf_inscal_apco2,
-     &                    exf_outscal_apco2
-#endif
-
-C ==========================================================
-C   EXF interpolation needs
-C ==========================================================
-#ifdef ALLOW_EXF
-#ifdef USE_EXF_INTERPOLATION
-      _RL apco2_lon0, apco2_lon_inc
-      _RL apco2_lat0, apco2_lat_inc(MAX_LAT_INC)
-      INTEGER apco2_nlon, apco2_nlat, apco2_interpMethod
-
-      COMMON /BLG_EXF_INTERPOLATION/
-     &        apco2_lon0, apco2_lon_inc,
-     &        apco2_lat0, apco2_lat_inc,
-     &        apco2_nlon, apco2_nlat,apco2_interpMethod
-#endif
-#endif
 
 C ==========================================================
 C   Ecosystem variables and parameters

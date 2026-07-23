@@ -1,3 +1,4 @@
+#ifndef GCHEM_ALLOW_FFIELDS
 C--   COMMON /DIC_LOAD/
 C     DIC_ldRec     :: time-record currently loaded (in temp arrays *[1])
 C     chlinput      :: chlorophyll climatology input field [mg/m3]
@@ -43,6 +44,7 @@ C     chlinput      :: chlorophyll climatology input field [mg/m3]
 #ifdef LIGHT_CHL
       _RS chlinput   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
+#endif /* GCHEM_ALLOW_FFIELDS */
 
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***
