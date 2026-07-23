@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification:
+  - remove all OpenAD test dir and files (code_oad, input_oad*, output_oadm.*)
+    and update docs in few places.
 o pkg/streamice:
   - fix Tapenade adjoint for simple SOLVE_FP use (same fix as for OpenAD)
     and update halfpipe_streamice Tap adj & tlm ref. output.
