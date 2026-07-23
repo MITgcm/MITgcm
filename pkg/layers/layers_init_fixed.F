@@ -34,20 +34,18 @@ C     msgBuf    :: Informational/error message buffer
       _RL     ZZf(FineGridMax+1)
       _RL     ZZc(FineGridMax)
 
-      CHARACTER*11   tmpName      
+      CHARACTER*11   tmpName
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C     Functions ::
       INTEGER     ILNBLNK
       EXTERNAL    ILNBLNK
-      
-#ifdef ALLOW_MNC
-#ifdef LAYERS_MNC
+
+#if defined ALLOW_MNC && defined LAYERS_MNC
       IF (layers_MNC) THEN
         CALL LAYERS_MNC_INIT( myThid )
       ENDIF
-#endif /* LAYERS_MNC */
-#endif /* ALLOW_MNC */
+#endif
 
 C  Set up the vertical grid
 
@@ -56,7 +54,6 @@ C     for now, just use up the entire available array for ZZ
 
 C     Z and ZZ are INCREASING DOWNWARD!!!
 C     Maybe this is dumb but it will work as long as we are consistent
-
 
 C     Each dF cell is split into FineGridFact fine cells
 C     Calculate dZZf on the fine grid
@@ -146,8 +143,8 @@ C     Output the layer coordinates
      & -1, myThid )
       ENDIF
       ENDDO
-      
-C --- Set up layers "w-grid" for transformation calculation 
+
+C--   Set up layers "w-grid" for transformation calculation
 #ifdef LAYERS_THERMODYNAMICS
       DO iLa=1,layers_maxNum
        IF ( layers_num(iLa).NE.0 ) THEN
