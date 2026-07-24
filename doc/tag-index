@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint69p (2026/07/24)
 o verification:
   - remove all OpenAD test dir and files (code_oad, input_oad*, output_oadm.*)
     and update docs in few places.
