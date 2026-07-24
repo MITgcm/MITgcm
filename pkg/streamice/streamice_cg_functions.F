@@ -111,10 +111,10 @@ C     == Local variables ==
      &       v(i+1,j,bi,bj) * DPhi(i,j,bi,bj,2,n,2) +
      &       v(i,j+1,bi,bj) * DPhi(i,j,bi,bj,3,n,2) +
      &       v(i+1,j+1,bi,bj) * DPhi(i,j,bi,bj,4,n,2)
-            exx = ux + k1AtC_str(i,j,bi,bj)*vq
-            eyy = vy + k2AtC_str(i,j,bi,bj)*uq
-            exy = .5*(uy+vx) +
-     &       k1AtC_str(i,j,bi,bj)*uq + k2AtC_str(i,j,bi,bj)*vq
+            exx = ux + k2AtC_str(i,j,bi,bj)*vq
+            eyy = vy + k1AtC_str(i,j,bi,bj)*uq
+            exy = .5*(uy+vx) - .5 * (
+     &       k2AtC_str(i,j,bi,bj)*uq + k1AtC_str(i,j,bi,bj)*vq)
 
             do inode = 1,2
              do jnode = 1,2
@@ -139,8 +139,8 @@ C     == Local variables ==
      &         uret(i-1+inode,j-1+jnode,bi,bj) + .25 *
      &         grid_jacq_streamice(i,j,bi,bj,n) *
      &         visc_streamice(i,j,bi,bj) * phival(inode,jnode) *
-     &         (4*k2AtC_str(i,j,bi,bj)*eyy+2*k2AtC_str(i,j,bi,bj)*exx+
-     &          4*0.5*k1AtC_str(i,j,bi,bj)*exy)
+     &         (4*k1AtC_str(i,j,bi,bj)*eyy+2*k1AtC_str(i,j,bi,bj)*exx-
+     &          2*k2AtC_str(i,j,bi,bj)*exy)
 
               uret(i-1+inode,j-1+jnode,bi,bj) =
      &         uret(i-1+inode,j-1+jnode,bi,bj) + .25 *
@@ -157,12 +157,14 @@ C     == Local variables ==
      &         visc_streamice(i,j,bi,bj) * (
      &          DPhi(i,j,bi,bj,m,n,2)*(4*eyy+2*exx) +
      &          DPhi(i,j,bi,bj,m,n,1)*(2*exy))
+
               vret(i-1+inode,j-1+jnode,bi,bj) =
      &         vret(i-1+inode,j-1+jnode,bi,bj) + .25 *
      &         grid_jacq_streamice(i,j,bi,bj,n) *
      &         visc_streamice(i,j,bi,bj) * phival(inode,jnode) *
-     &         (4*k1AtC_str(i,j,bi,bj)*exx+2*k1AtC_str(i,j,bi,bj)*eyy+
-     &          4*0.5*k2AtC_str(i,j,bi,bj)*exy)
+     &         (4*k2AtC_str(i,j,bi,bj)*exx+2*k2AtC_str(i,j,bi,bj)*eyy-
+     &          2*k1AtC_str(i,j,bi,bj)*exy)
+
               vret(i-1+inode,j-1+jnode,bi,bj) =
      &         vret(i-1+inode,j-1+jnode,bi,bj) + .25 *
      &         phival(inode,jnode) *
@@ -330,10 +332,10 @@ c
                    uq = Xquad(ilqx) * Xquad(ilqy)
                    vq = 0
 
-                   exx = ux + k1AtC_str(i,j,bi,bj)*vq
-                   eyy = vy + k2AtC_str(i,j,bi,bj)*uq
-                   exy = .5*(uy+vx) +
-     &              k1AtC_str(i,j,bi,bj)*uq + k2AtC_str(i,j,bi,bj)*vq
+                   exx = ux + k2AtC_str(i,j,bi,bj)*vq
+                   eyy = vy + k1AtC_str(i,j,bi,bj)*uq
+                   exy = .5*(uy+vx) - .5 * (
+     &              k2AtC_str(i,j,bi,bj)*uq + k1AtC_str(i,j,bi,bj)*vq)
 
                     tmpval = .25 *
      &              grid_jacq_streamice(i,j,bi,bj,n) *
@@ -388,8 +390,8 @@ c!!
                     tmpval = .25 *
      &              grid_jacq_streamice(i,j,bi,bj,n) *
      &              visc_streamice(i,j,bi,bj) * phival(inodx,inody) *
-     &             (4*k2AtC_str(i,j,bi,bj)*eyy+2*k2AtC_str(i,j,bi,bj)*
-     &              exx+4*0.5*k1AtC_str(i,j,bi,bj)*exy)
+     &             (4*k1AtC_str(i,j,bi,bj)*eyy+2*k1AtC_str(i,j,bi,bj)*
+     &              exx-2*k2AtC_str(i,j,bi,bj)*exy)
 
                    streamice_cg_A1
      &                 (i-1+inodx,j-1+inody,bi,bj,mod(inodx,2)+jnodx-2,
@@ -413,8 +415,8 @@ c!!
                    tmpval = .25 *
      &              grid_jacq_streamice(i,j,bi,bj,n) *
      &              visc_streamice(i,j,bi,bj) * phival(inodx,inody) *
-     &             (4*k1AtC_str(i,j,bi,bj)*exx+2*k1AtC_str(i,j,bi,bj)*
-     &              eyy+4*0.5*k2AtC_str(i,j,bi,bj)*exy)
+     &             (4*k2AtC_str(i,j,bi,bj)*exx+2*k2AtC_str(i,j,bi,bj)*
+     &              eyy-2*k1AtC_str(i,j,bi,bj)*exy)
 
                    streamice_cg_A3
      &                 (i-1+inodx,j-1+inody,bi,bj,mod(inodx,2)+jnodx-2,
@@ -487,10 +489,10 @@ c!!
                    vq = Xquad(ilqx) * Xquad(ilqy)
                    uq = 0
 
-                   exx = ux + k1AtC_str(i,j,bi,bj)*vq
-                   eyy = vy + k2AtC_str(i,j,bi,bj)*uq
-                   exy = .5*(uy+vx) +
-     &              k1AtC_str(i,j,bi,bj)*uq + k2AtC_str(i,j,bi,bj)*vq
+                   exx = ux + k2AtC_str(i,j,bi,bj)*vq
+                   eyy = vy + k1AtC_str(i,j,bi,bj)*uq
+                   exy = .5*(uy+vx) - .5 * (
+     &              k2AtC_str(i,j,bi,bj)*uq + k1AtC_str(i,j,bi,bj)*vq)
 
                     tmpval = .25 *
      &              grid_jacq_streamice(i,j,bi,bj,n) *
@@ -541,8 +543,8 @@ c!!
                    tmpval = .25 *
      &              grid_jacq_streamice(i,j,bi,bj,n) *
      &              visc_streamice(i,j,bi,bj) * phival(inodx,inody) *
-     &             (4*k2AtC_str(i,j,bi,bj)*eyy+2*k2AtC_str(i,j,bi,bj)*
-     &              exx+4*0.5*k1AtC_str(i,j,bi,bj)*exy)
+     &             (4*k1AtC_str(i,j,bi,bj)*eyy+2*k1AtC_str(i,j,bi,bj)*
+     &              exx-2*k2AtC_str(i,j,bi,bj)*exy)
 
                    streamice_cg_A2
      &                 (i-1+inodx,j-1+inody,bi,bj,mod(inodx,2)+jnodx-2,
@@ -564,8 +566,8 @@ c!!
                    tmpval = .25 *
      &              grid_jacq_streamice(i,j,bi,bj,n) *
      &              visc_streamice(i,j,bi,bj) * phival(inodx,inody) *
-     &             (4*k1AtC_str(i,j,bi,bj)*exx+2*k1AtC_str(i,j,bi,bj)*
-     &              eyy+4*0.5*k2AtC_str(i,j,bi,bj)*exy)
+     &             (4*k2AtC_str(i,j,bi,bj)*exx+2*k2AtC_str(i,j,bi,bj)*
+     &              eyy-2*k1AtC_str(i,j,bi,bj)*exy)
 
                    streamice_cg_A4
      &                 (i-1+inodx,j-1+inody,bi,bj,mod(inodx,2)+jnodx-2,
@@ -738,10 +740,10 @@ C     == Local variables ==
               uq = Xquad(ilq) * Xquad(jlq)
               vq = 0
 
-              exx = ux + k1AtC_str(i,j,bi,bj)*vq
-              eyy = vy + k2AtC_str(i,j,bi,bj)*uq
-              exy = .5*(uy+vx) +
-     &         k1AtC_str(i,j,bi,bj)*uq + k2AtC_str(i,j,bi,bj)*vq
+              exx = ux + k2AtC_str(i,j,bi,bj)*vq
+              eyy = vy + k1AtC_str(i,j,bi,bj)*uq
+              exy = .5*(uy+vx) - .5 * (
+     &         k2AtC_str(i,j,bi,bj)*uq + k1AtC_str(i,j,bi,bj)*vq)
 
               uret(i-1+inode,j-1+jnode,bi,bj) =
      &         uret(i-1+inode,j-1+jnode,bi,bj) + .25 *
@@ -754,8 +756,8 @@ C     == Local variables ==
      &         uret(i-1+inode,j-1+jnode,bi,bj) + .25 *
      &         grid_jacq_streamice(i,j,bi,bj,n) *
      &         visc_streamice(i,j,bi,bj) * phival(inode,jnode) *
-     &         (4*k2AtC_str(i,j,bi,bj)*eyy+2*k2AtC_str(i,j,bi,bj)*exx+
-     &          4*0.5*k1AtC_str(i,j,bi,bj)*exy)
+     &         (4*k1AtC_str(i,j,bi,bj)*eyy+2*k1AtC_str(i,j,bi,bj)*exx-
+     &          2*k2AtC_str(i,j,bi,bj)*exy)
 
               uret(i-1+inode,j-1+jnode,bi,bj) =
      &         uret(i-1+inode,j-1+jnode,bi,bj) + .25 *
@@ -769,10 +771,10 @@ C     == Local variables ==
               vq = Xquad(ilq) * Xquad(jlq)
               uq = 0
 
-              exx = ux + k1AtC_str(i,j,bi,bj)*vq
-              eyy = vy + k2AtC_str(i,j,bi,bj)*uq
-              exy = .5*(uy+vx) +
-     &         k1AtC_str(i,j,bi,bj)*uq + k2AtC_str(i,j,bi,bj)*vq
+              exx = ux + k2AtC_str(i,j,bi,bj)*vq
+              eyy = vy + k1AtC_str(i,j,bi,bj)*uq
+              exy = .5*(uy+vx) - .5 * (
+     &         k2AtC_str(i,j,bi,bj)*uq + k1AtC_str(i,j,bi,bj)*vq)
 
               vret(i-1+inode,j-1+jnode,bi,bj) =
      &         vret(i-1+inode,j-1+jnode,bi,bj) + .25 *
@@ -784,8 +786,8 @@ C     == Local variables ==
      &         vret(i-1+inode,j-1+jnode,bi,bj) + .25 *
      &         grid_jacq_streamice(i,j,bi,bj,n) *
      &         visc_streamice(i,j,bi,bj) * phival(inode,jnode) *
-     &         (4*k1AtC_str(i,j,bi,bj)*exx+2*k1AtC_str(i,j,bi,bj)*eyy+
-     &          4*0.5*k2AtC_str(i,j,bi,bj)*exy)
+     &         (4*k2AtC_str(i,j,bi,bj)*exx+2*k2AtC_str(i,j,bi,bj)*eyy-
+     &          2*k1AtC_str(i,j,bi,bj)*exy)
 
               vret(i-1+inode,j-1+jnode,bi,bj) =
      &         vret(i-1+inode,j-1+jnode,bi,bj) + .25 *
@@ -908,10 +910,10 @@ C     == Local variables ==
      &       v_bdry_values_SI(i+1,j,bi,bj) * DPhi(i,j,bi,bj,2,n,2) +
      &       v_bdry_values_SI(i,j+1,bi,bj) * DPhi(i,j,bi,bj,3,n,2) +
      &       v_bdry_values_SI(i+1,j+1,bi,bj) * DPhi(i,j,bi,bj,4,n,2)
-            exx = ux + k1AtC_str(i,j,bi,bj)*vq
-            eyy = vy + k2AtC_str(i,j,bi,bj)*uq
-            exy = .5*(uy+vx) +
-     &       k1AtC_str(i,j,bi,bj)*uq + k2AtC_str(i,j,bi,bj)*vq
+            exx = ux + k2AtC_str(i,j,bi,bj)*vq
+            eyy = vy + k1AtC_str(i,j,bi,bj)*uq
+            exy = .5*(uy+vx) - .5 * (
+     &       k2AtC_str(i,j,bi,bj)*uq + k1AtC_str(i,j,bi,bj)*vq)
 
             do inode = 1,2
              do jnode = 1,2
@@ -936,8 +938,8 @@ C     == Local variables ==
      &         uret(i-1+inode,j-1+jnode,bi,bj) + .25 *
      &         grid_jacq_streamice(i,j,bi,bj,n) *
      &         visc_streamice(i,j,bi,bj) * phival(inode,jnode) *
-     &         (4*k2AtC_str(i,j,bi,bj)*eyy+2*k2AtC_str(i,j,bi,bj)*exx+
-     &          4*0.5*k1AtC_str(i,j,bi,bj)*exy)
+     &         (4*k1AtC_str(i,j,bi,bj)*eyy+2*k1AtC_str(i,j,bi,bj)*exx-
+     &          2*k2AtC_str(i,j,bi,bj)*exy)
 
 c               if (STREAMICE_float_cond(i,j,bi,bj) .eq. 1) then
               uret(i-1+inode,j-1+jnode,bi,bj) =
@@ -958,8 +960,8 @@ c               endif
      &         vret(i-1+inode,j-1+jnode,bi,bj) + .25 *
      &         grid_jacq_streamice(i,j,bi,bj,n) *
      &         visc_streamice(i,j,bi,bj) * phival(inode,jnode) *
-     &         (4*k1AtC_str(i,j,bi,bj)*exx+2*k1AtC_str(i,j,bi,bj)*eyy+
-     &          4*0.5*k2AtC_str(i,j,bi,bj)*exy)
+     &         (4*k2AtC_str(i,j,bi,bj)*exx+2*k2AtC_str(i,j,bi,bj)*eyy-
+     &          2*k1AtC_str(i,j,bi,bj)*exy)
               vret(i-1+inode,j-1+jnode,bi,bj) =
      &         vret(i-1+inode,j-1+jnode,bi,bj) + .25 *
      &         phival(inode,jnode) * grid_jacq_streamice(i,j,bi,bj,n) *
