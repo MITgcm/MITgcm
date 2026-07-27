@@ -271,12 +271,12 @@ if test "x$ADDRESS" != xNONE -a "x$ADDRESS" != x ; then
       fi
     fi
     if test "x$SENDCMD" != x ; then
-        sendOpt='' ; nb=`echo $SENDCMD | grep -c '\<scp\>'`
+        sendOpt='' ; nb=`echo $SENDCMD | grep -c '\<mpack\>'`
         if [ $nb -eq 0 ] ; then
+           tarFile="${SAVDIR}/${DRESULTS}.$$.tar"
+        else
            sendOpt='-s MITgcm-test -m 3555000'
            tarFile="${SAVDIR}/${DRESULTS}.tar"
-        else
-           tarFile="${SAVDIR}/${DRESULTS}.$$.tar"
         fi
         #echo " run: $SENDCMD $sendOpt ${tarFile}.gz $ADDRESSES"
         tar -cf ${tarFile} $DRESULTS > /dev/null 2>&1 \
