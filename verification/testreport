@@ -1464,7 +1464,9 @@ fi
 #  build the mpack utility (if ADDRESSES = NONE, do it to test the build)
 if test "x$ADDRESSES" = x -o "x$SENDCMD" != x ; then
     echo "skipping mpack build"
-    if test "x$SENDCMD" = 'xupload_sftp' -a test ! -x $SENDCMD ; then SENDCMD="../tools/$SENDCMD" ; fi
+    if test "x$SENDCMD" = 'xupload_sftp' ; then
+      if test ! -x $SENDCMD -a -x ../tools/$SENDCMD ; then SENDCMD="../tools/$SENDCMD" ; fi
+    fi
 else
     build_mpack
     if test "x$HAVE_MPACK" = xt ; then SENDCMD=$MPACK ; fi
