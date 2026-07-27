@@ -55,10 +55,10 @@ usage()
     echo "                             (DEF=\"hostname\")"
     echo "  (-addr|-a) STRING        list of email recipients"
     echo "                             (DEF=\"\" no email is sent)"
-    echo "  (-send)       STRING     sending command (instead of using mpack)"
+    echo "  (-send)       STRING     sending command (instead of locally built mpack)"
     echo "  (-savdir|-sd) STRING     location to save output tar file to send (DEF='$SAVDIR')"
     echo "  (-mpackdir|-mpd) DIR     location of the mpack utility"
-    echo "                             (DEF=\"../tools/mpack-1.6\")"
+    echo "                             (DEF='$MPACKDIR')"
     echo " -- do only some parts: --"
     echo "  (-clean)                 *ONLY* run \"make CLEAN\" & clean run-dir"
     echo "  (-norun|-nr)             skip the \"runmodel\" stage (stop after make)"
@@ -108,7 +108,7 @@ build_mpack()
 	RETVAL=$?
 	if test "x$RETVAL" != x0 ; then
 	    echo
-	    echo "Error building the mpack tools at: $MPACK_DIR"
+	    echo "Error building the mpack tools at: $MPACKDIR"
 	    echo
 	    HAVE_MPACK=f
 	else
@@ -1464,6 +1464,7 @@ fi
 #  build the mpack utility (if ADDRESSES = NONE, do it to test the build)
 if test "x$ADDRESSES" = x -o "x$SENDCMD" != x ; then
     echo "skipping mpack build"
+    if test "x$SENDCMD" = 'xupload_sftp' -a test ! -x $SENDCMD ; then SENDCMD="../tools/$SENDCMD" ; fi
 else
     build_mpack
     if test "x$HAVE_MPACK" = xt ; then SENDCMD=$MPACK ; fi
@@ -1907,12 +1908,12 @@ if test "x$ADDRESSES" = xNONE -o "x$ADDRESSES" = x ; then
     echo "No results email was sent."
 else
     if test "x$SENDCMD" != x ; then
-	sendOpt='' ; nb=`echo $SENDCMD | grep -c '\<scp\>'`
+	sendOpt='' ; nb=`echo $SENDCMD | grep -c '\<mpack\>'`
 	if [ $nb -eq 0 ] ; then
+	   tarFile="${SAVDIR}/${DRESULTS}.$$.tar"
+	else
 	   sendOpt='-s MITgcm-test -m 3555000'
 	   tarFile="${SAVDIR}/${DRESULTS}.tar"
-	else
-	   tarFile="${SAVDIR}/${DRESULTS}.$$.tar"
 	fi
 	if [ $verbose -gt 1 ]; then
 	   echo " run: $SENDCMD $sendOpt ${tarFile}.gz $ADDRESSES"
