@@ -269,6 +269,8 @@ if test "x$ADDRESS" != xNONE -a "x$ADDRESS" != x ; then
         echo
         echo "Warning: $MPACK is not executable => no email was sent"
       fi
+    elif test "x$SENDCMD" = 'xupload_sftp' ; then
+      if test ! -x $SENDCMD ; then SENDCMD="../tools/$SENDCMD" ; fi
     fi
     if test "x$SENDCMD" != x ; then
         sendOpt='' ; nb=`echo $SENDCMD | grep -c '\<mpack\>'`
