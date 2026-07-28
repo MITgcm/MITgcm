@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools & testreport:
+  - add a very short script and adjust testreport & do_tst_2+2 to enable to use
+   "sftp" to send output results.
+
 checkpoint69p (2026/07/24)
 o verification:
   - remove all OpenAD test dir and files (code_oad, input_oad*, output_oadm.*)
