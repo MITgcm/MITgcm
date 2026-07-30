@@ -151,7 +151,7 @@ To run:
 ```
   cd run
   ln -s ../input_ad/* .
-  ../input_ad/prepare_run
+  ./prepare_run
   ln -s ../build/mitgcmuv_ad .
   ./do_run.sh
   cd ..

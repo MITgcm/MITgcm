@@ -7,3 +7,6 @@ ALWAYS_USE_F90=1
 
 #- specify which Fortran version src code is sent to TAF
 TAF_FORTRAN_VERS='F95'
+
+# pass additional flag to tapenade
+TAPENADE_FLAGS='-defaultnocheckpoint'

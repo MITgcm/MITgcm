@@ -1,9 +1,0 @@
-#
-# *******************
-# Calendar Parameters
-# *******************
- &CAL_NML
- TheCalendar='model',
- startDate_1=00010101,
- startDate_2=000000,
- &

@@ -53,6 +53,9 @@ C     == Global variables ===
 # include "PTRACERS_PARAMS.h"
 # include "PTRACERS_FIELDS.h"
 #endif
+#ifdef ALLOW_LAYERS
+# include "LAYERS_P2SHARE.h"
+#endif
 
 #ifdef ALLOW_AUTODIFF
 # ifdef ALLOW_AUTODIFF_TAMC
@@ -153,13 +156,13 @@ CADJ STORE theta,salt,wvel = comlev1, key = ikey_dynamics, byte=isbyte
 #endif
        CALL CALC_WSURF_TR( theta, salt, wVel,
      &                     myTime, myIter, myThid )
-      ENDIF
 #ifdef ALLOW_LAYERS
-      IF ( useLayers ) THEN
+       IF ( layers_useThermo ) THEN
         CALL LAYERS_WSURF_TR( theta, salt, wVel,
-     &                     myTime, myIter, myThid )
-      ENDIF
+     &                        myTime, myIter, myThid )
+       ENDIF
 #endif /* ALLOW_LAYERS */
+      ENDIF
 
 #ifdef DO_PTRACERS_HERE
 #ifdef ALLOW_AUTODIFF

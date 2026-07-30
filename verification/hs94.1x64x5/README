@@ -1,6 +1,8 @@
 Held-Suarez zonal average config. - no eddy param
 =================================================
 
+--- Instructions for Forward tests:
+
 Configure and compile the code:
   cd build
   ../../../tools/genmake2 -mods ../code [-of my_platform_optionFile]
@@ -11,12 +13,29 @@ Configure and compile the code:
 To run:
   cd run
   ln -s ../input/* .
-  ../input/prepare_run
-  ln -s ../build/mitgcmuv .
-  ./mitgcmuv > output.txt
+  ../build/mitgcmuv > output.txt
   cd ..
 
 There is comparison output in the directory:
   results/output.txt
 
-Comments:
+-- Instructions for Adjoint tests:
+Note: This requires access to a TAF license.
+
+Configure and compile the code:
+  cd build
+  ../../../tools/genmake2 -mods ../code_ad [-of my_platform_optionFile]
+  make depend
+  make adall
+  cd ..
+
+To run:
+  cd run
+  ln -s ../input_ad/* .
+  ../build/mitgcmuv_ad  > output_adm.txt
+  cd ..
+
+There is comparison output in the directory:
+  results/output_adm.txt
+
+--- Comments:

@@ -7,7 +7,7 @@
  tRef=15*20.,
  sRef=15*35.,
  viscAh =3.E5,
-#- biharmonic Viscosity: 3.e15 is close to the stability limit with deltaTmom=20mn
+#- biharmonic Viscosity: 3.e15 is close to the stability limit with deltaTMom=20mn
 #viscA4 =3.E15,
  viscAr =1.E-3,
  diffKhT=0.,
@@ -49,7 +49,7 @@
 
 # Time stepping parameters
  &PARM03
- nIter0=72000,
+ nIter0=36000,
  nTimeSteps= 2,
  deltaTMom   =1200.,
  deltaTtracer=86400.,

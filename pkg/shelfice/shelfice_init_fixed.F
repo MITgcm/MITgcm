@@ -49,7 +49,7 @@ C     msgBuf       :: Informational/error message buffer
       CHARACTER*16  diagUnits
       CHARACTER*(80) diagTitle
 #endif /* ALLOW_DIAGNOSTICS */
-#ifdef ALLOW_CTRL
+#if defined ALLOW_CTRL || defined ALLOW_ECCO
       INTEGER k
 #endif
 
@@ -143,7 +143,7 @@ c    &          R_shelfIce(i,j,bi,bj).LT.rF(1) ) THEN
        ENDDO
       ENDDO
 
-#ifdef ALLOW_CTRL
+#if defined ALLOW_CTRL || defined ALLOW_ECCO
 C     maskSHI is a hack to play along with the general ctrl-package
 C     infrastructure, where only the k=1 layer of a 3D mask is used
 C     for 2D fields. We cannot use maskInC instead, because routines

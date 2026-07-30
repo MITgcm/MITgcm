@@ -73,6 +73,7 @@ C     ==================================================================
       LOGICAL xx_gentim2d_cumsum(maxCtrlTim2D)
       LOGICAL xx_gentim2d_glosum(maxCtrlTim2D)
 
+# ifdef ALLOW_COST
       common /controlaux_gencost_r/
      &     objf_gentim2d,  num_gentim2d, mult_gentim2d,
      &     objf_genarr2d,  num_genarr2d, mult_genarr2d,
@@ -87,6 +88,7 @@ C     ==================================================================
       _RL  objf_genarr3d(nsx,nsy,maxCtrlArr3D)
       _RL  num_genarr3d(nsx,nsy,maxCtrlArr3D)
       _RL  mult_genarr3d(maxCtrlArr3D)
+# endif
 
 #endif
 

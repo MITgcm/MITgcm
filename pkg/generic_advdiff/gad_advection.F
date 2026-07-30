@@ -50,9 +50,12 @@ C !USES: ===============================================================
 #  include "PTRACERS_SIZE.h"
 # endif
 #endif
+#ifdef ALLOW_LAYERS
+# include "LAYERS_P2SHARE.h"
+#endif
 #ifdef ALLOW_EXCH2
-#include "W2_EXCH2_SIZE.h"
-#include "W2_EXCH2_TOPOLOGY.h"
+# include "W2_EXCH2_SIZE.h"
+# include "W2_EXCH2_TOPOLOGY.h"
 #endif /* ALLOW_EXCH2 */
 
 C !INPUT PARAMETERS: ===================================================
@@ -846,7 +849,7 @@ C-    horizontal advection done; store intermediate result in 3D array:
         CALL DIAGNOSTICS_FILL( afy, diagName, k,1, 2,bi,bj, myThid )
        ENDIF
 #ifdef ALLOW_LAYERS
-       IF ( useLayers ) THEN
+       IF ( layers_useThermo ) THEN
         CALL LAYERS_FILL(afx,trIdentity,'AFX',k,1,2,bi,bj,myThid)
         CALL LAYERS_FILL(afy,trIdentity,'AFY',k,1,2,bi,bj,myThid)
        ENDIF
@@ -1080,7 +1083,7 @@ C     and consistent with linFSConserveTr and "surfExpan_" monitor.
      &                          diagName, k,1, 2,bi,bj, myThid )
         ENDIF
 #ifdef ALLOW_LAYERS
-        IF ( useLayers ) THEN
+        IF ( layers_useThermo ) THEN
          CALL LAYERS_FILL( fVerT(1-OLx,1-OLy,kUp), trIdentity,
      &                     'AFR', k, 1, 2,bi,bj, myThid)
         ENDIF

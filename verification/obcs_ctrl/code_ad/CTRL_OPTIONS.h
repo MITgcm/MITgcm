@@ -36,7 +36,8 @@ C   This option is only relevant (for pack/unpack) with OBCS_CONTROL:
 #undef CTRL_PACK_PRECISE
 #undef CTRL_UNPACK_PRECISE
 #undef CTRL_DELZNORM
-#undef ALLOW_CTRL_WETV
+C   To read-in old (prior to PR #796) packed-ctrl file (specially the header)
+#undef READ_OLD_CTRL_PACK_FILE
 
 C       >>> Other Control.
 C   Allows for GMREDI controls
@@ -57,31 +58,36 @@ C   Only relevant within DEPTH_CONTROL code:
 #endif /* ALLOW_DEPTH_CONTROL */
 
 C       >>> Generic Control.
-#undef ALLOW_GENARR2D_CONTROL
+#undef  ALLOW_GENARR2D_CONTROL
 #define ALLOW_GENARR3D_CONTROL
-#undef ALLOW_GENTIM2D_CONTROL
+#undef  ALLOW_GENTIM2D_CONTROL
 # undef ALLOW_UVEL0_CONTROL
 # undef ALLOW_VVEL0_CONTROL
-# undef CTRL_SET_OLD_MAXCVARS_30
-# undef CTRL_SET_OLD_MAXCVARS_40
 
 C       >>> Open boundaries
 #ifdef ALLOW_OBCS
 C    Control of Open-Boundaries is meaningless without compiling pkg/obcs
-C    Note: Make sure that corresponding OBCS N/S/W/E Option is defined
+C    Note: Make sure that corresponding OBCS N/S/E/W Option is defined
 # define ALLOW_OBCSN_CONTROL
 # define ALLOW_OBCSS_CONTROL
-# define ALLOW_OBCSW_CONTROL
 # define ALLOW_OBCSE_CONTROL
-# define ALLOW_OBCS_CONTROL_MODES
+# define ALLOW_OBCSW_CONTROL
 #endif /* ALLOW_OBCS */
 
 C  o Set ALLOW_OBCS_CONTROL (Do not edit/modify):
 #if (defined (ALLOW_OBCSN_CONTROL) || \
      defined (ALLOW_OBCSS_CONTROL) || \
-     defined (ALLOW_OBCSW_CONTROL) || \
-     defined (ALLOW_OBCSE_CONTROL))
+     defined (ALLOW_OBCSE_CONTROL) || \
+     defined (ALLOW_OBCSW_CONTROL))
 # define ALLOW_OBCS_CONTROL
+#endif
+
+#ifdef ALLOW_OBCS_CONTROL
+C     Untested code:
+# define ALLOW_OBCS_CONTROL_MODES
+C     Enable code for 2D (horizontal,vertical) weights for obcs;
+C     this code is incomplete (fields are defined but not used anywhere)
+# undef ALLOW_OBCS_WEIGHTS2D
 #endif
 
 C  o Impose bounds on controls

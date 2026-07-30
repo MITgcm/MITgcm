@@ -16,7 +16,7 @@ Configure and compile the code:
 To run:
   cd run
   ln -s ../input/* .
-  ../input/prepare_run
+  ./prepare_run
   ln -s ../build/mitgcmuv .
   ./mitgcmuv > output.txt
   cd ..
@@ -44,12 +44,12 @@ o matlab scripts that make a simple diagnostic (barotropic stream function,
 Additional example:
   similar set-up, with the same executable, and using pkg/dwnslp:
 to run this 2nd example:
-  cd input.dwnslp
+  cd run ; rm *
+  ln -s ../input.dwnslp/* .
   ln -s ../input/* .
-  ../input/prepare_run
+  ./prepare_run
   ../build/mitgcmuv > output.dwnslp.txt
   cd ..
-
 
 ============================================
 Use of "blank tiles" in conjunction with exch2 package:
@@ -119,7 +119,7 @@ We wish to remove this tile from our calculation. How to proceed?
 
 1.3 Diagnose which tile numbers are empty:
 * from STDOUT.000[0-3] you can infer which tiles are empty using following grep:
-  grep "Empty tile" STDOUT.* | awk '{print "  " $6 ","}' > empty_tiles.txt 
+  grep "Empty tile" STDOUT.* | awk '{print "  " $6 ","}' > empty_tiles.txt
 * In this example there's only one empty tile, and it is #30.
 
 2. Configuring with empty tiles removed
@@ -144,12 +144,11 @@ We now need to specify in data.exch2 the number of the empty tile to be removed.
 This is done as follows (see file data.exch2.mpi):
   blankList  = 30,
 If there were more empty tiles, this would be a more extensive index array, e.g.
-  blankList = tile1, tile2, tile3, ... 
+  blankList = tile1, tile2, tile3, ...
 Now run the model (note that we've selected nPy=5, so in this example we actually
 *increase* the number of "real" processors used, despite reducing the number of
 total, i.e. "real" plus virtual tiles from 36 to 35):
 mpirun -np 5 ./mitgcmuv
-
 
 ============================================
 Adjoint set-up example:
@@ -163,7 +162,8 @@ Configure and compile the code:
   make adall
   cd ..
 To run the code:
-  cd input_ad
+  cd run ; rm *
+  ln -s ../input_ad/* .
   ./prepare_run
   ../build/mitgcmuv_ad > output_adm.txt
   cd ..
