@@ -59,7 +59,7 @@ C     GM_slopeSqCutoff :: slope^2 cut-off value
      &          GM_K3dRediFile, GM_K3dGMFile,
      &          GM_background_K3dFile, GM_isopycK3dFile,
      &          GM_taper_scheme,
-     &          GM_maxSlope,
+     &          GM_maxSlope, GM_delT_lim,
      &          GM_Kmin_horiz,
      &          GM_Small_Number, GM_slopeSqCutoff,
      &          GM_Scrit, GM_Sd,
@@ -113,6 +113,7 @@ C--   Default values GM/Redi
       GM_isopycK          = -999.
       GM_background_K     = 0. _d 0
       GM_maxSlope         = 1. _d -2
+      GM_delT_lim         = dTtracerLev(1)*5. _d 0
       GM_Kmin_horiz       = 0. _d 0
       GM_Small_Number     = 1. _d -20
       GM_slopeSqCutoff    = 1. _d +48
