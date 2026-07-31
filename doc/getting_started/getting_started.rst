@@ -1067,11 +1067,15 @@ type (assuming you are still in the ``build`` directory):
     % cp ../build/mitgcmuv .
     % ./mitgcmuv
 
-Here, we are making a link to all the support data files (in ``../input/``)
-needed by the MITgcm for this experiment, and then copying the executable from
-the the build directory. The ``./`` in the last step is a safe-guard to make
+Here, we are making a link to support files (in ``../input/``)
+needed by MITgcm for this experiment, and then copying the executable from
+the build directory.
+Note that some example experiments from our :filelink:`verification/` directory
+contain a ``prepare_run`` script ; when such a script exists, it is meant to
+be executed to provide additional needed links before running the model.
+The precursor ``./`` in the final step above is a safe-guard to make
 sure you use the local executable in case you have others that might exist in
-your ``$PATH``. The above command will spew out many lines of text output to
+your ``$PATH``. Running the model will spew out many lines of text output to
 your screen. This output contains details such as parameter values as well as
 diagnostics such as mean kinetic energy, largest CFL number, etc. It is
 worth keeping this text output with the binary output so we normally
@@ -1368,10 +1372,10 @@ into `Python <https://www.python.org/>`_:
 Bash scripts
 ~~~~~~~~~~~~
 
-The repository includes utilities for handling model input and output. You can 
+The repository includes utilities for handling model input and output. You can
 add these command line scripts to the system's search path by modifying the
 unix `PATH <https://www.digitalocean.com/community/tutorials/how-to-view-and-update-the-linux-path-environment-variable>`_
-variable. To permanently access MITgcm bash utilities, put this line in 
+variable. To permanently access MITgcm bash utilities, put this line in
 your shell configuration file e.g. ``.bashrc`` or ``.zshrc``:
 
 ::
@@ -1381,11 +1385,11 @@ your shell configuration file e.g. ``.bashrc`` or ``.zshrc``:
 NetCDF output
 ^^^^^^^^^^^^^
 
-`netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ output is produced 
-with one file per processor. This means unique tiles need to be stitched 
-together to create a single 
+`netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ output is produced
+with one file per processor. This means unique tiles need to be stitched
+together to create a single
 `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ file that spans the
-model domain. The script :filelink:`utils/scripts/gluemnc` can do this from the 
+model domain. The script :filelink:`utils/scripts/gluemnc` can do this from the
 command line. For usage information and dependencies, see :numref:`gluemnc`.
 
 .. _customize_compilation:

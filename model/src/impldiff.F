@@ -38,6 +38,9 @@ C     == Global data ==
 # include "PTRACERS_SIZE.h"
 # include "PTRACERS_PARAMS.h"
 #endif
+#ifdef ALLOW_LAYERS
+# include "LAYERS_P2SHARE.h"
+#endif
 c#ifdef ALLOW_AUTODIFF_TAMC
 c#endif
 
@@ -313,7 +316,11 @@ C--   Set diagnostic suffix for the current tracer
         ELSE
           STOP 'IMPLIDIFF: should never reach this point !'
         ENDIF
-        IF ( DIAGNOSTICS_IS_ON(diagName,myThid) ) THEN
+        IF ( DIAGNOSTICS_IS_ON(diagName,myThid)
+#ifdef ALLOW_LAYERS
+     &       .OR. layers_useThermo
+#endif
+     &       ) THEN
          DO k= 1,Nr
           IF ( k.EQ.1 ) THEN
 C-  Note: Needs to call DIAGNOSTICS_FILL at level k=1 even if array == 0
@@ -374,7 +381,7 @@ C         otherwise counter is not incremented !!
           ENDIF
           CALL DIAGNOSTICS_FILL(df,diagName, k,1, 2,bi,bj, myThid)
 #ifdef ALLOW_LAYERS
-          IF ( useLayers ) THEN
+          IF ( layers_useThermo ) THEN
            CALL LAYERS_FILL( df, tracerId, 'DFR',
      &                           k, 1, 2,bi,bj, myThid )
           ENDIF

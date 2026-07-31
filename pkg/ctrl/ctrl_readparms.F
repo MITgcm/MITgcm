@@ -1,5 +1,10 @@
 #include "CTRL_OPTIONS.h"
 #include "AD_CONFIG.h"
+#if (      defined ALLOW_GENARR2D_CONTROL \
+        || defined ALLOW_GENARR3D_CONTROL \
+        || defined ALLOW_GENTIM2D_CONTROL )
+# define ALLOW_GENARR_CONTROL
+#endif
 C--  File ctrl_readparms.F:
 C--   Contents
 C--   o CTRL_READPARMS
@@ -46,7 +51,7 @@ C     !LOCAL VARIABLES:
       INTEGER iUnit
       INTEGER nRetired
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-#if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
+#ifdef ALLOW_GENARR_CONTROL
       INTEGER iarr,jarr
 #endif
       CHARACTER*(MAX_LEN_FNAM) namBuf
@@ -54,10 +59,23 @@ C     !LOCAL VARIABLES:
 #ifdef HAVE_SYSTEM
       INTEGER pIL
 #endif
+C     auxillary variable to simplify code
+      _RL mult_default
 C     retired parameters (others are in ctrl_local_params.h)
       LOGICAL ctrlUseGen
       LOGICAL ctrlSmoothCorrel3D
       LOGICAL ctrlSmoothCorrel2D
+#ifndef ALLOW_COST
+C     dummy values, so that namelist need not change
+      _RL  mult_obcsN, mult_obcsS
+      _RL  mult_obcsE, mult_obcsW
+      _RL  mult_obcsvol, mult_ageos
+# ifdef ALLOW_GENARR_CONTROL
+      _RL  mult_gentim2d(maxCtrlTim2D)
+      _RL  mult_genarr2d(maxCtrlArr2D)
+      _RL  mult_genarr3d(maxCtrlArr3D)
+# endif
+#endif
 CEOP
 
 C--   Read the namelist input.
@@ -101,14 +119,14 @@ C--   Read the namelist input.
      &  xx_vwindstartdate1, xx_vwindstartdate2, xx_vwindperiod,
      &  xx_aqh_mean_file, xx_atemp_mean_file, xx_precip_mean_file,
      &  xx_swdown_mean_file, xx_uwind_mean_file, xx_vwind_mean_file,
-     &  xx_obcsn_file,
-     &  xx_obcsnstartdate1,  xx_obcsnstartdate2,  xx_obcsnperiod,
-     &  xx_obcss_file,
-     &  xx_obcssstartdate1,  xx_obcssstartdate2,  xx_obcssperiod,
-     &  xx_obcsw_file,
-     &  xx_obcswstartdate1,  xx_obcswstartdate2,  xx_obcswperiod,
-     &  xx_obcse_file,
-     &  xx_obcsestartdate1,  xx_obcsestartdate2,  xx_obcseperiod,
+     &  xx_obcsN_file,
+     &  xx_obcsNstartdate1,  xx_obcsNstartdate2,  xx_obcsNperiod,
+     &  xx_obcsS_file,
+     &  xx_obcsSstartdate1,  xx_obcsSstartdate2,  xx_obcsSperiod,
+     &  xx_obcsE_file,
+     &  xx_obcsEstartdate1,  xx_obcsEstartdate2,  xx_obcsEperiod,
+     &  xx_obcsW_file,
+     &  xx_obcsWstartdate1,  xx_obcsWstartdate2,  xx_obcsWperiod,
      &  xx_diffkr_file, xx_kapgm_file, xx_kapredi_file, xx_tr1_file,
      &  xx_sst_file, xx_sst_remo_intercept, xx_sst_remo_slope,
      &  xx_sss_file, xx_sss_remo_intercept, xx_sss_remo_slope,
@@ -122,6 +140,9 @@ C--   Read the namelist input.
      &  xx_shifwflx_file,
      &  xx_shifwflx_remo_intercept, xx_shifwflx_remo_slope,
      &  xx_shifwflxstartdate1, xx_shifwflxstartdate2, xx_shifwflxperiod,
+     &  mult_obcsN, mult_obcsS, mult_obcsE, mult_obcsW,
+     &  mult_obcsvol, mult_ageos,
+     &  obcs_data_errfile,
      &  doInitXX, ctrlSmoothCorrel3D, ctrlSmoothCorrel2D, ctrlUseGen,
      &  doPackDiag,
      &  doZscaleUnpack, doZscalePack,
@@ -137,7 +158,7 @@ cHFLUXM_CONTROL
      &  yadmark, yctrlid, yctrlposunpack, yctrlpospack,
      &  ctrlname, costname, scalname, maskname, metaname
 
-#if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
+#ifdef ALLOW_GENARR_CONTROL
       NAMELIST /CTRL_NML_GENARR/
      &  xx_genarr2d_file, xx_genarr3d_file, xx_gentim2d_file,
      &  xx_genarr2d_weight, xx_genarr3d_weight, xx_gentim2d_weight,
@@ -208,6 +229,7 @@ C     flag is defined
         ctrlprec = 64
 #endif
 
+        obcs_data_errfile = ' '
         ctrlDir = ' '
 
         xx_theta_file      = 'xx_theta'
@@ -216,7 +238,7 @@ C     flag is defined
         xx_gen2d_file      = 'xx_gen2d'
         xx_gen3d_file      = 'xx_gen3d'
 
-#if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
+#ifdef ALLOW_GENARR_CONTROL
         do iarr = 1, maxCtrlArr2D
          write(xx_genarr2d_file(iarr)(1:MAX_LEN_FNAM),'(a)') ' '
 #ifdef ALLOW_OPENAD
@@ -226,7 +248,7 @@ C     flag is defined
 #endif
          write(xx_genarr2d_weight(iarr)(1:MAX_LEN_FNAM),'(a)') ' '
          genarr2dPrecond(iarr)  = 1. _d 0
-         mult_genarr2d(iarr)    = 1. _d 0
+         mult_genarr2d(iarr)    = UNSET_RL
          do jarr = 1, 5
            xx_genarr2d_bounds(jarr,iarr) = 0. _d 0
          enddo
@@ -247,7 +269,7 @@ C     flag is defined
 #endif
          write(xx_genarr3d_weight(iarr)(1:MAX_LEN_FNAM),'(a)') ' '
          genarr3dPrecond(iarr)  = 1. _d 0
-         mult_genarr3d(iarr)    = 1. _d 0
+         mult_genarr3d(iarr)    = UNSET_RL
          do jarr = 1, 5
            xx_genarr3d_bounds(jarr,iarr) = 0. _d 0
          enddo
@@ -278,33 +300,40 @@ C     flag is defined
           xx_gentim2d_preproc_i(jarr,iarr) = 0
           xx_gentim2d_preproc_r(jarr,iarr) = 0. _d 0
          enddo
-         mult_gentim2d(iarr)          = 1. _d 0
          gentim2dPrecond(iarr)        = 1. _d 0
+         mult_gentim2d(iarr)          = UNSET_RL
          do jarr = 1, 5
            xx_gentim2d_bounds(jarr,iarr) = 0. _d 0
          enddo
         enddo
 #endif
 
-        xx_obcsnstartdate1  =   0
-        xx_obcsnstartdate2  =   0
-        xx_obcsnperiod      =   0. _d 0
-        xx_obcsn_file       = 'xx_obcsn'
+        xx_obcsNstartdate1  =   0
+        xx_obcsNstartdate2  =   0
+        xx_obcsNperiod      =   0. _d 0
+        xx_obcsN_file       = 'xx_obcsn'
 
-        xx_obcssstartdate1  =   0
-        xx_obcssstartdate2  =   0
-        xx_obcssperiod      =   0. _d 0
-        xx_obcss_file       = 'xx_obcss'
+        xx_obcsSstartdate1  =   0
+        xx_obcsSstartdate2  =   0
+        xx_obcsSperiod      =   0. _d 0
+        xx_obcsS_file       = 'xx_obcss'
 
-        xx_obcswstartdate1  =   0
-        xx_obcswstartdate2  =   0
-        xx_obcswperiod      =   0. _d 0
-        xx_obcsw_file       = 'xx_obcsw'
+        xx_obcsEstartdate1  =   0
+        xx_obcsEstartdate2  =   0
+        xx_obcsEperiod      =   0. _d 0
+        xx_obcsE_file       = 'xx_obcse'
 
-        xx_obcsestartdate1  =   0
-        xx_obcsestartdate2  =   0
-        xx_obcseperiod      =   0. _d 0
-        xx_obcse_file       = 'xx_obcse'
+        xx_obcsWstartdate1  =   0
+        xx_obcsWstartdate2  =   0
+        xx_obcsWperiod      =   0. _d 0
+        xx_obcsW_file       = 'xx_obcsw'
+
+        mult_obcsN          =   0. _d 0
+        mult_obcsS          =   0. _d 0
+        mult_obcsE          =   0. _d 0
+        mult_obcsW          =   0. _d 0
+        mult_obcsvol        =   0. _d 0
+        mult_ageos          =   0. _d 0
 
 C     retired parameters
 
@@ -434,7 +463,7 @@ C--     Next, read the cost data file.
 
         READ(unit = iUnit, nml = ctrl_nml)
         READ(unit = iUnit, nml = ctrl_packnames)
-#if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
+#ifdef ALLOW_GENARR_CONTROL
         READ(unit = iUnit, nml = ctrl_nml_genarr)
 #endif
 
@@ -448,6 +477,60 @@ C--     Next, read the cost data file.
 #else
         CLOSE(iUnit,STATUS='DELETE')
 #endif /* SINGLE_DISK_IO */
+
+C--   Set defaults for backwards compatibility
+        mult_default = 0. _d 0
+        IF ( useECCO ) mult_default = 1. _d 0
+#ifdef ALLOW_GENARR2D_CONTROL
+        DO iarr = 1, maxCtrlArr2D
+         IF ( mult_genarr2d(iarr) .EQ. UNSET_RL )
+     &        mult_genarr2d(iarr) = mult_default
+        ENDDO
+#endif
+#ifdef ALLOW_GENARR3D_CONTROL
+        DO iarr = 1, maxCtrlArr3D
+         IF ( mult_genarr3d(iarr) .EQ. UNSET_RL )
+     &        mult_genarr3d(iarr) = mult_default
+        ENDDO
+#endif
+#ifdef ALLOW_GENTIM2D_CONTROL
+        DO iarr = 1, maxCtrlTim2D
+         IF ( mult_gentim2d(iarr) .EQ. UNSET_RL )
+     &        mult_gentim2d(iarr) = mult_default
+        ENDDO
+#endif
+
+C--   if all multipliers are zero, we do not need to calculate the cost
+C     function contribution of the ctrl-variables (no Tikhonov
+C     regularisation)
+        useCtrlCostContribution = .FALSE.
+        useObcsCostContribution = .FALSE.
+#ifdef ALLOW_COST
+# ifdef ALLOW_GENARR2D_CONTROL
+        DO iarr = 1, maxCtrlArr2D
+         useCtrlCostContribution = useCtrlCostContribution
+     &        .OR. mult_genarr2d(iarr) .GT. 0. _d 0
+        ENDDO
+# endif
+# ifdef ALLOW_GENARR3D_CONTROL
+        DO iarr = 1, maxCtrlArr3D
+         useCtrlCostContribution = useCtrlCostContribution
+     &        .OR. mult_genarr3d(iarr) .GT. 0. _d 0
+        ENDDO
+# endif
+# ifdef ALLOW_GENTIM2D_CONTROL
+        DO iarr = 1, maxCtrlTim2D
+         useCtrlCostContribution = useCtrlCostContribution
+     &        .OR. mult_gentim2d(iarr) .GT. 0. _d 0
+        ENDDO
+# endif
+# ifdef ALLOW_OBCS
+        IF ( mult_obcsN .GT. 0. _d 0 .OR. mult_obcsS .GT. 0. _d 0 .OR.
+     &       mult_obcsE .GT. 0. _d 0 .OR. mult_obcsW .GT. 0. _d 0 .OR.
+     &       mult_obcsvol.GT.0. _d 0 .OR. mult_ageos .GT. 0. _d 0 )
+     &       useObcsCostContribution = .TRUE.
+# endif
+#endif
 
 C-- Create ctrlDir if necessary
       IF ( ctrlDir .NE. ' ' ) THEN

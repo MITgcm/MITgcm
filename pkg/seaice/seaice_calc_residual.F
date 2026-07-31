@@ -28,6 +28,7 @@ C     === Global variables ===
 #if ( defined SEAICE_ALLOW_BOTTOMDRAG || defined SEAICE_ALLOW_SIDEDRAG )
 # include "SEAICE_PARAMS.h"
 #endif
+#include "SEAICE_GRID.h"
 #include "SEAICE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:

@@ -161,13 +161,9 @@ C                 the current model integration.
 C     Two runtime parameters related to outputting sterGloH
 C     ecco_output_sterGloH :: output sterGloH at each time step if true
 C     ecco_keepTSeriesOutp_open :: keep the sterGloH file open if true
-C     eccoWriteCostFunction :: internal flag to suppress writing
-C                       costfunction multiple times (e.g. with grdchk-pkg)
       COMMON /ECCO_L/
-     &     ecco_output_sterGloH, ecco_keepTSeriesOutp_open,
-     &     eccoWriteCostFunction
+     &     ecco_output_sterGloH, ecco_keepTSeriesOutp_open
       LOGICAL ecco_output_sterGloH, ecco_keepTSeriesOutp_open
-      LOGICAL eccoWriteCostFunction
 
 C     file precision
       COMMON /PREC_TYPE_COST/

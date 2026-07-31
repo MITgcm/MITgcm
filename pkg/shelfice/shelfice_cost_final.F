@@ -2,14 +2,11 @@
 #ifdef ALLOW_COST
 # include "COST_OPTIONS.h"
 #endif
-#ifdef ALLOW_CTRL
-# include "CTRL_OPTIONS.h"
-#endif
 
 CBOP
 C     !ROUTINE: SHELFICE_COST_FINAL
 C     !INTERFACE:
-      SUBROUTINE SHELFICE_COST_FINAL( myThid )
+      SUBROUTINE SHELFICE_COST_FINAL( ifc, optimcycle, myThid )
 
 C     !DESCRIPTION:
 C     *==========================================================*
@@ -31,24 +28,23 @@ C     == Global variables ===
 
 #ifdef ALLOW_COST
 # include "cost.h"
-# ifndef ALLOW_OPENAD
-#  include "OPTIMCYCLE.h"
-# endif
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     myThid :: Thread number for this instance of the routine.
+C     ifc        :: file unit for costfunction_shelfice.XXXX
+C     optimcycle :: cycle number of the off-line optimization.
+C     myThid     :: Thread number for this instance of the routine.
+      INTEGER ifc
+      INTEGER optimcycle
       INTEGER myThid
 
 #ifdef ALLOW_COST
-C     ! FUNCTIONS:
-      LOGICAL  MASTER_CPU_THREAD
-      EXTERNAL MASTER_CPU_THREAD
-
 C     !LOCAL VARIABLES:
       INTEGER bi, bj
-      INTEGER ifc
-      CHARACTER*(25) cfname
+      CHARACTER*15  tile15c
+#ifndef ALLOW_OPENAD
+      CHARACTER*(26) cfname
+#endif
 
       _RL f_shelfice
       _RL f_shifwflx
@@ -63,30 +59,30 @@ CEOP
 cML      no_shelfice= 0. _d 0
       no_shifwflx= 0. _d 0
 
-      IF ( .NOT. useECCO ) THEN
 C--   Calculate cost function on tile of this instance
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
 ccc        do klev = 1, Nr
-          DO j=1,sNy
-           DO i=1,sNx
+         DO j=1,sNy
+          DO i=1,sNx
 
-             objf_shelfice(bi,bj) = objf_shelfice(bi,bj)
+            objf_shelfice(bi,bj) = objf_shelfice(bi,bj)
      &            + cMeanSHIforS(i,j,bi,bj)/lastinterval/rhoConstFresh
      &            *_rA(i,j,bi,bj)
 
-           ENDDO
           ENDDO
+         ENDDO
 ccc        end do
-        ENDDO
        ENDDO
-      ENDIF
+      ENDDO
 
 C--   Sum up all contributions.
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        write(standardmessageunit,'(A,D22.15)')
-     &       ' --> objf_shelfice(bi,bj) = ', objf_shelfice(bi,bj)
+        WRITE(tile15c,'(2(A,I3),A)') '(bi,bj=', bi, ',', bj, ')'
+        WRITE(standardMessageUnit,'(3A,1PE22.14,1X,1PE9.2)')
+     &       ' --> objf_shelfice ', tile15c, ' =',
+     &       objf_shelfice(bi,bj), mult_shelfice
         tile_fc(bi,bj) = tile_fc(bi,bj)
      &       + mult_shelfice * objf_shelfice(bi,bj)
 
@@ -98,15 +94,16 @@ cML      CALL GLOBAL_SUM_TILE_RL( num_shelfice, no_shelfice, myThid )
 
 # ifndef ALLOW_OPENAD
 C--   Each process has calculated the global part for itself.
-      IF ( MASTER_CPU_THREAD(myThid) ) THEN
+      IF ( ifc .NE. -1 ) THEN
 
-       ifc = 30
-       WRITE(cfname,'(A,i4.4)') 'costfunction_shelfice',optimcycle
+       WRITE(cfname,'(A,i4.4)') 'costfunction_shelfice.',optimcycle
        OPEN(unit=ifc,file=cfname)
 
-       WRITE(ifc,*) 'fc =', fc
+C     makes little sense to print this now, because it is zero at this point
+c       WRITE(ifc,*) 'fc =', fc
 cML       WRITE(ifc,*) 'f_shelfice =', f_shelfice, no_shelfice
-       WRITE(ifc,*) 'f_shelfice =', f_shelfice
+       WRITE(ifc,'(A,1PE22.14,1X,1PE9.2)')
+     &      'f_shelfice =', f_shelfice, mult_shelfice
 
        CLOSE(ifc)
 

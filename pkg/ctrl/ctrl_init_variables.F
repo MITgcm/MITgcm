@@ -112,7 +112,8 @@ C-    Needs to be called after few {PKG}_init_varia (e.g., PTRACERS_INIT_VARIA)
       CALL CTRL_MAP_INI_GENTIM2D( myThid )
 #endif
 
-#ifdef ALLOW_GENTIM2D_CONTROL
+#ifdef ALLOW_COST
+# ifdef ALLOW_GENTIM2D_CONTROL
       DO bj = myByLo(myThid),myByHi(myThid)
         DO bi = myBxLo(myThid),myBxHi(myThid)
           DO k=1,maxCtrlTim2D
@@ -121,8 +122,8 @@ C-    Needs to be called after few {PKG}_init_varia (e.g., PTRACERS_INIT_VARIA)
           ENDDO
         ENDDO
       ENDDO
-#endif
-#ifdef ALLOW_GENARR2D_CONTROL
+# endif
+# ifdef ALLOW_GENARR2D_CONTROL
       DO bj = myByLo(myThid),myByHi(myThid)
         DO bi = myBxLo(myThid),myBxHi(myThid)
           DO k=1,maxCtrlArr2D
@@ -131,8 +132,8 @@ C-    Needs to be called after few {PKG}_init_varia (e.g., PTRACERS_INIT_VARIA)
           ENDDO
         ENDDO
       ENDDO
-#endif
-#ifdef ALLOW_GENARR3D_CONTROL
+# endif
+# ifdef ALLOW_GENARR3D_CONTROL
       DO bj = myByLo(myThid),myByHi(myThid)
         DO bi = myBxLo(myThid),myBxHi(myThid)
           DO k=1,maxCtrlArr3D
@@ -141,7 +142,8 @@ C-    Needs to be called after few {PKG}_init_varia (e.g., PTRACERS_INIT_VARIA)
           ENDDO
         ENDDO
       ENDDO
-#endif
+# endif
+#endif /* ALLOW_COST */
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_LEAVE('CTRL_INIT_VARIABLES',myThid)

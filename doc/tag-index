@@ -1,6 +1,118 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools & testreport:
+  - add a very short script and adjust testreport & do_tst_2+2 to enable to use
+   "sftp" to send output results.
+
+checkpoint69p (2026/07/24)
+o verification:
+  - remove all OpenAD test dir and files (code_oad, input_oad*, output_oadm.*)
+    and update docs in few places.
+o pkg/streamice:
+  - fix Tapenade adjoint for simple SOLVE_FP use (same fix as for OpenAD)
+    and update halfpipe_streamice Tap adj & tlm ref. output.
+o pkg/seaice:
+  - comment out debug print in seaice_cost_test.F and reduce overlap size
+    (from 3 to 2) in experiment "1D_ocean_ice_column".
+o pkg/exf:
+  - fix time-invariant exf field (fldPeriod=0) when used as ctrl variables
+    (xx_gentim2d), by resetting it (ALLOW_GENTIM2D_CONTROL) from fld0,fld1 in
+    exf_set_fld.F ; simplify "data.exf" in AD experiment "offline_exf_seaice".
+o tools/ci:
+  - remove OpenAD tests from GitHub actions; add other Adjoint Tapenade test
+    experiments to CI (only run with label "adjoint"); update docs.
+
+checkpoint69o (2026/07/06) last version to support OpenAD
+o testreport:
+  - add process-id number to tar-file name when sending output with "scp".
+o pkg/obcs(sponge):
+  - fix bug in sponge relaxation time-scale for Salinity at the Southern OB;
+  - remove special condition (non zero T / S) for temp and salt relaxation.
+o pkg/layers:
+  - fix bug in LAYERS_THERMODYNAMCS surface term code for LinFSConserveTr=F
+o pkg/layers:
+  - new header file "LAYERS_P2SHARE.h" with new parameter "layers_useThermo"
+    allows calling S/R layers_fill only when it is necessary;
+  - fix bug that leads to zero output for some of the LAYERS_THERMODYNAMCS
+    diagnostics (LaTz, LaSz, LTto, LSto,LaTs,LaSs).
+
+checkpoint69n (2026/05/08)
+o pkg/seaice:
+  - move seaice grid-variables from SEAICE.h into new header "SEAICE_GRID.h";
+  - add missing metric terms to stress divergence (bug fix); new run-time parms
+    SEAICEselectMetricTerms, default=2, =1 recover previous partial metric-terms
+    (i.e., old results), tested in lab_sea.salt_plume ;
+  - update all affected reference output (in cpl_aim+ocn, global_ocean.cs32x15,
+    lab_sea & seaice_obcs, 19 total).
+o pkg/mdsio:
+  - when using pkg/cal, add date and time to ".meta" output file.
+o pkg/shelfice:
+  - use alternative way to compute freshWaterFlux based on heat balance ;
+    keep old code under CPP option SHI_SALTBAL_FWFLX, and define this option
+    in verification exp. shelfice_2d_remesh; update docs;
+  - fix potential division by zero in saltFreeze & freshWaterFlux expressions;
+  - fix bug related to SHELFICEadvDiffHeatFlux=T.
+o pkg/obcs:
+  - fix CPP logic in obcs_cost_driver.F to avoid compilation error.
+
+checkpoint69m (2026/03/30)
+o pkg/cost:
+  - change ordering of calls in `cost_final.F`, profiles before ecco, as
+    before PR 946 ; refine printing of cost per tile value to STDOUT.
+  - drop condition on "useECCO" in shelfice_cost_final.F ; fix few missing
+    or inconsistent CPP #ifdef.
+o verification/global_ocean.cs32x15 & offline_exf_seaice:
+  - in exp. "global_ocean.cs32x15", turn off useCAL in remaining FWD and AD
+    tests and skip compilation of pkg/cal in FWD built. Also shift "nIter0"
+    + rename pickup files in few secondary tests.
+  - similarly, in exp. offline_exf_seaice, turn off and skip compilation of
+    of pkg/cal in AD tests.
+  - fix missing useCAL in 2 pkg/ctrl src files.
+o pkg/cost,ctrl,ecco,obcs:
+  - final cost-function always computed in "cost_final.F" (even if useECCO=T),
+    calling individual {PKG}_COST_FINAL, each writing its own "costfunction_*"
+    summary file. Similar changes in new "cost_driver.F", calling individual
+    pkg "{pkg}_cost_driver.F";
+  - make ctrl-cost (and obcs-ctrl-cost) available without pkg/ecco ; move all
+    obcs-cost S/R from pkg/ecco to pkg/obcs ; and move+rename "data_errfile"
+    (formerly in data.ecco) to "obcs_data_errfile" in "data.ctrl";
+  - retire ALLOW_COST_DEPTH (covered by generic controls);
+  - no changes to results ; adjust few namelists for special cases (obcs_ctrl,
+    bottom_ctrl_5x5);
+  - adjust store directives for combinations of pkgs kpp, seaice, shelfice
+    with ALLOW_DEPTH_CONTROL.
+
+checkpoint69l (2026/03/01)
+o verification:
+  - for secondary tests, change testreport to only run a single "prepare_run"
+    from run-dir, after linking files from both ../input.${sfx}/ and ../input/.
+  - adjust several verification exp. secondary tests accordingly and update
+    instructions in README files + in the docs.
+o pkg/streamice:
+  - fix typo and S/R argument list within #ifdef ALLOW_PETSC adjoint code.
+o tools:
+  - fix PR 949 changes (location of "flow_tap") in Tapenade ad-optfile by
+    using Makefile variable "TOOLSDIR".
+o pkg/tapenade:
+  - fix for Tang-Lin: add missing handwritten code for some pkg/streamice S/R
+    and fix issues in ACTIVE_READ_XY/XYZ_D ;
+  - turn back on Tapenade TLM test for experiment halfpipe_streamice.
+o tapenade & genmake2:
+  - in genmake2, import Tapenade command arguments from ad-optfile (adjoint_tap)
+  - allow additional extra arguments with TAP_EXTRA, which can also be set using
+    new command line option "-tap_extra" ;
+  - add support for Tapenade to skip checkpointing with new "_FWD" and "_BWD"
+    versions of manually written subroutine derivatives ;
+  - test new "no-checkpointing" feature in halfpipe_streamice experiment
+    with new reference output.
+o pkg/gmredi:
+  - remove OLD_VISBECK_CALC code ; rename S/R GMREDI_CALC_PSI_B ;
+  - unless restricted to only uniform Kappa (including 2-D & 1-D scaling),
+    define local 3-d vars for Kappa-Redi and Kappa-GM to simplify Tensor
+    setting and Psi-Bolus code.
+
+checkpoint69k (2026/01/25)
 o model/src:
   - fix scaling from cg2g/cg3d TargetResWunit to CG-Tolerance (exact scaling
     if rAc is uniform) by using few more domain global quantities (in GRID.h).
