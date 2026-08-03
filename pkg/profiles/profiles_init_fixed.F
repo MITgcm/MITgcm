@@ -54,7 +54,7 @@ C     ProfNo_tile  :: counter
       INTEGER kLev, prof_num
       INTEGER chunk, chunkProf, ic, recLen
       INTEGER i,j,bi,bj,iG,jG,num_file,num_var,ProfNo_tile
-      INTEGER stopProfiles(NFILESPROFMAX)
+      INTEGER stopProfiles, stopProfiles_cnt
       INTEGER fid, dimId, varId1, varId1a, varId1b
       INTEGER varId2,varId3
       _RL tmpyymmdd(1000),tmphhmmss(1000),diffsecs
@@ -87,7 +87,7 @@ C     ProfNo_tile  :: counter
       _RL tmp_weights(1000,NUM_INTERP_POINTS),tmp_sum_weights
       _RL tmp_xC11(1000),tmp_yC11(1000)
       _RL tmp_xCNINJ(1000),tmp_yCNINJ(1000)
-      INTEGER stopGenericGrid(NFILESPROFMAX)
+      INTEGER stopGenericGrid, stopGenericGrid_cnt
       Real*8 xy_buffer_r8(0:sNx+1,0:sNy+1)
       INTEGER vec_start2(2), vec_count2(2)
       INTEGER hh, ProfNo_hh
@@ -111,13 +111,6 @@ C     ProfNo_tile  :: counter
       CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
-
-      DO num_file = 1, NFILESPROFMAX
-       stopProfiles(num_file) = 0
-      ENDDO
-      DO num_file = 1, NFILESPROFMAX
-       stopGenericGrid(num_file) = 0
-      ENDDO
 
       IF ( (.NOT.profilesDoGenGrid) .AND.
      &     (.NOT.usingSphericalPolarGrid .OR. rotateGrid) ) THEN
@@ -169,7 +162,12 @@ C     ProfNo_tile  :: counter
          ENDDO
         ENDDO
 
+        stopProfiles_cnt = 0
+        stopGenericGrid_cnt = 0
+
         DO num_file = 1, NFILESPROFMAX
+         stopProfiles = 0
+         stopGenericGrid = 0
          ProfNo_hh=0
          profilesfile=' '
          IL = ILNBLNK( profilesfiles(num_file) )
@@ -223,17 +221,17 @@ C     1) Read the number of profiles and available dimensions:
      &         err,bi,bj,myThid )
 C      Check that maximum number of vertical levels is not exceeded
           IF ( ProfDepthNo(num_file,bi,bj) .GT. NLEVELMAX ) THEN
-           WRITE(msgBuf,'(4A,I4,A,I4)')
+           WRITE(msgBuf,'(5A,I8)')
      &      'PROFILES_INIT_FIXED: ',profilesfile(1:IL),
      &      '.nc was not read properly. ',
-     &      'Number of depth levels = ', ProfDepthNo(num_file,bi,bj),
-     &      ' exceeds NLEVELMAX = ', NLEVELMAX
+     &      'Number of depth levels exceeds ',
+     &      'NLEVELMAX = ', NLEVELMAX
            CALL PRINT_ERROR( msgBuf, myThid )
            WRITE(msgBuf,'(2A)')
      &      'PROFILES_INIT_FIXED: increase NLEVELMAX in ',
      &      'PROFILES_SIZE.h and recompile'
            CALL PRINT_ERROR( msgBuf, myThid )
-           stopProfiles(num_file) = 1
+           stopProfiles = 1
           ENDIF
 
           err = NF_INQ_DIMID( fid, 'iINTERP', dimId )
@@ -297,10 +295,10 @@ C     If neither is found, then stop
      &          ' (no prof_depth etc.)'
            CALL PRINT_ERROR( msgBuf, myThid )
 
-           stopProfiles(num_file) = 1
+           stopProfiles = 1
           ENDIF
 
-          IF (stopProfiles(num_file).EQ.0) THEN
+          IF (stopProfiles.EQ.0) THEN
            DO kLev = 1, ProfDepthNo(num_file,bi,bj)
             err = NF_GET_VAR1_DOUBLE( fid, varId1a, kLev,
      &           prof_depth(num_file,kLev,bi,bj) )
@@ -347,7 +345,7 @@ C     Get time, lon, lat varIds
      &          ' (no prof_YYYYMMDD etc.)'
            CALL PRINT_ERROR( msgBuf, myThid )
 
-           stopProfiles(num_file) = 1
+           stopProfiles = 1
           ENDIF
 
           IF (profilesDoGenGrid) THEN
@@ -396,7 +394,7 @@ C     3) Read interpolation information (grid points, coeffs, etc.)
      &           ' (profilesDoGenGrid)'
             CALL PRINT_ERROR( msgBuf, myThid )
 
-            stopGenericGrid(num_file) = 2
+            stopGenericGrid = 2
            ENDIF
           ENDIF !IF (profilesDoGenGrid)
 
@@ -448,7 +446,7 @@ C     5.1) Read a chunk
      &            '.nc was not read properly (case 1).'
              CALL PRINT_ERROR( msgBuf, myThid )
 
-             stopProfiles(num_file) = 1
+             stopProfiles = 1
             ENDIF
 
             err = NF_GET_VARA_DOUBLE( fid, varId1a,
@@ -490,7 +488,7 @@ C     5.1) Read a chunk
      &            '.nc get_vara_double (case 2).'
              CALL PRINT_ERROR( msgBuf, myThid )
 
-             stopProfiles(num_file) = 1
+             stopProfiles = 1
             ENDIF
 
 C     If profilesDoGenGrid, then read interpolation coeffs and indices
@@ -542,7 +540,7 @@ C     If profilesDoGenGrid, then read interpolation coeffs and indices
 
 C     5.2) Loop through this chunk
             DO ic = 1, MIN(1000,ProfNo(num_file,bi,bj)-chunk)
-             IF (stopProfiles(num_file).EQ.0) THEN
+             IF (stopProfiles.EQ.0) THEN
 
               profIsInRunTime = 1
 
@@ -690,7 +688,7 @@ C     Then store interpolation coeffs and indices
 C     5.2a) Determine profiles in current tile domain (gen grid case)
               ELSEIF (profIsInRunTime.EQ.1) THEN
 
-               IF (stopGenericGrid(num_file).EQ.0) THEN
+               IF (stopGenericGrid.EQ.0) THEN
                 IF (ABS(tmp_xC11(ic)-xC(1,1,bi,bj)).LT.0.0001 _d 0
      &         .AND.ABS(tmp_yC11(ic)-yC(1,1,bi,bj)).LT.0.0001 _d 0
      &         .AND.ABS(tmp_xCNINJ(ic)-xC(sNx,sNy,bi,bj)).LT.0.0001 _d 0
@@ -734,7 +732,7 @@ C     Interpolation information consistent (self and with grid)
      &                  '(profilesDoGenGrid; out of tile)'
                    CALL PRINT_ERROR( msgBuf, myThid )
 
-                   stopGenericGrid(num_file) = 1
+                   stopGenericGrid = 1
                   ENDIF
 
 # ifdef ALLOW_PROFILES_EXCLUDE_CORNERS
@@ -756,7 +754,7 @@ C     This should be the same, fewer evaluations, and easier to read?
      &                   'corner)'
                     CALL PRINT_ERROR( msgBuf, myThid )
 
-                    stopGenericGrid(num_file) = 1
+                    stopGenericGrid = 1
                    ENDIF
                   ENDIF
 # endif /* ALLOW_PROFILES_EXCLUDE_CORNERS */
@@ -771,7 +769,7 @@ C     This should be the same, fewer evaluations, and easier to read?
      &                  'sum oustide 0-1)'
                    CALL PRINT_ERROR( msgBuf, myThid)
 
-                   stopGenericGrid(num_file) = 1
+                   stopGenericGrid = 1
                   ENDIF
 
                  ENDDO !DO iq
@@ -783,13 +781,13 @@ C     This should be the same, fewer evaluations, and easier to read?
      &                 ' (profilesDoGenGrid; dont add to 1)'
                   CALL PRINT_ERROR( msgBuf, myThid)
 
-                  stopGenericGrid(num_file) = 1
+                  stopGenericGrid = 1
                  ENDIF
 
                  prof_ind_glob(num_file,ProfNo_tile,bi,bj) = ic + chunk
 
                 ENDIF !IF ( ( ABS(tmp_xC11(ic)...
-               ENDIF !IF (stopGenericGrid(num_file).EQ.0)
+               ENDIF !IF (stopGenericGrid.EQ.0)
               ENDIF!IF (.NOT.profilesDoGenGrid ... ELSEIF ...
 
 C     Check that maximum size was not reached:
@@ -799,11 +797,11 @@ C     Check that maximum size was not reached:
      &              '.nc not read properly (increase NOBSGLOB).'
                CALL PRINT_ERROR( msgBuf, myThid)
 
-               stopProfiles(num_file) = 1
+               stopProfiles = 1
 
               ENDIF
 
-             ENDIF !IF (stopProfiles(num_file).EQ.0)
+             ENDIF !IF (stopProfiles.EQ.0)
             ENDDO !DO ic
 
            ENDIF !IF (MIN(ProfNo(num_file,bi,bj)
@@ -1076,6 +1074,10 @@ C     ===========================================================
 
          ENDIF !IF (IL.NE.0)
 
+         IF (stopProfiles.GE.1) THEN
+          stopProfiles_cnt = stopProfiles_cnt+1
+         ENDIF
+
         ENDDO !DO num_file
 
 # ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
@@ -1153,6 +1155,11 @@ C     Sort
           ENDIF
 
          ENDDO ! DO kLev
+
+         IF (stopProfiles.GE.1) THEN
+          stopProfiles_cnt = stopProfiles_cnt+1
+         ENDIF
+
         ENDDO ! DO num_file
 
         prof_depth_comb(NLEVELCOMBMAX,bi,bj) = -999. _d 0
@@ -1182,7 +1189,7 @@ C===========================================================
 
 C     1) Provide interpolation information
         DO num_file = 1, NFILESPROFMAX
-        IF (stopGenericGrid(num_file).EQ.2) THEN
+        IF (stopGenericGrid.EQ.2) THEN
          iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
          jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
 C     XC grid
@@ -1252,10 +1259,8 @@ C     YC grid
      &        'use the grid info in profiles*incl1PointOverlap*data'
          CALL PRINT_ERROR( msgBuf, myThid )
 
-         DO num_var = 1, NFILESPROFMAX
-          stopProfiles(num_var) = 1
-         ENDDO
-        ENDIF !IF (stopGenericGrid(num_file).EQ.2)
+         stopProfiles = 1
+        ENDIF !IF (stopGenericGrid.EQ.2)
         ENDDO
 
        ENDDO !DO bi
@@ -1271,25 +1276,17 @@ C     YC grid
 # endif
 
 C     2) Stop after other kind of errors
-      DO num_file = 1, NFILESPROFMAX
-       CALL GLOBAL_SUM_INT( stopProfiles(num_file), myThid )
-      ENDDO
-      DO num_file = 1, NFILESPROFMAX
-       IF ( stopProfiles(num_file).GE.1 ) THEN
-        CALL ALL_PROC_DIE( myThid )
-        STOP 'ABNORMAL END: S/R PROFILES_INIT_FIXED'
-       ENDIF
-      ENDDO
+      CALL GLOBAL_SUM_INT( stopProfiles_cnt, myThid )
+      IF ( stopProfiles_cnt.GE.1) THEN
+       CALL ALL_PROC_DIE( myThid )
+       STOP 'ABNORMAL END: S/R PROFILES_INIT_FIXED'
+      ENDIF
 
-      DO num_file = 1, NFILESPROFMAX
-       CALL GLOBAL_SUM_INT( stopGenericGrid(num_file), myThid )
-      ENDDO
-      DO num_file = 1, NFILESPROFMAX
-       IF ( stopGenericGrid(num_file).GE.1 ) THEN
-        CALL ALL_PROC_DIE( myThid )
-        STOP 'ABNORMAL END: S/R PROFILES_INIT_FIXED'
-       ENDIF
-      ENDDO
+      CALL GLOBAL_SUM_INT( stopGenericGrid_cnt, myThid )
+      IF ( stopGenericGrid_cnt.GE.1) THEN
+       CALL ALL_PROC_DIE( myThid )
+       STOP 'ABNORMAL END: S/R PROFILES_INIT_FIXED'
+      ENDIF
 
       WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
