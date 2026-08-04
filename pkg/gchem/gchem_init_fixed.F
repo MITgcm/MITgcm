@@ -12,10 +12,15 @@ C !USES: ===============================================================
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h"
 #include "GCHEM.h"
 #ifdef ALLOW_EXF
 # include "GCHEM_EXF.h"
 # include "EXF_PARAM.h"
+# ifdef USE_EXF_INTERPOLATION
+#  include "EXF_INTERP_SIZE.h"
+#  include "GCHEM_INTERP_PARAM.h"
+# endif
 #endif
 
 C !INPUT PARAMETERS: ===================================================
@@ -26,6 +31,9 @@ CEOP
 C     !LOCAL VARIABLES:
 C     errCount  :: error counter
       INTEGER errCount
+#ifdef GCHEM_3D_SILICA
+      INTEGER k
+#endif
 
 C jmc: simpler to put MASTER thread directive within individual S/R :
 C      that leave the choice, for each S/R, to do either single (master)
@@ -85,6 +93,23 @@ c      ENDIF
 
        _BEGIN_MASTER( myThid )
        errCount = 0
+
+#ifdef GCHEM_3D_SILICA
+# ifdef USE_EXF_INTERPOLATION
+C-    Default Si3D vertical grid parameters if not set by user in namelist
+       IF ( Si3D_nzin .EQ. UNSET_I ) THEN
+         Si3D_nzin = Nr
+         DO k = 1, Nr
+           Si3D_dzin(k) = drF(k)
+         ENDDO
+       ELSEIF ( Si3D_dzin(1) .EQ. UNSET_RL ) THEN
+C-      User set Si3D_nzin but not Si3D_dzin: fill from model grid
+         DO k = 1, MIN(Si3D_nzin, Nr)
+           Si3D_dzin(k) = drF(k)
+         ENDDO
+       ENDIF
+# endif /* USE_EXF_INTERPOLATION */
+#endif /* GCHEM_3D_SILICA */
 
        IF ( gchem_SiFile .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG

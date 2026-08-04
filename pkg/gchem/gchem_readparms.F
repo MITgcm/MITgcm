@@ -154,6 +154,8 @@ C
 C
      &     Si3D_lon0, Si3D_lat0, Si3D_nlon,Si_nlat,
      &     Si3D_lon_inc, Si3D_lat_inc, Si3D_interpMethod,
+C Additional parameters for interpolation of 3D silica fields     
+     &     Si3D_nzin, Si3D_dzin,
 C
      &     par_lon0, par_lat0, par_nlon, par_nlat,
      &     par_lon_inc, par_lat_inc, par_interpMethod,
@@ -445,6 +447,10 @@ C     This is done in s/r exf_init_interp only if useEXF=T
        Si3D_nlat = inp_gNy
        Si3D_lon_inc = inp_dLon
        Si3D_interpMethod  = 1
+       Si3D_nzin = UNSET_I
+       DO j = 1, MAX_LEV_IN
+         Si3D_dzin(j) = UNSET_RL
+       ENDDO
 
        par_lon0 = inp_lon0
        par_lat0 = inp_lat0

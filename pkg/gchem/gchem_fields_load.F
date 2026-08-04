@@ -422,6 +422,7 @@ C Otherwise get atmospheric pressure from PKG/EXF
      &      Si3D_lat0, Si3D_lat_inc,
      &      Si3D_nlon, Si3D_nlat, xC, yC,
      &      Si3D_interpMethod,
+     &      Si3D_nzin, Si3D_dzin,
 # endif
      &      mytime, myiter, mythid )
        ENDIF

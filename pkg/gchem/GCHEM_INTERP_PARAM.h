@@ -23,18 +23,20 @@ C Surface silica forcing parameters for exf
       _RL Si_lon_inc
       _RL Si_lat_inc(MAX_LAT_INC)
 
-C Three dimensional silica forcing parameters for exf (horizonal interp only)
+C Three dimensional silica forcing parameters for exf (3D interp)
 #ifdef GCHEM_3D_SILICA
       COMMON/gchem_interp_Si3D_i/
-     &    Si3D_nlon, Si3D_nlat, Si3D_interpMethod
+     &    Si3D_nlon, Si3D_nlat, Si3D_interpMethod, Si3D_nzin
       COMMON/gchem_interp_Si3D_r/
      &    Si3D_lon0, Si3D_lat0, Si3D_lon_inc,
-     &    Si3D_lat_inc
+     &    Si3D_lat_inc, Si3D_dzin
       INTEGER Si3D_interpMethod, Si3D_nlon, Si3D_nlat
+      INTEGER Si3D_nzin
       _RL Si3D_lon0
       _RL Si3D_lat0
       _RL Si3D_lon_inc
       _RL Si3D_lat_inc(MAX_LAT_INC)
+      _RL Si3D_dzin(MAX_LEV_IN)
 #endif /* GCHEM_3D_SILICA */
 
 C PAR forcing parameters for exf

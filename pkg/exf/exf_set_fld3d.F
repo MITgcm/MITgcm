@@ -12,6 +12,7 @@ C     !INTERFACE:
 #ifdef USE_EXF_INTERPOLATION
      I     fld_lon0, fld_lon_inc, fld_lat0, fld_lat_inc,
      I     fld_nlon, fld_nlat, fld_xout, fld_yout, interp_method,
+     I     fld_nzin, fld_dzin,
 #endif
      I     myTime, myIter, myThid )
 
@@ -43,6 +44,7 @@ C     == global variables ==
 #include "EXF_CONSTANTS.h"
 #include "EXF_INTERP_SIZE.h"
 #include "EXF_INTERP_PARAM.h"
+#include "GRID.h"
 
 C !INPUT/OUTPUT PARAMETERS:
 C     fldName        :: field short name (to print mesg)
@@ -65,6 +67,9 @@ C     fld_lat_inc          :: vector y-grid increments
 C     fld_xout, fld_yout   :: coordinates for output grid
 C     fld_xout, fld_yout   :: coordinates for output grid
 C     interp_method        :: select interpolation method (integer)
+C     fld_nzin             :: number of vertical levels in input file
+C     fld_dzin             :: input layer thicknesses (for conservative
+C                          :: vertical remapping to model grid)
 #endif /* USE_EXF_INTERPOLATION */
 C     myTime         :: Current time (in sec) in simulation
 C     myIter         :: Current iteration number
@@ -85,6 +90,8 @@ C     myThid         :: My Thread Id number
       _RS fld_xout  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS fld_yout  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER interp_method
+      INTEGER fld_nzin
+      _RL fld_dzin(*)
 #endif /* USE_EXF_INTERPOLATION */
       _RL     myTime
       INTEGER myIter
@@ -105,6 +112,10 @@ C     msgBuf     :: Informational/error message buffer
       CHARACTER*(128) locFile0, locFile1
 #ifdef USE_EXF_INTERPOLATION
       CHARACTER*(MAX_LEN_FNAM) out_file
+      _RL tmp2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL z_out_int(0:Nr)
+      _RL z_in_top, z_in_bot_k, overlap
+      INTEGER kIn, kRec
 # ifndef EXF_INTERP_USE_DYNALLOC
       _RL     bufArr( exf_interp_bufferSize )
 # endif
@@ -174,6 +185,16 @@ C-    get record numbers and interpolation factor for this field
            _END_MASTER( myThid )
          ENDIF
 
+#ifdef USE_EXF_INTERPOLATION
+C-    Pre-compute cumulative model level depths for conservative vert. remap
+         IF ( interp_method.GE.1 ) THEN
+           z_out_int(0) = 0. _d 0
+           DO k = 1, Nr
+             z_out_int(k) = z_out_int(k-1) + drF(k)
+           ENDDO
+         ENDIF
+#endif /* USE_EXF_INTERPOLATION */
+
          IF ( first ) THEN
             CALL exf_GetYearlyFieldName(
      I         useExfYearlyFields, twoDigitYear, fldPeriod, year0,
@@ -197,25 +218,75 @@ C-    get record numbers and interpolation factor for this field
 
 #ifdef USE_EXF_INTERPOLATION
             IF ( interp_method.GE.1 ) THEN
-              CALL EXF_INTERP(
-     I             locFile0, exf_iprec,
+C-    Zero fld1 before accumulating contributions from input levels
+              DO bj = myByLo(myThid),myByHi(myThid)
+               DO bi = myBxLo(myThid),myBxHi(myThid)
+                DO k = 1,Nr
+                 DO j = 1-OLy,sNy+OLy
+                  DO i = 1-OLx,sNx+OLx
+                   fld1(i,j,k,bi,bj) = 0. _d 0
+                  ENDDO
+                 ENDDO
+                ENDDO
+               ENDDO
+              ENDDO
+C-    Loop over input levels: horizontal-interpolate each, then accumulate
+C-    into model levels with conservative overlap weighting. This preserves
+C-    the column integral of the field (material conservation).
+              z_in_top = 0. _d 0
+              DO kIn = 1, fld_nzin
+               z_in_bot_k = z_in_top + fld_dzin(kIn)
+               kRec = (count0-1)*fld_nzin + kIn
+               CALL EXF_INTERP(
+     I              locFile0, exf_iprec,
 #ifdef EXF_INTERP_USE_DYNALLOC
-     O             fld1,
+     O              tmp2d,
 #else
-     O             fld1, bufArr,
+     O              tmp2d, bufArr,
 #endif
-     I             count0, fld_xout, fld_yout,
-     I             fld_lon0, fld_lon_inc, fld_lat0, fld_lat_inc,
-     I             fld_nlon, fld_nlat, interp_method, myIter, myThid )
+     I              kRec, fld_xout, fld_yout,
+     I              fld_lon0, fld_lon_inc, fld_lat0, fld_lat_inc,
+     I              fld_nlon, fld_nlat, interp_method, myIter, myThid )
+               DO bj = myByLo(myThid),myByHi(myThid)
+                DO bi = myBxLo(myThid),myBxHi(myThid)
+                 DO k = 1, Nr
+                  overlap = MIN( z_in_bot_k, z_out_int(k) )
+     &                    - MAX( z_in_top,   z_out_int(k-1) )
+                  IF ( overlap .GT. 0. _d 0 ) THEN
+                   DO j = 1-OLy,sNy+OLy
+                    DO i = 1-OLx,sNx+OLx
+                     fld1(i,j,k,bi,bj) = fld1(i,j,k,bi,bj)
+     &                                 + tmp2d(i,j,bi,bj)*overlap
+                    ENDDO
+                   ENDDO
+                  ENDIF
+                 ENDDO
+                ENDDO
+               ENDDO
+               z_in_top = z_in_bot_k
+              ENDDO
+C-    Normalize by model layer thickness to recover layer-mean values
+              DO bj = myByLo(myThid),myByHi(myThid)
+               DO bi = myBxLo(myThid),myBxHi(myThid)
+                DO k = 1, Nr
+                 DO j = 1-OLy,sNy+OLy
+                  DO i = 1-OLx,sNx+OLx
+                   fld1(i,j,k,bi,bj) = fld1(i,j,k,bi,bj)
+     &                               / drF(k)
+                  ENDDO
+                 ENDDO
+                ENDDO
+               ENDDO
+              ENDDO
 
               IF ( exf_output_interp ) THEN
                j = ILNBLNK(locFile0)
                WRITE(out_file,'(2A)') locFile0(1:j), '_out'
                IF ( count0.NE.1 )
-     &         CALL WRITE_REC_XY_RL( out_file, fld1, 1,
-     &                                         myIter, myThid )
-               CALL WRITE_REC_XY_RL( out_file, fld1, count0,
-     &                                         myIter, myThid )
+     &         CALL WRITE_REC_XYZ_RL( out_file, fld1, 1,
+     &                                            myIter, myThid )
+               CALL WRITE_REC_XYZ_RL( out_file, fld1, count0,
+     &                                            myIter, myThid )
               ENDIF
 
             ELSE
@@ -257,22 +328,68 @@ C-    end if ( first ) block
 
 #ifdef USE_EXF_INTERPOLATION
             IF ( interp_method.GE.1 ) THEN
-              CALL EXF_INTERP(
-     I             locFile1, exf_iprec,
+C-    Zero fld1 before accumulating contributions from input levels
+              DO bj = myByLo(myThid),myByHi(myThid)
+               DO bi = myBxLo(myThid),myBxHi(myThid)
+                DO k = 1,Nr
+                 DO j = 1-OLy,sNy+OLy
+                  DO i = 1-OLx,sNx+OLx
+                   fld1(i,j,k,bi,bj) = 0. _d 0
+                  ENDDO
+                 ENDDO
+                ENDDO
+               ENDDO
+              ENDDO
+              z_in_top = 0. _d 0
+              DO kIn = 1, fld_nzin
+               z_in_bot_k = z_in_top + fld_dzin(kIn)
+               kRec = (count1-1)*fld_nzin + kIn
+               CALL EXF_INTERP(
+     I              locFile1, exf_iprec,
 #ifdef EXF_INTERP_USE_DYNALLOC
-     O             fld1,
+     O              tmp2d,
 #else
-     O             fld1, bufArr,
+     O              tmp2d, bufArr,
 #endif
-     I             count1, fld_xout, fld_yout,
-     I             fld_lon0, fld_lon_inc, fld_lat0, fld_lat_inc,
-     I             fld_nlon, fld_nlat, interp_method, myIter, myThid )
+     I              kRec, fld_xout, fld_yout,
+     I              fld_lon0, fld_lon_inc, fld_lat0, fld_lat_inc,
+     I              fld_nlon, fld_nlat, interp_method, myIter, myThid )
+               DO bj = myByLo(myThid),myByHi(myThid)
+                DO bi = myBxLo(myThid),myBxHi(myThid)
+                 DO k = 1, Nr
+                  overlap = MIN( z_in_bot_k, z_out_int(k) )
+     &                    - MAX( z_in_top,   z_out_int(k-1) )
+                  IF ( overlap .GT. 0. _d 0 ) THEN
+                   DO j = 1-OLy,sNy+OLy
+                    DO i = 1-OLx,sNx+OLx
+                     fld1(i,j,k,bi,bj) = fld1(i,j,k,bi,bj)
+     &                                 + tmp2d(i,j,bi,bj)*overlap
+                    ENDDO
+                   ENDDO
+                  ENDIF
+                 ENDDO
+                ENDDO
+               ENDDO
+               z_in_top = z_in_bot_k
+              ENDDO
+              DO bj = myByLo(myThid),myByHi(myThid)
+               DO bi = myBxLo(myThid),myBxHi(myThid)
+                DO k = 1, Nr
+                 DO j = 1-OLy,sNy+OLy
+                  DO i = 1-OLx,sNx+OLx
+                   fld1(i,j,k,bi,bj) = fld1(i,j,k,bi,bj)
+     &                               / drF(k)
+                  ENDDO
+                 ENDDO
+                ENDDO
+               ENDDO
+              ENDDO
 
               IF ( exf_output_interp ) THEN
                j = ILNBLNK(locFile1)
                WRITE(out_file,'(2A)') locFile1(1:j), '_out'
-               CALL WRITE_REC_XY_RL( out_file, fld1, count1,
-     &                                         myIter, myThid )
+               CALL WRITE_REC_XYZ_RL( out_file, fld1, count1,
+     &                                            myIter, myThid )
               ENDIF
 
             ELSE

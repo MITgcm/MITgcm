@@ -474,6 +474,7 @@ C    the first timestep to initialize pH/pCO2
      &      Si3D_lat0, Si3D_lat_inc,
      &      Si3D_nlon, Si3D_nlat, xC, yC,
      &      Si3D_interpMethod,
+     &      Si3D_nzin, Si3D_dzin,
 # endif
      &      myLocTime, nIter0, mythid )
        ENDIF
