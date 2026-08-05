@@ -42,8 +42,8 @@ C     === Global variables ===
 #include "GRID.h"
 #include "BLING_VARS.h"
 #ifdef ALLOW_EXF
-#include "FFIELDS.h"
-#include "EXF_PARAM.h"
+# include "FFIELDS.h"
+# include "EXF_PARAM.h"
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -86,13 +86,9 @@ C !LOCAL VARIABLES: ====================================================
       _RL SumMLIrr  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tmp_ML    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
-c#ifndef USE_QSW
-      _RL solar, albedo
-      _RL dayfrac, yday, delta
-      _RL lat, sun1, dayhrs
-      _RL cosz, frac, fluxi
-      _RL sfac      (1-OLy:sNy+OLy)
-c#endif
+#ifndef USE_QSW
+      _RL sfac      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif
 #ifdef PHYTO_SELF_SHADING
       _RL k0_rd, chi_rd, e_rd
       _RL k0_bg, chi_bg, e_bg
@@ -110,15 +106,12 @@ C     kkey :: tape key (tile and level dependent)
 #endif
 CEOP
 
-#ifndef ALLOW_EXF
-      CHARACTER*(128) swdownfile
-#endif
-
-#ifdef PHYTO_SELF_SHADING
-# ifdef ALLOW_AUTODIFF_TAMC
-      tkey = bi + (bj - 1)*nSx + (ikey_dynamics - 1)*nSx*nSy
-# endif /* ALLOW_AUTODIFF_TAMC */
-#endif /* PHYTO_SELF_SHADING */
+C  Remove light under ice
+C  If using seaice/thsice, ice fraction is already
+C  taken into account
+      QSW_underice = .FALSE.
+      IF ( useSEAICE ) QSW_underice = .TRUE.
+      IF ( useThSIce ) QSW_underice = .TRUE.
 
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
@@ -145,18 +138,6 @@ CEOP
        ENDDO
       ENDDO
 
-C ---------------------------------------------------------------------
-C  Surface insolation
-
-#ifndef ALLOW_EXF
-      swdownfile = ' '
-#endif
-
-C If no EXF shortwave, calculate from time and latitude
-      IF (swdownfile.EQ.' ') THEN
-C  From pkg/dic/dic_insol
-C  find light as function of date and latitude
-C  based on paltridge and parson
 #ifdef PHYTO_SELF_SHADING
 C  Specify co-efficients for bio-optical model {kChl = k0 +chi[chl]^e}
 C  in red and blue-green fractions (Morel 1988; Foujols et al. 2000)
@@ -169,16 +150,31 @@ C  in red and blue-green fractions (Morel 1988; Foujols et al. 2000)
 #endif
 
 C ---------------------------------------------------------------------
-C  instantaneous light, mixed layer averaged light
+C  Instantaneous light, mixed layer averaged light
 
-#ifdef USE_QSW
+#ifdef ALLOW_EXF
+      IF (swdownfile.NE.' ') THEN
 C  Convert insolation to photosynthetically-available radiations (PAR)
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        irr_surf(i,j) = MAX( epsln,
-     &                  -parfrac*Qsw(i,j,bi,bj)*maskInC(i,j,bi,bj))
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         irr_surf(i,j) = MAX( epsln,
+     &                   -parfrac*Qsw(i,j,bi,bj)*maskInC(i,j,bi,bj))
+        ENDDO
        ENDDO
-      ENDDO
+      ELSE
+C  Find surface insolation (light) as function of date and latitude
+       CALL GCHEM_INSOLATION(
+     O      sfac,
+     I      iMin, iMax, jMin, jMax, bi, bj,
+     I      myTime, myIter, myThid)
+
+C Photosynthetically active solar radiation (PAR) just below surface
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         irr_surf(i,j) = MAX(1. _d -5,sfac(i,j)*parfrac)
+        ENDDO
+       ENDDO
+      ENDIF
 #else
 C  Find surface insolation (light) as function of date and latitude
       CALL GCHEM_INSOLATION(
@@ -192,7 +188,7 @@ C Photosynthetically active solar radiation (PAR) just below surface
         irr_surf(i,j) = MAX(1. _d -5,sfac(i,j)*parfrac)
        ENDDO
       ENDDO
-#endif /* USE_QSW */
+#endif /* ALLOW_EXF */
 
 C  Remove light under ice
       IF ( .NOT. QSW_underice ) THEN
@@ -203,39 +199,6 @@ C  Remove light under ice
        ENDDO
       ENDIF
 
-                                       C find day (****NOTE for year starting in winter*****)
-        dayfrac=mod(myTime,360. _d 0*86400. _d 0)
-     &                    /(360. _d 0*86400. _d 0)  !fraction of year
-        yday = 2. _d 0*PI*dayfrac                    !convert to radians
-        delta = (0.006918 _d 0
-     &         -(0.399912 _d 0*cos(yday))            !cosine zenith angle
-     &         +(0.070257 _d 0*sin(yday))            !(paltridge+platt)
-     &         -(0.006758 _d 0*cos(2. _d 0*yday))
-     &         +(0.000907 _d 0*sin(2. _d 0*yday))
-     &         -(0.002697 _d 0*cos(3. _d 0*yday))
-     &         +(0.001480 _d 0*sin(3. _d 0*yday)) )
-       DO j=1-OLy,sNy+OLy
-C latitude in radians
-          lat=YC(1,j,1,bj)*deg2rad
-C     latitute in radians, backed out from coriolis parameter
-C     (makes latitude independent of grid)
-          IF ( usingCartesianGrid .OR. usingCylindricalGrid )
-     &         lat = asin( fCori(1,j,1,bj)/(2. _d 0*omega) )
-          sun1 = -sin(delta)/cos(delta) * sin(lat)/cos(lat)
-          IF (sun1.LE.-0.999 _d 0) sun1=-0.999 _d 0
-          IF (sun1.GE. 0.999 _d 0) sun1= 0.999 _d 0
-          dayhrs = abs(acos(sun1))
-          cosz = ( sin(delta)*sin(lat)+              !average zenith angle
-     &            (cos(delta)*cos(lat)*sin(dayhrs)/dayhrs) )
-          IF (cosz.LE.5. _d -3) cosz= 5. _d -3
-          frac = dayhrs/PI                           !fraction of daylight in day
-C daily average photosynthetically active solar radiation just below surface
-          fluxi = solar*(1. _d 0-albedo)*cosz*frac*parfrac
-
-C convert to sfac
-          sfac(j) = MAX(1. _d -5,fluxi)
-       ENDDO !j
-      ENDIF
 #ifdef ALLOW_AUTODIFF_TAMC
       tkey = bi + (bj - 1)*nSx + (ikey_dynamics - 1)*nSx*nSy
 CADJ STORE irr_surf = comlev1_bibj, key=tkey, kind=isbyte
@@ -250,33 +213,12 @@ CADJ STORE tmp_ML = comlev1_bibj_k, key=kkey, kind=isbyte
 # endif /* ML_MEAN_LIGHT */
 #endif
 
-C ---------------------------------------------------------------------
-C Instantaneous light, mixed layer averaged light
 C Top layer
        IF ( k.EQ.1) THEN
 
         DO j=jMin,jMax
          DO i=iMin,iMax
 
-c  Photosynthetically-available radiations (PAR)
-        IF (swdownfile.EQ.' ') THEN
-         irr_surf(i,j) = sfac(j)
-        ELSE
-#ifdef ALLOW_EXF
-         irr_surf(i,j) = max(epsln,
-     &                 -parfrac*Qsw(i,j,bi,bj)*maskC(i,j,1,bi,bj))
-#endif
-        ENDIF
-
-c  Remove light under ice
-c  If using Qsw and seaice/thsice, then ice fraction is already
-c  taken into account
-        QSW_underice = .FALSE.
-        IF ( useSEAICE ) QSW_underice = .TRUE.
-        IF ( useThSIce ) QSW_underice = .TRUE.
-        IF ( .NOT. QSW_underice ) THEN
-         irr_surf(i,j) = irr_surf(i,j)*(1. _d 0 - FIce(i,j,bi,bj))
-        ENDIF
           IF ( maskC(i,j,k,bi,bj).EQ.oneRS ) THEN
 
 #ifdef PHYTO_SELF_SHADING
