@@ -1,5 +1,7 @@
 # Packages
  &PACKAGES
+ useCAL         = .TRUE.,
+ useEXF         = .TRUE.,
  useGMRedi      = .TRUE.,
  usePTRACERS    = .TRUE.,
  useGCHEM       = .TRUE.,
