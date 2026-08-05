@@ -1,0 +1,10 @@
+ &GCHEM_PARM01
+  useBLING=.TRUE.,
+  nsubtime=1,
+  selectBTconst=1,
+  selectFTconst=1,
+  selectHFconst=1,
+  selectK1K2const=6,
+# Munhoven "GENERAL" solver: =1 ; Munhoven "SEC" solver: =2 ; Munhoven "FAST" solver: =3
+  selectPHsolver=1,
+ &

@@ -1,16 +1,22 @@
-#include "DIC_OPTIONS.h"
+#include "GCHEM_OPTIONS.h"
+#ifdef ALLOW_DIC
+# include "DIC_OPTIONS.h"
+#endif
+#ifdef ALLOW_BLING
+# include "BLING_OPTIONS.h"
+#endif
 
-C--  File dic_solvesaphe.F:
+C--  File gchem_solvesaphe.F:
 C--   Contents:
-C--   o AHINI_FOR_AT
-C--   o ANW_INFSUP
-C--   o EQUATION_AT
-C--   o CALC_PCO2_SOLVESAPHE
-C--   o DIC_COEFFS_SURF
-C--   o DIC_COEFFS_DEEP
-C--   o SOLVE_AT_FAST
-C--   o SOLVE_AT_GENERAL
-C--   o SOLVE_AT_GENERAL_SEC
+C--   o GCHEM_AHINI_FOR_AT
+C--   o GCHEM_ANW_INFSUP
+C--   o GCHEM_EQUATION_AT
+C--   o GCHEM_CALC_PCO2_SOLVESAPHE
+C--   o GCHEM_COEFFS_SURF
+C--   o GCHEM_COEFFS_DEEP
+C--   o GCHEM_SOLVE_AT_FAST
+C--   o GCHEM_SOLVE_AT_GENERAL
+C--   o GCHEM_GCHEM_SOLVE_AT_GENERAL_SEC
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C    SolveSAPHE is free software: you can redistribute it and/or modify
@@ -39,34 +45,34 @@ C        MOD_PHSOLVERS SOLVE_AT_GENERAL SOLVE_AT_GENERAL_SEC and SOLVE_AT_FAST.
 C        Use runtime flags in data.dic to use GENERAL (selectPHsolver=1,
 C        default), SEC (selectPHsolver=2) or FAST (selectPHsolver=3).
 C
-C    - MOD_CHEMCONST is included here as DIC_COEFFS_SURF, with the
-C        style brought in line with S/R CARBON_COEFF (i.e all ak values are
+C    - MOD_CHEMCONST is included here as GCHEM_COEFFS_SURF, with the
+C        style brought in line with S/R GCHEM_CARBON_COEFF (i.e all ak values are
 C        filled in one call, rather than all as separate functions).
 C
 C    - MOD_CHEMCONST pressure corrections have been split off into the new
-C        S/R DIC_COEFFS_DEEP, call both to get pressure
+C        S/R GCHEM_COEFFS_DEEP, call both to get pressure
 C        adjusted dissociation constants
 C
 C    - Different coefficients can be accessed using runtime flags in data.dic:
 C
 C    Borate concentration from salinity:
 C     selectBTconst=1 for the default formulation of Uppström (1974)
-C                     i.e. the same as S/R CARBON_COEFFS
+C                     i.e. the same as S/R GCHEM_CARBON_COEFFS
 C     selectBTconst=2 for the new formulation from Lee et al (2010)
 C
 C    Fluoride concentration from salinity:
 C     selectFTconst=1 for the default formulation of Riley (1965)
-C                     i.e. the same as S/R CARBON_COEFFS
+C                     i.e. the same as S/R GCHEM_CARBON_COEFFS
 C     selectFTconst=2 for the new formulation from Culkin (1965)
 C
 C    First dissociation constant for hydrogen fluoride:
 C     selectHFconst=1 for the default  Dickson and Riley (1979)
-C                     i.e. the same as S/R CARBON_COEFFS
+C                     i.e. the same as S/R GCHEM_CARBON_COEFFS
 C     selectHFconst=2 for the formulation of Perez and Fraga (1987)
 C
 C    First and second dissociation constants of carbonic acid:
 C     selectK1K2const=1 for the default formulation of Millero (1995) with data
-C              from Mehrbach et al. (1973),  i.e. the same as S/R CARBON_COEFFS
+C        from Mehrbach et al. (1973), i.e. the same as S/R GCHEM_CARBON_COEFFS
 C     selectK1K2const=2 for the formulation of Roy et al. (1993)
 C     selectK1K2const=3 for the "combination" formulation of Millero (1995)
 C     selectK1K2const=4 for the formulation of Luecker et al. (2000)
@@ -75,7 +81,7 @@ C                                              (2010, Mar. Fresh Wat. Res.)
 C     selectK1K2const=6 for the formulation of Waters, Millero, Woosley
 C                                              (2014, Mar. Chem.)
 C      =========================================================================
-      SUBROUTINE AHINI_FOR_AT(p_alkcb, p_dictot, p_bortot, p_hini,
+      SUBROUTINE GCHEM_AHINI_FOR_AT(p_alkcb, p_dictot, p_bortot, p_hini,
      &                    i, j, k, bi, bj, myIter, myThid )
 
 C      Subroutine returns the root for the 2nd order approximation of the
@@ -92,7 +98,7 @@ C                       and the 2nd order approximation does not have a solution
 C     MITgcm GLobal variables
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "DIC_VARS.h"
+#include "GCHEM_VARS.h"
 
 C -----------------------------------------------------------------------
 C     Argument variables
@@ -104,7 +110,6 @@ C -----------------------------------------------------------------------
       _RL p_hini
       INTEGER i,j,k,bi,bj,myIter,myThid
 
-#ifdef CARBONCHEM_SOLVESAPHE
 C -----------------------------------------------------------------------
 C     Local variables
 C -----------------------------------------------------------------------
@@ -149,14 +154,13 @@ C      If the discriminant is positive
        ENDIF
       ENDIF
 
-#endif /* CARBONCHEM_SOLVESAPHE */
       RETURN
       END
-C      END SUBROUTINE AHINI_FOR_AT
+C      END SUBROUTINE GCHEM_AHINI_FOR_AT
 C      =========================================================================
 
 C      =========================================================================
-      SUBROUTINE ANW_INFSUP(p_dictot, p_bortot,
+      SUBROUTINE GCHEM_ANW_INFSUP(p_dictot, p_bortot,
      &                      p_po4tot, p_siltot,
      &                      p_nh4tot, p_h2stot,
      &                      p_so4tot, p_flutot,
@@ -173,7 +177,7 @@ C      inf(TA - [OH-] + [H+]) and sup(TA - [OH-] + [H+])
 C     MITgcm GLobal variables
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "DIC_VARS.h"
+#include "GCHEM_VARS.h"
 
 C      --------------------
 C      Argument variables
@@ -191,7 +195,6 @@ C      --------------------
       _RL p_alknw_sup
       INTEGER i,j,k,bi,bj,myIter,myThid
 
-#ifdef CARBONCHEM_SOLVESAPHE
 C      p_alknw_inf = -\Sum_i m_i Xtot_i
 C
 C      p_alknw_inf =-p_dictot*0. _d 0 & ! n = 2, m = 0
@@ -220,15 +223,15 @@ C                  p_flutot*(1. _d 0-1. _d 0)      ! n = 1, m = 1
      &             + p_po4tot + p_po4tot + p_siltot
      &             + p_nh4tot + p_h2stot
 
-#endif /* CARBONCHEM_SOLVESAPHE */
       RETURN
       END
-C      END SUBROUTINE ANW_INFSUP
+C      END SUBROUTINE GCHEM_ANW_INFSUP
 C      =========================================================================
 
 C      =========================================================================
-      SUBROUTINE CALC_PCO2_SOLVESAPHE(
+      SUBROUTINE GCHEM_CALC_PCO2_SOLVESAPHE(
      I                    t,s,z_dictot,z_po4tot,z_siltot,z_alktot,
+     I                    permil,
      U                    pHlocal,z_pco2,z_co3,
      I                    i,j,k,bi,bj,debugPrt,myIter,myThid )
 
@@ -237,7 +240,7 @@ C      =========================================================================
 C     MITgcm GLobal variables
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "DIC_VARS.h"
+#include "GCHEM_VARS.h"
 
 C -----------------------------------------------------------------------
 C General parameters
@@ -249,14 +252,15 @@ C       pt  = inorganic phosphate (mol/^3)
 C       sit = inorganic silicate (mol/^3)
 C       t   = temperature (degrees C)
 C       s   = salinity (g/kg)
+C       permil = conversion factor for mol/m3 to mol/kg
+C                assumes uniform (surface) density
       _RL  t, s, z_po4tot, z_siltot, z_alktot
+      _RL  permil
       _RL  z_pco2, z_dictot, pHlocal
       _RL  z_co3
       INTEGER i,j,k,bi,bj
       LOGICAL debugPrt
       INTEGER myIter,myThid
-
-#ifdef CARBONCHEM_SOLVESAPHE
 
 C     == Local variables ==
       _RL  z_h
@@ -299,27 +303,29 @@ C Load from the carbon_chem common block
 
       IF ( selectPHsolver.EQ.1 ) THEN
 #ifdef ALLOW_DEBUG
-        IF (debugPrt) CALL DEBUG_CALL('SOLVE_AT_GENERAL',myThid)
+        IF (debugPrt) CALL DEBUG_CALL('GCHEM_SOLVE_AT_GENERAL',myThid)
 #endif
-        CALL SOLVE_AT_GENERAL(z_alktot, z_dictot, z_bortot,
+        CALL GCHEM_SOLVE_AT_GENERAL(z_alktot, z_dictot, z_bortot,
      &                z_po4tot, z_siltot, z_nh4tot, z_h2stot,
      &                z_so4tot, z_flutot, z_hini,   z_val,
      &                z_h,
      &                i, j, k, bi, bj, debugPrt, myIter, myThid )
       ELSEIF ( selectPHsolver.EQ.2 ) THEN
 #ifdef ALLOW_DEBUG
-        IF (debugPrt) CALL DEBUG_CALL('SOLVE_AT_GENERAL_SEC',myThid)
+        IF (debugPrt)
+     &      CALL DEBUG_CALL('GCHEM_GCHEM_SOLVE_AT_GENERAL_SEC',myThid)
 #endif
-        CALL SOLVE_AT_GENERAL_SEC(z_alktot, z_dictot, z_bortot,
+        CALL GCHEM_GCHEM_SOLVE_AT_GENERAL_SEC(
+     &                z_alktot, z_dictot, z_bortot,
      &                z_po4tot, z_siltot, z_nh4tot, z_h2stot,
      &                z_so4tot, z_flutot, z_hini,   z_val,
      &                z_h,
      &                i, j, k, bi, bj, debugPrt, myIter, myThid )
       ELSEIF ( selectPHsolver.EQ.3 ) THEN
 #ifdef ALLOW_DEBUG
-        IF (debugPrt) CALL DEBUG_CALL('SOLVE_AT_FAST',myThid)
+        IF (debugPrt) CALL DEBUG_CALL('GCHEM_SOLVE_AT_FAST',myThid)
 #endif
-        CALL SOLVE_AT_FAST(z_alktot, z_dictot, z_bortot,
+        CALL GCHEM_SOLVE_AT_FAST(z_alktot, z_dictot, z_bortot,
      &                z_po4tot, z_siltot, z_nh4tot, z_h2stot,
      &                z_so4tot, z_flutot, z_hini,   z_val,
      &                z_h,
@@ -329,11 +335,11 @@ C Load from the carbon_chem common block
 C Unlikely, but it might happen...
       IF ( z_h .LT. 0. _d 0 ) THEN
         WRITE(msgBuf,'(A,A,A)')
-     &    'S/R CALC_PCO2_SOLVESAPHE:',
+     &    'S/R GCHEM_CALC_PCO2_SOLVESAPHE:',
      &    ' H+ ion concentration less than 0',
      &    ' Divergence or too many iterations'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CALC_PCO2_SOLVESAPHE'
+        STOP 'ABNORMAL END: S/R GCHEM_CALC_PCO2_SOLVESAPHE'
       ENDIF
 
 C Return update pH to main routine
@@ -372,14 +378,13 @@ C Reconvert from mol/kg -> mol/m^3
       z_co3    = z_co3/permil
       z_co2aq  = z_co2s/permil
 
-#endif /* CARBONCHEM_SOLVESAPHE */
       RETURN
       END
-C      END SUBROUTINE CALC_PCO2_SOLVESAPHE
+C      END SUBROUTINE GCHEM_CALC_PCO2_SOLVESAPHE
 C      =========================================================================
 
 C      =========================================================================
-      SUBROUTINE DIC_COEFFS_SURF(
+      SUBROUTINE GCHEM_COEFFS_SURF(
      &                   ttemp,stemp,
      &                   bi,bj,iMin,iMax,jMin,jMax,myThid)
 
@@ -393,13 +398,11 @@ C     MITgcm GLobal variables
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "DIC_VARS.h"
+#include "GCHEM_VARS.h"
 
       _RL  ttemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  stemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER bi,bj,iMin,iMax,jMin,jMax,myThid
-
-#ifdef CARBONCHEM_SOLVESAPHE
 
 C LOCAL VARIABLES
       INTEGER i, j
@@ -889,14 +892,13 @@ C       Units     : (mol/kg-SW)^2
          endif
          end do
         end do
-#endif /* CARBONCHEM_SOLVESAPHE */
       RETURN
       END
-C     END SUBROUTINE DIC_COEFFS_SURF
+C     END SUBROUTINE GCHEM_COEFFS_SURF
 C -----------------------------------------------------------------------
 
 C -----------------------------------------------------------------------
-      SUBROUTINE DIC_COEFFS_DEEP(
+      SUBROUTINE GCHEM_COEFFS_DEEP(
      &                   ttemp,stemp,
      &                   bi,bj,iMin,iMax,jMin,jMax,
      &                   Klevel,myThid)
@@ -911,13 +913,12 @@ C     MITgcm GLobal variables
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "DIC_VARS.h"
+#include "GCHEM_VARS.h"
 
       _RL  ttemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  stemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER bi,bj,iMin,iMax,jMin,jMax,Klevel,myThid
 
-#ifdef CARBONCHEM_SOLVESAPHE
 C LOCAL VARIABLES
       INTEGER i, j, k
       _RL  bdepth
@@ -1204,15 +1205,14 @@ C       References: Millero (1979) for pressure correction
          endif
        enddo
       enddo
-#endif /* CARBONCHEM_SOLVESAPHE */
 
       RETURN
       END
-C     END SUBROUTINE DIC_COEFFS_DEEP
+C     END SUBROUTINE GCHEM_COEFFS_DEEP
 C      =========================================================================
 
 C      =========================================================================
-      SUBROUTINE EQUATION_AT(p_alktot, p_h,      p_dictot,
+      SUBROUTINE GCHEM_EQUATION_AT(p_alktot, p_h,      p_dictot,
      &                       p_bortot, p_po4tot, p_siltot,
      &                       p_nh4tot, p_h2stot, p_so4tot,
      &                       p_flutot, p_eqn   , p_deriveqn,
@@ -1224,7 +1224,7 @@ C      =========================================================================
 C     MITgcm GLobal variables
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "DIC_VARS.h"
+#include "GCHEM_VARS.h"
 
 C      --------------------
 C      Argument variables
@@ -1243,8 +1243,6 @@ C      --------------------
       _RL p_deriveqn
       _RL p_eqn
       INTEGER i,j,k,bi,bj,myIter,myThid
-
-#ifdef CARBONCHEM_SOLVESAPHE
 
 C      -----------------
 C      Local variables
@@ -1311,7 +1309,7 @@ C      HF - F : n=1, m=1
 C      H2O - OH
       zalk_wat   = akw(i,j,bi,bj)/p_h - p_h/aphscale(i,j,bi,bj)
 
-C      EQUATION_AT =    zalk_dic + zalk_bor + zalk_po4 + zalk_sil &
+C      GCHEM_EQUATION_AT =    zalk_dic + zalk_bor + zalk_po4 + zalk_sil &
 C              + zalk_nh4 + zalk_h2s + zalk_so4 + zalk_flu &
 C                  + zalk_wat - p_alktot
       p_eqn =   zalk_dic + zalk_bor + zalk_po4 + zalk_sil
@@ -1367,30 +1365,29 @@ C      HF - F : n=1
      &             - akw(i,j,bi,bj)/p_h**2 - 1. _d 0/aphscale(i,j,bi,bj)
 C      ENDIF
 
-#endif /* CARBONCHEM_SOLVESAPHE */
       RETURN
       END
-C     END SUBROUTINE EQUATION_AT
+C     END SUBROUTINE GCHEM_EQUATION_AT
 C      =========================================================================
 
 C      =========================================================================
-      SUBROUTINE SOLVE_AT_FAST(p_alktot, p_dictot, p_bortot,
+      SUBROUTINE GCHEM_SOLVE_AT_FAST(p_alktot, p_dictot, p_bortot,
      &                         p_po4tot, p_siltot, p_nh4tot,
      &                         p_h2stot, p_so4tot, p_flutot,
      &                         p_hini,   p_val,    p_hnew,
      &                         i, j, k, bi, bj,
      &                         debugPrt, myIter, myThid )
 C      =========================================================================
-C      Fast version of SOLVE_AT_GENERAL, without any bounds checking.
+C      Fast version of GCHEM_SOLVE_AT_GENERAL, without any bounds checking.
 
       IMPLICIT NONE
 
 C     MITgcm GLobal variables
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "DIC_VARS.h"
+#include "GCHEM_VARS.h"
 
-C     _RL SOLVE_AT_FAST
+C     _RL GCHEM_SOLVE_AT_FAST
 
 C     --------------------
 C     Argument variables
@@ -1411,8 +1408,6 @@ C     --------------------
       INTEGER i, j, k, bi, bj
       LOGICAL debugPrt
       INTEGER myIter, myThid
-
-#ifdef CARBONCHEM_SOLVESAPHE
 
 C     --------------------
 C     Local variables
@@ -1436,13 +1431,13 @@ C     IF(PRESENT(p_hini)) THEN
       zh_ini = p_hini
 C     ELSE
 C     #if defined(DEBUG_PHSOLVERS)
-C        PRINT*, '[SOLVE_AT_FAST] Calling AHINI_FOR_AT for h_ini'
+C        PRINT*, '[GCHEM_SOLVE_AT_FAST] Calling GCHEM_AHINI_FOR_AT for h_ini'
 C     #endif
 C
-C        CALL AHINI_FOR_AT(p_alktot, p_dictot, p_bortot, zh_ini)
+C        CALL GCHEM_AHINI_FOR_AT(p_alktot, p_dictot, p_bortot, zh_ini)
 C
 C     #if defined(DEBUG_PHSOLVERS)
-C        PRINT*, '[SOLVE_AT_FAST] h_ini :', zh_ini
+C        PRINT*, '[GCHEM_SOLVE_AT_FAST] h_ini :', zh_ini
 C     #endif
 C     ENDIF
 
@@ -1461,11 +1456,11 @@ C Reset counters of iterations
 
          zh_prev = zh
 
-C        zeqn = EQUATION_AT(p_alktot, zh,       p_dictot, p_bortot,
+C        zeqn = EQUATION_AT(p_alktot, zh,        p_dictot, p_bortot,
 C     &                      p_po4tot, p_siltot, p_nh4tot, p_h2stot,
 C     &                      p_so4tot, p_flutot, P_DERIVEQN = zdeqndh)
 
-        CALL EQUATION_AT( p_alktot, zh      , p_dictot, p_bortot,
+        CALL GCHEM_EQUATION_AT( p_alktot, zh, p_dictot, p_bortot,
      &                    p_po4tot, p_siltot, p_nh4tot, p_h2stot,
      &                    p_so4tot, p_flutot,
      &                    zeqn    , zdeqndh,
@@ -1484,7 +1479,7 @@ C zh is the root
         ENDIF
 
 C     #if defined(DEBUG_PHSOLVERS)
-C        PRINT*, '[SOLVE_AT_FAST] testing zh :', zh, zeqn, zh_lnfactor
+C        PRINT*, '[GCHEM_SOLVE_AT_FAST] testing zh :', zh, zeqn, zh_lnfactor
 C     #endif
 C
 C      ! Stop iterations once |\delta{[H]}/[H]| < rdel
@@ -1507,15 +1502,15 @@ C        IF(l_exitnow) EXIT
        ENDIF
       ENDDO
 
-C     SOLVE_AT_FAST = zh
+C     GCHEM_SOLVE_AT_FAST = zh
       p_hnew = zh
 
 C     IF(PRESENT(p_val)) THEN
         IF(zh .GT. 0. _d 0) THEN
-C           p_val = EQUATION_AT(p_alktot, zh,       p_dictot, p_bortot,
+C           p_val = GCHEM_EQUATION_AT(p_alktot, zh,  p_dictot, p_bortot,
 C     &                          p_po4tot, p_siltot, p_nh4tot, p_h2stot,
 C     &                          p_so4tot, p_flutot)
-           CALL EQUATION_AT( p_alktot, zh,       p_dictot, p_bortot,
+           CALL GCHEM_EQUATION_AT( p_alktot, zh, p_dictot, p_bortot,
      &                       p_po4tot, p_siltot, p_nh4tot, p_h2stot,
      &                       p_so4tot, p_flutot,
      &                       p_val   , zdeqndh,
@@ -1526,14 +1521,13 @@ c          p_val = HUGE(1. _d 0)
         ENDIF
 C     ENDIF
 
-#endif /* CARBONCHEM_SOLVESAPHE */
       RETURN
       END
-C END FUNCTION SOLVE_AT_FAST
+C END FUNCTION GCHEM_SOLVE_AT_FAST
 C      =========================================================================
 
 C      =========================================================================
-      SUBROUTINE SOLVE_AT_GENERAL(p_alktot, p_dictot, p_bortot,
+      SUBROUTINE GCHEM_SOLVE_AT_GENERAL(p_alktot, p_dictot, p_bortot,
      &                         p_po4tot, p_siltot, p_nh4tot,
      &                         p_h2stot, p_so4tot, p_flutot,
      &                         p_hini,   p_val,    p_hnew,
@@ -1547,9 +1541,7 @@ C      determines upper an lower bounds for the solution if required
 C     MITgcm GLobal variables
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "DIC_VARS.h"
-
-C      _RL SOLVE_AT_GENERAL
+#include "GCHEM_VARS.h"
 
 C     --------------------
 C     Argument variables
@@ -1570,8 +1562,6 @@ C     --------------------
       INTEGER i, j, k, bi, bj
       LOGICAL debugPrt
       INTEGER myIter, myThid
-
-#ifdef CARBONCHEM_SOLVESAPHE
 
 C     -----------------
 C     Local variables
@@ -1596,17 +1586,17 @@ C      IF(PRESENT(p_hini)) THEN
         zh_ini = p_hini
 C      ELSE
 C#if defined(DEBUG_PHSOLVERS)
-C        PRINT*, '[SOLVE_AT_GENERAL] Calling AHINI_FOR_AT for h_ini'
+C        PRINT*, '[GCHEM_SOLVE_AT_GENERAL] Calling GCHEM_AHINI_FOR_AT for h_ini'
 C#endif
-C        CALL AHINI_FOR_AT(p_alktot, p_dictot, p_bortot, zh_ini)
+C        CALL GCHEM_AHINI_FOR_AT(p_alktot, p_dictot, p_bortot, zh_ini)
 C#if defined(DEBUG_PHSOLVERS)
-C        PRINT*, '[SOLVE_AT_GENERAL] h_ini :', zh_ini
+C        PRINT*, '[GCHEM_SOLVE_AT_GENERAL] h_ini :', zh_ini
 C#endif
 C      ENDIF
 #ifdef ALLOW_DEBUG
-      IF (debugPrt) CALL DEBUG_CALL('ANW_INFSUP',myThid)
+      IF (debugPrt) CALL DEBUG_CALL('GCHEM_ANW_INFSUP',myThid)
 #endif
-      CALL ANW_INFSUP(p_dictot, p_bortot,
+      CALL GCHEM_ANW_INFSUP(p_dictot, p_bortot,
      &                p_po4tot, p_siltot,  p_nh4tot, p_h2stot,
      &                p_so4tot, p_flutot,
      &                p_alknw_inf, p_alknw_sup,
@@ -1635,8 +1625,8 @@ C      ENDIF
       ENDIF
 
 C#if defined(DEBUG_PHSOLVERS)
-C           PRINT*, '[SOLVE_AT_GENERAL] h_min :', zh_min
-C           PRINT*, '[SOLVE_AT_GENERAL] h_max :', zh_max
+C           PRINT*, '[GCHEM_SOLVE_AT_GENERAL] h_min :', zh_min
+C           PRINT*, '[GCHEM_SOLVE_AT_GENERAL] h_max :', zh_max
 C#endif
 
       zh = MAX(MIN(zh_max, zh_ini), zh_min)
@@ -1658,12 +1648,12 @@ c     zeqn_absmin       = HUGE(1. _d 0)
 
         zh_prev = zh
 #ifdef ALLOW_DEBUG
-        IF (debugPrt) CALL DEBUG_CALL('EQUATION_AT',myThid)
+        IF (debugPrt) CALL DEBUG_CALL('GCHEM_EQUATION_AT',myThid)
 #endif
-C        zeqn = EQUATION_AT(p_alktot, zh,      p_dictot, p_bortot,
+C        zeqn = GCHEM_EQUATION_AT(p_alktot, zh, p_dictot, p_bortot,
 C     &                   p_po4tot, p_siltot, p_nh4tot, p_h2stot,
 C     &                   p_so4tot, p_flutot, P_DERIVEQN = zdeqndh)
-        CALL EQUATION_AT( p_alktot, zh,       p_dictot, p_bortot,
+        CALL GCHEM_EQUATION_AT( p_alktot, zh, p_dictot, p_bortot,
      &                    p_po4tot, p_siltot, p_nh4tot, p_h2stot,
      &                    p_so4tot, p_flutot,
      &                    zeqn   , zdeqndh,
@@ -1719,7 +1709,7 @@ C                 = [H]_old * EXP(-zeqn/(zdeqndh*[H]_old))
            ENDIF
 
 C#if defined(DEBUG_PHSOLVERS)
-C           PRINT*, '[SOLVE_AT_GENERAL] testing zh :', zh, zeqn, zh_lnfactor
+C           PRINT*, '[GCHEM_SOLVE_AT_GENERAL] testing zh :', zh, zeqn, zh_lnfactor
 C#endif
 
            IF( zh .LT. zh_min ) THEN
@@ -1776,11 +1766,11 @@ C        IF(l_exitnow) EXIT
        ENDIF
       ENDDO
 
-C      SOLVE_AT_GENERAL = zh
+C      GCHEM_SOLVE_AT_GENERAL = zh
       p_hnew = zh
 
 C      IF(PRESENT(p_val)) THEN
-C           p_val = EQUATION_AT(p_alktot, zh,      p_dictot, p_bortot,
+C           p_val = GCHEM_EQUATION_AT(p_alktot, zh, p_dictot, p_bortot,
 C     &                       p_po4tot, p_siltot, p_nh4tot, p_h2stot,
 C     &                       p_so4tot, p_flutot)
 C        ELSE
@@ -1788,16 +1778,15 @@ C           p_val = HUGE(1. _d 0)
 C       ENDIF
 C      ENDIF
 #ifdef ALLOW_DEBUG
-      IF (debugPrt) CALL DEBUG_LEAVE('SOLVE_AT_GENERAL',myThid)
+      IF (debugPrt) CALL DEBUG_LEAVE('GCHEM_SOLVE_AT_GENERAL',myThid)
 #endif
-#endif /* CARBONCHEM_SOLVESAPHE */
       RETURN
       END
-C      END FUNCTION SOLVE_AT_GENERAL
+C      END FUNCTION GCHEM_SOLVE_AT_GENERAL
 C      =========================================================================
 
 C      =========================================================================
-      SUBROUTINE SOLVE_AT_GENERAL_SEC(p_alktot, p_dictot,
+      SUBROUTINE GCHEM_GCHEM_SOLVE_AT_GENERAL_SEC(p_alktot, p_dictot,
      &                           p_bortot, p_po4tot,
      &                           p_siltot, p_nh4tot,
      &                           p_h2stot, p_so4tot,
@@ -1813,7 +1802,7 @@ C      determines upper an lower bounds for the solution if required
 C     MITgcm GLobal variables
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "DIC_VARS.h"
+#include "GCHEM_VARS.h"
 
 C     --------------------
 C     Argument variables
@@ -1835,8 +1824,6 @@ C     --------------------
       LOGICAL debugPrt
       INTEGER myIter, myThid
 
-#ifdef CARBONCHEM_SOLVESAPHE
-
 C     -----------------
 C     Local variables
 C     -----------------
@@ -1857,15 +1844,15 @@ C      IF(PRESENT(p_hini)) THEN
         zh_ini = p_hini
 C      ELSE
 C#if defined(DEBUG_PHSOLVERS)
-C        PRINT*, '[SOLVE_AT_GENERAL_SEC] Calling AHINI_FOR_AT for h_ini'
+C        PRINT*, '[GCHEM_GCHEM_SOLVE_AT_GENERAL_SEC] Calling GCHEM_AHINI_FOR_AT for h_ini'
 C#endif
-C       CALL AHINI_FOR_AT(p_alktot, p_dictot, p_bortot, zh_ini)
+C       CALL GCHEM_AHINI_FOR_AT(p_alktot, p_dictot, p_bortot, zh_ini)
 C#if defined(DEBUG_PHSOLVERS)
-C        PRINT*, '[SOLVE_AT_GENERAL_SEC] h_ini :', zh_ini
+C        PRINT*, '[GCHEM_GCHEM_SOLVE_AT_GENERAL_SEC] h_ini :', zh_ini
 C#endif
 C      ENDIF
 
-      CALL ANW_INFSUP(p_dictot, p_bortot,
+      CALL GCHEM_ANW_INFSUP(p_dictot, p_bortot,
      &               p_po4tot, p_siltot,  p_nh4tot, p_h2stot,
      &               p_so4tot, p_flutot,
      &               p_alknw_inf, p_alknw_sup,
@@ -1894,8 +1881,8 @@ C      ENDIF
       ENDIF
 
 C#if defined(DEBUG_PHSOLVERS)
-C           PRINT*, '[SOLVE_AT_GENERAL_SEC] h_min :', zh_min
-C           PRINT*, '[SOLVE_AT_GENERAL_SEC] h_max :', zh_max
+C           PRINT*, '[GCHEM_GCHEM_SOLVE_AT_GENERAL_SEC] h_min :', zh_min
+C           PRINT*, '[GCHEM_GCHEM_SOLVE_AT_GENERAL_SEC] h_max :', zh_max
 C#endif
 
 C     Uncomment this line for the "safe" initialisation test
@@ -1913,10 +1900,10 @@ C      (will take the role of the $n-2$ iterate at the first secant evaluation)
 
 C     zh_2 is the initial value
       zh_2   = zh
-C      zeqn_2 = EQUATION_AT(p_alktot, zh_2,     p_dictot, p_bortot,
+C      zeqn_2 = GCHEM_EQUATION_AT(p_alktot, zh_2, p_dictot, p_bortot,
 C     &                   p_po4tot, p_siltot, p_nh4tot, p_h2stot,
 C     &                   p_so4tot, p_flutot)
-      CALL EQUATION_AT( p_alktot, zh_2,    p_dictot, p_bortot,
+      CALL GCHEM_EQUATION_AT( p_alktot, zh_2, p_dictot, p_bortot,
      &                  p_po4tot, p_siltot, p_nh4tot, p_h2stot,
      &                  p_so4tot, p_flutot,
      &                  zeqn_2  , zdeqndh,
@@ -1946,7 +1933,7 @@ C                 to a bisection step on [pH@zh_min, pH@zh_max]
 
       ELSE
 C       we have got the root; unlikely, but one never knows
-C        SOLVE_AT_GENERAL_SEC = zh_2
+C        GCHEM_GCHEM_SOLVE_AT_GENERAL_SEC = zh_2
          p_hnew = zh_2
 C        IF(PRESENT(p_val)) p_val = zeqn_2
          p_val = zeqn_2
@@ -1960,10 +1947,10 @@ C      zh_1 has already been set above
 C     Update counter of iterations
       niter_atsec = 1
 
-C      zeqn_1 = EQUATION_AT(p_alktot, zh_1,      p_dictot, p_bortot,
+C      zeqn_1 = GCHEM_EQUATION_AT(p_alktot, zh_1, p_dictot, p_bortot,
 C     &                   p_po4tot, p_siltot, p_nh4tot, p_h2stot,
 C     &                   p_so4tot, p_flutot)
-      CALL EQUATION_AT( p_alktot, zh_1,     p_dictot, p_bortot,
+      CALL GCHEM_EQUATION_AT( p_alktot, zh_1, p_dictot, p_bortot,
      &                  p_po4tot, p_siltot, p_nh4tot, p_h2stot,
      &                  p_so4tot, p_flutot,
      &                  zeqn_1  , zdeqndh,
@@ -1978,7 +1965,7 @@ C      or zh_min <= zh <= zh_1 (if zeqn_1 < 0), so this can always be done
         zh_max = zh_1
       ELSE
 C      zh_1 is the root
-C        SOLVE_AT_GENERAL_SEC = zh_1
+C        GCHEM_GCHEM_SOLVE_AT_GENERAL_SEC = zh_1
         p_hnew = zh_1
 C        IF(PRESENT(p_val)) p_val = zeqn_1
         p_val = zeqn_1
@@ -2027,10 +2014,10 @@ C                and zeqn_2 < zeqn_1 < 0
            iterate4pH = .FALSE.
        ELSE
 
-C        zeqn = EQUATION_AT(p_alktot, zh, p_dictot, p_bortot,
+C        zeqn = GCHEM_EQUATION_AT(p_alktot, zh, p_dictot, p_bortot,
 C      &                  p_po4tot, p_siltot, p_nh4tot, p_h2stot,
 C      &                  p_so4tot, p_flutot)
-        CALL EQUATION_AT( p_alktot, zh,       p_dictot, p_bortot,
+        CALL GCHEM_EQUATION_AT( p_alktot, zh, p_dictot, p_bortot,
      &                    p_po4tot, p_siltot, p_nh4tot, p_h2stot,
      &                    p_so4tot, p_flutot,
      &                    zeqn    , zdeqndh,
@@ -2078,7 +2065,7 @@ C            H_new = H_1 + \Delta H
            zh      = zh_1 + zh_delta
 
 C#if defined(DEBUG_PHSOLVERS)
-C           PRINT*, '[SOLVE_AT_GENERAL_SEC] testing zh :', zh, zeqn, zh_delta
+C           PRINT*, '[GCHEM_GCHEM_SOLVE_AT_GENERAL_SEC] testing zh :', zh, zeqn, zh_delta
 C#endif
            IF( zh .LT. zh_min ) THEN
 C              if [H]_new < [H]_min
@@ -2121,15 +2108,15 @@ C        IF(l_exitnow) EXIT
        ENDIF
       ENDDO
 
-C      SOLVE_AT_GENERAL_SEC = zh
+C      GCHEM_GCHEM_SOLVE_AT_GENERAL_SEC = zh
       p_hnew = zh
 
 C      IF(PRESENT(p_val)) THEN
        IF(zh .GT. 0. _d 0) THEN
-C           p_val = EQUATION_AT(p_alktot, zh,      p_dictot, p_bortot,
+C           p_val = GCHEM_EQUATION_AT(p_alktot, zh, p_dictot, p_bortot,
 C     &                       p_po4tot, p_siltot, p_nh4tot, p_h2stot,
 C     &                       p_so4tot, p_flutot)
-          CALL EQUATION_AT( p_alktot, zh,       p_dictot, p_bortot,
+          CALL GCHEM_EQUATION_AT( p_alktot, zh, p_dictot, p_bortot,
      &                      p_po4tot, p_siltot, p_nh4tot, p_h2stot,
      &                      p_so4tot, p_flutot,
      &                      p_val   , zdeqndh,
@@ -2140,8 +2127,7 @@ c         p_val = HUGE(1. _d 0)
        ENDIF
 C      ENDIF
 
-#endif /* CARBONCHEM_SOLVESAPHE */
       RETURN
       END
-C      END FUNCTION SOLVE_AT_GENERAL_SEC
+C      END FUNCTION GCHEM_GCHEM_SOLVE_AT_GENERAL_SEC
 C      =========================================================================
