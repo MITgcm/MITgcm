@@ -161,11 +161,11 @@ C---   New way to read DIC pickup:
 C---    read DIC 3-D fields for restart
 #ifdef DIC_CALCITE_SAT
         IF ( useCalciteSaturation ) THEN
-c        CALL READ_MFLDS_3D_RL( 'DIC_pH3d', pH3D,
-c    &                                 nj, fp, Nr, myIter, myThid )
-c        _BEGIN_MASTER( myThid )
-c        pH_isLoaded(2) = .TRUE.
-c        _END_MASTER( myThid )
+         CALL READ_MFLDS_3D_RL( 'DIC_pH3d', pH3D,
+     &                                nj, fp, Nr, myIter, myThid )
+         _BEGIN_MASTER( myThid )
+         pH_isLoaded(2) = .TRUE.
+         _END_MASTER( myThid )
         ENDIF
 #endif
 

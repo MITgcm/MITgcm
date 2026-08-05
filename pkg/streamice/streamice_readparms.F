@@ -18,6 +18,7 @@ C     !USES:
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "STREAMICE.h"
+#include "STREAMICE_FP.h"
 #include "STREAMICE_BDRY.h"
 c#ifdef ALLOW_STREAMICE_FLUX_CONTROL
 c#include "STREAMICE_CTRL_FLUX.h"
@@ -143,7 +144,7 @@ c      _RL streamice_bdot_maxmelt
      &     streamice_petsc_pcfactorlevels
 #endif
 
-#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+#ifdef ALLOW_STREAMICE_FP_ADJ
       NAMELIST /STREAMICE_PARMOAD/
      &     streamice_nonlin_tol_adjoint,
      &     streamice_nonlin_tol_adjoint_rl
@@ -253,7 +254,7 @@ C--   Default values for STREAMICE
       streamice_nonlin_tol = 1e-6
       streamice_nonlin_tol_fp = 1.e-14
       streamice_err_norm = 0.
-#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+#ifdef ALLOW_STREAMICE_FP_ADJ
       streamice_nonlin_tol_adjoint = 1.e-14
       streamice_nonlin_tol_adjoint_rl = 1.e-14
 #ifdef ALLOW_PETSC
@@ -490,7 +491,7 @@ C     Read parameters from open data file
      &    SQUEEZE_RIGHT , 1)
 #endif
 
-#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+#ifdef ALLOW_STREAMICE_FP_ADJ
       READ(UNIT=iUnit,NML=STREAMICE_PARMOAD)
       WRITE(msgBuf,'(A)')
      &    'STREAMICE_READPARMS: read oad parm block'

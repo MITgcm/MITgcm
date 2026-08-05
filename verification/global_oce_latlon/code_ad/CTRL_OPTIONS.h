@@ -58,7 +58,7 @@ C   Only relevant within DEPTH_CONTROL code:
 #endif /* ALLOW_DEPTH_CONTROL */
 
 C       >>> Generic Control.
-#undef ALLOW_GENARR2D_CONTROL
+#define ALLOW_GENARR2D_CONTROL
 #define ALLOW_GENARR3D_CONTROL
 #define ALLOW_GENTIM2D_CONTROL
 # undef ALLOW_UVEL0_CONTROL

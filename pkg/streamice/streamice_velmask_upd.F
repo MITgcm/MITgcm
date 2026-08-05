@@ -224,7 +224,11 @@ c      CALL WRITE_FLD_XY_RL ("vfacemask","",STREAMICE_vfacemask,0,myThid)
 #ifdef ALLOW_PETSC
       myThidCopy = myThid
       if (streamice_use_petsc) then
+#ifdef ALLOW_OPENAD
       call streamice_petsc_numerate (myThidCopy)
+#else
+      call streamice_petsc_numerate (myThid)
+#endif
       endif
 #endif
 

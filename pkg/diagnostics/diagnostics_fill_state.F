@@ -25,6 +25,9 @@ C     == Global variables ===
 #ifdef ALLOW_GENERIC_ADVDIFF
 # include "GAD.h"
 #endif
+#ifdef ALLOW_LAYERS
+# include "LAYERS_P2SHARE.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -78,11 +81,9 @@ C--   fill momentum state-var diagnostics:
 
         CALL DIAGNOSTICS_SCALE_FILL( etaN, oneRL, 2,
      &                              'ETANSQ  ',0, 1,0,1,1,myThid)
-
-#ifdef EXACT_CONSERV
         CALL DIAGNOSTICS_SCALE_FILL( dEtaHdt, oneRL, 2,
      &                              'DETADT2 ',0, 1,0,1,1,myThid)
-#endif
+
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( use3Dsolver ) THEN
           CALL DIAGNOSTICS_FILL( phi_nh,'PHI_NH  ',0,Nr,0,1,1,myThid )
@@ -106,6 +107,37 @@ C--   fill momentum state-var diagnostics:
      &                              'WVELSQ  ',0,Nr,0,1,1,myThid)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+        IF ( DIAGNOSTICS_IS_ON('VSHEARSQ',myThid) ) THEN
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j = 1,sNy
+            DO i = 1,sNx
+              tmpMk(i,j,1,bi,bj) = 0. _d 0
+            ENDDO
+           ENDDO
+           DO k=2,Nr
+            DO j = 1,sNy+1
+             DO i = 1,sNx+1
+              tmpU(i,j) = ( uVel(i,j,k,bi,bj) - uVel(i,j,k-1,bi,bj) )
+c                       * maskW(i,j,k,bi,bj)*maskW(i,j,k-1,bi,bj)
+              tmpV(i,j) = ( vVel(i,j,k,bi,bj) - vVel(i,j,k-1,bi,bj) )
+c                       * maskS(i,j,k,bi,bj)*maskS(i,j,k-1,bi,bj)
+             ENDDO
+            ENDDO
+            DO j = 1,sNy
+             DO i = 1,sNx
+              tmpMk(i,j,k,bi,bj) = recip_drC(k)*recip_drC(k)*halfRL
+     &           *( ( tmpU(i,j)*tmpU(i,j) + tmpU(i+1,j)*tmpU(i+1,j) )
+     &            + ( tmpV(i,j)*tmpV(i,j) + tmpV(i,j+1)*tmpV(i,j+1) )
+     &            )
+             ENDDO
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+         CALL DIAGNOSTICS_FILL(tmpMk,'VSHEARSQ',0,Nr,0,1,1,myThid)
+        ENDIF
 
         IF ( DIAGNOSTICS_IS_ON('UE_VEL_C',myThid) .OR.
      &       DIAGNOSTICS_IS_ON('VN_VEL_C',myThid) .OR.
@@ -358,7 +390,11 @@ C     (next fill for these diagnostics will NOT allow counter to be incremented)
         CALL DIAGNOSTICS_SCALE_FILL( vVel, tmpFac, 1,
      &                              'TOTVTEND',0,Nr,0,1,1,myThid )
 
-        IF ( DIAGNOSTICS_IS_ON('TOTTTEND',myThid) ) THEN
+        IF ( DIAGNOSTICS_IS_ON('TOTTTEND',myThid)
+#ifdef ALLOW_LAYERS
+     &     .OR. layers_useThermo
+#endif
+     &     ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO k=1,Nr
@@ -373,13 +409,17 @@ C     (next fill for these diagnostics will NOT allow counter to be incremented)
          ENDDO
          CALL DIAGNOSTICS_FILL(tmpMk,'TOTTTEND',0,Nr,0,1,1,myThid)
 #ifdef ALLOW_LAYERS
-         IF ( useLayers ) THEN
-           CALL LAYERS_FILL(tmpMk,1,'TOT',0,Nr,0,1,1,myThid)
+         IF ( layers_useThermo ) THEN
+          CALL LAYERS_FILL(tmpMk,1,'TOT',0,Nr,0,1,1,myThid)
          ENDIF
 #endif /* ALLOW_LAYERS */
         ENDIF
 
-        IF ( DIAGNOSTICS_IS_ON('TOTSTEND',myThid) ) THEN
+        IF ( DIAGNOSTICS_IS_ON('TOTSTEND',myThid)
+#ifdef ALLOW_LAYERS
+     &     .OR. layers_useThermo
+#endif
+     &     ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO k=1,Nr
@@ -394,8 +434,8 @@ C     (next fill for these diagnostics will NOT allow counter to be incremented)
          ENDDO
          CALL DIAGNOSTICS_FILL(tmpMk,'TOTSTEND',0,Nr,0,1,1,myThid)
 #ifdef ALLOW_LAYERS
-         IF ( useLayers ) THEN
-           CALL LAYERS_FILL(tmpMk,2,'TOT',0,Nr,0,1,1,myThid)
+         IF ( layers_useThermo ) THEN
+          CALL LAYERS_FILL(tmpMk,2,'TOT',0,Nr,0,1,1,myThid)
          ENDIF
 #endif /* ALLOW_LAYERS */
         ENDIF
@@ -666,7 +706,11 @@ C     (previous fill for these diagnostics DID allow counter to be incremented)
          ENDDO
         ENDDO
 
-        IF ( DIAGNOSTICS_IS_ON('TOTTTEND',myThid) ) THEN
+        IF ( DIAGNOSTICS_IS_ON('TOTTTEND',myThid)
+#ifdef ALLOW_LAYERS
+     &     .OR. layers_useThermo
+#endif
+     &     ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO k=1,Nr
@@ -679,15 +723,19 @@ C     (previous fill for these diagnostics DID allow counter to be incremented)
            ENDDO
            CALL DIAGNOSTICS_FILL(tmpMk,'TOTTTEND',0,Nr,-1,bi,bj,myThid)
 #ifdef ALLOW_LAYERS
-           IF ( useLayers ) THEN
-             CALL LAYERS_FILL(tmpMk,1,'TOT',0,Nr,-1,bi,bj,myThid)
+           IF ( layers_useThermo ) THEN
+            CALL LAYERS_FILL(tmpMk,1,'TOT',0,Nr,-1,bi,bj,myThid)
            ENDIF
 #endif /* ALLOW_LAYERS */
           ENDDO
          ENDDO
         ENDIF
 
-        IF ( DIAGNOSTICS_IS_ON('TOTSTEND',myThid) ) THEN
+        IF ( DIAGNOSTICS_IS_ON('TOTSTEND',myThid)
+#ifdef ALLOW_LAYERS
+     &     .OR. layers_useThermo
+#endif
+     &     ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO k=1,Nr
@@ -700,7 +748,7 @@ C     (previous fill for these diagnostics DID allow counter to be incremented)
            ENDDO
            CALL DIAGNOSTICS_FILL(tmpMk,'TOTSTEND',0,Nr,-1,bi,bj,myThid)
 #ifdef ALLOW_LAYERS
-           IF ( useLayers ) THEN
+           IF ( layers_useThermo ) THEN
             CALL LAYERS_FILL(tmpMk,2,'TOT',0,Nr,-1,bi,bj,myThid)
            ENDIF
 #endif /* ALLOW_LAYERS */

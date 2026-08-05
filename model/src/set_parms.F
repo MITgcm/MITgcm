@@ -63,7 +63,12 @@ C--   Make metric term & Coriolis settings consistent with underlying grid.
      &                     SQUEEZE_RIGHT, myThid )
       ENDIF
       IF ( usingCurvilinearGrid ) THEN
+C-    Horizontal metric terms not implemented for Curvilinear-Grid
         selectMetricTerms = 0
+      ENDIF
+      IF ( usingCylindricalGrid ) THEN
+C-    No current alternative metric terms formulation for Cylindrical-Grid
+        selectMetricTerms = MIN( selectMetricTerms, 1 )
       ENDIF
       IF ( selectCoriMap.EQ.-1 ) THEN
         IF ( usingCartesianGrid.OR.usingCylindricalGrid ) THEN
@@ -92,6 +97,8 @@ C--   On/Off flags for each terms of the momentum equation
       momPressureForcing= momStepping .AND. momPressureForcing
       implicitIntGravWave=momPressureForcing .AND. implicitIntGravWave
       momImplVertAdv   = momAdvection .AND. momImplVertAdv
+      useNHMTerms      = momAdvection .AND. useNHMTerms
+      IF ( .NOT.momAdvection ) selectMetricTerms = 0
       implicitViscosity= momViscosity .AND. implicitViscosity
       useSmag3D        = momViscosity .AND. useSmag3D
       use3Dsolver      = nonHydrostatic.OR. implicitIntGravWave

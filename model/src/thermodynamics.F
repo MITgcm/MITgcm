@@ -14,6 +14,9 @@
 # ifdef ALLOW_KPP
 #  include "KPP_OPTIONS.h"
 # endif
+# ifdef ALLOW_SALT_PLUME
+#  include "SALT_PLUME_OPTIONS.h"
+# endif
 #endif /* ALLOW_AUTODIFF */
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
@@ -49,6 +52,9 @@ C     == Global variables ===
 # include "PTRACERS_SIZE.h"
 # include "PTRACERS_PARAMS.h"
 # include "PTRACERS_FIELDS.h"
+#endif
+#ifdef ALLOW_LAYERS
+# include "LAYERS_P2SHARE.h"
 #endif
 
 #ifdef ALLOW_AUTODIFF
@@ -135,7 +141,7 @@ CEOP
 C--   dummy statement to end declaration part
       tkey = 1
 
-C--   HPF directive to help TAMC
+C--   HPF directive to help TAF
 CHPF$ INDEPENDENT
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -150,13 +156,13 @@ CADJ STORE theta,salt,wvel = comlev1, key = ikey_dynamics, byte=isbyte
 #endif
        CALL CALC_WSURF_TR( theta, salt, wVel,
      &                     myTime, myIter, myThid )
-      ENDIF
 #ifdef ALLOW_LAYERS
-      IF ( useLayers ) THEN
+       IF ( layers_useThermo ) THEN
         CALL LAYERS_WSURF_TR( theta, salt, wVel,
-     &                     myTime, myIter, myThid )
-      ENDIF
+     &                        myTime, myIter, myThid )
+       ENDIF
 #endif /* ALLOW_LAYERS */
+      ENDIF
 
 #ifdef DO_PTRACERS_HERE
 #ifdef ALLOW_AUTODIFF

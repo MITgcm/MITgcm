@@ -44,6 +44,7 @@
 
  &STREAMICE_PARMOAD
  streamice_nonlin_tol_adjoint = 1.e-8,
+ streamice_nonlin_tol_adjoint_rl = 1.e-8,
  &
 
  &STREAMICE_COST

@@ -1,4 +1,7 @@
 #include "GMREDI_OPTIONS.h"
+#ifdef ALLOW_GENERIC_ADVDIFF
+# include "GAD_OPTIONS.h"
+#endif
 
 CBOP
 C !ROUTINE: GMREDI_CALC_GEOM

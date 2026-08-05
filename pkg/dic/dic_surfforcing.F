@@ -67,6 +67,7 @@ C local variables for carbon chem
       _RL VirtualFlux(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
+C     tkey :: tape key (tile dependent)
       INTEGER tkey
 #endif
 CEOP
@@ -215,6 +216,9 @@ C Use the original Follows et al. (2006) solver
           ENDIF
         ENDDO
        ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE pCO2(:,:,bi,bj) = comlev1_bibj, key = tkey, kind = isbyte
+#endif
 
        DO j=jMin,jMax
         DO i=iMin,iMax

@@ -28,10 +28,8 @@ C-  Defining SAFE_IO stops the model from overwriting its own files
 #endif
 
 #ifdef ALLOW_AUTODIFF
-#define ALLOW_BROKEN_MDSIO_GL
 #define _OLD_STATUS 'unknown'
 #else
-#undef  ALLOW_BROKEN_MDSIO_GL
 #define _OLD_STATUS 'old'
 #endif
 

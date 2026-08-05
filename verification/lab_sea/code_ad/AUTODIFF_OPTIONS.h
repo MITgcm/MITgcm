@@ -38,7 +38,7 @@ C       >>> Checkpointing as handled by TAMC
 C       >>> Extract adjoint state
 #define ALLOW_AUTODIFF_MONITOR
 C       >>> and DYNVARS_DIAG adjoint state
-#undef ALLOW_AUTODIFF_MONITOR_DIAG
+#define ALLOW_AUTODIFF_MONITOR_DIAG
 
 C       >>> DO 2-level checkpointing instead of 3-level
 #undef AUTODIFF_2_LEVEL_CHECKPOINT

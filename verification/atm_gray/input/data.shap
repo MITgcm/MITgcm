@@ -1,0 +1,19 @@
+# Shapiro Filter parameters
+ &SHAP_PARM01
+ shap_filt_uvStar=.FALSE.,
+ shap_filt_TrStagg=.TRUE.,
+ Shap_funct=2,
+ nShapT=4,
+ nShapS=0,
+ nShapUV=4,
+ nShapTrPhys=1,
+ nShapUVPhys=0,
+ Shap_TrLength=140000.,
+#Shap_TrLength=115000.,
+#Shap_uvLength=110000.,
+#Shap_Trtau=5400.,
+#Shap_uvtau=5400.,
+ Shap_Trtau=1800.,
+ Shap_uvtau= 900.,
+ &
+

@@ -162,7 +162,7 @@ C     Two runtime parameters related to outputting sterGloH
 C     ecco_output_sterGloH :: output sterGloH at each time step if true
 C     ecco_keepTSeriesOutp_open :: keep the sterGloH file open if true
       COMMON /ECCO_L/
-     &                ecco_output_sterGloH, ecco_keepTSeriesOutp_open
+     &     ecco_output_sterGloH, ecco_keepTSeriesOutp_open
       LOGICAL ecco_output_sterGloH, ecco_keepTSeriesOutp_open
 
 C     file precision

@@ -418,47 +418,6 @@ C--   Fill-in diagnostics
        ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
-#ifdef ALLOW_TIMEAVE
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C--   Time-average
-cgf layers_maxNum loop and dimension would be needed for
-cgf the following and tave output to work beyond iLa.EQ.1
-       IF ( layers_taveFreq.GT.0. .AND. iLa.EQ.1 ) THEN
-C --- The tile loops
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-
-#ifdef LAYERS_UFLUX
-          CALL TIMEAVE_CUMULATE( layers_UH_T, layers_UH, Nlayers,
-     &                           deltaTClock, bi, bj, myThid )
-#ifdef LAYERS_THICKNESS
-          CALL TIMEAVE_CUMULATE( layers_Hw_T, layers_Hw, Nlayers,
-     &                           deltaTClock, bi, bj, myThid )
-#endif /* LAYERS_THICKNESS */
-#endif /* LAYERS_UFLUX */
-#ifdef LAYERS_VFLUX
-          CALL TIMEAVE_CUMULATE( layers_VH_T, layers_VH, Nlayers,
-     &                           deltaTClock, bi, bj, myThid )
-#ifdef LAYERS_THICKNESS
-          CALL TIMEAVE_CUMULATE( layers_Hs_T, layers_Hs, Nlayers,
-     &                           deltaTClock, bi, bj, myThid )
-#endif /* LAYERS_THICKNESS */
-#endif /* LAYERS_VFLUX */
-
-#ifdef LAYERS_PRHO_REF
-          IF ( layers_num(iLa) .EQ. 3 )
-     &    CALL TIMEAVE_CUMULATE( prho_tave, prho, Nr,
-     &                           deltaTClock, bi, bj, myThid )
-#endif /* LAYERS_PRHO_REF */
-
-          layers_TimeAve(bi,bj)=layers_TimeAve(bi,bj)+deltaTClock
-
-C --- End bi,bj loop
-         ENDDO
-        ENDDO
-       ENDIF
-#endif /* ALLOW_TIMEAVE */
-
       ENDDO !DO iLa=1,layers_maxNum
 
 #ifdef LAYERS_THERMODYNAMICS

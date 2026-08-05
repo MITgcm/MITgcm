@@ -37,13 +37,14 @@ C     !USES:
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "PARAMS.h"
-#include "GRID.h"
-#include "SURFACE.h"
-#include "CG3D.h"
+#ifdef ALLOW_NONHYDROSTATIC
+# include "PARAMS.h"
+# include "GRID.h"
+# include "SURFACE.h"
+# include "CG3D.h"
+#endif /* ALLOW_NONHYDROSTATIC */
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     === Routine arguments ===
 C     cg3d_b    :: The source term or "right hand side" (output: normalised RHS)
 C     cg3d_x    :: The solution (input: first guess)
 C     firstResidual :: the initial residual before any iterations
@@ -64,9 +65,7 @@ C     myThid    :: my Thread Id number
       INTEGER myThid
 
 #ifdef ALLOW_NONHYDROSTATIC
-
 C     !LOCAL VARIABLES:
-C     === Local variables ====
 C     bi, bj     :: tile index in X and Y.
 C     i, j, k    :: Loop counters
 C     it3d       :: Loop counter for CG iterations
@@ -86,7 +85,6 @@ C     msgBuf     :: Informational/error message buffer
       INTEGER actualIts(nSx,nSy)
       INTEGER km1, kp1
       _RL     maskM1, maskP1
-      _RL     cg3dTolerance_sq
       _RL     err_sq,  errTile(nSx,nSy)
       _RL     eta_qrNtile(nSx,nSy)
       _RL     eta_qrNM1(nSx,nSy)
@@ -105,7 +103,6 @@ C     msgBuf     :: Informational/error message buffer
 CEOP
 
 C--   Initialise auxiliary constant, some output variable
-      cg3dTolerance_sq = cg3dTargetResidual*cg3dTargetResidual
       IF ( select_rStar .NE. 0 ) THEN
         surfFac = freeSurfFac
       ELSE
@@ -183,7 +180,7 @@ C--   Initial residual calculation (with free-Surface term)
              surfTerm(i,j) = surfTerm(i,j)*cg3dNorm
      &              *recip_Rcol(i,j,bi,bj)*recip_Rcol(i,j,bi,bj)
      &              *rA(i,j,bi,bj)*deepFac2F(ks)
-     &              *recip_Bo(i,j,bi,bj)/deltaTMom/deltaTfreesurf
+     &              *recip_Bo(i,j,bi,bj)/deltaTMom/deltaTFreeSurf
            ENDDO
           ENDDO
         ENDIF
@@ -241,7 +238,7 @@ C--   Initial residual calculation (with free-Surface term)
       IF ( debugLevel .GE. debLevZero ) THEN
         _BEGIN_MASTER( myThid )
         printResidual = printResidualFreq.GE.1
-        WRITE(standardmessageunit,'(A,1P2E22.14)')
+        WRITE(standardMessageUnit,'(A,1P2E22.14)')
      &     ' cg3d: Sum(rhs),rhsMax = ',sumRHS,rhsMax
         _END_MASTER( myThid )
       ENDIF
@@ -356,7 +353,7 @@ C==    q = A.s
              surfTerm(i,j) = surfTerm(i,j)*cg3dNorm
      &              *recip_Rcol(i,j,bi,bj)*recip_Rcol(i,j,bi,bj)
      &              *rA(i,j,bi,bj)*deepFac2F(ks)
-     &              *recip_Bo(i,j,bi,bj)/deltaTMom/deltaTfreesurf
+     &              *recip_Bo(i,j,bi,bj)/deltaTMom/deltaTFreeSurf
            ENDDO
           ENDDO
          ENDIF

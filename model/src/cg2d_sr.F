@@ -62,11 +62,6 @@ C     myThid    :: Thread on which I am working.
       INTEGER myThid
 
 #ifdef ALLOW_SRCG
-C--   Local variables in COMMON block (shared by all threads)
-C     sumPhi     :: needed to call global_vec_sum_r8 when mutli-threaded
-      _RL    sumPhi(3,nSx,nSy)
-      COMMON /CG2D_SR_LOCAL/ sumPhi
-
 C     !LOCAL VARIABLES:
 C     bi, bj     :: tile index in X and Y.
 C     i, j, it2d :: Loop counters ( it2d counts CG iterations )
@@ -79,6 +74,8 @@ C     alpha      :: coeff used to update solution & residual
 C     sumRHS     :: Sum of right-hand-side. Sometimes this is a useful
 C                   debugging/trouble shooting diagnostic. For neumann problems
 C                   sumRHS needs to be ~0 or it converge at a non-zero residual.
+C     sumVec     :: output vector for GLOBAL_SUM_VECTOR call
+C     tiledVec   :: input  vector for GLOBAL_SUM_VECTOR call
 C     cg2d_min   :: used to store solution corresponding to lowest residual.
 C     msgBuf     :: Informational/error message buffer
 C--   local working array (used to be in CG2D.h common block:
@@ -90,7 +87,6 @@ C     cg2d_s     ::   *same*
       INTEGER bi, bj
       INTEGER i, j, it2d
 c     INTEGER actualIts
-      _RL    cg2dTolerance_sq
       _RL    err_sq,  errTile(nSx,nSy)
       _RL    eta_qrN, eta_qrNtile(nSx,nSy)
       _RL    eta_qrNM1
@@ -99,6 +95,7 @@ c     INTEGER actualIts
       _RL    sigma
       _RL    delta,  deltaTile(nSx,nSy)
       _RL    sumRHS, sumRHStile(nSx,nSy)
+      _RL    sumVec(3), tiledVec(nSx,nSy,3)
       _RL    rhsMax
       _RL    rhsNorm
       _RL    cg2d_min(1:sNx,1:sNy,nSx,nSy)
@@ -112,7 +109,6 @@ c     INTEGER actualIts
 CEOP
 
 C--   Initialise auxiliary constant, some output variable and inverter
-      cg2dTolerance_sq = cg2dTolerance*cg2dTolerance
       minResidualSq = -1. _d 0
       eta_qrNM1     =  1. _d 0
 
@@ -214,7 +210,7 @@ c     actualIts = 0
       IF ( debugLevel .GE. debLevZero ) THEN
         _BEGIN_MASTER( myThid )
         printResidual = printResidualFreq.GE.1
-        WRITE(standardmessageunit,'(A,1P2E22.14)')
+        WRITE(standardMessageUnit,'(A,1P2E22.14)')
      &  ' cg2d: Sum(rhs),rhsMax = ', sumRHS,rhsMax
         _END_MASTER( myThid )
       ENDIF
@@ -349,20 +345,17 @@ C--    Do the error calcuation here to consolidate global reductions
      &                    + cg2d_r(i,j,bi,bj)*cg2d_r(i,j,bi,bj)
           ENDDO
          ENDDO
-         sumPhi(1,bi,bj) = eta_qrNtile(bi,bj)
-         sumPhi(2,bi,bj) = deltaTile(bi,bj)
-         sumPhi(3,bi,bj) = errTile(bi,bj)
+         tiledVec(bi,bj,1) = eta_qrNtile(bi,bj)
+         tiledVec(bi,bj,2) = deltaTile(bi,bj)
+         tiledVec(bi,bj,3) = errTile(bi,bj)
         ENDDO
        ENDDO
 
-C      CALL GLOBAL_SUM_TILE_RL( eta_qrNtile, eta_qrN,myThid )
-C      CALL GLOBAL_SUM_TILE_RL( deltaTile, delta, myThid )
-C      CALL GLOBAL_SUM_TILE_RL( errTile,  err_sq, myThid )
-       CALL GLOBAL_VEC_SUM_R8( 3, 3, sumPhi, myThid )
+       CALL GLOBAL_SUM_VECTOR_RL( 3, tiledVec, sumVec, myThid )
 
-       eta_qrN = sumPhi(1,1,1)
-       delta   = sumPhi(2,1,1)
-       err_sq  = sumPhi(3,1,1)
+       eta_qrN = sumVec(1)
+       delta   = sumVec(2)
+       err_sq  = sumVec(3)
 
        IF ( printResidual ) THEN
         IF ( MOD( it2d-1, printResidualFreq ).EQ.0 ) THEN

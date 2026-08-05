@@ -1,0 +1,3 @@
+ &AUTODIFF_PARM01
+ SEAICEuseFREEDRIFTswitchInAd = .TRUE.
+ &

@@ -44,10 +44,10 @@
 #                (see "available_diagnostics.log" file for the full list of diags)
 #--------------------
  &DIAG_STATIS_PARMS
- stat_fields(1:5,1)  = 'ETAN    ','ETANSQ  ','DETADT2 ',
-                       'UVEL    ','WVEL    ',
+ stat_fields(1:6,1)  = 'ETAN    ','ETANSQ  ','DETADT2 ',
+                       'UVEL    ','WVEL    ','PHI_NH  ',
   stat_fName(1) = 'dynStDiag',
-   stat_freq(1) = -0.1,
-  stat_phase(1) = 0.,
+   stat_freq(1) = -0.025,
+  stat_phase(1) =  0.005,
  &
 

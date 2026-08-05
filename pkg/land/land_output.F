@@ -23,36 +23,30 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "LAND_PARAMS.h"
 #include "LAND_VARS.h"
-#include "LAND_TAVE.h"
 #ifdef ALLOW_AIM
 #include "AIM_FFIELDS.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
-C     myTime - Current time of simulation ( s )
-C     myIter - Iteration number
-C     myThid - Number of this instance of the routine
+C     myTime :: Current time of simulation ( s )
+C     myIter :: Current iteration number in simulation
+C     myThid :: my Thread Id number
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
-CEOP
 
 #ifdef ALLOW_LAND
-
 C     !FUNCTIONS:
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
-      INTEGER bi, bj, k
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
-      CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(10) suff
 #ifdef ALLOW_MNC
+      CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(1) pf
 #endif
+CEOP
 
 #ifdef ALLOW_AIM
       IF ( land_monFreq.NE.0. ) THEN
@@ -157,139 +151,6 @@ C--   fluxes (2-D map):
       ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-#ifdef ALLOW_LAND_TAVE
-
-      IF (land_taveFreq.LE.0.) RETURN
-
-      IF ( myIter.EQ.nIter0 ) THEN
-C      Initialize time-average arrays to zero
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         CALL TIMEAVE_RESET(land_grTtave,land_nLev, bi, bj, myThid)
-         CALL TIMEAVE_RESET(land_entave, land_nLev, bi, bj, myThid)
-         CALL TIMEAVE_RESET(land_grWtave,land_nLev, bi, bj, myThid)
-         CALL TIMEAVE_RESET(land_sTtave,         1, bi, bj, myThid)
-         CALL TIMEAVE_RESET(land_hStave,         1, bi, bj, myThid)
-         CALL TIMEAVE_RESET(land_sAtave,         1, bi, bj, myThid)
-         CALL TIMEAVE_RESET(land_ROftave,        1, bi, bj, myThid)
-         CALL TIMEAVE_RESET(land_eROtave,        1, bi, bj, myThid)
-         land_timeAve(bi,bj) = 0.
-        ENDDO
-       ENDDO
-
-C     Dump files and restart average computation if needed
-      ELSEIF (
-     &     DIFFERENT_MULTIPLE( land_taveFreq, myTime, land_deltaT )
-     &       ) THEN
-
-C      Normalize by integrated time
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         CALL TIMEAVE_NORMALIZE( land_grTtave, land_timeAve,
-     &                           land_nLev, bi, bj, myThid )
-         CALL TIMEAVE_NORMALIZE( land_entave,  land_timeAve,
-     &                           land_nLev, bi, bj, myThid )
-         CALL TIMEAVE_NORMALIZE( land_grWtave, land_timeAve,
-     &                           land_nLev, bi, bj, myThid )
-         CALL TIMEAVE_NORMALIZE( land_sTtave,  land_timeAve,
-     &                                   1, bi, bj, myThid )
-         CALL TIMEAVE_NORMALIZE( land_hStave,  land_timeAve,
-     &                                   1, bi, bj, myThid )
-         CALL TIMEAVE_NORMALIZE( land_sAtave,  land_timeAve,
-     &                                   1, bi, bj, myThid )
-         CALL TIMEAVE_NORMALIZE( land_ROftave, land_timeAve,
-     &                                   1, bi, bj, myThid )
-         CALL TIMEAVE_NORMALIZE( land_eROtave, land_timeAve,
-     &                                   1, bi, bj, myThid )
-        ENDDO
-       ENDDO
-
-       IF ( land_timeave_mdsio ) THEN
-
-        IF ( rwSuffixType.EQ.0 ) THEN
-          WRITE(suff,'(I10.10)') myIter
-        ELSE
-          CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
-        ENDIF
-        WRITE(fn,'(2A)') 'land_tave.', suff
-        CALL WRITE_REC_3D_RL( fn, writeBinaryPrec, land_nLev,
-     &                        land_grTtave, 1, myIter, myThid )
-        CALL WRITE_REC_3D_RL( fn, writeBinaryPrec, land_nLev,
-     &                        land_entave,  2, myIter, myThid )
-        CALL WRITE_REC_3D_RL( fn, writeBinaryPrec, land_nLev,
-     &                        land_grWtave, 3, myIter, myThid )
-        k = 3*land_nLev
-        CALL WRITE_REC_XY_RL( fn, land_sTtave,  k+1, myIter, myThid )
-        CALL WRITE_REC_XY_RL( fn, land_hStave,  k+2, myIter, myThid )
-        CALL WRITE_REC_XY_RL( fn, land_sAtave,  k+3, myIter, myThid )
-        CALL WRITE_REC_XY_RL( fn, land_ROftave, k+4, myIter, myThid )
-        CALL WRITE_REC_XY_RL( fn, land_eROtave, k+5, myIter, myThid )
-
-       ENDIF
-
-#ifdef ALLOW_MNC
-       IF ( land_timeave_mnc ) THEN
-         _BARRIER
-
-         IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
-           pf(1:1) = 'D'
-         ELSE
-           pf(1:1) = 'R'
-         ENDIF
-         WRITE(fn,'(A)') 'land_tave'
-         CALL MNC_CW_SET_UDIM(fn, -1, myThid)
-         CALL MNC_CW_I_W_S('I',fn,0,0,'iter', myIter, myThid)
-         CALL MNC_CW_SET_UDIM(fn, 0, myThid)
-         CALL MNC_CW_RL_W_S('D',fn,0,0,'T', myTime, myThid)
-         CALL MNC_CW_RL_W(pf,fn,0,0,
-     &        'land_groundT', land_grTtave, myThid)
-         CALL MNC_CW_RL_W(pf,fn,0,0,
-     &        'land_enthalp', land_entave, myThid)
-         CALL MNC_CW_RL_W(pf,fn,0,0,
-     &        'land_groundW', land_grWtave, myThid)
-
-         CALL MNC_CW_RL_W(pf,fn,0,0,
-     &        'land_skinT', land_sTtave, myThid)
-         CALL MNC_CW_RL_W(pf,fn,0,0,
-     &        'land_hSnow', land_hStave, myThid)
-         CALL MNC_CW_RL_W(pf,fn,0,0,
-     &        'land_snAge', land_sAtave, myThid)
-         CALL MNC_CW_RL_W(pf,fn,0,0,
-     &        'land_RunOff', land_ROftave, myThid)
-         CALL MNC_CW_RL_W(pf,fn,0,0,
-     &        'land_enRnOf', land_eROtave, myThid)
-
-         _BARRIER
-       ENDIF
-#endif
-
-       WRITE(msgBuf,'(A,I10)')
-     &  '// Land Time-average  written, t-step', myIter
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A)') ' '
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-
-C      Reset averages to zero
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         CALL TIMEAVE_RESET(land_grTtave,land_nLev, bi, bj, myThid)
-         CALL TIMEAVE_RESET(land_entave, land_nLev, bi, bj, myThid)
-         CALL TIMEAVE_RESET(land_grWtave,land_nLev, bi, bj, myThid)
-         CALL TIMEAVE_RESET(land_sTtave,         1, bi, bj, myThid)
-         CALL TIMEAVE_RESET(land_hStave,         1, bi, bj, myThid)
-         CALL TIMEAVE_RESET(land_sAtave,         1, bi, bj, myThid)
-         CALL TIMEAVE_RESET(land_ROftave,        1, bi, bj, myThid)
-         CALL TIMEAVE_RESET(land_eROtave,        1, bi, bj, myThid)
-         land_timeAve(bi,bj) = 0.
-        ENDDO
-       ENDDO
-
-      ENDIF
-
-#endif /* ALLOW_LAND_TAVE */
 
 #endif /* ALLOW_LAND */
 

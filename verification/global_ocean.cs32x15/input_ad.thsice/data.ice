@@ -19,7 +19,6 @@
  &THSICE_PARM01
 #StartIceModel=1,
  stressReduction=0.,
-#thSIce_taveFreq=2592000.,
 #thSIce_diagFreq=2592000.,
 #thSIce_monFreq=864000.,
  thSIce_monFreq=1.,

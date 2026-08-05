@@ -45,6 +45,7 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "STREAMICE.h"
+#include "STREAMICE_FP.h"
 #include "STREAMICE_CG.h"
 
 C     !INPUT/OUTPUT ARGUMENTS
@@ -62,7 +63,7 @@ C     !INPUT/OUTPUT ARGUMENTS
       LOGICAL adj_CONVERGED
 #endif
 
-#ifdef ALLOW_STREAMICE_OAD_FP
+#ifdef ALLOW_STREAMICE_FP_ADJ
 
 C     LOCAL VARIABLES
 
@@ -76,7 +77,9 @@ C     LOCAL VARIABLES
 #endif
 
       IF (ISINLOOP .ne. 0) THEN
+#ifdef ALLOW_OPENAD
         IF (.NOT. CONVERGED) THEN
+#endif
           NL_ITER = (NL_ITER + 1)
           CALL streamice_vel_phi(MYTHID,MAXNLITER,MAXCGITER,CGTOL
      +,CG_ITERS,err_max)
@@ -144,10 +147,11 @@ C!!!!!!!!!!! conv check
           ENDDO
 
 C!!!!!!!!!!! end conv check
-
+#ifdef ALLOW_OPENAD
         ENDIF
+#endif
       ENDIF
 
-#endif /* ALLOW_STREAMICE_OAD_FP */
+#endif /* ALLOW_STREAMICE_FP_ADJ */
       RETURN
       END

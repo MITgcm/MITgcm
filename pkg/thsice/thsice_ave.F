@@ -8,7 +8,7 @@ C     !INTERFACE:
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | S/R  THSICE_AVE
-C     | o save values for timeaveraging
+C     | o fill some thsice diagnostics
 C     *==========================================================*
 C     \ev
 
@@ -22,10 +22,8 @@ C     == Global variables ==
 #include "FFIELDS.h"
 #include "THSICE_PARAMS.h"
 #include "THSICE_VARS.h"
-#include "THSICE_TAVE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine Arguments ==
 C     frwAtm  :: net fresh-water flux (E-P) to the atmosphere [kg/m2/s]
 C     flxAtm  :: net heat flux from the atmosphere (+=down) [W/m2]
 C     bi,bj   :: tile indices
@@ -41,71 +39,12 @@ c     _RL flxAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 CEOP
 
 #ifdef ALLOW_THSICE
-C     == Local variables ==
+C     !FUNCTIONS:
 c     LOGICAL  DIFFERENT_MULTIPLE
 c     EXTERNAL DIFFERENT_MULTIPLE
+
+C     !LOCAL VARIABLES:
 c     INTEGER wrtIter
-
-#ifdef ALLOW_TIMEAVE
-
-      IF ( thSIce_taveFreq .GT. 0. _d 0 ) THEN
-
-C--    Time-average
-       CALL TIMEAVE_CUMULATE( ice_fract_Ave, iceMask,
-     &                        1, thSIce_deltaT, bi, bj, myThid )
-C-- area weighted average (with ice-fraction)
-       CALL TIMEAVE_CUMUL_2V( ice_iceH_Ave,  iceHeight, iceMask,
-     &                    1, 0, thSIce_deltaT, bi, bj, myThid )
-       CALL TIMEAVE_CUMUL_2V( ice_snowH_Ave, snowHeight, iceMask,
-     &                    1, 0, thSIce_deltaT, bi, bj, myThid )
-       CALL TIMEAVE_CUMUL_2V( ice_Tsrf_Ave,  Tsrf,  iceMask,
-     &                    1, 0, thSIce_deltaT, bi, bj, myThid )
-       CALL TIMEAVE_CUMUL_2V( ice_Tice1_Ave, Tice1, iceMask,
-     &                    1, 0, thSIce_deltaT, bi, bj, myThid )
-       CALL TIMEAVE_CUMUL_2V( ice_Tice2_Ave, Tice2, iceMask,
-     &                    1, 0, thSIce_deltaT, bi, bj, myThid )
-c      CALL TIMEAVE_CUMUL_2V( ice_snowPr_Ave,snowPrc, iceMask,
-c    &                    1, 0, thSIce_deltaT, bi, bj, myThid )
-C--    notes: siceAlb is already multiplied by iceFraction
-       CALL TIMEAVE_CUMULATE( ice_albedo_Ave, siceAlb,
-     &                        1, thSIce_deltaT, bi, bj, myThid )
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C-- simple average (without ice-fraction)
-c      CALL TIMEAVE_CUMULATE( ice_iceH_Ave,iceHeight,
-c    &                        1, thSIce_deltaT, bi, bj, myThid )
-c      CALL TIMEAVE_CUMULATE( ice_snowH_Ave,snowHeight,
-c    &                        1, thSIce_deltaT, bi, bj, myThid )
-c      CALL TIMEAVE_CUMULATE( ice_Tsrf_Ave, Tsrf,
-c    &                        1, thSIce_deltaT, bi, bj, myThid )
-c      CALL TIMEAVE_CUMULATE( ice_Tice1_Ave,Tice1,
-c    &                        1, thSIce_deltaT, bi, bj, myThid )
-c      CALL TIMEAVE_CUMULATE( ice_Tice2_Ave,Tice2,
-c    &                        1, thSIce_deltaT, bi, bj, myThid )
-
-C-- average of atmospheric fluxes :
-      IF ( fluidIsWater ) THEN
-       CALL TIMEAVE_CUMULATE( ice_flxAtm_Ave, icFlxAtm,
-     &                        1, thSIce_deltaT, bi, bj, myThid )
-       CALL TIMEAVE_CUMULATE( ice_frwAtm_Ave, icFrwAtm,
-     &                        1, thSIce_deltaT, bi, bj, myThid )
-      ENDIF
-
-C-- average of oceanic fluxes :
-#ifndef CHECK_ENERGY_CONSERV
-#ifdef RS_IS_REAL8
-       CALL TIMEAVE_CUMULATE( ice_flx2oc_Ave, Qnet,
-     &                        1, thSIce_deltaT, bi, bj, myThid )
-       CALL TIMEAVE_CUMULATE( ice_frw2oc_Ave, EmPmR,
-     &                        1, thSIce_deltaT, bi, bj, myThid )
-       CALL TIMEAVE_CUMULATE( ice_salFx_Ave, saltFlux,
-     &                        1, thSIce_deltaT, bi, bj, myThid )
-#endif
-#endif /* CHECK_ENERGY_CONSERV */
-
-       ice_timeAve(bi,bj) = ice_timeAve(bi,bj)+thSIce_deltaT
-
-      ENDIF
-#endif /* ALLOW_TIMEAVE */
 
 c     IF ( DIFFERENT_MULTIPLE(thSIce_diagFreq,
 c    &                        myTime+deltaTClock,deltaTClock)

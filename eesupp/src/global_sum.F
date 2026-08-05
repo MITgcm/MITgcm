@@ -2,10 +2,10 @@
 
 C--   File global_sum.F: Routines that perform global sum on an array
 C                        of thread values.
-C      Contents
-C      o GLOBAL_SUM_R4
-C      o GLOBAL_SUM_R8
-C      o GLOBAL_SUM_INT
+C--    Contents
+C--    o GLOBAL_SUM_R4
+C--    o GLOBAL_SUM_R8
+C--    o GLOBAL_SUM_INT
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -50,7 +50,7 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     I      :: Loop counters
 C     mpiRC  :: MPI return code
-      INTEGER I
+      INTEGER i
       Real*4  tmp
 #ifdef ALLOW_USE_MPI
       INTEGER mpiRC
@@ -66,8 +66,8 @@ C--   Can not start until everyone is ready
 C--   Sum within the process first
       _BEGIN_MASTER( myThid )
        tmp = 0.
-       DO I=1,nThreads
-        tmp = tmp + phiGSR4(1,I)
+       DO i=1,nThreads
+        tmp = tmp + phiGSR4(1,i)
        ENDDO
        sumPhi = tmp
 #ifdef ALLOW_USE_MPI
@@ -88,7 +88,6 @@ C--   set result for every process
 
       RETURN
       END
-
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -133,7 +132,7 @@ C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     I      :: Loop counters
 C     mpiRC  :: MPI return code
-      INTEGER I
+      INTEGER i
       Real*8  tmp
 #ifdef ALLOW_USE_MPI
       INTEGER mpiRC
@@ -154,8 +153,8 @@ C     CALL FOOL_THE_COMPILER( phiGSR8 )
 C--   Sum within the process first
       _BEGIN_MASTER( myThid )
        tmp = 0. _d 0
-       DO I=1,nThreads
-        tmp = tmp + phiGSR8(1,I)
+       DO i=1,nThreads
+        tmp = tmp + phiGSR8(1,i)
        ENDDO
        sumPhi = tmp
 #ifdef ALLOW_USE_MPI
@@ -224,7 +223,7 @@ C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     I      :: Loop counters
 C     mpiRC  :: MPI return code
-      INTEGER I
+      INTEGER i
       INTEGER  tmp
 #ifdef ALLOW_USE_MPI
       INTEGER mpiRC
@@ -240,8 +239,8 @@ C--   Can not start until everyone is ready
 C--   Sum within the process first
       _BEGIN_MASTER( myThid )
        tmp = 0
-       DO I=1,nThreads
-        tmp = tmp + phiGSI(1,I)
+       DO i=1,nThreads
+        tmp = tmp + phiGSI(1,i)
        ENDDO
        sumPhi = tmp
 #ifdef ALLOW_USE_MPI

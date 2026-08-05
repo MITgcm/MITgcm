@@ -23,7 +23,7 @@ C     |   shelf-ice ocean interface
 C     |
 C     | stresses at the ice/water interface are computed in separate
 C     | routines that are called from mom_fluxform/mom_vecinv
-
+C     |
 CIGF  | ASSUMES
 C---  |   * SHELFICEconserve = true
 C     *=============================================================*
@@ -59,8 +59,8 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     myIter :: iteration counter for this thread
 C     myTime :: time counter for this thread
+C     myIter :: iteration counter for this thread
 C     myThid :: thread number for this instance of the routine.
       _RL  myTime
       INTEGER myIter
@@ -80,8 +80,8 @@ C                         column perpendicular to the ice front extended
 C                         to the far side of the tracer cell.
 C     iceFrontWidth    :: the width of the ice front.  unit meters.
 
-      INTEGER i,j,k
-      INTEGER bi,bj
+      INTEGER i, j, k
+      INTEGER bi, bj
       INTEGER CURI, CURJ, FRONT_K
 
       _RL tLoc
@@ -446,22 +446,26 @@ C     In units of K / s
      &                    tmpForcingT/iceFrontCellThickness*
      &                    iceFrontVertContactFrac*
      &                    _recip_hFacC(CURI,CURJ,k,bi,bj)
-                        tmpDiagIcfForcingT(CURI,CURJ,k,bi,bj) =
-     &                    tmpDiagIcfForcingT(CURI,CURJ,k,bi,bj) +
-     &                    tmpForcingT/iceFrontCellThickness*
-     &                    iceFrontVertContactFrac*
-     &                    drF(k)
 C     In units of psu /s
                         stic_gS(CURI,CURJ,k,bi,bj) =
      &                    stic_gS(CURI,CURJ,k,bi,bj) +
      &                    tmpForcingS/iceFrontCellThickness*
      &                    iceFrontVertContactFrac*
      &                    _recip_hFacC(CURI,CURJ,k,bi,bj)
-                        tmpDiagIcfForcingS(CURI,CURJ,k,bi,bj) =
-     &                    tmpDiagIcfForcingS(CURI,CURJ,k,bi,bj) +
-     &                    tmpForcingS/iceFrontCellThickness*
-     &                    iceFrontVertContactFrac*
-     &                    drF(k)
+#ifdef ALLOW_DIAGNOSTICS
+                        IF ( useDiagnostics ) THEN
+                         tmpDiagIcfForcingT(CURI,CURJ,k,bi,bj) =
+     &                     tmpDiagIcfForcingT(CURI,CURJ,k,bi,bj) +
+     &                     tmpForcingT/iceFrontCellThickness*
+     &                     iceFrontVertContactFrac*
+     &                     drF(k)
+                         tmpDiagIcfForcingS(CURI,CURJ,k,bi,bj) =
+     &                     tmpDiagIcfForcingS(CURI,CURJ,k,bi,bj) +
+     &                     tmpForcingS/iceFrontCellThickness*
+     &                     iceFrontVertContactFrac*
+     &                     drF(k)
+                        ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
                        ENDIF /* iceFrontCellThickness */
 C     In units of kg /s
                          stic_addMass(CURI,CURJ,k,bi,bj) =
@@ -545,16 +549,16 @@ C ow - Now add shelfice heat and freshwater fluxes
 C     In units of K/s
                 stic_gT(i,j,k,bi,bj) = stic_gT(i,j,k,bi,bj) +
      &              tmpForcingT*recip_drF(k)* _recip_hFacC(i,j,k,bi,bj)
-                tmpDiagShelficeForcingT(i,j,bi,bj) = tmpForcingT
 C     In units of psu/s
                 stic_gS(i,j,k,bi,bj) = stic_gS(i,j,k,bi,bj) +
      &              tmpForcingS*recip_drF(k)* _recip_hFacC(i,j,k,bi,bj)
-                tmpDiagShelficeForcingS(i,j,bi,bj) = tmpForcingS
 C     In units of kg/s  -- multiplication of area required first
                 stic_addMass(i,j,k,bi,bj) = stic_addMass(i,j,k,bi,bj) -
      &              tmpFWFLX*RA(i,j,bi,bj)
 #ifdef ALLOW_DIAGNOSTICS
                 IF ( useDiagnostics ) THEN
+                 tmpDiagShelficeForcingT(i,j,bi,bj) = tmpForcingT
+                 tmpDiagShelficeForcingS(i,j,bi,bj) = tmpForcingS
 #ifdef NONLIN_FRSURF
                  IF ( (nonlinFreeSurf.GT.0 .OR. usingPCoords)
      &            .AND. useRealFreshWaterFlux ) THEN
@@ -654,8 +658,8 @@ c     ENDIF
 #endif /* ndef ALLOW_AUTODIFF */
 
 #ifdef ALLOW_DIAGNOSTICS
-
       IF ( useDiagnostics ) THEN
+
 #ifdef NONLIN_FRSURF
        IF ( (nonlinFreeSurf.GT.0 .OR. usingPCoords)
      &         .AND. useRealFreshWaterFlux ) THEN
@@ -698,9 +702,9 @@ c     ENDIF
      &      0,1,0,1,1,myThid)
 
 #ifdef ALLOW_STEEP_ICECAVITY
-       CALL DIAGNOSTICS_FILL_RS(sticfFreshWaterFlux,'SHIICFfw',
+       CALL DIAGNOSTICS_FILL( sticfFreshWaterFlux, 'SHIICFfw',
      &      0,1,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL_RS(sticfHeatFlux,      'SHIICFht',
+       CALL DIAGNOSTICS_FILL( sticfHeatFlux,       'SHIICFht',
      &      0,1,0,1,1,myThid)
 #endif
 
@@ -746,7 +750,7 @@ C     Friction velocity
 #endif /* SHI_ALLOW_GAMMAFRICT */
 
       ENDIF
-#endif
+#endif /* ALLOW_DIAGNOSTICS */
 
       RETURN
       END

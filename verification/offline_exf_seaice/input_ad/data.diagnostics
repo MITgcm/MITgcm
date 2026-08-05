@@ -48,9 +48,10 @@
   frequency(2) =  86400.,
   missing_value(2) = -999.,
 
-  fields(1:10,3) = 'SIarea  ','SIheff  ','THETA   ','SItices ',
+  fields(1:8,3)  = 'SIarea  ','SIheff  ','THETA   ','SItices ',
                    'SIqnet  ','SIqsw   ','SIempmr ','oceSflux',
-                   'SIatmQnt','SIatmFW ',
+#- comment out SIatmQnt (not filled in seaice_growth_adx.F):
+#                  'SIatmQnt','SIatmFW ',
    fileName(3) = 'snapshot',
   frequency(3) = -86400.,
   timePhase(3) =  -3600.,

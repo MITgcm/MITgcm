@@ -39,7 +39,7 @@ C     !INPUT/OUTPUT ARGUMENTS
       INTEGER cg_iters
       _RL max_err
 
-#ifdef ALLOW_STREAMICE_OAD_FP
+#ifdef ALLOW_STREAMICE_FP_ADJ
 
 C     LOCAL VARIABLES
 
@@ -85,6 +85,6 @@ C     LOCAL VARIABLES
         CALL STREAMICE_TAUB (myThid)
 #endif
 
-#endif /* ALLOW_STREAMICE_OAD_FP */
+#endif /* ALLOW_STREAMICE_FP_ADJ */
       RETURN
       END

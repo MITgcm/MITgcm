@@ -78,7 +78,6 @@ C     cg2d_s     ::   *same*
       INTEGER bi, bj
       INTEGER i, j, it2d
       INTEGER actualIts
-      _RL    cg2dTolerance_sq
       _RL    err_sq,  errTile(nSx,nSy)
       _RL    eta_qrN, eta_qrNtile(nSx,nSy)
       _RL    eta_qrNM1
@@ -99,7 +98,6 @@ C     cg2d_s     ::   *same*
 CEOP
 
 C--   Initialise auxiliary constant, some output variable and inverter
-      cg2dTolerance_sq = cg2dTolerance*cg2dTolerance
       minResidualSq = -1. _d 0
       eta_qrNM1     =  1. _d 0
 
@@ -118,19 +116,19 @@ C--   Normalise RHS
 
       IF (cg2dNormaliseRHS) THEN
 C-  Normalise RHS :
-      _GLOBAL_MAX_RL( rhsMax, myThid )
-      rhsNorm = 1. _d 0
-      IF ( rhsMax .NE. 0. ) rhsNorm = 1. _d 0 / rhsMax
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1,sNy
-         DO i=1,sNx
-          cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)*rhsNorm
-          cg2d_x(i,j,bi,bj) = cg2d_x(i,j,bi,bj)*rhsNorm
+       _GLOBAL_MAX_RL( rhsMax, myThid )
+       rhsNorm = 1. _d 0
+       IF ( rhsMax .NE. 0. ) rhsNorm = 1. _d 0 / rhsMax
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1,sNy
+          DO i=1,sNx
+           cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)*rhsNorm
+           cg2d_x(i,j,bi,bj) = cg2d_x(i,j,bi,bj)*rhsNorm
+          ENDDO
          ENDDO
         ENDDO
        ENDDO
-      ENDDO
 C- end Normalise RHS
       ENDIF
 
@@ -198,7 +196,7 @@ C-    Initialise saved solution
       IF ( debugLevel .GE. debLevZero ) THEN
         _BEGIN_MASTER( myThid )
         printResidual = printResidualFreq.GE.1
-        WRITE(standardmessageunit,'(A,1P2E22.14)')
+        WRITE(standardMessageUnit,'(A,1P2E22.14)')
      &  ' cg2d: Sum(rhs),rhsMax = ', sumRHS,rhsMax
         _END_MASTER( myThid )
       ENDIF
@@ -372,11 +370,13 @@ C-    use the lowest residual solution (instead of current one = last residual)
 
       IF (cg2dNormaliseRHS) THEN
 C--   Un-normalise the answer
+c       rhsMax = 1. _d 0 / rhsNorm
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO j=1,sNy
            DO i=1,sNx
             cg2d_x(i,j,bi,bj) = cg2d_x(i,j,bi,bj)/rhsNorm
+c           cg2d_x(i,j,bi,bj) = cg2d_x(i,j,bi,bj)*rhsMax
            ENDDO
           ENDDO
          ENDDO
@@ -387,29 +387,36 @@ C--   Return parameters to caller
       lastResidual = SQRT(err_sq)
       numIters = actualIts
 
-CcnhDebugStarts
-c     _EXCH_XY_RL(cg2d_x, myThid )
-c     CALL PLOT_FIELD_XYRL( cg2d_x, 'CALC_MOM_RHS CG2D_X' , 1, myThid )
-c     err_sq = 0. _d 0
-c     DO bj=myByLo(myThid),myByHi(myThid)
-c      DO bi=myBxLo(myThid),myBxHi(myThid)
-c       DO j=1,sNy
-c        DO i=1,sNx
-c         cg2d_r(i,j,bi,bj) = cg2d_b(i,j,bi,bj) -
-c    &    (aW2d(i  ,j  ,bi,bj)*cg2d_x(i-1,j  ,bi,bj)
-c    &    +aW2d(i+1,j  ,bi,bj)*cg2d_x(i+1,j  ,bi,bj)
-c    &    +aS2d(i  ,j  ,bi,bj)*cg2d_x(i  ,j-1,bi,bj)
-c    &    +aS2d(i  ,j+1,bi,bj)*cg2d_x(i  ,j+1,bi,bj)
-c    &    +aC2d(i  ,j  ,bi,bj)*cg2d_x(i  ,j  ,bi,bj)
-c    &    )
-c         err_sq = err_sq + cg2d_r(i,j,bi,bj)*cg2d_r(i,j,bi,bj)
-c        ENDDO
-c       ENDDO
-c      ENDDO
-c     ENDDO
-c     _GLOBAL_SUM_RL( err_sq, myThid )
-c     write(*,*) 'cg2d: Ax - b = ',SQRT(err_sq)
-CcnhDebugEnds
+c#ifdef ALLOW_DEBUG
+c     IF ( .FALSE. ) THEN
+      IF ( debugLevel.GE.debLevE .AND. printResidualFreq.EQ.1 ) THEN
+        _EXCH_XY_RL(cg2d_x, myThid )
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          errTile(bi,bj) = 0. _d 0
+          DO j=1,sNy
+           DO i=1,sNx
+            sumRHS = cg2d_b(i,j,bi,bj) -
+     &      (aW2d(i  ,j  ,bi,bj)*cg2d_x(i-1,j  ,bi,bj)
+     &      +aW2d(i+1,j  ,bi,bj)*cg2d_x(i+1,j  ,bi,bj)
+     &      +aS2d(i  ,j  ,bi,bj)*cg2d_x(i  ,j-1,bi,bj)
+     &      +aS2d(i  ,j+1,bi,bj)*cg2d_x(i  ,j+1,bi,bj)
+     &      +aC2d(i  ,j  ,bi,bj)*cg2d_x(i  ,j  ,bi,bj)
+     &      )
+            errTile(bi,bj) = errTile(bi,bj) + sumRHS*sumRHS
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+        CALL GLOBAL_SUM_TILE_RL( errTile,    err_sq, myThid )
+        _BEGIN_MASTER( myThid )
+        WRITE(msgBuf,'(A,1PE21.14)')
+     &    ' cg2d: A.x - b resid.=', SQRT(err_sq)
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        _END_MASTER( myThid )
+      ENDIF
+c#endif /* ALLOW_DEBUG */
 
       RETURN
       END

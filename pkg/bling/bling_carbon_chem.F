@@ -31,11 +31,11 @@ C     =================================================================
 
 C     === Global variables ===
 #include "SIZE.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
-#include "PARAMS.h"
-#include "GRID.h"
-#include "FFIELDS.h"
+c#include "PARAMS.h"
+c#include "GRID.h"
+c#include "DYNVARS.h"
+c#include "FFIELDS.h"
 #include "BLING_VARS.h"
 
 C     == Routine arguments ==
@@ -345,11 +345,11 @@ C      Oct 2011: add CO3 extimation and pass out
 
 C     === Global variables ===
 #include "SIZE.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
-#include "PARAMS.h"
+c#include "PARAMS.h"
 #include "GRID.h"
-#include "FFIELDS.h"
+c#include "DYNVARS.h"
+c#include "FFIELDS.h"
 #include "BLING_VARS.h"
 
 C     == Routine arguments ==
@@ -523,11 +523,11 @@ C--------------------------------------------------------------------------
 
 C     === Global variables ===
 #include "SIZE.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
-#include "PARAMS.h"
+c#include "PARAMS.h"
 #include "GRID.h"
-#include "FFIELDS.h"
+c#include "DYNVARS.h"
+c#include "FFIELDS.h"
 #include "BLING_VARS.h"
 
 C     == Routine arguments ==
@@ -655,7 +655,7 @@ C------------------------------------------------------------------------
 C k1p = [H][H2PO4]/[H3PO4]
 C DOE(1994) eq 7.2.20 with footnote using data from Millero (1974)
 C The constant 115.525 is an approximation to convert to the total pH scale
-C  (Dickson et al., 2007). Use Millero's 115.540 constant to stay on the seawater
+C  (Dickson et al., 2007). Use Milleros 115.540 constant to stay on the seawater
 C  pH scale (everything else is the same).
            ak1p(i,j,bi,bj) = exp(-4576.752 _d 0*invtk + 115.525 _d 0 -
      &          18.453 _d 0*dlogtk +
@@ -665,7 +665,7 @@ C------------------------------------------------------------------------
 C k2p = [H][HPO4]/[H2PO4]
 C DOE(1994) eq 7.2.23 with footnote using data from Millero (1974))
 C The constant 172.0833 is an approximation to convert to the total pH scale
-C  (Dickson et al., 2007). Use Millero's 172.1033 constant to stay on the seawater
+C  (Dickson et al., 2007). Use Milleros 172.1033 constant to stay on the seawater
 C  pH scale (everything else is the same).
            ak2p(i,j,bi,bj) = exp(-8814.715 _d 0*invtk + 172.0883 _d 0 -
      &          27.927 _d 0*dlogtk +
@@ -675,7 +675,7 @@ C------------------------------------------------------------------------
 C k3p = [H][PO4]/[HPO4]
 C DOE(1994) eq 7.2.26 with footnote using data from Millero (1974)
 C The constant 18.141 is an approximation to convert to the total pH scale
-C  (Dickson et al., 2007). Use Millero's 18.126 constant to stay on the seawater
+C  (Dickson et al., 2007). Use Milleros 18.126 constant to stay on the seawater
 C  pH scale (everything else is the same).
            ak3p(i,j,bi,bj) = exp(-3070.75 _d 0*invtk - 18.141 _d 0 +
      &          (17.27039 _d 0*invtk + 2.81197 _d 0) *
@@ -684,7 +684,7 @@ C------------------------------------------------------------------------
 C ksi = [H][SiO(OH)3]/[Si(OH)4]
 C Millero p.671 (1995) using data from Yao and Millero (1995)
 C The constant 117.385 is an approximation to convert to the total pH scale
-C  (Dickson et al., 2007). Use Millero's 117.400 constant to stay on the seawater
+C  (Dickson et al., 2007). Use Milleros 117.400 constant to stay on the seawater
 C  pH scale (everything else is the same).
 C  Note: converted here from mol/kg-H2O to mol/kg-SW
            aksi(i,j,bi,bj) = exp(-8904.2 _d 0*invtk + 117.385 _d 0 -
@@ -697,7 +697,7 @@ C------------------------------------------------------------------------
 C kw = [H][OH]
 C Millero p.670 (1995) using composite data
 C The constant 148.9652 is an approximation to convert to the total pH scale
-C  (Dickson et al., 2007). Use Millero's 148.9802 constant to stay on the seawater
+C  (Dickson et al., 2007). Use Milleros 148.9802 constant to stay on the seawater
 C  pH scale (everything else is the same).
            akw(i,j,bi,bj) = exp(-13847.26 _d 0*invtk + 148.9652 _d 0 -
      &          23.6521 _d 0*dlogtk +
@@ -815,11 +815,11 @@ C--------------------------------------------------------------------------
 
 C     === Global variables ===
 #include "SIZE.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
-#include "PARAMS.h"
+c#include "PARAMS.h"
 #include "GRID.h"
-#include "FFIELDS.h"
+c#include "DYNVARS.h"
+c#include "FFIELDS.h"
 #include "BLING_VARS.h"
 
 C     == Routine arguments ==
@@ -911,6 +911,10 @@ c for surface exchange coeffs
             pressc = 1.0d0 + 0.1d0*cdepth
         end do
 
+        bigR = 83.145 _d 0
+        P1atm = 1.01325 _d 0 ! bars
+        Rgas = 83.1451 _d 0 ! bar*cm3/(mol*K)
+
         do i=imin,imax
          do j=jmin,jmax
           if (hFacC(i,j,Klevel,bi,bj).gt.0.d0) then
@@ -939,8 +943,6 @@ C added by Val Bennington Nov 2010
 C Fugacity Factor needed for non-ideality in ocean
 C ff used for atmospheric correction for water vapor and pressure
 C Weiss (1974) Marine Chemistry
-           P1atm = 1.01325 _d 0 ! bars
-           Rgas = 83.1451 _d 0 ! bar*cm3/(mol*K)
            RT = Rgas*tk
            delta = (57.7 _d 0 - 0.118 _d 0*tk)
            B1 = -1636.75 _d 0 + 12.0408 _d 0*tk - 0.0327957 _d 0*tk*tk
@@ -1000,7 +1002,6 @@ C Mick and Karsten - Dec 04
 C ADDING pressure dependence based on Millero (1995), p675
 C with additional info from CO2sys documentation (E. Lewis and
 C D. Wallace, 1998 - see endnotes for commentary on Millero, 95)
-C           bigR = 83.145
 C           dv = -29.48 + 0.1622*t + 2.608d-3*t*t
 C           dk = -2.84d-3
 C           pfactor = - (dv/(bigR*tk))*pressc
@@ -1011,7 +1012,6 @@ C Mick and Karsten - Dec 04
 C ADDING pressure dependence based on Millero (1995), p675
 C with additional info from CO2sys documentation (E. Lewis and
 C D. Wallace, 1998 - see endnotes for commentary on Millero, 95)
-           bigR = 83.145 _d 0
            dv = -29.48 _d 0 + 0.1622 _d 0*t + 2.608 _d -3*t*t
            dk = -2.84 _d -3
            pfactor = - (dv/(bigR*tk))*pressc
@@ -1022,7 +1022,7 @@ C------------------------------------------------------------------------
 C k1p = [H][H2PO4]/[H3PO4]
 C DOE(1994) eq 7.2.20 with footnote using data from Millero (1974)
 C The constant 115.525 is an approximation to convert to the total pH scale
-C  (Dickson et al., 2007). Use Millero's 115.540 constant to stay on the seawater
+C  (Dickson et al., 2007). Use Milleros 115.540 constant to stay on the seawater
 C  pH scale (everything else is the same).
            ak1p(i,j,bi,bj) = exp(-4576.752*invtk + 115.525 -
      &          18.453*dlogtk +
@@ -1032,7 +1032,7 @@ C------------------------------------------------------------------------
 C k2p = [H][HPO4]/[H2PO4]
 C DOE(1994) eq 7.2.23 with footnote using data from Millero (1974))
 C The constant 172.0833 is an approximation to convert to the total pH scale
-C  (Dickson et al., 2007). Use Millero's 172.1033 constant to stay on the seawater
+C  (Dickson et al., 2007). Use Milleros 172.1033 constant to stay on the seawater
 C  pH scale (everything else is the same).
            ak2p(i,j,bi,bj) = exp(-8814.715*invtk + 172.0883 -
      &          27.927*dlogtk +
@@ -1042,7 +1042,7 @@ C------------------------------------------------------------------------
 C k3p = [H][PO4]/[HPO4]
 C DOE(1994) eq 7.2.26 with footnote using data from Millero (1974)
 C The constant 18.141 is an approximation to convert to the total pH scale
-C  (Dickson et al., 2007). Use Millero's 18.126 constant to stay on the seawater
+C  (Dickson et al., 2007). Use Milleros 18.126 constant to stay on the seawater
 C  pH scale (everything else is the same).
            ak3p(i,j,bi,bj) = exp(-3070.75*invtk - 18.141 +
      &          (17.27039*invtk + 2.81197) *
@@ -1051,7 +1051,7 @@ C------------------------------------------------------------------------
 C ksi = [H][SiO(OH)3]/[Si(OH)4]
 C Millero p.671 (1995) using data from Yao and Millero (1995)
 C The constant 117.385 is an approximation to convert to the total pH scale
-C  (Dickson et al., 2007). Use Millero's 117.400 constant to stay on the seawater
+C  (Dickson et al., 2007). Use Milleros 117.400 constant to stay on the seawater
 C  pH scale (everything else is the same).
 C Note: converted here from mol/kg-H2O to mol/kg-SW
            aksi(i,j,bi,bj) = exp(-8904.2*invtk + 117.385 -
@@ -1064,7 +1064,7 @@ C------------------------------------------------------------------------
 C kw = [H][OH]
 C Millero p.670 (1995) using composite data
 C The constant 148.9652 is an approximation to convert to the total pH scale
-C  (Dickson et al., 2007). Use Millero's 148.9802 constant to stay on the seawater
+C  (Dickson et al., 2007). Use Milleros 148.9802 constant to stay on the seawater
 C  pH scale (everything else is the same).
            akw(i,j,bi,bj) = exp(-13847.26*invtk + 148.9652 -
      &          23.6521*dlogtk +

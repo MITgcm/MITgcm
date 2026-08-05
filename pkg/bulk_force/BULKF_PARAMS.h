@@ -104,13 +104,6 @@ C     blk_nIter :: Number of iterations to find turbulent transfer coeff.
       COMMON / BULK_PAR_I /
      &       blk_nIter
 
-C--   COMMON / BULK_PAR_R / real parameter
-C     blk_taveFreq :: time-average output frequency [s]
-
-      _RL  blk_taveFreq
-      COMMON / BULK_PAR_R /
-     &       blk_taveFreq
-
 C--   COMMON / BULK_PAR_L / Logical parameters
 C .. for BULKF_FORMULA_AIM
 C    calcWindStress     :: True to calculate Wind-Stress from surface wind

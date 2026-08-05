@@ -1,61 +1,59 @@
 #include "EXF_OPTIONS.h"
 
-      SUBROUTINE EXF_RADIATION( myTime, myIter, myThid )
+CBOP
+C !ROUTINE: EXF_RADIATION
 
-C     ==================================================================
-C     SUBROUTINE exf_radiation
-C     ==================================================================
-C
-C     o Set radiative fluxes at the surface.
-C
-C     ==================================================================
-C     SUBROUTINE exf_radiation
-C     ==================================================================
+C !INTERFACE: ==========================================================
+      SUBROUTINE EXF_RADIATION( exf_Tsf, myTime, myIter, myThid )
 
+C !DESCRIPTION:
+C Set radiative fluxes at the surface
+C
+C - Use atmospheric state to compute surface fluxes.
+C - Compute net from downward and downward from net longwave and
+C   shortwave radiation, IF needed.
+C   lwflux = Stefan-Boltzmann constant * emissivity * SST - lwdown
+C   swflux = - ( 1 - albedo ) * swdown
+
+C !USES:
       IMPLICIT NONE
-
-C     == global variables ==
-
+C == Global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "DYNVARS.h"
 #include "GRID.h"
-
 #include "EXF_PARAM.h"
 #include "EXF_FIELDS.h"
 #include "EXF_CONSTANTS.h"
 
-C     == routine arguments ==
-
+C !INPUT PARAMETERS:
+C myTime  :: Current time in simulation
+C myIter  :: Current iteration number in simulation
+C myThid  :: My Thread Id number
+C exf_Tsf :: local copy of global field gcmSST or extrapolated
+C            surface temperature (in deg Celsius)
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
+      _RL exf_Tsf(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #ifdef ALLOW_DOWNWARD_RADIATION
-C     == local variables ==
-
+C !LOCAL VARIABLES: ====================================================
+C bi,bj     :: Tile indices
+C kl,ks    :: loop indices
       INTEGER bi,bj
       INTEGER i,j
 #ifdef ALLOW_ATM_TEMP
-      INTEGER ks, kl
-      _RL Tsf, SSTtmp, TsfSq
+c     INTEGER ks
+      INTEGER kl
 #endif
-
-C     == end of interface ==
-
-C--   Use atmospheric state to compute surface fluxes.
-
-C--   Compute net from downward and downward from net longwave and
-C     shortwave radiation, IF needed.
-C     lwflux = Stefan-Boltzmann constant * emissivity * SST - lwdown
-C     swflux = - ( 1 - albedo ) * swdown
+CEOP
 
 #ifdef ALLOW_ATM_TEMP
-      ks = 1
+c     ks = 1
       kl = 2
       IF ( usingPCoords ) THEN
-       ks = Nr
+c      ks = Nr
        kl = Nr-1
       ENDIF
 
@@ -64,38 +62,14 @@ C     Loop over tiles.
        DO bj = myByLo(myThid),myByHi(myThid)
         DO bi = myBxLo(myThid),myBxHi(myThid)
 
-         IF ( Nr.GE.2 .AND. sstExtrapol.GT.0. _d 0 ) THEN
-          DO j = 1,sNy
-           DO i = 1,sNx
-            Tsf = theta(i,j,ks,bi,bj) + cen2kel
-            SSTtmp = sstExtrapol
-     &             *( theta(i,j,ks,bi,bj)-theta(i,j,kl,bi,bj) )
-     &             *  maskC(i,j,kl,bi,bj)
-            Tsf = Tsf + MAX( SSTtmp, 0. _d 0 )
-            TsfSq = Tsf*Tsf
-            lwflux(i,j,bi,bj) =
-     &          ocean_emissivity*stefanBoltzmann*TsfSq*TsfSq
-     &          - lwdown(i,j,bi,bj)
-#ifdef EXF_LWDOWN_WITH_EMISSIVITY
-     &           *ocean_emissivity
-C     the lw exitance (= out-going long wave radiation) is
-C     emissivity*stefanBoltzmann*T^4 + rho*lwdown, where the
-C     reflectivity rho = 1-emissivity for conservation reasons:
-C     the sum of emissivity, reflectivity, and transmissivity must be
-C     one, and transmissivity is zero in our case (long wave radiation
-C     does not penetrate the ocean surface)
-#endif /* EXF_LWDOWN_WITH_EMISSIVITY */
-           ENDDO
-          ENDDO
-         ELSE
-          DO j = 1,sNy
-           DO i = 1,sNx
-            lwflux(i,j,bi,bj) =
+         DO j = 1,sNy
+          DO i = 1,sNx
+           lwflux(i,j,bi,bj) =
      &          ocean_emissivity*stefanBoltzmann*
-     &          ((theta(i,j,ks,bi,bj)+cen2kel)**4)
+     &          exf_Tsf(i,j,bi,bj)**4
      &          - lwdown(i,j,bi,bj)
 #ifdef EXF_LWDOWN_WITH_EMISSIVITY
-     &           *ocean_emissivity
+     &          *ocean_emissivity
 C     the lw exitance (= out-going long wave radiation) is
 C     emissivity*stefanBoltzmann*T^4 + rho*lwdown, where the
 C     reflectivity rho = 1-emissivity for conservation reasons:
@@ -103,9 +77,8 @@ C     the sum of emissivity, reflectivity, and transmissivity must be
 C     one, and transmissivity is zero in our case (long wave radiation
 C     does not penetrate the ocean surface)
 #endif /* EXF_LWDOWN_WITH_EMISSIVITY */
-           ENDDO
           ENDDO
-         ENDIF
+         ENDDO
 
 C--   end bi,bj loops
         ENDDO
@@ -121,7 +94,7 @@ c        DO j = 1,sNy
 c         DO i = 1,sNx
 c          lwdown(i,j,bi,bj) =
 c    &          ocean_emissivity*stefanBoltzmann*
-c    &          ((theta(i,j,ks,bi,bj)+cen2kel)**4)
+c    &          ((gcmSST(i,j,bi,bj)+cen2kel)**4)
 c    &          - lwflux(i,j,bi,bj)
 c         ENDDO
 c        ENDDO

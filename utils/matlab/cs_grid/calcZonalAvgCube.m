@@ -2,14 +2,14 @@ function [fldzon,mskzon,ylat,areazon] = calcZonalAvgCube(fld,ny,yc,ar,hc);
 
 % [fldzon,mskzon,ylat,areazon] = calcZonalAvgCube(fld,ny,yc,ar,hc);
 %
-% Input arguements:  
+% Input arguments:
 %   fld     Data to zonally average ([6*n,n,nr,nt], [6*n,n,nr], [6*n,n])
 %   ny      Number of evenly spaces latitude lines to zonally average onto
 %   yc      Cell centered latitude
 %   ar      Cell area
 %   hc      HFacC
 %
-% Output arguement:
+% Output arguments:
 %   fldzon  Zonally averaged field ([ny,nr,nt], [ny,nr], [ny])
 %   mskzon  Mask for zonal slice
 %   ylat    Latitude coordinates for zonal average data
@@ -27,7 +27,13 @@ dims = size(fld);
 %if length(dims) > 4,
 %    error(['To many dimensions (Max 4):  ',mat2str(dims)]);
 %end
-nc = dims(2); nr=1; nt=1; nDim=4;
+n1h=dims(1); n2h=dims(2);
+if n1h == n2h*6, nc=n2h; elseif n1h*6 == n2h, nc=n1h;
+else
+   error(['Error in CS-dimensions: ',...
+           'n1h,n2h = ',int2str(n1h),', ',int2str(n2h)])
+end
+nr=1; nt=1; nDim=4;
 if length(dims) > 2,
   if length(size(hc)) == 3, nr=size(hc,3); end
   if dims(3) ~= nr, nr=1; nDim=3; end
@@ -60,7 +66,7 @@ for ij = 1:6*nc*nc                % Loop over all cells
         n = npzav(jz+1) + 1;   % Contribution from cell NORTH of line
         ijzav(jz+1,n) = ij;
         alzav(jz+1,n) = 1;     % Weight = 1 because all area accounted for
-        npzav(jz+1) = n; 
+        npzav(jz+1) = n;
     elseif jz >= ny
         n = npzav(jz) + 1;     % Contribution from cell NORTH of line
         ijzav(jz,n) = ij;
@@ -110,7 +116,7 @@ for nb = 1:1+abs(nBas)
         end
     else
         for k=1:nr,
-            var=vv1.*hc(:,k); 
+            var=vv1.*hc(:,k);
             for j=1:ny,
                 ijLoc=ijzav(j,1:npzav(j));
                 vvLoc=alzav(j,1:npzav(j))';

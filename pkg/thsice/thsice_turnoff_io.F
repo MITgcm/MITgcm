@@ -45,7 +45,6 @@ C--   Set output freq. to zero to avoid re-write of
 C     averaged fields in reverse checkpointing loops
       thSIce_monFreq  = 0.
       thSIce_diagFreq = 0.
-      thSIce_taveFreq = 0.
 
       _END_MASTER( myThid )
 

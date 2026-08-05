@@ -57,6 +57,12 @@ C     initialize longstep averages to zero
        CALL LONGSTEP_RESET_3D(LS_KwxCount, LS_Kwx, Nr, myThid)
        CALL LONGSTEP_RESET_3D(LS_KwyCount, LS_Kwy, Nr, myThid)
        CALL LONGSTEP_RESET_3D(LS_KwzCount, LS_Kwz, Nr, myThid)
+       CALL LONGSTEP_RESET_3D(LS_KuxCount, LS_Kux, Nr, myThid)
+       CALL LONGSTEP_RESET_3D(LS_KvyCount, LS_Kvy, Nr, myThid)
+       CALL LONGSTEP_RESET_3D(LS_KuzCount, LS_Kuz, Nr, myThid)
+       CALL LONGSTEP_RESET_3D(LS_KvzCount, LS_Kvz, Nr, myThid)
+       CALL LONGSTEP_RESET_3D(LS_PsiXCount, LS_PsiX, Nr, myThid)
+       CALL LONGSTEP_RESET_3D(LS_PsiYCount, LS_PsiY, Nr, myThid)
       ENDIF
 #endif
 #ifdef ALLOW_KPP

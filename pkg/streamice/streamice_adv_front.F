@@ -220,7 +220,7 @@ CADJ STORE hflux_y_SI(i,j+1,bi,bj) = comlev1_stream_ij, key = ikey_1
 
                n_flux_2 = 0. _d 0 ;
                DO k=1,4
-                new_partial (:) = 0
+                new_partial (k) = 0
                ENDDO
 
                DO k=1,2

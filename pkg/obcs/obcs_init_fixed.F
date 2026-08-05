@@ -586,6 +586,12 @@ C-    end if useOBCStides
 #endif /* ALLOW_OBCS_TIDES */
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+#ifdef ALLOW_CTRL
+c--   Get the weights that are to be used for the individual cost
+c--   function contributions.
+      CALL OBCS_COST_WEIGHTS( myThid )
+#endif
+
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_LEAVE('OBCS_INIT_FIXED',myThid)
 #endif

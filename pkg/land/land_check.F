@@ -1,3 +1,4 @@
+#undef ALLOW_LAND_TAVE
 #include "LAND_OPTIONS.h"
 
 CBOP
@@ -107,8 +108,6 @@ C- namelist LAND_MODEL_PAR:
       ENDIF
        CALL WRITE_0D_RL( land_deltaT, INDEX_NONE,'land_deltaT =',
      &  ' /* land model Time-Step (s) */')
-       CALL WRITE_0D_RL( land_taveFreq, INDEX_NONE,'land_taveFreq =',
-     &   ' /* Frequency^-1 for time-Aver. output (s) */')
        CALL WRITE_0D_RL( land_diagFreq, INDEX_NONE,'land_diagFreq =',
      &   ' /* Frequency^-1 for diagnostic output (s) */')
        CALL WRITE_0D_RL( land_diagFreq, INDEX_NONE,'land_monFreq =',
@@ -117,10 +116,6 @@ C- namelist LAND_MODEL_PAR:
      &   ' /* layer thickness ( m ) */')
        CALL WRITE_1D_RL(land_rec_dzC,land_nLev,INDEX_K,'land_rec_dzC= '
      &  ,' /* recip. vertical spacing (m-1) */')
-      CALL WRITE_0D_L( land_timeave_mdsio, INDEX_NONE,
-     &     'land_timeave_mdsio =',' /* use MDSIO for Tave output */')
-      CALL WRITE_0D_L( land_timeave_mnc, INDEX_NONE,
-     &     'land_timeave_mnc =',' /* use MNC for Tave output */')
       CALL WRITE_0D_L( land_snapshot_mdsio, INDEX_NONE,
      &     'land_snapshot_mdsio =',
      &     ' /* use MDSIO for snapshot output */')
@@ -202,17 +197,14 @@ C-    for now, Land package works only with AIM package:
         STOP 'ABNORMAL END: S/R LAND_CHECK'
       ENDIF
 
-C-    If land_taveFreq is positive, then must compile the land-diagnostics code
-#ifndef ALLOW_LAND_TAVE
-      IF (land_taveFreq.GT.0.) THEN
-        WRITE(msgBuf,'(2A)') 'LAND_CHECK:',
-     &  ' land_taveFreq > 0 but ALLOW_LAND_TAVE undefined'
+#ifdef ALLOW_LAND_TAVE
+        WRITE(msgBuf,'(2A)') 'LAND_CHECK: ',
+     &  '#define ALLOW_LAND_TAVE not allowed in LAND_OPTIONS.h'
         CALL PRINT_ERROR( msgBuf, myThid)
-        WRITE(msgBuf,'(2A)') 'Re-compile setting: ',
-     &  '#define ALLOW_LAND_TAVE (in LAND_OPTIONS.h)'
+        WRITE(msgBuf,'(2A)') 'LAND_CHECK: ',
+     &  'since "pkg/timeave" has been removed.'
         CALL PRINT_ERROR( msgBuf, myThid)
         STOP 'ABNORMAL END: S/R LAND_CHECK'
-      ENDIF
 #endif /* ALLOW_LAND_TAVE */
 
 C-    If land_monFreq is > 0, then must compile the monitor pkg

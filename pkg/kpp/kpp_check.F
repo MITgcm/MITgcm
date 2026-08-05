@@ -40,6 +40,8 @@ C--   Print out KPP parameters:
      &  ' /* non-local term fct of total diffus */')
       CALL WRITE_0D_L( KPPuseDoubleDiff, INDEX_NONE,
      &  'KPPuseDoubleDiff =', ' /* include double diffusive contrib */')
+      CALL WRITE_0D_L( KPPuseSWfrac3D, INDEX_NONE,
+     &  'KPPuseSWfrac3D =', ' /* for light attenuation use SWfrac3D */')
       CALL WRITE_0D_L( LimitHblStable, INDEX_NONE,
      &  'LimitHblStable =', ' /* limits depth of hbl if stable cond.*/')
       CALL WRITE_0D_RL( minKPPhbl, INDEX_NONE, ' minKPPhbl =',
@@ -119,8 +121,6 @@ C--
      &  'KPPwriteState =', ' /* write KPP fields to file */')
       CALL WRITE_0D_RL( kpp_dumpFreq, INDEX_NONE, ' kpp_dumpFreq =',
      &  ' /* dump freq of KPP output */')
-      CALL WRITE_0D_RL( kpp_taveFreq, INDEX_NONE, ' kpp_taveFreq =',
-     &  ' /* time-averaging freq of KPP output */')
 
 C--  Check parameters:
 
@@ -143,13 +143,6 @@ C     KPP needs implicit vertical diffusion and viscosity
          CALL PRINT_ERROR( msgBuf , myThid )
          STOP 'ABNORMAL END: S/R KPP_CHECK'
       ENDIF
-
-C     Shortwave heating should be defined with KPP
-#ifndef SHORTWAVE_HEATING
-      WRITE(msgBuf,'(A)') 'KPP needs CPP flag SHORTWAVE_HEATING enabled'
-      CALL PRINT_ERROR( msgBuf , myThid )
-      STOP 'ABNORMAL END: S/R KPP_CHECK'
-#endif /* SHORTWAVE_HEATING */
 
 C     Check that overlap region is adequate.
 C     When horizontal smoothing is turned on,

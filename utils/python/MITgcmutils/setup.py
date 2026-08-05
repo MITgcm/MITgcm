@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="MITgcmutils",
-    version="0.1.3",
+    version="0.2.1",
     author="MITgcm Developers and Contributors",
     author_email="mitgcm-support@mitgcm.org",
     description="Python utilities for MITgcm",
@@ -19,8 +19,5 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    install_requires=["numpy"],
-    extras_require={
-        "plot":  ["matplotlib"],
-    }
+    install_requires=["numpy","matplotlib"],
 )

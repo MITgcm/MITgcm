@@ -3,52 +3,47 @@
 # include "AUTODIFF_OPTIONS.h"
 #endif
 
-      subroutine cost_final_store ( mythid, lastdiva )
+CBOP
+C     !ROUTINE: COST_FINAL_STORE
 
-c     ==================================================================
-c     SUBROUTINE cost_final_store
-c     ==================================================================
-c
-c     Store cost function value
-c     This is required in conjunction with DIVA
-c     heimbach@mit.edu 5-Mar-2003
-c
-c     ==================================================================
-c     SUBROUTINE cost_final_store
-c     ==================================================================
+C     !INTERFACE:
+      SUBROUTINE COST_FINAL_STORE( lastDiva, myThid )
 
-      implicit none
+C     !DESCRIPTION:
+C     Store cost function value
+C     This is required in conjunction with DIVA
+C     heimbach@mit.edu 5-Mar-2003
 
-c     == global variables ==
-
+C     !USES:
+      IMPLICIT NONE
+C     == Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
-
 #include "cost.h"
 
-c     == routine arguments ==
+C     !INPUT/OUTPUT PARAMETERS:
+C     lastDiva :: output argument, initialised to False (if DIVA)
+C     myThid   :: my Thread Id number
+      LOGICAL lastDiva
+      INTEGER myThid
 
-      integer mythid
-      logical lastdiva
+#ifdef ALLOW_DIVIDED_ADJOINT
+C     !LOCAL VARIABLES:
+CEOP
 
-# ifdef ALLOW_DIVIDED_ADJOINT
+C--   Each process has calculated the global part for itself.
+      lastDiva = .FALSE.
 
-c     == local variables ==
-
-c     == end of interface ==
-
-c--   Each process has calculated the global part for itself.
-      lastdiva = .FALSE.
-
-      IF (myProcId .eq. 0) THEN
-         _BEGIN_MASTER( mythid )
-           open(unit=76,file='costfinal')
-           write(76,*) fc
-           close(76)
-         _END_MASTER( mythid )
+      IF ( myProcId .EQ. 0 ) THEN
+        _BEGIN_MASTER( myThid )
+        OPEN(UNIT=76,FILE='costfinal')
+        WRITE(76,*) fc
+        CLOSE(76)
+        _END_MASTER( myThid )
       ENDIF
       _BARRIER
 
-#endif
+#endif /* ALLOW_DIVIDED_ADJOINT */
 
-      end
+      RETURN
+      END

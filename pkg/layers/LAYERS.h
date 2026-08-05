@@ -10,7 +10,6 @@ C     layers_name     ::
 C     layers_bolus    ::
 C     layers_MNC      ::
 C     layers_MDSIO    ::
-C     layers_taveFreq ::
 C     layers_diagFreq ::
 
       INTEGER layers_num(layers_maxNum), layers_krho(layers_maxNum)
@@ -24,8 +23,8 @@ C     layers_diagFreq ::
       COMMON /LAYERS_PARM_L/ layers_MNC, layers_MDSIO,
      &                       layers_bolus
 
-      _RL layers_taveFreq, layers_diagFreq
-      COMMON /LAYERS_PARM_RL/ layers_taveFreq, layers_diagFreq
+      _RL layers_diagFreq
+      COMMON /LAYERS_PARM_RL/ layers_diagFreq
 
 C --  Isopycnal grid parameters:
 C      layers_bounds :: boundaries of tracer layers
@@ -138,45 +137,5 @@ C      layers_beta       :: alpha factor for density eqn (-drhodS/rho)
 #endif
 
 # endif /* LAYERS_THERMODYAMICS */
-
-#ifdef ALLOW_TIMEAVE
-C-- The same variables, time-averaged
-
-C     Keep track of time
-      _RL layers_TimeAve(nSx,nSy)
-      COMMON /LAYERS_TAVE/ layers_TimeAve
-
-#ifdef LAYERS_UFLUX
-      _RL layers_UH_T(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
-     &                   nSx,nSy)
-#ifdef LAYERS_THICKNESS
-      _RL layers_Hw_T(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
-     &                   nSx,nSy)
-      COMMON /LAYERS_U_TAVE/ layers_UH_T,
-     &    layers_Hw_T
-#else  /* LAYERS_THICKNESS */
-      COMMON /LAYERS_U_TAVE/ layers_UH_T
-#endif /* LAYERS_THICKNESS */
-#endif /* LAYERS_UFLUX */
-
-#ifdef LAYERS_VFLUX
-      _RL layers_VH_T(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
-     &                   nSx,nSy)
-#ifdef LAYERS_THICKNESS
-      _RL layers_Hs_T(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
-     &                   nSx,nSy)
-      COMMON /LAYERS_V_TAVE/ layers_VH_T,
-     &    layers_Hs_T
-#else  /* LAYERS_THICKNESS */
-      COMMON /LAYERS_V_TAVE/ layers_VH_T
-#endif /* LAYERS_THICKNESS */
-#endif /* LAYERS_VFLUX */
-
-#ifdef LAYERS_PRHO_REF
-      _RL prho_tave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      COMMON /LAYERS_RPHO_TAVE/ prho_tave
-#endif
-
-#endif /* ALLOW_TIMEAVE */
 
 #endif /* ALLOW_LAYERS */

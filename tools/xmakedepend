@@ -92,7 +92,7 @@ do
 
 	    *)
 		if [ "$endmarker"x = x ]; then
-		    case "$1" in 	
+		    case "$1" in
 			-w)
 			    width="$2"
 			    shift
@@ -113,7 +113,7 @@ do
 			    objsuffix="$2"
 			    shift
 			    ;;
-			
+
 			--*)
 			    echo "$1" | sed 's/^\-\-//' >${TMP}end
 			    endmarker="`cat ${TMP}end`"
@@ -191,7 +191,8 @@ done   | sed -e 's|/[^/.][^/]*/\.\.||g' -e 's|/\.[^.][^/]*/\.\.||g'     -e 's|"|
 	if ($1 != $4  &&  $2 != "#ident" && $2 != "#pragma")
 
 	    {
-	    ofile = substr ($1, 1, length ($1) - 2) "'"$objsuffix"'"
+	    ofile = $1
+	    sub(/\.[^.]*$/, "'"$objsuffix"'", ofile)
 	    print ofile, $4
 	    }
 	}'   | sort -u   | awk '
@@ -217,15 +218,18 @@ done   | sed -e 's|/[^/.][^/]*/\.\.||g' -e 's|/\.[^.][^/]*/\.\.||g'     -e 's|"|
 
 	    if (rec != "")
 		print rec
-	    }'   | egrep -v '^[^:]*:[ 	]*$' >> $DEPENDLINES
+	    }'   | grep -v '^[^:]*:[ 	]*$' >> $DEPENDLINES
 
 trap "" 1 2 13 15	# Now we are committed
 case "$makefile" in
     $TMPMAKEFILE)
 	;;
     *)
-	rm -f $makefile.bak
-	cp $makefile $makefile.bak
+	if [ "$append" = "n" ]
+	then
+	  rm -f $makefile.bak
+	  cp $makefile $makefile.bak
+	fi
 	echo "Appending dependencies to $makefile"
 	;;
 esac

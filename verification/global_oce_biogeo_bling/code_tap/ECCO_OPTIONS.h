@@ -75,9 +75,6 @@ C o Allow for near-shore and high-latitude altimetry
 #undef ALLOW_SHALLOW_ALTIMETRY
 #undef ALLOW_HIGHLAT_ALTIMETRY
 
-C o Allow for In-Situ Profiles cost function contribution
-#define ALLOW_PROFILES_CONTRIBUTION
-
 C o Cost function output format
 #define ALLOW_ECCO_OLD_FC_PRINT
 

@@ -53,6 +53,7 @@ C-    2-D forcing fields
           phiTide2d       (i,j,bi,bj) = 0. _d 0
           pLoad           (i,j,bi,bj) = 0. _d 0
           sIceLoad        (i,j,bi,bj) = 0. _d 0
+          gcmSST          (i,j,bi,bj) = 0. _d 0
 #ifdef ALLOW_GEOTHERMAL_FLUX
           geothermalFlux  (i,j,bi,bj) = 0. _d 0
 #endif

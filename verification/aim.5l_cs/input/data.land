@@ -11,7 +11,6 @@
 #     land_grW_iniFile  :: File containing initial ground Water.
 #     land_snow_iniFile :: File containing initial snow thickness.
 #     land_deltaT   :: land model time-step
-#     land_taveFreq :: Frequency^-1 for time-Aver. output (s)
 #     land_diagFreq :: Frequency^-1 for diagnostic output (s)
 #     land_monFreq  :: Frequency^-1 for monitor    output (s)
 #     land_dzF      :: layer thickness

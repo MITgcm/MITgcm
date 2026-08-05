@@ -1,4 +1,7 @@
 #ifdef ALLOW_SHELFICE
+# ifndef SHELFICE_OPTIONS_H
+      STOP 'need "SHELFICE_OPTIONS.h" to include this header file'
+# endif
 # ifdef ALLOW_SHELFICE_REMESHING
 CADJ STORE kTopC            = tapelvi2, key = ilev_2
 # endif

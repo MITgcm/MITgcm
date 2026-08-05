@@ -46,7 +46,6 @@ C--   Set output freq. to zero to avoid re-write of
 C     averaged fields in reverse checkpointing loops
       PTRACERS_monitorFreq = 0.
       PTRACERS_dumpFreq    = 0.
-      PTRACERS_taveFreq    = 0.
 
       _END_MASTER( myThid )
 

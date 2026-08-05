@@ -3,68 +3,60 @@
 # include "AUTODIFF_OPTIONS.h"
 #endif
 
-      subroutine cost_final_restore ( mythid, lastdiva )
+CBOP
+C     !ROUTINE: COST_FINAL_RESTORE
 
-c     ==================================================================
-c     SUBROUTINE cost_final_restore
-c     ==================================================================
-c
-c     Restore cost function value
-c     This is required in conjunction with DIVA
-c     heimbach@mit.edu 5-Mar-2003
-c
-c     ==================================================================
-c     SUBROUTINE cost_final_restore
-c     ==================================================================
+C     !INTERFACE:
+      SUBROUTINE COST_FINAL_RESTORE( lastDiva, myThid )
 
-      implicit none
+C     !DESCRIPTION:
+C     Restore cost function value
+C     This is required in conjunction with DIVA
+C     heimbach@mit.edu 5-Mar-2003
 
-c     == global variables ==
-
+C     !USES:
+      IMPLICIT NONE
+C     == Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
-
 #include "cost.h"
 
-c     == routine arguments ==
+C     !INPUT/OUTPUT PARAMETERS:
+C     lastDiva :: True if last AD run from DIVA sequence, False otherwise
+C     myThid   :: my Thread Id number
+      LOGICAL lastDiva
+      INTEGER myThid
 
-      integer mythid
-      logical lastdiva
+#ifdef ALLOW_DIVIDED_ADJOINT
+C     !LOCAL VARIABLES:
+      LOGICAL exst
+      INTEGER idivbeg, idivend
+CEOP
 
-# ifdef ALLOW_DIVIDED_ADJOINT
+      _BEGIN_MASTER( myThid )
 
-c     == local variables ==
-      logical exst
+        INQUIRE(FILE='divided.ctrl',EXIST=exst)
+        IF (exst) THEN
+          OPEN(UNIT=76,FILE='divided.ctrl',FORM='formatted')
+          READ(UNIT=76,FMT=*) idivbeg,idivend
+          CLOSE(UNIT=76)
+        ELSE
+          idivbeg = -2
+        ENDIF
 
-      integer idivbeg, idivend
-c     == end of interface ==
+        IF ( idivbeg .EQ. 0 ) THEN
+          lastDiva = .TRUE.
+          OPEN(UNIT=76,FILE='costfinal')
+          READ(76,*) fc
+          CLOSE(76)
+        ELSE
+          lastDiva = .FALSE.
+        ENDIF
 
-c--   Each process has calculated the global part for itself.
-cph      IF (myProcId .eq. 0) THEN
-         _BEGIN_MASTER( mythid )
-c
-           inquire(file='divided.ctrl',exist=exst)
-           if (exst) then
-              open(unit=76,file='divided.ctrl',form='formatted')
-              read(unit=76,fmt=*) idivbeg,idivend
-              close(unit=76)
-           else
-              idivbeg = -2
-           endif
-c
-           if ( idivbeg .EQ. 0 ) then
-              lastdiva = .TRUE.
-              open(unit=76,file='costfinal')
-              read(76,*) fc
-              close(76)
-           else
-              lastdiva = .FALSE.
-           endif
-c
-         _END_MASTER( mythid )
-cph      ENDIF
+      _END_MASTER( myThid )
       _BARRIER
 
-#endif
+#endif /* ALLOW_DIVIDED_ADJOINT */
 
-      end
+      RETURN
+      END

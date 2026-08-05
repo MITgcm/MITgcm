@@ -114,7 +114,6 @@ c           ENDIF
 C-      end-if not useSTIC
         ENDIF
 
-#ifdef EXACT_CONSERV
         IF ( staggerTimeStep ) THEN
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
@@ -122,7 +121,6 @@ C-      end-if not useSTIC
            ENDDO
           ENDDO
         ENDIF
-#endif /* EXACT_CONSERV */
 
         IF ( usingZCoords ) THEN
           DO j = jMin, jMax

@@ -60,7 +60,6 @@
  pChkptFreq=0.0,
  chkptFreq=0.0,
  dumpFreq=6000.0,
-#taveFreq=864000.0,
  monitorSelect=2,
  monitorFreq=1.,
  &

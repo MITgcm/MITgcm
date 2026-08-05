@@ -37,12 +37,14 @@ C     myThid - Thread number for this instance of the routine.
 #ifdef ALLOW_COST_STREAMICE
 C     == Local variables
       integer bi, bj
-      integer i, j, k
-      integer ig, jg
+      integer i, j
       integer itlo,ithi
       integer jtlo,jthi
-      _RL i_numcells, dCdx, dCdy, dBdx, dBdy, dmdx, dmdy, idt
-      _RL utmp, vtmp, uotmp, votmp, cotmp, dhdt, dhdt_fac
+C     unused variables
+c     integer ig, jg
+c     _RL dhdt, dhdt_fac, dmdx, dmdy
+      _RL i_numcells, dCdx, dCdy, dBdx, dBdy, idt
+      _RL utmp, vtmp, uotmp, votmp, cotmp
       _RL dRdx, dRdy, cfricval, bglenval, cfricvalp1, bglenvalp1
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
@@ -56,6 +58,7 @@ C     == Local variables
       _RL R0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       _RL smooth_cost_fric  (nSx,nSy)
+      _RL smooth_cost_maxmelt (nSx,nSy)
       _RL smooth_cost_prior (nSx,nSy)
       _RL smooth_cost_bglen (nSx,nSy)
       _RL cost_misfit (nSx,nSy)
@@ -64,7 +67,7 @@ C     == Local variables
       _RL smooth_cost_fric_gl, smooth_cost_prior_gl,
      &    smooth_cost_bglen_gl, cost_misfit_gl,
      &    cost_thin_gl, cost_misfit_norm_gl,
-     &    cost_vel_td_gl
+     &    cost_vel_td_gl, smooth_cost_maxmelt_gl
       _RL rhoi, rhow, r, i_r, h, hf, r_low_tmp, haf
 
       jtlo = myByLo(myThid)
@@ -107,7 +110,7 @@ C     == Local variables
      &      R0, 0, myThid )
       print *, 'GOT HERE read topo file'
 
-      _EXCH_XY_RL (R0, myThid)
+      _EXCH_XY_RL(R0, myThid)
 
 C--   Calculate mask for tracer cells  (0 => land, 1 => water)
 c       k=1
@@ -123,6 +126,7 @@ C--   Calculate cost function on tile of this instance
         do bi = itlo,ithi
 
           smooth_cost_fric (bi,bj) = 0.0
+          smooth_cost_maxmelt (bi,bj) = 0.0
           smooth_cost_bglen (bi,bj) = 0.0
           smooth_cost_prior (bi,bj) = 0.0
           cost_misfit (bi,bj) = 0.0
@@ -299,6 +303,8 @@ C--   Calculate cost function on tile of this instance
            smooth_cost_prior(bi,bj) = cost_prior_streamice(bi,bj)
            smooth_cost_fric(bi,bj) = cost_smooth_fric_streamice(bi,bj)
            smooth_cost_bglen(bi,bj) = cost_smooth_glen_streamice(bi,bj)
+           smooth_cost_maxmelt(bi,bj) =
+     &                        cost_smooth_bdotmelt_streamice(bi,bj)
           endif
 #endif
 
@@ -319,6 +325,10 @@ C--   Calculate cost function on tile of this instance
      &   ( cost_surf_streamice, cost_thin_gl, myThid )
       CALL GLOBAL_SUM_TILE_RL
      &   ( cost_vel_streamice, cost_vel_td_gl, myThid )
+      CALL GLOBAL_SUM_TILE_RL
+     &   ( smooth_cost_maxmelt, smooth_cost_maxmelt_gl, myThid )
+       write(standardMessageUnit,'(A,D22.15)') 'maxmlt smooth contr = ',
+     &   smooth_cost_maxmelt_gl
 
       if (STREAMICE_do_timedep_cost .or.
      &    STREAMICE_do_snapshot_cost) then

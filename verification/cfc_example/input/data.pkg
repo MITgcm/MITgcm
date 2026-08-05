@@ -5,6 +5,5 @@
  useGCHEM       =.TRUE.,
  useDiagnostics =.TRUE.,
  useLayers      =.TRUE.,
-#useMNC         =.TRUE.,
  &
   

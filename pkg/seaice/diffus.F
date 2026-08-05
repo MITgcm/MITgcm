@@ -1,4 +1,7 @@
 #include "SEAICE_OPTIONS.h"
+#ifdef ALLOW_GENERIC_ADVDIFF
+# include "GAD_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: DIFFUS
@@ -53,8 +56,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         IF ( SEAICEuseFluxForm ) THEN
 C--   Use flux form for MITgcm compliance, unfortunately changes results
 
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
             dfx(i,j) = 0. _d 0
             dfy(i,j) = 0. _d 0
            ENDDO

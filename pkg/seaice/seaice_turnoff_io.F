@@ -46,7 +46,6 @@ C--   Set output freq. to zero to avoid re-write of
 C     averaged fields in reverse checkpointing loops
       SEAICE_monFreq  = 0.
       SEAICE_dumpFreq = 0.
-      SEAICE_taveFreq = 0.
 
       _END_MASTER( myThid )
 

@@ -69,7 +69,7 @@ C--   Integrate continuity vertically for vertical velocity
      I                         bi, bj, k, uFld, vFld,
      I                         addMass, rStarDhDt,
      O                         wFld,
-     I                         myThid )
+     I                         myIter, myThid )
 
 #ifdef ALLOW_OBCS
 C--   reset W to zero outside the OB interior region

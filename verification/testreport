@@ -55,10 +55,10 @@ usage()
     echo "                             (DEF=\"hostname\")"
     echo "  (-addr|-a) STRING        list of email recipients"
     echo "                             (DEF=\"\" no email is sent)"
-    echo "  (-send)       STRING     sending command (instead of using mpack)"
+    echo "  (-send)       STRING     sending command (instead of locally built mpack)"
     echo "  (-savdir|-sd) STRING     location to save output tar file to send (DEF='$SAVDIR')"
     echo "  (-mpackdir|-mpd) DIR     location of the mpack utility"
-    echo "                             (DEF=\"../tools/mpack-1.6\")"
+    echo "                             (DEF='$MPACKDIR')"
     echo " -- do only some parts: --"
     echo "  (-clean)                 *ONLY* run \"make CLEAN\" & clean run-dir"
     echo "  (-norun|-nr)             skip the \"runmodel\" stage (stop after make)"
@@ -108,7 +108,7 @@ build_mpack()
 	RETVAL=$?
 	if test "x$RETVAL" != x0 ; then
 	    echo
-	    echo "Error building the mpack tools at: $MPACK_DIR"
+	    echo "Error building the mpack tools at: $MPACKDIR"
 	    echo
 	    HAVE_MPACK=f
 	else
@@ -604,26 +604,26 @@ makemodel()
 	fi
 	echo " TAF reports $nerr Errors and $nwar Recomputation Warnings" \
 				>> $CDIR"/summary.txt"
-	if test -f ad_taf_output.f ; then
-	    adfile=ad_taf_output.f
-	elif test -f ad_taf_output.for ; then
-	    adfile=ad_taf_output.for
+	#- report number of calls for some key S/R, i.e.,
+	#   load_fields_driver, do_oceanic_phys, and seaice_model
+	#  Multiple calls indicate hidden but expensive recomputations
+	FS='f'
+	if test -f genmake_state ; then eval `grep '^FS=' genmake_state` ; fi
+	if test "x$NOCATAD" = xt ; then
+	    adfiles="*_ad.$FS"
 	else
-	    echo "WARNING: neither ad_output_ad.f nor ad_output_ad.for found" \
-				>> $CDIR"/summary.txt"
-	    adfile=missing ; nlfd=0 ; ndop=0 ; nsm=0
+	    adfiles=ad_taf_output.$FS
 	fi
-	if test $adfile != missing ; then
-	    # count number of times load_fields_driver and do_oceanic_phys are called
-	    nlfd=`grep "call load_fields_driver(" ${adfile} | wc -l`
-	    nlfdmd=`grep "call load_fields_drivermd(" ${adfile} | wc -l`
-	    if (( $nlfdmd == 0 )) ; then
-		# if there is no load_fields_driver, we can substract one assuming
-		# that load_fields_driver is called once from forward_stepmd
-		nlfd=$((nlfd-1))
-	    fi
-	    ndop=`grep "call do_oceanic_phys("    ${adfile} | wc -l`
-	    nsm=`grep "call seaice_model(" ${adfile} | wc -l`
+	nbf=`ls $adfiles 2> /dev/null | wc -l`
+	if [ $nbf -eq 0 ] ; then
+	    echo "WARNING: no adfiles '$adfiles' found" >> $CDIR"/summary.txt"
+	    nlfd=0 ; ndop=0 ; nsm=0
+	else
+	    nlfd=`grep "call load_fields_driver(" ${adfiles} | wc -l`
+	    nlfdmd=`grep "call load_fields_drivermd(" ${adfiles} | wc -l`
+	    nlfd=$((nlfd+nlfdmd-1))
+	    ndop=`grep "call do_oceanic_phys(" ${adfiles} | wc -l`
+	    nsm=`grep "call seaice_model(" ${adfiles} | wc -l`
 	fi
 	echo " load_fields_driver, do_oceanic_phys, seaice_model are called " \
 	     "( $nlfd , $ndop , $nsm ) time(s)" >> $CDIR"/summary.txt"
@@ -780,7 +780,7 @@ linkdata()
 	    inpMPI=`(cd ../$1 ; find . -name "*.mpi" -print | sed 's:^\./::')`
 	    for xx in $inpMPI ; do
 	      if test -r "../"$1"/"$xx ; then
-		# found 1 _mpi sfx file in 1rst input dir and it is readable
+		# found 1 .mpi sfx file in 1rst input dir and it is readable
 		yy=`echo $xx | sed 's:\.mpi$::'`
 		if test "x$MPI" = "x0" ; then
 		    # not mpi test: remove symbolic link
@@ -822,15 +822,13 @@ linkdata()
 			    fi
 			fi
 		    done
-		    printf ' ;' 1>&2
-		    if test -x "../"$ldir"/"prepare_run ; then
-			"../"$ldir"/"prepare_run 1>&2
-		    else
-			echo '' 1>&2
-		    fi
+		    printf ' ;\n' 1>&2
 		fi
 		prevDir=$ldir
 	    done
+	    if test -x prepare_run ; then
+		./prepare_run 1>&2
+	    fi
 	)
     fi
 }
@@ -849,7 +847,7 @@ runmodel()
 	    #echo '' ; echo "  COMMAND='$COMMAND'"
 	    COMMAND=`echo $COMMAND | sed "s/ TR_NPROC/ $LOC_NPROC/"`
 	    if test "x$MPI_MFILE" != x ; then
-	      COMMAND=`echo $COMMAND | sed "s/ TR_MFILE / ..\/..\/$LOC_MFILE /"`
+	      COMMAND=`echo $COMMAND | sed "s/ TR_MFILE / ..\/$LOC_MFILE /"`
 	    fi
 	    #echo "  COMMAND='$COMMAND'"
 	fi
@@ -876,6 +874,7 @@ runmodel()
 	    rm -f $OUTPUTFILE $RUNLOG ; touch $RUNLOG
 	    if test -f run.log_tmp ; then cat run.log_tmp >> $RUNLOG ; fi
 	#- Divided Adjoint Run:
+	    add_DIVA_runs=0
 	#  get the number of additional runs (add_DIVA_runs) from file "run_ADM_DIVA"
 	    if test $KIND = 2 -a -f run_ADM_DIVA ; then
 	      adm_diva_nb=`sed -n '/^ *add_DIVA_runs *=/p' run_ADM_DIVA | sed 's/ //g'`
@@ -908,7 +907,7 @@ runmodel()
 	    ENDVAL=`tail $OUTPUTFILE | grep -c 'PROGRAM MAIN: Execution ended Normally'`
 	    touch $RUNLOG
 	    if test -f run.log_tmp ; then cat run.log_tmp >> $RUNLOG ; fi
-	    echo "---------->> $OUTPUTFILE is up to date " >> $RUNLOG 2>&1
+	    echo "---------->> $OUTPUTFILE is up to date" >> $RUNLOG 2>&1
 	  fi
 	fi
 	rm -f run.log_tmp
@@ -1051,7 +1050,6 @@ scandirs()
     fi
 }
 
-
 check_eedata()
 {
     # check_eedata eedata size.h
@@ -1093,7 +1091,6 @@ check_eedata()
 }
 
 ###############################################################################
-
 
 #  Default properties
 debug=0
@@ -1413,7 +1410,7 @@ done
 if test $count = 1 ; then echo "" ; echo -n " ... " ; fi
 #echo 'TESTDIRS='${TESTDIRS}'<'
 
-LOC_MFILE='tr_mpi_mfile'
+LOC_MFILE='mpi_mfile.loc'
 RUNLOG="run.tr_log"
 if test "x$MPI" = x0 ; then
   OUTPUTFILE=$ref_outp
@@ -1467,6 +1464,9 @@ fi
 #  build the mpack utility (if ADDRESSES = NONE, do it to test the build)
 if test "x$ADDRESSES" = x -o "x$SENDCMD" != x ; then
     echo "skipping mpack build"
+    if test "x$SENDCMD" = 'xupload_sftp' ; then
+      if test ! -x $SENDCMD -a -x ../tools/$SENDCMD ; then SENDCMD="../tools/$SENDCMD" ; fi
+    fi
 else
     build_mpack
     if test "x$HAVE_MPACK" = xt ; then SENDCMD=$MPACK ; fi
@@ -1654,7 +1654,9 @@ for dir in $TESTDIRS ; do
 	continue
     fi
 
-    if test "x$MPI" != "x0" ; then
+    if test "x$MPI" = "x0" ; then
+	LOC_NPROC=1
+    else
 	ntx=1 ; nty=1
 	if test "x$MULTI_THREAD" = "xt" ; then
 	  ff=$dir"/input/eedata.mth"
@@ -1679,17 +1681,17 @@ for dir in $TESTDIRS ; do
 	)
 	if test "x$MPI_MFILE" != x ; then
 	    #- create new MPI machine-file with the right number of Procs
-	    rm -f $LOC_MFILE
-	    cat $MPI_MFILE | sort | uniq | head -$LOC_NPROC > $LOC_MFILE
-	    nl=`wc -l $LOC_MFILE | awk '{print $1}'`
+	    rm -f $dir/$LOC_MFILE
+	    cat $MPI_MFILE | sort | uniq | head -$LOC_NPROC > $dir/$LOC_MFILE
+	    nl=`wc -l $dir/$LOC_MFILE | awk '{print $1}'`
 	    if [ $nl -lt $LOC_NPROC ] ; then
-		rm -f $LOC_MFILE
-		cat $MPI_MFILE | head -$LOC_NPROC > $LOC_MFILE
-		#sed -n "1,$LOC_NPROC p" $MPI_MFILE > $LOC_MFILE
+		rm -f $dir/$LOC_MFILE
+		cat $MPI_MFILE | head -$LOC_NPROC > $dir/$LOC_MFILE
+		#sed -n "1,$LOC_NPROC p" $MPI_MFILE > $dir/$LOC_MFILE
 	    fi
 	    if [ $verbose -gt 1 ]; then
 		nl=`wc -l $LOC_MFILE | awk '{print $1}'`
-		echo " new LOC_MFILE=$LOC_MFILE : $nl procs for LOC_NPROC=$LOC_NPROC"
+		echo " new LOC_MFILE=$dir/$LOC_MFILE : $nl procs for LOC_NPROC=$LOC_NPROC"
 	    fi
 	fi
 	if test "x$MULTI_THREAD" = "xt" ; then
@@ -1868,8 +1870,9 @@ for dir in $TESTDIRS ; do
 	      if test -f $gmkLog ; then
 		ADtool=`grep '^Tapenade ' $gmkLog | tail -n 1`
 		echo "from '$gmkLog', get: $ADtool" >> $DRESULTS/genmake_state
-		ADvers=`echo $ADtool | awk '{print $1,$2,$3}'`
-		sed "s/ by Tapenade/ by $ADvers/" $SUMMARY > tmp.tr_log
+		#ADvers=`echo $ADtool | awk '{print $2,$3}'`
+		ADvers=`echo $ADtool | sed -e 's/^Tapenade //' -e 's/ [0-9]*:[0-9][0-9] .*$//'`
+		sed "s/ by Tapenade/ by Tapenade $ADvers/" $SUMMARY > tmp.tr_log
 		mv -f tmp.tr_log $SUMMARY
 	      fi
 	    fi
@@ -1888,7 +1891,7 @@ for dir in $TESTDIRS ; do
 	makeclean $dir/$builddir \
 	    && run_clean $dir/$rundir
     fi
-    if test "x$MPI" != x0 -a "x$MPI_MFILE" != x ; then rm -f $LOC_MFILE ; fi
+    if test "x$MPI" != x0 -a "x$MPI_MFILE" != x ; then rm -f $dir/$LOC_MFILE ; fi
 
     echo "-------------------------------------------------------------------------------"
 
@@ -1907,29 +1910,32 @@ if test "x$ADDRESSES" = xNONE -o "x$ADDRESSES" = x ; then
     echo "No results email was sent."
 else
     if test "x$SENDCMD" != x ; then
-	SendOpt='' ; headCMD=`echo $SENDCMD | awk '{print $1}'`
-	if test $headCMD != 'scp' ; then SendOpt='-s MITgcm-test -m 3555000' ; fi
-	if [ $verbose -gt 1 ]; then
-	   echo " run: $SENDCMD $SendOpt ${SAVDIR}/${DRESULTS}".tar.gz" $ADDRESSES"
+	sendOpt='' ; nb=`echo $SENDCMD | grep -c '\<mpack\>'`
+	if [ $nb -eq 0 ] ; then
+	   tarFile="${SAVDIR}/${DRESULTS}.$$.tar"
+	else
+	   sendOpt='-s MITgcm-test -m 3555000'
+	   tarFile="${SAVDIR}/${DRESULTS}.tar"
 	fi
-	tar -cf ${SAVDIR}/${DRESULTS}".tar" $DRESULTS > /dev/null 2>&1 \
-	    && gzip ${SAVDIR}/${DRESULTS}".tar" \
-	    && $SENDCMD $SendOpt ${SAVDIR}/${DRESULTS}".tar.gz" $ADDRESSES
+	if [ $verbose -gt 1 ]; then
+	   echo " run: $SENDCMD $sendOpt ${tarFile}.gz $ADDRESSES"
+	fi
+	tar -cf ${tarFile} $DRESULTS > /dev/null 2>&1 \
+	    && gzip ${tarFile} \
+	    && $SENDCMD $sendOpt ${tarFile}".gz" $ADDRESSES
 	RETVAL=$?
+	echo
 	if test "x$RETVAL" != x0 ; then
-	    echo
 	    echo "Warning: The tar, gzip, & $SENDCMD step failed.  Please send email"
 	    echo "  to <MITgcm-support@mitgcm.org> for help.  You may copy the "
 	    echo "  summary of results from the directory \"$DRESULTS\"."
-	    echo
 	else
-	    echo
 	    echo "An email containing results was sent to the following addresses:"
 	    echo "  \"$ADDRESSES\""
-	    echo
-	    test -f ${SAVDIR}/${DRESULTS}".tar" &&  rm -f ${SAVDIR}/${DRESULTS}".tar"
-	    test -f ${SAVDIR}/${DRESULTS}".tar.gz" &&  rm -f ${SAVDIR}/${DRESULTS}".tar.gz"
+	    test -f ${tarFile}      &&  rm -f ${tarFile}
+	    test -f ${tarFile}".gz" &&  rm -f ${tarFile}".gz"
 	fi
+	echo
     fi
 fi
 

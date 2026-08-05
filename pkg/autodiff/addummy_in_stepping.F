@@ -28,7 +28,7 @@ C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE ADDUMMY_IN_STEPPING                           |
 C     *==========================================================*
-C     Extract adjoint variable from TAMC/TAF-generated
+C     Extract adjoint variable from TAF-generated
 C     adjoint common blocks, contained in adcommon.h
 C     and write fields to file;
 C     Make sure common blocks in adcommon.h are up-to-date
@@ -194,8 +194,8 @@ C     problem occurs
 #  endif
 # endif
 # if ( defined ALLOW_SHELFICE && defined ALLOW_SHITRANSCOEFF_3D )
-        CALL ADEXCH_3D_RL( adshiTransCoeffT3d, myThid )
-        CALL ADEXCH_3D_RL( adshiTransCoeffS3d, myThid )
+        CALL ADEXCH_3D_RL( adshiTransCoeffT3d, Nr, myThid )
+        CALL ADEXCH_3D_RL( adshiTransCoeffS3d, Nr, myThid )
 # endif
 
 #endif /* AUTODIFF_TAMC_COMPATIBILITY */

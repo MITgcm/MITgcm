@@ -3,7 +3,6 @@
 Generic Advection/Diffusion
 ---------------------------
 
-
 The generic_advdiff package contains high-level subroutines to solve
 the advection-diffusion equation of any tracer, either active (potential
 temperature, salinity or water vapor) or passive (see :ref:`pkg/ptracer <sub_phys_pkg_ptracers>`).
@@ -38,20 +37,14 @@ There are two high-level routines:
    non-linear schemes and can not be used in conjuction with
    Adams–Bashforth time stepping.
 
-
 .. tabularcolumns:: |\Y{.4}|L|L|
-
 
 +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
 | CPP Flag Name                                 | Default | Description                                                                                                          |
 +===============================================+=========+======================================================================================================================+
-| :varlink:`COSINEMETH_III`                     | #define | sets the implementation form of :math:`\cos{\varphi}` scaling of bi-harmonic terms for tracer diffusivity            |
-|                                               |         | (note, in :filelink:`pkg/generic_advdiff` routines the definition set here overrides whether this is defined in      |
-|                                               |         | :filelink:`model/inc/CPP_OPTIONS.h`, where the setting affects viscous term calculations)                            |
+| :varlink:`COSINEMETH_III`                     | #define | sets the form of :math:`\cos{\varphi}` scaling of horizontal bi-harmonic terms for tracer diffusivity                |
 +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
-| :varlink:`ISOTROPIC_COS_SCALING`              | #undef  | selects isotropic scaling of harmonic and bi-harmonic terms when using the :math:`\cos{\varphi}` scaling             |
-|                                               |         | (note, in :filelink:`pkg/generic_advdiff` routines the definition set here overrides whether this is defined in      |
-|                                               |         | :filelink:`model/inc/CPP_OPTIONS.h`, where the setting affects viscous term calculations)                            |
+| :varlink:`ISOTROPIC_COS_SCALING`              | #undef  | selects isotropic scaling of horizontal harmonic and bi-harmonic terms when using the :math:`\cos{\varphi}` scaling  |
 +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
 | :varlink:`DISABLE_MULTIDIM_ADVECTION`         | #undef  | disables compilation of multi-dim. advection code                                                                    |
 +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
@@ -65,8 +58,6 @@ There are two high-level routines:
 |                                               |         | (for ptracers, except temp and salinity)                                                                             |
 +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
 
-
-
 .. _gad_diagnostics:
 
 GAD Diagnostics
@@ -74,9 +65,8 @@ GAD Diagnostics
 
 ::
 
-
     ------------------------------------------------------------------------
-    <-Name->|Levs|<-parsing code->|<--  Units   -->|<- Tile (max=80c) 
+    <-Name->|Levs|<-parsing code->|<--  Units   -->|<- Tile (max=80c)
     ------------------------------------------------------------------------
     ADVr_TH | 15 |WM      LR      |degC.m^3/s      |Vertical   Advective Flux of Pot.Temperature
     ADVx_TH | 15 |UU   087MR      |degC.m^3/s      |Zonal      Advective Flux of Pot.Temperature
@@ -101,5 +91,4 @@ Experiments and tutorials that use GAD
 
 -  Tracer Sensitivity tutorial, in :filelink:`tutorial\_tracer\_adjsens <verification/tutorial_tracer_adjsens>`
    verification directory.
-
 

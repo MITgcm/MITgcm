@@ -7,7 +7,7 @@ c     active_file_control.flow
 c     ==================================================================
 c     provides flow directives for routines in active_file_control.F
 c                                       and in active_file_control_slice.F
-c     required by TAMC/TAF
+c     required by TAF
 c     * active_read_3d_rl , active_read_3d_rs
 c     * active_read_xz_rl , active_read_xz_rs
 c     * active_read_yz_rl , active_read_yz_rs
@@ -115,4 +115,3 @@ c subroutine active_write_yz_rs
 c----------------------------------------
 cadj SUBROUTINE active_write_yz_rs INPUT   = 1, 2, 3, 4, 5, 6, 7, 8, 9
 cadj SUBROUTINE active_write_yz_rs OUTPUT  =    2
-

@@ -30,7 +30,7 @@ grid = xr.open_dataset('grid.nc')
 
 # We will be using the following fields from the grid file:
 # 1-D fields
-#   RC:     vertical grid, cell center locations (this is coordinate Z)
+#   rC:     vertical grid, cell center locations (this is coordinate Z)
 #   drF:    vertical spacing of grid cells (thickness of cells)
 #   X:      1-D version of XC data
 #   Y:      1-D version of YC data
@@ -39,12 +39,12 @@ grid = xr.open_dataset('grid.nc')
 #   Xp1 and Yp1 are effectively 1-D versions of grid variables XG,YG with
 #   an extra data value at the eastern and northern ends of the domain.
 # 2-D fields (y,x)
-#   XC:     x-location of gridcell centers
-#   YC:     y-location of gridcell centers
+#   xC:     x-location of gridcell centers
+#   yC:     y-location of gridcell centers
 #   dyG:    grid spacing in y-dim (i.e. separation between corners)
-#   rA:     surface area of gridcells
+#   rAc:    surface area of gridcells
 # 3-D fields (z,y,x)
-#   HFacC:  vertical fraction of cell which is ocean
+#   hFacC:  vertical fraction of cell which is ocean
 # See MITgcm users manual section 2.11 for additional MITgcm grid info
 
 # Number of gridcells in x,y for full domain:
@@ -117,11 +117,11 @@ plt.ylim(-400, 0)
 # could be computed as follows, using HfacC[0,:,:], i.e. HfacC in
 # the surface layer, as a land-ocean mask, using xarray .where()
 # First, compute total surface area of ocean points:
-tot_ocean_area = (grid.rA.where(grid.HFacC[0,:,:]!=0)).sum(('Y', 'X'))
+tot_ocean_area = (grid.rAc.where(grid.hFacC[0,:,:]!=0)).sum(('Y', 'X'))
 # broadcasting with xarray is more flexible than basic numpy
 # because it matches axis name (not dependent on axis position)
 # grid area is broadcast across the time dimension below
-TRELAX_ave_ann = (surfDiag.TRELAX * grid.rA.where(grid.HFacC[0,:,:]!=0)
+TRELAX_ave_ann = (surfDiag.TRELAX * grid.rAc.where(grid.hFacC[0,:,:]!=0)
                  ).sum(('Y', 'X')) / tot_ocean_area
 TRELAX_ave_ann.assign_coords(T=Tann).plot(
                  color='m', linewidth=4, linestyle='dashed')
@@ -131,7 +131,7 @@ plt.subplot(223)
 # mean THETA by level
 # Here is an example of allowing xarray to do even more of the work
 # and labeling for you, given selected levels, using 'hue' parameter
-THETAmon = dynStDiag.THETA_lv_ave.assign_coords(T=Tmon, Z=grid.RC)
+THETAmon = dynStDiag.THETA_lv_ave.assign_coords(T=Tmon, Z=grid.rC)
 THETAmon.isel(Z=klevs).plot(hue='Z', linewidth=4)
 plt.grid('both')
 plt.title('b) Mean Potential Temp. by Level (THETA_lv_avg)')
@@ -144,7 +144,7 @@ plt.ylim(0, 30);
 
 plt.subplot(224)
 # standard deviation of THETA by level
-THETAmon = dynStDiag.THETA_lv_std.assign_coords(T=Tmon, Z=grid.RC)
+THETAmon = dynStDiag.THETA_lv_std.assign_coords(T=Tmon, Z=grid.rC)
 THETAmon.isel(Z=klevs).plot(hue='Z', linewidth=4)
 plt.grid('both')
 plt.title('c) Std. Dev. Potential Temp. by Level (THETA_lv_std)')
@@ -155,7 +155,7 @@ plt.show()
 # figure 4.7 - 2-D plot of TRELAX and contours of free surface height
 # (ETAN) at simulation end ( endTime = 3110400000. is t=100 yrs).
 ##
-eta_masked = surfDiag.ETAN[-1,0,:,:].where(grid.HFacC[0,:,:]!=0)
+eta_masked = surfDiag.ETAN[-1,0,:,:].where(grid.hFacC[0,:,:]!=0)
 plt.figure(figsize=(10,8)) 
 surfDiag.TRELAX[-1,0,:,:].plot(cmap='RdBu_r', vmin=-250, vmax=250)
 plt.xlim(0, 60)
@@ -216,7 +216,7 @@ plt.show()
 klev =  3
 jloc = 14
 
-theta_masked = dynDiag.THETA[-1,klev,:,:].where(grid.HFacC[klev,:,:]!=0)
+theta_masked = dynDiag.THETA[-1,klev,:,:].where(grid.hFacC[klev,:,:]!=0)
 plt.figure(figsize=(16,6))
 plt.subplot(121)
 # again we use pcolor for this plan view, grabs coordinates automatically
@@ -225,18 +225,18 @@ dynDiag.THETA[-1,klev,:,:].plot(cmap='coolwarm', vmin=0, vmax=30 )
 theta_masked.plot.contour(levels=np.linspace(0, 30, 16), colors='k')
 plt.xlim(0, 60)
 plt.ylim(15, 75)
-plt.title('a) THETA at %g m Depth ($\mathregular{^oC}$)' %grid.RC[klev])
+plt.title('a) THETA at %g m Depth ($\mathregular{^oC}$)' %grid.rC[klev])
 
 # For the xz slice, our limited vertical resolution makes for an ugly
 # pcolor plot, we'll shade using contour instead, providing the centers
 # of the vertical grid cells and cell centers in the x-dimension.
 # Also mask out land cells at the boundary, which results in slight
 # white space at domain edges.
-theta_masked = dynDiag.THETA[-1,:,jloc,:].where(grid.HFacC[:,jloc,:]!=0)
+theta_masked = dynDiag.THETA[-1,:,jloc,:].where(grid.hFacC[:,jloc,:]!=0)
 plt.subplot(122)
 theta_masked.plot.contourf(levels=np.arange(0,30,.2), cmap='coolwarm')
 theta_masked.plot.contour(levels=np.arange(0,30,2), colors='k')
-plt.title('b) THETA at %gN ($\mathregular{^oC}$)' %grid.YC[jloc,0])
+plt.title('b) THETA at %gN ($\mathregular{^oC}$)' %grid.yC[jloc,0])
 plt.xlim(0, 60)
 plt.ylim(-1800, 0)
 plt.show()
@@ -249,4 +249,4 @@ plt.show()
 # values masked/undefined beyond the cell centers toward boundaries.
 
 # To instead plot using pcolor: 
-# theta_masked.assign_coords(Z=grid.RC.values).plot(cmap='coolwarm')
+# theta_masked.assign_coords(Z=grid.rC.values).plot(cmap='coolwarm')

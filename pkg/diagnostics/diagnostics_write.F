@@ -159,8 +159,7 @@ C-      Track diagnostics pkg activation status:
 c         IF ( diag_pkgStatus.NE.ready2fillDiags ) STOP
           _BARRIER
           _BEGIN_MASTER(myThid)
-C ---   Do not disable diagnostics package for adj variables
-          IF ( .NOT.useDiag4AdjOutp ) diag_pkgStatus = 99
+          diag_pkgStatus = 99
           _END_MASTER(myThid)
           _BARRIER
 C       Close all Stat-diags output files

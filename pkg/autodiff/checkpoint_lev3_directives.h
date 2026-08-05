@@ -11,7 +11,9 @@ c
 #else
 c
 CADJ STORE etan  = tapelev3, key = ilev_3
-#ifndef EXCLUDE_FFIELDS_LOAD
+#ifdef EXCLUDE_FFIELDS_LOAD
+CADJ STORE saltflux = tapelev3, key = ilev_3
+#else
 CADJ STORE taux0 = tapelev3, key = ilev_3
 CADJ STORE taux1 = tapelev3, key = ilev_3
 CADJ STORE tauy0 = tapelev3, key = ilev_3
@@ -39,11 +41,10 @@ CADJ STORE pload0 = tapelev3, key = ilev_3
 CADJ STORE pload1 = tapelev3, key = ilev_3
 # endif
 #endif /* ndef EXCLUDE_FFIELDS_LOAD */
-#ifdef EXACT_CONSERV
+
 CADJ STORE etaH = tapelev3, key = ilev_3
 CADJ STORE dEtaHdt = tapelev3, key = ilev_3
 CADJ STORE PmEpR = tapelev3, key = ilev_3
-#endif
 c
 #ifdef ALLOW_ADAMSBASHFORTH_3
 CADJ STORE gtnm  = tapelev3, key = ilev_3
@@ -64,10 +65,6 @@ CADJ STORE wvel  = tapelev3, key = ilev_3
 CADJ STORE totphihyd     = tapelev3, key = ilev_3
 c
 #endif /* AUTODIFF_USE_STORE_RESTORE */
-
-#ifdef EXACT_CONSERV
-cphCADJ STORE hDivFlow   = tapelev3, key = ilev_3
-#endif /* EXACT_CONSERV */
 
 #ifdef NONLIN_FRSURF
 CADJ STORE hfac_surfc    = tapelev3, key = ilev_3

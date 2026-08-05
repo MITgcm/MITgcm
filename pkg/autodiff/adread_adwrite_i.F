@@ -2,7 +2,7 @@
 
 C     ==================================================================
 C
-C     adread_adwrite_i.F: routines to handle the I/O of the TAF/TAMC
+C     adread_adwrite_i.F: routines to handle the I/O of the TAF
 C                         code for integer fields. All files are direct
 C                         generated code or integer fields. All files
 C                         are direct access files.
@@ -38,9 +38,6 @@ C                 On entry, irec is the record number to be written.
 C     myThid -  integer
 C                 On entry, myThid is the number of the thread or
 C                           instance of the program.
-C
-C     For further details on this see the TAMC Users Manual, Appendix B,
-C     User defined Storage Subroutines.
 C
 C     TAF does not provide the leading argument myThid when compiling
 C     the MITgcmUV code. Instead there is a sed script available that

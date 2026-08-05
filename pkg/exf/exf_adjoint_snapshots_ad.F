@@ -15,7 +15,7 @@ C     *==========================================================*
 C     | SUBROUTINE ADEXF_ADJOINT_SNAPSHOTS                       |
 C     *==========================================================*
 C     Adjoint version of EXF Adjoint-variable output subroutine:
-C     extract adjoint variable from TAMC/TAF-generated
+C     extract adjoint variable from TAF-generated
 C     adjoint common blocks, contained in adcommon.h
 C     and write fields to file;
 C     Make sure common blocks in adcommon.h are up-to-date

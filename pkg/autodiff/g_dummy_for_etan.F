@@ -13,7 +13,7 @@ C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE g_dummy_for_etan                              |
 C     *==========================================================*
-C     Extract tangent linear variable from TAMC/TAF-generated
+C     Extract tangent linear variable from TAF-generated
 C     tangent linear common blocks, contained in g_common.h
 C     and write fields to file;
 C     Make sure common blocks in g_common.h are up-to-date
@@ -81,7 +81,6 @@ C--     Read IO error counter
 
         CALL WRITE_FLD_XY_RL(
      &       'G_Jetan.',suff, g_etan, myIter, myThid )
-
 
 C--     Reread IO error counter
         endIOErrCount = IO_ERRCOUNT(myThid)

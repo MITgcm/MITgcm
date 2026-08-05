@@ -433,12 +433,12 @@ c  For the effective resource limitation, there is an option to replace
 c  the default Liebig limitation (the minimum of Michaelis-Menton
 c  PO4-limitation, or iron-limitation) by the product (safer for adjoint)
 
-#ifdef MULT_NUT_LIM
-          Pc_m = Pc_0*expkT(i,j,k)
-     &           *PO4_lim(i,j,k)*Fe_lim(i,j,k)*maskC(i,j,k,bi,bj)
-#else
+#ifdef MIN_NUT_LIM
           Pc_m = Pc_0*expkT(i,j,k)
      &           *min(PO4_lim(i,j,k), Fe_lim(i,j,k))*maskC(i,j,k,bi,bj)
+#else
+          Pc_m = Pc_0*expkT(i,j,k)
+     &           *PO4_lim(i,j,k)*Fe_lim(i,j,k)*maskC(i,j,k,bi,bj)
 #endif
 
 c ---------------------------------------------------------------------

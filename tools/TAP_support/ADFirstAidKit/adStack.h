@@ -2,6 +2,7 @@
 #define ADSTACK_INCLUDED
 
 #include "complex.h"
+#include <stdint.h>
 
 void adStack_startRepeat() ;
 void adStack_resetRepeat() ;
@@ -20,6 +21,8 @@ void pushReal4Array(float *x, int n) ;
 void popReal4Array(float *x, int n) ;
 void pushReal8Array(double *x, int n) ;
 void popReal8Array(double *x, int n) ;
+void pushReal16Array(long double *x, int n) ;
+void popReal16Array(long double *x, int n) ;
 /* Commented out because sizeof(complex) == sizeof(double complex) == 16 */
 /* void pushComplex8Array(complex *x, int n) ; */
 /* void popComplex8Array(complex *x, int n) ; */
@@ -34,6 +37,8 @@ void pushReal4(float val) ;
 void popReal4(float* val) ;
 void pushReal8(double val) ;
 void popReal8(double* val) ;
+void pushReal16(long double *val) ;
+void popReal16(long double *val) ;
 void pushInteger4(int val) ;
 void popInteger4(int* val) ;
 void pushInteger8(long val) ;
@@ -74,6 +79,8 @@ void adStack_showPeakSize() ;
 void adStack_showTotalTraffic() ;
 void adStack_showStackSize(int label) ;
 void adStack_showStack(char *locationName) ;
+
+uint64_t adStack_getCurrentStackSize();
 
 int stackIsThreadSafe() ;
 #endif

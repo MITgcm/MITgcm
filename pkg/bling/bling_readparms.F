@@ -107,6 +107,12 @@ C ==========================================================
      &                     k_NO3,
      &                     k_PtoN,
      &                     k_FetoN,
+     &                     k_NO3_sm,
+     &                     k_NO3_lg,
+     &                     k_PO4_sm,
+     &                     k_PO4_lg,
+     &                     k_Fe_sm,
+     &                     k_Fe_lg,
      &                     PtoN_min,
      &                     PtoN_max,
      &                     FetoN_min,
@@ -183,6 +189,7 @@ C ==========================================================
      &          bling_psmFile, bling_plgFile, bling_PdiazFile,
      &          bling_forcingPeriod, bling_forcingCycle,
      &          bling_Pc_2dFile, bling_Pc_2d_diazFile,
+     &          bling_k0_2dFile,
      &          bling_alpha_photo2dFile,bling_phi_DOM2dFile,
      &          bling_k_Fe2dFile, bling_k_Fe_diaz2dFile,
      &          bling_gamma_POM2dFile, bling_wsink0_2dFile,
@@ -354,6 +361,12 @@ C     Default values
       k_Fe_diaz            = 7. _d -10 / permil
       k_NO3                = 2. _d -6 / permil
       k_PO4                = 1. _d -8 / permil
+      k_NO3_sm             = 2.0 _d -6 / permil
+      k_NO3_lg             = 6.0 _d -6 / permil
+      k_PO4_sm             = 1.0 _d -8 / permil
+      k_PO4_lg             = 3.0 _d -8 / permil
+      k_Fe_sm              = 1.6 _d -10 / permil
+      k_Fe_lg              = 4.8 _d -10 / permil
       k_PtoN               = 1.5 _d -6 / permil
       k_FetoN              = 8. _d -10 / permil
       remin_min            = 0.15 _d 0
@@ -428,6 +441,7 @@ C     Default values
       bling_pdiazFile        = ' '
       bling_Pc_2dFile        = ' '
       bling_Pc_2d_diazFile   = ' '
+      bling_k0_2dFile        = ' '
       bling_alpha_photo2dFile= ' '
       bling_k_Fe2dFile       = ' '
       bling_k_Fe_diaz2dFile  = ' '

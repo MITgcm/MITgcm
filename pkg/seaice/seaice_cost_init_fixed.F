@@ -1,6 +1,6 @@
 #include "SEAICE_OPTIONS.h"
 
-      subroutine seaice_cost_init_fixed( mythid )
+      SUBROUTINE SEAICE_COST_INIT_FIXED( myThid )
 
 C     ==================================================================
 C     SUBROUTINE seaice_cost_init_fixed
@@ -14,7 +14,7 @@ C     ==================================================================
 C     SUBROUTINE seaice_cost_init_fixed
 C     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
 C     == global variables ==
 #include "EEPARAMS.h"
@@ -28,41 +28,40 @@ C     == global variables ==
 #endif
 
 C     == routine arguments ==
-      integer mythid
+      INTEGER myThid
 
 #if (defined ALLOW_COST && defined ALLOW_COST_ICE)
-C     == local variables ==
-      integer tempDate1(4)
-      integer tempDate2(4)
-C     == end of interface ==
-
 #ifdef ALLOW_CAL
+C     == local variables ==
+      INTEGER tempDate1(4)
+      INTEGER tempDate2(4)
+C     == end of interface ==
 
       _BEGIN_MASTER( myThid )
 
       IF ( useCAL ) THEN
 C--   Sea-ice cost function start and stop times in model seconds.
-        call cal_FullDate  ( costIceStart1 , costIceStart2,
-     &                       tempDate1     , mythid )
-        call cal_TimePassed( modelStartDate, tempDate1    ,
-     &                       tempDate2     , mythid )
-        call cal_ToSeconds ( tempDate2 , costIceStart , mythid )
+        CALL cal_FullDate  ( costIceStart1 , costIceStart2,
+     &                       tempDate1     , myThid )
+        CALL cal_TimePassed( modelStartDate, tempDate1    ,
+     &                       tempDate2     , myThid )
+        CALL cal_ToSeconds ( tempDate2 , costIceStart , myThid )
         costIceStart = costIceStart + startTime
 
-        if ( costIceEnd1.EQ.0 ) then
+        IF ( costIceEnd1.EQ.0 ) THEN
 C-      use "modelEndDate" as default value for costIceEnd
           costIceEnd1 = modelEndDate(1)
           costIceEnd2 = modelEndDate(2)
-        endif
-        call cal_FullDate  ( costIceEnd1   , costIceEnd2  ,
-     &                       tempDate1     , mythid )
-        call cal_TimePassed( modelStartDate, tempDate1    ,
-     &                       tempDate2     , mythid )
-        call cal_ToSeconds ( tempDate2 , costIceEnd , mythid )
+        ENDIF
+        CALL cal_FullDate  ( costIceEnd1   , costIceEnd2  ,
+     &                       tempDate1     , myThid )
+        CALL cal_TimePassed( modelStartDate, tempDate1    ,
+     &                       tempDate2     , myThid )
+        CALL cal_ToSeconds ( tempDate2 , costIceEnd , myThid )
         costIceEnd = costIceEnd + startTime
 C--
       ENDIF
-      _END_MASTER( mythid )
+      _END_MASTER( myThid )
 
       _BARRIER
 

@@ -4,7 +4,6 @@
  &KL10_PARM01
  KLwriteState=.TRUE.,
 # keep commented if you want the same average frequency as the other snapshots
-  KLtaveFreq=44640., 
-# KLdumpFreq=1240., 
+# KLdumpFreq=1240.,
  KLviscMax=300.
  &

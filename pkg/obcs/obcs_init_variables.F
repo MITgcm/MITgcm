@@ -1,4 +1,7 @@
 #include "OBCS_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: OBCS_INIT_VARIABLES
@@ -361,6 +364,24 @@ C--   Load/compute OBCS values (initial conditions only)
       IF ( nIter0.EQ.0 .AND. pickupSuff.EQ.' ' ) THEN
 #ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('OBCS_CALC',myThid)
+#endif
+#if ( defined ALLOW_AUTODIFF_TAMC && defined ALLOW_OBCS_STEVENS )
+# ifdef ALLOW_OBCS_EAST
+CADJ STORE OBEsStevens = tapelev_init, key = 1
+CADJ STORE OBEtStevens = tapelev_init, key = 1
+# endif
+# ifdef ALLOW_OBCS_WEST
+CADJ STORE OBWsStevens = tapelev_init, key = 1
+CADJ STORE OBWtStevens = tapelev_init, key = 1
+# endif
+# ifdef ALLOW_OBCS_SOUTH
+CADJ STORE OBSsStevens = tapelev_init, key = 1
+CADJ STORE OBStStevens = tapelev_init, key = 1
+# endif
+# ifdef ALLOW_OBCS_NORTH
+CADJ STORE OBNsStevens = tapelev_init, key = 1
+CADJ STORE OBNtStevens = tapelev_init, key = 1
+# endif
 #endif
        CALL OBCS_CALC( startTime, nIter0,
      &              uVel, vVel, wVel, theta, salt, myThid )

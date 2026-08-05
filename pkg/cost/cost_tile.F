@@ -120,20 +120,20 @@ CADJ &     kind = isbyte
 
       IF ( myTime .GT. (endTime - lastinterval) ) THEN
 
-#if (defined (ALLOW_COST_TEST) || defined (ALLOW_COST_ATLANTIC_HEAT) || defined (ALLOW_COST_TEMP) )
-        CALL COST_ACCUMULATE_MEAN (myThid)
+#if ( defined ALLOW_COST_TEST || defined ALLOW_COST_ATLANTIC_HEAT || defined ALLOW_COST_TEMP )
+        CALL COST_ACCUMULATE_MEAN( myThid )
 #endif
 
-#ifdef ALLOW_COST_SHELFICE
-        CALL SHELFICE_COST_ACCUMULATE (myThid)
+#if ( defined ALLOW_SHELFICE && defined ALLOW_COST_SHELFICE )
+        IF (useShelfIce) CALL SHELFICE_COST_ACCUMULATE( myThid )
 #endif
 
-#if ( defined(ALLOW_STREAMICE) && defined(ALLOW_COST_STREAMICE) )
-        IF (useStreamIce) CALL STREAMICE_COST_ACCUM (myIter, myThid)
+#if ( defined ALLOW_STREAMICE && defined ALLOW_COST_STREAMICE )
+        IF (useStreamIce) CALL STREAMICE_COST_ACCUM( myIter, myThid )
 #endif
 
-#if (defined ALLOW_THSICE && defined ALLOW_THSICE_COST_TEST)
-        IF (useThSIce) CALL THSICE_COST_DRIVER (myTime, myIter, myThid)
+#if ( defined ALLOW_THSICE && defined ALLOW_THSICE_COST_TEST )
+        IF (useThSIce) CALL THSICE_COST_DRIVER( myTime, myIter, myThid )
 #endif
 
       ENDIF

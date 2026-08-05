@@ -181,10 +181,11 @@ def readmeta(f):
     # remove file-specific parameters
     timeInterval = meta.pop('timeInterval', None)
     timeStepNumber = meta.pop('timeStepNumber', None)
+    timeStepDate = meta.pop('timeStepDate', None)
     map2gl = meta.pop('map2glob', None)
     # put back only global dimensions
     meta['dimList'] = list(gdims[::-1])
-    return gdims,i0s,ies,timeStepNumber,timeInterval,map2gl,meta
+    return gdims,i0s,ies,timeStepNumber,timeStepDate,timeInterval,map2gl,meta
 
 
 _typeprefixes = {'ieee-be':'>',
@@ -223,7 +224,7 @@ def rdmds(fnamearg,itrs=-1,machineformat='b',rec=None,fill_value=0,
         will read prefix0000/T.0000002880.*, prefix0001/T.0000002880.*, ...
         (and any others that match the wildcard, so be careful how you name things!)
 
-    itrs : int or list of ints or np.NaN or np.Inf
+    itrs : int or list of ints or np.nan or np.inf
         Iteration number(s).  With itrs=-1, will try to read
 
           fname.meta or fname.001.001.meta, ...
@@ -232,8 +233,8 @@ def rdmds(fnamearg,itrs=-1,machineformat='b',rec=None,fill_value=0,
 
           fname.000000iter.meta, ...
 
-        If itrs is np.NaN, it will read all iterations for which files are found.
-        If itrs is np.Inf, it will read the highest iteration found.
+        If itrs is np.nan, it will read all iterations for which files are found.
+        If itrs is np.inf, it will read the highest iteration found.
 
     machineformat : int
         endianness ('b' or 'l', default 'b')
@@ -271,7 +272,7 @@ def rdmds(fnamearg,itrs=-1,machineformat='b',rec=None,fill_value=0,
     >>> T = rdmds('T.0000002880')
     >>> T = rdmds('T',2880)
     >>> T2 = rdmds('T',[2880,5760])
-    >>> T,its = rdmds('T',numpy.Inf)
+    >>> T,its = rdmds('T',numpy.inf)
     >>> VVEL = rdmds('pickup',2880,rec=range(50,100))
     >>> a5 = rdmds('diags',2880,rec=0,lev=[5])
     >>> a = rdmds('diags',2880,rec=0,lev=([0],[0,1,5,6,7]))
@@ -336,6 +337,7 @@ def rdmds(fnamearg,itrs=-1,machineformat='b',rec=None,fill_value=0,
     arr = None
     metaref = {}
     timeStepNumbers = []
+    timeStepDates = []
     timeIntervals = []
     for iit,it in enumerate(itrs):
         if additrs:
@@ -352,7 +354,7 @@ def rdmds(fnamearg,itrs=-1,machineformat='b',rec=None,fill_value=0,
         if debug: warning('Found',len(metafiles),'metafiles for iteration',it)
 
         for metafile in metafiles:
-            gdims,i0s,ies,timestep,timeinterval,map2gl,meta = readmeta(metafile)
+            gdims,i0s,ies,timestep,tsdate,timeinterval,map2gl,meta = readmeta(metafile)
             if arr is None:
                 # initialize, allocate
                 try:
@@ -462,12 +464,22 @@ def rdmds(fnamearg,itrs=-1,machineformat='b',rec=None,fill_value=0,
         if timestep is not None:
             timeStepNumbers.extend(timestep)
 
+        if tsdate is not None:
+            # np.datetime64 does not support timezones, so remove the
+            # timezone Z (Zulu time) to avoid the warning
+            timeStepDates.append(np.datetime64(tsdate[0].replace('Z','')))
+
         if timeinterval is not None:
             timeIntervals.append(timeinterval)
 
     # put list of iteration numbers back into metadata dictionary
     if len(timeStepNumbers):
         metaref['timeStepNumber'] = timeStepNumbers
+
+    if len(timeStepDates):
+        metaref['timeStepDate'] = timeStepDates
+        # hardwire time zone
+        metaref['timeZone'] = [ 'Z' ]
 
     if len(timeIntervals):
         metaref['timeInterval'] = timeIntervals
@@ -634,4 +646,3 @@ def wrmds(fbase, arr, itr=None, dataprec='float32', ndims=None, nrecords=None,
             f.write(" };\n")
 
     arr.astype(tp).tofile(fbase + '.data')
-

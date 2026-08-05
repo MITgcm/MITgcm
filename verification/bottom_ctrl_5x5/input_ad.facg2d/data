@@ -37,8 +37,8 @@
 # Elliptic solver parameters
  &PARM02
  cg2dMaxIters=100,
-#cg2dTargetResidual=1.E-13,
- cg2dTargetResWunit=1.E-18,
+ cg2dTargetResidual=1.E-13,
+#cg2dTargetResWunit=5.E-18,
  useNSACGSolver = .FALSE.,
  &
 # Time stepping parameters

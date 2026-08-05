@@ -111,7 +111,6 @@ C       current limit is set to 0.1 CFL
       ENDIF
 C-- end of "addEmP" setting
 
-#ifdef EXACT_CONSERV
       IF ( (nonlinFreeSurf.GT.0 .OR. usingPCoords)
      &     .AND. useRealFreshWaterFlux ) THEN
 
@@ -138,9 +137,6 @@ c
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ELSE
-#else /* EXACT_CONSERV */
-      IF (.TRUE.) THEN
-#endif /* EXACT_CONSERV */
 
 C--   EmPmR does not really affect the water column height (for tracer budget)
 C     and is converted to a salt tendency.

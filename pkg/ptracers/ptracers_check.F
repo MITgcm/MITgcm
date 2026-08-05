@@ -73,15 +73,9 @@ C--   Print a summary of pTracer parameter values:
       CALL WRITE_0D_RL(PTRACERS_dumpFreq, INDEX_NONE,
      &   'PTRACERS_dumpFreq =',
      &   ' /* Frequency^-1 for snapshot output (s) */')
-      CALL WRITE_0D_RL(PTRACERS_taveFreq, INDEX_NONE,
-     &   'PTRACERS_taveFreq =',
-     &   ' /* Frequency^-1 for time-Aver. output (s) */')
       CALL WRITE_0D_L( PTRACERS_useRecords, INDEX_NONE,
      &   'PTRACERS_useRecords =', ' /* all tracers in 1 file */')
 
-      CALL WRITE_0D_L( PTRACERS_timeave_mnc, INDEX_NONE,
-     &     'PTRACERS_timeave_mnc =',
-     &     ' /* use MNC for Tave output */')
       CALL WRITE_0D_L( PTRACERS_snapshot_mnc, INDEX_NONE,
      &     'PTRACERS_snapshot_mnc =',
      &     ' /* use MNC for snapshot output */')

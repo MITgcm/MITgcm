@@ -28,7 +28,7 @@ c     == global variables ==
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "GRID.h"
-c#include "OBCS_PARAMS.h"
+#include "OBCS_PARAMS.h"
 #include "OBCS_GRID.h"
 #include "OBCS_FIELDS.h"
 #include "CTRL_SIZE.h"
@@ -43,7 +43,7 @@ c     == routine arguments ==
       integer myIter
       integer myThid
 
-#ifdef ALLOW_OBCSS_CONTROL
+#if ( defined ALLOW_OBCS_SOUTH && defined ALLOW_OBCSS_CONTROL )
 c     == external functions ==
       integer  ilnblnk
       external ilnblnk
@@ -283,7 +283,7 @@ c--   Calculate mask for tracer cells (0 => land, 1 => water).
 C--   End over iobcs loop
       enddo
 
-#endif /* ALLOW_OBCSS_CONTROL */
+#endif /* defined ALLOW_OBCS_SOUTH && defined ALLOW_OBCSS_CONTROL */
 
       return
       end

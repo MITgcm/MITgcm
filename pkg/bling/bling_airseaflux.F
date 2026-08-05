@@ -232,6 +232,9 @@ C Use the original Follows et al. (2006) solver
 
         ENDDO
        ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE pCO2(:,:,bi,bj) = comlev1_bibj, key = tkey, kind = isbyte
+#endif
 
        DO j=jmin,jmax
         DO i=imin,imax

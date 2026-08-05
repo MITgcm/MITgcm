@@ -345,7 +345,6 @@ C---  Write 2-D fields, starting with Eta:
         IF (j.LE.listDim) wrFldList(j) = 'dPhiNH  '
        ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
-#ifdef EXACT_CONSERV
 c      IF ( exactConserv ) THEN
         j = j + 1
         nj = -( n3D*(Nr-1) + j )
@@ -360,7 +359,6 @@ c      IF ( nonlinFreeSurf.GT.0 ) THEN
         CALL WRITE_REC_3D_RL( fn, fp, 1, etaHnm1, nj, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'EtaH    '
 c      ENDIF
-#endif /* EXACT_CONSERV */
 C--------------------------
         nWrFlds = j
         IF ( nWrFlds.GT.listDim ) THEN
@@ -423,10 +421,8 @@ C       Then set the actual unlimited dimension
         CALL MNC_CW_RL_W('D',fn,0,0,'gTnm1', gtNm1, myThid)
         CALL MNC_CW_RL_W('D',fn,0,0,'gSnm1', gsNm1, myThid)
 #endif /* ALLOW_ADAMSBASHFORTH_3 */
-#ifdef EXACT_CONSERV
         CALL MNC_CW_RL_W('D',fn,0,0,'dEtaHdt', dEtaHdt, myThid)
         CALL MNC_CW_RL_W('D',fn,0,0,'EtaH', etaHnm1, myThid)
-#endif
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( use3Dsolver ) THEN
           CALL MNC_CW_RL_W('D',fn,0,0,'phi_nh', phi_nh, myThid)
@@ -435,7 +431,7 @@ c         CALL MNC_CW_RL_W('D',fn,0,0,'gW', gW, myThid)
           CALL MNC_CW_RL_W('D',fn,0,0,'gWnm1', gwNm1, myThid)
 #endif
         ENDIF
-#endif
+#endif /* ALLOW_NONHYDROSTATIC */
         IF ( storePhiHyd4Phys ) THEN
           CALL MNC_CW_RL_W('D',fn,0,0,'phiHyd', totPhiHyd, myThid)
         ENDIF

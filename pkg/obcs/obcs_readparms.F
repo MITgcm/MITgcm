@@ -168,7 +168,7 @@ C     Retired parameters:
      &          OBCS_u1_adv_Tr,
      &          OBNptrFile, OBSptrFile, OBEptrFile, OBWptrFile,
 #endif
-     &          useOBCSsponge, useSeaiceSponge,
+     &          useOBCSsponge, useSeaiceSponge, useSeaiceNeumann,
      &          OBCSsponge_N , OBCSsponge_S,
      &          OBCSsponge_E, OBCSsponge_W,
      &          OBCSsponge_UatNS, OBCSsponge_UatEW,
@@ -268,6 +268,7 @@ C--   Default flags and values for OBCS
       useOBCStides       =.FALSE.
       useOBCSsponge      =.FALSE.
       useSeaiceSponge    =.FALSE.
+      useSeaiceNeumann   =.FALSE.
       OBCSsponge_N       =.TRUE.
       OBCSsponge_S       =.TRUE.
       OBCSsponge_E       =.TRUE.

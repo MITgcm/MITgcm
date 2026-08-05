@@ -1,0 +1,50 @@
+#!/bin/bash
+#
+# Generate make file dependency entries for TAF generated AD files
+# passed as arguments after output dependency file
+
+if [ $# -eq 0 ]; then
+  echo "Usage: `basename $0` output_file list_of_TAF_generated_files"
+  exit 1
+else
+  dep_file=$1 ; shift
+fi
+
+# don't complain if *.F90 doesn't match any files
+shopt -s nullglob
+
+# init files
+#log_file="`basename $0`.log"
+log_file="f90mkdepend_taf.log"
+
+cat /dev/null > $log_file
+cat /dev/null > $dep_file
+
+# append module dependencies to Makefile
+adfiles=$*
+for filename in ${adfiles}; do
+  # quick check for "use" to speed up processing
+  if grep -iq '^ *use ' $filename; then
+    # extract module name in lower case
+    modreflist=$(grep -i '^ *use ' $filename | awk '{print tolower($2)}' | sed -e 's/,.*$//' -e 's/\r$//' | sort | uniq )
+
+    echo "$filename => $modreflist" >> $log_file
+
+    # determine AD suffix
+    adsuff=$(echo ${filename%.*} | sed -e 's/.*_//')
+    depline="$filename:"
+    for m in $modreflist; do
+	# I am sure that this can be shorter with only one grep command
+	mm=$(grep -Hi "${m}$" ${adfiles} | grep -i module | grep -v end | awk -F: '{print $1}')
+	if  [ $mm == $filename ] ; then
+	    echo "INFO: f90mkdepend_taf: $filename contains module $m" 1>&2
+        elif [[ ${#mm} > 0 ]] && [ -f ${mm} ] ; then
+	    depline="$depline ${mm%.*}.o"
+	else
+            echo "WARNING: f90mkdepend_taf: in $filename no source file found for module $m" 1>&2
+	fi
+    done
+    echo $depline >> $dep_file
+  fi
+done
+exit 0

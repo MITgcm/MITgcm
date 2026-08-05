@@ -17,43 +17,46 @@ C fld2d_procbuff_rx :: Heap storage buffer to which master thread
 C                   read-in/write-from data which all threads copy from
 C                   (during read) or copy to (during write).
       COMMON /MDS_WH_BUFFERS_R8/ fld2d_procbuff_r8
-#ifndef EXCLUDE_WHIO_GLOBUFF_2D
+# ifndef EXCLUDE_WHIO_GLOBUFF_2D
      &                         , fld2d_globuff_r8
-#endif
+# endif
       COMMON /MDS_WH_BUFFERS_R4/ fld2d_procbuff_r4
-#ifndef EXCLUDE_WHIO_GLOBUFF_2D
-     &                        ,  fld2d_globuff_r4
-#endif
-      Real*8 fld2d_procbuff_r8( (sNx+2*Olx)*(sNy+2*Oly)*nSx*nSy )
-      Real*4 fld2d_procbuff_r4( (sNx+2*Olx)*(sNy+2*Oly)*nSx*nSy )
-#ifndef EXCLUDE_WHIO_GLOBUFF_2D
-      Real*4 fld2d_globuff_r4( (sNx+2*Olx)*(sNy+2*Oly)*nSx*nSy*nPx*nPy )
-      Real*8 fld2d_globuff_r8( (sNx+2*Olx)*(sNy+2*Oly)*nSx*nSy*nPx*nPy )
-#endif
+# ifndef EXCLUDE_WHIO_GLOBUFF_2D
+     &                         , fld2d_globuff_r4
+# endif
+      Real*8 fld2d_procbuff_r8( (sNx+2*OLx)*(sNy+2*OLy)*nSx*nSy )
+      Real*4 fld2d_procbuff_r4( (sNx+2*OLx)*(sNy+2*OLy)*nSx*nSy )
+# ifndef EXCLUDE_WHIO_GLOBUFF_2D
+      Real*8 fld2d_globuff_r8( (sNx+2*OLx)*(sNy+2*OLy)*nSx*nSy*nPx*nPy )
+      Real*4 fld2d_globuff_r4( (sNx+2*OLx)*(sNy+2*OLy)*nSx*nSy*nPx*nPy )
+# endif
 
-#ifdef ALLOW_WHIO_3D
+# ifdef ALLOW_WHIO_3D
       COMMON /MDS_WH_BUFFERS_3D_L/ writeWh
-      logical writeWh
+      LOGICAL writeWh
       COMMON /MDS_WH_BUFFERS_3D_I/ iWh, jWh
-      integer nWh, iWh, jWh
+      INTEGER nWh, iWh, jWh
       PARAMETER (nWh=727)
-      COMMON /MDS_WH_BUFFERS_3D_RL/
+      COMMON /MDS_WH_BUFFERS_3D_R8/ fld3d_procbuff_r8
 #  ifdef INCLUDE_WHIO_GLOBUFF_3D
-     &                        fld3d_globuff_r8, fld3d_globuff_r4,
+     &                            , fld3d_globuff_r8
 #  endif
-     &                        fld3d_procbuff_r8, fld3d_procbuff_r4
+      COMMON /MDS_WH_BUFFERS_3D_R4/ fld3d_procbuff_r4
+#  ifdef INCLUDE_WHIO_GLOBUFF_3D
+     &                            , fld3d_globuff_r4
+#  endif
       Real*8 fld3d_procbuff_r8
-     &       ( (sNx+2*Olx)*(sNy+2*Oly)*nSx*nSy*nWh )
+     &       ( (sNx+2*OLx)*(sNy+2*OLy)*nSx*nSy*nWh )
       Real*4 fld3d_procbuff_r4
-     &       ( (sNx+2*Olx)*(sNy+2*Oly)*nSx*nSy*nWh )
+     &       ( (sNx+2*OLx)*(sNy+2*OLy)*nSx*nSy*nWh )
 #  ifdef INCLUDE_WHIO_GLOBUFF_3D
-      Real*4 fld3d_globuff_r4
-     &       ( (sNx+2*Olx)*(sNy+2*Oly)*nSx*nSy*nPx*nPy*nWh )
       Real*8 fld3d_globuff_r8
-     &       ( (sNx+2*Olx)*(sNy+2*Oly)*nSx*nSy*nPx*nPy*nWh )
+     &       ( (sNx+2*OLx)*(sNy+2*OLy)*nSx*nSy*nPx*nPy*nWh )
+      Real*4 fld3d_globuff_r4
+     &       ( (sNx+2*OLx)*(sNy+2*OLy)*nSx*nSy*nPx*nPy*nWh )
 #  endif
-#endif
+# endif /* ALLOW_WHIO_3D */
 
-#endif
+#endif /* ALLOW_WHIO */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

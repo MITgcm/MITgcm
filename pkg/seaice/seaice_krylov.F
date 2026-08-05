@@ -33,6 +33,7 @@ C     === Global variables ===
 #include "GRID.h"
 #include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
+#include "SEAICE_GRID.h"
 #include "SEAICE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -376,7 +377,7 @@ C     some output diagnostics
          _BEGIN_MASTER( myThid )
          totalPicardItersLoc =
      &        picardIterMax*(myIter-nIter0)+picardIter
-         WRITE(msgBuf,'(2A,2(1XI6),2E12.5)')
+         WRITE(msgBuf,'(2A,2(1X,I6),2E12.5)')
      &        ' S/R SEAICE_KRYLOV: Picard iterate / total, ',
      &        'KRYLOVgamma_lin, initial norm = ',
      &        picardIter, totalPicardItersLoc,

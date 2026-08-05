@@ -19,7 +19,6 @@
 #thSIceAdvScheme=1,
 #thSIce_diffK   =800.,
  stressReduction=0.,
-#thSIce_taveFreq=2592000.,
  thSIce_diagFreq=5184000.,
 #thSIce_monFreq=864000.,
 #thSIce_diagFreq=0.,
