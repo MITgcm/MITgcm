@@ -37,8 +37,6 @@ C     EOP
 C     !FUNCTIONS:
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
-      INTEGER  MDS_RECLEN
-      EXTERNAL MDS_RECLEN
 
 C     !LOCAL VARIABLES:
 C     i,j,bi,bj    :: loop indices
@@ -52,7 +50,7 @@ C     ProfNo_tile  :: counter
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
       INTEGER kLev, prof_num
-      INTEGER chunk, chunkProf, ic, recLen
+      INTEGER chunk, chunkProf, ic
       INTEGER i,j,bi,bj,iG,jG,num_file,num_var,ProfNo_tile
       INTEGER stopProfiles, stopProfiles_cnt
       INTEGER fid, dimId, varId1, varId1a, varId1b
@@ -87,8 +85,7 @@ C     ProfNo_tile  :: counter
       _RL tmp_weights(1000,NUM_INTERP_POINTS),tmp_sum_weights
       _RL tmp_xC11(1000),tmp_yC11(1000)
       _RL tmp_xCNINJ(1000),tmp_yCNINJ(1000)
-      INTEGER stopGenericGrid, stopGenericGrid_cnt
-      Real*8 xy_buffer_r8(0:sNx+1,0:sNy+1)
+      INTEGER stopGenericGrid, stopGenericGrid_max
       INTEGER vec_start2(2), vec_count2(2)
       INTEGER hh, ProfNo_hh
 # ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
@@ -97,6 +94,8 @@ C     ProfNo_tile  :: counter
       _RL tmp_avgbin(1000)
 # endif /* ALLOW_PROFILES_SAMPLESPLIT_COST */
 
+      stopProfiles_cnt = 0
+      stopGenericGrid_max = 0
       iUnit = standardMessageUnit
       WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
@@ -158,6 +157,11 @@ C     0) initialise profiles arrays
           ENDDO
          ENDDO
         ENDDO
+# ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
+        DO kCMax = 1, NLEVELCOMBMAX
+         prof_depth_comb(kCMax,bi,bj) = -999. _d 0
+        ENDDO
+# endif /* ALLOW_PROFILES_SAMPLESPLIT_COST */
 
         DO num_file = 1, NFILESPROFMAX
           ProfNo(num_file,bi,bj) = 0
@@ -192,17 +196,15 @@ C--   end bi,bj loops
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      stopProfiles_cnt = 0
-      stopGenericGrid_cnt = 0
-      yymmddMin=modelstartdate(1)
-      yymmddMax=modelenddate(1)
-      hhmmssMin=modelstartdate(2)
-      hhmmssMax=modelenddate(2)
+      yymmddMin = modelstartdate(1)
+      yymmddMax = modelenddate(1)
+      hhmmssMin = modelstartdate(2)
+      hhmmssMax = modelenddate(2)
 
-      DO bj = 1, nSy
-       DO bi = 1, nSx
+      DO num_file = 1, NFILESPROFMAX
 
-        DO num_file = 1, NFILESPROFMAX
+       DO bj = 1, nSy
+        DO bi = 1, nSx
          stopProfiles = 0
          stopGenericGrid = 0
          ProfNo_hh=0
@@ -222,6 +224,10 @@ c        IL = ILNBLNK( profilesfile )
 C===========================================================
 C     Open data files and read information
 C===========================================================
+C-- Note: the NetCdF input file is not specific to this tile,
+C     ==> could save I/O if we open this file outside bi,bj loops
+C         and drop nSx,nSy dims from "fiddata" vector.
+C---------
           WRITE(fnamedatanc,'(2A)') profilesfile(1:IL),'.nc'
           err = NF_OPEN( fnamedatanc, NF_NOWRITE,
      &         fiddata(num_file,bi,bj) )
@@ -421,7 +427,6 @@ C     3) Read interpolation information (grid points, coeffs, etc.)
      &           '.nc missing interpolation information',
      &           ' (profilesDoGenGrid)'
             CALL PRINT_ERROR( msgBuf, myThid )
-
             stopGenericGrid = 2
            ENDIF
           ENDIF !IF (profilesDoGenGrid)
@@ -1041,23 +1046,25 @@ C     Obtain existing NetCDF file id
 C     ===========================================================
          ENDIF !IF (IL.NE.0)
 
-         IF (stopProfiles.GE.1) THEN
+         IF ( stopGenericGrid.GT.0 ) stopProfiles = 1
+         IF ( stopProfiles.GE.1 ) THEN
           stopProfiles_cnt = stopProfiles_cnt+1
          ENDIF
+         stopGenericGrid_max = MAX( stopGenericGrid_max,
+     &                              stopGenericGrid )
 
-        ENDDO !DO num_file
+C--   end bi,bj loops
+        ENDDO
+       ENDDO
+      ENDDO !DO num_file
 
 # ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
 C     Find unique depth levels from all profile datasets
-C     initialize prof_depth_comb
-        IF (bi.EQ.1.AND.bj.EQ.1) THEN
-         NLEVELCOMB = 0
-         NLEVELCOMBRL = NLEVELCOMB
-        ENDIF
 
-        DO kCMax = 1, NLEVELCOMBMAX
-         prof_depth_comb(kCMax,bi,bj) = -999. _d 0
-        ENDDO
+C     initialize prof_depth_comb
+       NLEVELCOMB = 0
+      DO bj = 1, nSy
+       DO bi = 1, nSx
 
         m = 1
         DO num_file = 1, NFILESPROFMAX
@@ -1123,10 +1130,6 @@ C     Sort
 
          ENDDO ! DO kLev
 
-         IF (stopProfiles.GE.1) THEN
-          stopProfiles_cnt = stopProfiles_cnt+1
-         ENDIF
-
         ENDDO ! DO num_file
 
         prof_depth_comb(NLEVELCOMBMAX,bi,bj) = -999. _d 0
@@ -1148,6 +1151,9 @@ C     Diagnostics output
 
         WRITE(msgBuf,'(A,I6,D20.5)') 'NLEVELCOMB = ', NLEVELCOMB
         CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
+C--   end bi,bj loops
+       ENDDO
+      ENDDO
 # endif /* ALLOW_PROFILES_SAMPLESPLIT_COST */
 
 C===========================================================
@@ -1155,9 +1161,10 @@ C     Error analysis:
 C===========================================================
 
 C     1) Provide interpolation information
-        DO num_file = 1, NFILESPROFMAX
-        IF (stopGenericGrid.EQ.2) THEN
+      IF ( stopGenericGrid_max.EQ.2) THEN
 #ifdef ALLOW_DEBUG
+       DO bj = 1, nSy
+        DO bi = 1, nSx
 C     XC grid
          fnameequinc = 'profilesXCwithOverlap'
          JL  = ILNBLNK( fnameequinc )
@@ -1165,7 +1172,7 @@ C     XC grid
      &        'PROFILES_INIT_FIXED: creating grid from profiles; ',
      &         'file:', fnameequinc(1:JL), ' , bi,bj=', bi, bj
          CALL WRITE_FULLARRAY_RS( fnameequinc, xC(1-OLx,1-OLy,bi,bj),
-     &                             1, bi, bj, 1, -1, myThid )
+     &                            1, bi, bj, 1, -1, myThid )
 C     YC grid
          fnameequinc = 'profilesYCwithOverlap'
          JL  = ILNBLNK( fnameequinc )
@@ -1174,29 +1181,25 @@ C     YC grid
      &         'file:', fnameequinc(1:JL), ' , bi,bj=', bi, bj
          CALL WRITE_FULLARRAY_RS( fnameequinc, yC(1-OLx,1-OLy,bi,bj),
      &                             1, bi, bj, 1, -1, myThid )
+        ENDDO
+       ENDDO
 #endif /* ALLOW_DEBUG */
 
-         WRITE(msgBuf,'(2A)')
-     &        'PROFILES_INIT_FIXED : when using profilesDoGenGrid ',
-     &        'you have to provide interpolation coeffs etc. '
-         CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(2A)')
+     &      'PROFILES_INIT_FIXED : when using profilesDoGenGrid ',
+     &      'you have to provide interpolation coeffs etc. '
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(2A)')
+     &      'and some of your nc files dont have them. ',
+     &      'You could use profiles_prep_mygrid.m and/or'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(2A)') 'use the grid info in ',
+     &                      'profilesXC,YCwithOverlap.xxx.yyy.data'
+       CALL PRINT_ERROR( msgBuf, myThid )
 
-         WRITE(msgBuf,'(2A)')
-     &        'and some of your nc files dont have them. ',
-     &        'You could use profiles_prep_mygrid.m and/or'
-         CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF !IF (stopGenericGrid_max.EQ.2)
 
-         WRITE(msgBuf,'(2A)') 'use the grid info in ',
-     &                        'profilesXC,YCwithOverlap.xxx.yyy.data'
-         CALL PRINT_ERROR( msgBuf, myThid )
-
-         stopProfiles = 1
-        ENDIF !IF (stopGenericGrid.EQ.2)
-        ENDDO
-
-       ENDDO !DO bi
-      ENDDO !DO bj
-
+C===========================================================
       _END_MASTER( myThid )
       _BARRIER
 
@@ -1209,12 +1212,6 @@ C     YC grid
 C     2) Stop after other kind of errors
       CALL GLOBAL_SUM_INT( stopProfiles_cnt, myThid )
       IF ( stopProfiles_cnt.GE.1) THEN
-       CALL ALL_PROC_DIE( myThid )
-       STOP 'ABNORMAL END: S/R PROFILES_INIT_FIXED'
-      ENDIF
-
-      CALL GLOBAL_SUM_INT( stopGenericGrid_cnt, myThid )
-      IF ( stopGenericGrid_cnt.GE.1) THEN
        CALL ALL_PROC_DIE( myThid )
        STOP 'ABNORMAL END: S/R PROFILES_INIT_FIXED'
       ENDIF
