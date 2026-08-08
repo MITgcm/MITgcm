@@ -51,15 +51,14 @@ C     ProfNo_tile  :: counter
       INTEGER iUnit
       INTEGER kLev, prof_num
       INTEGER chunk, chunkProf, ic
-      INTEGER i,j,bi,bj,iG,jG,num_file,num_var,ProfNo_tile
-      INTEGER stopProfiles, stopProfiles_cnt
+      INTEGER i, j, bi, bj, iG, jG, num_file, num_var, ProfNo_tile
       INTEGER fid, dimId, varId1, varId1a, varId1b
-      INTEGER varId2,varId3
-      _RL tmpyymmdd(1000),tmphhmmss(1000),diffsecs
+      INTEGER varId2, varId3
+      _RL tmpyymmdd(1000), tmphhmmss(1000), diffsecs
       _RL yymmddMin,yymmddMax
       _RL hhmmssMin,hhmmssMax
 
-      INTEGER tmpdate(4),tmpdiff(4),profIsInRunTime
+      INTEGER tmpdate(4), tmpdiff(4), profIsInRunTime
       _RL tmp_lon, tmp_lon2(1000), tmp_lat2(1000)
       _RL lon_cur, lat_cur
       _RL lon_1, lon_2, lat_1, lat_2
@@ -76,16 +75,17 @@ C     ProfNo_tile  :: counter
       CHARACTER*(MAX_LEN_FNAM) tlfnameequinc
 # endif
       INTEGER IL, JL, KL, err, nerr
-      LOGICAL exst
+      LOGICAL exst, stopProfiles
+      INTEGER stopProfiles_cnt
+      INTEGER stopGenericGrid, stopGenericGrid_max
 
       INTEGER varId_intp1, varId_intp2, varId_intp11, varId_intp22
       INTEGER varId_intp3, varId_intp4, varId_intp5, iq, iINTERP
       _RL tmp_i(1000,NUM_INTERP_POINTS)
       _RL tmp_j(1000,NUM_INTERP_POINTS)
-      _RL tmp_weights(1000,NUM_INTERP_POINTS),tmp_sum_weights
-      _RL tmp_xC11(1000),tmp_yC11(1000)
-      _RL tmp_xCNINJ(1000),tmp_yCNINJ(1000)
-      INTEGER stopGenericGrid, stopGenericGrid_max
+      _RL tmp_weights(1000,NUM_INTERP_POINTS), tmp_sum_weights
+      _RL tmp_xC11(1000), tmp_yC11(1000)
+      _RL tmp_xCNINJ(1000), tmp_yCNINJ(1000)
       INTEGER vec_start2(2), vec_count2(2)
       INTEGER hh, ProfNo_hh
 # ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
@@ -202,25 +202,22 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       hhmmssMax = modelenddate(2)
 
       DO num_file = 1, NFILESPROFMAX
+       profilesfile = profilesfiles(num_file)
+       IL = ILNBLNK( profilesfile )
 
        DO bj = 1, nSy
         DO bi = 1, nSx
-         stopProfiles = 0
+         stopProfiles = .FALSE.
          stopGenericGrid = 0
          ProfNo_hh=0
-         profilesfile=' '
-         IL = ILNBLNK( profilesfiles(num_file) )
+
          IF (IL.NE.0) THEN
-          WRITE(profilesfile,'(A)') profilesfiles(num_file)(1:IL)
           WRITE(msgBuf,'(A)') ' '
           CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
           WRITE(msgBuf,'(A,I3,2A)') 'profiles file #', num_file,
      &         ' is ', profilesfile(1:IL)
           CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
-         ENDIF
 
-c        IL = ILNBLNK( profilesfile )
-         IF (IL.NE.0) THEN
 C===========================================================
 C     Open data files and read information
 C===========================================================
@@ -273,7 +270,7 @@ C      Check that maximum number of vertical levels is not exceeded
      &      'PROFILES_INIT_FIXED: increase NLEVELMAX in ',
      &      'PROFILES_SIZE.h and recompile'
            CALL PRINT_ERROR( msgBuf, myThid )
-           stopProfiles = 1
+           stopProfiles = .TRUE.
           ENDIF
 
           err = NF_INQ_DIMID( fid, 'iINTERP', dimId )
@@ -330,10 +327,10 @@ C     If neither is found, then stop
      &          '.nc is not in the pkg/profiles format',
      &          ' (no prof_depth etc.)'
            CALL PRINT_ERROR( msgBuf, myThid )
-           stopProfiles = 1
+           stopProfiles = .TRUE.
           ENDIF
 
-          IF (stopProfiles.EQ.0) THEN
+          IF ( .NOT.stopProfiles ) THEN
            DO kLev = 1, ProfDepthNo(num_file,bi,bj)
             err = NF_GET_VAR1_DOUBLE( fid, varId1a, kLev,
      &           prof_depth(num_file,kLev,bi,bj) )
@@ -379,7 +376,7 @@ C     Get time, lon, lat varIds
      &          '.nc not in pkg/profiles format',
      &          ' (no prof_YYYYMMDD etc.)'
            CALL PRINT_ERROR( msgBuf, myThid )
-           stopProfiles = 1
+           stopProfiles = .TRUE.
           ENDIF
 
           IF (profilesDoGenGrid) THEN
@@ -457,7 +454,7 @@ C     5.1) Read a chunk
      &            'PROFILES_INIT_FIXED: file ',profilesfile(1:IL),
      &            '.nc was not read properly (case 1).'
              CALL PRINT_ERROR( msgBuf, myThid )
-             stopProfiles = 1
+             stopProfiles = .TRUE.
             ENDIF
 
             err = NF_GET_VARA_DOUBLE( fid, varId1a,
@@ -498,7 +495,7 @@ C     5.1) Read a chunk
      &            'PROFILES_INIT_FIXED: file ', profilesfile(1:IL),
      &            '.nc get_vara_double (case 2).'
              CALL PRINT_ERROR( msgBuf, myThid )
-             stopProfiles = 1
+             stopProfiles = .TRUE.
             ENDIF
 
 C     If profilesDoGenGrid, then read interpolation coeffs and indices
@@ -550,7 +547,7 @@ C     If profilesDoGenGrid, then read interpolation coeffs and indices
 
 C     5.2) Loop through this chunk
             DO ic = 1, MIN(1000,ProfNo(num_file,bi,bj)-chunk)
-             IF (stopProfiles.EQ.0) THEN
+             IF ( .NOT.stopProfiles ) THEN
 
               profIsInRunTime = 1
 
@@ -613,7 +610,7 @@ C     5.2a) Determine profiles in current tile domain (lat-lon grid case)
                 profIsInRunTime = 0
                ENDIF
 
-C     Determine value of i,j to the south-ouest of data point
+C     Determine value of i,j to the South-West of data point
                prof_i = -10
                prof_j = -10
                lon_1  = -10
@@ -802,10 +799,10 @@ C     Check that maximum size was not reached:
      &              'PROFILES_INIT_FIXED: file ', profilesfile(1:IL),
      &              '.nc not read properly (increase NOBSGLOB).'
                CALL PRINT_ERROR( msgBuf, myThid)
-               stopProfiles = 1
+               stopProfiles = .TRUE.
               ENDIF
 
-             ENDIF !IF (stopProfiles.EQ.0)
+             ENDIF !IF ( .not.stopProfiles )
             ENDDO !DO ic
 
            ENDIF !IF (MIN(ProfNo(num_file,bi,bj)
@@ -1046,8 +1043,8 @@ C     Obtain existing NetCDF file id
 C     ===========================================================
          ENDIF !IF (IL.NE.0)
 
-         IF ( stopGenericGrid.GT.0 ) stopProfiles = 1
-         IF ( stopProfiles.GE.1 ) THEN
+         stopProfiles = stopProfiles .OR. ( stopGenericGrid.GT.0 )
+         IF ( stopProfiles ) THEN
           stopProfiles_cnt = stopProfiles_cnt+1
          ENDIF
          stopGenericGrid_max = MAX( stopGenericGrid_max,
