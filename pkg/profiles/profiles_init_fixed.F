@@ -1065,7 +1065,7 @@ C     initialize prof_depth_comb
 
         m = 1
         DO num_file = 1, NFILESPROFMAX
-         DO kLev = 1, ProfDepthNo(num_file,bi,bj)
+         DO kLev = 1, MIN( ProfDepthNo(num_file,bi,bj), NLEVELMAX )
           IF (m.EQ.1) THEN
            prof_depth_comb(m,bi,bj) = prof_depth(num_file,kLev,bi,bj)
            m = m + 1

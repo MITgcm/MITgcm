@@ -73,14 +73,13 @@ CEOP
       _RL  num_prof_glo
 
 #ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
-      INTEGER iavgbin,ikzz
+      INTEGER iavgbin
       INTEGER itmp
-      INTEGER k2, ix9, iy9, ktmp
+      INTEGER ix9, iy9, ktmp
       INTEGER cunit
       CHARACTER*(MAX_LEN_FNAM) cfile
 
       _RL prof_data1D_mean(NLEVELMAX)
-      _RL prof_count1D(NLEVELMAX)
       _RL prof_weights1D_mean(NLEVELMAX)
       _RL recip_profiles_mean_indsamples(NVARMAX)
 
