@@ -847,7 +847,7 @@ C-     compute explicit stress
        ENDDO
 C
        DO j=jMin,jMax
-        DO i=jMin,jMax
+        DO i=iMin,iMax
          IF ( kTopC(i,j,bi,bj) .GT. 0 ) THEN
           uStarSquare(i,j) =
      &         ( stressU(i,j)*stressU(i,j)+stressU(i+1,j)*stressU(i+1,j)
