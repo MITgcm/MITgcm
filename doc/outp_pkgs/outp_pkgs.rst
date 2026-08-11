@@ -357,17 +357,18 @@ time interval specified by :varlink:`frequency`; and to ``-0.5*`` \|
 written in the middle of the time interval specified by :varlink:`frequency`.
 
 There is a special case when :varlink:`calendarDumps` is ``.TRUE.``. In this
-case any value of :varlink:`frequency` between 2592000 and 2678400 seconds (30
+case, any value of :varlink:`frequency` between 2592000 and 2678400 seconds (30
 and 31 days) triggers monthly output according to the specified calendar and
 any value betweeen 31104000 and 31968000 seconds (360 and 370 days) triggers
-yearly output. In this case, the parameter :varlink:`timePhase` can be used to
-start the averaged or snapshot output put after ``N`` months or years, where
-the "unit" month or year is defined by the value of :varlink:`frequency`. For
+yearly output. The parameter :varlink:`timePhase` can still be used to start
+the averaged or snapshot output after ``N`` months or years, where now the
+"unit" month or year is defined by the value of :varlink:`frequency`. For
 example, if you specify :varlink:`frequency` = 31363217 seconds (363 days and
-17 seconds, we choose this example to make our point clear) for yearly output,
-:varlink:`timePhase` needs be ``50*31363217 = 1568160850`` to start writing
-averaged output to disk after 50 years, exactly (taking into account all
-possible leap years, etc.).
+17 seconds, this awkward example is deliberate to make our point clear) with
+:varlink:`calendarDumps` ``=.TRUE.``, the model will write yearly averages at
+the end of each calendar year exactly; to start writing averages only after
+``N=50``, :varlink:`timePhase` needs be ``50*31363217 = 1568160850`` (taking
+into account all possible leap years, etc.).
 
 The :varlink:`fileFlags` parameter is explained in
 :numref:`diagnostic_fileFlags`.  Only the first three characters matter.  The
