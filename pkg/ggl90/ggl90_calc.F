@@ -128,12 +128,14 @@ C                    of TKE and mixing (output of S/R GGL90_IDEMIX)
 #endif /* ALLOW_GGL90_IDEMIX */
 #ifdef ALLOW_GGL90_LANGMUIR
 C   uStar, vStar :: frictional velocity component
-      _RL uStar, vStar, depthFac
+      _RL depthFac
       _RL recip_Lasq, recip_LD
       _RL LCmixingLength(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL stokesterm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dstokesUdR(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dstokesVdR(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL uStar     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL vStar     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif /* ALLOW_GGL90_LANGMUIR */
       _RL recip_hFacI      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL hFac
@@ -323,6 +325,10 @@ c       rMixingLength(i,j,1)  = 0. _d 0
          stokesterm(i,j) = 0. _d 0
          dstokesUdR(i,j) = 0. _d 0
          dstokesVdR(i,j) = 0. _d 0
+         uStar(i,j) = SIGN( SQRT(ABS(surfaceForcingU(i,j,bi,bj))),
+     &                               surfaceForcingU(i,j,bi,bj)   )
+         vStar(i,j) = SIGN( SQRT(ABS(surfaceForcingV(i,j,bi,bj))),
+     &                               surfaceForcingV(i,j,bi,bj)   )
         ENDDO
        ENDDO
       ENDIF
@@ -507,12 +513,8 @@ C       compute (dStokesU/dz) and (dStokesV/dz)
         depthFac = recip_Lasq*EXP( recip_LD*rF(k) )
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          uStar = SIGN( SQRT(ABS(surfaceForcingU(i,j,bi,bj))),
-     &                  surfaceForcingU(i,j,bi,bj) )
-          dstokesUdR(i,j) = recip_LD * uStar * depthFac
-          vStar = SIGN( SQRT(ABS(surfaceForcingV(i,j,bi,bj))),
-     &                  surfaceForcingV(i,j,bi,bj) )
-          dstokesVdR(i,j) = recip_LD * vStar * depthFac
+          dstokesUdR(i,j) = recip_LD * uStar(i,j) * depthFac
+          dstokesVdR(i,j) = recip_LD * vStar(i,j) * depthFac
          ENDDO
         ENDDO
 

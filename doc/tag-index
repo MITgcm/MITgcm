@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ggl90:
+  - langmuir code: save some computations for u/vStar (done once vs Nr times).
 o tools & testreport:
   - add a very short script and adjust testreport & do_tst_2+2 to enable to use
    "sftp" to send output results.
