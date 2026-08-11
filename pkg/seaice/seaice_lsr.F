@@ -831,7 +831,7 @@ CADJ STORE uice, vice = comlev1_lsr, kind=isbyte, key = lnkey
               rhsVy(i,j,bi,bj) = ( rhsV(i,j,bi,bj)
      &             + vRt1(i,j,bi,bj)*vIce(i-1,j,bi,bj)
      &             + vRt2(i,j,bi,bj)*vIce(i+1,j,bi,bj)
-     &                           )*seaiceMaskU(i,j,bi,bj)
+     &                           )*seaiceMaskV(i,j,bi,bj)
              ENDDO
             ENDDO
            ENDIF
