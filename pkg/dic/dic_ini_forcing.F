@@ -118,19 +118,26 @@ C--   Set reasonable values to those that need at least something
        DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-            wind(i,j,bi,bj)       = 5. _d 0*maskC(i,j,1,bi,bj)
-            AtmosP(i,j,bi,bj)     = 1. _d 0*maskC(i,j,1,bi,bj)
-            silicaSurf(i,j,bi,bj) = 7.6838 _d -3*maskC(i,j,1,bi,bj)
-            fIce(i,j,bi,bj)       = 0. _d 0
+            wind(i,j,bi,bj)       = dic_wind_const
+     &                                  *maskC(i,j,1,bi,bj)
+            AtmosP(i,j,bi,bj)     = dic_atmosp_const/Pa2Atm
+     &                                  *maskC(i,j,1,bi,bj)
+            silicaSurf(i,j,bi,bj) = dic_silicaSurf_const
+     &                                  *maskC(i,j,1,bi,bj)
+            fIce(i,j,bi,bj)       = dic_ice_const
+     &                                  *maskC(i,j,1,bi,bj)
 #ifdef READ_PAR
-            par(i,j,bi,bj)        = 100. _d 0*maskC(i,j,1,bi,bj)
+            par(i,j,bi,bj)        = dic_par_const
+     &                                  *maskC(i,j,1,bi,bj)
 #endif
 #ifdef LIGHT_CHL
 C If the chlorophyll climatology is not provided, use this default value.
-            CHL(i,j,bi,bj)        = 1. _d -2*maskC(i,j,1,bi,bj)
+            CHL(i,j,bi,bj)        = dic_chl_const
+     &                                  *maskC(i,j,1,bi,bj)
 #endif
 #ifdef ALLOW_FE
-            InputFe(i,j,bi,bj)    = 1. _d -11*maskC(i,j,1,bi,bj)
+            InputFe(i,j,bi,bj)    = dic_iron_const
+     &                                  *maskC(i,j,1,bi,bj)
 #endif
           ENDDO
          ENDDO
@@ -139,7 +146,8 @@ C If the chlorophyll climatology is not provided, use this default value.
           DO k=1,Nr
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
-              silicaDeep(i,j,k,bi,bj) = 3. _d -2*maskC(i,j,k,bi,bj)
+              silicaDeep(i,j,k,bi,bj) = dic_silicaDeep_const
+     &                                  *maskC(i,j,k,bi,bj)
             ENDDO
            ENDDO
           ENDDO

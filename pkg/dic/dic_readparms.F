@@ -371,14 +371,14 @@ C-- setting default values for Calcite Saturation params ends here.
 
 C     some sensible defaults
       dic_ice_const        = 0.      _d 0
-      dic_wind_const       = 0.      _d 0
       dic_atmosp_const     = 1.01325 _d 5
-      dic_silicaSurf_const = 7.6     _d -3
-      dic_Silicadeep_const = 3.      _d -2
-      dic_par_const        = 0.      _d 0
-      dic_iron_const       = 0.      _d 0
+      dic_silicaSurf_const = 7.6838  _d -3
+      dic_silicaDeep_const = 3.      _d -2
       dic_atmospCO2_const  = dic_pCO2
-      dic_chl_const        = 0.      _d 0
+      dic_wind_const       = 5.      _d 0
+      dic_par_const        = 100.    _d 0
+      dic_iron_const       = 1.      _d -11
+      dic_chl_const        = 1. _d -2
       dic_SST_const        = 24.     _d 0
       dic_SSS_const        = 34.5    _d 0
 
