@@ -1,0 +1,27 @@
+# DIC parameters 
+ &ABIOTIC_PARMS
+ &
+
+ &BIOTIC_PARMS
+  alphaUniform = 0.97e-10,
+  rainRatioUniform = 5.e-2,
+  KRemin = 0.95,
+ &
+
+ &DIC_FORCING
+  DIC_useEXF          = .TRUE.,
+#
+  DIC_atmospco2_const = 278.e-6,
+  DIC_wind_const      = 5.,
+  DIC_atmosp_const     = 1.01325e5,
+  DIC_par_const       = 140.0,
+  DIC_silicaSurf_const= 7.6838e-3,
+#
+  DIC_iceFile         ='fice.bin',
+  DIC_windFile        ='tren_speed.bin',
+  DIC_silicaFile      ='sillev1.bin',
+#
+  DIC_windPeriod      = -12.,
+  DIC_icePeriod       = -12.,
+  DIC_SilicaSurfPeriod= -12.,
+ &

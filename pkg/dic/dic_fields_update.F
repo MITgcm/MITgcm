@@ -16,6 +16,7 @@ C !USES: ===============================================================
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "DYNVARS.h"
 #include "DIC_VARS.h"
 #ifdef ALLOW_THSICE
 # include "THSICE_VARS.h"
@@ -34,7 +35,7 @@ C     bi, bj       :: tile indices
 C     myTime       :: Current time in simulation
 C     myIter       :: Current timestep number
 C     myThid       :: my Thread Id number
-      INTEGER bi, bj
+      INTEGER bi, bj, k
       _RL myTime
       INTEGER myIter
       INTEGER myThid
@@ -42,9 +43,9 @@ C     myThid       :: my Thread Id number
 #ifdef ALLOW_DIC
 
 c !LOCAL VARIABLES: ===================================================
-#if defined(ALLOW_THSICE) || defined(ALLOW_SEAICE) || defined(COMPONENT_MODULE)
+C#if defined(ALLOW_THSICE) || defined(ALLOW_SEAICE) || defined(COMPONENT_MODULE)
       INTEGER i, j
-#endif
+C#endif
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
@@ -95,6 +96,17 @@ CEOP
         ENDIF
 #endif /* ALLOW_OCN_COMPON_INTERF */
 
+      IF ( .NOT. dic_useEXF ) THEN
+C  Get SST, SSS and ice fraction from the main model        
+        k = 1
+
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          dicSST(i,j,bi,bj) = theta(i,j,k,bi,bj)
+          dicSSS(i,j,bi,bj) = salt (i,j,k,bi,bj)
+         ENDDO
+        ENDDO
+      ENDIF /* NOT dic_useEXF */
 #endif /* ALLOW_DIC */
       RETURN
       END

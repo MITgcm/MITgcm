@@ -1,8 +1,8 @@
 # Packages
  &PACKAGES
+ useCAL=.TRUE.,
+ useEXF=.TRUE.,
  useGMRedi=.TRUE.,
- useCAL=.FALSE.,
- useEXF=.FALSE., 
  usePTRACERS=.TRUE.,
  useGCHEM=.TRUE.,
 #useMNC=.TRUE.,
