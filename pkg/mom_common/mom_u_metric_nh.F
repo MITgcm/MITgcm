@@ -48,8 +48,8 @@ CEOP
       wVelBottomOverride=1.
       IF (k.EQ.Nr) wVelBottomOverride=0.
 
-      DO j=1-Olx,sNy+Oly
-       DO i=1-Olx+1,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx+1,sNx+OLx
          uMetricTerms(i,j) = uFld(i,j)*recip_rSphere*recip_deepFacC(k)
      &    *0.25*( (wFld(i-1,j,kp1,bi,bj)+wFld(i,j,kp1,bi,bj))
      &            *rVel2wUnit(kp1)*wVelBottomOverride

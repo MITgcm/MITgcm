@@ -192,7 +192,7 @@ C-   make a list for each tile
           newConnect = 1
           DO WHILE ( newConnect.NE. 0 )
            newConnect = 0
-           DO i=1,(sNx+sNy)*2
+           DO i=1,sNx+sNx+sNy+sNy
             IF ( tmpConnect(i).GE.1 ) THEN
               IF ( newConnect.EQ.0 ) THEN
                newConnect = tmpConnect(i)
@@ -299,7 +299,7 @@ C-    make a local copy
           DO n=1,numConnect
 C-    change Id value: listConnect(n) to n
            IF ( listConnect(n).NE.n ) THEN
-            DO i=1,(sNx+sNy)*2
+            DO i=1,sNx+sNx+sNy+sNy
              IF ( tmpConnect(i).EQ.listConnect(n) ) tmpConnect(i) = n
             ENDDO
            ENDIF
