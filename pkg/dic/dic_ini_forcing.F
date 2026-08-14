@@ -222,7 +222,7 @@ C     if not dic_useEXF
 
 #ifdef ALLOW_EXF
       IF ( dic_useEXF ) THEN
-
+       myLocTime = startTime + deltaTClock*nIter0
        IF ( dic_SilicaFile .NE. ' ' ) THEN
 C     This would be the exf-way to initialise a forcing field: just use
 C     a constant value. But, because in pkg/dic
@@ -242,7 +242,6 @@ c     &     SilicaSurf_nlon, SilicaSurf_nlat, xC, yC,
 c     &     SilicaSurf_interpMethod,
 c#endif
 c     &     mythid )
-        myLocTime = startTime + deltaTClock*nIter0
         CALL EXF_SET_FLD(
      &     'dicSilicaSurf', dic_SilicaFile, dic_SilicaSurfMask,
      &     dic_SilicaSurfStartTime, dic_SilicaSurfPeriod, 
@@ -260,7 +259,6 @@ c     &     mythid )
        ENDIF
 
 #ifdef DIC_3D_SILICA
-       myLocTime = startTime + deltaTClock*nIter0
        IF ( dic_SilicaDeepFile .NE. ' ' ) THEN
          CALL EXF_SET_FLD3D(
      &      'dicSilicaDeep', dic_SilicaDeepFile, dic_SilicaDeepMask,
@@ -284,7 +282,6 @@ c     &     mythid )
 C    Do the same for SST and SSS, which are also used before 
 C    the first timestep to initialize pH/pCO2
        IF ( dic_SSTFile .NE. ' ' ) THEN
-        myLocTime = startTime + deltaTClock*nIter0
         CALL EXF_SET_FLD(
      &     'dicSST', dic_SSTFile, dic_SSTMask,
      &     dic_SSTStartTime, dic_SSTPeriod, dic_SSTRepCycle,
@@ -301,7 +298,6 @@ C    the first timestep to initialize pH/pCO2
        ENDIF
        
        IF ( dic_SSSFile .NE. ' ' ) THEN
-        myLocTime = startTime + deltaTClock*nIter0
         CALL EXF_SET_FLD(
      &     'dicSSS', dic_SSSFile, dic_SSSMask,
      &     dic_SSSStartTime, dic_SSSPeriod, dic_SSSRepCycle,

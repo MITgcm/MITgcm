@@ -391,6 +391,8 @@ C default periodic forcing to same as for physics
 
 C  default based on 360 day year or related to calendar settings
        dic_secondsPerYear   = 360. _d 0 * 86400. _d 0
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef ALLOW_CAL
        IF ( useCAL ) THEN
         IF ( theCalendar .EQ. 'gregorian') THEN
@@ -401,39 +403,6 @@ C  default based on 360 day year or related to calendar settings
        ENDIF
 #endif
 
-      WRITE(msgBuf,'(A)') ' DIC_READPARMS: opening data.dic'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     I                    SQUEEZE_RIGHT, myThid )
-
-      CALL OPEN_COPY_DATA_FILE( 'data.dic', 'DIC_READPARMS',
-     O                          iUnit, myThid )
-
-C--   Read parameters from open data file:
-
-C-    Abiotic parameters
-      READ(UNIT=iUnit, NML=ABIOTIC_PARMS)
-
-#ifdef DIC_BIOTIC
-C-    Biotic parameters
-      READ(UNIT=iUnit, NML=BIOTIC_PARMS)
-#endif
-
-C-    forcing filenames and parameters
-      READ(UNIT=iUnit, NML=DIC_FORCING)
-
-      WRITE(msgBuf,'(A)')
-     &   ' DIC_READPARMS: finished reading data.dic'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     I                    SQUEEZE_RIGHT, myThid )
-
-C--   Close the open data file
-#ifdef SINGLE_DISK_IO
-      CLOSE(iUnit)
-#else
-      CLOSE(iUnit,STATUS='DELETE')
-#endif /* SINGLE_DISK_IO */
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 # ifdef ALLOW_EXF
       IF ( dic_useEXF ) THEN
        dic_SilicaSurfPeriod               = 0.0 _d 0
@@ -690,8 +659,38 @@ C     dic_useEXF
       ENDIF
 # endif /* ALLOW_EXF */
 
-C-    derive other parameters:
+C--   Open data file and read parameters from it:
+      WRITE(msgBuf,'(A)') ' DIC_READPARMS: opening data.dic'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     I                    SQUEEZE_RIGHT, myThid )
 
+      CALL OPEN_COPY_DATA_FILE( 'data.dic', 'DIC_READPARMS',
+     O                          iUnit, myThid )
+
+C-    Abiotic parameters
+      READ(UNIT=iUnit, NML=ABIOTIC_PARMS)
+
+#ifdef DIC_BIOTIC
+C-    Biotic parameters
+      READ(UNIT=iUnit, NML=BIOTIC_PARMS)
+#endif
+
+C-    forcing filenames and parameters
+      READ(UNIT=iUnit, NML=DIC_FORCING)
+
+      WRITE(msgBuf,'(A)')
+     &   ' DIC_READPARMS: finished reading data.dic'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     I                    SQUEEZE_RIGHT, myThid )
+
+C--   Close the open data file
+#ifdef SINGLE_DISK_IO
+      CLOSE(iUnit)
+#else
+      CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
+
+C-    derive other parameters:
 C-    set parameter default values
       IF ( selectBTconst  .EQ.UNSET_I ) selectBTconst   = 1
       IF ( selectFTconst  .EQ.UNSET_I ) selectFTconst   = 1
@@ -1025,10 +1024,10 @@ C     and the corresponding file from which the data will be read.
 C--   dic wind speed
         IF ( dic_WindFile .NE. ' ' ) THEN
           CALL EXF_FLD_SUMMARY( 'wind speed',
-     I         dic_windfile, 
-     I         dic_windRepCycle, 
-     I         dic_windperiod,
-     I         dic_windStartTime, 
+     I         dic_WindFile, 
+     I         dic_WindRepCycle, 
+     I         dic_WindPeriod,
+     I         dic_WindStartTime, 
      I         useExfYearlyFields,
      I         addBlkLn, 
      I         myThid )
@@ -1049,9 +1048,9 @@ C--   dic wind speed
 C--   dic atmospheric pressure
         IF ( dic_atmospFile .NE. ' ' ) THEN
           CALL EXF_FLD_SUMMARY( 'atmospheric pressure',
-     I         dic_atmospfile, 
+     I         dic_atmospFile, 
      I         dic_atmospRepCycle, 
-     I         dic_atmospperiod,
+     I         dic_atmospPeriod,
      I         dic_atmospStartTime, 
      I         useExfYearlyFields, 
      I         addBlkLn, 
@@ -1075,7 +1074,7 @@ C--   dic surface silica
           CALL EXF_FLD_SUMMARY( 'surface silica',
      I         dic_SilicaFile, 
      I         dic_SilicaSurfRepCycle, 
-     I         dic_SilicaSurfperiod,
+     I         dic_SilicaSurfPeriod,
      I         dic_SilicaSurfStartTime, 
      I         useExfYearlyFields, 
      I         addBlkLn, 
@@ -1099,7 +1098,7 @@ C--  dic deep silica
           CALL EXF_FLD_SUMMARY( 'deep silica',
      I         dic_SilicaDeepFile, 
      I         dic_SilicaDeepRepCycle, 
-     I         dic_SilicaDeepperiod,
+     I         dic_SilicaDeepPeriod,
      I         dic_SilicaDeepStartTime, 
      I         useExfYearlyFields, 
      I         addBlkLn, 
@@ -1124,7 +1123,7 @@ C--   dic par
      I        'photosynthetically active radiation',
      I         dic_parFile, 
      I         dic_parRepCycle, 
-     I         dic_parperiod,
+     I         dic_parPeriod,
      I         dic_parStartTime, 
      I         useExfYearlyFields, 
      I         addBlkLn, 
@@ -1148,7 +1147,7 @@ C--   dic iron forcing
           CALL EXF_FLD_SUMMARY( 'aeolian iron flux',
      I         dic_ironFile, 
      I         dic_ironRepCycle, 
-     I         dic_ironperiod,
+     I         dic_ironPeriod,
      I         dic_ironStartTime, 
      I         useExfYearlyFields, 
      I         addBlkLn, 
@@ -1172,7 +1171,7 @@ C--   dic atmospheric CO2 forcing
           CALL EXF_FLD_SUMMARY( 'atmospheric CO2',
      I         dic_atmospCO2File, 
      I         dic_atmospCO2RepCycle, 
-     I         dic_atmospCO2period,
+     I         dic_atmospCO2Period,
      I         dic_atmospCO2StartTime, 
      I         useExfYearlyFields, 
      I         addBlkLn, 
@@ -1196,7 +1195,7 @@ C--  dic sea ice forcing
           CALL EXF_FLD_SUMMARY( 'sea ice fraction',
      I         dic_iceFile, 
      I         dic_iceRepCycle, 
-     I         dic_iceperiod,
+     I         dic_icePeriod,
      I         dic_iceStartTime, 
      I         useExfYearlyFields, 
      I         addBlkLn, 
@@ -1220,7 +1219,7 @@ C-- dic chlorophyll forcing
           CALL EXF_FLD_SUMMARY( 'chlorophyll',
      I         dic_chlaFile, 
      I         dic_chlRepCycle, 
-     I         dic_chlperiod,
+     I         dic_chlPeriod,
      I         dic_chlStartTime, 
      I         useExfYearlyFields, 
      I         addBlkLn, 
@@ -1245,7 +1244,7 @@ C-- dic SST forcing
      I        'carbon chem sea surface temperature',
      I         dic_SSTFile, 
      I         dic_SSTRepCycle, 
-     I         dic_SSTperiod,
+     I         dic_SSTPeriod,
      I         dic_SSTStartTime, 
      I         useExfYearlyFields, 
      I         addBlkLn, 
@@ -1270,7 +1269,7 @@ C-- dic SSS forcing
      I        'carbon chem sea surface salinity',
      I         dic_SSSFile, 
      I         dic_SSSRepCycle, 
-     I         dic_SSSperiod,
+     I         dic_SSSPeriod,
      I         dic_SSSStartTime, 
      I         useExfYearlyFields, 
      I         addBlkLn, 
