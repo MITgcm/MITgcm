@@ -352,7 +352,8 @@ C Otherwise get atmospheric pressure from PKG/EXF
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-            AtmosP(i,j,bi,bj) = apressure(i,j,bi,bj)
+C EXFs pressure is in Pa, convert to atm for DIC package.               
+            AtmosP(i,j,bi,bj) = apressure(i,j,bi,bj)/Pa2ATM
            ENDDO
           ENDDO
          ENDDO
