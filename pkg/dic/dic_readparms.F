@@ -997,22 +997,22 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef ALLOW_EXF
       IF ( dic_useEXF ) THEN
 C--   Print general parameters:
-      WRITE(msgBuf,'(A)') ' dic_useEXF general parameters:'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid )
-      WRITE(msgBuf,'(A)') ' '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid )
+        WRITE(msgBuf,'(A)') ' dic_useEXF general parameters:'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid )
+        WRITE(msgBuf,'(A)') ' '
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid )
 #ifdef USE_EXF_INTERPOLATION
-      WRITE(msgBuf,'(A)')
-     &'// USE_EXF_INTERPOLATION:              defined'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
+        WRITE(msgBuf,'(A)')
+     &  '// USE_EXF_INTERPOLATION:              defined'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid)
 #else
-      WRITE(msgBuf,'(A)')
-     &'// USE_EXF_INTERPOLATION:          NOT defined'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
+          WRITE(msgBuf,'(A)')
+     &  '// USE_EXF_INTERPOLATION:          NOT defined'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid)
 #endif
 C--   For each data set used the summary prints the calendar data
 C     and the corresponding file from which the data will be read.
@@ -1020,269 +1020,288 @@ C     and the corresponding file from which the data will be read.
       addBlkLn = .TRUE.
 
 C--   dic wind speed
-      IF ( dic_WindFile .NE. ' ' ) THEN
-       CALL EXF_FLD_SUMMARY( 'wind speed',
-     I      dic_windfile, 
-     I      dic_windRepCycle, 
-     I      dic_windperiod,
-     I      dic_windStartTime, 
-     I      useExfYearlyFields,
-     I      addBlkLn, 
-     I      myThid )
+        IF ( dic_WindFile .NE. ' ' ) THEN
+          CALL EXF_FLD_SUMMARY( 'wind speed',
+     I         dic_windfile, 
+     I         dic_windRepCycle, 
+     I         dic_windperiod,
+     I         dic_windStartTime, 
+     I         useExfYearlyFields,
+     I         addBlkLn, 
+     I         myThid )
 #ifdef USE_EXF_INTERPOLATION
-       CALL EXF_PRINT_INTERP( 'dicWind',
-     &  wind_lon0, 
-     I      wind_lon_inc, 
-     I      wind_lat0, 
-     I      wind_lat_inc,
-     &  wind_nlon, 
-     I      wind_nlat, 
-     I      wind_interpMethod, 
-     I      myThid )
-#endif
-       prtBlkLn = .TRUE.
-      ENDIF
+          CALL EXF_PRINT_INTERP( 'dicWind',
+     &     wind_lon0, 
+     I         wind_lon_inc, 
+     I         wind_lat0, 
+     I         wind_lat_inc,
+     &     wind_nlon, 
+     I         wind_nlat, 
+     I         wind_interpMethod, 
+     I         myThid )
+#endif   
+          prtBlkLn = .TRUE.
+        ENDIF
 
 C--   dic atmospheric pressure
-      IF ( dic_atmospFile .NE. ' ' ) THEN
-       CALL EXF_FLD_SUMMARY( 'atmospheric pressure',
-     I      dic_atmospfile, 
-     I      dic_atmospRepCycle, 
-     I      dic_atmospperiod,
-     I      dic_atmospStartTime, 
-     I      useExfYearlyFields, 
-     I      addBlkLn, 
-     I      myThid )
+        IF ( dic_atmospFile .NE. ' ' ) THEN
+          CALL EXF_FLD_SUMMARY( 'atmospheric pressure',
+     I         dic_atmospfile, 
+     I         dic_atmospRepCycle, 
+     I         dic_atmospperiod,
+     I         dic_atmospStartTime, 
+     I         useExfYearlyFields, 
+     I         addBlkLn, 
+     I         myThid )
 #ifdef USE_EXF_INTERPOLATION
-       CALL EXF_PRINT_INTERP( 'dicAtmosP',
-     &      atmosp_lon0, 
-     &      atmosp_lon_inc, 
-     &      atmosp_lat0, 
-     &      atmosp_lat_inc,
-     &      atmosp_nlon, 
-     &      atmosp_nlat, 
-     &      atmosp_interpMethod, 
-     &      myThid )
-#endif
-       prtBlkLn = .TRUE.
-      ENDIF 
+          CALL EXF_PRINT_INTERP( 'dicAtmosP',
+     &         atmosp_lon0, 
+     &         atmosp_lon_inc, 
+     &         atmosp_lat0, 
+     &         atmosp_lat_inc,
+     &         atmosp_nlon, 
+     &         atmosp_nlat, 
+     &         atmosp_interpMethod, 
+     &         myThid )
+#endif  
+         prtBlkLn = .TRUE.
+        ENDIF 
 
 C--   dic surface silica
-      IF ( dic_SilicaFile .NE. ' ' ) THEN
-       CALL EXF_FLD_SUMMARY( 'surface silica',
-     I      dic_SilicaFile, 
-     I      dic_SilicaSurfRepCycle, 
-     I      dic_SilicaSurfperiod,
-     I      dic_SilicaSurfStartTime, 
-     I      useExfYearlyFields, 
-     I      addBlkLn, 
-     I      myThid )
+        IF ( dic_SilicaFile .NE. ' ' ) THEN
+          CALL EXF_FLD_SUMMARY( 'surface silica',
+     I         dic_SilicaFile, 
+     I         dic_SilicaSurfRepCycle, 
+     I         dic_SilicaSurfperiod,
+     I         dic_SilicaSurfStartTime, 
+     I         useExfYearlyFields, 
+     I         addBlkLn, 
+     I         myThid )
 #ifdef USE_EXF_INTERPOLATION
-       CALL EXF_PRINT_INTERP( 'dicSilicaSurf',
-     I      silicaSurf_lon0, 
-     I      silicaSurf_lon_inc, 
-     I      silicaSurf_lat0, 
-     I      silicaSurf_lat_inc,
-     I      silicaSurf_nlon, 
-     I      silicaSurf_nlat, 
-     I      silicaSurf_interpMethod, 
-     I      myThid )
-#endif
-       prtBlkLn = .TRUE.
-      ENDIF
+          CALL EXF_PRINT_INTERP( 'dicSilicaSurf',
+     I         silicaSurf_lon0, 
+     I         silicaSurf_lon_inc, 
+     I         silicaSurf_lat0, 
+     I         silicaSurf_lat_inc,
+     I         silicaSurf_nlon, 
+     I         silicaSurf_nlat, 
+     I         silicaSurf_interpMethod, 
+     I         myThid )
+#endif   
+          prtBlkLn = .TRUE.
+        ENDIF
 
 C--  dic deep silica
-      IF ( dic_SilicaDeepFile .NE. ' ' ) THEN
-       CALL EXF_FLD_SUMMARY( 'deep silica',
-     I      dic_SilicaDeepFile, 
-     I      dic_SilicaDeepRepCycle, 
-     I      dic_SilicaDeepperiod,
-     I      dic_SilicaDeepStartTime, 
-     I      useExfYearlyFields, 
-     I      addBlkLn, 
-     I      myThid )
+        IF ( dic_SilicaDeepFile .NE. ' ' ) THEN
+          CALL EXF_FLD_SUMMARY( 'deep silica',
+     I         dic_SilicaDeepFile, 
+     I         dic_SilicaDeepRepCycle, 
+     I         dic_SilicaDeepperiod,
+     I         dic_SilicaDeepStartTime, 
+     I         useExfYearlyFields, 
+     I         addBlkLn, 
+     I         myThid )
 #ifdef USE_EXF_INTERPOLATION
-       CALL EXF_PRINT_INTERP( 'dicSilicaDeep',
-     &      silicaDeep_lon0, 
-     &      silicaDeep_lon_inc, 
-     &      silicaDeep_lat0, 
-     &      silicaDeep_lat_inc,
-     &      silicaDeep_nlon, 
-     &      silicaDeep_nlat, 
-     &      silicaDeep_interpMethod, 
-     &      myThid )
-#endif
-       prtBlkLn = .TRUE.
-      ENDIF
+          CALL EXF_PRINT_INTERP( 'dicSilicaDeep',
+     &         silicaDeep_lon0, 
+     &         silicaDeep_lon_inc, 
+     &         silicaDeep_lat0, 
+     &         silicaDeep_lat_inc,
+     &         silicaDeep_nlon, 
+     &         silicaDeep_nlat, 
+     &         silicaDeep_interpMethod, 
+     &         myThid )
+#endif   
+          prtBlkLn = .TRUE.
+        ENDIF
 
 C--   dic par
-      IF ( dic_parFile .NE. ' ' ) THEN
-       CALL EXF_FLD_SUMMARY( 'photosynthetically available radiation',
-     I      dic_parFile, 
-     I      dic_parRepCycle, 
-     I      dic_parperiod,
-     I      dic_parStartTime, 
-     I      useExfYearlyFields, 
-     I      addBlkLn, 
-     I      myThid )
+        IF ( dic_parFile .NE. ' ' ) THEN
+          CALL EXF_FLD_SUMMARY( 
+     I        'photosynthetically active radiation',
+     I         dic_parFile, 
+     I         dic_parRepCycle, 
+     I         dic_parperiod,
+     I         dic_parStartTime, 
+     I         useExfYearlyFields, 
+     I         addBlkLn, 
+     I         myThid )
 #ifdef USE_EXF_INTERPOLATION
-       CALL EXF_PRINT_INTERP( 'dicPAR',
-     &  par_lon0, 
-     &  par_lon_inc, 
-     &  par_lat0, 
-     &  par_lat_inc,
-     &  par_nlon, 
-     &  par_nlat, 
-     &  par_interpMethod, 
-     &  myThid )
-#endif
-       prtBlkLn = .TRUE.
-      ENDIF
+          CALL EXF_PRINT_INTERP( 'dicPAR',
+     &         par_lon0, 
+     &         par_lon_inc, 
+     &         par_lat0, 
+     &         par_lat_inc,
+     &         par_nlon, 
+     &         par_nlat, 
+     &         par_interpMethod, 
+     &         myThid )
+#endif   
+          prtBlkLn = .TRUE.
+        ENDIF
 
 C--   dic iron forcing
-      IF ( dic_ironFile .NE. ' ' ) THEN
-       CALL EXF_FLD_SUMMARY( 'aeolian iron flux',
-     I      dic_ironFile, 
-     I      dic_ironRepCycle, 
-     I      dic_ironperiod,
-     I      dic_ironStartTime, 
-     I      useExfYearlyFields, 
-     I      addBlkLn, 
-     I      myThid )
+        IF ( dic_ironFile .NE. ' ' ) THEN
+          CALL EXF_FLD_SUMMARY( 'aeolian iron flux',
+     I         dic_ironFile, 
+     I         dic_ironRepCycle, 
+     I         dic_ironperiod,
+     I         dic_ironStartTime, 
+     I         useExfYearlyFields, 
+     I         addBlkLn, 
+     I         myThid )
 #ifdef USE_EXF_INTERPOLATION
-       CALL EXF_PRINT_INTERP( 'InputFe',
-     &  iron_lon0, 
-     &  iron_lon_inc, 
-     &  iron_lat0, 
-     &  iron_lat_inc,
-     &  iron_nlon, 
-     &  iron_nlat, 
-     &  iron_interpMethod, 
-     &  myThid )
-#endif
-       prtBlkLn = .TRUE.
+          CALL EXF_PRINT_INTERP( 'InputFe',
+     &         iron_lon0, 
+     &         iron_lon_inc, 
+     &         iron_lat0, 
+     &         iron_lat_inc,
+     &         iron_nlon, 
+     &         iron_nlat, 
+     &         iron_interpMethod, 
+     &         myThid )
+#endif   
+          prtBlkLn = .TRUE.
       ENDIF
 
 C--   dic atmospheric CO2 forcing
-      IF ( dic_atmospCO2File .NE. ' ' ) THEN
-       CALL EXF_FLD_SUMMARY( 'atmospheric CO2',
-     I      dic_atmospCO2File, 
-     I      dic_atmospCO2RepCycle, 
-     I      dic_atmospCO2period,
-     I      dic_atmospCO2StartTime, 
-     I      useExfYearlyFields, 
-     I      addBlkLn, 
-     I      myThid)
+        IF ( dic_atmospCO2File .NE. ' ' ) THEN
+          CALL EXF_FLD_SUMMARY( 'atmospheric CO2',
+     I         dic_atmospCO2File, 
+     I         dic_atmospCO2RepCycle, 
+     I         dic_atmospCO2period,
+     I         dic_atmospCO2StartTime, 
+     I         useExfYearlyFields, 
+     I         addBlkLn, 
+     I         myThid)
 #ifdef USE_EXF_INTERPOLATION
-       CALL EXF_PRINT_INTERP( 'dicAtmosCO2',
-     &  atmospCO2_lon0, 
-     &  atmospCO2_lon_inc, 
-     &  atmospCO2_lat0, 
-     &  atmospCO2_lat_inc,
-     &  atmospCO2_nlon, 
-     &  atmospCO2_nlat, 
-     &  atmospCO2_interpMethod, 
-     &  myThid )
-#endif
-       prtBlkLn = .TRUE.
-      ENDIF
+          CALL EXF_PRINT_INTERP( 'dicAtmosCO2',
+     &         atmospCO2_lon0, 
+     &         atmospCO2_lon_inc, 
+     &         atmospCO2_lat0, 
+     &         atmospCO2_lat_inc,
+     &         atmospCO2_nlon, 
+     &         atmospCO2_nlat, 
+     &         atmospCO2_interpMethod, 
+     &         myThid )
+#endif  
+         prtBlkLn = .TRUE.
+        ENDIF
 
 C--  dic sea ice forcing
-      IF ( dic_iceFile .NE. ' ' ) THEN
-       CALL EXF_FLD_SUMMARY( 'sea ice fraction',
-     I      dic_iceFile, 
-     I      dic_iceRepCycle, 
-     I      dic_iceperiod,
-     I      dic_iceStartTime, 
-     I      useExfYearlyFields, 
-     I      addBlkLn, 
-     I      myThid ) 
+        IF ( dic_iceFile .NE. ' ' ) THEN
+          CALL EXF_FLD_SUMMARY( 'sea ice fraction',
+     I         dic_iceFile, 
+     I         dic_iceRepCycle, 
+     I         dic_iceperiod,
+     I         dic_iceStartTime, 
+     I         useExfYearlyFields, 
+     I         addBlkLn, 
+     I         myThid ) 
 #ifdef USE_EXF_INTERPOLATION
-       CALL EXF_PRINT_INTERP( 'dicIce',
-     &  ice_lon0, 
-     &  ice_lon_inc, 
-     &  ice_lat0, 
-     &  ice_lat_inc,
-     &  ice_nlon, 
-     &  ice_nlat, 
-     &  ice_interpMethod, 
-     &  myThid )
-#endif
-       prtBlkLn = .TRUE.
-      ENDIF
+          CALL EXF_PRINT_INTERP( 'dicIce',
+     &         ice_lon0, 
+     &         ice_lon_inc, 
+     &         ice_lat0, 
+     &         ice_lat_inc,
+     &         ice_nlon, 
+     &         ice_nlat, 
+     &         ice_interpMethod, 
+     &         myThid )
+#endif   
+          prtBlkLn = .TRUE.
+        ENDIF
 
 C-- dic chlorophyll forcing
-      IF ( dic_chlaFile .NE. ' ' ) THEN
-       CALL EXF_FLD_SUMMARY( 'chlorophyll',
-     I      dic_chlaFile, 
-     I      dic_chlRepCycle, 
-     I      dic_chlperiod,
-     I      dic_chlStartTime, 
-     I      useExfYearlyFields, 
-     I      addBlkLn, 
-     I      myThid )
+        IF ( dic_chlaFile .NE. ' ' ) THEN
+          CALL EXF_FLD_SUMMARY( 'chlorophyll',
+     I         dic_chlaFile, 
+     I         dic_chlRepCycle, 
+     I         dic_chlperiod,
+     I         dic_chlStartTime, 
+     I         useExfYearlyFields, 
+     I         addBlkLn, 
+     I         myThid )
 #ifdef USE_EXF_INTERPOLATION
-       CALL EXF_PRINT_INTERP( 'dicChl',
-     &  chl_lon0, 
-     &  chl_lon_inc, 
-     &  chl_lat0, 
-     &  chl_lat_inc,
-     &  chl_nlon, 
-     &  chl_nlat, 
-     &  chl_interpMethod, 
-     &  myThid )
-#endif
-       prtBlkLn = .TRUE.
-      ENDIF
+          CALL EXF_PRINT_INTERP( 'dicChl',
+     &         chl_lon0, 
+     &         chl_lon_inc, 
+     &         chl_lat0, 
+     &         chl_lat_inc,
+     &         chl_nlon, 
+     &         chl_nlat, 
+     &         chl_interpMethod, 
+     &         myThid )
+#endif   
+          prtBlkLn = .TRUE.
+        ENDIF
 
 C-- dic SST forcing
-      IF ( dic_SSTFile .NE. ' ' ) THEN
-       CALL EXF_FLD_SUMMARY( 'carbon chem sea surface temperature',
-     I      dic_SSTFile, 
-     I      dic_SSTRepCycle, 
-     I      dic_SSTperiod,
-     I      dic_SSTStartTime, 
-     I      useExfYearlyFields, 
-     I      addBlkLn, 
-     I      myThid )
+        IF ( dic_SSTFile .NE. ' ' ) THEN
+          CALL EXF_FLD_SUMMARY(
+     I        'carbon chem sea surface temperature',
+     I         dic_SSTFile, 
+     I         dic_SSTRepCycle, 
+     I         dic_SSTperiod,
+     I         dic_SSTStartTime, 
+     I         useExfYearlyFields, 
+     I         addBlkLn, 
+     I         myThid )
 #ifdef USE_EXF_INTERPOLATION
-       CALL EXF_PRINT_INTERP( 'dicSST',
-     &  SST_lon0, 
-     &  SST_lon_inc, 
-     &  SST_lat0, 
-     &  SST_lat_inc,
-     &  SST_nlon, 
-     &  SST_nlat, 
-     &  SST_interpMethod, 
-     &  myThid )
-#endif
-       prtBlkLn = .TRUE.
-      ENDIF
+          CALL EXF_PRINT_INTERP( 'dicSST',
+     &         SST_lon0, 
+     &         SST_lon_inc, 
+     &         SST_lat0, 
+     &         SST_lat_inc,
+     &         SST_nlon, 
+     &         SST_nlat, 
+     &         SST_interpMethod, 
+     &         myThid )
+#endif   
+          prtBlkLn = .TRUE.
+        ENDIF
 
 C-- dic SSS forcing
-      IF ( dic_SSSFile .NE. ' ' ) THEN
-       CALL EXF_FLD_SUMMARY( 'carbon chem sea surface salinity',
-     I      dic_SSSFile, 
-     I      dic_SSSRepCycle, 
-     I      dic_SSSperiod,
-     I      dic_SSSStartTime, 
-     I      useExfYearlyFields, 
-     I      addBlkLn, 
-     I      myThid )
+        IF ( dic_SSSFile .NE. ' ' ) THEN
+          CALL EXF_FLD_SUMMARY(
+     I        'carbon chem sea surface salinity',
+     I         dic_SSSFile, 
+     I         dic_SSSRepCycle, 
+     I         dic_SSSperiod,
+     I         dic_SSSStartTime, 
+     I         useExfYearlyFields, 
+     I         addBlkLn, 
+     I         myThid )
 #ifdef USE_EXF_INTERPOLATION
-       CALL EXF_PRINT_INTERP( 'dicSSS',
-     &  SSS_lon0, 
-     &  SSS_lon_inc, 
-     &  SSS_lat0, 
-     &  SSS_lat_inc,
-     &  SSS_nlon, 
-     &  SSS_nlat, 
-     &  SSS_interpMethod, 
-     &  myThid )
-#endif
-       prtBlkLn = .TRUE.
+          CALL EXF_PRINT_INTERP( 'dicSSS',
+     &         SSS_lon0, 
+     &         SSS_lon_inc, 
+     &         SSS_lat0, 
+     &         SSS_lat_inc,
+     &         SSS_nlon, 
+     &         SSS_nlat, 
+     &         SSS_interpMethod, 
+     &         myThid )
+#endif   
+           prtBlkLn = .TRUE.
+        ENDIF
+      ELSE
+        IF ( dic_SSSFile .NE. ' ' ) THEN
+         WRITE(msgBuf,'(2A)') 'DIC_READPARMS: The use of ',
+     &    'dic_SSSFile WITHOUT dic_useEXF',
+     &    'is not implemented'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         errCount = errCount + 1
+        ENDIF
+        IF ( dic_SSTFile .NE. ' ' ) THEN
+         WRITE(msgBuf,'(2A)') 'DIC_READPARMS: The use of ',
+     &    'dic_SSTFile WITHOUT dic_useEXF',
+     &    'is not implemented'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         errCount = errCount + 1
+        ENDIF
+C dic_useEXF
       ENDIF
-      ENDIF /* dic_useEXF */
 
 C     dic_useEXF and useExfYearlyFields
       IF ( dic_useEXF .AND. useExfYearlyFields ) THEN
