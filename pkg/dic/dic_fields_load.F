@@ -19,6 +19,7 @@ C !USES: ===============================================================
 #include "DIC_VARS.h"
 #include "DIC_LOAD.h"
 #ifdef ALLOW_EXF
+# include "DYNVARS.h"
 # include "EXF_PARAM.h"
 # include "EXF_FIELDS.h"
 # include "DIC_EXF.h"
@@ -346,7 +347,7 @@ C If a pressure files is given in data.dic, read it
 # endif
      &     mytime, myiter, mythid )
 C Otherwise get atmospheric pressure from PKG/EXF
-       ELSEIF ( useEXF .AND. dic_atmospFile .NE. ' ' ) THEN
+       ELSEIF ( useEXF .AND. apressurefile .NE. ' ' ) THEN
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
@@ -478,7 +479,7 @@ C     forcing load fields with pkg/exf tools
      &     mytime, myiter, mythid )
 #ifdef EXF_SEAICE_FRACTION
 C Otherwise get sea ice fraction from PKG/EXF
-       ELSEIF ( areamaskfile .NE. ' ' ) THEN
+       ELSEIF ( useEXF .AND. areamaskfile .NE. ' ' ) THEN
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
@@ -527,6 +528,18 @@ C     forcing load fields with pkg/exf tools
      &     SST_interpMethod,
 # endif
      &     mytime, myiter, mythid )
+       ELSE
+C If there is no SST file given in data.dic, get fields from
+C  the main model.
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            dicSST(i,j,bi,bj) = theta(i,j,1,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
        ENDIF
 
        IF ( dic_SSSFile .NE. ' ' ) THEN
@@ -544,6 +557,18 @@ C     forcing load fields with pkg/exf tools
      &     SSS_interpMethod,
 # endif
      &     mytime, myiter, mythid )
+       ELSE
+C If there is no SSS file given in data.dic, get fields from
+C  the main model.
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            dicSSS(i,j,bi,bj) = salt(i,j,1,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO          
        ENDIF
 C     endif dic_useEXF
       ENDIF

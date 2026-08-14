@@ -60,6 +60,8 @@ C-    Initialise DIC_VARS.h forcing-field arrays:
            CHL       (i,j,bi,bj) = 0. _d 0
            InputFe   (i,j,bi,bj) = 0. _d 0
 #endif
+           dicSST    (i,j,bi,bj) = 0. _d 0
+           dicSSS    (i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
 #ifdef DIC_CALCITE_SAT
@@ -139,6 +141,10 @@ C If the chlorophyll climatology is not provided, use this default value.
             InputFe(i,j,bi,bj)    = dic_iron_const
      &                                  *maskC(i,j,1,bi,bj)
 #endif
+           dicSST(i,j,bi,bj)      = dic_SST_const
+     &                                  *maskC(i,j,1,bi,bj)
+           dicSSS(i,j,bi,bj)       = dic_SSS_const
+     &                                  *maskC(i,j,1,bi,bj)
           ENDDO
          ENDDO
 #ifdef DIC_CALCITE_SAT
@@ -488,7 +494,6 @@ C    the first timestep to initialize pH/pCO2
 C     dic_useEXF
       ENDIF
 # endif /* ALLOW_EXF */
-
 C If there is no SST file given in data.dic, get fields from
 C  the main model so we can initialize pH/pCO2 correctly.
       IF ( dic_SSTFile .EQ. ' ' ) THEN

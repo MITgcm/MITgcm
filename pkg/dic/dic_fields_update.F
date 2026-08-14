@@ -35,7 +35,7 @@ C     bi, bj       :: tile indices
 C     myTime       :: Current time in simulation
 C     myIter       :: Current timestep number
 C     myThid       :: my Thread Id number
-      INTEGER bi, bj, k
+      INTEGER bi, bj
       _RL myTime
       INTEGER myIter
       INTEGER myThid
@@ -44,7 +44,7 @@ C     myThid       :: my Thread Id number
 
 c !LOCAL VARIABLES: ===================================================
 C#if defined(ALLOW_THSICE) || defined(ALLOW_SEAICE) || defined(COMPONENT_MODULE)
-      INTEGER i, j
+      INTEGER i, j, k
 C#endif
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
@@ -96,17 +96,22 @@ CEOP
         ENDIF
 #endif /* ALLOW_OCN_COMPON_INTERF */
 
-      IF ( .NOT. dic_useEXF ) THEN
-C  Get SST, SSS and ice fraction from the main model        
+C  Get SST, SSS and ice fraction from the main model if not supplied      
         k = 1
-
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          dicSST(i,j,bi,bj) = theta(i,j,k,bi,bj)
-          dicSSS(i,j,bi,bj) = salt (i,j,k,bi,bj)
-         ENDDO
-        ENDDO
-      ENDIF /* NOT dic_useEXF */
+        IF ( dic_SSTFile .EQ. ' ' ) THEN
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            dicSST(i,j,bi,bj) = theta(i,j,k,bi,bj)
+           ENDDO
+          ENDDO
+        ENDIF
+        IF ( dic_SSSFile .EQ. ' ' ) THEN
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            dicSSS(i,j,bi,bj) = salt(i,j,k,bi,bj)
+           ENDDO
+          ENDDO
+        ENDIF
 #endif /* ALLOW_DIC */
       RETURN
       END
