@@ -55,7 +55,7 @@ C define Schmidt no. coefficients for CO2
 C define Schmidt no. coefficients for O2
 C based on Keeling et al [GBC, 12, 141, (1998)]
       sox1 = 1638.0 _d 0
-      sox2 = -81.83 _d 0
+      sox2 =  -81.83 _d 0
       sox3 =    1.483 _d 0
       sox4 =   -0.008004 _d 0
 
