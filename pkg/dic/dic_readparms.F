@@ -37,7 +37,10 @@ C     === Global variables ===
 #  include "DIC_INTERP_PARAM.h"
 # endif
 #endif
-
+#ifdef ALLOW_OCN_COMPON_INTERF
+# include "CPL_PARAMS.h"
+# include "OCNCPL.h"
+#endif /* ALLOW_OCN_COMPON_INTERF */
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     myThid    :: My Thread Id. number
@@ -1560,6 +1563,80 @@ C  If USE_PLOAD is not defined, then dic_atmospFile may be used
         CALL ALL_PROC_DIE( 0 )
         STOP 'ABNORMAL END: S/R DIC_READPARMS'
       ENDIF
+
+C Warnings
+#ifdef DIC_CALCITE_SAT
+      IF ( useCalciteSaturation .AND. dic_SSTFile .NE. ' ' ) THEN
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS WARNING: ',
+     &      'using dic_SSTFile (SST input) only impacts gas exchange'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     I                    SQUEEZE_RIGHT, myThid )  
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS WARNING: ',
+     &      'prescribing 3D THETA field is not implemented.'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     I                    SQUEEZE_RIGHT, myThid )
+      ENDIF 
+
+      IF ( useCalciteSaturation .AND. dic_SSSFile .NE. ' ' ) THEN
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS WARNING: ',
+     &      'using dic_SSSFile (SSS input) only impacts gas exchange'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     I                    SQUEEZE_RIGHT, myThid )  
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS WARNING: ',
+     &      'prescribing 3D SALT field is not implemented.'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     I                    SQUEEZE_RIGHT, myThid )
+      ENDIF 
+#endif /* DIC_CALCITE_SAT */
+
+      IF ( useThSIce .AND. dic_iceFile .NE. ' ' ) THEN
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS WARNING: ',
+     &      'to use dynamic sea ice fraction from pkg/thice'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     I                    SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS WARNING: ',
+     &      'make sure to set dic_iceFile = " " in data.dic'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     I                    SQUEEZE_RIGHT, myThid )
+      ENDIF
+
+      IF ( useSEAICE .AND. dic_iceFile .NE. ' ' ) THEN
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS WARNING: ',
+     &      'to use dynamic sea ice fraction from pkg/seaice'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     I                    SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS WARNING: ',
+     &      'make sure to set dic_iceFile = " " in data.dic'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     I                    SQUEEZE_RIGHT, myThid )
+      ENDIF
+
+#ifdef ALLOW_OCN_COMPON_INTERF
+      IF ( useCoupler ) THEN
+        IF ( useImportCO2 .AND. dic_atmospCO2File .NE. ' ' ) THEN
+          WRITE(msgBuf,'(2A)') 'DIC_READPARMS WARNING: ',
+     &      'to use atmospheric pCO2 from the atmospheric model'
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     I                    SQUEEZE_RIGHT, myThid )
+          WRITE(msgBuf,'(2A)') 'DIC_READPARMS WARNING: ',
+     &      'make sure to set dic_atmospCO2File = " " in data.dic'
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     I                    SQUEEZE_RIGHT, myThid )
+        ENDIF
+
+        IF ( useImportWSpd .AND. dic_windFile .NE. ' ' ) THEN
+          WRITE(msgBuf,'(2A)') 'DIC_READPARMS WARNING: ',
+     &      'to use wind speed from the atmospheric model'
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     I                    SQUEEZE_RIGHT, myThid )
+          WRITE(msgBuf,'(2A)') 'DIC_READPARMS WARNING: ',
+     &      'make sure to set dic_windFile = " " in data.dic'
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     I                    SQUEEZE_RIGHT, myThid )
+        ENDIF
+      ENDIF
+#endif /* ALLOW_OCN_COMPON_INTERF */
+
       _END_MASTER(myThid)
 
 C--   Everyone else must wait for the parameters to be loaded
