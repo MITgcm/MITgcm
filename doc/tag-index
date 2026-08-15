@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - fix 3 bugs (loop range and 2 times seaiceMaskU -> MaskV) in seaice_lsr.F ;
+    update 12 ref. outputs in exp. global_ocean.cs32x15, lab_sea & cpl_aim+ocn.
 o pkg/ggl90 & obcs:
   - fix loop limits in ggl90_calc.F, when getting BC from pkg/shelfice;
   - fix OBCS indices in N & S OB-Eta field when applied to rStar factors.
