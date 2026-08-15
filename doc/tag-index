@@ -1,6 +1,11 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ggl90 & obcs:
+  - fix loop limits in ggl90_calc.F, when getting BC from pkg/shelfice;
+  - fix OBCS indices in N & S OB-Eta field when applied to rStar factors.
+o pkg/ggl90:
+  - langmuir code: save some computations for u/vStar (done once vs Nr times).
 o tools & testreport:
   - add a very short script and adjust testreport & do_tst_2+2 to enable to use
    "sftp" to send output results.
