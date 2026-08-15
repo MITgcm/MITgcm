@@ -1,7 +1,5 @@
+#include "GCHEM_OPTIONS.h"
 #include "BLING_OPTIONS.h"
-#ifdef ALLOW_EXF
-# include "EXF_OPTIONS.h"
-#endif
 
 CBOP
       subroutine BLING_INI_FORCING( myThid )
@@ -18,11 +16,8 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#ifdef ALLOW_EXF
-# include "EXF_INTERP_SIZE.h"
-#endif
 #include "BLING_VARS.h"
-#include "BLING_LOAD.h"
+#include "GCHEM_FIELDS.h"
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
@@ -36,23 +31,6 @@ c !LOCAL VARIABLES: ===================================================
 #ifdef USE_BLING_V1
        CHARACTER*(MAX_LEN_MBUF) msgBuf
 #endif
-
-C First call requires that we initialize everything to zero for safety
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-         BLING_ldRec(bi,bj) = 0
-       ENDDO
-      ENDDO
-      CALL LEF_ZERO( dicwind0,myThid )
-      CALL LEF_ZERO( dicwind1,myThid )
-      CALL LEF_ZERO( atmosp0,myThid )
-      CALL LEF_ZERO( atmosp1,myThid )
-      CALL LEF_ZERO( silica0,myThid )
-      CALL LEF_ZERO( silica1,myThid )
-      CALL LEF_ZERO( ice0,myThid )
-      CALL LEF_ZERO( ice1,myThid )
-      CALL LEF_ZERO( feinput0,myThid )
-      CALL LEF_ZERO( feinput1,myThid )
 
 #ifdef USE_BLING_V1
 #ifdef USE_SIBLING
@@ -78,39 +56,33 @@ C First call requires that we initialize everything to zero for safety
 #endif
 #endif /* USE_BLING_V1 */
 
-c set reasonable values to those that need at least something
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-             apco2(i,j,bi,bj) = bling_pCO2*maskC(i,j,1,bi,bj)
-             wind(i,j,bi,bj)     = 5. _d 0*maskC(i,j,1,bi,bj)
-             atmosP(i,j,bi,bj)   = 1. _d 0*maskC(i,j,1,bi,bj)
-             fIce(i,j,bi,bj)     = 0. _d 0
-             fluxCO2(i,j,bi,bj)  = 0. _d 0
-             InputFe(i,j,bi,bj)  = 1. _d -11*maskC(i,j,1,bi,bj)
-             silica(i,j,bi,bj)   = 7.6838 _d -3*maskC(i,j,1,bi,bj)
+#ifdef GCHEM_ALLOW_FFIELDS
+           fIce(i,j,bi,bj)    = gchemIce(i,j,bi,bj)
+           wind(i,j,bi,bj)    = gchemWind(i,j,bi,bj)
+C     Atm pressure in Pascals, convert to atm
+           AtmosP(i,j,bi,bj)  = gchemAtmosp(i,j,bi,bj)/Pa2atm
+           silica(i,j,bi,bj)  = gchemSi(i,j,bi,bj)
+c          PAR(i,j,bi,bj)     = gchemPAR(i,j,bi,bj)
+           inputFe(i,j,bi,bj) = gchemFe(i,j,bi,bj)
+           apCO2(i,j,bi,bj)   = gchemapCO2(i,j,bi,bj)
+#else
+           fIce(i,j,bi,bj)    = 0. _d 0
+           wind(i,j,bi,bj)    = 0. _d 0
+           AtmosP(i,j,bi,bj)  = 0. _d 0
+           silica(i,j,bi,bj)  = 0. _d 0
+c          PAR(i,j,bi,bj)     = 0. _d 0
+           inputFe(i,j,bi,bj) = 0. _d 0
+           apCO2(i,j,bi,bj)   = 0. _d 0
+#endif
+           fluxCO2(i,j,bi,bj) = 0. _d 0
           ENDDO
          ENDDO
         ENDDO
        ENDDO
-
-#ifdef ALLOW_EXF
-      IF ( useEXF ) THEN
-       IF ( apco2file .NE. ' ' ) THEN
-      CALL EXF_INIT_FLD(
-     I     'apco2', apco2file, apco2mask,
-     I     apco2period, exf_inscal_apco2, apco2const,
-     O     apco2, apco20, apco21,
-# ifdef USE_EXF_INTERPOLATION
-     I     apco2_lon0, apco2_lon_inc,
-     I     apco2_lat0, apco2_lat_inc,
-     I     apco2_nlon, apco2_nlat, xC, yC, apco2_interpMethod,
-# endif
-     I     myThid )
-       ENDIF
-      ENDIF
-#endif /* ALLOW_EXF */
 
 #endif /* ALLOW_BLING */
       RETURN

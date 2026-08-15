@@ -1,3 +1,4 @@
+#include "GCHEM_OPTIONS.h"
 #include "BLING_OPTIONS.h"
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
@@ -17,11 +18,6 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_EXF
-# include "EXF_PARAM.h"
-# include "EXF_INTERP_SIZE.h"
-# include "EXF_INTERP_PARAM.h"
-#endif /* ALLOW_EXF */
 #include "BLING_VARS.h"
 
 C     === Routine arguments ===
@@ -184,8 +180,6 @@ C   BLING forcing
 C ==========================================================
 
       NAMELIST /BLING_FORCING/
-     &          bling_windFile, bling_atmospFile, bling_iceFile,
-     &          bling_ironFile, bling_silicaFile,
      &          bling_psmFile, bling_plgFile, bling_PdiazFile,
      &          bling_forcingPeriod, bling_forcingCycle,
      &          bling_Pc_2dFile, bling_Pc_2d_diazFile,
@@ -193,19 +187,7 @@ C ==========================================================
      &          bling_alpha_photo2dFile,bling_phi_DOM2dFile,
      &          bling_k_Fe2dFile, bling_k_Fe_diaz2dFile,
      &          bling_gamma_POM2dFile, bling_wsink0_2dFile,
-     &          bling_phi_sm2dFile,bling_phi_lg2dFile,
-     &          bling_pCO2,
-     &          river_conc_po4, river_dom_to_nut
-#ifdef ALLOW_EXF
-     &         ,apco2file, apco2startdate1, apco2startdate2,
-     &          apco2RepCycle, apco2period, apco2StartTime,
-     &          exf_inscal_apco2, exf_outscal_apco2, apco2const,
-     &          apco2_exfremo_intercept, apco2_exfremo_slope
-#ifdef USE_EXF_INTERPOLATION
-     &         ,apco2_lon0, apco2_lon_inc, apco2_lat0, apco2_lat_inc,
-     &          apco2_nlon, apco2_nlat, apco2_interpMethod
-#endif /* USE_EXF_INTERPOLATION */
-#endif /* ALLOW_EXF */
+     &          bling_phi_sm2dFile,bling_phi_lg2dFile
 
 C ==========================================================
 C   secperday        :: Seconds in a day = 24*60*60
@@ -297,11 +279,6 @@ C   chlsat_locTimWindow(1:2) :: local-time window (in h) for
 C                       satellite-equivalent chlorophyll diagnostic (and cost)
 
       _RL secperday
-#ifdef ALLOW_EXF
-#ifdef USE_EXF_INTERPOLATION
-      INTEGER j
-#endif /* USE_EXF_INTERPOLATION */
-#endif /* ALLOW_EXF */
 
       _BEGIN_MASTER(myThid)
       errCount = 0
@@ -418,11 +395,6 @@ C     Default values
       chlsat_locTimWindow(1) = 12.0 _d 0
       chlsat_locTimWindow(2) = 13.5 _d 0
 
-      bling_windFile         = ' '
-      bling_atmospFile       = ' '
-      bling_iceFile          = ' '
-      bling_ironFile         = ' '
-      bling_silicaFile       = ' '
       bling_psmFile          = ' '
       bling_plgFile          = ' '
       bling_pdiazFile        = ' '
@@ -438,40 +410,10 @@ C     Default values
       bling_phi_sm2dFile     = ' '
       bling_phi_lg2dFile     = ' '
 
-      bling_pCO2             = 278. _d -6
+C     Now set in pkg/gchem
+C     bling_pCO2             = 278. _d -6
       river_conc_po4         = 0.007 _d 0
       river_dom_to_nut       = 0. _d 0
-
-#ifdef ALLOW_EXF
-      apco2startdate1         = 0
-      apco2startdate2         = 0
-      apco2StartTime          = UNSET_RL
-      apco2period             = 0.0 _d 0
-      apco2RepCycle           = repeatPeriod
-      apco2const              = 0.0 _d 0
-      apco2_exfremo_intercept = 0.0 _d 0
-      apco2_exfremo_slope     = 0.0 _d 0
-      apco2file               = ' '
-      exf_inscal_apco2        =  1. _d 0
-      exf_outscal_apco2       =  1. _d 0
-#ifdef USE_EXF_INTERPOLATION
-C--   set default input location to match (in case of simple Lat-Long grid)
-C     model grid cell-center position (leading to trivial interpolation)
-      apco2_lon0         = inp_lon0
-      apco2_lat0         = inp_lat0
-      apco2_nlon         = inp_gNx
-      apco2_nlat         = inp_gNy
-      apco2_lon_inc      = inp_dLon
-      DO j=1,MAX_LAT_INC
-        apco2_lat_inc(j) = inp_dLat(j)
-      ENDDO
-      apco2_interpMethod = 1
-#endif /* USE_EXF_INTERPOLATION */
-#endif /* ALLOW_EXF */
-
-C     default periodic forcing to same as for physics
-      bling_forcingPeriod = externForcingPeriod
-      bling_forcingCycle  = externForcingCycle
 
       WRITE(msgBuf,'(A)') ' BLING_READPARMS: opening data.bling'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -591,6 +533,35 @@ C OCMIP2 Coefficients from S/R CARBON_COEFFS in CARBON_CHEM.F
       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
 #endif
 
+#ifdef CARBONCHEM_SOLVESAPHE
+      IF ( selectHFconst.GT.2 .OR. selectBTconst.GT.2
+     & .OR. selectFTconst.GT.2 ) THEN
+        WRITE(msgBuf,'(2A)')
+     &    'BLING_READPARMS: selectHF, selectBT or selectFT > 2, '
+     &    'solvesaphe_const error'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ELSEIF ( selectK1K2const.GT.6 ) THEN
+        WRITE(msgBuf,'(A)')
+     &    'BLING_READPARMS: selectK1K2const > 6, solvesaphe_const error'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ELSEIF ( selectPHsolver.GT.3 ) THEN
+        WRITE(msgBuf,'(A)')
+     &    'BLING_READPARMS: selectPHsolver > 3, select pH solver error'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+#endif
+
+#ifndef GCHEM_ALLOW_FFIELDS
+      WRITE(msgBuf,'(2A)')
+     &     'BLING requires ',
+     &     '#defined GCHEM_ALLOW_FFIELDS in GCHEM_OPTIONS.h'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      errCount = errCount + 1
+#endif
+
       IF ( errCount.GE.1 ) THEN
        WRITE(msgBuf,'(A,I3,A)')
      &     'BLING_READPARMS: detected', errCount,' fatal error(s)'
@@ -598,27 +569,6 @@ C OCMIP2 Coefficients from S/R CARBON_COEFFS in CARBON_CHEM.F
        CALL ALL_PROC_DIE( 0 )
        STOP 'ABNORMAL END: S/R BLING_READPARMS'
       ENDIF
-
-#ifdef CARBONCHEM_SOLVESAPHE
-      IF ( selectHFconst.GT.2 .OR. selectBTconst.GT.2
-     & .OR. selectFTconst.GT.2 ) THEN
-        WRITE(msgBuf,'(A)')
-     &    'BLING_READPARMS: selectHF, selectBT or selectFT > 2'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R BLING_READPARMS: solvesaphe_const error'
-      ELSEIF ( selectK1K2const.GT.6 ) THEN
-        WRITE(msgBuf,'(A)')
-     &    'BLING_READPARMS: selectK1K2const > 6 '
-        CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R BLING_READPARMS: solvesaphe_const error'
-      ELSEIF ( selectPHsolver.GT.3 ) THEN
-        WRITE(msgBuf,'(A)')
-     &    'BLING_READPARMS: selectPHsolver > 3 '
-        CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R BLING_READPARMS: select pH solver error'
-      ENDIF
-#endif
-
       _END_MASTER(myThid)
 
 C--   Everyone else must wait for the parameters to be loaded
