@@ -256,6 +256,7 @@ c     &     mythid )
      &     SilicaSurf_interpMethod,
 # endif
      &     myLocTime, nIter0, mythid )
+        _EXCH_XY_RL( SilicaSurf, myThid )
        ENDIF
 
 #ifdef DIC_3D_SILICA
@@ -276,6 +277,7 @@ c     &     mythid )
      &      SilicaDeep_nzin, SilicaDeep_dzin,
 # endif
      &      myLocTime, nIter0, mythid )
+        _EXCH_XYZ_RL( SilicaDeep, myThid )
        ENDIF
 #endif /* DIC_3D_SILICA */
 
@@ -295,6 +297,7 @@ C    the first timestep to initialize pH/pCO2
      &     SST_interpMethod,
 # endif
      &     myLocTime, nIter0, mythid )
+        _EXCH_XY_RL( dicSST, myThid )
        ENDIF
        
        IF ( dic_SSSFile .NE. ' ' ) THEN
@@ -311,6 +314,7 @@ C    the first timestep to initialize pH/pCO2
      &     SSS_interpMethod,
 # endif
      &     myLocTime, nIter0, mythid )
+        _EXCH_XY_RL( dicSSS, myThid )
        ENDIF
 
        IF ( dic_WindFile .NE. ' ' ) THEN
@@ -325,6 +329,7 @@ C    the first timestep to initialize pH/pCO2
      &     wind_interpMethod,
 # endif
      &     mythid )
+        _EXCH_XY_RL( Wind, myThid )
        ENDIF
 
 #ifndef USE_PLOAD
@@ -340,6 +345,7 @@ C    the first timestep to initialize pH/pCO2
      &     atmosp_interpMethod,
 # endif
      &     mythid )
+        _EXCH_XY_RL( AtmosP, myThid )
        ENDIF
 #endif /* USE_PLOAD */
 
@@ -355,6 +361,7 @@ C    the first timestep to initialize pH/pCO2
      &     ice_interpMethod,
 # endif
      &     mythid )
+        _EXCH_XY_RL( fIce, myThid )
        ENDIF
 
 #ifdef READ_PAR
@@ -370,6 +377,7 @@ C    the first timestep to initialize pH/pCO2
      &     par_interpMethod,
 # endif
      &     mythid )
+        _EXCH_XY_RL( PAR, myThid )
        ENDIF
 #endif /* READ_PAR */
 
@@ -386,6 +394,7 @@ C    the first timestep to initialize pH/pCO2
      &     iron_interpMethod,
 # endif
      &     mythid )
+        _EXCH_XY_RL( inputFe, myThid )
        ENDIF
 #endif /* ALLOW_FE */
 
@@ -402,6 +411,7 @@ C    the first timestep to initialize pH/pCO2
      &     atmospCO2_interpMethod,
 # endif
      &     mythid )
+        _EXCH_XY_RL( atmospCO2, myThid )
        ENDIF
 
 #ifdef LIGHT_CHL
@@ -417,6 +427,7 @@ C    the first timestep to initialize pH/pCO2
      &     chl_interpMethod,
 # endif
      &     mythid )
+        _EXCH_XY_RL( CHL, myThid )
        ENDIF
 #endif /* LIGHT_CHL */
 C     dic_useEXF

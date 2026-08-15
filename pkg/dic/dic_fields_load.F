@@ -529,18 +529,6 @@ C     forcing load fields with pkg/exf tools
      &     SST_interpMethod,
 # endif
      &     mytime, myiter, mythid )
-       ELSE
-C If there is no SST file given in data.dic, get fields from
-C  the main model.
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-            dicSST(i,j,bi,bj) = theta(i,j,1,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
        ENDIF
 
        IF ( dic_SSSFile .NE. ' ' ) THEN
@@ -557,19 +545,7 @@ C     forcing load fields with pkg/exf tools
      &     SSS_nlon, SSS_nlat, xC, yC,
      &     SSS_interpMethod,
 # endif
-     &     mytime, myiter, mythid )
-       ELSE
-C If there is no SSS file given in data.dic, get fields from
-C  the main model.
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-            dicSSS(i,j,bi,bj) = salt(i,j,1,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO          
+     &     mytime, myiter, mythid )         
        ENDIF
 C     endif dic_useEXF
       ENDIF
