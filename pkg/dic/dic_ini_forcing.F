@@ -117,30 +117,30 @@ C--   Set reasonable values to those that need at least something
        DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-            wind(i,j,bi,bj)       = dic_wind_const
+           wind(i,j,bi,bj)       = dic_wind_const
      &                                  *maskC(i,j,1,bi,bj)
-            AtmosP(i,j,bi,bj)     = dic_atmosp_const/Pa2Atm
+           AtmosP(i,j,bi,bj)     = dic_atmosp_const/Pa2Atm
      &                                  *maskC(i,j,1,bi,bj)
-            silicaSurf(i,j,bi,bj) = dic_silicaSurf_const
+           silicaSurf(i,j,bi,bj) = dic_silicaSurf_const
      &                                  *maskC(i,j,1,bi,bj)
-            fIce(i,j,bi,bj)       = dic_ice_const
+           fIce(i,j,bi,bj)       = dic_ice_const
      &                                  *maskC(i,j,1,bi,bj)
 #ifdef READ_PAR
-            par(i,j,bi,bj)        = dic_par_const
+           par(i,j,bi,bj)        = dic_par_const
      &                                  *maskC(i,j,1,bi,bj)
 #endif
 #ifdef LIGHT_CHL
 C If the chlorophyll climatology is not provided, use this default value.
-            CHL(i,j,bi,bj)        = dic_chl_const
+           CHL(i,j,bi,bj)        = dic_chl_const
      &                                  *maskC(i,j,1,bi,bj)
 #endif
 #ifdef ALLOW_FE
-            InputFe(i,j,bi,bj)    = dic_iron_const
+           InputFe(i,j,bi,bj)    = dic_iron_const
      &                                  *maskC(i,j,1,bi,bj)
 #endif
-           dicSST(i,j,bi,bj)      = dic_SST_const
+           dicSST(i,j,bi,bj)     = dic_SST_const
      &                                  *maskC(i,j,1,bi,bj)
-           dicSSS(i,j,bi,bj)       = dic_SSS_const
+           dicSSS(i,j,bi,bj)     = dic_SSS_const
      &                                  *maskC(i,j,1,bi,bj)
           ENDDO
          ENDDO
@@ -149,7 +149,7 @@ C If the chlorophyll climatology is not provided, use this default value.
           DO k=1,Nr
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
-              silicaDeep(i,j,k,bi,bj) = dic_silicaDeep_const
+             silicaDeep(i,j,k,bi,bj) = dic_silicaDeep_const
      &                                  *maskC(i,j,k,bi,bj)
             ENDDO
            ENDDO
@@ -409,7 +409,7 @@ C    the first timestep to initialize pH/pCO2
         CALL EXF_INIT_FLD (
      &     'dicCHL', dic_chlaFile, dic_chlMask,
      &     dic_chlPeriod, dic_inscal_chl, dic_chl_const,
-     &     dicchl, dicchl0, dicchl1,
+     &     CHL, dicchl0, dicchl1,
 # ifdef USE_EXF_INTERPOLATION
      &     chl_lon0, chl_lon_inc,
      &     chl_lat0, chl_lat_inc,
@@ -422,6 +422,7 @@ C    the first timestep to initialize pH/pCO2
 C     dic_useEXF
       ENDIF
 # endif /* ALLOW_EXF */
+
 C If there is no SST file given in data.dic, get fields from
 C  the main model so we can initialize pH/pCO2 correctly.
       IF ( dic_SSTFile .EQ. ' ' ) THEN
@@ -434,8 +435,8 @@ C  the main model so we can initialize pH/pCO2 correctly.
           ENDDO
          ENDDO
         ENDDO
+      _EXCH_XY_RL( dicSST, myThid )
       ENDIF
-
 C If there is no SSS file given in data.dic, get fields from
 C  the main model so we can initialize pH/pCO2 correctly.
       IF ( dic_SSSFile .EQ. ' ' ) THEN
@@ -448,6 +449,7 @@ C  the main model so we can initialize pH/pCO2 correctly.
           ENDDO
          ENDDO
         ENDDO
+        _EXCH_XY_RL( dicSSS, myThid )
       ENDIF
 #endif /* ALLOW_DIC */
       RETURN
