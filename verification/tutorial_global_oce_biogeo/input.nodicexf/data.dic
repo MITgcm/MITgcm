@@ -9,13 +9,14 @@
  &
 
  &DIC_FORCING
-  DIC_useEXF          = .TRUE.,
+# use pkg/exf for physics but not bgc
+  DIC_useEXF          = .FALSE.,
+# Since externForcingPeriod and externForcingCycle will be 0
+#   have to provide a ForcingPeriod and ForcingCycle.
+  DIC_forcingPeriod   = 2592000.,
+  DIC_forcingCycle    = 31104000.,
 #
   DIC_iceFile         ='fice.bin',
   DIC_windFile        ='tren_speed.bin',
   DIC_silicaFile      ='sillev1.bin',
-#
-  DIC_icePeriod       = -12.,
-  DIC_windPeriod      = -12.,
-  DIC_SilicaSurfPeriod= -12.,
  &
