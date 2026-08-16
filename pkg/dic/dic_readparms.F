@@ -403,136 +403,134 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        ENDIF
 #endif
 
-# ifdef ALLOW_EXF
-      IF ( dic_useEXF ) THEN
+#ifdef ALLOW_EXF
 C     If useEXF=F, s/r exf_readparms is not called and exf-parameters
 C     are not initialiased properly. The following few exf-related
 C     parameters need to have a defined value to be used in s/r
 C     exf_set_fld.
-        dic_exf_iprec           = 32
-        dic_useExfYearlyFields  = .FALSE.
-        dic_twoDigitYear        = .FALSE.
-        dic_exf_debugLev        = debugLevel
-        dic_ForcingCycle        = repeatPeriod
-         
-        IF ( .NOT. useEXF ) THEN
-          repeatPeriod       = dic_ForcingCycle
-          exf_iprec          = dic_exf_iprec
-          useExfYearlyFields = dic_useExfYearlyFields
-          twoDigitYear       = dic_twoDigitYear
-          exf_debugLev       = dic_exf_debugLev
-        ENDIF
- 
-        dic_SilicaSurfPeriod               = 0.0 _d 0
-        dic_SilicaSurfRepCycle             = repeatPeriod
-        dic_SilicaSurfStartTime            = UNSET_RL
-        dic_SilicaSurfStartDate1           = 0
-        dic_SilicaSurfStartDate2           = 0
-        dic_SilicaSurf_exfremo_intercept   = 0.0 _d 0
-        dic_SilicaSurf_exfremo_slope       = 0.0 _d 0
-        dic_SilicaSurfMask                 = 'c'
-        dic_inscal_SilicaSurf              = 1. _d 0
- 
-        dic_SilicaDeepPeriod               = 0.0 _d 0
-        dic_SilicaDeepRepCycle             = repeatPeriod
-        dic_SilicaDeepStartTime            = UNSET_RL
-        dic_SilicaDeepStartDate1           = 0
-        dic_SilicaDeepStartDate2           = 0
-        dic_SilicaDeep_exfremo_intercept   = 0.0 _d 0
-        dic_SilicaDeep_exfremo_slope       = 0.0 _d 0
-        dic_SilicaDeepMask                 = 'c'
-        dic_inscal_SilicaDeep              = 1. _d 0
- 
-        dic_parPeriod                      = 0.0 _d 0
-        dic_parRepCycle                    = repeatPeriod
-        dic_parStartTime                   = UNSET_RL
-        dic_parStartDate1                  = 0
-        dic_parStartDate2                  = 0
-        dic_par_exfremo_intercept          = 0.0 _d 0
-        dic_par_exfremo_slope              = 0.0 _d 0
-        dic_parMask                        = 'c'
-        dic_inscal_par                     = 1. _d 0
- 
-        dic_ironPeriod                     = 0.0 _d 0
-        dic_ironRepCycle                   = repeatPeriod
-        dic_ironStartTime                  = UNSET_RL
-        dic_ironStartDate1                 = 0
-        dic_ironStartDate2                 = 0
-        dic_iron_exfremo_intercept         = 0.0 _d 0
-        dic_iron_exfremo_slope             = 0.0 _d 0
-        dic_ironMask                       = 'c'
-        dic_inscal_iron                    = 1. _d 0
- 
-        dic_atmospCO2Period                = 0.0 _d 0
-        dic_atmospCO2RepCycle              = repeatPeriod
-        dic_atmospCO2StartTime             = UNSET_RL
-        dic_atmospCO2StartDate1            = 0
-        dic_atmospCO2StartDate2            = 0
-        dic_atmospCO2_exfremo_intercept    = 0.0 _d 0
-        dic_atmospCO2_exfremo_slope        = 0.0 _d 0
-        dic_atmospCO2Mask                  = 'c'
-        dic_inscal_atmospCO2               = 1. _d 0
- 
-        dic_icePeriod                      = 0.0 _d 0
-        dic_iceRepCycle                    = repeatPeriod
-        dic_iceStartTime                   = UNSET_RL
-        dic_iceStartDate1                  = 0
-        dic_iceStartDate2                  = 0
-        dic_ice_exfremo_intercept          = 0.0 _d 0
-        dic_ice_exfremo_slope              = 0.0 _d 0
-        dic_iceMask                        = 'c'
-        dic_inscal_ice                     = 1. _d 0
- 
-        dic_windPeriod                     = 0.0 _d 0
-        dic_windRepCycle                   = repeatPeriod
-        dic_windStartTime                  = UNSET_RL
-        dic_windStartDate1                 = 0
-        dic_windStartDate2                 = 0
-        dic_wind_exfremo_intercept         = 0.0 _d 0
-        dic_wind_exfremo_slope             = 0.0 _d 0
-        dic_windMask                       = 'c'
-        dic_inscal_wind                    = 1. _d 0
- 
-        dic_atmospPeriod                   = 0.0 _d 0
-        dic_atmospRepCycle                 = repeatPeriod
-        dic_atmospStartTime                = UNSET_RL
-        dic_atmospStartDate1               = 0
-        dic_atmospStartDate2               = 0
-        dic_atmosp_exfremo_intercept       = 0.0 _d 0
-        dic_atmosp_exfremo_slope           = 0.0 _d 0
-        dic_atmospMask                     = 'c'
-        dic_inscal_atmosp                  = 1. _d 0
+       dic_exf_iprec           = 32
+       dic_useExfYearlyFields  = .FALSE.
+       dic_twoDigitYear        = .FALSE.
+       dic_exf_debugLev        = debugLevel
 
-        dic_chlPeriod                      = 0.0 _d 0
-        dic_chlRepCycle                    = repeatPeriod
-        dic_chlStartTime                   = UNSET_RL
-        dic_chlStartDate1                  = 0
-        dic_chlStartDate2                  = 0
-        dic_chl_exfremo_intercept          = 0.0 _d 0
-        dic_chl_exfremo_slope              = 0.0 _d 0
-        dic_chlMask                        = 'c'
-        dic_inscal_chl                     = 1. _d 0
+       IF ( .NOT. useEXF ) THEN
+         repeatPeriod       = dic_ForcingCycle
+         exf_iprec          = dic_exf_iprec
+         useExfYearlyFields = dic_useExfYearlyFields
+         twoDigitYear       = dic_twoDigitYear
+         exf_debugLev       = dic_exf_debugLev
+       ENDIF
+ 
+       dic_SilicaSurfPeriod               = 0.0 _d 0
+       dic_SilicaSurfRepCycle             = repeatPeriod
+       dic_SilicaSurfStartTime            = UNSET_RL
+       dic_SilicaSurfStartDate1           = 0
+       dic_SilicaSurfStartDate2           = 0
+       dic_SilicaSurf_exfremo_intercept   = 0.0 _d 0
+       dic_SilicaSurf_exfremo_slope       = 0.0 _d 0
+       dic_SilicaSurfMask                 = 'c'
+       dic_inscal_SilicaSurf              = 1. _d 0
+ 
+       dic_SilicaDeepPeriod               = 0.0 _d 0
+       dic_SilicaDeepRepCycle             = repeatPeriod
+       dic_SilicaDeepStartTime            = UNSET_RL
+       dic_SilicaDeepStartDate1           = 0
+       dic_SilicaDeepStartDate2           = 0
+       dic_SilicaDeep_exfremo_intercept   = 0.0 _d 0
+       dic_SilicaDeep_exfremo_slope       = 0.0 _d 0
+       dic_SilicaDeepMask                 = 'c'
+       dic_inscal_SilicaDeep              = 1. _d 0
+ 
+       dic_parPeriod                      = 0.0 _d 0
+       dic_parRepCycle                    = repeatPeriod
+       dic_parStartTime                   = UNSET_RL
+       dic_parStartDate1                  = 0
+       dic_parStartDate2                  = 0
+       dic_par_exfremo_intercept          = 0.0 _d 0
+       dic_par_exfremo_slope              = 0.0 _d 0
+       dic_parMask                        = 'c'
+       dic_inscal_par                     = 1. _d 0
+ 
+       dic_ironPeriod                     = 0.0 _d 0
+       dic_ironRepCycle                   = repeatPeriod
+       dic_ironStartTime                  = UNSET_RL
+       dic_ironStartDate1                 = 0
+       dic_ironStartDate2                 = 0
+       dic_iron_exfremo_intercept         = 0.0 _d 0
+       dic_iron_exfremo_slope             = 0.0 _d 0
+       dic_ironMask                       = 'c'
+       dic_inscal_iron                    = 1. _d 0
+ 
+       dic_atmospCO2Period                = 0.0 _d 0
+       dic_atmospCO2RepCycle              = repeatPeriod
+       dic_atmospCO2StartTime             = UNSET_RL
+       dic_atmospCO2StartDate1            = 0
+       dic_atmospCO2StartDate2            = 0
+       dic_atmospCO2_exfremo_intercept    = 0.0 _d 0
+       dic_atmospCO2_exfremo_slope        = 0.0 _d 0
+       dic_atmospCO2Mask                  = 'c'
+       dic_inscal_atmospCO2               = 1. _d 0
+ 
+       dic_icePeriod                      = 0.0 _d 0
+       dic_iceRepCycle                    = repeatPeriod
+       dic_iceStartTime                   = UNSET_RL
+       dic_iceStartDate1                  = 0
+       dic_iceStartDate2                  = 0
+       dic_ice_exfremo_intercept          = 0.0 _d 0
+       dic_ice_exfremo_slope              = 0.0 _d 0
+       dic_iceMask                        = 'c'
+       dic_inscal_ice                     = 1. _d 0
+ 
+       dic_windPeriod                     = 0.0 _d 0
+       dic_windRepCycle                   = repeatPeriod
+       dic_windStartTime                  = UNSET_RL
+       dic_windStartDate1                 = 0
+       dic_windStartDate2                 = 0
+       dic_wind_exfremo_intercept         = 0.0 _d 0
+       dic_wind_exfremo_slope             = 0.0 _d 0
+       dic_windMask                       = 'c'
+       dic_inscal_wind                    = 1. _d 0
+ 
+       dic_atmospPeriod                   = 0.0 _d 0
+       dic_atmospRepCycle                 = repeatPeriod
+       dic_atmospStartTime                = UNSET_RL
+       dic_atmospStartDate1               = 0
+       dic_atmospStartDate2               = 0
+       dic_atmosp_exfremo_intercept       = 0.0 _d 0
+       dic_atmosp_exfremo_slope           = 0.0 _d 0
+       dic_atmospMask                     = 'c'
+       dic_inscal_atmosp                  = 1. _d 0
 
-        dic_SSTPeriod                      = 0.0 _d 0
-        dic_SSTRepCycle                    = repeatPeriod
-        dic_SSTStartTime                   = UNSET_RL
-        dic_SSTStartDate1                  = 0
-        dic_SSTStartDate2                  = 0
-        dic_SST_exfremo_intercept          = 0.0 _d 0
-        dic_SST_exfremo_slope              = 0.0 _d 0
-        dic_SSTMask                        = 'c'
-        dic_inscal_SST                     = 1. _d 0
+       dic_chlPeriod                      = 0.0 _d 0
+       dic_chlRepCycle                    = repeatPeriod
+       dic_chlStartTime                   = UNSET_RL
+       dic_chlStartDate1                  = 0
+       dic_chlStartDate2                  = 0
+       dic_chl_exfremo_intercept          = 0.0 _d 0
+       dic_chl_exfremo_slope              = 0.0 _d 0
+       dic_chlMask                        = 'c'
+       dic_inscal_chl                     = 1. _d 0
 
-        dic_SSSPeriod                      = 0.0 _d 0
-        dic_SSSRepCycle                    = repeatPeriod
-        dic_SSSStartTime                   = UNSET_RL
-        dic_SSSStartDate1                  = 0
-        dic_SSSStartDate2                  = 0
-        dic_SSS_exfremo_intercept          = 0.0 _d 0
-        dic_SSS_exfremo_slope              = 0.0 _d 0
-        dic_SSSMask                        = 'c'
-        dic_inscal_SSS                     = 1. _d 0
-#  ifdef USE_EXF_INTERPOLATION
+       dic_SSTPeriod                      = 0.0 _d 0
+       dic_SSTRepCycle                    = repeatPeriod
+       dic_SSTStartTime                   = UNSET_RL
+       dic_SSTStartDate1                  = 0
+       dic_SSTStartDate2                  = 0
+       dic_SST_exfremo_intercept          = 0.0 _d 0
+       dic_SST_exfremo_slope              = 0.0 _d 0
+       dic_SSTMask                        = 'c'
+       dic_inscal_SST                     = 1. _d 0
+
+       dic_SSSPeriod                      = 0.0 _d 0
+       dic_SSSRepCycle                    = repeatPeriod
+       dic_SSSStartTime                   = UNSET_RL
+       dic_SSSStartDate1                  = 0
+       dic_SSSStartDate2                  = 0
+       dic_SSS_exfremo_intercept          = 0.0 _d 0
+       dic_SSS_exfremo_slope              = 0.0 _d 0
+       dic_SSSMask                        = 'c'
+       dic_inscal_SSS                     = 1. _d 0
+# ifdef USE_EXF_INTERPOLATION
 
        IF ( .NOT. useEXF ) THEN
 C     This is done in s/r exf_init_interp only if useEXF=T
@@ -550,9 +548,9 @@ C     This is done in s/r exf_init_interp only if useEXF=T
         inp_dLon = delX(1)
         DO j=1,MAX_LAT_INC
          IF (j.LT.inp_gNy) THEN
-          inp_dLat(j) = (delY(j) + delY(j+1))*halfRL
+           inp_dLat(j) = (delY(j) + delY(j+1))*halfRL
          ELSE
-          inp_dLat(j) = 0.
+           inp_dLat(j) = 0.
          ENDIF
         ENDDO
        ENDIF
@@ -653,10 +651,8 @@ C     This is done in s/r exf_init_interp only if useEXF=T
        IF ( .NOT. useEXF ) THEN
         exf_output_interp   = dic_exf_output_interp
        ENDIF
-#  endif /* USE_EXF_INTERPOLATION */
-C     dic_useEXF
-      ENDIF
-# endif /* ALLOW_EXF */
+# endif /* USE_EXF_INTERPOLATION */
+#endif /* ALLOW_EXF */
 
 C--   Open data file and read parameters from it:
       WRITE(msgBuf,'(A)') ' DIC_READPARMS: opening data.dic'

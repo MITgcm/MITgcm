@@ -269,7 +269,7 @@ C-      User set silicaDeep_nzin but not silicaDeep_dzin: fill from model grid
         IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START SST',myThid)
 # endif
         CALL EXF_GETFFIELD_START( useExfYearlyFields,
-     I                   'dic', 'SST', dic_SSTPeriod,
+     I                   'dic', 'dicSST', dic_SSTPeriod,
      I                   dic_SSTStartDate1, dic_SSTStartDate2,
      U                   dic_SSTStartTime, errCount,
      I                   myThid )
@@ -280,12 +280,19 @@ C-      User set silicaDeep_nzin but not silicaDeep_dzin: fill from model grid
         IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START SSS',myThid)
 # endif
         CALL EXF_GETFFIELD_START( useExfYearlyFields,
-     I                   'dic', 'SSS', dic_SSSPeriod,
+     I                   'dic', 'dicSSS', dic_SSSPeriod,
      I                   dic_SSSStartDate1, dic_SSSStartDate2,
      U                   dic_SSSStartTime, errCount,
      I                   myThid )
        ENDIF
        
+       IF ( errCount.GE.1 ) THEN
+        WRITE(msgBuf,'(A,I3,A)')
+     &       'DIC_INIT_FIXED: detected', errCount,' fatal error(s)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( 0 )
+        STOP 'ABNORMAL END: S/R DIC_INIT_FIXED'
+       ENDIF
        _END_MASTER( myThid )
 
 C     endif dic_useEXF
