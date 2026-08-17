@@ -5,10 +5,10 @@
 (PID.TID 0000.0001) // ======================================================
 (PID.TID 0000.0001) // execution environment starting up...
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) // MITgcmUV version:  checkpoint69m
+(PID.TID 0000.0001) // MITgcmUV version:  checkpoint69p
 (PID.TID 0000.0001) // Build user:        jm_c
 (PID.TID 0000.0001) // Build host:        villon
-(PID.TID 0000.0001) // Build date:        Wed Apr 15 17:42:50 EDT 2026
+(PID.TID 0000.0001) // Build date:        Wed Aug 12 16:25:12 EDT 2026
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Execution Environment parameter file "eedata"
@@ -5949,21 +5949,21 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) %MON thSI_Tsrf_min_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tsrf_min_N              =  -8.2700073572304E+00
 (PID.TID 0000.0001) %MON thSI_Tsrf_max_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_max_N              =  -3.2225684065779E+00
+(PID.TID 0000.0001) %MON thSI_Tsrf_max_N              =  -3.2225684065130E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_ave_G              =  -5.6899166134716E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_ave_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_ave_N              =  -5.6899166134716E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_min_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_min_N              =  -5.7819881272148E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_max_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_max_N              =  -2.9557844866799E+00
+(PID.TID 0000.0001) %MON thSI_Tic1_max_N              =  -2.9557844866251E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_ave_G              =  -2.7462910302684E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_ave_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_ave_N              =  -2.7462910302684E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_min_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_min_N              =  -2.9324934976775E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_max_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_max_N              =  -2.1312126178631E+00
+(PID.TID 0000.0001) %MON thSI_Tic2_max_N              =  -2.1312126178442E+00
 (PID.TID 0000.0001) %MON thSI_TotEnerg_G              =  -7.2254497120526E+18
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR Therm.SeaIce statistics
@@ -6144,21 +6144,21 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) %MON thSI_Tsrf_min_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tsrf_min_N              =  -8.4026352249767E+00
 (PID.TID 0000.0001) %MON thSI_Tsrf_max_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_max_N              =  -2.9066331934484E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_ave_G              =  -5.8449576962648E+00
+(PID.TID 0000.0001) %MON thSI_Tsrf_max_N              =  -2.9066331933977E+00
+(PID.TID 0000.0001) %MON thSI_Tic1_ave_G              =  -5.8449576962649E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_ave_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_ave_N              =  -5.8449576962648E+00
+(PID.TID 0000.0001) %MON thSI_Tic1_ave_N              =  -5.8449576962649E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_min_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_min_N              =  -5.9181239118028E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_max_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_max_N              =  -2.6280184474660E+00
+(PID.TID 0000.0001) %MON thSI_Tic1_max_N              =  -2.6280184474258E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_ave_G              =  -2.8175740561994E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_ave_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_ave_N              =  -2.8175740561994E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_min_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_min_N              =  -2.9817105183221E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_max_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_max_N              =  -2.0108368745098E+00
+(PID.TID 0000.0001) %MON thSI_Tic2_max_N              =  -2.0108368744960E+00
 (PID.TID 0000.0001) %MON thSI_TotEnerg_G              =  -7.3088362354817E+18
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR Therm.SeaIce statistics
@@ -6307,21 +6307,21 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) %MON thSI_Tsrf_min_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tsrf_min_N              =  -8.5269777636994E+00
 (PID.TID 0000.0001) %MON thSI_Tsrf_max_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_max_N              =  -2.8590014628517E+00
+(PID.TID 0000.0001) %MON thSI_Tsrf_max_N              =  -2.8590014628071E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_ave_G              =  -5.9894314288002E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_ave_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_ave_N              =  -5.9894314288002E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_min_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_min_N              =  -6.0569120760220E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_max_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_max_N              =  -2.5746237371967E+00
+(PID.TID 0000.0001) %MON thSI_Tic1_max_N              =  -2.5746237371625E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_ave_G              =  -2.8826425580381E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_ave_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_ave_N              =  -2.8826425580381E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_min_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_min_N              =  -3.0261660145754E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_max_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_max_N              =  -1.9907936093067E+00
+(PID.TID 0000.0001) %MON thSI_Tic2_max_N              =  -1.9907936092953E+00
 (PID.TID 0000.0001) %MON thSI_TotEnerg_G              =  -7.3921815808074E+18
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR Therm.SeaIce statistics
@@ -6468,23 +6468,23 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) %MON thSI_Tsrf_ave_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tsrf_ave_N              =  -8.5136232609907E+00
 (PID.TID 0000.0001) %MON thSI_Tsrf_min_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_min_N              =  -8.6430491499806E+00
+(PID.TID 0000.0001) %MON thSI_Tsrf_min_N              =  -8.6430491499807E+00
 (PID.TID 0000.0001) %MON thSI_Tsrf_max_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_max_N              =  -2.8617829573097E+00
+(PID.TID 0000.0001) %MON thSI_Tsrf_max_N              =  -2.8617829572673E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_ave_G              =  -6.1236310445041E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_ave_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_ave_N              =  -6.1236310445041E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_min_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_min_N              =  -6.1850769447189E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_max_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_max_N              =  -2.5728485435376E+00
+(PID.TID 0000.0001) %MON thSI_Tic1_max_N              =  -2.5728485435056E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_ave_G              =  -2.9422225041968E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_ave_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_ave_N              =  -2.9422225041968E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_min_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_min_N              =  -3.0660867665401E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_max_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_max_N              =  -1.9897293805748E+00
+(PID.TID 0000.0001) %MON thSI_Tic2_max_N              =  -1.9897293805642E+00
 (PID.TID 0000.0001) %MON thSI_TotEnerg_G              =  -7.4754878449340E+18
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR Therm.SeaIce statistics
@@ -6633,21 +6633,21 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) %MON thSI_Tsrf_min_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tsrf_min_N              =  -8.7509764065127E+00
 (PID.TID 0000.0001) %MON thSI_Tsrf_max_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_max_N              =  -2.8750857721476E+00
+(PID.TID 0000.0001) %MON thSI_Tsrf_max_N              =  -2.8750857721061E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_ave_G              =  -6.2479578769970E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_ave_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_ave_N              =  -6.2479578769970E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_min_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_min_N              =  -6.3031496139689E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_max_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_max_N              =  -2.5819417313146E+00
+(PID.TID 0000.0001) %MON thSI_Tic1_max_N              =  -2.5819417312835E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_ave_G              =  -2.9968938037749E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_ave_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_ave_N              =  -2.9968938037749E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_min_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_min_N              =  -3.1017699890344E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_max_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_max_N              =  -1.9926451429727E+00
+(PID.TID 0000.0001) %MON thSI_Tic2_max_N              =  -1.9926451429623E+00
 (PID.TID 0000.0001) %MON thSI_TotEnerg_G              =  -7.5587574912384E+18
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR Therm.SeaIce statistics
@@ -6794,23 +6794,23 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) %MON thSI_Tsrf_ave_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tsrf_ave_N              =  -8.7071361082868E+00
 (PID.TID 0000.0001) %MON thSI_Tsrf_min_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_min_N              =  -8.8509792937771E+00
+(PID.TID 0000.0001) %MON thSI_Tsrf_min_N              =  -8.8509792937772E+00
 (PID.TID 0000.0001) %MON thSI_Tsrf_max_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_max_N              =  -2.8903796843722E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_ave_G              =  -6.3628803042391E+00
+(PID.TID 0000.0001) %MON thSI_Tsrf_max_N              =  -2.8903796843312E+00
+(PID.TID 0000.0001) %MON thSI_Tic1_ave_G              =  -6.3628803042392E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_ave_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_ave_N              =  -6.3628803042391E+00
+(PID.TID 0000.0001) %MON thSI_Tic1_ave_N              =  -6.3628803042392E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_min_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_min_N              =  -6.4116771635017E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_max_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_max_N              =  -2.5932055570009E+00
+(PID.TID 0000.0001) %MON thSI_Tic1_max_N              =  -2.5932055569702E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_ave_G              =  -3.0471303775971E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_ave_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_ave_N              =  -3.0471303775971E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_min_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_min_N              =  -3.1335427121385E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_max_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_max_N              =  -1.9963643872880E+00
+(PID.TID 0000.0001) %MON thSI_Tic2_max_N              =  -1.9963643872778E+00
 (PID.TID 0000.0001) %MON thSI_TotEnerg_G              =  -7.6419932626548E+18
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR Therm.SeaIce statistics
@@ -6957,23 +6957,23 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) %MON thSI_Tsrf_ave_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tsrf_ave_N              =  -8.7919322313982E+00
 (PID.TID 0000.0001) %MON thSI_Tsrf_min_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_min_N              =  -8.9433627772639E+00
+(PID.TID 0000.0001) %MON thSI_Tsrf_min_N              =  -8.9433627772640E+00
 (PID.TID 0000.0001) %MON thSI_Tsrf_max_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_max_N              =  -2.9054140263865E+00
+(PID.TID 0000.0001) %MON thSI_Tsrf_max_N              =  -2.9054140263459E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_ave_G              =  -6.4689080437410E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_ave_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_ave_N              =  -6.4689080437410E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_min_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_min_N              =  -6.5155132804945E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_max_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_max_N              =  -2.6044540429163E+00
+(PID.TID 0000.0001) %MON thSI_Tic1_max_N              =  -2.6044540428858E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_ave_G              =  -3.0933298119625E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_ave_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_ave_N              =  -3.0933298119625E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_min_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_min_N              =  -3.1617403262471E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_max_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_max_N              =  -2.0000999843193E+00
+(PID.TID 0000.0001) %MON thSI_Tic2_max_N              =  -2.0000999843092E+00
 (PID.TID 0000.0001) %MON thSI_TotEnerg_G              =  -7.7251981434121E+18
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR Therm.SeaIce statistics
@@ -7122,21 +7122,21 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) %MON thSI_Tsrf_min_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tsrf_min_N              =  -9.0284843072677E+00
 (PID.TID 0000.0001) %MON thSI_Tsrf_max_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_max_N              =  -2.9202859600072E+00
+(PID.TID 0000.0001) %MON thSI_Tsrf_max_N              =  -2.9202859599669E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_ave_G              =  -6.5665521131443E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_ave_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_ave_N              =  -6.5665521131443E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_min_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_min_N              =  -6.6176656575323E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_max_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_max_N              =  -2.6155894513558E+00
+(PID.TID 0000.0001) %MON thSI_Tic1_max_N              =  -2.6155894513256E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_ave_G              =  -3.1358321722768E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_ave_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_ave_N              =  -3.1358321722768E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_min_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_min_N              =  -3.1990240612510E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_max_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_max_N              =  -2.0037994065778E+00
+(PID.TID 0000.0001) %MON thSI_Tic2_max_N              =  -2.0037994065677E+00
 (PID.TID 0000.0001) %MON thSI_TotEnerg_G              =  -7.8083746772311E+18
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR Therm.SeaIce statistics
@@ -7629,9 +7629,9 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) %MON thSI_Ice_Area_G              =   1.8887030349162E+11
 (PID.TID 0000.0001) %MON thSI_Ice_Area_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Ice_Area_N              =   1.8887030349162E+11
-(PID.TID 0000.0001) %MON thSI_IceH_ave_G              =   1.3575887726379E-01
+(PID.TID 0000.0001) %MON thSI_IceH_ave_G              =   1.3575887726378E-01
 (PID.TID 0000.0001) %MON thSI_IceH_ave_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_IceH_ave_N              =   1.3575887726379E-01
+(PID.TID 0000.0001) %MON thSI_IceH_ave_N              =   1.3575887726378E-01
 (PID.TID 0000.0001) %MON thSI_IceH_max_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_IceH_max_N              =   1.4665063199624E-01
 (PID.TID 0000.0001) %MON thSI_SnwH_ave_G              =   0.0000000000000E+00
@@ -7643,7 +7643,7 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) %MON thSI_Tsrf_ave_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tsrf_ave_N              =  -9.0440698400905E+00
 (PID.TID 0000.0001) %MON thSI_Tsrf_min_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_min_N              =  -9.2423423704907E+00
+(PID.TID 0000.0001) %MON thSI_Tsrf_min_N              =  -9.2423423704908E+00
 (PID.TID 0000.0001) %MON thSI_Tsrf_max_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tsrf_max_N              =  -2.6279848405974E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_ave_G              =  -6.8105870570835E+00
@@ -7976,7 +7976,7 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) %MON thSI_Tic1_ave_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_ave_N              =  -6.9430277917111E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_min_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_min_N              =  -7.0390079953753E+00
+(PID.TID 0000.0001) %MON thSI_Tic1_min_N              =  -7.0390079953754E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_max_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_max_N              =  -2.3928478310916E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_ave_G              =  -3.3115846693210E+00
@@ -8118,9 +8118,9 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) %MON thSI_Ice_Area_G              =   1.9119025373888E+11
 (PID.TID 0000.0001) %MON thSI_Ice_Area_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Ice_Area_N              =   1.9119025373888E+11
-(PID.TID 0000.0001) %MON thSI_IceH_ave_G              =   1.3592533179676E-01
+(PID.TID 0000.0001) %MON thSI_IceH_ave_G              =   1.3592533179675E-01
 (PID.TID 0000.0001) %MON thSI_IceH_ave_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_IceH_ave_N              =   1.3592533179676E-01
+(PID.TID 0000.0001) %MON thSI_IceH_ave_N              =   1.3592533179675E-01
 (PID.TID 0000.0001) %MON thSI_IceH_max_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_IceH_max_N              =   1.4703413807806E-01
 (PID.TID 0000.0001) %MON thSI_SnwH_ave_G              =   0.0000000000000E+00
@@ -8454,9 +8454,9 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) %MON thSI_SnwH_ave_N              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_SnwH_max_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_SnwH_max_N              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_ave_G              =  -9.2409621634875E+00
+(PID.TID 0000.0001) %MON thSI_Tsrf_ave_G              =  -9.2409621634874E+00
 (PID.TID 0000.0001) %MON thSI_Tsrf_ave_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_ave_N              =  -9.2409621634875E+00
+(PID.TID 0000.0001) %MON thSI_Tsrf_ave_N              =  -9.2409621634874E+00
 (PID.TID 0000.0001) %MON thSI_Tsrf_min_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tsrf_min_N              =  -9.5118657030594E+00
 (PID.TID 0000.0001) %MON thSI_Tsrf_max_S              =   0.0000000000000E+00
@@ -8465,7 +8465,7 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) %MON thSI_Tic1_ave_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_ave_N              =  -7.1014750342974E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_min_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_min_N              =  -7.2249302510062E+00
+(PID.TID 0000.0001) %MON thSI_Tic1_min_N              =  -7.2249302510063E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_max_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_max_N              =  -2.4199137137950E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_ave_G              =  -3.3862967650379E+00
@@ -8630,7 +8630,7 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) %MON thSI_Tic1_ave_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_ave_N              =  -7.1408303676431E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_min_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_min_N              =  -7.2767895826929E+00
+(PID.TID 0000.0001) %MON thSI_Tic1_min_N              =  -7.2767895826930E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_max_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_max_N              =  -2.8110179104131E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_ave_G              =  -3.4055241468008E+00
@@ -8825,14 +8825,14 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) %MON thSI_Tic1_ave_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_ave_N              =  -7.1768747423800E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_min_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_min_N              =  -7.3241908501928E+00
+(PID.TID 0000.0001) %MON thSI_Tic1_min_N              =  -7.3241908501929E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_max_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_max_N              =  -2.4096594972837E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_ave_G              =  -3.4231739855731E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_ave_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_ave_N              =  -3.4231739855731E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_min_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_min_N              =  -3.4823999398166E+00
+(PID.TID 0000.0001) %MON thSI_Tic2_min_N              =  -3.4823999398167E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_max_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_max_N              =  -1.9080914144661E+00
 (PID.TID 0000.0001) %MON thSI_TotEnerg_G              =  -8.2014626544662E+18
@@ -9151,7 +9151,7 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) %MON thSI_Tic1_ave_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_ave_N              =  -7.2388863545052E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_min_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_min_N              =  -7.4066194060900E+00
+(PID.TID 0000.0001) %MON thSI_Tic1_min_N              =  -7.4066194060901E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_max_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_max_N              =  -2.3526516193966E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_ave_G              =  -3.4538935926694E+00
@@ -9290,9 +9290,9 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) // Begin MONITOR Therm.SeaIce statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON thSI_time_sec                =   1.6650000000000E+04
-(PID.TID 0000.0001) %MON thSI_Ice_Area_G              =   1.9752493591818E+11
+(PID.TID 0000.0001) %MON thSI_Ice_Area_G              =   1.9752493591819E+11
 (PID.TID 0000.0001) %MON thSI_Ice_Area_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Ice_Area_N              =   1.9752493591818E+11
+(PID.TID 0000.0001) %MON thSI_Ice_Area_N              =   1.9752493591819E+11
 (PID.TID 0000.0001) %MON thSI_IceH_ave_G              =   1.3625330805596E-01
 (PID.TID 0000.0001) %MON thSI_IceH_ave_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_IceH_ave_N              =   1.3625330805596E-01
@@ -9314,7 +9314,7 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) %MON thSI_Tic1_ave_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_ave_N              =  -7.2651832395801E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_min_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_min_N              =  -7.4421392482841E+00
+(PID.TID 0000.0001) %MON thSI_Tic1_min_N              =  -7.4421392482842E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_max_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_max_N              =  -2.3612497641731E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_ave_G              =  -3.4671646119506E+00
@@ -9473,9 +9473,9 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) %MON thSI_Tsrf_min_N              =  -9.7022605548845E+00
 (PID.TID 0000.0001) %MON thSI_Tsrf_max_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tsrf_max_N              =  -2.6096760284587E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_ave_G              =  -7.2885645865990E+00
+(PID.TID 0000.0001) %MON thSI_Tic1_ave_G              =  -7.2885645865991E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_ave_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_ave_N              =  -7.2885645865990E+00
+(PID.TID 0000.0001) %MON thSI_Tic1_ave_N              =  -7.2885645865991E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_min_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_min_N              =  -7.4741873121001E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_max_S              =   0.0000000000000E+00
@@ -9640,7 +9640,7 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) %MON thSI_Tic1_ave_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_ave_N              =  -7.3091877106040E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_min_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_min_N              =  -7.5029487619223E+00
+(PID.TID 0000.0001) %MON thSI_Tic1_min_N              =  -7.5029487619224E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_max_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_Tic1_max_N              =  -2.3821713436706E+00
 (PID.TID 0000.0001) %MON thSI_Tic2_ave_G              =  -3.4899669229076E+00
@@ -9820,171 +9820,171 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) DIAGSTATS_CLOSE_IO: close file: iceStDiag.0000000000.txt , unit=     9
 (PID.TID 0000.0001) %CHECKPOINT        40 ckptA
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   9.8976579671725631
-(PID.TID 0000.0001)         System time:   2.6161998976022005E-002
-(PID.TID 0000.0001)     Wall clock time:   9.9321200847625732
+(PID.TID 0000.0001)           User time:   9.5895063551142812
+(PID.TID 0000.0001)         System time:   3.6213998682796955E-002
+(PID.TID 0000.0001)     Wall clock time:   9.6271898746490479
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  0.10480499640107155
-(PID.TID 0000.0001)         System time:   1.1386000551283360E-002
-(PID.TID 0000.0001)     Wall clock time:  0.11866307258605957
+(PID.TID 0000.0001)           User time:   9.2080003116279840E-002
+(PID.TID 0000.0001)         System time:   1.0745000559836626E-002
+(PID.TID 0000.0001)     Wall clock time:  0.10288095474243164
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "THE_MAIN_LOOP          [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   9.7928381040692329
-(PID.TID 0000.0001)         System time:   1.4771997928619385E-002
-(PID.TID 0000.0001)     Wall clock time:   9.8134410381317139
+(PID.TID 0000.0001)           User time:   9.4974115863442421
+(PID.TID 0000.0001)         System time:   2.5463998317718506E-002
+(PID.TID 0000.0001)     Wall clock time:   9.5242922306060791
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   8.9195996522903442E-002
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   8.9962959289550781E-002
+(PID.TID 0000.0001)           User time:   8.8417991995811462E-002
+(PID.TID 0000.0001)         System time:   7.2199851274490356E-004
+(PID.TID 0000.0001)     Wall clock time:   8.9141130447387695E-002
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   9.7036272883415222
-(PID.TID 0000.0001)         System time:   1.4771997928619385E-002
-(PID.TID 0000.0001)     Wall clock time:   9.7234640121459961
+(PID.TID 0000.0001)           User time:   9.4089797288179398
+(PID.TID 0000.0001)         System time:   2.4740999564528465E-002
+(PID.TID 0000.0001)     Wall clock time:   9.4351379871368408
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "MAIN_DO_LOOP        [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   9.7034622430801392
-(PID.TID 0000.0001)         System time:   1.4771997928619385E-002
-(PID.TID 0000.0001)     Wall clock time:   9.7232975959777832
+(PID.TID 0000.0001)           User time:   9.4088300466537476
+(PID.TID 0000.0001)         System time:   2.4739000946283340E-002
+(PID.TID 0000.0001)     Wall clock time:   9.4349873065948486
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "FORWARD_STEP        [MAIN_DO_LOOP]":
-(PID.TID 0000.0001)           User time:   9.7031250447034836
-(PID.TID 0000.0001)         System time:   1.4771997928619385E-002
-(PID.TID 0000.0001)     Wall clock time:   9.7229657173156738
+(PID.TID 0000.0001)           User time:   9.4085209518671036
+(PID.TID 0000.0001)         System time:   2.4738000705838203E-002
+(PID.TID 0000.0001)     Wall clock time:   9.4346771240234375
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "DO_STATEVARS_DIAGS  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   4.7816336154937744E-003
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   4.7836303710937500E-003
+(PID.TID 0000.0001)           User time:   4.6263188123703003E-003
+(PID.TID 0000.0001)         System time:   5.3001567721366882E-005
+(PID.TID 0000.0001)     Wall clock time:   4.6920776367187500E-003
 (PID.TID 0000.0001)          No. starts:         120
 (PID.TID 0000.0001)           No. stops:         120
 (PID.TID 0000.0001)   Seconds in section "LOAD_FIELDS_DRIVER  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   1.8579065799713135E-003
-(PID.TID 0000.0001)         System time:   3.9529986679553986E-003
-(PID.TID 0000.0001)     Wall clock time:   1.0904312133789062E-002
+(PID.TID 0000.0001)           User time:   4.1304081678390503E-003
+(PID.TID 0000.0001)         System time:   6.0014426708221436E-006
+(PID.TID 0000.0001)     Wall clock time:   4.1439533233642578E-003
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "CPL_EXPORT-IMPORT  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.59299978613853455
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.59300661087036133
+(PID.TID 0000.0001)           User time:  0.57874673604965210
+(PID.TID 0000.0001)         System time:   4.3260008096694946E-003
+(PID.TID 0000.0001)     Wall clock time:  0.58307957649230957
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "DO_ATMOSPHERIC_PHYS [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   1.3421968817710876
-(PID.TID 0000.0001)         System time:   4.0009617805480957E-006
-(PID.TID 0000.0001)     Wall clock time:   1.3421752452850342
+(PID.TID 0000.0001)           User time:   1.3025491237640381
+(PID.TID 0000.0001)         System time:   1.1399947106838226E-004
+(PID.TID 0000.0001)     Wall clock time:   1.3028874397277832
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "AIM_DO_PHYSICS [DO_ATMOSPHERIC_PHYS]":
-(PID.TID 0000.0001)           User time:   1.3149568438529968
-(PID.TID 0000.0001)         System time:   4.0009617805480957E-006
-(PID.TID 0000.0001)     Wall clock time:   1.3149819374084473
+(PID.TID 0000.0001)           User time:   1.2758799791336060
+(PID.TID 0000.0001)         System time:   3.4999102354049683E-005
+(PID.TID 0000.0001)     Wall clock time:   1.2761917114257812
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "DO_OCEANIC_PHYS     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   4.5004487037658691E-004
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   4.4536590576171875E-004
+(PID.TID 0000.0001)           User time:   4.0349364280700684E-004
+(PID.TID 0000.0001)         System time:   9.9837779998779297E-007
+(PID.TID 0000.0001)     Wall clock time:   4.0483474731445312E-004
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "DYNAMICS            [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   2.2609353065490723
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   2.2609691619873047
+(PID.TID 0000.0001)           User time:   2.1762273013591766
+(PID.TID 0000.0001)         System time:   3.3004209399223328E-005
+(PID.TID 0000.0001)     Wall clock time:   2.1767840385437012
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "UPDATE_R_STAR       [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.13149374723434448
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.13152861595153809
+(PID.TID 0000.0001)           User time:  0.12626186013221741
+(PID.TID 0000.0001)         System time:   1.1800043284893036E-004
+(PID.TID 0000.0001)     Wall clock time:  0.12649273872375488
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "UPDATE_CG2D         [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   8.1653296947479248E-002
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   8.1671237945556641E-002
+(PID.TID 0000.0001)           User time:   7.6727330684661865E-002
+(PID.TID 0000.0001)         System time:   5.6998804211616516E-005
+(PID.TID 0000.0001)     Wall clock time:   7.6802253723144531E-002
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "SOLVE_FOR_PRESSURE  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.77450329065322876
-(PID.TID 0000.0001)         System time:   2.0004808902740479E-006
-(PID.TID 0000.0001)     Wall clock time:  0.77455377578735352
+(PID.TID 0000.0001)           User time:  0.77214989066123962
+(PID.TID 0000.0001)         System time:   2.2998079657554626E-005
+(PID.TID 0000.0001)     Wall clock time:  0.77233886718750000
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "MOM_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.70243996381759644
-(PID.TID 0000.0001)         System time:   1.3001263141632080E-005
-(PID.TID 0000.0001)     Wall clock time:  0.70243477821350098
+(PID.TID 0000.0001)           User time:  0.68022423982620239
+(PID.TID 0000.0001)         System time:   7.1000307798385620E-005
+(PID.TID 0000.0001)     Wall clock time:  0.68037796020507812
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "SHAP_FILT_UV       [MOM_CORR_STEP]":
-(PID.TID 0000.0001)           User time:  0.61844372749328613
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.61844825744628906
+(PID.TID 0000.0001)           User time:  0.59956783056259155
+(PID.TID 0000.0001)         System time:   4.4999644160270691E-005
+(PID.TID 0000.0001)     Wall clock time:  0.59969711303710938
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "INTEGR_CONTINUITY   [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.18685930967330933
-(PID.TID 0000.0001)         System time:   2.8090011328458786E-003
-(PID.TID 0000.0001)     Wall clock time:  0.18969368934631348
+(PID.TID 0000.0001)           User time:  0.18250292539596558
+(PID.TID 0000.0001)         System time:   1.1997297406196594E-005
+(PID.TID 0000.0001)     Wall clock time:  0.18262624740600586
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "CALC_R_STAR         [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   8.7958514690399170E-002
-(PID.TID 0000.0001)         System time:   8.9984387159347534E-006
-(PID.TID 0000.0001)     Wall clock time:   8.7990999221801758E-002
+(PID.TID 0000.0001)           User time:   8.3508551120758057E-002
+(PID.TID 0000.0001)         System time:   2.6000663638114929E-005
+(PID.TID 0000.0001)     Wall clock time:   8.3617448806762695E-002
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   5.1309704780578613E-002
-(PID.TID 0000.0001)         System time:   3.0007213354110718E-006
-(PID.TID 0000.0001)     Wall clock time:   5.1330327987670898E-002
+(PID.TID 0000.0001)           User time:   4.8873305320739746E-002
+(PID.TID 0000.0001)         System time:   6.8997964262962341E-005
+(PID.TID 0000.0001)     Wall clock time:   4.8971891403198242E-002
 (PID.TID 0000.0001)          No. starts:          80
 (PID.TID 0000.0001)           No. stops:          80
 (PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   1.4069994091987610
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   1.4070405960083008
+(PID.TID 0000.0001)           User time:   1.3668478727340698
+(PID.TID 0000.0001)         System time:   1.2001022696495056E-005
+(PID.TID 0000.0001)     Wall clock time:   1.3669822216033936
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "TRC_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.67078888416290283
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.67078542709350586
+(PID.TID 0000.0001)           User time:  0.64838266372680664
+(PID.TID 0000.0001)         System time:   6.0014426708221436E-006
+(PID.TID 0000.0001)     Wall clock time:  0.64844679832458496
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "SHAP_FILT_TS       [TRC_CORR_STEP]":
-(PID.TID 0000.0001)           User time:  0.67033886909484863
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.67037749290466309
+(PID.TID 0000.0001)           User time:  0.64798343181610107
+(PID.TID 0000.0001)         System time:   4.0009617805480957E-006
+(PID.TID 0000.0001)     Wall clock time:  0.64809107780456543
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "MONITOR             [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   1.2125142216682434
-(PID.TID 0000.0001)         System time:   3.9930008351802826E-003
-(PID.TID 0000.0001)     Wall clock time:   1.2165498733520508
+(PID.TID 0000.0001)           User time:   1.1848937869071960
+(PID.TID 0000.0001)         System time:   4.0009617805480957E-006
+(PID.TID 0000.0001)     Wall clock time:   1.1850349903106689
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.17177909612655640
-(PID.TID 0000.0001)         System time:   3.9789974689483643E-003
-(PID.TID 0000.0001)     Wall clock time:  0.17578387260437012
+(PID.TID 0000.0001)           User time:  0.15930366516113281
+(PID.TID 0000.0001)         System time:   1.1804996058344841E-002
+(PID.TID 0000.0001)     Wall clock time:  0.17112851142883301
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "DO_WRITE_PICKUP     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   1.6940116882324219E-002
-(PID.TID 0000.0001)         System time:   2.0004808902740479E-006
-(PID.TID 0000.0001)     Wall clock time:   1.6974687576293945E-002
+(PID.TID 0000.0001)           User time:   7.9208016395568848E-003
+(PID.TID 0000.0001)         System time:   7.9899989068508148E-003
+(PID.TID 0000.0001)     Wall clock time:   1.5932798385620117E-002
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001) // ======================================================
