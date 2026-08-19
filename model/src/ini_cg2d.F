@@ -1,5 +1,6 @@
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#include "BACKWARD_COMPAT_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: INI_CG2D
@@ -11,7 +12,8 @@ C     *==========================================================*
 C     | SUBROUTINE INI_CG2D
 C     | o Initialise 2d conjugate gradient solver operators.
 C     *==========================================================*
-C     | These arrays are purely a function of the basin geom.
+C     | These arrays are function of the basin geom. and time-step
+C     | (except for main-diagonal free-surface term).
 C     | We set then here once and them use then repeatedly.
 C     *==========================================================*
 C     \ev
@@ -40,7 +42,7 @@ C     myNorm   :: Work variable used in calculating normalisation factor
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER bi, bj
       INTEGER i, j, k, ks
-      _RL     faceArea
+      _RL     faceArea, tmpFac, dT2impl
       _RL     cg2dTolerance
       _RS     myNorm
       _RS     aC, aCw, aCs
@@ -71,8 +73,15 @@ C--   Init. scalars
       _END_MASTER(myThid)
 
 C--   Initialise laplace operator
+#ifdef PRESERVE_C69C_OUTPUT
 C     aW2d: integral in Z Ax/dX
 C     aS2d: integral in Z Ay/dY
+      tmpFac = implicDiv2DFlow
+#else
+C     aW2d: integral in Z Ax/dX *deltaT
+C     aS2d: integral in Z Ay/dY *deltaT
+      tmpFac = deltaTMom
+#endif
       myNorm = 0. _d 0
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -89,12 +98,14 @@ C  deep-model: *deepFacC (faceArea), /deepFacC (recip_dx,y): => no net effect
            faceArea = _dyG(i,j,bi,bj)*drF(k)
      &               *_hFacW(i,j,k,bi,bj)
            aW2d(i,j,bi,bj) = aW2d(i,j,bi,bj)
-     &              + implicSurfPress*implicDiv2DFlow
+     &              + implicSurfPress*tmpFac
+c    &              + implicSurfPress*deltaTMom
      &               *faceArea*recip_dxC(i,j,bi,bj)
            faceArea = _dxG(i,j,bi,bj)*drF(k)
      &               *_hFacS(i,j,k,bi,bj)
            aS2d(i,j,bi,bj) = aS2d(i,j,bi,bj)
-     &              + implicSurfPress*implicDiv2DFlow
+     &              + implicSurfPress*tmpFac
+c    &              + implicSurfPress*deltaTMom
      &               *faceArea*recip_dyC(i,j,bi,bj)
           ENDDO
          ENDDO
@@ -142,13 +153,14 @@ C     CALL PLOT_FIELD_XYRS( aS2d, 'AS2D INI_CG2D.2' , 1, myThid )
 CcnhDebugEnds
 
       _BEGIN_MASTER(myThid)
-C-- set global parameter in common block:
+C-- set global parameter in common block, units of 1/(s.r-Unit):
       cg2dNorm = myNorm
 C-- Define the solver tolerance in the appropriate Unit :
       cg2dNormaliseRHS = cg2dTargetResWunit.LE.zeroRL
       IF ( cg2dNormaliseRHS ) THEN
 C-  when using a normalisation of RHS, tolerance has no unit => no conversion
         cg2dTolerance = cg2dTargetResidual
+#ifdef PRESERVE_C69C_OUTPUT
       ELSEIF ( implicDiv2DFlow.GT.zeroRL ) THEN
 C-  convert Target-Residual (in W unit) to cg2d-solver residual unit [m^2/s^2]
         cg2dTolerance = cg2dNorm * cg2dTargetResWunit
@@ -159,6 +171,12 @@ C-  special case implicDiv2DFlow=0 :
 C   not much to solve anyway, cg2dTolerance does not matter as long as it is > 0
         cg2dTolerance = cg2dNorm * cg2dTargetResWunit
      &                           * globalArea / deltaTMom
+#else
+      ELSE
+C-  convert Target-Residual (in W unit) to cg2d-solver residual unit [m^2/s^2]
+        cg2dTolerance = cg2dNorm * cg2dTargetResWunit
+     &                           * globalArea / SQRT( n2dWetPts )
+#endif
       ENDIF
       cg2dTolerance_sq = cg2dTolerance*cg2dTolerance
       _END_MASTER(myThid)
@@ -196,17 +214,48 @@ C           defaults to 0.51 but can be set at runtime.
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 C-    calculate and store solver main diagonal :
-        DO j=0,sNy
-         DO i=0,sNx
+        IF ( selectNHfreeSurf.EQ.2 ) THEN
+C-    with adjusted free-surface contribution due to Non-Hydrostatic Free-Surf:
+C     since Gamma = drC(1)/( beta * gamma * g * deltaT^2 )
+C     1/[(1+Gamma)*g*beta*deltaT] = gamma*deltaT/(g*beta*gamma*deltaT^2 +drC(1))
+         tmpFac = freeSurfFac*myNorm * implicitNHPress*deltaTMom
+         dT2impl = implicitNHPress * deltaTMom
+     &           * implicDiv2DFlow * deltaTFreeSurf
+         DO j=0,sNy
+          DO i=0,sNx
+           ks = 1
+c          ks = kSurfC(i,j,bi,bj)
+c          IF ( ks.LE.Nr ) THEN
+           aC2d(i,j,bi,bj) = -(
+     &        aW2d(i,j,bi,bj) + aW2d(i+1,j, bi,bj)
+     &      + aS2d(i,j,bi,bj) + aS2d( i,j+1,bi,bj)
+     &      + tmpFac*rA(i,j,bi,bj)*deepFac2F(ks)
+     &                 /( dT2impl*Bo_surf(i,j,bi,bj) + drC(1) )
+     &                        )
+c          ENDIF
+          ENDDO
+         ENDDO
+        ELSE
+C-    with default Hydrostatic free-surface contribution
+         IF ( implicDiv2DFlow.GT.zeroRL ) THEN
+           tmpFac = freeSurfFac*myNorm/(implicDiv2DFlow*deltaTFreeSurf)
+         ENDIF
+         DO j=0,sNy
+          DO i=0,sNx
            ks = kSurfC(i,j,bi,bj)
            aC2d(i,j,bi,bj) = -(
-     &       aW2d(i,j,bi,bj) + aW2d(i+1,j, bi,bj)
-     &      +aS2d(i,j,bi,bj) + aS2d( i,j+1,bi,bj)
-     &      +freeSurfFac*myNorm*recip_Bo(i,j,bi,bj)*deepFac2F(ks)
+     &        aW2d(i,j,bi,bj) + aW2d(i+1,j, bi,bj)
+     &      + aS2d(i,j,bi,bj) + aS2d( i,j+1,bi,bj)
+#ifdef PRESERVE_C69C_OUTPUT
+     &      + freeSurfFac*myNorm*recip_Bo(i,j,bi,bj)*deepFac2F(ks)
      &                  *rA(i,j,bi,bj)/deltaTMom/deltaTFreeSurf
+#else
+     &      + tmpFac*recip_Bo(i,j,bi,bj)*rA(i,j,bi,bj)*deepFac2F(ks)
+#endif
      &                        )
+          ENDDO
          ENDDO
-        ENDDO
+        ENDIF
         DO j=1,sNy
          DO i=1,sNx
            aC  = aC2d( i, j, bi,bj)
@@ -215,7 +264,7 @@ C-    calculate and store solver main diagonal :
            IF ( aC .EQ. zeroRS ) THEN
             pC(i,j,bi,bj) = 1. _d 0
            ELSE
-            pC(i,j,bi,bj) =  1. _d 0 / aC
+            pC(i,j,bi,bj) = 1. _d 0 / aC
            ENDIF
            IF ( aC + aCw .EQ. zeroRS ) THEN
             pW(i,j,bi,bj) = 0.
@@ -239,6 +288,12 @@ C          pS(i,j,bi,bj) = 0.
 C--   Update overlap regions
       CALL EXCH_XY_RS( pC, myThid )
       CALL EXCH_UV_XY_RS( pW, pS, .FALSE., myThid )
+
+      IF ( debugLevel .GE. debLevC ) THEN
+        CALL WRITE_FLD_XY_RS( 'aW2d', ' ', aW2d, -1, myThid )
+        CALL WRITE_FLD_XY_RS( 'aS2d', ' ', aS2d, -1, myThid )
+        CALL WRITE_FLD_XY_RS( 'aC2d', ' ', aC2d, -1, myThid )
+      ENDIF
 CcnhDebugStarts
 C     CALL PLOT_FIELD_XYRS( pC, 'pC   INI_CG2D.2' , 1, myThid )
 C     CALL PLOT_FIELD_XYRS( pW, 'pW   INI_CG2D.2' , 1, myThid )

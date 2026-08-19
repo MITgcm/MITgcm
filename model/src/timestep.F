@@ -58,7 +58,7 @@ C     gvExt    :: forcing tendency, v component
 C     gu_AB    :: tendency increment from Adams-Bashforth, u component
 C     gv_AB    :: tendency increment from Adams-Bashforth, v component
       INTEGER i,j
-      _RL phFac, psFac
+      _RL phFac, psFac, nhFac
       _RL     guExt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     gvExt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     gUtmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -67,18 +67,21 @@ C     gv_AB    :: tendency increment from Adams-Bashforth, v component
       _RL     gv_AB(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     gUdPx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     gVdPy(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-#ifdef ALLOW_NONHYDROSTATIC
-      _RL     nhFac
-#endif
 #ifdef ALLOW_CD_CODE
       _RL     guCor(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     gvCor(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
 CEOP
 
-C-- explicit part of the surface potential gradient is added in this S/R
-      psFac = pfFacMom*(1. _d 0 - implicSurfPress)
-     &       *recip_deepFacC(k)*recip_rhoFacC(k)
+C-- solveForDeltaP=T : explicit surface potential gradient is added in this S/R
+C   solveForDeltaP=F : only the explicit part (1-implicSurfPress) is added
+C   and same for Non-Hydrostatic pressure/potential horizontal gradient.
+      psFac = pfFacMom*recip_deepFacC(k)*recip_rhoFacC(k)
+      nhFac = psFac
+      IF ( .NOT.solveForDeltaP ) THEN
+        psFac = psFac*(1. _d 0 - implicSurfPress)
+        nhFac = nhFac*(1. _d 0 - implicitNHPress)
+      ENDIF
 
 C--  factors for gradient (X & Y directions) of Hydrostatic Potential
       phFac = pfFacMom
@@ -325,7 +328,7 @@ C-- Explicit (remaining) part of the Hyd pressure gradient:
            gVdPy(i,j) = -phFac*dPhiHydY(i,j) - psFac*phiSurfY(i,j)
          ENDDO
         ENDDO
-      ELSEIF ( implicSurfPress.NE.oneRL ) THEN
+      ELSEIF ( psFac.NE.zeroRL ) THEN
         DO j=jMin,jMax
          DO i=iMin,iMax
            gUdPx(i,j) = -psFac*phiSurfX(i,j)
@@ -336,10 +339,19 @@ C-- Explicit (remaining) part of the Hyd pressure gradient:
 
 #ifdef ALLOW_NONHYDROSTATIC
 C-- explicit part of the NH pressure gradient is added here
-      IF ( use3Dsolver .AND. implicitNHPress.NE.1. _d 0 ) THEN
-        nhFac = pfFacMom*(1. _d 0 - implicitNHPress)
-     &         *recip_deepFacC(k)*recip_rhoFacC(k)
-       IF ( exactConserv ) THEN
+      IF ( use3Dsolver .AND. nhFac.NE.zeroRL ) THEN
+       IF ( solveForDeltaP .OR. .NOT.exactConserv ) THEN
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          gUdPx(i,j) = gUdPx(i,j)
+     &               - nhFac*_recip_dxC(i,j,bi,bj)
+     &               *( phi_nh(i,j,k,bi,bj) - phi_nh(i-1,j,k,bi,bj) )
+          gVdPy(i,j) = gVdPy(i,j)
+     &               - nhFac*_recip_dyC(i,j,bi,bj)
+     &               *( phi_nh(i,j,k,bi,bj) - phi_nh(i,j-1,k,bi,bj) )
+         ENDDO
+        ENDDO
+       ELSE
         DO j=jMin,jMax
          DO i=iMin,iMax
           gUdPx(i,j) = gUdPx(i,j)
@@ -352,17 +364,6 @@ C-- explicit part of the NH pressure gradient is added here
      &               *( (phi_nh(i,j,k,bi,bj)-phi_nh(i,j-1,k,bi,bj))
      &                 -( dPhiNH(i,j,bi,bj) - dPhiNH(i,j-1,bi,bj) )
      &                )
-         ENDDO
-        ENDDO
-       ELSE
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-          gUdPx(i,j) = gUdPx(i,j)
-     &               - nhFac*_recip_dxC(i,j,bi,bj)
-     &               *( phi_nh(i,j,k,bi,bj) - phi_nh(i-1,j,k,bi,bj) )
-          gVdPy(i,j) = gVdPy(i,j)
-     &               - nhFac*_recip_dyC(i,j,bi,bj)
-     &               *( phi_nh(i,j,k,bi,bj) - phi_nh(i,j-1,k,bi,bj) )
          ENDDO
         ENDDO
        ENDIF
