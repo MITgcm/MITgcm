@@ -1,7 +1,7 @@
 #include "CHEAPAML_OPTIONS.h"
 
       SUBROUTINE CHEAPAML(
-     I                           myTime, myIter, myThid )
+     I                     myTime, myIter, myThid )
 
 C     ==================================================================
 C     SUBROUTINE cheapaml
@@ -68,8 +68,8 @@ C       AML timestep
         _RL dtemp,xflu,xfld,dq,dtr
 c       _RL Fclouds, ttt2
         _RL q,precip,ttt,entrain
-        _RL uRelWind(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-        _RL vRelWind(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+        _RL uRelWind(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+        _RL vRelWind(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
         _RL windSq  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
         _RL fsha(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
         _RL flha(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -299,49 +299,40 @@ C     now continue with diabatic forcing
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
-           DO j = 1-OLy, sNy+OLy
-             DO i = 1-OLx, sNx+OLx
-               surfDrag(i,j,bi,bj) = 0.
-             ENDDO
-           ENDDO
+         DO j = 1-OLy, sNy+OLy
+          DO i = 1-OLx, sNx+OLx
+            surfDrag(i,j,bi,bj) = 0.
+          ENDDO
+         ENDDO
 
          IF (useRelativeWind) THEN
            DO j = 1-OLy, sNy+OLy
-             DO i = 1-OLx, sNx+OLx
-               uRelWind(i,j) = uWind(i,j,bi,bj)-uVel(i,j,1,bi,bj)
-               vRelWind(i,j) = vWind(i,j,bi,bj)-vVel(i,j,1,bi,bj)
-             ENDDO
-           ENDDO
-
-           DO j = jMin,jMax
-             DO i = iMin,iMax
-               windSq(i,j) = ( uRelWind( i ,j)*uRelWind( i ,j)
-     &            + uRelWind(i+1,j)*uRelWind(i+1,j)
-     &            + vRelWind(i, j )*vRelWind(i, j )
-     &            + vRelWind(i,j+1)*vRelWind(i,j+1)
-     &            )*0.5 _d 0
-#ifdef INCONSISTENT_WIND_LOCATION
-               windSq(i,j) = uRelWind(i,j)*uRelWind(i,j)
-     &            + vRelWind(i,j)*vRelWind(i,j)
-#endif
-             ENDDO
+            DO i = 1-OLx, sNx+OLx
+              uRelWind(i,j,bi,bj) = uWind(i,j,bi,bj)-uVel(i,j,1,bi,bj)
+              vRelWind(i,j,bi,bj) = vWind(i,j,bi,bj)-vVel(i,j,1,bi,bj)
+            ENDDO
            ENDDO
          ELSE
-           DO j = jMin,jMax
-             DO i = iMin,iMax
-               windSq(i,j) = ( uWind( i ,j,bi,bj)*uWind( i ,j,bi,bj)
-     &            + uWind(i+1,j,bi,bj)*uWind(i+1,j,bi,bj)
-     &            + vWind(i, j ,bi,bj)*vWind(i, j,bi,bj )
-     &            + vWind(i,j+1,bi,bj)*vWind(i,j+1,bi,bj)
-     &            )*0.5 _d 0
-#ifdef INCONSISTENT_WIND_LOCATION
-               windSq(i,j) = uWind(i,j,bi,bj)*uWind(i,j,bi,bj)
-     &            + vWind(i,j,bi,bj)*vWind(i,j,bi,bj)
-#endif
-             ENDDO
+           DO j = 1-OLy, sNy+OLy
+            DO i = 1-OLx, sNx+OLx
+              uRelWind(i,j,bi,bj) = uWind(i,j,bi,bj)
+              vRelWind(i,j,bi,bj) = vWind(i,j,bi,bj)
+            ENDDO
            ENDDO
-
          ENDIF
+         DO j = jMin,jMax
+          DO i = iMin,iMax
+            windSq(i,j) = ( uRelWind( i ,j,bi,bj)*uRelWind( i ,j,bi,bj)
+     &                    + uRelWind(i+1,j,bi,bj)*uRelWind(i+1,j,bi,bj)
+     &                    + vRelWind(i, j ,bi,bj)*vRelWind(i, j ,bi,bj)
+     &                    + vRelWind(i,j+1,bi,bj)*vRelWind(i,j+1,bi,bj)
+     &                    )*halfRL
+#ifdef INCONSISTENT_WIND_LOCATION
+            windSq(i,j) = uRelWind(i,j,bi,bj)*uRelWind(i,j,bi,bj)
+     &                  + vRelWind(i,j,bi,bj)*vRelWind(i,j,bi,bj)
+#endif
+          ENDDO
+         ENDDO
 
          IF ( useThSIce ) THEN
            CALL CHEAPAML_SEAICE(
@@ -387,10 +378,14 @@ C-     Qsw (from FFIELDS.h) has opposite (and annoying) sign convention:
            DO j = jMin,jMax
             DO i = iMin,iMax
              IF (FluxFormula.EQ.'LANL') THEN
-              CALL cheapaml_LANL_flux(
-     I                      i, j, bi, bj,
-     O                      fsha(i,j), flha(i,j), evp(i,j),
-     O                      xolw(i,j), ssqt(i,j), q100(i,j) )
+              CALL CHEAPAML_LANL_FLUX(
+     I                      i, j, bi, bj, 0,
+     I                      theta(1-OLx,1-OLy,1,bi,bj), windSq,
+     O                      fsha(i,j), flha(i,j), evp(i,j), xolw(i,j),
+     O                      ssqt(i,j), q100(i,j), cdq(i,j),
+     O                      surfDrag(i,j,bi,bj),
+c    O                      dumArg(1), dumArg(2), dumArg(3), dumArg(4),
+     I                      myIter, myThid )
              ELSEIF (FluxFormula.EQ.'COARE3') THEN
               CALL CHEAPAML_COARE3_FLUX(
      I                      i, j, bi, bj, 0,
@@ -415,9 +410,9 @@ C atmospheric upwelled long wave
            ttt = Tair(i,j,bi,bj)-gamma_blk*(CheapHgrid(i,j,bi,bj)-zt)
 c          xalwu = stefan*(ttt+celsius2K)**4*0.5 _d 0
            xalwu = stefan*(0.5*Tair(i,j,bi,bj)+0.5*ttt+celsius2K)**4
-     &                   *0.5 _d 0
+     &                   *halfRL
 C atmospheric downwelled long wave
-           xalwd = stefan*(Tair(i,j,bi,bj)+celsius2K)**4*0.5 _d 0
+           xalwd = stefan*(Tair(i,j,bi,bj)+celsius2K)**4*halfRL
 C total flux at upper atmospheric layer interface
            xflu = ( -solar(i,j,bi,bj) + xalwu + flha(i,j)
      &            )*xef*maskC(i,j,1,bi,bj)
@@ -475,7 +470,7 @@ C ts is surface atmospheric temperature
             pt=p0*(1-gamma_blk*CheapHgrid(i,j,bi,bj)/ts)
      &          **(gravity/gamma_blk/gasR)
 
-             IF (.NOT.usePrecip) THEN
+            IF (.NOT.usePrecip) THEN
 C factor to compute rainfall from specific humidity
               dm=100.*(p0-pt)*recip_gravity
 C     Large scale precip
@@ -495,7 +490,7 @@ C     Convective precip
               cheapPrecip(i,j,bi,bj) = precip*1200/CheapHgrid(i,j,bi,bj)
             ENDIF
 
-              entrain = cdq(i,j)*q*0.25
+            entrain = cdq(i,j)*q*0.25 _d 0
 
 c           gqair(i,j,bi,bj)=(evp-precip-entrain)/CheapHgrid(i,j,bi,bj)
             gqair(i,j,bi,bj) = (evp(i,j)-entrain)/CheapHgrid(i,j,bi,bj)
@@ -519,8 +514,8 @@ C note: full oceanic time step deltaT is used below
 C       do implicit time stepping over land
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-            dtemp=tr(i,j,bi,bj)-Tair(i,j,bi,bj)
-            Tair(i,j,bi,bj)=Tair(i,j,bi,bj)+dtemp*xrelf(i,j,bi,bj)
+            dtemp = tr(i,j,bi,bj)-Tair(i,j,bi,bj)
+            Tair(i,j,bi,bj) = Tair(i,j,bi,bj) + dtemp*xrelf(i,j,bi,bj)
           ENDDO
          ENDDO
 
@@ -534,9 +529,9 @@ C do water
 C     do implicit time stepping over land and or buffer
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-            dq=qr(i,j,bi,bj)-qair(i,j,bi,bj)
-            qair(i,j,bi,bj)=qair(i,j,bi,bj)+dq*xrelf(i,j,bi,bj)
-            IF (qair(i,j,bi,bj).LT.0.0) qair(i,j,bi,bj) = 0.0 _d 0
+            dq = qr(i,j,bi,bj)-qair(i,j,bi,bj)
+            qair(i,j,bi,bj) = qair(i,j,bi,bj) + dq*xrelf(i,j,bi,bj)
+            IF (qair(i,j,bi,bj).LT.zeroRL) qair(i,j,bi,bj) = 0. _d 0
           ENDDO
          ENDDO
         ENDIF
@@ -546,7 +541,7 @@ C do tracer
 C     do implicit time stepping over land and or buffer
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-            dtr=CheaptracerR(i,j,bi,bj)-Cheaptracer(i,j,bi,bj)
+            dtr = CheaptracerR(i,j,bi,bj)-Cheaptracer(i,j,bi,bj)
             Cheaptracer(i,j,bi,bj) = Cheaptracer(i,j,bi,bj)
      &                             + dtr*xrelf(i,j,bi,bj)
           ENDDO
@@ -576,12 +571,8 @@ C update edges
       IF (useCheapTracer) THEN
        _EXCH_XY_RL(Cheaptracer,myThid)
       ENDIF
-      IF (.NOT.useStressOption) THEN
-       IF ( FluxFormula.EQ.'COARE3' ) THEN
-        _EXCH_XY_RL( surfDrag, myThid )
-       ELSE
-        CALL EXCH_UV_AGRID_3D_RL( ustress, vstress, .TRUE., 1, myThid )
-       ENDIF
+      IF ( .NOT.useStressOption ) THEN
+       _EXCH_XY_RL( surfDrag, myThid )
       ENDIF
 
 C reset edges to open boundary profiles
@@ -624,84 +615,45 @@ c     CALL PLOT_FIELD_XYRS( Qnet, 'S/R CHEAPAML Qnet',1,myThid)
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
-        IF ( .NOT.useStressOption .AND. FluxFormula.EQ.'COARE3' ) THEN
-          IF (useRelativeWind) THEN
-
+        IF ( .NOT.useStressOption ) THEN
           DO j = 1-OLy+1,sNy+OLy
-          DO i = 1-OLx+1,sNx+OLx
-            fu(i,j,bi,bj) = maskW(i,j,1,bi,bj)*0.5 _d 0
+           DO i = 1-OLx+1,sNx+OLx
+            fu(i,j,bi,bj) = maskW(i,j,1,bi,bj)*halfRL
      &          *( surfDrag(i-1,j,bi,bj) + surfDrag(i,j,bi,bj) )
-     &          *( uWind(i,j,bi,bj)-uVel(i,j,1,bi,bj) )
-            fv(i,j,bi,bj) = maskS(i,j,1,bi,bj)*0.5 _d 0
+     &          * uRelWind(i,j,bi,bj)
+            fv(i,j,bi,bj) = maskS(i,j,1,bi,bj)*halfRL
      &          *( surfDrag(i,j-1,bi,bj) + surfDrag(i,j,bi,bj) )
-     &          *( vWind(i,j,bi,bj)-vVel(i,j,1,bi,bj) )
+     &          * vRelWind(i,j,bi,bj)
+           ENDDO
           ENDDO
-         ENDDO
 #ifdef INCONSISTENT_WIND_LOCATION
-         DO j = 1-OLy,sNy+OLy
-          DO i = 1-OLx+1,sNx+OLx
-            fu(i,j,bi,bj) = maskW(i,j,1,bi,bj)*0.5 _d 0
-     &          *( surfDrag(i-1,j,bi,bj)
-     &             *( uWind(i-1,j,bi,bj)-uVel(i-1,j,1,bi,bj) )
-     &           + surfDrag(i,j,bi,bj)
-     &             *( uWind(i,j,bi,bj) - uVel(i,j,1,bi,bj) ) )
+          DO j = 1-OLy,sNy+OLy
+           DO i = 1-OLx+1,sNx+OLx
+            fu(i,j,bi,bj) = maskW(i,j,1,bi,bj)*halfRL
+     &          *( surfDrag(i-1,j,bi,bj)*uRelWind(i-1,j,bi,bj)
+     &           + surfDrag(i,j,bi,bj) * uRelWind(i,j,bi,bj) )
+           ENDDO
           ENDDO
-         ENDDO
-         DO j = 1-OLy+1,sNy+OLy
-          DO i = 1-OLx,sNx+OLx
-            fv(i,j,bi,bj) = maskS(i,j,1,bi,bj)*0.5 _d 0
-     &          *( surfDrag(i,j-1,bi,bj)
-     &             *( vWind(i,j-1,bi,bj)-vVel(i,j-1,1,bi,bj) )
-     &           + surfDrag(i,j,bi,bj)
-     &             *( vWind(i,j,bi,bj) - vVel(i,j,1,bi,bj) ) )
-          ENDDO
-         ENDDO
-#endif /* INCONSISTENT_WIND_LOCATION */
-       ELSE ! relative wind
-
           DO j = 1-OLy+1,sNy+OLy
-          DO i = 1-OLx+1,sNx+OLx
-            fu(i,j,bi,bj) = maskW(i,j,1,bi,bj)*0.5 _d 0
-     &          *( surfDrag(i-1,j,bi,bj) + surfDrag(i,j,bi,bj) )
-     &          *uWind(i,j,bi,bj)
-            fv(i,j,bi,bj) = maskS(i,j,1,bi,bj)*0.5 _d 0
-     &          *( surfDrag(i,j-1,bi,bj) + surfDrag(i,j,bi,bj) )
-     &          *vWind(i,j,bi,bj)
+           DO i = 1-OLx,sNx+OLx
+            fv(i,j,bi,bj) = maskS(i,j,1,bi,bj)*halfRL
+     &          *( surfDrag(i,j-1,bi,bj)*vRelWind(i,j-1,bi,bj)
+     &           + surfDrag(i,j,bi,bj) * vRelWind(i,j,bi,bj) )
+           ENDDO
           ENDDO
-         ENDDO
-#ifdef INCONSISTENT_WIND_LOCATION
-         DO j = 1-OLy,sNy+OLy
-          DO i = 1-OLx+1,sNx+OLx
-            fu(i,j,bi,bj) = maskW(i,j,1,bi,bj)*0.5 _d 0
-     &          *( surfDrag(i-1,j,bi,bj)
-     &             *uWind(i-1,j,bi,bj)
-     &           + surfDrag(i,j,bi,bj)
-     &             *uWind(i,j,bi,bj))
-          ENDDO
-         ENDDO
-         DO j = 1-OLy+1,sNy+OLy
-          DO i = 1-OLx,sNx+OLx
-            fv(i,j,bi,bj) = maskS(i,j,1,bi,bj)*0.5 _d 0
-     &          *( surfDrag(i,j-1,bi,bj)
-     &             *vWind(i,j-1,bi,bj)
-     &           + surfDrag(i,j,bi,bj)
-     &             *vWind(i,j,bi,bj))
-          ENDDO
-         ENDDO
 #endif /* INCONSISTENT_WIND_LOCATION */
-         ENDIF !relative wind
 
-       ELSE
+        ELSE ! useStressOption
 Cswd move wind stresses to u and v points
          DO j = 1-OLy,sNy+OLy
           DO i = 1-OLx+1,sNx+OLx
-            fu(i,j,bi,bj) = maskW(i,j,1,bi,bj)*0.5 _d 0
+            fu(i,j,bi,bj) = maskW(i,j,1,bi,bj)*halfRL
      &          *( ustress(i,j,bi,bj) + ustress(i-1,j,bi,bj) )
           ENDDO
          ENDDO
          DO j = 1-OLy+1,sNy+OLy
           DO i = 1-OLx,sNx+OLx
-            fv(i,j,bi,bj) = maskS(i,j,1,bi,bj)*0.5 _d 0
+            fv(i,j,bi,bj) = maskS(i,j,1,bi,bj)*halfRL
      &          *( vstress(i,j,bi,bj) + vstress(i,j-1,bi,bj) )
           ENDDO
          ENDDO
