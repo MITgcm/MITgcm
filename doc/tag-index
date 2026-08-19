@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkgs *_read/write_pickup.F
+  - fix bug/typo a) in "missFldList" index (7 files) b) in thsice MNC pickup
+    and c) in cheapaml passive tracer pickup.
 o pkg/seaice:
   - fix 3 bugs (loop range and 2 times seaiceMaskU -> MaskV) in seaice_lsr.F ;
     update 12 ref. outputs in exp. global_ocean.cs32x15, lab_sea & cpl_aim+ocn.
