@@ -196,18 +196,18 @@ C--    Check for missing fields:
        ENDIF
        IF ( nMissing.GE.1 ) THEN
         DO j=1,nMissing
-         IF ( missFldList(nj) .EQ. 'DIC_pH2d' ) THEN
+         IF ( missFldList(j) .EQ. 'DIC_pH2d' ) THEN
            _BEGIN_MASTER( myThid )
            pH_isLoaded(1) = .FALSE.
            _END_MASTER( myThid )
-         ELSEIF ( missFldList(nj) .EQ. 'DIC_pH3d' ) THEN
+         ELSEIF ( missFldList(j) .EQ. 'DIC_pH3d' ) THEN
            _BEGIN_MASTER( myThid )
            pH_isLoaded(2) = .FALSE.
            _END_MASTER( myThid )
          ELSE
           StopFlag = .TRUE.
           WRITE(msgBuf,'(4A)') 'DIC_READ_PICKUP: ',
-     &       'cannot restart without field "',missFldList(nj),'"'
+     &       'cannot restart without field "',missFldList(j),'"'
           CALL PRINT_ERROR( msgBuf, myThid )
          ENDIF
         ENDDO

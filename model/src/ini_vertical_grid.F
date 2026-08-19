@@ -191,7 +191,7 @@ c       write(0,*) 'rC=',rC
        ENDIF
       ENDDO
 
-C-    Calculate reciprol vertical grid spacing :
+C-    Calculate reciprocal vertical grid spacing :
       DO k=1,Nr+1
        recip_drC(k)   = 1. _d 0/drC(k)
       ENDDO
@@ -205,13 +205,13 @@ C---  Hybrid-Sigma vertical coordinate:
          aHybSigmF(k) = 0. _d 0
          bHybSigmF(k) = 0. _d 0
          dAHybSigC(k) = 0. _d 0
-         dAHybSigC(k) = 0. _d 0
+         dBHybSigC(k) = 0. _d 0
        ENDDO
        DO k=1,Nr
          aHybSigmC(k) = 0. _d 0
          bHybSigmC(k) = 0. _d 0
          dAHybSigF(k) = 0. _d 0
-         dAHybSigF(k) = 0. _d 0
+         dBHybSigF(k) = 0. _d 0
        ENDDO
       ELSE
        rFullDepth = rF(1) - rF(Nr+1)
