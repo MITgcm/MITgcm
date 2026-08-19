@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src & pkg/atm_phys:
+  - fix initialisation of dBHybSigC/F (case selectSigmaCoord=0) and
+    fix setting/copy of gcm_debLevB & gcm_debLevC in pkg/atm_phys.
 o pkg/gmredi:
   - fix Rossby-wave speed advection (in gmredi_calc_geom.F);
   - fix indexing in QG-Leith averaging (gmredi_calc_qgleith.F & mom_calc_visc.F)
