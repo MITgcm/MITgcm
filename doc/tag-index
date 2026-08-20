@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/gmredi:
+  - fix signed cap on Bates wave speed (in gmredi_calc_bates_k.F); it strongly
+    affects results when using GM_useBatesK3d=T (only in verifiation_other).
 o model/src & pkg/atm_phys:
   - fix initialisation of dBHybSigC/F (case selectSigmaCoord=0) and
     fix setting/copy of gcm_debLevB & gcm_debLevC in pkg/atm_phys.
