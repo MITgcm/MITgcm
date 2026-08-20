@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/bbl:
+  - fix wrong grid distance (dxG instead of dyG); this affects results of test
+    exp. global_oce_latlon.yearly (6 matching digits), update ref. output.
 o pkg/gmredi:
   - fix signed cap on Bates wave speed (in gmredi_calc_bates_k.F); it strongly
     affects results when using GM_useBatesK3d=T (only in verifiation_other).
