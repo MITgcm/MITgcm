@@ -1,6 +1,24 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/bbl:
+  - fix wrong grid distance (dxG instead of dyG); this affects results of test
+    exp. global_oce_latlon.yearly (6 matching digits), update ref. output.
+o pkg/gmredi:
+  - fix signed cap on Bates wave speed (in gmredi_calc_bates_k.F); it strongly
+    affects results when using GM_useBatesK3d=T (only in verifiation_other).
+o model/src & pkg/atm_phys:
+  - fix initialisation of dBHybSigC/F (case selectSigmaCoord=0) and
+    fix setting/copy of gcm_debLevB & gcm_debLevC in pkg/atm_phys.
+o pkg/gmredi:
+  - fix Rossby-wave speed advection (in gmredi_calc_geom.F);
+  - fix indexing in QG-Leith averaging (gmredi_calc_qgleith.F & mom_calc_visc.F)
+o pkgs *_read/write_pickup.F
+  - fix bug/typo a) in "missFldList" index (7 files) b) in thsice MNC pickup
+    and c) in cheapaml passive tracer pickup.
+o pkg/seaice:
+  - fix 3 bugs (loop range and 2 times seaiceMaskU -> MaskV) in seaice_lsr.F ;
+    update 12 ref. outputs in exp. global_ocean.cs32x15, lab_sea & cpl_aim+ocn.
 o pkg/ggl90 & obcs:
   - fix loop limits in ggl90_calc.F, when getting BC from pkg/shelfice;
   - fix OBCS indices in N & S OB-Eta field when applied to rStar factors.
