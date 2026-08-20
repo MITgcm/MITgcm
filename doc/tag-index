@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/mom, seaice & streamice:
+  - cleaning inconsistent OLx <-> OLy usage.
 o pkg/bbl:
   - fix wrong grid distance (dxG instead of dyG); this affects results of test
     exp. global_oce_latlon.yearly (6 matching digits), update ref. output.
