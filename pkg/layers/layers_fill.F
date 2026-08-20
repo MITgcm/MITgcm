@@ -69,25 +69,25 @@ C msgBuf           :: error message buffer
        IF (fluxid.EQ.'SUR') THEN
          CALL LAYERS_FILL_FIELD(df, trIdentity, 1, layers_surfflux,'M',
      &           klev, nLevs, bibjFlg, biArg, bjArg, myThid)
-       ELSE IF (fluxid.EQ.'DFX') THEN
+       ELSEIF (fluxid.EQ.'DFX') THEN
          CALL LAYERS_FILL_FIELD(df, trIdentity, Nr, layers_dfx,'U',
      &           kLev, nLevs, bibjFlg, biArg, bjArg, myThid)
-       ELSE IF (fluxid.EQ.'DFY') THEN
+       ELSEIF (fluxid.EQ.'DFY') THEN
          CALL LAYERS_FILL_FIELD(df, trIdentity, Nr, layers_dfy,'V',
      &           kLev, nLevs, bibjFlg, biArg, bjArg, myThid)
-       ELSE IF (fluxid.EQ.'DFR') THEN
+       ELSEIF (fluxid.EQ.'DFR') THEN
          CALL LAYERS_FILL_FIELD(df, trIdentity, Nr, layers_dfr,'M',
      &           kLev, nLevs, bibjFlg, biArg, bjArg, myThid)
-       ELSE IF (fluxid.EQ.'AFX') THEN
+       ELSEIF (fluxid.EQ.'AFX') THEN
          CALL LAYERS_FILL_FIELD(df, trIdentity, Nr, layers_afx,'U',
      &           kLev, nLevs, bibjFlg, biArg, bjArg, myThid)
-       ELSE IF (fluxid.EQ.'AFY') THEN
+       ELSEIF (fluxid.EQ.'AFY') THEN
          CALL LAYERS_FILL_FIELD(df, trIdentity, Nr, layers_afy,'V',
      &           kLev, nLevs, bibjFlg, biArg, bjArg, myThid)
-       ELSE IF (fluxid.EQ.'AFR') THEN
+       ELSEIF (fluxid.EQ.'AFR') THEN
          CALL LAYERS_FILL_FIELD(df, trIdentity, Nr, layers_afr,'M',
      &           kLev, nLevs, bibjFlg, biArg, bjArg, myThid)
-       ELSE IF (fluxid.EQ.'TOT') THEN
+       ELSEIF (fluxid.EQ.'TOT') THEN
          CALL LAYERS_FILL_FIELD(df, trIdentity, Nr, layers_tottend,'M',
      &           kLev, nLevs, bibjFlg, biArg, bjArg, myThid)
        ELSE
@@ -251,7 +251,7 @@ C      &        df(i,j,1,1)
 C           ENDDO
 C          ENDDO
 C         ENDDO
-C        ELSE IF (bibjFlg.EQ.0) THEN
+C        ELSEIF (bibjFlg.EQ.0) THEN
 C C --   the bi-bj loop must be done here
 C         DO bj=myByLo(myThid), myByHi(myThid)
 C          DO bi=myBxLo(myThid), myBxHi(myThid)

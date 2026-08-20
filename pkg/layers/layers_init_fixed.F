@@ -91,11 +91,11 @@ C       see if ZZc point is less than the top Zc point
           MapIndex(kk) = 1
           MapFact(kk) = 1.0 _d 0
 C       see if ZZc point is greater than the bottom Zc point
-        ELSE IF ( (ZZc(kk) .GE. Zc(Nr)) .OR. (k .EQ. Nr) ) THEN
+        ELSEIF ( (ZZc(kk) .GE. Zc(Nr)) .OR. (k .EQ. Nr) ) THEN
           MapIndex(kk) = Nr - 1
           MapFact(kk) = 0.0 _d 0
 C       Otherwise we are somewhere in between and need to do interpolation)
-        ELSE IF ( (ZZc(kk) .GE. Zc(k))
+        ELSEIF ( (ZZc(kk) .GE. Zc(k))
      &   .AND. (ZZc(kk) .LT. Zc(Nr)) ) THEN
 C         Find the proper k value
           DO WHILE (ZZc(kk) .GE. Zc(k+1))
