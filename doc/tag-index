@@ -1,6 +1,59 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/mom, seaice & streamice:
+  - cleaning inconsistent OLx <-> OLy usage.
+o pkg/bbl:
+  - fix wrong grid distance (dxG instead of dyG); this affects results of test
+    exp. global_oce_latlon.yearly (6 matching digits), update ref. output.
+o pkg/gmredi:
+  - fix signed cap on Bates wave speed (in gmredi_calc_bates_k.F); it strongly
+    affects results when using GM_useBatesK3d=T (only in verifiation_other).
+o model/src & pkg/atm_phys:
+  - fix initialisation of dBHybSigC/F (case selectSigmaCoord=0) and
+    fix setting/copy of gcm_debLevB & gcm_debLevC in pkg/atm_phys.
+o pkg/gmredi:
+  - fix Rossby-wave speed advection (in gmredi_calc_geom.F);
+  - fix indexing in QG-Leith averaging (gmredi_calc_qgleith.F & mom_calc_visc.F)
+o pkgs *_read/write_pickup.F
+  - fix bug/typo a) in "missFldList" index (7 files) b) in thsice MNC pickup
+    and c) in cheapaml passive tracer pickup.
+o pkg/seaice:
+  - fix 3 bugs (loop range and 2 times seaiceMaskU -> MaskV) in seaice_lsr.F ;
+    update 12 ref. outputs in exp. global_ocean.cs32x15, lab_sea & cpl_aim+ocn.
+o pkg/ggl90 & obcs:
+  - fix loop limits in ggl90_calc.F, when getting BC from pkg/shelfice;
+  - fix OBCS indices in N & S OB-Eta field when applied to rStar factors.
+o pkg/ggl90:
+  - langmuir code: save some computations for u/vStar (done once vs Nr times).
+o tools & testreport:
+  - add a very short script and adjust testreport & do_tst_2+2 to enable to use
+   "sftp" to send output results.
+
+checkpoint69p (2026/07/24)
+o verification:
+  - remove all OpenAD test dir and files (code_oad, input_oad*, output_oadm.*)
+    and update docs in few places.
+o pkg/streamice:
+  - fix Tapenade adjoint for simple SOLVE_FP use (same fix as for OpenAD)
+    and update halfpipe_streamice Tap adj & tlm ref. output.
+o pkg/seaice:
+  - comment out debug print in seaice_cost_test.F and reduce overlap size
+    (from 3 to 2) in experiment "1D_ocean_ice_column".
+o pkg/exf:
+  - fix time-invariant exf field (fldPeriod=0) when used as ctrl variables
+    (xx_gentim2d), by resetting it (ALLOW_GENTIM2D_CONTROL) from fld0,fld1 in
+    exf_set_fld.F ; simplify "data.exf" in AD experiment "offline_exf_seaice".
+o tools/ci:
+  - remove OpenAD tests from GitHub actions; add other Adjoint Tapenade test
+    experiments to CI (only run with label "adjoint"); update docs.
+
+checkpoint69o (2026/07/06) last version to support OpenAD
+o testreport:
+  - add process-id number to tar-file name when sending output with "scp".
+o pkg/obcs(sponge):
+  - fix bug in sponge relaxation time-scale for Salinity at the Southern OB;
+  - remove special condition (non zero T / S) for temp and salt relaxation.
 o pkg/layers:
   - fix bug in LAYERS_THERMODYNAMCS surface term code for LinFSConserveTr=F
 o pkg/layers:
