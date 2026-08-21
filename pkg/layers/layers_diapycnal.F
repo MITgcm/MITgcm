@@ -260,57 +260,44 @@ C ------- Now rescale dzfac to include the layer coordinate spacing
 #endif
          IF (kci.EQ.1) THEN
 C ------- We are in the surface layer
-          TtendSurf(i,j,kloc,bi,bj) =
-     &     TtendSurf(i,j,kloc,bi,bj) +
-     &     Tfac * dzfac * layers_surfflux(i,j,1,1,bi,bj)
-          StendSurf(i,j,kloc,bi,bj) =
-     &     StendSurf(i,j,kloc,bi,bj) +
-     &     Sfac * dzfac * layers_surfflux(i,j,1,2,bi,bj)
+          TtendSurf(i,j,kloc,bi,bj) = TtendSurf(i,j,kloc,bi,bj)
+     &         + Tfac * dzfac * layers_surfflux(i,j,1,1,bi,bj)
+          StendSurf(i,j,kloc,bi,bj) = StendSurf(i,j,kloc,bi,bj)
+     &         + Sfac * dzfac * layers_surfflux(i,j,1,2,bi,bj)
          ENDIF
 
 #ifdef SHORTWAVE_HEATING
-          TtendSurf(i,j,kloc,bi,bj) =
-     &     TtendSurf(i,j,kloc,bi,bj) +
-     &     Tfac * dzfac * layers_sw(i,j,kci,1,bi,bj)
+         TtendSurf(i,j,kloc,bi,bj) = TtendSurf(i,j,kloc,bi,bj)
+     &        + Tfac * dzfac * layers_sw(i,j,kci,1,bi,bj)
 #endif /* SHORTWAVE_HEATING */
 
 C ------- Diffusion
-         TtendDiffh(i,j,kloc,bi,bj) =
-     &     TtendDiffh(i,j,kloc,bi,bj) + dzfac * Tfac *
-     &    (layers_dfx(i,j,kci,1,bi,bj)+
-     &     layers_dfy(i,j,kci,1,bi,bj))
-         TtendDiffr(i,j,kloc,bi,bj) =
-     &     TtendDiffr(i,j,kloc,bi,bj) +
-     &     dzfac * Tfac * layers_dfr(i,j,kci,1,bi,bj)
-         StendDiffh(i,j,kloc,bi,bj) =
-     &     StendDiffh(i,j,kloc,bi,bj) + dzfac * Sfac *
-     &    (layers_dfx(i,j,kci,2,bi,bj)+
-     &     layers_dfy(i,j,kci,2,bi,bj))
-         StendDiffr(i,j,kloc,bi,bj) =
-     &     StendDiffr(i,j,kloc,bi,bj) +
-     &     dzfac * Sfac * layers_dfr(i,j,kci,2,bi,bj)
+         TtendDiffh(i,j,kloc,bi,bj) = TtendDiffh(i,j,kloc,bi,bj)
+     &        + dzfac * Tfac *
+     &        (layers_dfx(i,j,kci,1,bi,bj)+layers_dfy(i,j,kci,1,bi,bj))
+         TtendDiffr(i,j,kloc,bi,bj) = TtendDiffr(i,j,kloc,bi,bj)
+     &        + dzfac * Tfac * layers_dfr(i,j,kci,1,bi,bj)
+         StendDiffh(i,j,kloc,bi,bj) = StendDiffh(i,j,kloc,bi,bj)
+     &        + dzfac * Sfac *
+     &        (layers_dfx(i,j,kci,2,bi,bj)+layers_dfy(i,j,kci,2,bi,bj))
+         StendDiffr(i,j,kloc,bi,bj) = StendDiffr(i,j,kloc,bi,bj)
+     &        + dzfac * Sfac * layers_dfr(i,j,kci,2,bi,bj)
 C ------- Advection
-         TtendAdvh(i,j,kloc,bi,bj) =
-     &     TtendAdvh(i,j,kloc,bi,bj) + dzfac * Tfac *
-     &    (layers_afx(i,j,kci,1,bi,bj)+
-     &     layers_afy(i,j,kci,1,bi,bj))
-         TtendAdvr(i,j,kloc,bi,bj) =
-     &     TtendAdvr(i,j,kloc,bi,bj) +
-     &     dzfac * Tfac * layers_afr(i,j,kci,1,bi,bj)
-         StendAdvh(i,j,kloc,bi,bj) =
-     &     StendAdvh(i,j,kloc,bi,bj) + dzfac * Sfac *
-     &    (layers_afx(i,j,kci,2,bi,bj)+
-     &     layers_afy(i,j,kci,2,bi,bj))
-         StendAdvr(i,j,kloc,bi,bj) =
-     &     StendAdvr(i,j,kloc,bi,bj) +
-     &     dzfac * Sfac * layers_afr(i,j,kci,2,bi,bj)
+         TtendAdvh(i,j,kloc,bi,bj) = TtendAdvh(i,j,kloc,bi,bj)
+     &        + dzfac * Tfac *
+     &        (layers_afx(i,j,kci,1,bi,bj)+layers_afy(i,j,kci,1,bi,bj))
+         TtendAdvr(i,j,kloc,bi,bj) = TtendAdvr(i,j,kloc,bi,bj)
+     &        + dzfac * Tfac * layers_afr(i,j,kci,1,bi,bj)
+         StendAdvh(i,j,kloc,bi,bj) = StendAdvh(i,j,kloc,bi,bj)
+     &        + dzfac * Sfac *
+     &        (layers_afx(i,j,kci,2,bi,bj)+layers_afy(i,j,kci,2,bi,bj))
+         StendAdvr(i,j,kloc,bi,bj) = StendAdvr(i,j,kloc,bi,bj)
+     &        + dzfac * Sfac * layers_afr(i,j,kci,2,bi,bj)
 C -------- Total Tendency
-         Ttendtot(i,j,kloc,bi,bj) =
-     &     Ttendtot(i,j,kloc,bi,bj) +
-     &     dzfac * Tfac * layers_tottend(i,j,kci,1,bi,bj)
-         Stendtot(i,j,kloc,bi,bj) =
-     &     Stendtot(i,j,kloc,bi,bj) +
-     &     dzfac * Sfac * layers_tottend(i,j,kci,2,bi,bj)
+         Ttendtot(i,j,kloc,bi,bj) = Ttendtot(i,j,kloc,bi,bj)
+     &        + dzfac * Tfac * layers_tottend(i,j,kci,1,bi,bj)
+         Stendtot(i,j,kloc,bi,bj) = Stendtot(i,j,kloc,bi,bj)
+     &        + dzfac * Sfac * layers_tottend(i,j,kci,2,bi,bj)
         ENDDO
        ENDDO
       ENDDO
