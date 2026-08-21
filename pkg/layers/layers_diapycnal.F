@@ -4,19 +4,19 @@ CBOP 0
 C     !ROUTINE: LAYERS_DIAPYCNAL
 C     !INTERFACE:
       SUBROUTINE LAYERS_DIAPYCNAL(
-     I                  tracer,iLa,
+     I                  tracer, iLa,
      O                  TtendSurf, TtendDiffh, TtendDiffr,
-     O                  TtendAdvh, TtendAdvr, Ttendtot,
+     O                  TtendAdvh, TtendAdvr, TtendTot,
      O                  StendSurf, StendDiffh, StendDiffr,
-     O                  StendAdvh, StendAdvr, Stendtot,
+     O                  StendAdvh, StendAdvr, StendTot,
      O                  Hc, PIc,
      I                  myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE LAYERS_DIAPYCNAL
-C     | Calculate the diapycnal velocity in isotracer layers, for a chosen
-C     | tracer.
+C     | Calculate the diapycnal velocity in isotracer layers,
+C     | for a chosen tracer.
 C     *==========================================================*
 C     \ev
       IMPLICIT NONE
@@ -28,53 +28,55 @@ C     \ev
 #include "LAYERS.h"
 
 C !INPUT PARAMETERS:
-C     myThid    :: my Thread Id number
-C     tracer    :: potential temperature, salt or potential density prho
-C     iLa       :: layer coordinate index
-C     TtendSurf :: temperature tendency due to surface forcing times thickness
-C     TtendDiffh:: temperature tendency due to horiz. diffusion times thickness
-C     TtendDiffr:: temperature tendency due to vert. diffusion times thickness
-C     TtendAdvh:: salinity tendency due to horiz. advection times thickness
-C     TtendAdvr:: salinity tendency due to vert. advection times thickness
-C     StendSurf :: salinity tendency due to surface forcing times thickness
-C     StendDiffh:: salinity tendency due to horiz. diffusion times thickness
-C     StendDiffr:: salinity tendency due to vert. diffusion times thickness
-C     StendAdvh :: salinity tendency due to horiz. advection times thickness
-C     StendAdvr :: salinity tendency due to vert. advection times thickness
-C     Hc        :: Layer thickness at the tracer point (m)
-C     PIw       :: 1 if layer exists, 0 otherwise (at tracer point)
+C     tracer     :: potential temperature, salt or potential density prho
+C     iLa        :: layer coordinate index
+C     TtendSurf  :: Theta tendency due to surface forcing times thickness
+C     TtendDiffh :: Theta tendency due to horiz. diffusion times thickness
+C     TtendDiffr :: Theta tendency due to vert. diffusion times thickness
+C     TtendAdvh  :: Theta tendency due to horiz. advection times thickness
+C     TtendAdvr  :: Theta tendency due to vert. advection times thickness
+C     TtendTot   :: Theta Total tendency
+C     StendSurf  :: Salt  tendency due to surface forcing times thickness
+C     StendDiffh :: Salt  tendency due to horiz. diffusion times thickness
+C     StendDiffr :: Salt  tendency due to vert. diffusion times thickness
+C     StendAdvh  :: Salt  tendency due to horiz. advection times thickness
+C     StendAdvr  :: Salt  tendency due to vert. advection times thickness
+C     StendTot   :: Salt  Total tendency
+C     Hc         :: Layer thickness at the tracer point (m)
+C     PIw        :: 1 if layer exists, 0 otherwise (at tracer point)
+C     myThid     :: my Thread Id number
       INTEGER iLa, myThid
       _RL tracer    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,     nSx,nSy)
-      _RL Hc        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
-      _RL PIc       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
       _RL TtendSurf (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)
       _RL TtendDiffh(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)
       _RL TtendDiffr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)
       _RL TtendAdvh (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)
       _RL TtendAdvr (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)
-      _RL Ttendtot  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)
+      _RL TtendTot  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)
       _RL StendSurf (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)
       _RL StendDiffh(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)
       _RL StendDiffr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)
       _RL StendAdvh (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)
       _RL StendAdvr (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)
-      _RL Stendtot  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)
+      _RL StendTot  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)
+      _RL Hc        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
+      _RL PIc       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
 CEOP
 
 #ifdef LAYERS_THERMODYNAMICS
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C !LOCAL VARIABLES:
-C     bi, bj   :: tile indices
-C     i,j      :: horizontal indices
-C     k        :: vertical index for model grid
-C     kp1      :: vertical index for model grid next cell
-C     kci      :: index from CellIndex
-C     kg       :: index for looping though layers_bounds
-C     kk       :: vertical index for ZZ (fine) grid
-C     kloc     :: local copy of kgu/v to reduce accesses to index arrays
-C     mSteps   :: maximum number of steps for bisection method
-C     TatC     :: temperature at C point
+C     bi, bj  :: tile indices
+C     i, j    :: horizontal indices
+C     k       :: vertical index for model grid
+C     kp1     :: vertical index for model grid next cell
+C     kci     :: index from CellIndex
+C     kg      :: index for looping though layers_bounds
+C     kk      :: vertical index for ZZ (fine) grid
+C     kloc    :: local copy of kgu/v to reduce accesses to index arrays
+C     mSteps  :: maximum number of steps for bisection method
+C     TatC    :: temperature at C point
       _RL Hcw       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)
       INTEGER bi, bj
       INTEGER i,j,k,kk,kg,kci,kloc
@@ -94,7 +96,7 @@ C --  constants for T and S forcing, gets reset later for rho
 
 C     compute maximum number of steps for bisection method (approx.
 C     log2(Nlayers)) as log2(Nlayers) + 1 for safety
-      mSteps = int(log10(dble(Nlayers))/log10(2. _d 0))+1
+      mSteps = INT(LOG10(DBLE(Nlayers))/LOG10(2. _d 0))+1
 
 C      STOP 'DEBUG END: S/R LAYERS_DIAPYCNAL'
 
@@ -123,13 +125,13 @@ C --- These are at the w point
          TtendDiffr(i,j,kg,bi,bj) = 0. _d 0
          TtendAdvh(i,j,kg,bi,bj)  = 0. _d 0
          TtendAdvr(i,j,kg,bi,bj)  = 0. _d 0
-         Ttendtot(i,j,kg,bi,bj)   = 0. _d 0
+         TtendTot(i,j,kg,bi,bj)   = 0. _d 0
          StendSurf (i,j,kg,bi,bj) = 0. _d 0
          StendDiffh(i,j,kg,bi,bj) = 0. _d 0
          StendDiffr(i,j,kg,bi,bj) = 0. _d 0
          StendAdvh(i,j,kg,bi,bj)  = 0. _d 0
          StendAdvr(i,j,kg,bi,bj)  = 0. _d 0
-         Stendtot(i,j,kg,bi,bj)   = 0. _d 0
+         StendTot(i,j,kg,bi,bj)   = 0. _d 0
          Hcw(i,j,kg,bi,bj) = 0. _d 0
         ENDDO
        ENDDO
@@ -273,33 +275,34 @@ C ------- We are in the surface layer
 
 C ------- Diffusion
          TtendDiffh(i,j,kloc,bi,bj) = TtendDiffh(i,j,kloc,bi,bj)
-     &        + dzfac * Tfac *
-     &        (layers_dfx(i,j,kci,1,bi,bj)+layers_dfy(i,j,kci,1,bi,bj))
+     &        + dzfac * Tfac*( layers_dfx(i,j,kci,1,bi,bj)
+     &                       + layers_dfy(i,j,kci,1,bi,bj) )
+         StendDiffh(i,j,kloc,bi,bj) = StendDiffh(i,j,kloc,bi,bj)
+     &        + dzfac * Sfac*( layers_dfx(i,j,kci,2,bi,bj)
+     &                       + layers_dfy(i,j,kci,2,bi,bj) )
          TtendDiffr(i,j,kloc,bi,bj) = TtendDiffr(i,j,kloc,bi,bj)
      &        + dzfac * Tfac * layers_dfr(i,j,kci,1,bi,bj)
-         StendDiffh(i,j,kloc,bi,bj) = StendDiffh(i,j,kloc,bi,bj)
-     &        + dzfac * Sfac *
-     &        (layers_dfx(i,j,kci,2,bi,bj)+layers_dfy(i,j,kci,2,bi,bj))
          StendDiffr(i,j,kloc,bi,bj) = StendDiffr(i,j,kloc,bi,bj)
      &        + dzfac * Sfac * layers_dfr(i,j,kci,2,bi,bj)
 C ------- Advection
          TtendAdvh(i,j,kloc,bi,bj) = TtendAdvh(i,j,kloc,bi,bj)
-     &        + dzfac * Tfac *
-     &        (layers_afx(i,j,kci,1,bi,bj)+layers_afy(i,j,kci,1,bi,bj))
+     &        + dzfac * Tfac*( layers_afx(i,j,kci,1,bi,bj)
+     &                       + layers_afy(i,j,kci,1,bi,bj) )
+         StendAdvh(i,j,kloc,bi,bj) = StendAdvh(i,j,kloc,bi,bj)
+     &        + dzfac * Sfac*( layers_afx(i,j,kci,2,bi,bj)
+     &                       + layers_afy(i,j,kci,2,bi,bj) )
          TtendAdvr(i,j,kloc,bi,bj) = TtendAdvr(i,j,kloc,bi,bj)
      &        + dzfac * Tfac * layers_afr(i,j,kci,1,bi,bj)
-         StendAdvh(i,j,kloc,bi,bj) = StendAdvh(i,j,kloc,bi,bj)
-     &        + dzfac * Sfac *
-     &        (layers_afx(i,j,kci,2,bi,bj)+layers_afy(i,j,kci,2,bi,bj))
          StendAdvr(i,j,kloc,bi,bj) = StendAdvr(i,j,kloc,bi,bj)
      &        + dzfac * Sfac * layers_afr(i,j,kci,2,bi,bj)
 C -------- Total Tendency
-         Ttendtot(i,j,kloc,bi,bj) = Ttendtot(i,j,kloc,bi,bj)
+         TtendTot(i,j,kloc,bi,bj) = TtendTot(i,j,kloc,bi,bj)
      &        + dzfac * Tfac * layers_tottend(i,j,kci,1,bi,bj)
-         Stendtot(i,j,kloc,bi,bj) = Stendtot(i,j,kloc,bi,bj)
+         StendTot(i,j,kloc,bi,bj) = StendTot(i,j,kloc,bi,bj)
      &        + dzfac * Sfac * layers_tottend(i,j,kci,2,bi,bj)
         ENDDO
        ENDDO
+C--   end kk loop
       ENDDO
 
 C--   Now that we know the thicknesses, compute the heaviside function
