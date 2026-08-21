@@ -32,10 +32,12 @@ C     == Global variables ===
 #endif
 
 C     !INPUT PARAMETERS:
-C     fNb, vNb ::
+C     fNb      :: file number
+C     vNb      :: variable selector: positive => observation value,
+C                 negative => uncertainty value
 C     irec     :: sample record number
 C     myThid   :: my thread ID number
-C     vec_loc  ::
+C     vec_loc  :: returned value (observation or uncertainty)
       INTEGER fNb, vNb
       INTEGER irec, myThid
       _RL     vec_loc
@@ -78,7 +80,7 @@ C Implies that a forward loop is calling
        ENDIF !IF (obsfit_curfile_buff.NE.fNb)
 
 #ifdef ALLOW_DEBUG
-       IF ( debugLevel.GE.debLevD ) THEN
+       IF ( obsfit_debugLevel.GE.debLevD ) THEN
          WRITE( msgbuf,'(A,5I9)' )
      &    'buffer readobsfile ',
      &    obsfit_minind_buff, obsfit_maxind_buff,
