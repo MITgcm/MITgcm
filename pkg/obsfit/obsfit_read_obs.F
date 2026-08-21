@@ -80,7 +80,7 @@ C Implies that a forward loop is calling
        ENDIF !IF (obsfit_curfile_buff.NE.fNb)
 
 #ifdef ALLOW_DEBUG
-       IF ( debugLevel.GE.debLevD ) THEN
+       IF ( obsfit_debugLevel.GE.debLevD ) THEN
          WRITE( msgbuf,'(A,5I9)' )
      &    'buffer readobsfile ',
      &    obsfit_minind_buff, obsfit_maxind_buff,

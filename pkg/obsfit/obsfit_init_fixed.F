@@ -229,7 +229,7 @@ C Read number of interpolation points (generic grid only):
          err = NF_INQ_DIMLEN( fid, dimid, iINTERP )
         ELSE
 
-         IF ( debugLevel .GE. debLevA ) THEN
+         IF ( obsfit_debugLevel .GE. debLevA ) THEN
           WRITE( msgBuf,'(3A,I3)' )
      &         'S/R OBSFIT_INIT_FIXED: ',
      &         'no iINTERP dim in data file; using iINTERP ',

@@ -22,7 +22,8 @@ C     == Global variables ===
 #ifdef ALLOW_OBSFIT
 # include "SIZE.h"
 # include "EEPARAMS.h"
-# include "PARAMS.h"
+# include "OBSFIT_SIZE.h"
+# include "OBSFIT.h"
 # include "netcdf.inc"
 #endif
 
@@ -46,7 +47,7 @@ C     !LOCAL VARIABLES:
       INTEGER IL
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-      IF ( debugLevel .GE. debLevA .AND. STATUS .NE. NF_NOERR ) THEN
+      IF ( obsfit_debugLevel .GE. debLevA .AND. STATUS .NE. NF_NOERR ) THEN
         IL = ILNBLNK(message)
         IF ( IL .GT. 0 ) THEN
           IF ( (bi.GT.0).AND.(bj.GT.0) ) THEN

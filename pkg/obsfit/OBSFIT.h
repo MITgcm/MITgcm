@@ -10,6 +10,11 @@ C     | Header file defining ObsFit parameters and variables
 C     ==================================================================
 CEOP
 
+C--  OBSFIT_PARAMS common block:
+C    obsfit_dBugLevel :: control debug print to STDOUT or log file, higher -> more
+      INTEGER obsfit_dBugLevel
+      COMMON /OBSFIT_PARAMS_I/ obsfit_dBugLevel
+
 C ObsFit LOGICAL parameters
       LOGICAL obsfitDoNcOutput
       LOGICAL obsfitDoGenGrid
