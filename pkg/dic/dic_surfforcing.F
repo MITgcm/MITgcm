@@ -103,7 +103,7 @@ cQQQQ check ptracer numbers
           surfphos(i,j) = PTR_PO4(i,j,klev)*maskC(i,j,kLev,bi,bj)
 #endif
 #else /* DIC_BIOTIC */
-          surfalk(i,j)  = 2.366595 _d 0 * salt(i,j,kLev,bi,bj)/gsm_s
+          surfalk(i,j)  = 2.366595 _d 0 * dicSSS(i,j,bi,bj)/gsm_s
      &                  * maskC(i,j,kLev,bi,bj)
           surfphos(i,j) = 5.1225 _d -4 * maskC(i,j,kLev,bi,bj)
 #endif /* DIC_BIOTIC */
@@ -111,14 +111,14 @@ C for non-interactive Si
           surfsi(i,j)   = silicaSurf(i,j,bi,bj)*maskC(i,j,kLev,bi,bj)
 #ifdef DIC_BOUNDS
           surftemp(i,j) = MAX( -4. _d 0,
-     &                         MIN( 50. _d 0, theta(i,j,kLev,bi,bj) ) )
+     &                         MIN( 50. _d 0, dicSST(i,j,bi,bj) ) )
           surfsalt(i,j) = MAX( 4. _d 0,
-     &                         MIN( 50. _d 0, salt(i,j,kLev,bi,bj) ) )
+     &                         MIN( 50. _d 0, dicSSS(i,j,bi,bj) ) )
           surfdic(i,j)  = MAX( 0.4 _d 0,
      &                         MIN( 10. _d 0, PTR_CO2(i,j,kLev) ) )
 #else
-          surftemp(i,j) = theta(i,j,kLev,bi,bj)
-          surfsalt(i,j) = salt(i,j,kLev,bi,bj)
+          surftemp(i,j) = dicSST(i,j,bi,bj)
+          surfsalt(i,j) = dicSSS(i,j,bi,bj)
           surfdic(i,j)  = PTR_CO2(i,j,kLev)
 #endif
         ENDDO
@@ -227,10 +227,10 @@ CADJ STORE pCO2(:,:,bi,bj) = comlev1_bibj, key = tkey, kind = isbyte
 C calculate SCHMIDT NO. for CO2
             SchmidtNoDIC(i,j) =
      &            sca1
-     &          + sca2 * theta(i,j,kLev,bi,bj)
-     &          + sca3 * theta(i,j,kLev,bi,bj)*theta(i,j,kLev,bi,bj)
-     &          + sca4 * theta(i,j,kLev,bi,bj)*theta(i,j,kLev,bi,bj)
-     &                *theta(i,j,kLev,bi,bj)
+     &          + sca2 * dicSST(i,j,bi,bj)
+     &          + sca3 * dicSST(i,j,bi,bj)*dicSST(i,j,bi,bj)
+     &          + sca4 * dicSST(i,j,bi,bj)*dicSST(i,j,bi,bj)
+     &                 * dicSST(i,j,bi,bj)
 C make sure Schmidt number is not negative (will happen if temp>39C)
             SchmidtNoDIC(i,j) = MAX( 1.0 _d -2, SchmidtNoDIC(i,j) )
 

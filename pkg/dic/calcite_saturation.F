@@ -119,7 +119,7 @@ C calcium concentration already calculated in S/R DIC_COEFFS_SURF
 #endif
 
 C SilicaDeep filled with constant value of 0.03 mol/m3 unless
-C     DIC_deepSilicaFile provided.
+C     DIC_silicaDeepFile provided.
            sitlocal = silicaDeep(i,j,k,bi,bj)
            po4local = PTR_PO4(i,j,k)
            diclocal = PTR_DIC(i,j,k)
