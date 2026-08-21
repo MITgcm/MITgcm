@@ -503,7 +503,7 @@ C Sync file so that data is not lost when run finishes
             ENDDO !DO prof_num
 
 #ifdef ALLOW_DEBUG
-            IF ( debugLevel .GE. debLevD ) THEN
+            IF ( prof_dBugLevel .GE. debLevD ) THEN
               IF (ProfNo(num_file,bi,bj).GT.0) THEN
                 DO num_var = 1, NVARMAX
                   WRITE(msgBuf,'(A,4I9)') 'bi,bj,prof_num,num_var ',
@@ -567,7 +567,7 @@ C Sync file so that data is not lost when run finishes
           ENDDO !DO num_var
 
 # ifdef ALLOW_DEBUG
-          IF ( debugLevel .GE. debLevD ) THEN
+          IF ( prof_dBugLevel .GE. debLevD ) THEN
             DO num_var = 1, NVARMAX
               WRITE(msgBuf,'(A,4I9)') 'bi,bj,num_var ',bi,bj,num_var
               CALL PRINT_MESSAGE( msgBuf,

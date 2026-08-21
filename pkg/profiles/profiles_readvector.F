@@ -73,7 +73,7 @@ C Implies that a forward loop is calling
         ENDIF !IF (profiles_curfile_buff(bi,bj).NE.fNb)
 
 # ifdef ALLOW_DEBUG
-        IF (debugLevel.GE.debLevD) THEN
+        IF (prof_dBugLevel.GE.debLevD) THEN
           WRITE(msgBuf,'(A,5I9)')
      &     'buffer readvector ',
      &     profiles_minind_buff(bi,bj), profiles_maxind_buff(bi,bj),

@@ -138,6 +138,8 @@ C     ProfNo_tile  :: counter
       CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A,L5)') '  profilesDoNcOutput ', profilesDoNcOutput
       CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A,I5)') '  prof_dBugLevel   = ', prof_dBugLevel
+      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
 
@@ -277,7 +279,7 @@ C      Check that maximum number of vertical levels is not exceeded
      &          'INIT_FIXED: NF_INQ_DIMLEN iINTERP',
      &          err,bi,bj,myThid )
           ELSE
-           IF (debugLevel .GE. debLevA) THEN
+           IF (prof_dBugLevel .GE. debLevB) THEN
             CALL PROFILES_NF_ERROR(
      &           'INIT_FIXED: NF_INQ_DIMID iINTERP',
      &           err,bi,bj,myThid )
@@ -839,7 +841,7 @@ C     6) Available variables in the data set
             CALL PROFILES_NF_ERROR(
      &           'INIT_FIXED: NF_INQ_VARID prof_names = '//
      &           prof_names(num_file,num_var)(1:JL),err,bi,bj,myThid )
-            IF (debugLevel .GE. debLevA) THEN
+            IF (prof_dBugLevel .GE. debLevB) THEN
              WRITE(msgBuf,'(3A)') 'S/R PROFILES_INIT_FIXED: no ',
      &            prof_names(num_file,num_var)(1:JL),
      &            ', setting corresponding vec_quantities = F'
