@@ -1,3 +1,8 @@
+C--  PROF_PARAMS common block:
+C    diag_dBugLevel :: control debug print to STDOUT or log file, higher -> more
+      INTEGER prof_dBugLevel
+      COMMON /PROF_PARAMS_I/ prof_dBugLevel
+
 C===========================================================
 C variables
 C===========================================================
