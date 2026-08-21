@@ -1,18 +1,18 @@
-C
-CBOP
-C    !ROUTINE: HFACC_MACROS.h
-C    !INTERFACE:
-C    include HFACC_MACROS.h
-C    !DESCRIPTION: \bv
-C     *==========================================================*
-C     | HFACC_MACROS.h                                            
-C     *==========================================================*
-C     | These macros are used to reduce memory requirement and/or 
-C     | memory references when variables are fixed along a given  
-C     | axis or axes.                                             
-C     *==========================================================*
-C     \ev
-CEOP
+!
+!BOP
+!    !ROUTINE: HFACC_MACROS.h
+!    !INTERFACE:
+!    include HFACC_MACROS.h
+!    !DESCRIPTION: \bv
+! *==========================================================*
+! | HFACC_MACROS.h
+! *==========================================================*
+! | These macros are used to reduce memory requirement and/or
+! | memory references when variables are fixed along a given
+! | axis or axes.
+! *==========================================================*
+! \ev
+!EOP
 
 #ifdef HFACC_CONST
 #define  _hFacC(i,j,k,bi,bj) hFacC(1,1,1,1,1)
