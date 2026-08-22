@@ -1,17 +1,14 @@
 #include "LAYERS_OPTIONS.h"
-C--  File layers_thermodynamics.F:
-C--   Contents
-C--   o LAYERS_CALC_RHS
 
 CBOP 0
-C     !ROUTINE: LAYERS_CALC_RHS
+C     !ROUTINE: LAYERS_CALC_DIVERGENCE
 C     !INTERFACE:
-      SUBROUTINE LAYERS_CALC_RHS(
+      SUBROUTINE LAYERS_CALC_DIVERGENCE(
      I                  myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE LAYERS_CALC_RHS
+C     | SUBROUTINE LAYERS_CALC_DIVERGENCE
 C     | Recalculate the divergence of the RHS terms in T and S eqns.
 C     | Replaces the values of layers_surfflux, layers_df? IN PLACE
 C     | with the corresponding tendencies (same units as GT and GS)
@@ -35,7 +32,7 @@ C     myThid    :: my Thread Id number
 CEOP
 
 #ifdef ALLOW_LAYERS
-#ifdef LAYERS_THERMODYNAMICS
+# ifdef LAYERS_THERMODYNAMICS
 C !LOCAL VARIABLES:
 C     bi, bj   :: tile indices
 C     i,j      :: horizontal indices
@@ -140,6 +137,8 @@ C -- Advection
          ENDDO
         ENDDO
 
+CML   I am guessing that this copy of the original diagnostics code
+CML   is here only for reference:
 C-    TFLUX (=total heat flux, match heat-content variations, [W/m2])
 C       IF ( fluidIsWater .AND.
 C      &     DIAGNOSTICS_IS_ON('TFLUX   ',myThid) ) THEN
@@ -240,8 +239,8 @@ C    &    )
 C      ENDDO
 C     ENDDO
 
-#endif /* LAYERS_THERMODYNAMICS */
+# endif /* LAYERS_THERMODYNAMICS */
 #endif /* USE_LAYERS */
       RETURN
       END
-C -- end of S/R LAYERS_CALC_RHS
+C -- end of S/R LAYERS_CALC_DIVERGENCE

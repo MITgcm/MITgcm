@@ -70,7 +70,7 @@ CEOP
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy-1
-         DO i=1-OLx,sNx+OLy-1
+         DO i=1-OLx,sNx+OLx-1
 C     non-linear water drag coefficients CwatC (DWATN)
 #ifdef OBCS_UVICE_OLD
           tempVar = 0.25 _d 0*(
