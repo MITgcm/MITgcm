@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/layers:
+  - rename and split src files according to S/R content.
 o pkg/mom, seaice & streamice:
   - cleaning inconsistent OLx <-> OLy usage.
 o pkg/bbl:
