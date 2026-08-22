@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/profiles:
+  - improve error handling and check that number of depth levels (in profiles
+    file) does not exceed NLEVELMAX ; add run-time param "prof_dBugLevel".
 o pkg/layers:
   - rename and split src files according to S/R content.
 o pkg/mom, seaice & streamice:
