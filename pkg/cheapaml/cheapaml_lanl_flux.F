@@ -100,8 +100,8 @@ C     determine wind stress
           usm = 1. _d 0
         ENDIF
 C diabatic and freshwater flux forcing
-        toa = Celsius2K + tSurf(i,j)
-        tta = Celsius2K + Tair(i,j,bi,bj)
+        toa = celsius2K + tSurf(i,j)
+        tta = celsius2K + Tair(i,j,bi,bj)
         ttas = tta+gamma_blk*zref
         ttt = tta - ( cheaphgrid(i,j,bi,bj) - zref )*gamma_blk
         pt = p0*( oneRL -gamma_blk*cheaphgrid(i,j,bi,bj)/ttas )
