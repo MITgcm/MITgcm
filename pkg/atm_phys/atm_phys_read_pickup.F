@@ -159,7 +159,7 @@ C--    Check for missing fields:
         ioUnit = errorMessageUnit
         DO j=1,nMissing
          WRITE(msgBuf,'(4A)') 'ATM_PHYS_READ_PICKUP: ',
-     &       'cannot restart without field "',missFldList(nj),'"'
+     &       'cannot restart without field "',missFldList(j),'"'
          CALL PRINT_ERROR( msgBuf, myThid )
         ENDDO
         CALL ALL_PROC_DIE( myThid )
