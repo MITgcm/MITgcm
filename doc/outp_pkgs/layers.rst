@@ -35,9 +35,9 @@ where :math:`\sigma` is potential density, :math:`t` is time, and
 :math:`\dot{\theta}` and :math:`\dot{S}` represent all non-advective sources
 (that is, external forcing and mixing) of potential temperature
 (:math:`\theta`) and salinity (:math:`S`), respectively. The transformation
-rate :math:`\Omega` can be linearly decomposed into many different
-contributions from different processes, and the volume integral reduces to a
-surface integral for surface fluxes.
+rate :math:`\Omega` can be linearly decomposed into contributions from
+horizontal and vertical advective and diffusive processes, and from surface
+fluxes for which the volume integral reduces to a surface integral.
 
 Layers configuration and compilation
 ------------------------------------
@@ -55,7 +55,7 @@ Layers configuration and compilation
    :varlink:`LAYERS_THERMODYNAMICS`, #undef, allows using the water mass transformation code
    :varlink:`LAYERS_PRHO_REF`, #define, allow use of potential density as a layering field
    :varlink:`LAYERS_FINEGRID_DIAPYCNAL`, #undef, use refined grid for diapycnal terms
-   :varlink:`LAYERS_MNC`, #undef, allows MNC output
+   :varlink:`LAYERS_MNC`, #undef, allows MNC output (not yet implemented)
 
 Run-time parameters
 -------------------
@@ -72,7 +72,7 @@ setting :varlink:`useLayers` ``= .TRUE.,`` in ``data.pkg``.
 General flags and parameters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-:numref:`tab_phys_pkg_layers_runtimeparms` lists most run-time parameters.
+:numref:`tab_phys_pkg_layers_runtimeparms` lists most run-time parameters. The number of layers is specified by :varlink:`Nlayers` in (a local copy of) :filelink:`LAYERS_SIZE.h`.
 
 .. tabularcolumns:: |\Y{.275}|\Y{.20}|\Y{.525}|
 
@@ -83,11 +83,14 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   |   Name                             |      Default value           |   Description                                                           |
   +====================================+==============================+=========================================================================+
-  | :varlink:`layers_name`             |     ' '                      |                                                                         |
+  | :varlink:`layers_name`             |     ' '                      | give layers variable a name, e.g. `RHO`                                 |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`layers_bounds`           |     UNSET_RL                 |                                                                         |
+  | :varlink:`layers_bounds`           |   ``UNSET_RL``               | define :varlink:`Nlayers` +1 boundaries between layers                  |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`layers_krho`             |     1                        |                                                                         |
+  | :varlink:`layers_krho`             |     1                        | index of reference (density) value (at C-point)                         |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`layers_bolus`            |   :varlink:`useGMRedi`       |                                                                         |
+  | :varlink:`layers_bolus`            |   :varlink:`useGMRedi`       | include GM bolus velocity in flux calculations                          |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`layers_useThermos`       |  ``.FALSE.``                 |  defaults to ``.TRUE.`` if :varlink:`LAYERS_THERMODYNAMICS` is defined, |
+  |                                    |                              |  turns on thermodynamics code for water mass tranformation rates        |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
