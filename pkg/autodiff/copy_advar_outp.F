@@ -84,10 +84,6 @@ CEOP
        ENDDO
       ENDIF
 
-#ifdef ALLOW_OPENAD
-C--   need to all the correct OpenAD EXCH S/R ; left empty for now
-#else /* ALLOW_OPENAD */
-
       IF ( gridloc.EQ.1 ) THEN
        IF ( wSign ) THEN
 #ifdef AUTODIFF_TAMC_COMPATIBILITY
@@ -115,7 +111,6 @@ c       CALL ADEXCH_Z_3D_RL( outFld, nNz, myThid )
         STOP 'ABNORMAL END: COPY_ADVAR_OUTP missing noSign,loc=2'
        ENDIF
       ENDIF
-#endif /* ALLOW_OPENAD */
 
 #endif /* ALLOW_ADJOINT_RUN or ALLOW_ADMTLM */
 #endif /* ALLOW_AUTODIFF_MONITOR */
