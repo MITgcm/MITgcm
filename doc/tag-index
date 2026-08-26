@@ -1,6 +1,20 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint69q (2026/08/24)
+o pkg/profiles:
+  - improve error handling and check that number of depth levels (in profiles
+    file) does not exceed NLEVELMAX ; add run-time param "prof_dBugLevel".
+o pkg/layers:
+  - rename and split src files according to S/R content.
+o pkg/mom, seaice & streamice:
+  - cleaning inconsistent OLx <-> OLy usage.
+o pkg/bbl:
+  - fix wrong grid distance (dxG instead of dyG); this affects results of test
+    exp. global_oce_latlon.yearly (6 matching digits), update ref. output.
+o pkg/gmredi:
+  - fix signed cap on Bates wave speed (in gmredi_calc_bates_k.F); it strongly
+    affects results when using GM_useBatesK3d=T (only in verifiation_other).
 o model/src & pkg/atm_phys:
   - fix initialisation of dBHybSigC/F (case selectSigmaCoord=0) and
     fix setting/copy of gcm_debLevB & gcm_debLevC in pkg/atm_phys.

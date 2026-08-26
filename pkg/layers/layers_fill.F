@@ -1,8 +1,9 @@
 #include "LAYERS_OPTIONS.h"
-C--  File layers_save.F:
+C--  File layers_fill.F:
 C--   Contents
 C--   o LAYERS_FILL
 C--   o LAYERS_FILL_FIELD
+C--   o LAYERS_CUMULATE
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -13,7 +14,9 @@ CBOP
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE LAYERS_FILL
-C     | "Remember" the merid. advective flux for use later in layers_thermodynamics
+C     | - Wrapper routine to increment the layers thermodynamics
+C     |   diagnostics arrays with a RL field
+C     | - only active when LAYERS_THERMODYNAMICS is defined
 C     *==========================================================*
        IMPLICIT NONE
 #include "SIZE.h"
@@ -66,25 +69,25 @@ C msgBuf           :: error message buffer
        IF (fluxid.EQ.'SUR') THEN
          CALL LAYERS_FILL_FIELD(df, trIdentity, 1, layers_surfflux,'M',
      &           klev, nLevs, bibjFlg, biArg, bjArg, myThid)
-       ELSE IF (fluxid.EQ.'DFX') THEN
+       ELSEIF (fluxid.EQ.'DFX') THEN
          CALL LAYERS_FILL_FIELD(df, trIdentity, Nr, layers_dfx,'U',
      &           kLev, nLevs, bibjFlg, biArg, bjArg, myThid)
-       ELSE IF (fluxid.EQ.'DFY') THEN
+       ELSEIF (fluxid.EQ.'DFY') THEN
          CALL LAYERS_FILL_FIELD(df, trIdentity, Nr, layers_dfy,'V',
      &           kLev, nLevs, bibjFlg, biArg, bjArg, myThid)
-       ELSE IF (fluxid.EQ.'DFR') THEN
+       ELSEIF (fluxid.EQ.'DFR') THEN
          CALL LAYERS_FILL_FIELD(df, trIdentity, Nr, layers_dfr,'M',
      &           kLev, nLevs, bibjFlg, biArg, bjArg, myThid)
-       ELSE IF (fluxid.EQ.'AFX') THEN
+       ELSEIF (fluxid.EQ.'AFX') THEN
          CALL LAYERS_FILL_FIELD(df, trIdentity, Nr, layers_afx,'U',
      &           kLev, nLevs, bibjFlg, biArg, bjArg, myThid)
-       ELSE IF (fluxid.EQ.'AFY') THEN
+       ELSEIF (fluxid.EQ.'AFY') THEN
          CALL LAYERS_FILL_FIELD(df, trIdentity, Nr, layers_afy,'V',
      &           kLev, nLevs, bibjFlg, biArg, bjArg, myThid)
-       ELSE IF (fluxid.EQ.'AFR') THEN
+       ELSEIF (fluxid.EQ.'AFR') THEN
          CALL LAYERS_FILL_FIELD(df, trIdentity, Nr, layers_afr,'M',
      &           kLev, nLevs, bibjFlg, biArg, bjArg, myThid)
-       ELSE IF (fluxid.EQ.'TOT') THEN
+       ELSEIF (fluxid.EQ.'TOT') THEN
          CALL LAYERS_FILL_FIELD(df, trIdentity, Nr, layers_tottend,'M',
      &           kLev, nLevs, bibjFlg, biArg, bjArg, myThid)
        ELSE
@@ -109,11 +112,11 @@ C         CALL PRINT_ERROR( msgBuf, myThid )
 C         STOP 'ABNORMAL END: S/R LAYERS_FILL'
        ENDIF
 
-#endif /* LAYERS_THERMODYNAMICS */
-
       RETURN
       END
 C end of S/R LAYERS_FILL
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE LAYERS_FILL_FIELD(
      I               df, trIdentity, myNr,
@@ -136,8 +139,6 @@ C end of S/R LAYERS_FILL
 C       _RL df(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
        _RL df(*)
        INTEGER myThid
-
-#ifdef LAYERS_THERMODYNAMICS
 
 C !LOCAL VARIABLES: ====================================================
 C i,j              :: loop indices
@@ -250,7 +251,7 @@ C      &        df(i,j,1,1)
 C           ENDDO
 C          ENDDO
 C         ENDDO
-C        ELSE IF (bibjFlg.EQ.0) THEN
+C        ELSEIF (bibjFlg.EQ.0) THEN
 C C --   the bi-bj loop must be done here
 C         DO bj=myByLo(myThid), myByHi(myThid)
 C          DO bi=myBxLo(myThid), myBxHi(myThid)
@@ -273,11 +274,11 @@ C            CALL PRINT_ERROR( msgBuf, myThid )
 C            STOP 'ABNORMAL END: S/R LAYERS_FILL_FIELD'
 C        ENDIF
 
-#endif /* LAYERS_THERMODYNAMICS */
-
       RETURN
       END
 C end of S/R LAYERS_FILL_FIELD
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE LAYERS_CUMULATE(
      U                  cumFld,
@@ -329,6 +330,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        ENDDO
       ENDDO
 
+#endif /* LAYERS_THERMODYNAMICS */
+
       RETURN
       END
-
