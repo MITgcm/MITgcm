@@ -280,14 +280,6 @@ CADJ &     = comlev1_stream_hybrid, key=ikey_1
         ENDDO
        ENDDO
       ENDDO
-#ifdef ALLOW_OPENAD
-#ifdef STREAMICE_HYBRID_STRESS
-      tau_beta_eff_streamice(1,1,1,1) =
-     &  tau_beta_eff_streamice(1,1,1,1) +
-     &  0. * streamice_u_surf(1,1,1,1) +
-     &  0. * streamice_v_surf(1,1,1,1)
-#endif
-#endif
 
 #endif
 #endif

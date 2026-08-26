@@ -183,10 +183,6 @@ C                                          vel solve
 C     streamice_maxcgiter_cpl           :: max CG iters, coupled mode
 C     streamice_maxnliter_cpl           :: max NL iters, coupled mode
 C     streamice_maxnliter_Petsc         :: max NL iters with PETSC
-C     streamice_smooth_thick_adjoint    :: facility to smooth adjoint
-C                                          thickness sensitivity after
-C                                          advect_thickness
-C                                          0 -> no smoothing
 C     streamice_petsc_pcfactorlevels    :: fill level of incomplete
 C                                          cholesky preconditioner
 C                                          for use with PETSC and
