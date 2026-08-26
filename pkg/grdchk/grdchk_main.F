@@ -176,8 +176,6 @@ C--   forward run with unperturbed control vector
 
 #if (defined  (ALLOW_ADMTLM))
       fcref = objf_state_final(idep,jdep,1,1,1)
-#elif (defined (ALLOW_OPENAD))
-      fcref = fc%v
 #else
       fcref = fc
 #endif
@@ -353,16 +351,10 @@ C--   perturb it and write back to file
 C--   forward run with perturbed control vector
           myTime = startTime
           myIter = nIter0
-#ifdef ALLOW_OPENAD
-          CALL OpenAD_THE_MAIN_LOOP( myTime, myIter, myThid )
-#else
           CALL THE_MAIN_LOOP( myTime, myIter, myThid )
-#endif
 
 #ifdef ALLOW_ADMTLM
           fcpertplus = objf_state_final(idep,jdep,1,1,1)
-#elif (defined (ALLOW_OPENAD))
-          fcpertplus = fc%v
 #else
           fcpertplus = fc
 #endif
@@ -394,16 +386,10 @@ C--   perturb it and write back to file
 C--   forward run with perturbed control vector
             myTime = startTime
             myIter = nIter0
-#ifdef ALLOW_OPENAD
-            CALL OpenAD_THE_MAIN_LOOP( myTime, myIter, myThid )
-#else
             CALL THE_MAIN_LOOP( myTime, myIter, myThid )
-#endif
 
 #if (defined (ALLOW_ADMTLM))
             fcpertminus = objf_state_final(idep,jdep,1,1,1)
-#elif (defined (ALLOW_OPENAD))
-            fcpertminus = fc%v
 #else
             fcpertminus = fc
 #endif
