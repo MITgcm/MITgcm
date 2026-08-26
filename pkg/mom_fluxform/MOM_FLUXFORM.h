@@ -16,13 +16,11 @@ C     == Local variables in common block ==
 C     dWtransC :: vertical transp. difference between r & r* coordinates
 C     dWtransU :: same but above u.point location (West  face)
 C     dWtransV :: same but above v.point location (South face)
-#  ifndef ALLOW_OPENAD
       COMMON /LOCAL_MOM_CALC_RTRANS/
      &       dWtransC, dWtransU, dWtransV
-#  endif
       _RL dWtransC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL dWtransU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL dWtransV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-# endif
+# endif /* ndef DISABLE_RSTAR_CODE */
 #endif /* NONLIN_FRSURF */
 
