@@ -100,7 +100,6 @@ C--    quick fix to prevent ice-shelf mass to become negative
 
        _EXCH_XY_RL( shelficeMass, myThid )
 
-#ifndef ALLOW_OPENAD
 C--  Calculate new loading anomaly (in case the ice-shelf mass was updated)
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -112,7 +111,6 @@ C--  Calculate new loading anomaly (in case the ice-shelf mass was updated)
          ENDDO
         ENDDO
        ENDDO
-#endif
 
       ENDIF
 
