@@ -3378,6 +3378,7 @@ cat >>$MAKEFILE <<EOF
 
 # C preprocessing and replacing the _d in constants:
 CPPCMD = cat \$< | ${CPP} \$(DEFINES) \$(INCLUDES) | ${S64}
+CPPcmd = cat \$< | ${CPP} \$(DEFINES) \$(INCLUDES) | ${S64} | \$(TOOLSDIR)/switch_comments2f90
 
 .F.$FS:
 	\$(CPPCMD)  > \$@
@@ -3386,7 +3387,7 @@ CPPCMD = cat \$< | ${CPP} \$(DEFINES) \$(INCLUDES) | ${S64}
 .F.o:
 	\$(FC) \$(FFLAGS) \$(FOPTIM) -c \$<
 .F90.$FS90:
-	\$(CPPCMD)  > \$@
+	\$(CPPcmd)  > \$@
 .FF90.f$FS90:
 	\$(CPPCMD)  > \$@
 .$FS90.o:
