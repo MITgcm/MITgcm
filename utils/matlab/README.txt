@@ -9,6 +9,7 @@ The following utilities are available in this directory:
   grepread.m                :: a new (from Aug 2001) useful script
   griddata_fast.m           :: script to help use cube and netcdf
   griddata_preprocess.m     :: script to help use cube and netcdf
+  makeblanks.m              :: script to choose cores and find blank tiles
   ini_poly3.m               :: calculate in-situ density as MITgcm POLY3
   inpaint_nans.m            :: used by interpickups.m (for topography mask)
   interpickups.m            :: interpolate mnc pickup files
