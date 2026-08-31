@@ -21,11 +21,7 @@ C     == Global variables ===
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#ifdef ALLOW_OPENAD
-# include "FFIELDS.h"
-#else
-# include "cost_local.h"
-#endif
+#include "cost_local.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
       INTEGER  myThid

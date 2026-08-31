@@ -197,7 +197,6 @@ c       iters = streamice_max_cg_iter
        ENDDO
       ENDDO
 
-!#if !defined(ALLOW_OPENAD) & !defined(ALLOW_TAPENADE)
       if (recalc_vel .eq. 1) then
        CALL STREAMICE_CG_SOLVE(
      &  U_state,
@@ -213,7 +212,6 @@ c       iters = streamice_max_cg_iter
      &  maxiters,
      &  myThid )
       endif
-!#endif
 
       tmpiter = 0
 

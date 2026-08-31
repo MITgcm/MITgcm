@@ -43,11 +43,6 @@ C     !LOCAL VARIABLES:
       _RL err_last_change, cgtol, err_init
       LOGICAL CONVERGED
 
-#ifdef ALLOW_OPENAD
-      INTEGER ADJ_ITER
-      LOGICAL ADJ_CONVERGED
-#endif
-
       isinloop0 =0
       isinloop1 =1
       isinloop2 =2
@@ -106,21 +101,6 @@ C     !LOCAL VARIABLES:
 
        endif
 
-#ifdef ALLOW_OPENAD
-      CALL STREAMICE_VEL_PHISTAGE (
-     I                   myThid,
-     I                   maxNLIter,
-     I                   maxCGiter,
-     O                   cgtol,
-     O                   nL_iter,
-     O                   adj_iter,
-     O                   CONVERGED,
-     O                   ADJ_CONVERGED,
-     O                   err_last_change,
-     O                   err_init,
-     I                   isinloop0)
-#endif
-
 #if (defined(ALLOW_STREAMICE_FP_ADJ) && defined(ALLOW_TAPENADE))
 #ifdef STREAMICE_HYBRID_STRESS
 !$AD FP-LOOP "u_streamice,v_streamice,streamice_taubx,streamice_tauby,visc_streamice_full" adj_reduction=1.e-6
@@ -137,7 +117,6 @@ C       but after convergence loop does nothing
 
 c        IF (.not.CONVERGED) THEN
 
-#ifndef ALLOW_OPENAD
       CALL STREAMICE_VEL_PHISTAGE (
      I                   myThid,
      I                   maxNLIter,
@@ -148,20 +127,6 @@ c        IF (.not.CONVERGED) THEN
      O                   err_last_change,
      O                   err_init,
      I                   isinloop1)
-#else
-      CALL STREAMICE_VEL_PHISTAGE (
-     I                   myThid,
-     I                   maxNLIter,
-     I                   maxCGiter,
-     O                   cgtol,
-     O                   nL_iter,
-     O                   adj_iter,
-     O                   CONVERGED,
-     O                   ADJ_CONVERGED,
-     O                   err_last_change,
-     O                   err_init,
-     I                   isinloop1)
-#endif
 
 c      DO bj = myByLo(myThid), myByHi(myThid)
 c       DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -176,7 +141,6 @@ c      ENDDO
 
       ENDDO
 
-#ifndef ALLOW_OPENAD
       CALL STREAMICE_VEL_PHISTAGE (
      I                   myThid,
      I                   maxNLIter,
@@ -187,20 +151,6 @@ c      ENDDO
      O                   err_last_change,
      O                   err_init,
      I                   isinloop2)
-#else
-      CALL STREAMICE_VEL_PHISTAGE (
-     I                   myThid,
-     I                   maxNLIter,
-     I                   maxCGiter,
-     O                   cgtol,
-     O                   nL_iter,
-     O                   adj_iter,
-     O                   CONVERGED,
-     O                   ADJ_CONVERGED,
-     O                   err_last_change,
-     O                   err_init,
-     I                   isinloop2)
-#endif
 
 C END NL ITER. LOOP
 C-------------------------------------------------------------------

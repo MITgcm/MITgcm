@@ -123,7 +123,6 @@ C     Initialise cost function variables zo zero
         ENDDO
        ENDDO
 
-c#ifndef ALLOW_OPENAD
 # ifdef ALLOW_GENTIM2D_CONTROL
        DO num_var=1,maxCtrlTim2D
         _GLOBAL_SUM_RL(f_gentim2d(num_var), myThid )

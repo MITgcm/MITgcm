@@ -2,7 +2,7 @@
 
 C--  File ctrl_toolbox.F: Routines to handle basic operations common in pkg/ctrl
 C--  Note: basically same as ecco_toolbox routines, but copied here for package
-C--  independence (pkg/ecco doesn't work with openad)
+C--  independence
 C--   Contents
 C--   o CTRL_ASSIGN
 C--   o CTRL_CPRLRL
