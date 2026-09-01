@@ -245,14 +245,14 @@ c    &         *0.98 _d 0
      &         * 17.502 _d 0 * 240.97 _d 0 / (240.97 _d 0+tsw)**2
 
       if (iceornot.EQ.0) THEN
-c       dLWdTs = 4. _d 0*ocean_emissivity*stefan*tsr*tsr*tsr
-        dLWdTs = 4. _d 0 * 0.96 _d 0 *stefan*tsr*tsr*tsr
+c       dLWdTs = 4. _d 0*ocean_emissivity*stefan*(tsw+celsius2K)**3
+        dLWdTs = 4. _d 0 * 0.96 _d 0 *stefan*(tsw+celsius2K)**3
       ELSEIF (iceornot.EQ.2) THEN
-c       dLWdTs = 4. _d 0*snow_emissivity*stefan*tsr*tsr*tsr
-        dLWdTs = 4. _d 0 * 0.96 _d 0 *stefan*tsr*tsr*tsr
+c       dLWdTs = 4. _d 0*snow_emissivity*stefan*(tsw+celsius2K)**3
+        dLWdTs = 4. _d 0 * 0.96 _d 0 *stefan*(tsw+celsius2K)**3
       ELSEIF (iceornot.EQ.1) THEN
-c       dLWdTs = 4. _d 0*ice_emissivity*stefan*tsr*tsr*tsr
-        dLWdTs = 4. _d 0 * 0.96 _d 0 *stefan*tsr*tsr*tsr
+c       dLWdTs = 4. _d 0*ice_emissivity*stefan*(tsw+celsius2K)**3
+        dLWdTs = 4. _d 0 * 0.96 _d 0 *stefan*(tsw+celsius2K)**3
       ENDIF
 
 C--   for now, ignores derivative of q100 relative to Tsurf:
