@@ -1839,7 +1839,7 @@ COMMM  SSDEV(I,1) = XL(I,1)*(AA(I,1)*DSH(I,1)-BB(I,1)*DTH(I,1))
 COMMM   SSDEV(I,L) = XL(I,L-1)*(AA(I,L)*DSH(I,L-1)-BB(I,L)*DTH(I,L-1))
         SSDEV(I,L) = XL(I,L-1)*(AA(I,L)*DSH(I,L-1)-
      1               BB(I,L)*plke(I,L)*DTH(I,L-1))
-        SSDEV(I,L) = B2 * KHSAVE(I,L-1) * SSDEV(I,L-1) * SSDEV(I,L-1)
+        SSDEV(I,L) = B2 * KHSAVE(I,L-1) * SSDEV(I,L) * SSDEV(I,L)
         SVAR(I,L) = SQRT(SSDEV(I,L))
 COMMM   SSDEV(I,L) = XL(I,L)*(AA(I,L)*DSH(I,L)-BB(I,L)*DTH(I,L))
         SSDEV(I,L) = XL(I,L)*(AA(I,L)*DSH(I,L)-
