@@ -1,27 +1,27 @@
-C
-CBOP
-C    !ROUTINE: GRID_MACROS.h
-C    !INTERFACE:
-C    include GRID_MACROS.h
-C    !DESCRIPTION: \bv
-C     *==========================================================*
-C     | GRID_MACROS.h
-C     *==========================================================*
-C     | These macros are used to substitute definitions for
-C     | GRID.h variables for particular configurations.
-C     | In setting these variables the following convention
-C     | applies.
-C     | undef  phi_CONST   - Indicates the variable phi is fixed
-C     |                      in X, Y and Z.
-C     | undef  phi_FX      - Indicates the variable phi only
-C     |                      varies in X (i.e.not in X or Z).
-C     | undef  phi_FY      - Indicates the variable phi only
-C     |                      varies in Y (i.e.not in X or Z).
-C     | undef  phi_FXY     - Indicates the variable phi only
-C     |                      varies in X and Y ( i.e. not Z).
-C     *==========================================================*
-C     \ev
-CEOP
+!
+!BOP
+!    !ROUTINE: GRID_MACROS.h
+!    !INTERFACE:
+!    include GRID_MACROS.h
+!    !DESCRIPTION: \bv
+! *==========================================================*
+! | GRID_MACROS.h
+! *==========================================================*
+! | These macros are used to substitute definitions for
+! | GRID.h variables for particular configurations.
+! | In setting these variables the following convention
+! | applies.
+! | undef  phi_CONST   - Indicates the variable phi is fixed
+! |                      in X, Y and Z.
+! | undef  phi_FX      - Indicates the variable phi only
+! |                      varies in X (i.e.not in X or Z).
+! | undef  phi_FY      - Indicates the variable phi only
+! |                      varies in Y (i.e.not in X or Z).
+! | undef  phi_FXY     - Indicates the variable phi only
+! |                      varies in X and Y ( i.e. not Z).
+! *==========================================================*
+! \ev
+!EOP
 
 #undef    DXC_CONST
 #undef    DXC_FX

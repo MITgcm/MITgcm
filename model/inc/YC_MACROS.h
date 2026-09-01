@@ -1,18 +1,18 @@
-C
-CBOP
-C    !ROUTINE: YC_MACROS.h
-C    !INTERFACE:
-C    include YC_MACROS.h
-C    !DESCRIPTION: \bv
-C     *==========================================================*
-C     | YC_MACROS.h                                               
-C     *==========================================================*
-C     | These macros are used to reduce memory requirement and/or 
-C     | memory references when variables are fixed along a given  
-C     | axis or axes.                                             
-C     *==========================================================*
-C     \ev
-CEOP
+!
+!BOP
+!    !ROUTINE: YC_MACROS.h
+!    !INTERFACE:
+!    include YC_MACROS.h
+!    !DESCRIPTION: \bv
+! *==========================================================*
+! | YC_MACROS.h
+! *==========================================================*
+! | These macros are used to reduce memory requirement and/or
+! | memory references when variables are fixed along a given
+! | axis or axes.
+! *==========================================================*
+! \ev
+!EOP
 
 #ifdef YC_CONST
 #define  _yC(i,j,bi,bj) yC(1,1,1,1)

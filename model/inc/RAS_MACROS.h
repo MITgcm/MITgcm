@@ -1,18 +1,18 @@
-C
-CBOP
-C    !ROUTINE: RAS_MACROS.h
-C    !INTERFACE:
-C    include RAS_MACROS.h
-C    !DESCRIPTION: \bv
-C     *==========================================================*
-C     | RAS_MACROS.h                                              
-C     *==========================================================*
-C     | These macros are used to reduce memory requirement and/or 
-C     | memory references when variables are fixed along a given  
-C     | axis or axes.                                             
-C     *==========================================================*
-C     \ev
-CEOP
+!
+!BOP
+!    !ROUTINE: RAS_MACROS.h
+!    !INTERFACE:
+!    include RAS_MACROS.h
+!    !DESCRIPTION: \bv
+! *==========================================================*
+! | RAS_MACROS.h
+! *==========================================================*
+! | These macros are used to reduce memory requirement and/or
+! | memory references when variables are fixed along a given
+! | axis or axes.
+! *==========================================================*
+! \ev
+!EOP
 
 #ifdef RA_CONST
 #define  _rAs(i,j,bi,bj) rAs(1,1,1,1)
