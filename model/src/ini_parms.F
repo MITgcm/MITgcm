@@ -263,6 +263,8 @@ C--   Continuous equation parameters
 
 C--   Elliptic solver parameters
       NAMELIST /PARM02/
+     & useCG2DPrecond, usePcsiSolver, PcsiConvergenceCheckFreq,
+     & PcsiConvergenceCheckStart, PcsiMaxIters, PcsiTargetResidual,
      & cg2dMaxIters, cg2dMinItersNSA, cg2dChkResFreq, cg2dUseMinResSol,
      & cg2dTargetResidual, cg2dTargetResWunit,
      & cg2dpcOffDFac, cg2dPreCondFreq,
