@@ -149,6 +149,28 @@ C     Report RBCS mask setting
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT, myThid )
       ENDIF
+      IF ( useRBCeta ) THEN
+        IF ( relaxMaskEtaFile.EQ. ' ' ) THEN
+         WRITE(msgBuf,'(2A)') '** WARNING ** RBCS_INIT_FIXED:',
+     &     ' relaxMaskEtaFile unset ==> use Temp mask instead'
+         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+         WRITE(msgBuf,'(2A)') 'Warning:',
+     &     ' relaxMaskEtaFile unset ==> use Temp mask instead'
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+        ELSE
+         iLen = ILNBLNK(relaxMaskEtaFile)
+         WRITE(msgBuf,'(A,3A)') 'Use relaxMaskEtaFile',
+     &     ' = "', relaxMaskEtaFile(1:iLen), '"'
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+        ENDIF
+         WRITE(msgBuf,'(A,1PE21.13)')
+     &     ' for Eta relaxation with tauRelaxEta =', tauRelaxEta
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+      ENDIF
 #ifdef ALLOW_PTRACERS
       IF ( usePTRACERS .AND. PTRACERS_numInUse.GE.1 ) THEN
        DO iTr=1,PTRACERS_numInUse
@@ -251,6 +273,25 @@ C--   Apply mask:
          ENDIF
        ENDIF
       ENDDO
+
+C--
+      IF ( relaxMaskEtaFile.NE. ' ' ) THEN
+        CALL READ_FLD_XY_RS( relaxMaskEtaFile, ' ',
+     &                 RBC_Etamask(1-OLx,1-OLy,1,1), 0, myThid )
+        CALL EXCH_XY_RS( RBC_Etamask(1-OLx,1-OLy,1,1), myThid )
+C--   Apply mask:
+        DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+             DO j=1-OLy,sNy+OLy
+              DO i=1-OLx,sNx+OLx
+                RBC_Etamask(i,j,bi,bj) = RBC_Etamask(i,j,bi,bj)
+     &                                       * maskC(i,j,1,bi,bj)
+              ENDDO
+             ENDDO
+          ENDDO
+        ENDDO
+      ENDIF
+
 
 #ifndef DISABLE_RBCS_MOM
       IF ( useRBCuVel .AND. relaxMaskUFile.NE. ' ' ) THEN
