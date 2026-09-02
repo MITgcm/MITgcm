@@ -1,0 +1,10 @@
+# Packages
+ &PACKAGES
+ usePTRACERS=.TRUE.,
+ useGCHEM =.TRUE.,
+ useGMRedi=.TRUE.,
+ useOBCS  =.TRUE.,
+ useDiagnostics=.TRUE.,
+ useCal=.TRUE.,
+ useEXF=.FALSE.,
+ &

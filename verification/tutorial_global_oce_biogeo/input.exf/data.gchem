@@ -1,0 +1,23 @@
+ &GCHEM_PARM01
+  useDIC=.TRUE.,
+  gchem_useEXF=.TRUE.,
+  nsubtime=1,
+  gchem_windFile='tren_speed.bin',
+  gchem_iceFile='fice.bin',
+  gchem_SiFile='sillev1.bin',
+#
+  gchem_apco2_const = 278.e-6,
+  gchem_wind_const  = 5.,
+  gchem_apres_const = 1.01325e5,
+  gchem_par_const   = 140.0,
+  gchem_Si_const    = 7.6838e-3,
+ &
+
+ &GCHEM_FORCING_PARAMS
+  gchem_windPeriod = -12.,
+  gchem_icePeriod  = -12.,
+  gchem_SiPeriod   = -12.,
+ &
+
+ &GCHEM_INTERP_PARAMS
+ &

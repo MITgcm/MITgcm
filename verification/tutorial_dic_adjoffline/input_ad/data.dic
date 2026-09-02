@@ -1,4 +1,4 @@
-# DIC parameters 
+# DIC parameters
  &ABIOTIC_PARMS
  &
 
@@ -9,8 +9,4 @@
  &
 
  &DIC_FORCING
-  DIC_iceFile='fice.bin',
-  DIC_windFile='tren_speed.bin',
-  DIC_silicaFile='sillev1.bin',
-  DIC_ironFile='mah_flux_smooth.bin',
  &

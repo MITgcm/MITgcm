@@ -33,7 +33,7 @@ C     msgBuf    :: Informational/error message buffer
 C     ioUnit    :: Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER ioUnit
-      INTEGER errCount
+c     INTEGER errCount
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -70,20 +70,6 @@ C---  Print summary:
 c     CALL WRITE_0D_L( fluidIsAir,   INDEX_NONE,
 c    & 'fluidIsAir   =', '  /* fluid major constituent is Air */')
 
-      CALL WRITE_0D_C( CFC_windFile, -1, INDEX_NONE,
-     & 'CFC_windFile =', ' /* wind-speed input file */')
-      CALL WRITE_0D_C( CFC_atmospFile, -1, INDEX_NONE,
-     & 'CFC_atmospFile =', ' /* atmos surf pressure input file */')
-      CALL WRITE_0D_C( CFC_iceFile, -1, INDEX_NONE,
-     & 'CFC_iceFile =', ' /* seaice fraction input file */')
-
-      CALL WRITE_0D_RL( CFC_forcingPeriod, INDEX_NONE,
-     &  'CFC_forcingPeriod =',
-     &  ' /* forcing period (s) of input file */')
-      CALL WRITE_0D_RL( CFC_forcingCycle, INDEX_NONE,
-     &  'CFC_forcingCycle =',
-     &  ' /* period of Cycle for input file (s) */')
-
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
@@ -94,46 +80,18 @@ c    & 'fluidIsAir   =', '  /* fluid major constituent is Air */')
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 
 C---  Check CFC pkg settings:
-      errCount = 0
+c     errCount = 0 ! nothing to check currently
 
-      IF ( CFC_windFile .NE. ' ' .AND. useEXF ) THEN
-        WRITE(msgBuf,'(A)')
-     &    'CFC_CHECK: setting CFC_windFile conflicts with using EXF'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        errCount = errCount + 1
-      ENDIF
+c     IF ( errCount.GE.1 ) THEN
+c       WRITE(msgBuf,'(A,I3,A)')
+c    &       'CFC_CHECK: detected', errCount,' fatal error(s)'
+c       CALL PRINT_ERROR( msgBuf, myThid )
+c       CALL ALL_PROC_DIE( 0 )
+c       STOP 'ABNORMAL END: S/R CFC_CHECK'
+c     ENDIF
 
-      IF ( CFC_iceFile .NE. ' ' .AND.
-     &     ( useThSIce .OR. useSEAICE ) ) THEN
-        WRITE(msgBuf,'(A)')
-     &    'CFC_CHECK: setting CFC_iceFile conflicts with using seaice'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        errCount = errCount + 1
-      ENDIF
-
-      IF ( CFC_forcingCycle.LE.zeroRL .AND.
-     &     ( CFC_windFile   .NE. ' '
-     &  .OR. CFC_atmospFile .NE. ' '
-     &  .OR. CFC_iceFile    .NE. ' ' ) ) THEN
-        WRITE(msgBuf,'(A)')
-     &       'CFC_CHECK: CFC_forcingCycle=0 but code to load'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(A)')
-     &       'CFC_CHECK:  non periodic forcing is missing'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        errCount = errCount + 1
-      ENDIF
-
-      IF ( errCount.GE.1 ) THEN
-        WRITE(msgBuf,'(A,I3,A)')
-     &       'CFC_CHECK: detected', errCount,' fatal error(s)'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        CALL ALL_PROC_DIE( 0 )
-        STOP 'ABNORMAL END: S/R CFC_CHECK'
-      ENDIF
-
-      WRITE(msgBuf,'(A)') 'CFC_CHECK: done'
-      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+c     WRITE(msgBuf,'(A)') 'CFC_CHECK: done'
+c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 
       _END_MASTER(myThid)
 

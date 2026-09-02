@@ -21,6 +21,11 @@ C                            used for exf-interpolation input-grid
       INTEGER MAX_LAT_INC
       PARAMETER( MAX_LAT_INC = 1279 )
 
+C     INTEGER MAX_LEV_IN  :: maximum number of vertical levels in input
+C                            file for 3D exf-interpolation
+      INTEGER MAX_LEV_IN
+      PARAMETER( MAX_LEV_IN = 200 )
+
 #ifndef EXF_INTERP_USE_DYNALLOC
 C-  To read input data without dynamical allocation (INTERP_USE_DYNALLOC undef):
 C     exf_max_nLon :: maximum size of original grid (longitudinal direction)
@@ -40,9 +45,11 @@ C   increased to 140000 to accommodate for ECMWF-INTERIM (512 x 256)
 
 C-- Set dummy dimension
       INTEGER    MAX_LAT_INC
+      INTEGER    MAX_LEV_IN
       INTEGER    exf_max_nLon, exf_max_nLat
       INTEGER    exf_interp_bufferSize
       PARAMETER( MAX_LAT_INC = 1 )
+      PARAMETER( MAX_LEV_IN = 1 )
       PARAMETER( exf_max_nLon = 1 )
       PARAMETER( exf_max_nLat = 1 )
       PARAMETER( exf_interp_bufferSize = 1 )
