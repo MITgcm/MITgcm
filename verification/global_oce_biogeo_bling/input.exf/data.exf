@@ -1,0 +1,119 @@
+# *********************
+# External Forcing Data
+# *********************
+#
+ &EXF_NML_01
+#TO COMBINE WITH ALLOW_ZENITH_ANGLE:
+# useExfZenIncoming = .TRUE., 
+# select_ZenAlbedo  = 1,
+#
+ exf_iprec         = 32,
+ exf_yftype        = 'RL',
+ useExfYearlyFields= .TRUE.,
+ useExfCheckRange  = .FALSE.,
+ useRelativeWind   = .FALSE.,
+ &
+# 
+ &EXF_NML_02
+# atempfile         = 'ERA5_NRT_tmp2m_K',
+# aqhfile           = 'ERA5_NRT_spfh2m',
+# precipfile        = 'ERA5_NRT_rain',
+# uwindfile         = 'ERA5_NRT_u10m',
+# vwindfile         = 'ERA5_NRT_v10m',
+# swdownfile        = 'ERA5_NRT_dsw',
+# lwdownfile        = 'ERA5_NRT_dlw',
+# runoffFile        = 'runoff_core_cnyf2p0_ccs_ms.bin',
+#
+# atempstartdate1   = 19920101,
+# atempstartdate2   = 000000,
+# atempperiod       = 3600.0,
+#
+# aqhstartdate1     = 19920101,
+# aqhstartdate2     = 000000,
+# aqhperiod         = 3600.0,
+#
+# apressurestartdate1     = 19920101,
+# apressurestartdate2     = 000000,
+# apressureperiod         = 3600.0,
+#
+# precipstartdate1  = 19920101,
+# precipstartdate2  = 003000,
+# precipperiod      = 3600.0,
+#
+# runoffperiod      = -12,
+#
+# uwindstartdate1   = 19920101,
+# uwindstartdate2   = 000000,
+# uwindperiod       = 3600.0,
+#
+# vwindstartdate1   = 19920101,
+# vwindstartdate2   = 000000,
+# vwindperiod       = 3600.0,
+#
+# swdownstartdate1  = 19920101,
+# swdownstartdate2  = 003000,
+# swdownperiod      = 3600.0,
+#
+# lwdownstartdate1  = 19920101,
+# lwdownstartdate2  = 003000,
+# lwdownperiod      = 3600.0,
+ &
+#
+ &EXF_NML_03
+# exf_inscal_precip = 1.e-03,
+ &
+#
+ &EXF_NML_04
+# runoff_interpMethod = 0,
+#
+# atemp_lon0        =   0.0000000D0,
+# atemp_lon_inc     =   0.25D0,
+# atemp_lat0        = -90.0D0,
+# atemp_lat_inc     = 720*0.25D0,
+# atemp_nlon        = 1440,
+# atemp_nlat        = 721,
+#
+# aqh_lon0        =   0.0000000D0,
+# aqh_lon_inc     =   0.25D0,
+# aqh_lat0        = -90.0D0,
+# aqh_lat_inc     = 720*0.25D0,
+# aqh_nlon        = 1440,
+# aqh_nlat        = 721,
+#
+# precip_lon0        =   0.0000000D0,
+# precip_lon_inc     =   0.25D0,
+# precip_lat0        = -90.0D0,
+# precip_lat_inc     = 720*0.25D0,
+# precip_nlon        = 1440,
+# precip_nlat        = 721,
+#
+# uwind_lon0        =   0.0000000D0,
+# uwind_lon_inc     =   0.25D0,
+# uwind_lat0        = -90.0D0,
+# uwind_lat_inc     = 720*0.25D0,
+# uwind_nlon        = 1440,
+# uwind_nlat        = 721,
+#
+# vwind_lon0        =   0.0000000D0,
+# vwind_lon_inc     =   0.25D0,
+# vwind_lat0        = -90.0D0,
+# vwind_lat_inc     = 720*0.25D0,
+# vwind_nlon        = 1440,
+# vwind_nlat        = 721,
+#
+# swdown_lon0        =   0.0000000D0,
+# swdown_lon_inc     =   0.25D0,
+# swdown_lat0        = -90.0D0,
+# swdown_lat_inc     = 720*0.25D0,
+# swdown_nlon        = 1440,
+# swdown_nlat        = 721,
+#
+# lwdown_lon0        =   0.0000000D0,
+# lwdown_lon_inc     =   0.25D0,
+# lwdown_lat0        = -90.0D0,
+# lwdown_lat_inc     = 720*0.25D0,
+# lwdown_nlon        = 1440,
+# lwdown_nlat        = 721,
+#
+ /
+
