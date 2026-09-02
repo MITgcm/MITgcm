@@ -1,0 +1,61 @@
+# Model parameters
+# Continuous equation parameters
+ &PARM01
+ viscAh=5000.,
+ viscAr=1.E-2,
+ no_slip_sides=.TRUE.,
+ no_slip_bottom=.FALSE.,
+ diffKhT=1000.,
+ diffKrT=1.E-5,
+ ivdc_kappa=1.,
+ implicitDiffusion=.TRUE.,
+ eosType='LINEAR',
+ tRef=30.,27.,24.,21.,18.,15.,13.,11.,9.,7.,6.,5.,4.,3.,2.,
+ tAlpha=2.E-4,
+ sBeta=0.,
+ rhoNil=999.8,
+ gravity=9.81,
+ rigidLid=.FALSE.,
+ implicitFreeSurface=.TRUE.,
+ exactConserv=.TRUE.,
+ saltStepping=.FALSE.,
+# globalFiles=.TRUE.,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dTargetResidual=1.E-7,
+ cg2dMaxIters=1000,
+ &
+
+# Time stepping parameters
+ &PARM03
+ startTime=0.,
+ endTime=12000.,
+ deltaT=1200.,
+ pChkptFreq=622080000.,
+ chkptFreq=155520000.,
+ dumpFreq=31104000.,
+ monitorFreq=1200.,
+ monitorSelect=2,
+ tauThetaClimRelax=2592000.,
+#-for longer run (100 yrs)
+# endTime = 3110400000.,
+# monitorFreq=2592000.,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingSphericalPolarGrid=.TRUE.,
+ delX=62*1.,
+ delY=62*1.,
+ xgOrigin=-1.,
+ ygOrigin=14.,
+ delR=50.,60.,70.,80.,90.,100.,110.,120.,130.,140.,150.,160.,170.,180.,190.,
+ &
+
+ &PARM05
+ bathyFile='bathy.bin',
+ zonalWindFile='windx_cosy.bin',
+ thetaClimFile='SST_relax.bin',
+ &
