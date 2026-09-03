@@ -50,19 +50,23 @@ C     derivative vs surf. temp of Sensible, Evap, LW, q100
 CEOP
 
 C     !LOCAL VARIABLES:
-      INTEGER iter,nits
-      _RL tau,L,psu,pst,Bf
-      _RL CD,usr,tsr,qsr
-c     _RL ttas,ttt,ttt2,pt,essqt
-      _RL zo,zot,zoq,RR,zL
-      _RL twoPI,cwave,lwave
+      INTEGER iter, nits
+      _RL tau, L, psu, pst, Bf
+      _RL CD, usr, tsr, qsr
+c     _RL ttas, ttt, ttt2, pt, essqt
+      _RL zo, zot, zoq, RR, zL
+      _RL twoPI, cwave, lwave
 
 C various constants
-      _RL u,q,Tas,tta,zi,es,qs,tsw
-      _RL psiu,psit,zot10,Ct10,CC,Ribu
-      _RL Du,Wg,Dt,Dq,u10,zo10,Cd10,Ch10
-      _RL xBeta,visa,Ribcu,QaR
-      _RL Ct,zetu,L10,charn
+C   u :: wind-speed ;   `   q :: specific humid
+C tac :: air  temp (in C) ; TaK :: air  temp (K)
+C tsw :: surf temp (in C) ; TsK :: surf temp (K)
+      _RL u, q, tac, TaK, tsw, TsK
+      _RL zi, es, qs
+      _RL psiu, psit, zot10, Ct10, CC, Ribu
+      _RL Du, Wg, Dt, Dq, u10, zo10, Cd10, Ch10
+      _RL xBeta, visa, Ribcu, QaR
+      _RL Ct, zetu, L10, charn
 
 C Constants and coefficients (Stull 1988 p640).
       xBeta = 1.2 _d 0    !Given as 1.25 in Fairall et al.(1996)
@@ -74,10 +78,10 @@ C default relative humidity
 C sea surface temperature without skin correction
 c     tsw=theta(i,j,1,bi,bj)
       tsw = tSurf(i,j)
-      Tas = Tair(i,j,bi,bj)
+      TsK = tsw+celsius2K
 
 C net upward long wave
-      Rnl = 0.96 _d 0*(stefan*(tsw+celsius2K)**4) !Net longwave (up = +).
+      Rnl = 0.96 _d 0*(stefan*TsK**4) !Net longwave (up = +).
 
 C Teten''s return s air svp es in mb
       es = (1.0007 _d 0 + 3.46 _d -6*p0)*6.1121 _d 0
@@ -86,10 +90,13 @@ C Teten''s return s air svp es in mb
 C-    convert from mb to spec. humidity  kg/kg
       qs = 0.62197 _d 0*es/(p0 -0.378 _d 0*es)
 
-      tta = Tas+celsius2K
-c     ttas=tta+gamma_blk*zt
-c     ttt=tta-(CheapHgrid(i,j,bi,bj) - zt)*gamma_blk
-c     ttt2=tta-(CheapHgrid(i,j,bi,bj) - zt)*gamma_blk-celsius2K
+C air temperature
+      tac = Tair(i,j,bi,bj)
+      TaK = tac+celsius2K
+
+c     ttas=TaK+gamma_blk*zt
+c     ttt=TaK-(CheapHgrid(i,j,bi,bj) - zt)*gamma_blk
+c     ttt2=TaK-(CheapHgrid(i,j,bi,bj) - zt)*gamma_blk-celsius2K
 c     pt = p0*(1.-gamma_blk*CheapHgrid(i,j,bi,bj)/ttas)
 c    &     **(gravity/gamma_blk/gasR)
 c     essqt = (1.0007 _d 0 + 3.46 _d -6*pt)*6.1121 _d 0
@@ -98,7 +105,7 @@ C-    convert from mb to spec. humidity  kg/kg
 c     ssqt = 0.62197 _d 0*essqt/(pt -0.378 _d 0*essqt)
 C-     LANL formulation
 C     saturation no more at the top:
-      ssqt=ssq0*EXP( lath*(ssq1-ssq2/tta) ) / p0
+      ssqt=ssq0*EXP( lath*(ssq1-ssq2/TaK) ) / p0
 
       IF (useFreshWaterFlux) THEN
         q=qair(i,j,bi,bj)
@@ -120,7 +127,7 @@ c    &  + (vwind(i,j,bi,bj)-vVel(i,j,1,bi,bj))**2
       u = windSq(i,j)
       Du= SQRT(u + Wg**2 )  !include gustiness in wind spd. difference
       u = SQRT(u)
-      Dt=tsw-Tas-gamma_blk*zt  !potential temperature difference.
+      Dt=tsw-tac-gamma_blk*zt  !potential temperature difference.
       Dq=qs-q
 
 C **************** neutral coefficients ******************
@@ -142,7 +149,7 @@ C ************* Grachev and Fairall (JAM, 1997) **********
       Ct=xkar/LOG(zt/zot10)   ! Temperature transfer coefficient
       CC=xkar*Ct/Cd            ! z/L vs Rib linear coefficient
       Ribcu=-zu/(zi*0.004 _d 0*xBeta**3)  ! Saturation or plateau Rib
-      Ribu=-gravity*zu*(Dt+0.61 _d 0*tta*Dq)/(tta*Du**2)
+      Ribu=-gravity*zu*(Dt+0.61 _d 0*TaK*Dq)/(TaK*Du**2)
       IF (Ribu.LT.0. _d 0) THEN
           zetu=CC*Ribu/(1. _d 0+Ribu/Ribcu)   ! Unstable G and F
       ELSE
@@ -193,25 +200,25 @@ C *** zoq and zot fitted to results from several ETL cruises ************
      &    ' L,zu,zL,zt    =', L, zu, zL, zt
          WRITE(errorMessageUnit,'(A,1P4E16.8)')
      &    ' ln(zu/zo),psu,diff,zL*=', LOG(zu/zo), psu, LOG(zu/zo)-psu,
-     &          ( tsr*(1.+0.61 _d 0*q)+0.61 _d 0*tta*qsr )
-     &         /( tta*usr*usr*(1. _d 0+0.61 _d 0*q) )
+     &          ( tsr*(1.+0.61 _d 0*q)+0.61 _d 0*TaK*qsr )
+     &         /( TaK*usr*usr*(1. _d 0+0.61 _d 0*q) )
          WRITE(errorMessageUnit,'(A,1P4E17.9)')
-     &    ' tsr,tta,q,qsr  =', tsr, tta, q, qsr
+     &    ' tsr,TaK,q,qsr  =', tsr, TaK, q, qsr
          CALL MDS_FLUSH( errorMessageUnit, myThid )
          CALL MDS_FLUSH( standardMessageUnit, myThid )
        ENDIF
        zoq = MIN( 1.15 _d -4, 5.5 _d -5/rr**0.6 _d 0 )
        zot = zoq
 
-       zL=xkar*gravity*zu*( tsr*(1.+0.61 _d 0*q)+0.61 _d 0*tta*qsr )
-     &                   /( tta*usr*usr*(1. _d 0+0.61 _d 0*q) )
+       zL=xkar*gravity*zu*( tsr*(1.+0.61 _d 0*q)+0.61 _d 0*TaK*qsr )
+     &                   /( TaK*usr*usr*(1. _d 0+0.61 _d 0*q) )
        L=zu/zL
        psu=psiu(zu/L)
        pst=psit(zt/L)
        usr=Du*xkar/(LOG(zu/zo)-psiu(zu/L))
        tsr=-(Dt)*xkar/(LOG(zt/zot)-psit(zt/L))
        qsr=-(Dq)*xkar/(LOG(zq/zoq)-psit(zq/L))
-       Bf=-gravity/tta*usr*(tsr+0.61 _d 0*tta*qsr)
+       Bf=-gravity/TaK*usr*(tsr+0.61 _d 0*TaK*qsr)
        IF (Bf.GT.0. _d 0) THEN
           Wg=xBeta*(Bf*zi)**.333 _d 0
        ELSE
@@ -245,14 +252,14 @@ c    &         *0.98 _d 0
      &         * 17.502 _d 0 * 240.97 _d 0 / (240.97 _d 0+tsw)**2
 
       if (iceornot.EQ.0) THEN
-c       dLWdTs = 4. _d 0*ocean_emissivity*stefan*(tsw+celsius2K)**3
-        dLWdTs = 4. _d 0 * 0.96 _d 0 *stefan*(tsw+celsius2K)**3
+c       dLWdTs = 4. _d 0*ocean_emissivity*stefan*TsK**3
+        dLWdTs = 4. _d 0 * 0.96 _d 0 *stefan*TsK*TsK*TsK
       ELSEIF (iceornot.EQ.2) THEN
-c       dLWdTs = 4. _d 0*snow_emissivity*stefan*(tsw+celsius2K)**3
-        dLWdTs = 4. _d 0 * 0.96 _d 0 *stefan*(tsw+celsius2K)**3
+c       dLWdTs = 4. _d 0*snow_emissivity*stefan*TsK**3
+        dLWdTs = 4. _d 0 * 0.96 _d 0 *stefan*TsK*TsK*TsK
       ELSEIF (iceornot.EQ.1) THEN
-c       dLWdTs = 4. _d 0*ice_emissivity*stefan*(tsw+celsius2K)**3
-        dLWdTs = 4. _d 0 * 0.96 _d 0 *stefan*(tsw+celsius2K)**3
+c       dLWdTs = 4. _d 0*ice_emissivity*stefan*TsK**3
+        dLWdTs = 4. _d 0 * 0.96 _d 0 *stefan*TsK*TsK*TsK
       ENDIF
 
 C--   for now, ignores derivative of q100 relative to Tsurf:
