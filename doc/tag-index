@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/cheapaml:
+  - fix LW derivative vs surf. temp (cheapaml_coare3_flux.F) which is used over
+    seaice ; update offline_cheapaml exp. (in verification_other) ref. output.
 o doc:
   - add reference to MITgcmIS in Chapt.12
 o pkg/fizhi:
