@@ -312,7 +312,7 @@ C     this line makes TAF create vectorizable code
      &   + ct*(2.*teos(03) + 3.*teos(04)*ct)
      &   + sa*(teos(06) + 2.*teos(07)*ct
      &   + sqrtsa*(teos(09) + ct*(2.*teos(10) + 3.*teos(11)*ct)))
-     &   + p*(     teos(13) + 2.*teos(14)*ct  + sa*2.*teos(16)
+     &   + p*(     teos(13) + 2.*teos(14)*ct  + sa*teos(16)
      &        + p*(teos(18) + 2.*teos(19)*ct))
 
          dden_dtheta = teos(22)
@@ -322,7 +322,7 @@ C     this line makes TAF create vectorizable code
      &   + sqrtsa*(teos(32)
      &   + ct*(2.*teos(33) + ct*(3.*teos(34) + 4.*teos(35)*ct))))
      &   + p*(teos(38) + ct*(2.*teos(39) + 3.*teos(40)*ct)
-     &   + teos(42)
+     &   + sa*teos(42)
      &   + p*(teos(44) + 2.*teos(45)*ct + teos(46)*sa
      &   + p*teos(48) ))
 
@@ -628,7 +628,7 @@ C     this line makes TAF create vectorizable code
      &   + 2.*teos(36)*sa
      &   + 1.5*sqrtsa*(teos(31) + ct*(teos(32) + ct*(teos(33)
      &                          + ct*(teos(34) + teos(35)*ct))))
-     &   + p*(teos(41) + teos(42)*ct + p*teos(46))
+     &   + p*(teos(41) + teos(42)*ct + p*ct*teos(46))
 
          betaLoc(i,j) = rhoDen(i,j)*( dnum_dsalt
      &        - (rhoLoc(i,j)*rhoDen(i,j))*dden_dsalt )

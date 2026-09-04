@@ -204,7 +204,7 @@ Each example experiment directory has the following subdirectories:
    running the adjoint of a global ocean simulation (model setup similar to :ref:`sec_global_oce_latlon`).
    This adjoint run optimizes a time-independent surface heat flux (i.e., the control variable) which brings
    the model climatology closest to observed climatology, using a cost function
-   based on gridpoint error in temperature. TAF and OpenAD adjoint setups.
+   based on gridpoint error in temperature.
 
 .. toctree::
    :maxdepth: 1
@@ -217,7 +217,7 @@ Each example experiment directory has the following subdirectories:
    A second experiment demonstrating MITgcm's adjoint capabilities, here examining the sensitivity of surface outgassing of a passive tracer
    as a function of tracer injection site location within the ocean interior. The global (4\ :sup:`o`\ x4\ :sup:`o`)
    ocean setup from tutorial :ref:`sec_global_oce_latlon`
-   is again used for this tutorial. TAF and OpenAD adjoint setups.
+   is again used for this tutorial. TAF and Tapenade adjoint setups.
 
 .. toctree::
    :maxdepth: 1
@@ -604,9 +604,10 @@ For many experiments, additional information is provided in a ``README`` file lo
 Additional Example Experiments: Adjoint Model Setups
 ====================================================
 
-Unless stated otherwise, the physical setup of the adjoint run is identical to the forward run, see description above.
-TAF adjoint setups require building with directory ``code_ad`` with input directory ``input_ad``, whereas OpenAD requires
-directories ``code_oad`` and ``input_oad`` respectively.
+Unless stated otherwise, the physical setup of the adjoint run is identical to the forward run,
+see description above.
+TAF adjoint setups require building with directory ``code_ad`` with input directory ``input_ad``,
+whereas Tapenaade requires directories ``code_tap`` and ``input_tap`` respectively.
 
 #. :filelink:`1D_ocean_ice_column <verification/1D_ocean_ice_column>` - Based on standard forward experiment,
    TAF adjoint setup, uses package :filelink:`ecco <pkg/ecco>`.
@@ -622,7 +623,7 @@ directories ``code_oad`` and ``input_oad`` respectively.
    <verification/bottom_ctrl_5x5/input_ad.facg2d>`)
 
 #. :filelink:`global_ocean.90x40x15 <verification/global_ocean.90x40x15>` - Based on standard forward experiment,
-   TAF and OpenAD adjoint setups. Also contains additional TAF adjoint setups:
+   TAF adjoint setups. Also contains additional TAF adjoint setups:
 
    - with bottom drag as a control and manual adjoint :filelink:`cg2d_mad.F
      <pkg/autodiff/cg2d_mad.F>` (:filelink:`input_ad.bottomdrag <verification/global_ocean.90x40x15/input_ad.bottomdrag>`)
@@ -631,7 +632,7 @@ directories ``code_oad`` and ``input_oad`` respectively.
 
    - with :math:`\kappa_{Redi}` as a control (:filelink:`input_ad.kapredi <verification/global_ocean.90x40x15/input_ad.kapredi>`).
 
-#. :filelink:`global_ocean.cs32x15 <verification/global_ocean.cs32x15>` - Based on standard forward experiment, TAF adjoint setup.
+#. :filelink:`global_ocean.cs32x15 <verification/global_ocean.cs32x15>` - Based on standard forward experiment, TAF and Tapenade adjoint setup.
    Also contains additional TAF adjoint setups:
 
    - using thermodynamic-dynamic sea ice (:filelink:`input_ad.seaice <verification/global_ocean.cs32x15/input_ad.seaice>`).
@@ -643,45 +644,43 @@ directories ``code_oad`` and ``input_oad`` respectively.
      (:filelink:`input_ad.thsice <verification/global_ocean.cs32x15/input_ad.thsice>`).
 
 #. :filelink:`global_oce_biogeo_bling <verification/global_oce_biogeo_bling>` - Based on
-   standard forward experiment, TAF adjoint setup, uses package
+   standard forward experiment, TAF and Tapenade adjoint setup, uses package
    :filelink:`ecco <pkg/ecco>` and package :filelink:`profiles <pkg/profiles>`.
    Also contains an additional TAF adjoint setup
    that uses package :filelink:`obsfit <pkg/obsfit>`
    (:filelink:`input_ad.obsfit <verification/global_oce_biogeo_bling/input_ad.obsfit>`).
 
-#. :filelink:`global_oce_latlon <verification/global_oce_latlon>` - Simple adjoint experiment (used also to test OpenAD compiler), TAF and OpenAD adjoint setups.
-   Also contains additional TAF and OpenAD adjoint setups:
+#. :filelink:`global_oce_latlon <verification/global_oce_latlon>` - Simple adjoint experiment, used also to test TAF and Tapenade adjoint setups.
+   Also contains additional TAF and Tapenade adjoint setups:
 
    - using package :filelink:`ggl90 <pkg/ggl90>`
-     (:filelink:`input_ad.ggl90 <verification/global_oce_latlon/input_ad.ggl90>`,
-     :filelink:`input_oad.ggl90 <verification/global_oce_latlon/input_oad.ggl90>`).
-
-   - using package :filelink:`kpp <pkg/kpp>`
-     (:filelink:`input_oad.kpp <verification/global_oce_latlon/input_oad.kpp>`).
+     (:filelink:`input_ad.ggl90 <verification/global_oce_latlon/input_ad.ggl90>`).
 
    - using package :filelink:`exf <pkg/exf>`
      (:filelink:`input_ad.w_exf <verification/global_oce_latlon/input_ad.w_exf>`,
+     :filelink:`input_tap.w_exf <verification/global_oce_latlon/input_tap.w_exf>`,
      formerly :filelink:`global_with_exf <verification/global_with_exf>`)
 
    - using package :filelink:`ebm <pkg/ebm>`
      (:filelink:`input_ad.ebm <verification/global_oce_latlon/input_ad.ebm>`,
      formerly :filelink:`global_ocean_ebm <verification/global_ocean_ebm>`)
 
-#. :filelink:`halfpipe_streamice<verification/halfpipe_streamice>` - Based on standard forward experiment, TAF and OpenAD adjoint setups.
+#. :filelink:`halfpipe_streamice<verification/halfpipe_streamice>` - Based on standard forward experiment, TAF and Tapenade adjoint setups.
 
-#. :filelink:`hs94.1x64x5 <verification/hs94.1x64x5>` - Based on standard forward experiment, TAF and OpenAD adjoint setups.
+#. :filelink:`hs94.1x64x5 <verification/hs94.1x64x5>` - Based on standard forward experiment, TAF adjoint setup.
 
-#. :filelink:`isomip <verification/isomip>` - Based on standard forward experiment, TAF and OpenAD adjoint setups.
+#. :filelink:`isomip <verification/isomip>` - Based on standard forward experiment, TAF and Tapenade adjoint setups.
    Also contains additional TAF adjoint setup
    with “htd” (Hellmer's thermodynamics, Hellmer 1989 :cite:`hellmer:89`) (:filelink:`input_ad.htd <verification/isomip/input_ad.htd>`).
 
-#. :filelink:`lab_sea <verification/lab_sea>` - Based on standard forward experiment, TAF adjoint setup, uses
+#. :filelink:`lab_sea <verification/lab_sea>` - Based on standard forward experiment, TAF and Tapenade adjoint setup, uses
    package :filelink:`ecco <pkg/ecco>` and :ref:`divided adjoint (DIVA) <sec_autodiff_diva>`.
-   Also contains additional TAF adjoint setups:
+   Also contains additional TAF and Tapenade adjoint setups:
 
    - without seaice dynamics (:filelink:`input_ad.noseaicedyn <verification/lab_sea/input_ad.noseaicedyn>`).
 
    - without seaice altogether (:filelink:`input_ad.noseaice <verification/lab_sea/input_ad.noseaice>`).
+   - without pkg/ecco (:filelink:`input_tap.noecco <verification/lab_sea/input_tap.noecco>`).
 
 #. :filelink:`obcs_ctrl <verification/obcs_ctrl>` - Adjoint test using open boundary conditions as
    control parameters, uses package :filelink:`ecco <pkg/ecco>`.
@@ -694,8 +693,9 @@ directories ``code_oad`` and ``input_oad`` respectively.
    to the dissolved inorganic carbon biogeochemistry model (currently NOT documented as a tutorial experiment).
 
 #. :filelink:`tutorial_global_oce_biogeo <verification/tutorial_global_oce_biogeo>` - Based on forward experiment described
-   in :numref:`sub_global_oce_biogeo`, TAF and OpenAD adjoint setups.
+   in :numref:`sub_global_oce_biogeo`, TAF and Tapenade adjoint setups.
 
 #. :filelink:`tutorial_tracer_adjsens <verification/tutorial_tracer_adjsens>` - Based on adjoint experiment
-   described in :numref:`sec_tracer_adj_sens`, contains an additional TAF setup using Second Order Moment (SOM)
-   advection scheme (:filelink:`input_ad.som81 <verification/tutorial_tracer_adjsens/input_ad.som81>`).
+   described in :numref:`sec_tracer_adj_sens`, TAF and Tapenade adjoint setups.
+   Contains also an additional TAF setup using Second Order Moment (SOM) advection scheme
+   (:filelink:`input_ad.som81 <verification/tutorial_tracer_adjsens/input_ad.som81>`).
