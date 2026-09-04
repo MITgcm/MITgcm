@@ -1,6 +1,12 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o doc:
+  - add reference to MITgcmIS in Chapt.12
+o pkg/fizhi:
+  - fix indices in averaged variance (SVAR) for turbulence fluxes (S/R TRBFLX);
+    add new CPP option "FIZHI_TRBFLX_OLD_BUG" to recover old bug ; update ref.
+    output of the fizhi-cs test experiments.
 o model/src:
   - fix TEOS-10 derivatives (bug) in FIND_ALPHA and FIND_BETA ;
     add missing "_d 0" to constants in GSW_GIBBS_PT0_PT0.
