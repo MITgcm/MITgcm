@@ -3,9 +3,9 @@
 C--  File gsw_teos10.F: routines that compute quantities related to seawater.
 C--   Contents
 C--   TEOS-10 routines (Gibbs seawater, GSW)
-C--   o GSW_PT_FROM_CT: function to compute potential temperature 
+C--   o GSW_PT_FROM_CT: function to compute potential temperature
 C--              from conservative temperature and absolute salinity
-C--   o GSW_CT_FROM_PT: function to compute conservative temperature with
+C--   o GSW_CT_FROM_PT: function to compute conservative temperature
 C--              from potential temperature and absolute salinity
 C--   o GSW_GIBBS_PT0_PT0: function to compute specific Gibbs free energy
 C--              from potential temperature and absolute salinity
@@ -47,13 +47,13 @@ CML      EXTERNAL gsw_gibbs, gsw_gibbs_pt0_pt0, gsw_ct_from_pt
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER n0, n2
-      _RL s1, p0, cp0 
+      _RL s1, p0, cp0
       _RL a0, a1, a2, a3, a4, a5, b0, b1, b2, b3
       _RL a5ct, b3ct, ct_factor, pt_num, pt_den, ct_diff
       _RL pt, pt_old, ptm, dct_dpt
 CEOP
 
-      cp0 = 3991.86795711963 _d 0    
+      cp0 = 3991.86795711963 _d 0
 
       n0 = 0
       n2 = 2
@@ -67,7 +67,7 @@ CEOP
       a3 =  9.477566673794488 _d -1
       a4 =  2.166591947736613 _d -3
       a5 =  3.828842955039902 _d -3
-      
+
       b0 =  1.000000000000000 _d +0
       b1 =  6.506097115635800 _d -4
       b2 =  3.830289486850898 _d -3
@@ -83,8 +83,8 @@ CEOP
 
       dct_dpt   = (pt_den)/(ct_factor + a5ct - (b2 + b3ct + b3ct)*pt)
 
-C     start the 1.5 iterations through the modified Newton-Rapshon 
-C     iterative method.  
+C     start the 1.5 iterations through the modified Newton-Rapshon
+C     iterative method.
 
       ct_diff = gsw_ct_from_pt(sa,pt) - CT
       pt_old  = pt
@@ -98,7 +98,7 @@ C     iterative method.
       pt_old         = pt
       GSW_PT_FROM_CT = pt_old - (ct_diff)/dct_dpt
 
-      RETURN 
+      RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -110,7 +110,7 @@ C     !INTERFACE:
 C     !DESCRIPTION: \bv
 C     *=============================================================*
 C     | S/R  GSW_CT_FROM_PT
-C     | o compute conservative temperature from potential 
+C     | o compute conservative temperature from potential
 C     |   temperature (PT)  at reference level 0 dbar and absolute
 C     |   salinity (SA)
 C     | o this is a more or less shameless copy of the teos-10 code
@@ -136,7 +136,7 @@ C     == Local variables ==
       _RL x2, x, y, cp0
 CEOP
 
-      sfac = 0.0248826675584615 _d 0 
+      sfac = 0.0248826675584615 _d 0
 
       x2   = sfac*sa
       x    = 0. _d 0
@@ -146,21 +146,21 @@ C     normalize for F03 and F08
 
       pot_enthalpy =  61.01362420681071 _d 0 +
      &     y*(168776.46138048015 _d 0 +
-     &     y*(-2735.2785605119625 _d 0 + y*(2574.2164453821433 _d 0 + 
-     &     y*(-1536.6644434977543 _d 0 + y*(545.7340497931629 _d 0 + 
-     &     (-50.91091728474331 _d 0 - 18.30489878927802 _d 0*y)*y))))) + 
-     &     x2*(268.5520265845071 _d 0 + y*(-12019.028203559312 _d 0 + 
-     &     y *(3734.858026725145 _d 0 + y*(-2046.7671145057618 _d 0 + 
-     &     y*(465.28655623826234 _d 0 + (-0.6370820302376359 _d 0 - 
-     &     10.650848542359153 _d 0*y)*y)))) + 
+     &     y*(-2735.2785605119625 _d 0 + y*(2574.2164453821433 _d 0 +
+     &     y*(-1536.6644434977543 _d 0 + y*(545.7340497931629 _d 0 +
+     &     (-50.91091728474331 _d 0 - y*18.30489878927802 _d 0)*y))))) +
+     &     x2*(268.5520265845071 _d 0 + y*(-12019.028203559312 _d 0 +
+     &     y *(3734.858026725145 _d 0 + y*(-2046.7671145057618 _d 0 +
+     &     y*(465.28655623826234 _d 0 + (-0.6370820302376359 _d 0 -
+     &     y*10.650848542359153 _d 0)*y)))) +
      &     x*(937.2099110620707 _d 0 + y*(588.1802812170108 _d 0 +
      &     y*(248.39476522971285 _d 0 + (-3.871557904936333 _d 0 -
-     &     2.6268019854268356 _d 0*y)*y)) + 
-     &     x*(-1687.914374187449 _d 0 + x*(246.9598888781377 _d 0 + 
-     &     x*(123.59576582457964 _d 0 - 48.5891069025409 _d 0*x)) + 
-     &     y*( 936.3206544460336 _d 0 + 
-     &     y*(-942.7827304544439 _d 0 + y*(369.4389437509002 _d 0 + 
-     &     (-33.83664947895248 _d 0 - 9.987880382780322 _d 0*y)*y))))))
+     &     y*2.6268019854268356 _d 0)*y)) +
+     &     x*(-1687.914374187449 _d 0 + x*(246.9598888781377 _d 0 +
+     &     x*(123.59576582457964 _d 0 - x*48.5891069025409 _d 0)) +
+     &     y*( 936.3206544460336 _d 0 +
+     &     y*(-942.7827304544439 _d 0 + y*(369.4389437509002 _d 0 +
+     &     (-33.83664947895248 _d 0 - y*9.987880382780322 _d 0)*y))))))
 
       cp0 = 3991.86795711963 _d 0
 
@@ -203,27 +203,27 @@ C     == Local variables ==
       _RL sfac, x2, x, y, g03, g08
 CEOP
 
-      sfac = 0.0248826675584615
+      sfac = 0.0248826675584615 _d 0
 
       x2   = sfac*sa
       x    = 0. _d 0
       if (x2.gt.0. _d 0) x = sqrt(x2)
       y    = pt0*0.025 _d 0
 
-      g03 = -24715.571866078 +
-     &     y*(4420.4472249096725 +
-     &     y*(-1778.231237203896 +
-     &     y*(1160.5182516851419 +
-     &     y*(-569.531539542516  + y*128.13429152494615))))
+      g03 = -24715.571866078 _d 0 +
+     &     y*(4420.4472249096725 _d 0 +
+     &     y*(-1778.231237203896 _d 0 +
+     &     y*(1160.5182516851419 _d 0 +
+     &     y*(-569.531539542516 _d 0  + y*128.13429152494615 _d 0))))
 
-      g08 = x2*(1760.062705994408  + x*(-86.1329351956084 +
-     &     x*( -137.1145018408982  + y*(296.20061691375236 +
-     &     y* (-205.67709290374563 + 49.9394019139016*y))) + 
-     &     y*(  -60.136422517125   + y*10.50720794170734)) +
-     &     y*(-1351.605895580406   + y*(1097.1125373015109 +
-     &     y*( -433.20648175062206 + 63.905091254154904*y))))
+      g08 = x2*(1760.062705994408 _d 0  + x*(-86.1329351956084 _d 0 +
+     &     x*( -137.1145018408982 _d 0  + y*(296.20061691375236 _d 0 +
+     &     y* (-205.67709290374563 _d 0 + y*49.9394019139016 _d 0))) +
+     &     y*(  -60.136422517125 _d 0   + y*10.50720794170734 _d 0)) +
+     &     y*(-1351.605895580406 _d 0   + y*(1097.1125373015109 _d 0 +
+     &     y*( -433.20648175062206 _d 0 + y*63.905091254154904 _d 0))))
 
-      gsw_gibbs_pt0_pt0 = (g03 + g08)*0.000625
+      gsw_gibbs_pt0_pt0 = (g03 + g08)*0.000625 _d 0
 
       RETURN
       END
