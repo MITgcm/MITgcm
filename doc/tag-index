@@ -2,6 +2,9 @@
     ==============================
 
 o pkg/cheapaml:
+  - fix cheapaml implementation of Large and Pond surface flux and add a
+    secondary test in experiment cheapAML_box that uses 'LANL' flux formula.
+o pkg/cheapaml:
   - fix LW derivative vs surf. temp (cheapaml_coare3_flux.F) which is used over
     seaice ; update offline_cheapaml exp. (in verification_other) ref. output.
 o doc:
