@@ -1,18 +1,18 @@
-C
-CBOP
-C    !ROUTINE: DYG_MACROS.h
-C    !INTERFACE:
-C    include DYG_MACROS.h
-C    !DESCRIPTION: \bv
-C     *==========================================================*
-C     | DYG_MACROS.h                                              
-C     *==========================================================*
-C     | These macros are used to reduce memory requirement and/or 
-C     | memory references when variables are fixed along a given  
-C     | axis or axes.                                             
-C     *==========================================================*
-C     \ev
-CEOP
+!
+!BOP
+!    !ROUTINE: DYG_MACROS.h
+!    !INTERFACE:
+!    include DYG_MACROS.h
+!    !DESCRIPTION: \bv
+! *==========================================================*
+! | DYG_MACROS.h
+! *==========================================================*
+! | These macros are used to reduce memory requirement and/or
+! | memory references when variables are fixed along a given
+! | axis or axes.
+! *==========================================================*
+! \ev
+!EOP
 
 #ifdef DYG_CONST
 #define  _dyG(i,j,bi,bj) dyG(1,1,1,1)

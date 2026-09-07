@@ -1,18 +1,18 @@
-C
-CBOP
-C    !ROUTINE: DXC_MACROS.h
-C    !INTERFACE:
-C    include DXC_MACROS.h
-C    !DESCRIPTION: \bv
-C     *==========================================================*
-C     | DXC_MACROS.h                                              
-C     *==========================================================*
-C     | These macros are used to reduce memory requirement and/or 
-C     | memory references when variables are fixed along a given  
-C     | axis or axes.                                             
-C     *==========================================================*
-C     \ev
-CEOP
+!
+!BOP
+!    !ROUTINE: DXC_MACROS.h
+!    !INTERFACE:
+!    include DXC_MACROS.h
+!    !DESCRIPTION: \bv
+! *==========================================================*
+! | DXC_MACROS.h
+! *==========================================================*
+! | These macros are used to reduce memory requirement and/or
+! | memory references when variables are fixed along a given
+! | axis or axes.
+! *==========================================================*
+! \ev
+!EOP
 
 #ifdef DXC_CONST
 #define  _dxC(i,j,bi,bj) dxC(1,1,1,1)
