@@ -62,6 +62,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
          CALL DIAGNOSTICS_FILL(GEOM_EKE,'GEOMeE  ',0,1,1,bi,bj,myThid)
        ENDIF
 #endif
+#ifndef GM_TRIADS_SCHEME
          CALL DIAGNOSTICS_FILL(Kux,'GM_Kux  ',0,Nr,1,bi,bj,myThid)
          CALL DIAGNOSTICS_FILL(Kvy,'GM_Kvy  ',0,Nr,1,bi,bj,myThid)
 #ifdef GM_EXTRA_DIAGONAL
@@ -73,6 +74,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
          CALL DIAGNOSTICS_FILL(Kwx,'GM_Kwx  ',0,Nr,1,bi,bj,myThid)
          CALL DIAGNOSTICS_FILL(Kwy,'GM_Kwy  ',0,Nr,1,bi,bj,myThid)
          CALL DIAGNOSTICS_FILL(Kwz,'GM_Kwz  ',0,Nr,1,bi,bj,myThid)
+#endif /* ndef GM_TRIADS_SCHEME */
 #ifdef GM_BOLUS_ADVEC
        IF ( GM_AdvForm ) THEN
          CALL DIAGNOSTICS_FILL(GM_PsiX,'GM_PsiX ',0,Nr,1,bi,bj,myThid)
