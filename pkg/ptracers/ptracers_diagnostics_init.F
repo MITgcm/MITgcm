@@ -46,7 +46,7 @@ c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       INTEGER      iTrc, ilnb, ilng, tracerId
       CHARACTER*7  trcUnits
-      CHARACTER*9  flxUnits, wUnits
+      CHARACTER*9  flxUnits, wUnits, hvUnits
       CHARACTER*30 locName
       CHARACTER*60 longName
       CHARACTER*4  diagSufx
@@ -58,9 +58,11 @@ C--   Add diagnostics to the (long) list
       IF ( usingPCoords ) THEN
          flxUnits = '.Pa.m^2/s'
          wUnits   = '.Pa/s    '
+         hvUnits  = '.m.Pa    '
       ELSE
          flxUnits = '.m^3/s   '
          wUnits   = '.m/s     '
+         hvUnits  = '.m^2     '
       ENDIF
 
       DO iTrc=1,PTRACERS_num
@@ -203,6 +205,113 @@ C-     Diffusive flux:
        diagCode  = 'WM      LR      '
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C--    Add diagnostics for variance
+c      diagUnits = DIAGS_MK_UNITS( trcUnits//'^2 '//flxUnits, myThid )
+       diagUnits = DIAGS_MK_UNITS(
+     &                   '('//trcUnits//')^2'//flxUnits, myThid )
+C-     Transport of tracer variance (splitted by direction):
+       diagName  = 'VTRr'//diagSufx
+       WRITE(diagTitle,'(2A)') 'Vert. transport Flux of ',
+     &                 locName(1:ilnb)//' Variance'
+       diagCode  = 'WM      LR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+       diagName  = 'VTRx'//diagSufx
+       WRITE(diagTitle,'(2A)') 'Zonal transport Flux of ',
+     &                 locName(1:ilnb)//' Variance'
+       diagCode  = 'UU      MR      '
+       diagMate  = diagNum + 2
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+       diagName  = 'VTRy'//diagSufx
+       WRITE(diagTitle,'(2A)') 'Merid transport Flux of ',
+     &                 locName(1:ilnb)//' Variance'
+       diagCode  = 'VV      MR      '
+       diagMate  = diagNum + 2
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+C-     Numerical Production of variance (same units as variance Transport)
+       diagName  = 'VPRr'//diagSufx
+       WRITE(diagTitle,'(2A)') locName(1:ilnb),
+     &                 ' Var Production by Vert. advection'
+       diagCode  = 'WM      LR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+       diagName  = 'VPRx'//diagSufx
+       WRITE(diagTitle,'(2A)') locName(1:ilnb),
+     &                 ' Var Production by Zonal advection'
+       diagCode  = 'UU      MR      '
+       diagMate  = diagNum + 2
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+       diagName  = 'VPRy'//diagSufx
+       WRITE(diagTitle,'(2A)') locName(1:ilnb),
+     &                 ' Var Production by Merid advection'
+       diagCode  = 'VV      MR      '
+       diagMate  = diagNum
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+C-     Variance Production due to forcing (same units as variance Transport)
+       diagName  = 'VPRf'//diagSufx
+       WRITE(diagTitle,'(2A)') locName(1:ilnb),
+     &                 ' Variance Production by Forcing'
+       diagCode  = 'SM      MR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+C-     Residual in variance budget (same units as variance Transport)
+       diagName  = 'VRes'//diagSufx
+       WRITE(diagTitle,'(2A)') 'Budget Residual of ',
+     &                 locName(1:ilnb)//' Variance'
+       diagCode  = 'SM      MR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+C--- for now, add specific diags for vertical implicit part
+       diagName  = 'VTRi'//diagSufx
+       WRITE(diagTitle,'(2A)') 'Impl.Vert. transport Flux of ',
+     &                 locName(1:ilnb)//' Variance'
+       diagCode  = 'WM      LR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+       diagName  = 'VPRi'//diagSufx
+       WRITE(diagTitle,'(2A)') locName(1:ilnb),
+     &                 ' Var Production by Impl.Vert. advection'
+       diagCode  = 'WM      LR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+C-     square of tracer difference in each direction (times face area):
+       diagUnits = DIAGS_MK_UNITS( '('//trcUnits//')^2.m^2', myThid )
+       diagName  = 'SqDi'//diagSufx
+       WRITE(diagTitle,'(2A)') 'Square of Impl.Vert. gradient of ',
+     &                 locName(1:ilnb)
+       diagCode  = 'WM      LR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+C--
+       diagName  = 'SqDr'//diagSufx
+       WRITE(diagTitle,'(2A)') 'Square of Vertical gradient of ',
+     &                 locName(1:ilnb)
+       diagCode  = 'WM      LR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+       diagUnits = DIAGS_MK_UNITS('('//trcUnits//')^2'//hvUnits,myThid )
+       diagName  = 'SqDx'//diagSufx
+       WRITE(diagTitle,'(2A)') 'Square of Zonal gradient of ',
+     &                 locName(1:ilnb)
+       diagCode  = 'UU      MR      '
+       diagMate  = diagNum + 2
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+       diagName  = 'SqDy'//diagSufx
+       WRITE(diagTitle,'(2A)') 'Square of Merid gradient of ',
+     &                 locName(1:ilnb)
+       diagCode  = 'VV      MR      '
+       diagMate  = diagNum
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
