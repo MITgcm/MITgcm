@@ -348,6 +348,28 @@ does time averaging every 3600. seconds and the names of diagnostics quantities
 are ``THETA`` and ``SALT``.  It interpolates vertically to the pressure levels
 100000 Pa, ..., 20000 Pa.
 
+The parameter :varlink:`timePhase` is used to specify the time of the first
+output (i.e., the phase): the output starts at :varlink:`timePhase` + multiple
+of \| :varlink:`frequency` \|. :varlink:`timePhase` defaults to zero for
+positive :varlink:`frequency` so that time averages are written at the of the
+time interval specified by :varlink:`frequency`; and to ``-0.5*`` \|
+:varlink:`frequency` \| for negative :varlink:`frequency` so that snapshots are
+written in the middle of the time interval specified by :varlink:`frequency`.
+
+There is a special case when :varlink:`calendarDumps` is ``.TRUE.``. In this
+case, any value of :varlink:`frequency` between 2592000 and 2678400 seconds (30
+and 31 days) triggers monthly output according to the specified calendar and
+any value betweeen 31104000 and 31968000 seconds (360 and 370 days) triggers
+yearly output. The parameter :varlink:`timePhase` can still be used to start
+the averaged or snapshot output after ``N`` months or years, where now the
+"unit" month or year is defined by the value of :varlink:`frequency`. For
+example, if you specify :varlink:`frequency` = 31363217 seconds (363 days and
+17 seconds, this awkward example is deliberate to make our point clear) with
+:varlink:`calendarDumps` ``=.TRUE.``, the model will write yearly averages at
+the end of each calendar year exactly; to start writing averages only after
+``N=50``, :varlink:`timePhase` needs be ``50*31363217 = 1568160850`` (taking
+into account all possible leap years, etc.).
+
 The :varlink:`fileFlags` parameter is explained in
 :numref:`diagnostic_fileFlags`.  Only the first three characters matter.  The
 first character determines the precision of the output files.  The default is
@@ -1426,7 +1448,7 @@ scripts to manipulate :filelink:`pkg/mnc` output are available at
 More general manipulations can be performed on `netCDF <http://www.unidata.ucar.edu/software/netcdf/>`_  files with
 the NetCDF Operators (“NCO”) at http://nco.sourceforge.net
 or with the Climate Data Operators (“CDO”) at https://code.mpimet.mpg.de/projects/cdo.
-See :ref:`gluemnc <gluemnc>` for post-processing NetCDF output via command line. 
+See :ref:`gluemnc <gluemnc>` for post-processing NetCDF output via command line.
 
 Unlike the older :filelink:`pkg/mdsio` routines, :filelink:`pkg/mnc` reads and writes variables on
 different “grids” depending upon their location in the
@@ -1535,7 +1557,7 @@ variables, and attributes.
 The two levels of :filelink:`pkg/mnc` are:
 
 Upper level
-     
+
 
     The upper level contains information about two kinds of
     associations:
@@ -1560,7 +1582,7 @@ Upper level
     re-used over multiple file reads and writes.
 
 Lower level
-     
+
 
     In the lower (or internal) level, associations are stored for `netCDF <http://www.unidata.ucar.edu/software/netcdf/>`_
     files and many of the entities that they contain including
@@ -1988,7 +2010,7 @@ and as yet are unpublished and undocumented.
 pkg/mnc utils
 ~~~~~~~~~~~~~
 
-The following scripts and utilities have been written to help manipulate 
+The following scripts and utilities have been written to help manipulate
 `netCDF <http://www.unidata.ucar.edu/software/netcdf/>`_ files:
 
 Tile Assembly:
@@ -1998,9 +2020,9 @@ Tile Assembly:
     called :filelink:`gluemnc.m <utils/matlab/gluemnc.m>` is also provided. Please use the
     `MATLAB <https://www.mathworks.com/>`_ help facility for more information.
 
-    A bash script :filelink:`gluemnc <utils/scripts/gluemnc>` is available for 
-    spatially “assembling” :filelink:`pkg/mnc` NetCDF output. Please see 
-    :numref:`gluemnc` for details. 
+    A bash script :filelink:`gluemnc <utils/scripts/gluemnc>` is available for
+    spatially “assembling” :filelink:`pkg/mnc` NetCDF output. Please see
+    :numref:`gluemnc` for details.
 
 gmt:
     As MITgcm evolves to handle more complicated domains and topologies,
