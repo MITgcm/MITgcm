@@ -53,18 +53,6 @@ C Light absorption scheme from Manizza et al. (2005),
 C with self shading from phytoplankton
 #undef PHYTO_SELF_SHADING
 
-C Note: atm pressure from PKG/EXF is always used for air-sea flux calculation
-C if available; otherwise read from file or set to constant value (1 atm)
-
-C Note: winds from PKG/EXF are always used if available;
-C otherwise read from file or set to constant value (5 m/s)
-
-C Note: ice fraction from PKG/SEAICE or THSICE is always used if available;
-C otherwise read from file or set to constant value (0)
-
-C Note: atm pCO2 from EXF file is always used if available;
-C otherwise set to constant value in data.bling
-
 C Simplify some parts of the code that are problematic when using the adjoint
 #define BLING_ADJOINT_SAFE
 

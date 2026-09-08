@@ -1,5 +1,5 @@
 #include "DIC_OPTIONS.h"
-
+#include "GCHEM_OPTIONS.h"
 CBOP
 C !ROUTINE: DIC_FIELDS_UPDATE
 
@@ -16,7 +16,11 @@ C !USES: ===============================================================
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "DYNVARS.h"
 #include "DIC_VARS.h"
+#ifdef GCHEM_ALLOW_FFIELDS
+# include "GCHEM_FIELDS.h"
+#else
 #ifdef ALLOW_THSICE
 # include "THSICE_VARS.h"
 #endif
@@ -28,6 +32,7 @@ C !USES: ===============================================================
 # include "CPL_PARAMS.h"
 # include "OCNCPL.h"
 #endif /* ALLOW_OCN_COMPON_INTERF */
+#endif /* GCHEM_ALLOW_FFIELDS */
 
 C !INPUT PARAMETERS: ===================================================
 C     bi, bj       :: tile indices
@@ -42,11 +47,29 @@ C     myThid       :: my Thread Id number
 #ifdef ALLOW_DIC
 
 c !LOCAL VARIABLES: ===================================================
-#if defined(ALLOW_THSICE) || defined(ALLOW_SEAICE) || defined(COMPONENT_MODULE)
-      INTEGER i, j
-#endif
+      INTEGER i, j, k
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
+C Update forcing fields in pkg/dic common blocks
+#ifdef GCHEM_ALLOW_FFIELDS
+C  Get SST, SSS and ice fraction from pkg/gchem        
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          dicSST(i,j,bi,bj) = gchemSST(i,j,bi,bj)
+          dicSSS(i,j,bi,bj) = gchemSSS(i,j,bi,bj)
+          fIce(i,j,bi,bj)   = gchemIce(i,j,bi,bj)
+         ENDDO
+        ENDDO
+#else /* GCHEM_ALLOW_FFIELDS */
+C  Get SST, SSS and ice fraction from the main model        
+        k = 1
+
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          dicSST(i,j,bi,bj) = theta(i,j,k,bi,bj)
+          dicSSS(i,j,bi,bj) = salt (i,j,k,bi,bj)
+         ENDDO
+        ENDDO
 
         IF ( useThSIce ) THEN
 #ifdef ALLOW_THSICE
@@ -94,7 +117,7 @@ CEOP
          ENDIF
         ENDIF
 #endif /* ALLOW_OCN_COMPON_INTERF */
-
+#endif /* GCHEM_ALLOW_FFIELDS */
 #endif /* ALLOW_DIC */
       RETURN
       END

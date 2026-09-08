@@ -1,4 +1,6 @@
  &GCHEM_PARM01
   useCFC=.TRUE.,
   nsubtime=1,
+  gchem_iceFile  = 'fice.bin',
+  gchem_windFile = 'tren_speed.bin',
  &

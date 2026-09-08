@@ -1,4 +1,12 @@
  &GCHEM_PARM01
   useDIC=.TRUE.,
   nsubtime=1,
+#
+  gchem_iceFile='fice.bin',
+  gchem_windFile='tren_speed.bin',
+  gchem_siFile='sillev1.bin',
+  gchem_FeFile='mah_flux_smooth.bin',
+#
+  gchem_apco2_const = 278.e-6,
+  gchem_apres_const = 1013.25e2,
  &

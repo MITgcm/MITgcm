@@ -49,7 +49,6 @@ C  myThid               :: thread number
       INTEGER myIter, myThid
 CEOP
 
-#ifdef ALLOW_GCHEM
 #ifdef GCHEM_SEPARATE_FORCING
 
 C!LOCAL VARIABLES: ====================================================
@@ -136,6 +135,11 @@ C$taf loop = parallel
 C$taf loop = parallel
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
+#ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('GCHEM_FIELDS_UPDATE',myThid)
+#endif
+          CALL GCHEM_FIELDS_UPDATE( bi, bj, myTime, myIter, myThid )
+          
 ccccccccccccccccccccccccccc DIC cccccccccccccccccccccccccccccccc
 #ifdef ALLOW_DIC
 # ifdef ALLOW_AUTODIFF
@@ -318,7 +322,6 @@ C       tendency multiplied by maskInC)
 #endif
 
 #endif /* GCHEM_SEPARATE_FORCING */
-#endif /* ALLOW_GCHEM */
 
       RETURN
       END

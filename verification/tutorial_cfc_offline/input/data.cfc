@@ -24,6 +24,4 @@
 #- default atmCFC_timeOffset is set according to PTRACERS_Iter0
 #   and corresponds to -5899*360*86400 as set just below:
 # atmCFC_timeOffset = -183482496000.,
-  CFC_iceFile='fice.bin',
-  CFC_windFile='tren_speed.bin',
  &
