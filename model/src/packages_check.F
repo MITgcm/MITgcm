@@ -376,6 +376,12 @@ C---  Continue with standard packages (with standard usePKG flag)
      &                  'ICEFRONT', ' ', myThid )
 #endif
 
+#ifdef ALLOW_ICEPLUME
+      IF (useICEPLUME) CALL ICEPLUME_CHECK( myThid )
+#else
+      IF (useICEPLUME) CALL PACKAGES_ERROR_MSG('ICEPLUME',' ',myThid)
+#endif
+
 #ifdef ALLOW_THSICE
       IF ( useThSIce ) CALL THSICE_CHECK( myThid )
 #else

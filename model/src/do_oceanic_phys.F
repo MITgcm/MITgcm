@@ -73,6 +73,8 @@ C       |-- SHELFICE_THERMODYNAMICS
 C       |
 C       |-- ICEFRONT_THERMODYNAMICS
 C       |
+C       |-- ICEPLUME_CALC
+C       |
 C       |-- SALT_PLUME_DO_EXCH
 C       |
 C       |-- FREEZE_SURFACE
@@ -541,6 +543,16 @@ C     ice-front ocean interface
      &      myThid)
       ENDIF
 #endif /* ALLOW_ICEFRONT */
+
+#ifdef ALLOW_ICEPLUME
+      IF ( useICEPLUME .AND. fluidIsWater ) THEN
+C     Calculate plume due to subglacial runoff, as well as
+C     temperature and virtual salt flux at ice-ocean interface
+       CALL TIMER_START('ICEPLUME_CALC [DO_OCEANIC_PHYS]', myThid )
+       CALL ICEPLUME_CALC( myTime, myIter, myThid )
+       CALL TIMER_STOP( 'ICEPLUME_CALC [DO_OCEANIC_PHYS]', myThid )
+      ENDIF
+#endif /* ALLOW_ICEPLUME */
 
 #ifdef ALLOW_SALT_PLUME
       IF ( useSALT_PLUME ) THEN
