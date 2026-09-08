@@ -290,6 +290,41 @@ C     Atmospheric carbon dioxide concentration
       ENDIF
 #endif
 
+C-----------------------------------------------------------
+C Get silica concentration and surface iron flux from PKG/EXF
+#ifdef ALLOW_EXF
+      IF ( useEXF ) THEN
+C     Silica concentration
+       IF ( BLING_silicaFile .NE. ' '  ) THEN
+        CALL EXF_SET_FLD(
+     I     'silica', BLING_silicafile, silicamask,
+     I     silicaStartTime, silicaperiod, silicaRepCycle,
+     I     exf_inscal_silica,
+     I     silica_exfremo_intercept, silica_exfremo_slope,
+     U     silica, silica0, silica1,
+# ifdef USE_EXF_INTERPOLATION
+     I     silica_lon0, silica_lon_inc, silica_lat0, silica_lat_inc,
+     I     silica_nlon, silica_nlat, xC, yC, silica_interpMethod,
+# endif
+     I     myTime, myIter, myThid )
+       ENDIF
+C      Surface iron flux
+       IF ( BLING_ironFile .NE. ' '  ) THEN
+        CALL EXF_SET_FLD(
+     I     'InputFe', BLING_ironfile, ironmask,
+     I     ironStartTime, ironperiod, ironRepCycle,
+     I     exf_inscal_iron,
+     I     iron_exfremo_intercept, iron_exfremo_slope,
+     U     InputFe, feinput0, feinput1,
+# ifdef USE_EXF_INTERPOLATION
+     I     iron_lon0, iron_lon_inc, iron_lat0, iron_lat_inc,
+     I     iron_nlon, iron_nlat, xC, yC, iron_interpMethod,
+# endif
+     I     myTime, myIter, myThid )
+       ENDIF
+      ENDIF
+#endif
+
 #endif /* ALLOW_BLING */
       RETURN
       END

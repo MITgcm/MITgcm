@@ -1,0 +1,11 @@
+# Example "eedata" file  for multi-threaded test
+#   (copy "eedata.mth" to "eedata" to use it)
+# Lines beginning "#" are comments
+# nTx - No. threads per process in X
+# nTy - No. threads per process in Y
+ &EEPARMS
+ nTx=1,
+ nTy=2,
+ &
+# Note: Some systems use & as the namelist terminator (as shown here).
+#       Other systems use a / character.

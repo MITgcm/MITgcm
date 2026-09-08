@@ -16,6 +16,10 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "BLING_VARS.h"
+#ifdef ALLOW_EXF
+# include "EXF_PARAM.h"
+# include "EXF_INTERP_SIZE.h"
+#endif
 
 C     !INPUT PARAMETERS:
 C     myThid       :: my Thread Id number
@@ -23,7 +27,8 @@ C     myThid       :: my Thread Id number
 CEOP
 
 #ifdef ALLOW_BLING
-c     CHARACTER*(MAX_LEN_MBUF) msgBuf
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER errCount
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -61,6 +66,43 @@ C coefficients for determining saturation O2
       IF ( useSEAICE ) THEN
        apco2mask = ' '
       ENDIF
+
+      IF ( apCO2file .NE. ' ' ) THEN
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START pCO2',
+     &  myThid)
+# endif
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                         'bling', 'apCO2', apCO2period,
+     I                         apCO2startdate1, apCO2startdate2,
+     U                         apCO2StartTime, errCount,
+     I                         myThid )
+      ENDIF
+
+      IF ( bling_ironfile .NE. ' ' ) THEN
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START iron',
+     &  myThid)
+# endif
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                         'bling', 'iron', ironperiod,
+     I                         ironstartdate1, ironstartdate2,
+     U                         ironStartTime, errCount,
+     I                         myThid )
+      ENDIF
+
+      IF ( bling_silicafile .NE. ' ' ) THEN
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START silica',
+     &  myThid)
+# endif
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                         'bling', 'silica', silicaperiod,
+     I                         silicastartdate1, silicastartdate2,
+     U                         silicaStartTime, errCount,
+     I                         myThid )
+      ENDIF
+
 #endif
 
 C     Set other constant/flag

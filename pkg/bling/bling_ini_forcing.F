@@ -109,6 +109,32 @@ c set reasonable values to those that need at least something
 # endif
      I     myThid )
        ENDIF
+C      Silica concentration
+       IF ( BLING_silicafile .NE. ' ' ) THEN
+      CALL EXF_INIT_FLD(
+     I     'silica', BLING_silicafile, silicamask,
+     I     silicaperiod, exf_inscal_silica, silicaconst,
+     O     silica, silica0, silica1,
+# ifdef USE_EXF_INTERPOLATION
+     I     silica_lon0, silica_lon_inc,
+     I     silica_lat0, silica_lat_inc,
+     I     silica_nlon, silica_nlat, xC, yC, silica_interpMethod,
+# endif
+     I     myThid )
+       ENDIF
+C      Surface iron flux
+       IF ( BLING_ironfile .NE. ' ' ) THEN
+      CALL EXF_INIT_FLD(
+     I     'InputFe', BLING_ironfile, ironmask,
+     I     ironperiod, exf_inscal_iron, ironconst,
+     O     InputFe, feinput0, feinput1,
+# ifdef USE_EXF_INTERPOLATION
+     I     iron_lon0, iron_lon_inc,
+     I     iron_lat0, iron_lat_inc,
+     I     iron_nlon, iron_nlat, xC, yC, iron_interpMethod,
+# endif
+     I     myThid )
+       ENDIF
       ENDIF
 #endif /* ALLOW_EXF */
 
