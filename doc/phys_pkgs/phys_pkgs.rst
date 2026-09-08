@@ -121,6 +121,7 @@ Ice and Sea Ice Packages
    shelfice.rst
    remesh.rst   
    streamice.rst   
+   iceberg.rst
 
 Biogeochemistry Packages
 ========================

@@ -10,17 +10,24 @@ C     | o Shared 3-D Buffers used for I/O
 C     *==========================================================*
 CEOP
 
+#ifdef ALLOW_ICEBERG
+# include "ICEBERG_SIZE.h"
+#endif /* ALLOW_ICEBERG */
+
 C     size3dBuf  :: buffer 3rd dimension, corresponds to the maximum number
 C                   of levels that can be read/written at a time.
 C     Note: minimum value = Nr, but in few cases (vertical interpolation,
-C           NrPhys from Fizhi, ...)  needs to be larger. Here we pick 2*Nr
+C           NrPhys from Fizhi, ICERBERG package...)  needs to be larger. Here we pick 2*Nr
 C           which should be enough for most applications.
       INTEGER size3dBuf
 #ifdef ALLOW_FIZHI
       PARAMETER ( size3dBuf = Nr+NrPhys )
+#elif defined(ALLOW_ICEBERG)
+      PARAMETER ( size3dBuf = brg_MaxBergCt )
 #else
       PARAMETER ( size3dBuf = 2*Nr )
 #endif
+
 
 C--   COMMON /MDS_3D_BUFFERS/  3-D Shared Local Buffers
 C     Those buffers have be in common block to be shared by all threads;
