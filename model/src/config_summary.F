@@ -730,6 +730,21 @@ C---
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)') '//  '
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+#ifdef ALLOW_PCSI
+      CALL WRITE_0D_L( usePcsiSolver, INDEX_NONE,
+     & 'usePcsiSolver =', '  /* use Pcsi solver(s) */')
+      CALL WRITE_0D_I( PcsiConvergenceCheckFreq,   INDEX_NONE,
+     & 'PcsiConvergenceCheckFreq =',
+     &'   /*  Freq. for Pcsi Convergence Check */')
+      CALL WRITE_0D_I( PcsiConvergenceCheckStart,   INDEX_NONE,
+     & 'PcsiConvergenceCheckStart =',
+     &'   /* Lower limt for Pcsi Convergence Check Start  */')
+      CALL WRITE_0D_I( PcsiMaxIters,   INDEX_NONE,'PcsiMaxIters =',
+     &'   /* Upper limit on 2d Pcsi iterations  */')
+      CALL WRITE_0D_RL( PcsiTargetResidual, INDEX_NONE,
+     & 'PcsiTargetResidual =',
+     &'   /* 2d Pcsi target residual  */')
+#endif
       CALL WRITE_0D_I( cg2dMaxIters,   INDEX_NONE,'cg2dMaxIters =',
      &'   /* Upper limit on 2d con. grad iterations  */')
       CALL WRITE_0D_I( cg2dMinItersNSA, INDEX_NONE,'cg2dMinItersNSA =',

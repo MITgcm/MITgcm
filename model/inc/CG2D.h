@@ -43,3 +43,16 @@ C                 on cg2dNormaliseRHS, solver-unit ^2 = (m2/s2)^2 or no unit)
       _RL  cg2dNorm, cg2dTolerance_sq
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifdef ALLOW_PCSI
+      COMMON /PCSI_I_L/ PcsiNormaliseRHS
+      LOGICAL PcsiNormaliseRHS
+
+      COMMON /PCSI_I_RL/
+     &      PcsiMaxEigs, PcsiMinEigs,
+     &      PcsiNorm, PcsiTolerance
+      _RL  PcsiMaxEigs, PcsiMinEigs
+      _RL  PcsiNorm, PcsiTolerance
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+#endif /* ALLOW_PCSI */
