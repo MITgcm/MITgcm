@@ -1,10 +1,13 @@
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#include "BACKWARD_COMPAT_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: MOMENTUM_CORRECTION_STEP
 C     !INTERFACE:
-      SUBROUTINE MOMENTUM_CORRECTION_STEP( myTime, myIter, myThid )
+      SUBROUTINE MOMENTUM_CORRECTION_STEP(
+     O                    cg2d_x, cg3d_x,
+     I                    myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE MOMENTUM_CORRECTION_STEP
@@ -31,19 +34,28 @@ C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h"
 #include "DYNVARS.h"
 
 #ifdef ALLOW_SHAP_FILT
-#include "SHAP_FILT.h"
+# include "SHAP_FILT.h"
 #endif
 #ifdef ALLOW_ZONAL_FILT
-#include "ZONAL_FILT.h"
+# include "ZONAL_FILT.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
+C     cg2d_x  :: Solution vector of the 2-D solver equation A.x=b
+C     cg3d_x  :: Solution vector of the 3-D solver equation A.X=B
 C     myTime :: Current time in simulation
 C     myIter :: Current iteration number in simulation
 C     myThid :: my Thread Id. number
+      _RL cg2d_x(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#ifdef ALLOW_NONHYDROSTATIC
+      _RL cg3d_x(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#else /* ALLOW_NONHYDROSTATIC */
+      _RL cg3d_x(1)
+#endif /* ALLOW_NONHYDROSTATIC */
       _RL myTime
       INTEGER myIter
       INTEGER myThid
@@ -76,17 +88,32 @@ C       range is all but first row and column in overlaps.
           jMin = 1-OLy+1
           jMax = sNy+OLy
 
-C-      Calculate gradient of surface Potentiel
+C-      Calculate gradient of surface Potential
+#ifdef PRESERVE_C69C_OUTPUT
           CALL CALC_GRAD_PHI_SURF(
      I         bi, bj, iMin, iMax, jMin, jMax,
      I         etaN,
      O         phiSurfX, phiSurfY,
      I         myThid )
+#else
+          DO j=jMin,jMax
+           DO i=iMin,iMax
+            phiSurfX(i,j) = _recip_dxC(i,j,bi,bj)
+     &                    *( cg2d_x(i,j,bi,bj) - cg2d_x(i-1,j,bi,bj) )
+           ENDDO
+          ENDDO
+          DO j=jMin,jMax
+           DO i=iMin,iMax
+            phiSurfY(i,j) = _recip_dyC(i,j,bi,bj)
+     &                    *( cg2d_x(i,j,bi,bj) - cg2d_x(i,j-1,bi,bj) )
+           ENDDO
+          ENDDO
+#endif
 
 C-      Update velocity fields:  V(n) = V** - dt * grad Eta
           CALL CORRECTION_STEP(
      I         bi, bj, iMin, iMax, jMin, jMax,
-     I         phiSurfX, phiSurfY,
+     I         phiSurfX, phiSurfY, cg3d_x,
      I         myTime, myIter, myThid )
         ENDIF
 

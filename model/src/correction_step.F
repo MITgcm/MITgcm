@@ -5,7 +5,7 @@ CBOP
 C     !ROUTINE: CORRECTION_STEP
 C     !INTERFACE:
       SUBROUTINE CORRECTION_STEP( bi, bj, iMin, iMax, jMin, jMax,
-     I                      phiSurfX, phiSurfY,
+     I                      phiSurfX, phiSurfY, cg3d_x,
      I                      myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -23,9 +23,6 @@ C     == Global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
-#ifdef ALLOW_NONHYDROSTATIC
-# include "NH_VARS.h"
-#endif
 #ifdef ALLOW_DIAGNOSTICS
 # include "FFIELDS.h"
 #endif
@@ -34,12 +31,18 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
 C     bi, bj              :: Tile indices
 C     iMin,iMax,jMin,jMax :: Loop counters range
-C     phiSurfX, phiSurfY  :: Surface Potential gradient
+C     phiSurfX, phiSurfY  :: Surface Potentiel gradient
+C     cg3d_x              :: Solution vector of the 3-D solver equation A.X=B
 C     myTime              :: Current time in simulation
 C     myIter              :: Current iteration number in simulation
 C     myThid              :: my Thread Id number
       _RL     phiSurfX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     phiSurfY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#ifdef ALLOW_NONHYDROSTATIC
+      _RL cg3d_x(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#else /* ALLOW_NONHYDROSTATIC */
+      _RL cg3d_x(1)
+#endif /* ALLOW_NONHYDROSTATIC */
       INTEGER bi, bj
       INTEGER iMin, iMax, jMin, jMax
       _RL     myTime
@@ -162,7 +165,7 @@ C     Pressure gradient tendency (zonal mom): Implicit part
      &          psFac*phiSurfX(i,j)
 #ifdef ALLOW_NONHYDROSTATIC
      &        + nhFac*_recip_dxC(i,j,bi,bj)
-     &           *(phi_nh(i,j,k,bi,bj)-phi_nh(i-1,j,k,bi,bj))
+     &           *(cg3d_x(i,j,k,bi,bj)-cg3d_x(i-1,j,k,bi,bj))
 #endif
      &                   )*_maskW(i,j,k,bi,bj)
           ENDDO
@@ -183,7 +186,7 @@ C     Pressure gradient tendency (merid mom): Implicit part
      &          psFac*phiSurfY(i,j)
 #ifdef ALLOW_NONHYDROSTATIC
      &        + nhFac*_recip_dyC(i,j,bi,bj)
-     &           *(phi_nh(i,j,k,bi,bj)-phi_nh(i,j-1,k,bi,bj))
+     &           *(cg3d_x(i,j,k,bi,bj)-cg3d_x(i,j-1,k,bi,bj))
 #endif
      &                   )*_maskS(i,j,k,bi,bj)
           ENDDO
