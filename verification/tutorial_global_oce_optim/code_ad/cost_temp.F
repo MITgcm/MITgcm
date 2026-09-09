@@ -22,11 +22,7 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "cost.h"
-#ifdef ALLOW_OPENAD
-# include "FFIELDS.h"
-#else
-# include "cost_local.h"
-#endif
+#include "cost_local.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid - Thread number for this instance of the routine.

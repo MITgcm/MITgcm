@@ -314,11 +314,7 @@ C--      start diagnostics k loop
             DO j=jMin,jMax
              DO i=iMin,iMax
                df(i,j) =
-cc#ifdef ALLOW_AUTODIFF_OPENAD
-cc     &             -rA(i,j,bi,bj)%v
-cc#else
      &             -rA(i,j,bi,bj)*deepFac2F(k)*rhoFacF(k)
-cc#endif
      &            * kappaRX(i,j,k)*recip_drC(k)*rkSign
      &            * (gTracer(i,j,k) - gTracer(i,j,k-1))
      &            * maskC(i,j,k,bi,bj)
@@ -426,12 +422,8 @@ C--    use current hFac (consistent with solver matrix)
            DO j=jMin,jMax
             DO i=iMin,iMax
               flx(i,j) = flx(i,j)
-cc#ifdef ALLOW_AUTODIFF_OPENAD
-cc     &                - rkSign*div(i,j)*rA(i,j,bi,bj)%v/deltaTLev(k)
-cc#else
      &                - rkSign*div(i,j)*rA(i,j,bi,bj)
      &                        *deepFac2C(k)*rhoFacC(k)/deltaTLev(k)
-cc#endif
               af(i,j) = flx(i,j) - df(i,j)
             ENDDO
            ENDDO

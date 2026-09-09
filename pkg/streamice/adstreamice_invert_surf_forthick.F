@@ -3,17 +3,8 @@
 # include "AUTODIFF_OPTIONS.h"
 #endif
 
-
       SUBROUTINE ADSTRMICE_H_INV (
-#ifdef ALLOW_OPENAD
-     &            H,
-     &            Hd,
-     &            S,
-     &            R,
-     &            Rd,
-     &            delta,
-#endif
-     &            mythid)
+     &            myThid)
 
 !      This S/R finds a thickness (H) that gives surf elev S with bed R
 
@@ -41,15 +32,15 @@
       _RL H(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 !      _RL Rtmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)a
 #ifdef ALLOW_AUTODIFF_TAMC
-      _RL r_low_si_ad(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL r_low_si_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       common /streamice_rlow_ad/ r_low_si_ad
-      _RL h_streamice_ad(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL h_streamice_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       common /streamice_fields_rl_ad/ h_streamice_ad
 #else
-      _RL R(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL S(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL Rd(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL Hd(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL R(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL S(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL Rd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL Hd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
 !       il=ILNBLNK( xx_genarr2d_file(iarr) )
@@ -59,8 +50,6 @@
 !     &                      doglobalread, ladinit, optimcycle,
 !     &                      myThid, xx_genarr2d_dummy(iarr) )
 
-
-
 !      CALL ACTIVE_READ_XY ( 'H_adjust.data', H, 1,
 !     &     doglobalread, ladinit, optimcycle,
 !     &     myThid,
@@ -68,7 +57,7 @@
 !      CALL READ_FLD_XY_RL( 'R_low_adjust.data', ' ', Rtmp,
 !     &     0, myThid )
 
-!      call write_fld_xy_rl ("R_invert_pre","",R,0,mythid)
+!      call write_fld_xy_rl ("R_invert_pre","",R,0,myThid)
 
       CALL STREAMICE_INVERT_SURF_FORTHICK (
      O            H,
@@ -92,7 +81,6 @@
           do j = 1,sNy
             do i = 1,sNx
 
-
 #ifdef ALLOW_AUTODIFF_TAMC
               hf = -1.0 * i_r * R_low_si (i,j,bi,bj)
 #else
@@ -105,7 +93,6 @@
      &             1. _d 0,
      &             delta*hf,
      &             streamice_smooth_gl_width)
-
 
 #ifdef ALLOW_AUTODIFF_TAMC
               r_low_si_ad (i,j,bi,bj) =

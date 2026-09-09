@@ -93,10 +93,10 @@ c#endif
 
 #ifdef ALLOW_PETSC
 
-#if ((!defined ALLOW_OPENAD) && (!defined ALLOW_TAPENADE))
-      if (streamice_use_petsc.and.petscFlag.eq.1) then
-#else
+#ifdef ALLOW_TAPENADE
       if (streamice_use_petsc) then
+#else
+      if (streamice_use_petsc.and.petscFlag.eq.1) then
 #endif
 
       CALL STREAMICE_CG_SOLVE_PETSC(

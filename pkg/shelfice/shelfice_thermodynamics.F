@@ -48,7 +48,6 @@ C     === Global variables ===
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     === Routine arguments ===
 C     myIter :: iteration counter for this thread
 C     myTime :: time counter for this thread
 C     myThid :: thread number for this instance of the routine.
@@ -57,8 +56,11 @@ C     myThid :: thread number for this instance of the routine.
       INTEGER myThid
 
 #ifdef ALLOW_SHELFICE
+C     !FUNCTIONS:
+      _RL SW_TEMP
+      EXTERNAL SW_TEMP
+
 C     !LOCAL VARIABLES :
-C     === Local variables ===
 C     i,j,k,kp1,bi,bj  :: loop counters
 C     tLoc, sLoc, pLoc :: local in-situ temperature, salinity, pressure
 C     theta/saltFreeze :: temperature and salinity of water at the
@@ -112,11 +114,6 @@ C     drKp1, recip_drLoc
       _RL uStarDiag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif /* ALLOW_DIAGNOSTICS */
 #endif /*SHI_ALLOW_GAMMAFRICT */
-
-#ifndef ALLOW_OPENAD
-      _RL SW_TEMP
-      EXTERNAL SW_TEMP
-#endif
 
 #ifdef ALLOW_GENTIM2D_CONTROL
       INTEGER iarr
@@ -452,11 +449,7 @@ C--   turn potential temperature into in-situ temperature relative
 C--   to the surface
         DO j = 1, sNy
          DO i = 1, sNx
-#ifdef ALLOW_OPENAD
-          CALL SW_TEMP(sLoc(i,j),tLoc(i,j),pLoc(i,j),zeroRL,tLoc(i,j))
-#else
           tLoc(i,j) = SW_TEMP(sLoc(i,j),tLoc(i,j),pLoc(i,j),zeroRL)
-#endif
          ENDDO
         ENDDO
 

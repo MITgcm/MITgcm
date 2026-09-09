@@ -188,6 +188,14 @@ C--   Close the open data file
       CLOSE(iUnit,STATUS='DELETE')
 #endif /* SINGLE_DISK_IO */
 
+C--   packages which were removed
+#ifdef ALLOW_OPENAD
+      WRITE(msgBuf,'(A)') ' PACKAGES_BOOT: pkg/openad got removed'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      CALL ALL_PROC_DIE( 0 )
+      STOP 'ABNORMAL END: S/R PACKAGES_BOOT'
+#endif
+
 C--   packages with hard-coded switch
 #ifndef HAVE_NETCDF
       IF (usePROFILES) THEN
@@ -495,9 +503,6 @@ C----- AD related pkgs:
 #endif
 #ifdef ALLOW_AUTODIFF
       CALL PACKAGES_PRINT_MSG( locFlag, 'AUTODIFF',   'Used' )
-#endif
-#ifdef ALLOW_OPENAD
-      CALL PACKAGES_PRINT_MSG( locFlag, 'OPENAD',     'Used' )
 #endif
 #ifdef ALLOW_COST
       CALL PACKAGES_PRINT_MSG( locFlag, 'COST',       'Used' )

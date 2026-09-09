@@ -29,44 +29,37 @@ c     == routine arguments ==
       INTEGER myThid
 
 c     == local variables ==
-#if ( defined ALLOW_COST_VECTOR || defined  ALLOW_COST_STATE_FINAL )
+#ifdef ALLOW_AUTODIFF
+# if ( defined ALLOW_COST_VECTOR || defined  ALLOW_COST_STATE_FINAL )
       INTEGER i
-#endif
-#ifdef ALLOW_COST_STATE_FINAL
+# endif
+# ifdef ALLOW_COST_STATE_FINAL
       INTEGER j, k
-#endif
-      INTEGER bi,bj
+# endif
+      INTEGER bi, bj
+#endif /* ALLOW_AUTODIFF */
 c     == end of interface ==
 
-#ifdef ALLOW_OPENAD
-      fc%v = 0.0
-#else
       fc   = 0. _d 0
-#endif
 
 #ifdef ALLOW_AUTODIFF
 
-#ifdef ALLOW_TAPENADE
+# ifdef ALLOW_TAPENADE
       fcb = 0. _d 0
       IF ( myProcId .EQ. 0 ) fcb = 1. _d 0
-#endif
-
-#ifdef ALLOW_OPENAD
-      adfc = 1.0
-#else
+# endif
       adfc = 0. _d 0
       IF ( myProcId .EQ. 0 ) adfc = 1. _d 0
-#endif
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-#ifdef ALLOW_COST_VECTOR
+# ifdef ALLOW_COST_VECTOR
          DO i=1,sNx
           objf_vector(i,bi,bj) = 0. _d 0
           adobjf_vector(i,bi,bj) = 1. _d 0
          ENDDO
-#endif
-#ifdef ALLOW_COST_STATE_FINAL
+# endif
+# ifdef ALLOW_COST_STATE_FINAL
          DO k=1,4*Nr+1
           DO j=1,sNy
            DO i=1,sNx
@@ -76,7 +69,7 @@ c     == end of interface ==
          ENDDO
 cph No init. of cost_state_final here,
 cph because we need it in ADM*TLM
-#endif
+# endif
        ENDDO
       ENDDO
 

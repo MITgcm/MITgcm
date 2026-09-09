@@ -1,8 +1,5 @@
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
-#ifdef ALLOW_OPENAD
-# include "OPENAD_OPTIONS.h"
-#endif
 c#ifdef ALLOW_AUTODIFF
 c# include "AUTODIFF_OPTIONS.h"
 c#endif
@@ -66,11 +63,8 @@ C     *================================================================*
 C     | SUBROUTINE MAIN_DO_LOOP
 C     | o Interface S/R that calls FORWARD_STEP
 C     *================================================================*
-C     | This S/R contains the model main "do-loop" for OpenAD built
-C     | (i.e., ALLOW_OPENAD defined), with a call to FORWARD_STEP
-C     | inside the loop.
-C     | But without OpenAD, this S/R just calls directly FORWARD_STEP
-C     | (in this case the main do-loop is done in S/R THE_MAIN_LOOP).
+C     | This S/R just calls directly FORWARD_STEP
+C     | (the main do-loop is done in S/R THE_MAIN_LOOP).
 C     *================================================================*
 
 C     !USES:
@@ -81,7 +75,7 @@ C     == Global variables ==
 #include "PARAMS.h"
 
 c**************************************
-#if (defined ALLOW_OPENAD || defined ALLOW_TAPENADE)
+#ifdef ALLOW_TAPENADE
 
 # ifdef ALLOW_CTRL
 #  include "CTRL_SIZE.h"
@@ -132,9 +126,6 @@ c**************************************
 #  include "STREAMICE_CG.h"
 # endif
 
-#endif /* ALLOW_OPENAD or ALLOW_TAPENADE */
-
-#ifdef ALLOW_TAPENADE
 # ifdef ALLOW_EXF
 #  include "EXF_PARAM.h"
 #  include "EXF_INTERP_SIZE.h"
@@ -197,49 +188,19 @@ CEOP
       IF (debugMode) CALL DEBUG_ENTER('MAIN_DO_LOOP',myThid)
 #endif
 
-#ifdef ALLOW_OPENAD
-C     >>>>>>>>>>>>>>>>>>>>>>>>>>>   LOOP   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
-C     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STARTS  <<<<<<<<<<<<<<<<<<<<<<<<<<<<
-# ifdef ALLOW_OPENAD_DIVA
-      DO iloop = 1, nTimeSteps_l2
-# else
-      DO iloop = 1, nTimeSteps
-# endif
-#endif /* ALLOW_OPENAD */
-
 #ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('FORWARD_STEP',myThid)
 #endif
 
-#ifndef ALLOW_OPENAD
-# ifdef ALLOW_ATM2D
+#ifdef ALLOW_ATM2D
         CALL TIMER_START('FORWARD_STEP_ATM2D  [MAIN_DO_LOOP]',myThid)
         CALL FORWARD_STEP_ATM2D( iloop, myTime, myIter, myThid )
         CALL TIMER_STOP ('FORWARD_STEP_ATM2D  [MAIN_DO_LOOP]',myThid)
-# else
+#else
         CALL TIMER_START('FORWARD_STEP        [MAIN_DO_LOOP]',myThid)
         CALL FORWARD_STEP( iloop, myTime, myIter, myThid )
         CALL TIMER_STOP ('FORWARD_STEP        [MAIN_DO_LOOP]',myThid)
-# endif
-#else /* ALLOW_OPENAD */
-# ifdef ALLOW_OPENAD_DIVA
-        CALL TIMER_START('INNER_DO_LOOP       [MAIN_DO_LOOP]',myThid)
-        nTimeSteps_l2 = 2
-        CALL INNER_DO_LOOP( iloop, myTime, myIter, myThid )
-        CALL TIMER_STOP ('INNER_DO_LOOP       [MAIN_DO_LOOP]',myThid)
-# else
-        CALL TIMER_START('FORWARD_STEP        [MAIN_DO_LOOP]',myThid)
-        nTimeSteps_l2 = 2
-        CALL FORWARD_STEP( iloop, myTime, myIter, myThid )
-        CALL TIMER_STOP ('FORWARD_STEP        [MAIN_DO_LOOP]',myThid)
-# endif
-#endif /* ALLOW_OPENAD */
-
-#ifdef ALLOW_OPENAD
-      ENDDO
-C     >>>>>>>>>>>>>>>>>>>>>>>>>>>   LOOP   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
-C     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STOPS   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
-#endif /* ALLOW_OPENAD */
+#endif
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_LEAVE('MAIN_DO_LOOP',myThid)

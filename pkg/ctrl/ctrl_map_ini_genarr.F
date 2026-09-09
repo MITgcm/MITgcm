@@ -275,48 +275,23 @@ C--      u* drag coefficient
 
 #ifdef ALLOW_STREAMICE
       IF (igen_bdot_max_streamice.GT.0) THEN
-#ifdef ALLOW_OPENAD
-       streamice_bdot_maxmelt_v(1,1,1,1) =
-     &  streamice_bdot_maxmelt_v(1,1,1,1) +
-     &  0.0 * xx_genarr2d_dummy(igen_bdot_max_streamice)
-#endif
        CALL CTRL_MAP_GENARR2D( streamice_bdot_maxmelt_v,
      &  igen_bdot_max_streamice, myThid )
       ENDIF
       IF (igen_bdot_streamice.GT.0) THEN
-#ifdef ALLOW_OPENAD
-       bdot_streamice(1,1,1,1) = bdot_streamice(1,1,1,1) +
-     &  0.0 * xx_genarr2d_dummy(igen_bdot_streamice)
-#endif
        CALL CTRL_MAP_GENARR2D( bdot_streamice, igen_bdot_streamice,
      &  myThid )
       ENDIF
       IF (igen_beta.GT.0) THEN
-#ifdef ALLOW_OPENAD
-       C_basal_friction(1,1,1,1) = C_basal_friction(1,1,1,1) +
-     &  0.0 * xx_genarr2d_dummy(igen_beta)
-#endif
        CALL CTRL_MAP_GENARR2D( C_basal_friction, igen_beta, myThid )
       ENDIF
       IF (igen_rlow_streamice.GT.0) THEN
-#ifdef ALLOW_OPENAD
-       r_low_si(1,1,1,1) = r_low_si(1,1,1,1) +
-     &  0.0 * xx_genarr2d_dummy(igen_rlow_streamice)
-#endif
        CALL CTRL_MAP_GENARR2D( r_low_si, igen_rlow_streamice, myThid )
       ENDIF
       IF (igen_b_glen.GT.0) THEN
-#ifdef ALLOW_OPENAD
-       B_glen(1,1,1,1) = B_glen(1,1,1,1) +
-     &  0.0 * xx_genarr2d_dummy(igen_b_glen)
-#endif
        CALL CTRL_MAP_GENARR2D( B_glen, igen_b_glen, myThid )
       ENDIF
       IF (igen_h_streamice.GT.0) THEN
-#ifdef ALLOW_OPENAD
-       h_streamice(1,1,1,1) = h_streamice(1,1,1,1) +
-     &  0.0 * xx_genarr2d_dummy(igen_h_streamice)
-#endif
        CALL CTRL_MAP_GENARR2D( h_streamice, igen_h_streamice, myThid )
       ENDIF
 #endif /* ALLOW_STREAMICE */

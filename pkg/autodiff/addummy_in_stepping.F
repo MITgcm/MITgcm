@@ -1,7 +1,4 @@
 #include "AUTODIFF_OPTIONS.h"
-#ifdef ALLOW_OPENAD
-# include "OPENAD_OPTIONS.h"
-#endif
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
@@ -42,32 +39,13 @@ C     !USES:
       IMPLICIT NONE
 
 C     == Global variables ===
-#ifdef ALLOW_OPENAD
-      use OAD_active
-      use OAD_rev
-      use OAD_tape
-      use OAD_cp
-#endif
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #ifdef ALLOW_AUTODIFF_MONITOR
-# ifdef ALLOW_OPENAD
-C- Note: Since OpenAD uses modules, the ordering of included headers matters
-#  include "DYNVARS.h"
-#  include "FFIELDS.h"
-#  ifdef ALLOW_GMREDI
-#   include "GMREDI.h"
-#  endif
-#  ifdef ALLOW_GGL90
-#   include "GGL90.h"
-#  endif
-# endif /* ALLOW_OPENAD */
 # include "AUTODIFF_PARAMS.h"
 # include "AUTODIFF.h"
-# ifndef ALLOW_OPENAD
-#  include "adcommon.h"
-# endif /* ALLOW_OPENAD */
+# include "adcommon.h"
 # ifdef ALLOW_MNC
 #  include "MNC_PARAMS.h"
 # endif
@@ -77,7 +55,6 @@ C- Note: Since OpenAD uses modules, the ordering of included headers matters
 #endif /* ALLOW_AUTODIFF_MONITOR */
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
 C     myTime  :: time counter for this thread
 C     myIter  :: iteration counter for this thread
 C     myThid  :: Thread number for this instance of the routine.
@@ -85,25 +62,24 @@ C     myThid  :: Thread number for this instance of the routine.
       INTEGER myIter
       INTEGER myThid
 
-#if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_ADMTLM))
 #ifdef ALLOW_AUTODIFF_MONITOR
+#if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_ADMTLM))
 
 C     !FUNCTIONS:
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
 
 C     !LOCAL VARIABLES:
-C     == local variables ==
 C     suff    :: Hold suffix part of a filename
 C     msgBuf  :: Error message buffer
 c     CHARACTER*(10) suff
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
-#ifdef ALLOW_MNC
+# ifdef ALLOW_MNC
       _RL var2Du(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL var2Dv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL var3Du(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL var3Dv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-#endif
+# endif
       _RS dumRS(1)
       _RL dumRL(1)
       LOGICAL doExch
@@ -115,18 +91,15 @@ C--- Do dump?
 
 C--- Test for adexch based on dumpAdVarExch flag
       doExch = doDump
-#ifdef ALLOW_DIAGNOSTICS
+# ifdef ALLOW_DIAGNOSTICS
       doExch = doDump .OR. useDiag4AdjOutp
-#endif
+# endif
       doExch = doExch .AND. ( dumpAdVarExch.EQ.1 )
 
 C--- If necessary, do the exchanges
       IF ( doExch ) THEN
-#ifdef ALLOW_OPENAD
-C--   need to all the correct OpenAD EXCH S/R ; left empty for now
-#else /* ALLOW_OPENAD */
 
-#ifdef AUTODIFF_TAMC_COMPATIBILITY
+# ifdef AUTODIFF_TAMC_COMPATIBILITY
         call adexch_xyz_rl( myThid,adTheta)
         call adexch_xyz_rl( myThid,adSalt)
         call adexch_xyz_rl( myThid,adwVel )
@@ -135,21 +108,22 @@ C--   need to all the correct OpenAD EXCH S/R ; left empty for now
         call adexch_uv_xy_rs( .true., myThid, adfu, adfv )
         call adexch_xy_rs( myThid,adqnet )
         call adexch_xy_rs( myThid,adempmr )
-# ifdef ALLOW_EDDYPSI_CONTROL
+#  ifdef ALLOW_EDDYPSI_CONTROL
         call adexch_uv_xyz_rs(  .true. ,myThid,adeddypsix,adeddypsiy )
-# endif
-# ifdef ALLOW_DIFFKR_CONTROL
+#  endif
+#  ifdef ALLOW_DIFFKR_CONTROL
         call adexch_xyz_rl( myThid,addiffkr )
-# endif
-# ifdef ALLOW_KAPGM_CONTROL
+#  endif
+#  ifdef ALLOW_KAPGM_CONTROL
         call adexch_xyz_rl( myThid, adKapGM )
-# endif
-# ifdef ALLOW_KAPREDI_CONTROL
+#  endif
+#  ifdef ALLOW_KAPREDI_CONTROL
         call adexch_xyz_rl( myThid, adKapRedi )
-# endif
-# ifdef ALLOW_BOTTOMDRAG_CONTROL
+#  endif
+#  ifdef ALLOW_BOTTOMDRAG_CONTROL
         call adexch_xy_rl( myThid,adbottomdragfld)
-# endif
+#  endif
+
 # else /* ndfef AUTODIFF_TAMC_COMPATIBILITY */
 
 #  ifndef ALLOW_BULK_OFFLINE
@@ -165,41 +139,40 @@ C     fields controls. We should have a cpp flag for that that is
 C     automatically defined if any 2D forcing controls are defined. As a
 C     hack we use an excluding cpp-flag that needs to be defined if this
 C     problem occurs
-#ifndef AUTODIFF_EXCLUDE_ADEXCH_RS
+#  ifndef AUTODIFF_EXCLUDE_ADEXCH_RS
         CALL ADEXCH_UV_XY_RS( adFu, adFv, .TRUE., myThid )
         CALL ADEXCH_XY_RS( adQnet, myThid )
         CALL ADEXCH_XY_RS( adEmPmR, myThid )
-#endif
-# ifdef ALLOW_EDDYPSI_CONTROL
+#  endif
+#  ifdef ALLOW_EDDYPSI_CONTROL
         CALL ADEXCH_UV_XYZ_RS( adEddyPsiX, adEddyPsiY, .TRUE., myThid )
-# endif
-# ifdef ALLOW_DIFFKR_CONTROL
+#  endif
+#  ifdef ALLOW_DIFFKR_CONTROL
         CALL ADEXCH_3D_RL( adDiffKr, Nr, myThid )
-# endif
-# ifdef ALLOW_KAPGM_CONTROL
+#  endif
+#  ifdef ALLOW_KAPGM_CONTROL
         CALL ADEXCH_3D_RL( adKapGM, Nr, myThid )
-# endif
-# ifdef ALLOW_KAPREDI_CONTROL
+#  endif
+#  ifdef ALLOW_KAPREDI_CONTROL
         CALL ADEXCH_3D_RL( adKapRedi, Nr, myThid )
-# endif
-# ifdef ALLOW_BOTTOMDRAG_CONTROL
+#  endif
+#  ifdef ALLOW_BOTTOMDRAG_CONTROL
         CALL ADEXCH_3D_RL( adBottomDragFld, 1 , myThid )
-# endif
-# if (defined ALLOW_SHELFICE && !defined ALLOW_SHITRANSCOEFF_3D)
-#  ifndef SHI_ALLOW_GAMMAFRICT
+#  endif
+#  if (defined ALLOW_SHELFICE && !defined ALLOW_SHITRANSCOEFF_3D)
+#   ifndef SHI_ALLOW_GAMMAFRICT
         CALL ADEXCH_XY_RL( adshiTransCoeffT, myThid )
         CALL ADEXCH_XY_RL( adshiTransCoeffS, myThid )
-#  else
+#   else
         CALL ADEXCH_XY_RL( adshiCDragFld, myThid )
+#   endif
 #  endif
-# endif
-# if ( defined ALLOW_SHELFICE && defined ALLOW_SHITRANSCOEFF_3D )
+#  if ( defined ALLOW_SHELFICE && defined ALLOW_SHITRANSCOEFF_3D )
         CALL ADEXCH_3D_RL( adshiTransCoeffT3d, Nr, myThid )
         CALL ADEXCH_3D_RL( adshiTransCoeffS3d, Nr, myThid )
-# endif
+#  endif
 
-#endif /* AUTODIFF_TAMC_COMPATIBILITY */
-#endif /* ALLOW_OPENAD */
+# endif /* AUTODIFF_TAMC_COMPATIBILITY */
       ENDIF
 
 C=======================================================================
@@ -211,7 +184,6 @@ C     Increment ad dump record number (used only if dumpAdByRec is true)
         CALL TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
       ENDIF
 
-#ifndef ALLOW_OPENAD
 C========================
 C--  TAF AD-variables:
 C========================
@@ -322,127 +294,11 @@ C-----------------------------------------------------------------------
      &     33, doDump, dumpAdRecMn, myTime, myIter, myThid)
 # endif /* ALLOW_DEPTH_CONTROL */
 
-#else /* ALLOW_OPENAD */
-C========================
-C--  OpenAD AD-variable:
-C========================
-C-----------------------------------------------------------------------
-C--- State variables
-C-----------------------------------------------------------------------
-      CALL DUMP_ADJ_XYZ(dumRS, theta%d, 'ADJtheta', 'ADJtheta.',
-     &                  12, doDump, dumpAdRecMn, myTime, myIter,myThid)
-
-      CALL DUMP_ADJ_XYZ(dumRS, salt%d, 'ADJsalt ', 'ADJsalt.',
-     &                  12, doDump, dumpAdRecMn, myTime, myIter,myThid)
-
-      CALL DUMP_ADJ_XYZ(dumRS, wvel%d, 'ADJwvel ', 'ADJwvel.',
-     &                  12, doDump, dumpAdRecMn, myTime, myIter,myThid)
-
-      CALL DUMP_ADJ_XYZ_UV(
-     &     dumRS, uvel%d, 'ADJuvel ', 'ADJuvel.',
-     &     dumRS, vvel%d, 'ADJvvel ', 'ADJvvel.',
-     &     34, doDump, dumpAdRecMn, myTime, myIter,myThid)
-
-C-----------------------------------------------------------------------
-C--- Surface Forcing
-C-----------------------------------------------------------------------
-      IF ( .NOT. useSEAICE .AND. .NOT. useEXF ) THEN
-       CALL DUMP_ADJ_XY_UV(
-     &      Fu%d, dumRL, 'ADJtaux ', 'ADJtaux.',
-     &      Fv%d, dumRL, 'ADJtauy ', 'ADJtauy.',
-     &      33, doDump, dumpAdRecMn, myTime, myIter,myThid)
-        CALL DUMP_ADJ_XY(Qnet%d, dumRL, 'ADJqnet ', 'ADJqnet.',
-     &                   11, doDump, dumpAdRecMn, myTime, myIter,myThid)
-        CALL DUMP_ADJ_XY(EmPmR%d, dumRL, 'ADJempmr', 'ADJempr.',
-     &                   11, doDump, dumpAdRecMn, myTime, myIter,myThid)
-
-# ifdef SHORTWAVE_HEATING
-C     Commented out since only works when Qsw is active
-c       CALL DUMP_ADJ_XY(Qsw%d, dumRL, 'ADJqsw  ', 'ADJqsw.',
-c    &                   11, doDump, dumpAdRecMn, myTime, myIter,myThid)
-# endif
-      ENDIF
-
-C-----------------------------------------------------------------------
-C---Various packages and parameters
-C-----------------------------------------------------------------------
-# ifdef ALLOW_BOTTOMDRAG_CONTROL
-      CALL DUMP_ADJ_XY(dumRS, BottomDragFld%d,
-     &                 'ADJbtdrg','ADJbottomdrag.',
-     &                 11, doDump, dumpAdRecMn, myTime, myIter,myThid)
-# endif
-# ifdef ALLOW_GGL90
-      CALL DUMP_ADJ_XYZ(dumRS, GGL90TKE%d, 'ADJtke90', 'ADJggl90tke.',
-     &                  12, doDump, dumpAdRecMn, myTime, myIter,myThid)
-# endif
-# ifdef ALLOW_DIFFKR_CONTROL
-      CALL DUMP_ADJ_XYZ(dumRS, DiffKr%d, 'ADJdifkr', 'ADJdiffkr.',
-     &                  12, doDump, dumpAdRecMn, myTime, myIter,myThid)
-# endif
-# if ( defined ALLOW_KAPGM_CONTROL && defined GM_READ_K3D_GM )
-      CALL DUMP_ADJ_XYZ(dumRS, GM_inpK3dGM%d, 'ADJkapgm', 'ADJkapgm.',
-     &                  12, doDump, dumpAdRecMn, myTime, myIter,myThid)
-# endif
-# if ( defined ALLOW_KAPREDI_CONTROL && defined GM_READ_K3D_REDI )
-      CALL DUMP_ADJ_XYZ(dumRS, GM_inpK3dRedi%d, 'ADJkapre',
-     &                  'ADJkapredi.',
-     &                  12, doDump, dumpAdRecMn, myTime, myIter,myThid)
-# endif
-
-# ifdef ALLOW_EDDYPSI_CONTROL
-      CALL DUMP_ADJ_XYZ_UV(
-     &     EddyPsiX%d,dumRL,'ADJepsix','ADJeddipsix.',
-     &     EddyPsiY%d,dumRL,'ADJepsiy','ADJeddipsiy.',
-     &     33, doDump, dumpAdRecMn, myTime, myIter,myThid)
-# endif
-# if (defined ALLOW_SHELFICE && !defined ALLOW_SHITRANSCOEFF_3D)
-#  ifndef SHI_ALLOW_GAMMAFRICT
-      CALL DUMP_ADJ_XY(dumRS, shiTransCoeffT%d,
-     &                 'ADJshict','ADJshict.',
-     &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
-      CALL DUMP_ADJ_XY(dumRS, shiTransCoeffS%d,
-     &                 'ADJshics','ADJshics.',
-     &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
-#  else
-      CALL DUMP_ADJ_XY(dumRS, shiCDragFld%d,
-     &                 'ADJshicd','ADJshicd.',
-     &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
-#  endif
-# endif
-# if (defined ALLOW_SHELFICE && defined ALLOW_SHITRANSCOEFF_3D)
-      CALL DUMP_ADJ_XYZ(dumRS, shiTransCoeffT3d%d,
-     &                 'ADJshict','ADJshict.',
-     &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
-      CALL DUMP_ADJ_XYZ(dumRS, shiTransCoeffS3d%d,
-     &                 'ADJshics','ADJshics.',
-     &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
-# endif
-
-# ifdef ALLOW_DEPTH_CONTROL
-      CALL DUMP_ADJ_XYZ(
-     &     hFacC%d,dumRL,'ADJhFacC','ADJhFacC.',
-     &     11, doDump, dumpAdRecMn, myTime, myIter, myThid)
-      CALL DUMP_ADJ_XYZ_UV(
-     &     hFacW%d,dumRL,'ADJhFacW','ADJhFacW.',
-     &     hFacS%d,dumRL,'ADJhFacS','ADJhFacS.',
-     &     33, doDump, dumpAdRecMn, myTime, myIter, myThid)
-      CALL DUMP_ADJ_XYZ(
-     &     recip_hFacC%d,dumRL,'ADJrhFcC','ADJrecip_hFacC.',
-     &     11, doDump, dumpAdRecMn, myTime, myIter, myThid)
-      CALL DUMP_ADJ_XYZ_UV(
-     &     recip_hFacW%d,dumRL,'ADJrhFcW','ADJrecip_hFacW.',
-     &     recip_hFacS%d,dumRL,'ADJrhFcS','ADJrecip_hFacS.',
-     &     33, doDump, dumpAdRecMn, myTime, myIter, myThid)
-# endif /* ALLOW_DEPTH_CONTROL */
-
-#endif /* ALLOW_OPENAD */
-
 C=======================================================================
 C--  Dump TAF AD-variable to NetCdF files
 C=======================================================================
       IF ( doDump ) THEN
-#ifndef ALLOW_OPENAD
-#ifdef ALLOW_MNC
+# ifdef ALLOW_MNC
         IF (useMNC .AND. autodiff_mnc) THEN
          CALL MNC_CW_SET_UDIM('adstate', -1, myThid)
          CALL MNC_CW_RL_W_S('D','adstate',0,0,'T',myTime,myThid)
@@ -472,27 +328,27 @@ C=======================================================================
           CALL MNC_CW_RL_W('D','adstate',0,0,'adFu', var2Du, myThid)
           CALL MNC_CW_RL_W('D','adstate',0,0,'adFv', var2Dv, myThid)
 
-#ifdef ALLOW_BOTTOMDRAG_CONTROL
+#  ifdef ALLOW_BOTTOMDRAG_CONTROL
           CALL COPY_ADVAR_OUTP( dumRS, adBottomDragFld,
      &                                        var2Du, 1, 12, myThid )
           CALL MNC_CW_RL_W('D','adstate',0,0,
      &                     'adBottomDrag', var2Du, myThid)
-#endif
-#ifdef ALLOW_DIFFKR_CONTROL
+#  endif
+#  ifdef ALLOW_DIFFKR_CONTROL
           CALL COPY_ADVAR_OUTP( dumRS, adDiffKr,var3Du, Nr, 12,myThid )
           CALL MNC_CW_RL_W('D','adstate',0,0,
      &                     'adDiffkr', var3Du, myThid)
-#endif
-#ifdef ALLOW_KAPGM_CONTROL
+#  endif
+#  ifdef ALLOW_KAPGM_CONTROL
           CALL COPY_ADVAR_OUTP( dumRS, adKapGM, var3Du, Nr, 12,myThid )
           CALL MNC_CW_RL_W('D','adstate',0,0,
      &                     'adkapgm', var3Du, myThid)
-#endif
-#ifdef ALLOW_KAPREDI_CONTROL
+#  endif
+#  ifdef ALLOW_KAPREDI_CONTROL
           CALL COPY_ADVAR_OUTP( dumRS,adKapRedi,var3Du, Nr, 12,myThid )
           CALL MNC_CW_RL_W('D','adstate',0,0,
      &                     'adkapredi', var3Du, myThid)
-#endif
+#  endif
          ELSE
 C     dumpAdVarExch.NE.2
           CALL MNC_CW_RL_W('D','adstate',0,0,'adU', aduVel, myThid)
@@ -506,45 +362,44 @@ C     dumpAdVarExch.NE.2
           CALL MNC_CW_RS_W('D','adstate',0,0,'adFu', adfu, myThid)
           CALL MNC_CW_RS_W('D','adstate',0,0,'adFv', adfv, myThid)
 
-#ifdef ALLOW_BOTTOMDRAG_CONTROL
+#  ifdef ALLOW_BOTTOMDRAG_CONTROL
           CALL MNC_CW_RL_W('D','adstate',0,0,
      &                     'adBottomDrag', adbottomdragfld, myThid)
-#endif
-#ifdef ALLOW_DIFFKR_CONTROL
+#  endif
+#  ifdef ALLOW_DIFFKR_CONTROL
           CALL MNC_CW_RL_W('D','adstate',0,0,
      &                     'adDiffkr', addiffkr, myThid)
-#endif
-#ifdef ALLOW_KAPGM_CONTROL
+#  endif
+#  ifdef ALLOW_KAPGM_CONTROL
           CALL MNC_CW_RL_W('D','adstate',0,0,
      &                     'adkapgm', adKapGM, myThid)
-#endif
-#ifdef ALLOW_KAPREDI_CONTROL
+#  endif
+#  ifdef ALLOW_KAPREDI_CONTROL
           CALL MNC_CW_RL_W('D','adstate',0,0,
      &                     'adkapredi', adKapRedi, myThid)
-#endif
-#ifdef ALLOW_SHELFICE
-# ifndef SHI_ALLOW_GAMMAFRICT
-#  ifdef ALLOW_SHITRANSCOEFF_3D
+#  endif
+#  ifdef ALLOW_SHELFICE
+#   ifndef SHI_ALLOW_GAMMAFRICT
+#    ifdef ALLOW_SHITRANSCOEFF_3D
           CALL MNC_CW_RL_W('D','adstate',0,0,
      &                     'adshict', adshiTransCoeffT3d, myThid)
           CALL MNC_CW_RL_W('D','adstate',0,0,
      &                     'adshics', adshiTransCoeffS3d, myThid)
-#  else
+#    else
           CALL MNC_CW_RL_W('D','adstate',0,0,
      &                     'adshict', adshiTransCoeffT, myThid)
           CALL MNC_CW_RL_W('D','adstate',0,0,
      &                     'adshics', adshiTransCoeffS, myThid)
-#  endif
-# else
+#    endif
+#   else
           CALL MNC_CW_RL_W('D','adstate',0,0,
      &                     'adshicd', adshiCDragFld, myThid)
-# endif
-#endif
+#   endif
+#  endif
          ENDIF
 C     endif mnc
         ENDIF
-#endif /* ALLOW_MNC */
-#endif /* ALLOW_OPENAD */
+# endif /* ALLOW_MNC */
 
         CALL TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
 
@@ -553,18 +408,18 @@ C     endif mnc
 C=======================================================================
 C--  Output AD-variable & fill Diagnostics with pkg specific interface
 C=======================================================================
-#ifdef ALLOW_SEAICE
+# ifdef ALLOW_SEAICE
         IF ( useSEAICE )
      &   CALL SEAICE_AD_DUMP( myTime, myIter, myThid )
-#endif
+# endif
 
-#ifdef ALLOW_PTRACERS
+# ifdef ALLOW_PTRACERS
         IF ( usePTRACERS )
      &   CALL PTRACERS_AD_DUMP( myTime, myIter, myThid )
-#endif
+# endif
 
+#endif /* ALLOW_ADJOINT_RUN or ALLOW_ADMTLM */
 #endif /* ALLOW_AUTODIFF_MONITOR */
-#endif /* ALLOW_ADJOINT_RUN */
 
       RETURN
       END
