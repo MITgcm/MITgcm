@@ -40,6 +40,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       NAMELIST /LAYERS_PARM01/
      &       layers_G, layers_taveFreq, layers_diagFreq,
      &       LAYER_nb, layers_kref, useBOLUS, layers_bolus,
+     &       layers_useThermo,
      &       layers_name, layers_bounds, layers_krho
 
        _BEGIN_MASTER(myThid)
