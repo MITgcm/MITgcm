@@ -2005,8 +2005,8 @@ TAF-generated one, controlled by the same run-time parameters of ``data`` and
   build (``make tap_tlm``).
 
 The adjoint-mode parameter switches of ``data.autodiff`` (``viscFacInAd``,
-``useKPPinAdMode``, ``useGMRediInAdMode``, ``useSEAICEinAdMode``, ...) are
-applied at the start of every
+``useKPPinAdMode``, ``useGMRediInAdMode``, ``useSEAICEinAdMode``,
+``useApproxAdvectionInAdMode``, ...) are applied at the start of every
 backward time step and reverted at its end, as in a TAF-generated adjoint
 (see :filelink:`pkg/autodiff/autodiff_inadmode_set_ad.F`).
 
