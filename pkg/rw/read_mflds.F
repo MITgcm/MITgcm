@@ -39,10 +39,11 @@ c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 C-----
 
 C-    Initialise variables in common block:
-      thirdDim = 0
-      nFl3D    = 0
-      nFlds    = 0
-      nMissFld = 0
+      glob_File = 0
+      thirdDim  = 0
+      nFl3D     = 0
+      nFlds     = 0
+      nMissFld  = 0
       mFldsFile = ' '
       DO i=1,sizFldList
         fldList(i) = ' '
@@ -133,10 +134,11 @@ C-    Initialise output arguments:
       _BEGIN_MASTER( myThid )
 
 C-    Initialise variables in common block:
-      thirdDim = fileDim3
-      nFl3D    = 0
-      nFlds    = 0
-      nMissFld = 0
+      glob_File = 0
+      thirdDim  = fileDim3
+      nFl3D     = 0
+      nFlds     = 0
+      nMissFld  = 0
       mFldsFile = fName
       DO i=1,sizFldList
         fldList(i) = ' '
@@ -152,6 +154,7 @@ C-    Initialise variables in common block:
      I               fName,
      O               simulName,
      O               titleLine,
+     O               glob_File,
      O               filePrec,
      U               nDims,   nFlds,   nTimRec,
      O               dimList, fldList, timList,
@@ -277,7 +280,7 @@ C     !FUNCTIONS
       EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
-      INTEGER j, iL, ioUnit
+      INTEGER j, iL, ioUnit, globFile
       LOGICAL prtMsg
       LOGICAL useCurrentDir
       _RS     dummyRS(1)
@@ -342,11 +345,14 @@ C-      increment record number
       IF ( nj.GE.1 ) THEN
 C--   read in array "field"
         fName = mFldsFile
+        globFile = glob_File
         useCurrentDir = .FALSE.
         fType = 'RL'
 #ifdef ALLOW_MDSIO
-        CALL MDS_READ_FIELD(
-     I                       fName, fPrec, useCurrentDir,
+c       CALL MDS_READ_FIELD(
+c    I                       fName, fPrec, useCurrentDir,
+        CALL MDS_READ_FIELD_NEW(
+     I                       fName, globFile, fPrec, useCurrentDir,
      I                       fType, nNz, 1, nNz,
      O                       field, dummyRS,
      I                       nj, myThid )
@@ -406,7 +412,7 @@ C     !FUNCTIONS
       EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
-      INTEGER j, iL, ioUnit
+      INTEGER j, iL, ioUnit, globFile
       LOGICAL prtMsg
       LOGICAL useCurrentDir
       _RS     dummyRS(1)
@@ -471,11 +477,14 @@ C-      increment record number
       IF ( nj.GE.1 ) THEN
 C--   read in array "field"
         fName = mFldsFile
+        globFile = glob_File
         useCurrentDir = .FALSE.
         fType = 'RL'
 #ifdef ALLOW_MDSIO
-        CALL MDS_READ_FIELD(
-     I                       fName, fPrec, useCurrentDir,
+c       CALL MDS_READ_FIELD(
+c    I                       fName, fPrec, useCurrentDir,
+        CALL MDS_READ_FIELD_NEW(
+     I                       fName, globFile, fPrec, useCurrentDir,
      I                       fType, kSiz, kLo, kHi,
      O                       field, dummyRS,
      I                       nj, myThid )
@@ -535,7 +544,7 @@ C     !FUNCTIONS
       EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
-      INTEGER j, iL, ioUnit
+      INTEGER j, iL, ioUnit, globFile
       LOGICAL prtMsg
       LOGICAL useCurrentDir
       _RL     dummyRL(1)
@@ -600,11 +609,14 @@ C-      increment record number
       IF ( nj.GE.1 ) THEN
 C--   read in array "field"
         fName = mFldsFile
+        globFile = glob_File
         useCurrentDir = .FALSE.
         fType = 'RS'
 #ifdef ALLOW_MDSIO
-        CALL MDS_READ_FIELD(
-     I                       fName, fPrec, useCurrentDir,
+c       CALL MDS_READ_FIELD(
+c    I                       fName, fPrec, useCurrentDir,
+        CALL MDS_READ_FIELD_NEW(
+     I                       fName, globFile, fPrec, useCurrentDir,
      I                       fType, kSiz, kLo, kHi,
      O                       dummyRL, field,
      I                       nj, myThid )
