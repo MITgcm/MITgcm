@@ -1,4 +1,12 @@
 C----------------------------------------
+C subroutine mds_read_field_new
+C----------------------------------------
+CADJ SUBROUTINE MDS_READ_FIELD_NEW  INPUT  = 1,2,3,4,5,6,7,8,     11,12
+CADJ SUBROUTINE MDS_READ_FIELD_NEW  OUTPUT =                 9,10
+CADJ SUBROUTINE MDS_READ_FIELD_NEW  DEPEND = 1,2,3,4,5,6,7,8,9,10,11,12
+CADJ SUBROUTINE MDS_READ_FIELD_NEW  REQUIRED
+
+C----------------------------------------
 C subroutine mds_read_field
 C----------------------------------------
 CADJ SUBROUTINE MDS_READ_FIELD  INPUT  = 1,2,3,4,5,6,7,    10,11
