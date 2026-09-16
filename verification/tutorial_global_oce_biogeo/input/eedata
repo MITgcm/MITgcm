@@ -3,6 +3,7 @@
 # nTx - No. threads per process in X
 # nTy - No. threads per process in Y
  &EEPARMS
+ debugMode=.True.,
  nTx=1,
  nTy=1,
  &
