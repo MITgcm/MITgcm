@@ -45,13 +45,14 @@ C     !USES:
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "PARAMS.h"
-#include "GRID.h"
-#include "SURFACE.h"
-#include "CG3D.h"
+#ifdef ALLOW_NONHYDROSTATIC
+# include "PARAMS.h"
+# include "GRID.h"
+# include "SURFACE.h"
+# include "CG3D.h"
+#endif /* ALLOW_NONHYDROSTATIC */
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     === Routine arguments ===
 C     cg3d_b    :: The source term or "right hand side" (output: normalised RHS)
 C     cg3d_x    :: The solution (input: first guess)
 C     firstResidual :: the initial residual before any iterations
@@ -72,9 +73,7 @@ C     myThid    :: my Thread Id number
       INTEGER myThid
 
 #ifdef ALLOW_NONHYDROSTATIC
-
 C     !LOCAL VARIABLES:
-C     === Local variables ====
 C     bi, bj     :: tile index in X and Y.
 C     i, j, k    :: Loop counters
 C     it3d       :: Loop counter for CG iterations
@@ -94,7 +93,6 @@ C     msgBuf     :: Informational/error message buffer
       INTEGER actualIts
       INTEGER km1, kp1
       _RL     maskM1, maskP1
-      _RL     cg3dTolerance_sq
       _RL     err_sq,  errTile(nSx,nSy)
       _RL     eta_qrN, eta_qrNtile(nSx,nSy)
       _RL     eta_qrNM1
@@ -113,7 +111,6 @@ C     msgBuf     :: Informational/error message buffer
 CEOP
 
 C--   Initialise auxiliary constant, some output variable
-      cg3dTolerance_sq = cg3dTargetResidual*cg3dTargetResidual
       IF ( select_rStar .NE. 0 ) THEN
         surfFac = freeSurfFac
       ELSE
@@ -145,21 +142,26 @@ C--   Normalise RHS
         ENDDO
        ENDDO
       ENDDO
-      _GLOBAL_MAX_RL( rhsMax, myThid )
-      rhsNorm = 1. _d 0
-      IF ( rhsMax .NE. 0. ) rhsNorm = 1. _d 0 / rhsMax
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO k=1,Nr
-         DO j=1,sNy
-          DO i=1,sNx
-           cg3d_b(i,j,k,bi,bj) = cg3d_b(i,j,k,bi,bj)*rhsNorm
-           cg3d_x(i,j,k,bi,bj) = cg3d_x(i,j,k,bi,bj)*rhsNorm
+
+      IF ( cg3dNormaliseRHS ) THEN
+C-  Normalise RHS :
+       _GLOBAL_MAX_RL( rhsMax, myThid )
+       rhsNorm = 1. _d 0
+       IF ( rhsMax .NE. 0. ) rhsNorm = 1. _d 0 / rhsMax
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO k=1,Nr
+          DO j=1,sNy
+           DO i=1,sNx
+            cg3d_b(i,j,k,bi,bj) = cg3d_b(i,j,k,bi,bj)*rhsNorm
+            cg3d_x(i,j,k,bi,bj) = cg3d_x(i,j,k,bi,bj)*rhsNorm
+           ENDDO
           ENDDO
          ENDDO
         ENDDO
        ENDDO
-      ENDDO
+C- end Normalise RHS
+      ENDIF
 
 C--   Update overlaps
       _EXCH_XYZ_RL( cg3d_x, myThid )
@@ -190,7 +192,7 @@ C--   Initial residual calculation (with free-Surface term)
              surfTerm(i,j) = surfTerm(i,j)*cg3dNorm
      &              *recip_Rcol(i,j,bi,bj)*recip_Rcol(i,j,bi,bj)
      &              *rA(i,j,bi,bj)*deepFac2F(ks)
-     &              *recip_Bo(i,j,bi,bj)/deltaTMom/deltaTfreesurf
+     &              *recip_Bo(i,j,bi,bj)/deltaTMom/deltaTFreeSurf
            ENDDO
           ENDDO
         ENDIF
@@ -248,7 +250,7 @@ C--   Initial residual calculation (with free-Surface term)
       IF ( debugLevel .GE. debLevZero ) THEN
         _BEGIN_MASTER( myThid )
         printResidual = printResidualFreq.GE.1
-        WRITE(standardmessageunit,'(A,1P2E22.14)')
+        WRITE(standardMessageUnit,'(A,1P2E22.14)')
      &     ' cg3d: Sum(rhs),rhsMax = ',sumRHS,rhsMax
         _END_MASTER( myThid )
       ENDIF
@@ -372,7 +374,7 @@ C==    q = A.s
              surfTerm(i,j) = surfTerm(i,j)*cg3dNorm
      &              *recip_Rcol(i,j,bi,bj)*recip_Rcol(i,j,bi,bj)
      &              *rA(i,j,bi,bj)*deepFac2F(ks)
-     &              *recip_Bo(i,j,bi,bj)/deltaTMom/deltaTfreesurf
+     &              *recip_Bo(i,j,bi,bj)/deltaTMom/deltaTFreeSurf
            ENDDO
           ENDDO
          ENDIF
@@ -516,18 +518,22 @@ C      Now compute "interior" points.
      I        'cg3d_r_F', 'I10', 1, Nr, cg3d_r, myIter, myThid )
       ENDIF
 
+      IF ( cg3dNormaliseRHS ) THEN
 C--   Un-normalise the answer
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO k=1,Nr
-         DO j=1,sNy
-          DO i=1,sNx
-           cg3d_x(i,j,k,bi,bj) = cg3d_x(i,j,k,bi,bj)/rhsNorm
+c      rhsMax = 1. _d 0 / rhsNorm
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO k=1,Nr
+          DO j=1,sNy
+           DO i=1,sNx
+            cg3d_x(i,j,k,bi,bj) = cg3d_x(i,j,k,bi,bj)/rhsNorm
+c           cg3d_x(i,j,k,bi,bj) = cg3d_x(i,j,k,bi,bj)*rhsMax
+           ENDDO
           ENDDO
          ENDDO
         ENDDO
        ENDDO
-      ENDDO
+      ENDIF
 
 C--   Return parameters to caller
       lastResidual = SQRT(err_sq)

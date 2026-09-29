@@ -122,6 +122,49 @@ C--   Add diagnostics to the (long) list
        diagCode  = 'WM P    LR      '
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+       diagName  = 'LSkux   '
+       diagTitle = 'K_11 element (U.point, X.dir) of GM-Redi tensor'
+       diagUnits = 'm^2/s           '
+       diagCode  = 'UU P    MR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+       diagName  = 'LSkvy   '
+       diagTitle = 'K_22 element (V.point, Y.dir) of GM-Redi tensor'
+       diagUnits = 'm^2/s           '
+       diagCode  = 'VV P    MR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+       diagName  = 'LSkuz   '
+       diagTitle = 'K_13 element (U.point, Z.dir) of GM-Redi tensor'
+       diagUnits = 'm^2/s           '
+       diagCode  = 'UU      MR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+       diagName  = 'LSkvz   '
+       diagTitle = 'K_23 element (V.point, Z.dir) of GM-Redi tensor'
+       diagUnits = 'm^2/s           '
+       diagCode  = 'VV      MR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+       diagName  = 'LS_PsiX '
+       diagTitle = 'GM Bolus transport Psi in longstep : U component'
+       diagUnits = 'm^2/s           '
+       diagCode  = 'UU      LR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+       diagName  = 'LS_PsiY '
+       diagTitle = 'GM Bolus transport Psi in longstep : V component'
+       diagUnits = 'm^2/s           '
+       diagCode  = 'VV      LR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
       ENDIF
 #endif
 

@@ -49,14 +49,13 @@ C     msgBuf       :: Informational/error message buffer
       CHARACTER*16  diagUnits
       CHARACTER*(80) diagTitle
 #endif /* ALLOW_DIAGNOSTICS */
-#ifdef ALLOW_CTRL
+#if defined ALLOW_CTRL || defined ALLOW_ECCO
       INTEGER k
 #endif
 
 #ifdef ALLOW_MNC
 C     Initialize MNC variable information for SHELFICE
-      IF ( useMNC .AND. (shelfice_tave_mnc.OR.shelfice_dump_mnc)
-     &    ) THEN
+      IF ( useMNC .AND. shelfice_dump_mnc ) THEN
         CALL SHELFICE_MNC_INIT( myThid )
       ENDIF
 #endif /* ALLOW_MNC */
@@ -144,7 +143,7 @@ c    &          R_shelfIce(i,j,bi,bj).LT.rF(1) ) THEN
        ENDDO
       ENDDO
 
-#ifdef ALLOW_CTRL
+#if defined ALLOW_CTRL || defined ALLOW_ECCO
 C     maskSHI is a hack to play along with the general ctrl-package
 C     infrastructure, where only the k=1 layer of a 3D mask is used
 C     for 2D fields. We cannot use maskInC instead, because routines

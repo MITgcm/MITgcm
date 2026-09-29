@@ -8,7 +8,8 @@ C     !INTERFACE:
       SUBROUTINE CPL_INIT_FIXED( myThid )
 
 C     !DESCRIPTION:
-C     Define MNC variables for use by the coupler.
+C     Initialise non evolving (fixed) coupling interface package,
+C     Atmospheric version
 
 C     !USES:
       IMPLICIT NONE
@@ -19,11 +20,6 @@ C     !USES:
 C     !INPUT PARAMETERS:
       INTEGER myThid
 CEOP
-
-#ifdef ALLOW_MNC
-C      IF (useMNC) THEN
-C      ENDIF
-#endif /* ALLOW_MNC */
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN

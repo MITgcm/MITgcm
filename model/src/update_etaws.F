@@ -24,7 +24,6 @@ C     == Global variables
 #include "SURFACE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
 C     myTime  :: Current time in simulation
 C     myIter  :: Current iteration number
 C     myThid  :: my Thread Id number
@@ -32,13 +31,9 @@ C     myThid  :: my Thread Id number
       INTEGER myIter
       INTEGER myThid
 
-C     !LOCAL VARIABLES:
-#ifdef EXACT_CONSERV
-C     Local variables in common block
-
 #ifdef NONLIN_FRSURF
 # ifndef DISABLE_SIGMA_CODE
-C     Local variables
+C     !LOCAL VARIABLES:
 C     i,j,bi,bj  :: Loop counters
       INTEGER i,j,bi,bj
 CEOP
@@ -87,9 +82,9 @@ C-     2nd bi,bj loop :
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
             dEtaWdt(i,j,bi,bj) = ( etaHw(i,j,bi,bj)
-     &                           - dEtaWdt(i,j,bi,bj) )/deltaTfreesurf
+     &                           - dEtaWdt(i,j,bi,bj) )/deltaTFreeSurf
             dEtaSdt(i,j,bi,bj) = ( etaHs(i,j,bi,bj)
-     &                           - dEtaSdt(i,j,bi,bj) )/deltaTfreesurf
+     &                           - dEtaSdt(i,j,bi,bj) )/deltaTFreeSurf
           ENDDO
          ENDDO
 
@@ -100,8 +95,6 @@ C- end 2nd bi,bj loop.
       ENDIF
 # endif /* DISABLE_SIGMA_CODE */
 #endif /* NONLIN_FRSURF */
-
-#endif /* EXACT_CONSERV */
 
       RETURN
       END

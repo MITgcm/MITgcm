@@ -378,41 +378,4 @@ c     _RL feload(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER nlev
       LOGICAL QSW_underice
 
-#ifdef ALLOW_TIMEAVE
-C For time-averages output using TIMEAVE pkg:
-C Note: Although some of the Time-Ave arrays are for A-Biotic fields, all these
-C       arrays are only used + filled within ifdef DIC_BIOTIC code, so we keep
-C       them only if DIC_BIOTIC is defined.
-C  BIOave     :: biological productivity [mol P/m3/s]
-C  CARave     :: carbonate changes due to biological productivity
-C                 and remineralization [mol C/m3/s]
-C  SURave     :: tendency of DIC due to air-sea exchange
-C                 and virtual flux [mol C/m3/s]
-C  SUROave    :: tendency of O2 due to air-sea exchange [mol O2/m3/s]
-C  pCO2ave    :: surface ocean pCO2 [uatm]
-C  pHave      :: surface ocean pH
-C  fluxCO2ave :: Air-sea flux of CO2 [mol C/m2/s]
-C  pfluxave   :: changes to PO4 due to flux and remineralization [mol P/m3/s]
-C  epfluxave  :: export flux of PO4 through each layer [mol P/m2/s]
-C  cfluxave   :: carbonate changes due to flux and remineralization [mol C/m3/s]
-C  DIC_timeAve  :: period over which DIC averages are calculated [s]
-
-      COMMON /BIOTIC_TAVE/
-     &     BIOave, CARave, SURave, SUROave, pCO2ave, pHave,
-     &     fluxCO2ave, pfluxave, epfluxave, cfluxave,
-     &     DIC_timeAve
-
-      _RL BIOave    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL CARave    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL SURave    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL SUROave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL pCO2ave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL pHave     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL fluxCO2ave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL pfluxave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL epfluxave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL cfluxave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL DIC_timeAve(nSx,nSy)
-#endif /* ALLOW_TIMEAVE */
-
 #endif /* DIC_BIOTIC */

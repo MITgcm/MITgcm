@@ -313,12 +313,6 @@ C
       _RL phy_adj(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif
 #ifdef SIZE_DEP_LIM
-      _RL k_NO3_sm
-      _RL k_NO3_lg
-      _RL k_PO4_sm
-      _RL k_PO4_lg
-      _RL k_Fe_sm
-      _RL k_Fe_lg
       _RL light_lim_sm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL light_lim_lg(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL NO3_lim_sm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -603,29 +597,6 @@ C  timescale is set by gamma_irr_mem.
        ENDDO
       ENDDO
 
-C     some constants (should be runtime parameters)
-CAV Darwin (uM)
-C kPO4: sm/lg 2.4e-2 4.5e-2
-C kNO3: 0.4, 0.73
-C kSi: 0, 2
-C kFe: 3e-5, 5.6e-5
-
-CAV Topaz (mol/kg)
-C kPO4: 2e-7, 6e-7
-C kNO3: 2e-6, 6e-6
-C kFe: 3e-9, 9e-9
-
-CAV BLING (mol/kg)
-C kPO4: 1e-8
-C kNO3: 2e-6
-C kFe: 1.6e-10
-      k_NO3_sm = 2.0 _d -6 / permil
-      k_NO3_lg = 6.0 _d -6 / permil
-      k_PO4_sm = 1.0 _d -8 / permil
-      k_PO4_lg = 3.0 _d -8 / permil
-      k_Fe_sm = 1.6 _d -10 / permil
-      k_Fe_lg = 4.8 _d -10 / permil
-
 C  Nutrient uptake and partitioning between organic pools
 
       DO k=1,Nr
@@ -662,6 +633,7 @@ C  Iron limitation
           Si_lim(i,j,k) = PTR_Si(i,j,k)/(PTR_Si(i,j,k)+k_Si)
 #endif
 
+#ifdef SIZE_DEP_LIM
           NO3_lim_sm(i,j,k) = PTR_NO3(i,j,k)/(PTR_NO3(i,j,k)+k_NO3_sm)
 
           PO4_lim_sm(i,j,k) = PTR_PO4(i,j,k)/(PTR_PO4(i,j,k)+k_PO4_sm)
@@ -673,6 +645,7 @@ C  Iron limitation
           PO4_lim_lg(i,j,k) = PTR_PO4(i,j,k)/(PTR_PO4(i,j,k)+k_PO4_lg)
 
           Fe_lim_lg(i,j,k) = PTR_FE(i,j,k)/(PTR_FE(i,j,k)+k_Fe_lg)
+#endif
 C  NB The temperature function of Eppley (1972) is used to represent the
 C  effects of temperature on uptake, synthesis and ecosystem function.
 C  The reference value is 0 C. Note that this differs slightly from the
@@ -827,25 +800,7 @@ C  Nutrient uptake
           N_uptake(i,j,k) = mu(i,j,k) * (Phy_sm_local(i,j,k)
      &                      + Phy_lg_local(i,j,k))
 
-CAV(
 #ifdef SIZE_DEP_LIM
-
-CAV Darwin (uM)
-C kPO4: sm/lg 2.4e-2 4.5e-2
-C kNO3: 0.4, 0.73
-C kSi: 0, 2
-C kFe: 3e-5, 5.6e-5
-
-CAV Topaz (mol/kg)
-C kPO4: 2e-7, 6e-7
-C kNO3: 2e-6, 6e-6
-C kFe: 3e-9, 9e-9
-
-CAV BLING (mol/kg)
-C kPO4: 1e-8
-C kNO3: 2e-6
-C kFe: 1.6e-10
-
           Pc_m_sm = Pc_0_2d(i,j,bi,bj) * expkT(i,j,k)
      &           * min(NO3_lim_sm(i,j,k), PO4_lim_sm(i,j,k),
      &           Fe_lim_sm(i,j,k)) * maskC(i,j,k,bi,bj)
@@ -863,9 +818,7 @@ C kFe: 1.6e-10
 
           N_uptake(i,j,k) = mu_sm(i,j,k) * Phy_sm_local(i,j,k)
      &                      + mu_lg(i,j,k) * Phy_lg_local(i,j,k)
-
 #endif /* SIZE_DEP_LIM */
-CAV)
 
           N_fix(i,j,k) = mu_diaz(i,j,k) * Phy_diaz_local(i,j,k)
 
@@ -888,15 +841,13 @@ C  phytoplankton, which gave a reasonably good fit to the global
 C  observational synthesis of Dunne (2009). This is consistent
 C  with the findings of Jin et al. (GBC,2006).
 
-CAV(
-#ifdef SIZE_NUT_LIM
+#ifdef SIZE_DEP_LIM
           CaCO3_uptake(i,j,k) = mu_sm(i,j,k) * Phy_sm_local(i,j,k)
      &                          * phi_sm_2d(i,j,bi,bj) * CatoN
 #else
           CaCO3_uptake(i,j,k) = mu(i,j,k) * Phy_sm_local(i,j,k)
      &                          * phi_sm_2d(i,j,bi,bj) * CatoN
 #endif
-CAV)
 
          ENDIF
         ENDDO
@@ -980,7 +931,6 @@ CADJ STORE Phy_diaz_local = comlev1_bibj, key=tkey, kind=isbyte
        DO j=jmin,jmax
         DO i=imin,imax
          IF ( maskC(i,j,k,bi,bj).EQ.oneRS ) THEN
-CAV(
 # ifdef SIZE_DEP_LIM
 
           Phy_lg_local(i,j,k) = Phy_lg_local(i,j,k) +
@@ -995,7 +945,6 @@ CAV(
      &                * PTRACERS_dTLev(k)
 
 # endif
-CAV)
 
 # ifdef USE_SIBLING
 C  For now: assuming that all large phyto are diatoms
@@ -1093,9 +1042,9 @@ C  phytoplankton.
 C  sinking fraction: particulate organic matter
 
 #ifdef NEW_FRAC_EXP
-CAV fraction that does into POM is
-CAV (assume diaz has same export frac as small phyto)
-CAV e^kT * [phi_lg * B_lg/Btot + phi_sm * B_sm/Btot + phi_sm * Bdiaz/Bto]
+C  Fraction that does into POM is
+C  (assume diaz has same export frac as small phyto)
+C  e^kT * [phi_lg * B_lg/Btot + phi_sm * B_sm/Btot + phi_sm * Bdiaz/Bto]
 
           frac_exp = (phi_sm_2d(i,j,bi,bj) * (phyto_sm(i,j,k,bi,bj) +
      &      phyto_diaz(i,j,k,bi,bj)) + phi_lg_2d(i,j,bi,bj) *
@@ -1106,8 +1055,8 @@ CAV e^kT * [phi_lg * B_lg/Btot + phi_sm * B_sm/Btot + phi_sm * Bdiaz/Bto]
 
 #else
 
-CAV this is from blingv1, where B_sm and B_lg are diagnosed from
-CAV the value of mu...
+C  This is from blingv1, where B_sm and B_lg are diagnosed from
+C  the value of mu...
           frac_exp = (phi_sm_2d(i,j,bi,bj) + phi_lg_2d(i,j,bi,bj) *
      &           (mu(i,j,k)/(epsln + lambda_0*expkT(i,j,k)))**2)/
      &           (1. + (mu(i,j,k)/

@@ -116,8 +116,8 @@ C--   Calculate cost function on tile of this instance
               cost_func1_streamice(bi,bj) =
      &         cost_func1_streamice(bi,bj) +
      &         streamice_wgt_tikh_gen * (dMdx**2+dMdy**2) * gridtimfac
-              cost_smooth_glen_streamice(bi,bj) =
-     &         cost_smooth_glen_streamice(bi,bj) +
+              cost_smooth_bdotmelt_streamice(bi,bj) =
+     &         cost_smooth_bdotmelt_streamice(bi,bj) +
      &         streamice_wgt_tikh_gen * (dMdx**2+dMdy**2) * gridtimfac
 
               h = H_streamice(i,j,bi,bj)

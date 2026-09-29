@@ -2,9 +2,8 @@
  PTRACERS_numInUse=1,
  PTRACERS_Iter0=200000,
  PTRACERS_dumpFreq=0.,
- PTRACERS_taveFreq=0.,
  PTRACERS_monitorFreq=0.,
-# tracer 1 
+# tracer 1
  PTRACERS_advScheme(1)=30,
  PTRACERS_diffKh(1)=5.E3,
  PTRACERS_diffKr(1)=5.E-5,

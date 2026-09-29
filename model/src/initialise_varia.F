@@ -95,8 +95,6 @@ C       |-- STATE_SUMMARY
 C       |
 C       |-- MONITOR
 C       |
-C       |-- DO_STATEVARS_TAVE
-C       |
 C       |-- DO_THE_MODEL_IO
 
 C     !USES:
@@ -187,7 +185,7 @@ CEOP
 #endif /* ALLOW_AUTODIFF */
 
 #ifdef ALLOW_DEPTH_CONTROL
-C--   Intialize the depth for TAF/TAMC
+C--   Intialize the depth for TAF
       CALL INI_DEPTHS( myThid )
 C--   Get control parameter depth
       CALL CTRL_DEPTH_INI( myThid )
@@ -244,7 +242,7 @@ C--   Initialise model forcing fields.
       CALL INI_FORCING( myThid )
 
 #ifdef ALLOW_AUTODIFF
-C--   Initialise active fields to help TAMC
+C--   Initialise active fields to help TAF
       if (useAUTODIFF) CALL AUTODIFF_INIT_VARIA( myThid )
 #endif
 
@@ -384,14 +382,6 @@ C--   Finally summarise the model state
 C--   Check status of initial state (statistics, cfl, etc...)
       CALL MONITOR( startTime, nIter0, myThid )
 #endif /* ALLOW_MONITOR */
-
-#ifdef ALLOW_TIMEAVE
-#ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('DO_STATEVARS_TAVE',myThid)
-#endif
-C--   Initialise time-average arrays with initial state values
-      CALL DO_STATEVARS_TAVE( startTime, nIter0, myThid )
-#endif
 
 C--   Dump initial state to files
 #ifdef ALLOW_DEBUG

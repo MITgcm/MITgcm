@@ -1,4 +1,7 @@
 #include "DIC_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
 C !ROUTINE: DIC_BIOTIC_FORCING
@@ -29,6 +32,9 @@ C !USES: ===============================================================
 #include "DIC_VARS.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+#endif
 
 C !INPUT/OUTPUT PARAMETERS: ===================================================
 C  PTR_DIC              :: dissolced inorganic carbon
@@ -105,12 +111,19 @@ C  freefe                 :: iron not bound to ligand
       INTEGER kBottom
 # endif
 #endif
+#ifdef ALLOW_AUTODIFF_TAMC
+C     tkey :: tape key TAF-AD simulations (depends on tiles)
+      INTEGER tkey
+#endif
 CEOP
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_ENTER('DIC_BIOTIC_FORCING',myThid)
 #endif
 
+#ifdef ALLOW_AUTODIFF_TAMC
+      tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+#endif
       IF ( useThSIce .OR. useSEAICE .OR. useCoupler ) THEN
 #ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('DIC_FIELDS_UPDATE',myThid)
@@ -162,6 +175,10 @@ C carbon air-sea interaction
      I                    bi, bj, iMin, iMax, jMin, jMax,
      I                    myTime, myIter, myThid )
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE Kwexch_pre(:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
+#endif
+
 C alkalinity air-sea interaction
 #ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('ALK_SURFFORCING',myThid)
@@ -207,6 +224,9 @@ C biological activity
      O                    BIOac,
      I                    bi, bj, iMin, iMax, jMin, jMax,
      I                    myTime, myIter, myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE BIOac = comlev1_bibj, key = tkey, kind = isbyte
+#endif
 
 C flux of po4 from layers with biological activity
 #ifdef ALLOW_DEBUG
@@ -382,45 +402,6 @@ c find free iron and get rid of insoluble part
      I               myIter, myThid )
 #endif
 #endif
-
-#ifdef ALLOW_TIMEAVE
-C save averages
-       IF ( PTRACERS_taveFreq.GT.0. ) THEN
-        DO k=1,Nr
-         DO j=jMin,jMax
-          DO i=iMin,iMax
-            BIOave(i,j,k,bi,bj)   =BIOave(i,j,k,bi,bj)+
-     &                             BIOac(i,j,k)*deltaTClock
-            CARave(i,j,k,bi,bj)   =CARave(i,j,k,bi,bj)+
-     &                             CAR(i,j,k)*deltaTClock
-            pfluxave(i,j,k,bi,bj) =pfluxave(i,j,k,bi,bj) +
-     &                             pflux(i,j,k)*deltaTClock
-            epfluxave(i,j,k,bi,bj)=epfluxave(i,j,k,bi,bj) +
-     &                             exportflux(i,j,k)*deltaTClock
-            cfluxave(i,j,k,bi,bj) =cfluxave(i,j,k,bi,bj) +
-     &                             cflux(i,j,k)*deltaTClock
-          ENDDO
-         ENDDO
-        ENDDO
-         DO j=jMin,jMax
-          DO i=iMin,iMax
-              SURave(i,j,bi,bj)    =SURave(i,j,bi,bj)+
-     &                              SURC(i,j)*deltaTClock
-#ifdef ALLOW_O2
-              SUROave(i,j,bi,bj)   =SUROave(i,j,bi,bj)+
-     &                              SURO(i,j)*deltaTClock
-#endif
-              pCO2ave(i,j,bi,bj)   =pCO2ave(i,j,bi,bj)+
-     &                              pCO2(i,j,bi,bj)*deltaTClock
-              pHave(i,j,bi,bj)     =pHave(i,j,bi,bj)+
-     &                              pH(i,j,bi,bj)*deltaTClock
-              fluxCO2ave(i,j,bi,bj)=fluxCO2ave(i,j,bi,bj)+
-     &                           fluxCO2(i,j,bi,bj)*deltaTClock
-          ENDDO
-         ENDDO
-         DIC_timeAve(bi,bj) = DIC_timeAve(bi,bj)+deltaTClock
-       ENDIF
-#endif /* ALLOW_TIMEAVE*/
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

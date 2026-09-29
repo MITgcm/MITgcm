@@ -12,6 +12,9 @@
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE_OPTIONS.h"
 #endif
+#ifdef ALLOW_OBCS
+# include "OBCS_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: CTRL_CHECK
@@ -44,7 +47,8 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     myThid     :: my Thread Id number
       INTEGER myThid
 
-#if (defined (ALLOW_GENARR3D_CONTROL) && defined(ALLOW_PTRACERS))
+#if (defined (ALLOW_GENARR3D_CONTROL) && defined(ALLOW_PTRACERS)) \
+      || defined ALLOW_GENTIM2D_CONTROL
 C     !FUNCTIONS:
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
@@ -62,6 +66,8 @@ C     msgBuf     :: Informational/error message buffer
 #endif
 #if ( defined ALLOW_GENARR3D_CONTROL && defined ALLOW_PTRACERS )
       INTEGER iLen, iPtr, ascii_1
+#elif defined ALLOW_GENTIM2D_CONTROL
+      INTEGER iLen
 #endif
 #ifdef ECCO_CTRL_DEPRECATED
       INTEGER ioUnit
@@ -93,11 +99,17 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_GENTIM2D_CONTROL
       IF ( .NOT.useCAL ) THEN
-        WRITE(msgBuf,'(2A)') '** WARNING ** CTRL_CHECK: ',
-     &    'ALLOW_GENTIM2D_CONTROL is unsafe'
-     &    //' without pkg/cal (currently: useCAL=F)'
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
+       DO iarr = 1, maxCtrlTim2D
+        IF ( xx_gentim2d_period(iarr) .NE. 0. _d 0 ) THEN
+         iLen = ILNBLNK(xx_gentim2d_file(iarr))
+         WRITE(msgBuf,'(3A)') '** WARNING ** CTRL_CHECK: '
+     &        //'xx_gentim2d_period .ne. 0. for ',
+     &        xx_gentim2d_file(iarr)(1:iLen),
+     &        ' is unsafe without pkg/cal (currently: useCAL=F)'
+         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+        ENDIF
+       ENDDO
       ENDIF
 #endif
 
@@ -231,6 +243,46 @@ C-    to use KAPREDI_CONTROL, needs to define GM_READ_K3D_REDI in GMREDI_OPTIONS
 #  endif
 # endif /* ndef EXCLUDE_CTRL_PACK */
 #endif /* ALLOW_PACKUNPACK_METHOD2 */
+
+#if ( defined ALLOW_OBCSN_CONTROL && !defined ALLOW_OBCS_NORTH )
+      WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
+     &     'CPP-flag ALLOW_OBCSN_CONTROL is defined,'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
+     &     'but CPP-flag ALLOW_OBCS_NORTH is not defined.'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      errCount = errCount + 1
+#endif
+
+#if ( defined ALLOW_OBCSS_CONTROL && !defined ALLOW_OBCS_SOUTH )
+      WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
+     &     'CPP-flag ALLOW_OBCSS_CONTROL is defined,'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
+     &     'but CPP-flag ALLOW_OBCS_SOUTH is not defined.'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      errCount = errCount + 1
+#endif
+
+#if ( defined ALLOW_OBCSE_CONTROL && !defined ALLOW_OBCS_EAST )
+      WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
+     &     'CPP-flag ALLOW_OBCSE_CONTROL is defined,'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
+     &     'but CPP-flag ALLOW_OBCS_EAST is not defined.'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      errCount = errCount + 1
+#endif
+
+#if ( defined ALLOW_OBCSW_CONTROL && !defined ALLOW_OBCS_WEST )
+      WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
+     &     'CPP-flag ALLOW_OBCSW_CONTROL is defined,'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
+     &     'but CPP-flag ALLOW_OBCS_WEST is not defined.'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      errCount = errCount + 1
+#endif
 
 #ifdef ALLOW_HFLUXM_CONTROL
       WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',

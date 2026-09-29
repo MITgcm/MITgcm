@@ -3,25 +3,20 @@
 # include "CTRL_OPTIONS.h"
 #endif
 
-      subroutine grdchk_get_position( mythid )
+CBOP
+C     !ROUTINE: GRDCHK_GET_POSITION
+C     !INTERFACE:
+      SUBROUTINE GRDCHK_GET_POSITION( myThid )
 
-c     ==================================================================
-c     SUBROUTINE grdchk_loc
-c     ==================================================================
-c
-c     o Get the location of a given component of the control vector for
-c       the current process.
-c
-c     started: Christian Eckert eckert@mit.edu 04-Apr-2000
-c     continued: heimbach@mit.edu: 13-Jun-2001
-c
-c     ==================================================================
-c     SUBROUTINE grdchk_loc
-c     ==================================================================
+C     !DESCRIPTION:
+C     o Get the location of a given component of the control vector for
+C       the current process.
+C
+C     started: Christian Eckert eckert@mit.edu 04-Apr-2000
+C     continued: heimbach@mit.edu: 13-Jun-2001
 
-      implicit none
-
-c     == global variables ==
+C     !USES:
+      IMPLICIT NONE
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
@@ -40,237 +35,209 @@ C     CTRL_OBCS.h must be included before GRDCHK.h
 #endif
 #include "GRDCHK.h"
 
-c     == routine arguments ==
-      integer       mythid
+C     !INPUT/OUTPUT PARAMETERS:
+      INTEGER myThid
 
 #ifdef ALLOW_GRDCHK
-c     == local variables ==
-      integer       icvrec
-      integer       jtile
-      integer       itile
-      integer       layer
-      integer       obcspos
-      integer       itilepos
-      integer       jtilepos
-      integer       itest
-      integer       ierr
-      integer bi,bj
-      integer i,j,k
-      integer iobcs
-      integer iwrk, jwrk, kwrk
-      integer iobcswrk
-      integer irec, irecwrk
-      integer itlo,ithi
-      integer jtlo,jthi
-      integer jmin,jmax
-      integer imin,imax
-      integer icomptest
-      integer nobcsmax
-      integer pastit
+C     !LOCAL VARIABLES:
+      INTEGER icvrec
+      INTEGER jtile
+      INTEGER itile
+      INTEGER layer
+      INTEGER obcspos
+      INTEGER itilepos
+      INTEGER jtilepos
+      INTEGER itest
+      INTEGER ierr
+      INTEGER bi,bj
+      INTEGER i,j,k
+      INTEGER iobcs
+      INTEGER iwrk, jwrk, kwrk
+      INTEGER irec, irecwrk
+      INTEGER icomptest
+      INTEGER nobcsmax
+      INTEGER pastit
       _RL wetlocal
+CEOP
 
-c     == end of interface ==
-
-      jtlo = 1
-      jthi = nsy
-      itlo = 1
-      ithi = nsx
-      jmin = 1
-      jmax = sny
-      imin = 1
-      imax = snx
-
-      itile = iLocTile
-      jtile = jLocTile
+C     local copies of COMMON block variable (GRDCHK.h)
+      itile    = iLocTile
+      jtile    = jLocTile
       itilepos = iGloPos
       jtilepos = jGloPos
       layer    = kGloPos
       obcspos  = obcsglo
       icvrec   = recglo
 
-      _BEGIN_MASTER( mythid )
+      _BEGIN_MASTER( myThid )
 
-c--   determine proc. number from following assumptions <= done in grdchk_readparms
+C--   determine proc. number from following assumptions <= done in
+C     grdchk_readparms
 
-      if ( myProcId .EQ. grdchkwhichproc ) then
+      IF ( myProcId .EQ. grdchkwhichproc ) THEN
 
-c     initialise parameters
-      ierr      = -5
-      pastit    = -1
-      wetlocal  = 0
+C     initialise parameters
+       ierr      = -5
+       pastit    = -1
+       wetlocal  = 0
 
-      itest     = 0
-      icomptest = 0
-      irecwrk   = 1
-c     bjwrk     = 1
-c     biwrk     = 1
-      kwrk      = 1
-      iobcswrk  = 1
-      jwrk      = 1
-      iwrk      = 1
+       itest     = 0
+       icomptest = 0
+       irecwrk   = 1
+       kwrk      = 1
+       jwrk      = 1
+       iwrk      = 1
 
-c--   set max loop index for obcs multiplicities
-      if ( ncvargrd(grdchkvarindex) .eq. 'm' ) then
+C--   set max loop index for obcs multiplicities
+       IF ( ncvargrd(grdchkvarindex) .EQ. 'm' ) THEN
 #ifdef ALLOW_OBCS_CONTROL
-         nobcsmax = nobcs
+        nobcsmax = nobcs
 #else
-         print *, 'S/R grdchk_get_position: Ooops!'
+        PRINT *, 'S/R grdchk_get_position: Ooops!'
 #endif
-      else
-         nobcsmax = 1
-      endif
+       ELSE
+        nobcsmax = 1
+       ENDIF
 
-c--   Start to loop over records.
-        do irec = irecwrk, ncvarrecs(grdchkvarindex)
-         iobcs = MOD((irec-1),nobcsmax) + 1
-c         do bj = bjwrk, jthi
-c          do bi = biwrk, ithi
-            bi = itile
-            bj = jtile
-            do k = kwrk, ncvarnrmax(grdchkvarindex)
-
+C--   Start to loop over records.
+       DO irec = irecwrk, ncvarrecs(grdchkvarindex)
+        iobcs = MOD((irec-1),nobcsmax) + 1
+        bi = itile
+        bj = jtile
+        DO k = kwrk, ncvarnrmax(grdchkvarindex)
 cph(
-cph-print               print *, 'ph-grd get_pos irec, bj, bi, k ',
+cph-print               PRINT *, 'ph-grd get_pos irec, bj, bi, k ',
 cph-print     &              irec, bj, bi, k
 cph)
-             if ( ierr .ne. 0 ) then
-               do j = jwrk, ncvarymax(grdchkvarindex)
-                do i = iwrk, ncvarxmax(grdchkvarindex)
-                 if (ierr .ne. 0) then
-                  if ( ncvargrd(grdchkvarindex) .eq. 'c' ) then
-                     if ( maskC(i,j,k,bi,bj) .gt. 0.) then
-                        icomptest = icomptest + 1
-                     endif
-                     wetlocal = maskC(i,j,k,bi,bj)
-                  else if ( ncvargrd(grdchkvarindex) .eq. 's' ) then
-                     if ( _maskS(i,j,k,bi,bj) .gt. 0.) then
-                        icomptest = icomptest + 1
-                     endif
-                     wetlocal = _maskS(i,j,k,bi,bj)
-                  else if ( ncvargrd(grdchkvarindex) .eq. 'w' ) then
-                     if ( _maskW(i,j,k,bi,bj) .gt. 0.) then
-                        icomptest = icomptest + 1
-                     endif
-                     wetlocal = _maskW(i,j,k,bi,bj)
+         IF ( ierr .ne. 0 ) THEN
+          DO j = jwrk, ncvarymax(grdchkvarindex)
+           DO i = iwrk, ncvarxmax(grdchkvarindex)
+            IF (ierr .NE. 0) THEN
+             IF ( ncvargrd(grdchkvarindex) .EQ. 'c' ) THEN
+              IF ( maskC(i,j,k,bi,bj) .GT. 0.) THEN
+               icomptest = icomptest + 1
+              ENDIF
+              wetlocal = maskC(i,j,k,bi,bj)
+             ELSEIF ( ncvargrd(grdchkvarindex) .EQ. 's' ) THEN
+              IF ( _maskS(i,j,k,bi,bj) .GT. 0.) THEN
+               icomptest = icomptest + 1
+              ENDIF
+              wetlocal = _maskS(i,j,k,bi,bj)
+             ELSEIF ( ncvargrd(grdchkvarindex) .EQ. 'w' ) THEN
+              IF ( _maskW(i,j,k,bi,bj) .GT. 0.) THEN
+               icomptest = icomptest + 1
+              ENDIF
+              wetlocal = _maskW(i,j,k,bi,bj)
 #ifdef ALLOW_SHELFICE
-c--             Ice shelf mask.
-                  else if ( ncvargrd(grdchkvarindex) .eq. 'i' ) then
-                     if ( maskSHI(i,j,k,bi,bj) .gt. 0.) then
-                        icomptest = icomptest + 1
-                     endif
-                     wetlocal = maskSHI(i,j,k,bi,bj)
+C--   Ice shelf mask.
+             ELSEIF ( ncvargrd(grdchkvarindex) .EQ. 'i' ) THEN
+              IF ( maskSHI(i,j,k,bi,bj) .GT. 0.) THEN
+               icomptest = icomptest + 1
+              ENDIF
+              wetlocal = maskSHI(i,j,k,bi,bj)
 #endif /* ALLOW_SHELFICE */
 #ifdef ALLOW_OBCS_CONTROL
-                  else if ( ncvargrd(grdchkvarindex) .eq. 'm' ) then
-                     if ( ncvarfname(grdchkvarindex)
-     &                  .eq.xx_obcsn_file ) then
+             ELSEIF ( ncvargrd(grdchkvarindex) .EQ. 'm' ) THEN
+              IF ( ncvarfname(grdchkvarindex)
+     &             .EQ. xx_obcsn_file ) THEN
 #ifdef ALLOW_OBCSN_CONTROL
-                        if (grdchk_maskxz(i,k,bi,bj,iobcs) .gt. 0.
-     &                       .and. j.eq. OB_Jn(I,bi,bj) ) then
-                           icomptest = icomptest + 1
-                        endif
-                        wetlocal = grdchk_maskxz(i,k,bi,bj,iobcs)
+               IF (grdchk_maskxz(i,k,bi,bj,iobcs) .GT. 0.
+     &              .AND. j .EQ. OB_Jn(i,bi,bj) ) THEN
+                icomptest = icomptest + 1
+               ENDIF
+               wetlocal = grdchk_maskxz(i,k,bi,bj,iobcs)
 #endif
-                     else if ( ncvarfname(grdchkvarindex)
-     &                       .eq.xx_obcss_file ) then
+              ELSEIF ( ncvarfname(grdchkvarindex)
+     &                    .EQ. xx_obcss_file ) THEN
 #ifdef ALLOW_OBCSS_CONTROL
-                        if (grdchk_maskxz(i,k,bi,bj,iobcs) .gt. 0.
-     &                       .and. j.eq. OB_Js(I,bi,bj) ) then
-                           icomptest = icomptest + 1
-                        endif
-                        wetlocal = grdchk_maskxz(i,k,bi,bj,iobcs)
+               IF (grdchk_maskxz(i,k,bi,bj,iobcs) .GT. 0.
+     &              .AND. j .EQ. OB_Js(i,bi,bj) ) THEN
+                icomptest = icomptest + 1
+               ENDIF
+               wetlocal = grdchk_maskxz(i,k,bi,bj,iobcs)
 #endif
-                     else if ( ncvarfname(grdchkvarindex)
-     &                       .eq.xx_obcse_file ) then
+              ELSEIF ( ncvarfname(grdchkvarindex)
+     &              .EQ. xx_obcse_file ) THEN
 #ifdef ALLOW_OBCSE_CONTROL
-                        if (grdchk_maskyz(j,k,bi,bj,iobcs) .gt. 0.
-     &                       .and. i.eq. OB_Ie(J,bi,bj) ) then
-                           icomptest = icomptest + 1
-                        endif
-                        wetlocal = grdchk_maskyz(j,k,bi,bj,iobcs)
+               IF (grdchk_maskyz(j,k,bi,bj,iobcs) .GT. 0.
+     &              .AND. i .EQ. OB_Ie(j,bi,bj) ) THEN
+                icomptest = icomptest + 1
+               ENDIF
+               wetlocal = grdchk_maskyz(j,k,bi,bj,iobcs)
 #endif
-                     else if ( ncvarfname(grdchkvarindex)
-     &                       .eq.xx_obcsw_file ) then
+              ELSEIF ( ncvarfname(grdchkvarindex)
+     &              .EQ. xx_obcsw_file ) THEN
 #ifdef ALLOW_OBCSW_CONTROL
-                        if ( grdchk_maskyz(j,k,bi,bj,iobcs) .gt. 0.
-     &                      .and. i.eq. OB_Iw(J,bi,bj) ) then
-                           icomptest = icomptest + 1
-                        endif
-                        wetlocal = grdchk_maskyz(j,k,bi,bj,iobcs)
+               IF ( grdchk_maskyz(j,k,bi,bj,iobcs) .GT. 0.
+     &              .AND. i .EQ. OB_Iw(j,bi,bj) ) THEN
+                icomptest = icomptest + 1
+               ENDIF
+               wetlocal = grdchk_maskyz(j,k,bi,bj,iobcs)
 #endif
-                     endif
+              ENDIF
 #endif /* ALLOW_OBCS_CONTROL */
-                  endif
-c
-                  if ( i     .EQ. itilepos .AND.
-     &                 j     .EQ. jtilepos .AND.
-     &                 k     .EQ. layer .AND.
-     &                 bi    .EQ. itile .AND.
-     &                 bj    .EQ. jtile .AND.
-     &                 iobcs .EQ. obcspos .AND.
-     &                 irec  .EQ. icvrec ) then
-                     pastit = 0
-                     if ( wetlocal .NE.0 ) then
-                        nbeg = icomptest
-                        nend = nbeg + nend
-                        ierr     = 0
-                        print '(a,6I5)',
-     &                       ' grad-res exact position met: '
-                        print '(a,7I5)',
-     &                       ' grad-res ', grdchkwhichproc,
-     &                       nbeg, itilepos, jtilepos, layer,
-     &                       itile, jtile
-                        goto 1234
-                     endif
-                  else if ( pastit .EQ. 0 .AND.
-     &                    wetlocal .NE.0 ) then
-                     nbeg = icomptest
-                     nend = nbeg + nend
-                     ierr     = 0
-                        print '(a,6I5)',
-     &                       ' grad-res closest next position: '
-                        print '(a,7I5)',
-     &                       ' grad-res ', grdchkwhichproc,
-     &                       nbeg, itilepos, jtilepos, layer,
-     &                       itile, jtile
-                        goto 1234
-                  endif
-c
-                 endif
-                enddo
-                iwrk = 1
-               enddo
-               jwrk = 1
-             else if (ierr .NE. 0) then
-                itest     = itest + nwettile(bi,bj,k,iobcs)
-                iwrk      = 1
-                jwrk      = 1
-             endif
-c--   End of loop over k
-            enddo
-            kwrk = 1
-c--   End of loop over bi
-c          enddo
-c          biwrk = 1
-c--   End of loop over bj
-c         enddo
-c         bjwrk = 1
-c--   End of loop over iobcs
-cph         enddo
-cph         iobcswrk = 1
-c--   End of loop over irec records.
-         enddo
+             ENDIF
 
-c--   End of if myProcId statement
-      endif
+             IF ( i     .EQ. itilepos .AND.
+     &            j     .EQ. jtilepos .AND.
+     &            k     .EQ. layer .AND.
+     &            bi    .EQ. itile .AND.
+     &            bj    .EQ. jtile .AND.
+     &            iobcs .EQ. obcspos .AND.
+     &            irec  .EQ. icvrec ) THEN
+              pastit = 0
+              IF ( wetlocal .NE.0 ) THEN
+               nbeg = icomptest
+               nend = nbeg + nend
+               ierr     = 0
+               WRITE(standardMessageUnit,'(a,6I5)')
+     &              ' grad-res exact position met: '
+               WRITE(standardMessageUnit,'(a,7I5)')
+     &              ' grad-res ', grdchkwhichproc,
+     &              nbeg, itilepos, jtilepos, layer,
+     &              itile, jtile
+               GOTO 1234
+              ENDIF
+             ELSEIF ( pastit .EQ. 0 .AND. wetlocal .NE.0 ) THEN
+              nbeg = icomptest
+              nend = nbeg + nend
+              ierr     = 0
+              WRITE(standardMessageUnit,'(a,6I5)')
+     &             ' grad-res closest next position: '
+              WRITE(standardMessageUnit,'(a,7I5)')
+     &             ' grad-res ', grdchkwhichproc,
+     &             nbeg, itilepos, jtilepos, layer,
+     &             itile, jtile
+              GOTO 1234
+             ENDIF
 
- 1234 continue
+            ENDIF
+           ENDDO
+           iwrk = 1
+          ENDDO
+          jwrk = 1
+         ELSEIF (ierr .NE. 0) THEN
+          itest     = itest + nwettile(bi,bj,k,iobcs)
+          iwrk      = 1
+          jwrk      = 1
+         ENDIF
 
-      _END_MASTER( mythid )
+C--   End of loop over k
+        ENDDO
+
+C--   End of loop over irec records.
+       ENDDO
+
+C--   End of if myProcId statement
+      ENDIF
+
+ 1234 CONTINUE
+
+      _END_MASTER( myThid )
 
       _BARRIER
 
 #endif /* ALLOW_GRDCHK */
 
-      return
-      end
+      RETURN
+      END

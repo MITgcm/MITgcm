@@ -716,7 +716,7 @@ Top-level routine: :filelink:`streamice_timestep.F <pkg/streamice/streamice_time
   |   #endif
   |
   |--#if (defined (ALLOW_STREAMICE_OAD_FP))
-  |    STREAMICE_VEL_SOLVE_OPENAD
+  |    STREAMICE_VEL_SOLVE_FP
   |  #else
   |    STREAMICE_VEL_SOLVE
   |    |

@@ -1,6 +1,0 @@
-#!/bin/bash
-
-#  This is the local options file for the "new" version of genmake
-
-MAKEDEPEND=tools_xmakedepend
-

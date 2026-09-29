@@ -35,11 +35,6 @@ CEOP
 C     == Local variables ==
       CHARACTER*(MAX_LEN_FNAM) fn
       INTEGER prec
-#ifndef USE_ATMOSCO2
-c     INTEGER ioUnit
-c     _RL tmpFld(2)
-c     _RS dummyRS(1)
-#endif
       LOGICAL glf
       _RL     timList(1)
       INTEGER j

@@ -1,4 +1,7 @@
 #include "CTRL_OPTIONS.h"
+#ifdef ALLOW_STREAMICE
+# include "STREAMICE_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: CTRL_MAP_FORCING
@@ -22,17 +25,12 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "FFIELDS.h"
-#include "DYNVARS.h"
-#include "GRID.h"
 #include "CTRL_SIZE.h"
 #include "CTRL.h"
 #include "CTRL_GENARR.h"
 #include "CTRL_DUMMY.h"
 #ifdef ALLOW_STREAMICE
 # include "STREAMICE.h"
-#endif
-#ifdef ALLOW_AUTODIFF
-#include "AUTODIFF_MYFIELDS.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -127,15 +125,6 @@ CEOP
          ENDDO
         ENDDO
        ENDDO
-
-       CALL EXCH_XY_RS( Qnet , myThid )
-       CALL EXCH_XY_RS( EmPmR , myThid )
-       CALL EXCH_XY_RS( Qsw , myThid )
-       CALL EXCH_XY_RS( SST , myThid )
-       CALL EXCH_XY_RS( SSS , myThid )
-       CALL EXCH_XY_RS( pLoad , myThid )
-       CALL EXCH_XY_RS( saltFlux , myThid )
-       CALL EXCH_UV_XY_RS( fu, fv, .TRUE., myThid )
 
 # ifdef ALLOW_STREAMICE
        IF ( useStreamIce ) THEN

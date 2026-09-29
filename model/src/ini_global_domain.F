@@ -31,24 +31,25 @@ C     === Global variables ===
 #endif /* ALLOW_EXCH2 */
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     === Routine arguments ===
-C     myThid :: my Thread Id number
+C     myThid  :: my Thread Id number
       INTEGER myThid
 
 C     == Local variables in common ==
-      _RL tileArea(nSx,nSy), threadArea
+      _RL tileArea(nSx,nSy)
 C     put tileArea in (local) common block to print from master-thread:
       COMMON / LOCAL_INI_GLOB_DOMAIN / tileArea
 
 C     !LOCAL VARIABLES:
-C     === Local variables ===
-C     bi,bj  :: tile indices
-C     i, j   :: Loop counters
+C     bi, bj  :: tile indices
+C     i, j, k :: Loop counters
       INTEGER bi, bj
-      INTEGER i, j, nCorners
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER i, j, k, nCorners
       LOGICAL northWestCorner, northEastCorner,
      &        southWestCorner, southEastCorner
+      _RL loc2dArea, loc2dNwet
+      _RL loc3dArea, loc3dNwet
+      _RL tileNwet(nSx,nSy)
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_EXCH2
       INTEGER myTile
 #endif /* ALLOW_EXCH2 */
@@ -70,28 +71,51 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Calculate global domain area:
 C     use to be in ini_masks_etc.F but has been move after packages_init_fixed
 C     in case 1 pkg (e.g., OBCS) modifies the domain size.
-      threadArea = 0. _d 0
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 C-      Compute the domain Area:
+        tileNwet(bi,bj) = 0. _d 0
         tileArea(bi,bj) = 0. _d 0
         DO j=1,sNy
          DO i=1,sNx
+          tileNwet(bi,bj) = tileNwet(bi,bj) + maskInC(i,j,bi,bj)
           tileArea(bi,bj) = tileArea(bi,bj)
      &                    + rA(i,j,bi,bj)*maskInC(i,j,bi,bj)
          ENDDO
         ENDDO
-c       threadArea = threadArea + tileArea(bi,bj)
        ENDDO
       ENDDO
-c#ifdef ALLOW_AUTODIFF_TAMC
-C_jmc: apply GLOBAL_SUM to thread-local variable (not in common block)
-c      _GLOBAL_SUM_RL( threadArea, myThid )
-c#else
-      CALL GLOBAL_SUM_TILE_RL( tileArea, threadArea, myThid )
-c#endif
+      CALL GLOBAL_SUM_TILE_RL( tileNwet, loc2dNwet, myThid )
+      CALL GLOBAL_SUM_TILE_RL( tileArea, loc2dArea, myThid )
+
+C--   Calculate domain 3-D average grid-cell area:
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+C-      Compute 3-D integrated area:
+        tileNwet(bi,bj) = 0. _d 0
+        tileArea(bi,bj) = 0. _d 0
+        DO k=1,Nr
+         DO j=1,sNy
+          DO i=1,sNx
+           tileNwet(bi,bj) = tileNwet(bi,bj)
+     &                     + maskC(i,j,k,bi,bj)*maskInC(i,j,bi,bj)
+           tileArea(bi,bj) = tileArea(bi,bj)
+     &                     + deepFac2C(k)*rA(i,j,bi,bj)
+     &                      *maskC(i,j,k,bi,bj)*maskInC(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+      CALL GLOBAL_SUM_TILE_RL( tileNwet, loc3dNwet, myThid )
+      CALL GLOBAL_SUM_TILE_RL( tileArea, loc3dArea, myThid )
+
       _BEGIN_MASTER( myThid )
-      globalArea = threadArea
+      n2dWetPts  = loc2dNwet
+      n3dWetPts  = loc3dNwet
+      globalArea = loc2dArea
+      rAc_3dMean = 0. _d 0
+      IF ( loc3dNwet .GT. zeroRL ) rAc_3dMean = loc3dArea / loc3dNwet
 C-    list empty tiles:
       msgBuf(1:1) = ' '
       DO bj = 1,nSy

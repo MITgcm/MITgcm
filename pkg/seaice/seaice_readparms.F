@@ -74,11 +74,13 @@ C     MAX_TICE          :: maximum ice temperature   (deg C)
 C     LAD               :: time stepping used for sea-ice advection:
 C                          1 = LEAPFROG,  2 = BACKWARD EULER.
 C     SEAICE_freeze     :: FREEZING TEMP. OF SEA WATER
+C     SEAICEuseMetricTerms :: replaced by SEAICEselectMetricTerms
       _RL SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce
       _RL SEAICE_salinity, SIsalFRAC, SIsal0
       _RL SEAICE_lhSublim, SEAICE_freeze, MAX_HEFF
       _RL areaMin, areaMax, A22, hiceMin, MAX_TICE
       LOGICAL SEAICEadvAge
+      LOGICAL SEAICEuseMetricTerms
       INTEGER SEAICEadvSchAge, LAD, SEAICEturbFluxFormula
       INTEGER NPSEUDOTIMESTEPS, SOLV_MAX_ITERS
       INTEGER SEAICEnewtonIterMax, SEAICEkrylovIterMax
@@ -105,12 +107,15 @@ C     former ALLOW_SEAICE_COST_SMR_AREA related flags
       _RL SEAICE_clamp_salt
       _RL SEAICE_clamp_theta
 #endif /* ALLOW_COST */
+      _RL SEAICE_taveFreq
+      LOGICAL SEAICE_tave_mnc
 
 C--   SEAICE parameters
       NAMELIST /SEAICE_PARM01/
      & SEAICEuseDYNAMICS, SEAICEuseFREEDRIFT, SEAICEuseStrImpCpl,
      & SEAICEuseMCS, SEAICEuseMCE, SEAICEuseTD, SEAICEusePL,
-     & SEAICEuseTEM, SEAICEuseMetricTerms, SEAICEuseTilt,
+     & SEAICEuseTEM, SEAICEuseTilt,
+     & SEAICEuseMetricTerms, SEAICEselectMetricTerms,
      & useHB87stressCoupling, SEAICEupdateOceanStress,
      & usePW79thermodynamics, useMaykutSatVapPoly, SEAICEuseFlooding,
      & SEAICErestoreUnderIce, SEAICE_growMeltByConv,
@@ -136,6 +141,7 @@ C--   SEAICE parameters
      & SEAICE_evpDampC, SEAICEnEVPstarSteps,
      & SEAICE_evpAlpha, SEAICE_evpBeta,
      & SEAICEaEVPcoeff, SEAICEaEVPcStar, SEAICEaEVPalphaMin,
+     & SEAICE_evpAreaReg,
      & SEAICE_zetaMin, SEAICE_zetaMaxFac, SEAICEusePicardAsPrecon,
      & SEAICEuseLSRflex, SEAICEuseKrylov, SEAICEuseJFNK,
      & SEAICEnonLinIterMax, SEAICElinearIterMax, SEAICEnonLinTol,
@@ -163,6 +169,7 @@ C--   SEAICE parameters
      & SEAICE_drag_south, SEAICE_waterDrag_south,
      & SEAICE_dryIceAlb_south, SEAICE_wetIceAlb_south,
      & SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south, HO_south,
+     & SEAICEsideDrag, uCoastLineFile, vCoastLineFile,
      & SEAICE_cBasalStar, SEAICEbasalDragU0, SEAICEbasalDragK1,
      & SEAICEbasalDragK2, SEAICE_wetAlbTemp, SEAICE_waterAlbedo,
      & SEAICE_strength, SEAICE_cStar, SEAICE_eccen,
@@ -250,6 +257,7 @@ C--   set default sea ice parameters
       SEAICEuseTD        = .FALSE.
       SEAICEusePL        = .FALSE.
       SEAICEuseMetricTerms = .TRUE.
+      SEAICEselectMetricTerms = UNSET_I
       SEAICEuseEVPpickup = .TRUE.
       SEAICEuseEVPstar   = .TRUE.
       SEAICEuseEVPrev    = .TRUE.
@@ -372,6 +380,7 @@ C     Hunke, JCP, 2001 use 615 kg/m^2 for this, but does not recommend using it
       SEAICEaEVPcoeff    = UNSET_RL
       SEAICEaEVPcStar    = UNSET_RL
       SEAICEaEVPalphaMin = UNSET_RL
+      SEAICE_evpAreaReg  = -1.
       SEAICE_initialHEFF = ZERO
 #ifdef SEAICE_ITD
 C     Coefficients used to calculate sea ice thickness category limits
@@ -394,6 +403,7 @@ C        c1=1.5/N, c2=42*c1, c3=3.3
       SEAICE_drag        = 0.001  _d 0
       OCEAN_drag         = 0.001  _d 0
       SEAICE_waterDrag   = 0.0055 _d 0
+      SEAICEsideDrag     = 0.0    _d 0
       SEAICEdWatMin      = 0.25   _d 0
       SEAICE_dryIceAlb   = 0.75   _d 0
       SEAICE_wetIceAlb   = 0.66   _d 0
@@ -509,6 +519,8 @@ c     SEAICE_dTempFrz_dS = 0. _d 0
       HeffFile   = ' '
       uIceFile   = ' '
       vIceFile   = ' '
+      uCoastLineFile = ' '
+      vCoastLineFile = ' '
       IMAX_TICE  = 10
       postSolvTempIter = 2
 C     LSR parameters
@@ -546,13 +558,10 @@ C     LSR parameters
       SEAICEwriteState  = .FALSE.
       SEAICE_monFreq    = monitorFreq
       SEAICE_dumpFreq   = dumpFreq
-      SEAICE_taveFreq   = taveFreq
 #ifdef ALLOW_MNC
-      SEAICE_tave_mnc = timeave_mnc
       SEAICE_dump_mnc = snapshot_mnc
       SEAICE_mon_mnc  = monitor_mnc
 #else
-      SEAICE_tave_mnc = .FALSE.
       SEAICE_dump_mnc = .FALSE.
       SEAICE_mon_mnc  = .FALSE.
 #endif
@@ -599,6 +608,8 @@ c     MAX_TICE           = 30.     _d 0
       MAX_HEFF           = UNSET_RL
       SEAICEuseAB2       = .FALSE.
       SEAICE_abEps       = UNSET_RL
+      SEAICE_taveFreq    = UNSET_RL
+      SEAICE_tave_mnc    = .FALSE.
 C-    end retired parameters
 
 #ifdef ALLOW_COST
@@ -895,13 +906,45 @@ C     and EVP, JFNK, and Krylov solvers
       IF ( .NOT. SEAICE_no_slip ) SEAICE_2ndOrderBC = .FALSE.
       IF ( SEAICEuseLSR ) SEAICE_2ndOrderBC = .FALSE.
 
-C     2nd order boundary conditions require one more row of overlap for the additive Schwartz method
+C     2nd order boundary conditions require one more row of overlap for
+C     the additive Schwartz method
       IF ( SEAICE_2ndOrderBC ) THEN
        SEAICE_OLx = OLx-3
        SEAICE_OLy = OLy-3
       ENDIF
 
-C-    The old ways of specifying mcPheeTaper, mcPheePiston & frazilFrac:
+      IF ( SEAICEselectMetricTerms .EQ. UNSET_I ) THEN
+       IF ( SEAICEuseMetricTerms ) THEN
+        SEAICEselectMetricTerms = 2
+       ELSE
+C-    just for backward compatibility:
+        SEAICEselectMetricTerms = 0
+       ENDIF
+      ELSEIF ( .NOT.SEAICEuseMetricTerms .AND.
+     &         SEAICEselectMetricTerms .GT. 0  ) THEN
+C-    inconsistent setting:
+       WRITE(msgBuf,'(2A)') 'S/R SEAICE_READPARMS: ',
+     &      'Cannot set both: SEAICEuseMetricTerms= False'
+       CALL PRINT_ERROR( msgBuf , myThid)
+       WRITE(msgBuf,'(2A,I2)') 'S/R SEAICE_READPARMS: ',
+     &      ' AND SEAICEselectMetricTerms =', SEAICEselectMetricTerms
+       CALL PRINT_ERROR( msgBuf , myThid)
+       nError = nError + 1
+      ENDIF
+      IF ( SEAICEselectMetricTerms .LT. 0 .OR.
+     &     SEAICEselectMetricTerms .GT. 2 ) THEN
+       WRITE(msgBuf,'(2A,I2)') 'S/R SEAICE_READPARMS: ',
+     &      'SEAICEselectMetricTerms = ', SEAICEselectMetricTerms
+       CALL PRINT_ERROR( msgBuf , myThid)
+       WRITE(msgBuf,'(2A)') 'S/R SEAICE_READPARMS: ',
+     &      'SEAICEselectMetricTerms needs to be >=0 and <= 2'
+       CALL PRINT_ERROR( msgBuf , myThid)
+       nError = nError + 1
+      ENDIF
+C-    to skip some compution of metric terms (all zero on Cartesian-Grid)
+      IF ( usingCartesianGrid ) SEAICEselectMetricTerms = 0
+
+C     -    The old ways of specifying mcPheeTaper, mcPheePiston & frazilFrac:
 C     a) prevent multiple specification of the same coeff;
 C     b) if specified, then try to recover old way of setting & default.
       IF ( SEAICE_mcPheeTaper .EQ. UNSET_RL ) THEN
@@ -1339,6 +1382,25 @@ C-    Retired parameters
        CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
 #endif /* ALLOW_COST */
+      IF ( SEAICE_taveFreq .NE. UNSET_RL ) THEN
+        WRITE(msgBuf,'(2A)') 'SEAICE_READPARMS: "SEAICE_taveFreq"',
+     &    ' is no longer allowed in file "data.seaice"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'SEAICE_READPARMS: ',
+     &    ' since "pkg/timeave" has been removed.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        nRetired = nRetired + 1
+      ENDIF
+      IF ( SEAICE_tave_mnc ) THEN
+        WRITE(msgBuf,'(2A)') 'SEAICE_READPARMS: "SEAICE_tave_mnc"',
+     &    ' is no longer allowed in file "data.seaice"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'SEAICE_READPARMS: ',
+     &    ' since "pkg/timeave" has been removed.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        nRetired = nRetired + 1
+      ENDIF
+
       IF ( nRetired .GT. 0 ) THEN
        WRITE(msgBuf,'(2A)') 'S/R SEAICE_READPARMS: ',
      &  'Error reading parameter file "data.seaice"'
@@ -1372,13 +1434,10 @@ C     facOpenGrow/facOpenMelt
       IF (SEAICE_doOpenWaterMelt)   facOpenMelt = 1. _d 0
 
 C-    Set Output type flags :
-      SEAICE_tave_mdsio = .TRUE.
       SEAICE_dump_mdsio = .TRUE.
       SEAICE_mon_stdio  = .TRUE.
 #ifdef ALLOW_MNC
       IF (useMNC) THEN
-        IF ( .NOT.outputTypesInclusive
-     &       .AND. SEAICE_tave_mnc ) SEAICE_tave_mdsio = .FALSE.
         IF ( .NOT.outputTypesInclusive
      &       .AND. SEAICE_dump_mnc ) SEAICE_dump_mdsio = .FALSE.
         IF ( .NOT.outputTypesInclusive
@@ -1437,6 +1496,17 @@ C     in case of large values
        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
       ENDIF
+
+#ifdef SEAICE_ALLOW_SIDEDRAG
+      IF ( SEAICEsideDrag .NE. 0.0 _d 0 .AND. SEAICE_no_slip ) THEN
+       WRITE(msgBuf,'(3A)') '** WARNING ** SEAICE_READPARMS: ',
+     &      'SEAICEsideDrag .NE. 0.,',
+     &      ' resetting SEAICE_no_slip = .FALSE.'
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+       SEAICE_no_slip = .FALSE.
+      ENDIF
+#endif
 
       IF ( DIFF1 .EQ. UNSET_RL ) THEN
         DIFF1 = 0. _d 0

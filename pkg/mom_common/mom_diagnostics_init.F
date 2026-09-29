@@ -251,28 +251,28 @@ C--   add diagnostics of simple derivative quantities:
       diagName  = 'momHDiv '
       diagTitle = 'Horizontal Divergence (in momentum Eq.)'
       diagCode  = 'SMR     MR      '
-      diagUnits = 's^-1            '
+      diagUnits = '1/s             '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'momVort3'
       diagTitle = '3rd component (vertical) of Vorticity'
       diagCode  = 'SZR     MR      '
-      diagUnits = 's^-1            '
+      diagUnits = '1/s             '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'Strain  '
       diagTitle = 'Horizontal Strain of Horizontal Velocities'
       diagCode  = 'SZR     MR      '
-      diagUnits = 's^-1            '
+      diagUnits = '1/s             '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'Tension '
       diagTitle = 'Horizontal Tension of Horizontal Velocities'
       diagCode  = 'SMR     MR      '
-      diagUnits = 's^-1            '
+      diagUnits = '1/s             '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 #endif /* ALLOW_MOM_VECINV */
@@ -280,7 +280,7 @@ C--   add diagnostics of simple derivative quantities:
       diagName  = 'Stretch '
       diagTitle = 'Vortex stretching from QG Leith dynamic viscosity'
       diagCode  = 'SM      MR      '
-      diagUnits = 's^-1            '
+      diagUnits = '1/s             '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
@@ -439,6 +439,20 @@ C--   add diagnostics of tendencies from each terms
 
 #endif /* ALLOW_MOM_VECINV */
 
+C-    diagnostics of metric-terms tendencies:
+      diagName  = 'Um_Metr '
+      diagTitle = 'U momentum tendency from Metric terms'
+      diagCode  = 'UUR     MR      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+      diagName  = 'Vm_Metr '
+      diagTitle = 'V momentum tendency from Metric terms'
+      diagCode  = 'VVR     MR      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
 #ifdef ALLOW_NONHYDROSTATIC
 C-    vertical momentum tendencies
       IF ( usingPCoords ) THEN
@@ -446,6 +460,11 @@ C-    vertical momentum tendencies
       ELSE
         diagUnits = 'm/s^2           '
       ENDIF
+      diagName  = 'WSidDrag'
+      diagTitle = 'Vertical momentum tendency from Side Drag'
+      diagCode  = 'WMr     LR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
       diagName  = 'Wm_Diss '
       diagTitle = 'W momentum tendency from Dissipation'
       diagCode  = 'WMr     LR      '
@@ -457,9 +476,8 @@ C-    vertical momentum tendencies
       diagCode  = 'WMr     LR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      diagName  = 'WSidDrag'
-      diagTitle = 'Vertical momentum tendency from Side Drag'
+      diagName  = 'Wm_Metr '
+      diagTitle = 'W momentum tendency from Metric terms'
       diagCode  = 'WMr     LR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )

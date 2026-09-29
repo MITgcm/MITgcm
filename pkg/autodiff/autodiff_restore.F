@@ -113,11 +113,9 @@ C-      2D arrays
           pload0(I,J,bi,bj)  = StoreDynVars2D(I,J,bi,bj,18)
           pload1(I,J,bi,bj)  = StoreDynVars2D(I,J,bi,bj,19)
 #endif
-#ifdef EXACT_CONSERV
           etaH(I,J,bi,bj)    = StoreDynVars2D(I,J,bi,bj,20)
           dEtaHdt(I,J,bi,bj) = StoreDynVars2D(I,J,bi,bj,21)
           PmEpR(I,J,bi,bj)   = StoreDynVars2D(I,J,bi,bj,22)
-#endif
          ENDDO
         ENDDO
        ENDDO

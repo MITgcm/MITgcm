@@ -41,7 +41,7 @@ C     myThid  :: My Thread Id number
       INTEGER myThid
 CEOP
 
-#ifdef ALLOW_GMREDI
+#ifdef GM_BOLUS_ADVEC
 #ifdef GM_BOLUS_BVP
 
 C     !LOCAL VARIABLES:
@@ -252,8 +252,8 @@ C     Write some diagnostics
 #endif
 
       ENDIF
+#endif /* GM_BOLUS_BVP */
 #endif /* GM_BOLUS_ADVEC */
-#endif /* ALLOW_GMREDI */
 
       RETURN
       END

@@ -3,5 +3,6 @@
  useGMRedi=.TRUE.,
  usePTRACERS=.TRUE.,
  useGCHEM=.TRUE.,
+ useOffLine=.TRUE.,
  &
-  
+

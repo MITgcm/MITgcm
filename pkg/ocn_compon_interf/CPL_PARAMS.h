@@ -52,8 +52,7 @@ C     useImportWSpd   :: True => use the Imported surf. Wind speed from coupler
      &  useImportSLP,  useImportRunOff,
      &  useImportSIce, useImportThSIce, useImportSltPlm,
      &  useImportFice, useImportCO2, useImportWSpd,
-     &  cpl_snapshot_mdsio, cpl_snapshot_mnc,
-     &  cpl_timeave_mdsio, cpl_timeave_mnc
+     &  cpl_snapshot_mdsio, cpl_snapshot_mnc
 
       LOGICAL ocn_cplSequential
       LOGICAL ocn_cplExch_RunOff
@@ -72,9 +71,7 @@ C     useImportWSpd   :: True => use the Imported surf. Wind speed from coupler
       LOGICAL useImportFice
       LOGICAL useImportCO2
       LOGICAL useImportWSpd
-      LOGICAL
-     &     cpl_snapshot_mdsio, cpl_snapshot_mnc,
-     &     cpl_timeave_mdsio, cpl_timeave_mnc
+      LOGICAL cpl_snapshot_mdsio, cpl_snapshot_mnc
 
 C--   COMMON /CPL_OCN_PAR_I/: Integer valued parameters
 C     maxNumberPrint :: max number of printed Export/Import messages
@@ -88,14 +85,4 @@ C     cplErrorCount  :: counter for errors in coupling config
 C--   COMMON /CPL_OCN_PAR_C/: Character valued parameters
 c     CHARACTER*(MAX_LEN_FNAM) cpl_ocnFile
 
-C--   COMMON /CPL_OCN_PAR_R/: real-type parameters
-C     cpl_taveFreq   :: Frequency^-1 for time-Aver. output (s)
-      COMMON /CPL_OCN_PAR_R/
-     &    cpl_taveFreq
-      _RL cpl_taveFreq
-
 #endif /* COMPONENT_MODULE */
-
-CEH3 ;;; Local Variables: ***
-CEH3 ;;; mode:fortran ***
-CEH3 ;;; End: ***

@@ -31,6 +31,7 @@ C !USES: ===============================================================
 #include "GRID.h"
 #include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
+#include "SEAICE_GRID.h"
 #include "SEAICE.h"
 
 C !INPUT PARAMETERS: ===================================================
@@ -112,11 +113,11 @@ C--   now set up ice pressure and viscosities
          ELSE
           tmpscal2=HEFF(i,j,bi,bj)
          ENDIF
-         PRESS0     (I,J,bi,bj) = SEAICE_strength*tmpscal2
+         PRESS0     (i,j,bi,bj) = SEAICE_strength*tmpscal2
      &        *EXP(-SEAICE_cStar*(SEAICE_area_max-AREA(i,j,bi,bj)))
-         SEAICE_zMax(I,J,bi,bj) = SEAICE_zetaMaxFac*PRESS0(I,J,bi,bj)
-         SEAICE_zMin(I,J,bi,bj) = SEAICE_zetaMin
-         PRESS0     (I,J,bi,bj) = PRESS0(I,J,bi,bj)*HEFFM(I,J,bi,bj)
+         SEAICE_zMax(i,j,bi,bj) = SEAICE_zetaMaxFac*PRESS0(i,j,bi,bj)
+         SEAICE_zMin(i,j,bi,bj) = SEAICE_zetaMin
+         PRESS0     (i,j,bi,bj) = PRESS0(i,j,bi,bj)*HEFFM(i,j,bi,bj)
         ENDDO
        ENDDO
 #ifdef SEAICE_ITD
@@ -169,9 +170,9 @@ C
         DO i=iMin,iMax
          PRESS0(i,j,bi,bj)      = PRESS0(i,j,bi,bj)/ridgingModeNorm(i,j)
      &        *tmpscal1
-         SEAICE_zMax(I,J,bi,bj) = SEAICE_zetaMaxFac*PRESS0(I,J,bi,bj)
-         SEAICE_zMin(I,J,bi,bj) = SEAICE_zetaMin
-         PRESS0     (I,J,bi,bj) = PRESS0(I,J,bi,bj)*HEFFM(I,J,bi,bj)
+         SEAICE_zMax(i,j,bi,bj) = SEAICE_zetaMaxFac*PRESS0(i,j,bi,bj)
+         SEAICE_zMin(i,j,bi,bj) = SEAICE_zetaMin
+         PRESS0     (i,j,bi,bj) = PRESS0(i,j,bi,bj)*HEFFM(i,j,bi,bj)
         ENDDO
        ENDDO
 #endif /* SEAICE_ITD */

@@ -34,13 +34,11 @@ c we may need these for the checkpointing
 #endif
 #ifdef ALLOW_GMREDI
       use GMREDI_mod
-      use GMREDI_TAVE_mod
 #endif
       use GRID_mod
 #ifdef ALLOW_KPP
       use KPP_mod
       use KPP_PARAMS_mod
-      use KPP_TAVE_mod
 #endif
 #ifdef ALLOW_MOM_COMMON
       use MOM_VISC_mod
@@ -55,8 +53,6 @@ c we may need these for the checkpointing
       use STREAMICE_BDRY_mod
       use STREAMICE_CG_mod
 #endif
-      use SOLVE_FOR_PRESSURE3D_mod
-      use SOLVE_FOR_PRESSURE_mod
       use SURFACE_mod
       use cost_mod
       use g_cost_mod

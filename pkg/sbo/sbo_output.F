@@ -100,13 +100,6 @@ C-    multi-threaded: only write it once (by master thread)
       _END_MASTER(myThid)
 #endif /* ALLOW_MDSIO */
 
-#ifdef ALLOW_TIMEAVE
-C-----------------------------------------------------------------
-C     NOT doing this anymore:
-C     Save time-averaged bottom pressure at sbo_taveFreq intervals
-C-----------------------------------------------------------------
-#endif /* ALLOW_TIMEAVE */
-
       IF ( myIter .EQ. nIter0 .OR.
      &     DIFFERENT_MULTIPLE(sbo_monFreq,myTime,deltaTClock)
      &   ) THEN

@@ -5,7 +5,6 @@
 #  please make a separate (local) copy of this file.
 
 TAF=staf
-TAMC=stamc
 
 if test "x$USE_DIVA" = "x1" ; then
     DIVA='true'
@@ -16,10 +15,6 @@ if test "x$USE_DIVA" = "x1" ; then
 else
     DIVA_FLAG=
 fi
-
-AD_TAMC_FLAGS="-reverse -admark ad -i4 -r4 -l tamc_ad.log $AD_TAMC_FLAGS"
-FTL_TAMC_FLAGS="-forward -ftlmark g_ -i4 -r4 -l tamc_ftl.log $FTL_TAMC_FLAGS"
-SVD_TAMC_FLAGS="-reverse -forward -pure -i4 -r4 -l tamc_svd.log $SVD_TAMC_FLAGS"
 
 AD_TAF_FLAGS="-reverse $DIVA_FLAG -l taf_ad.log $AD_TAF_FLAGS"
 FTL_TAF_FLAGS="-forward -l taf_ftl.log $FTL_TAF_FLAGS"
@@ -33,7 +28,7 @@ if test "x$TAMC_COMPATIBILITY_MODE" = "x1" ; then
 fi
 
 if test "x$USE_EXTENDED_SRC" = "xt"; then
-    TAF_COMMON_FLAGS="-e $TAF_COMMON_FLAGS"
+    TAF_F77_FLAGS="$TAF_F77_FLAGS -e"
 fi
 
 #- select which Fortran version to specify to TAF
@@ -89,11 +84,8 @@ DIFF_FLAGS="-toplevel 'the_main_loop' \
                     xx_gentim2d_dummy'\
             -output '$TAF_FC'"
 
-AD_TAMC_FLAGS="$AD_TAMC_FLAGS $DIFF_FLAGS"
 AD_TAF_FLAGS="$TAF_COMMON_FLAGS $AD_TAF_FLAGS $MPI_TAF_OPTIONS $DIFF_FLAGS"
 
-FTL_TAMC_FLAGS="$FTL_TAMC_FLAGS $DIFF_FLAGS"
 FTL_TAF_FLAGS="$TAF_COMMON_FLAGS $FTL_TAF_FLAGS $MPI_TAF_OPTIONS $DIFF_FLAGS"
 
-SVD_TAMC_FLAGS="$SVD_TAMC_FLAGS $DIFF_FLAGS"
 SVD_TAF_FLAGS="$TAF_COMMON_FLAGS $SVD_TAF_FLAGS $MPI_TAF_OPTIONS $DIFF_FLAGS"

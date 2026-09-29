@@ -39,7 +39,7 @@
  cg2dMaxIters=100,
  cg2dMinItersNSA = 10,
 #cg2dTargetResidual=1.E-13,
- cg2dTargetResWunit=1.E-18,
+ cg2dTargetResWunit=5.E-18,
  useNSACGSolver = .TRUE.,
  &
 # Time stepping parameters

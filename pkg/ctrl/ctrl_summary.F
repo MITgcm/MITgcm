@@ -34,6 +34,9 @@ c     == global variables ==
       || defined ALLOW_GENTIM2D_CONTROL  )
 #  include "CTRL_GENARR.h"
 # endif
+# ifdef ALLOW_OBCS
+#  include "CTRL_OBCS.h"
+# endif
 #endif
 
 c     == routine arguments ==
@@ -53,7 +56,7 @@ c     == local variables ==
       integer nwetsouth
       integer nwetwest
 
-      character*(max_len_mbuf) msgbuf
+      character*(MAX_LEN_MBUF) msgbuf
 
 #if (defined (ALLOW_GENARR2D_CONTROL) \
       || defined (ALLOW_GENARR3D_CONTROL) \
@@ -128,7 +131,7 @@ c         write(msgbuf,'(a,i5.4,i5.4,i7.6,i7.6,i7.6)')
       enddo
 
       do ivar = 1, maxcvars
-C     only print active variables for which ncvarindex has be set
+C     only print active variables for which ncvarindex has been set
 C     (default = -1)
        if ( ncvarindex(ivar) .GE. 0 ) then
 
@@ -302,6 +305,28 @@ C
         call print_error( msgbuf, myThid )
         stop 'ABNORMAL END: S/R CTRL_SUMMARY'
       endif
+
+      CALL WRITE_0D_L( useCtrlCostContribution, INDEX_NONE,
+     &     'useCtrlCostContribution =',
+     &     '  /* compute regularisation for gen. ctrls */')
+#ifdef ALLOW_OBCS
+      CALL WRITE_0D_L( useObcsCostContribution, INDEX_NONE,
+     &     'useObcsCostContribution =',
+     &     '  /* compute regularisation for obcs ctrls */')
+C-    these 2 following params are related to currently disabled code:
+      IF ( mult_obcsvol .NE. 0. _d 0 ) THEN
+       WRITE(msgBuf,'(2A)') '** WARNING ** CTRL_SUMMARY: ',
+     &   '"mult_obcsvol" currently has not effect; code needs fixing.'
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+      ENDIF
+      IF ( mult_ageos.NE.0. _d 0 ) THEN
+       WRITE(msgBuf,'(2A)') '** WARNING ** CTRL_SUMMARY: ',
+     &   '"mult_ageos" currently has no effect; code needs fixing.'
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+      ENDIF
+#endif
 
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardMessageUnit,

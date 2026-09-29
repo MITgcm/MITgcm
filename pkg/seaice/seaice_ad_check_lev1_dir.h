@@ -7,9 +7,7 @@ CADJ STORE uice  = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE vice  = comlev1, key=ikey_dynamics, kind=isbyte
 
 #ifdef AUTODIFF_SOMETIMES_NEEDED
-# ifdef EXACT_CONSERV
 CADJ STORE pmepr      = comlev1, key = ikey_dynamics
-# endif
 cphCADJ STORE uvel    = comlev1, key=ikey_dynamics, kind=isbyte
 cphCADJ STORE vvel    = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE salt    = comlev1, key=ikey_dynamics, kind=isbyte
@@ -29,6 +27,10 @@ CADJ STORE etan        = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE dwatn       = comlev1, key=ikey_dynamics, kind=isbyte
 # ifdef SEAICE_ALLOW_BOTTOMDRAG
 CADJ STORE cbotc       = comlev1, key=ikey_dynamics, kind=isbyte
+# endif
+# ifdef SEAICE_ALLOW_SIDEDRAG
+CADJ STORE sideDragU   = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE sideDragV   = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
 CADJ STORE seaicemasku = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE seaicemaskv = comlev1, key=ikey_dynamics, kind=isbyte

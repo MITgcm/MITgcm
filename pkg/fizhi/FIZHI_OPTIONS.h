@@ -3,8 +3,20 @@
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
+CBOP
+C !ROUTINE: FIZHI_OPTIONS.h
+C !INTERFACE:
+C #include "FIZHI_OPTIONS.h"
+
+C !DESCRIPTION:
+C *==================================================================*
+C | CPP options file for pkg "fizhi":
+C | Control which optional features to compile in this package code.
+C *==================================================================*
+CEOP
+
 #ifdef ALLOW_FIZHI
-C     Package-specific options go here
+C     Package-specific CPP options go here
 
 C     use fixed day in the year:
 #undef FIZHI_USE_FIXED_DAY
@@ -17,9 +29,8 @@ C     Compiler and Processor specific code
 #undef FIZHI_CRAY
 #undef FIZHI_SGI
 
+C     Bring back original/old bug in S/R TRBFLX
+#undef FIZHI_TRBFLX_OLD_BUG
+
 #endif /* ALLOW_FIZHI */
 #endif /* FIZHI_OPTIONS_H */
-
-CEH3 ;;; Local Variables: ***
-CEH3 ;;; mode:fortran ***
-CEH3 ;;; End: ***

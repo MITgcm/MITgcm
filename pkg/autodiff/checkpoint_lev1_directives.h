@@ -10,10 +10,8 @@ CADJ STORE saltFlux  = comlev1, key = ikey_dynamics, kind = isbyte
 #ifdef ATMOSPHERIC_LOADING
 CADJ STORE sIceLoad  = comlev1, key = ikey_dynamics, kind = isbyte
 #endif
-#ifdef EXACT_CONSERV
 CADJ STORE PmEpR     = comlev1, key = ikey_dynamics,  kind = isbyte
 CADJ STORE dEtaHdt   = comlev1, key = ikey_dynamics,  kind = isbyte
-#endif
 CADJ STORE wVel      = comlev1, key = ikey_dynamics, kind = isbyte
 
 #ifdef ALLOW_ADAMSBASHFORTH_3
@@ -54,9 +52,11 @@ CADJ &     key = ikey_dynamics,kind = isbyte
 
 #else /* NONLIN_FRSURF */
 
-CADJ STORE etaH = comlev1, key = ikey_dynamics, kind = isbyte
-# if ( defined ALLOW_ECCO || defined ALLOW_SEAICE || defined ALLOW_DEPTH_CONTROL )
-CADJ STORE theta, salt = comlev1, key = ikey_dynamics,kind = isbyte
+CADJ STORE etaH  = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE salt  = comlev1, key = ikey_dynamics, kind = isbyte
+# if ( defined ALLOW_ECCO || defined ALLOW_SEAICE \
+    || defined ALLOW_DEPTH_CONTROL )
+CADJ STORE theta = comlev1, key = ikey_dynamics,kind = isbyte
 # endif /* ALLOW_ECCO or ALLOW_SEAICE or ALLOW_DEPTH_CONTROL */
 
 #endif /* NONLIN_FRSURF */

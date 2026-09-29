@@ -5,10 +5,10 @@ C !ROUTINE: MOM_U_ADV_VU
 
 C !INTERFACE: ==========================================================
       SUBROUTINE MOM_U_ADV_VU(
-     I        bi,bj,k,
+     I        bi, bj, k,
      I        vTrans, uFld,
      O        AdvectFluxVU,
-     I        myThid)
+     I        myThid )
 
 C !DESCRIPTION:
 C Calculates the meridional advective flux of zonal momentum:
@@ -24,12 +24,12 @@ C !USES: ===============================================================
 #include "GRID.h"
 
 C !INPUT PARAMETERS: ===================================================
-C  bi,bj                :: tile indices
+C  bi, bj               :: tile indices
 C  k                    :: vertical level
 C  vTrans               :: meridional transport
-C  uFld                 :: zonal flow
-C  myThid               :: thread number
-      INTEGER bi,bj,k
+C  uFld                 :: zonal velocity
+C  myThid               :: my Thread Id number
+      INTEGER bi, bj, k
       _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
@@ -43,22 +43,39 @@ C  i,j                  :: loop indices
       INTEGER i,j
 CEOP
 
-      DO j=1-Oly+1,sNy+Oly
-       DO i=1-Olx+1,sNx+Olx
-        AdvectFluxVU(i,j) =
-     &  0.25*( vTrans(i,j) + vTrans(i-1,j) )
+      IF ( selectMetricTerms.NE.3 ) THEN
+        DO j=1-OLy+1,sNy+OLy
+         DO i=1-OLx+1,sNx+OLx
+          AdvectFluxVU(i,j) = 0.25 _d 0
+     &        *( vTrans(i,j) + vTrans(i-1,j) )
 #ifdef MOM_BOUNDARY_CONSERVE
-     &      *(   uFld(i,j)*_maskW(i,j-1,k,bi,bj)
+     &        *(   uFld(i,j)*_maskW(i,j-1,k,bi,bj)
      &         + uFld(i,j-1)*_maskW(i,j,k,bi,bj) )
 #else
-     &      *( uFld(i,j) + uFld(i,j-1) )
+     &        *( uFld(i,j) + uFld(i,j-1) )
 #endif
 #ifdef OLD_ADV_BCS
-     &      *_maskW(i,j,k,bi,bj)
-     &      *_maskW(i,j-1,k,bi,bj)
+     &        *_maskW(i,j,k,bi,bj)
+     &        *_maskW(i,j-1,k,bi,bj)
 #endif /* OLD_ADV_BCS */
-       ENDDO
-      ENDDO
+         ENDDO
+        ENDDO
+      ELSE
+C-    Advect u*dxC (--> account for metric term u*v*tanPhi/R)
+        DO j=1-OLy+1,sNy+OLy
+         DO i=1-OLx+1,sNx+OLx
+          AdvectFluxVU(i,j) = 0.25 _d 0
+     &        *( vTrans(i,j) + vTrans(i-1,j) )
+#ifdef MOM_BOUNDARY_CONSERVE
+     &        *( uFld(i, j )*dxC(i, j, bi,bj)*_maskW(i,j-1,k,bi,bj)
+     &         + uFld(i,j-1)*dxC(i,j-1,bi,bj)*_maskW(i, j, k,bi,bj) )
+#else
+     &        *( uFld(i, j )*dxC(i, j, bi,bj)
+     &         + uFld(i,j-1)*dxC(i,j-1,bi,bj) )
+#endif
+         ENDDO
+        ENDDO
+      ENDIF
 
       RETURN
       END

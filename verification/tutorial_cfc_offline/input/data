@@ -39,7 +39,7 @@
 # 100 years starting from a spinup of 5900 years:
 #startTime = 1.835136E+11,
 #endTime   = 1.866240E+11,
- deltaTmom = 900.0,
+ deltaTMom = 900.0,
 #tauCD =     321428.,
  deltaTtracer= 43200.0,
  deltaTClock = 43200.0,
@@ -48,7 +48,6 @@
  pChkptFreq=3110400000.,
 #chkptFreq= 3110400000.,
  dumpFreq=  31104000.,
- taveFreq=  31104000.,
 #monitorFreq= 4853865600.,
  monitorFreq= 2592000.,
 #tauThetaClimRelax = 5184000.0,

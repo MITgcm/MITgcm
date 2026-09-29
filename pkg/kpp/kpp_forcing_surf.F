@@ -228,12 +228,18 @@ CML      ENDDO
      &       SSBETA(i,j,1) * surfForcS(i,j,bi,bj) )
      &       / rhoSurf(i,j)
 CML  &       * work3(i,j)
-        bosol(i,j) = gravity * TTALPHA(i,j,1) * Qsw(i,j,bi,bj) *
-     &       recip_Cp*recip_rhoConst
-     &       / rhoSurf(i,j)
-CML  &       * work3(i,j)
        ENDDO
       ENDDO
+      IF ( selectPenetratingSW .GE. 1 ) THEN
+       DO j = jmin, jmax
+        DO i = imin, imax
+         bosol(i,j) = gravity * TTALPHA(i,j,1) * Qsw(i,j,bi,bj)
+     &       *recip_Cp*recip_rhoConst
+     &       / rhoSurf(i,j)
+CML  &       * work3(i,j)
+        ENDDO
+       ENDDO
+      ENDIF
 
 #ifdef ALLOW_SALT_PLUME
 Catn: need check sign of SPforcT

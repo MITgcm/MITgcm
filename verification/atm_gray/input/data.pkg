@@ -1,0 +1,7 @@
+# Packages
+ &PACKAGES
+ useSHAP_FILT=.TRUE.,
+ useDiagnostics=.TRUE.,
+ useAtm_Phys=.TRUE.,
+#useMNC = .TRUE.,
+ &

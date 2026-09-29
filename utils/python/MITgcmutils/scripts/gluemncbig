@@ -194,7 +194,7 @@ class NetCDFError(Exception):
 
 class unmapped_array(object):
     def __init__(self, shape, dtype_):
-        self.shape = shape
+        self.shape = tuple(int(_) for _ in shape)
         self.dtype = dtype(dtype_)
 
     @property

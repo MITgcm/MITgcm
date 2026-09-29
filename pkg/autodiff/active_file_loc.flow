@@ -6,7 +6,7 @@ c     ==================================================================
 c     active_file_loc.flow
 c     ==================================================================
 c     provides flow directives for routines in active_file_loc.F
-c     required by TAMC/TAF
+c     required by TAF
 c     * active_read_xy_loc
 c     * active_read_xyz_loc
 c     * active_read_xz_loc
@@ -100,5 +100,3 @@ cadj SUBROUTINE active_write_yz_loc INPUT   = 1   , 3, 4, 5, 6, 7, 8
 cadj SUBROUTINE active_write_yz_loc OUTPUT  =    2
 cadj SUBROUTINE active_write_yz_loc ACTIVE  =    2
 cadj SUBROUTINE active_write_yz_loc DEPEND  = 1,    3, 4, 5, 6, 7
-
-

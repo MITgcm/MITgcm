@@ -34,6 +34,9 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
+#ifdef SEAICE_VARIABLE_SALINITY
+# include "SEAICE_GRID.h"
+#endif
 #include "SEAICE.h"
 #include "SEAICE_TRACER.h"
 #ifdef ALLOW_EXF

@@ -30,17 +30,14 @@ C     myThid :: my Thread Id. number
 C     !LOCAL VARIABLES:
 C     Local variables
 C     i,j,k,bi,bj  :: loop counter
-      INTEGER bi,bj
+      INTEGER i, j
+      INTEGER bi, bj
 #ifdef NONLIN_FRSURF
-      INTEGER i, j, ks
+      INTEGER ks
 # ifdef ALLOW_AUTODIFF
       INTEGER k
 # endif
       _RL hFacInfMOM, Rmin_tmp
-#else /* NONLIN_FRSURF */
-# ifdef EXACT_CONSERV
-      INTEGER i, j
-# endif
 #endif /* NONLIN_FRSURF */
 CEOP
 
@@ -54,9 +51,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        DO bi=myBxLo(myThid), myBxHi(myThid)
 C-    1rst bi,bj loop :
 
-#ifdef EXACT_CONSERV
-C-- Initialise arrays (defined within ifdef EXACT_CONSERV):
-C   note: should be done elsewhere, outside ifdef NONLIN_FRSURF bloc
+C-- Initialise arrays:
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
             etaHnm1(i,j,bi,bj) = 0.
@@ -64,7 +59,6 @@ C   note: should be done elsewhere, outside ifdef NONLIN_FRSURF bloc
             PmEpR  (i,j,bi,bj) = 0.
           ENDDO
          ENDDO
-#endif /* EXACT_CONSERV */
 
 #ifdef NONLIN_FRSURF
 C-- Initialise arrays (NLFS using r-coordinate):

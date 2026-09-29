@@ -65,6 +65,7 @@ C     data.pkg namelists
      &          useGrdchk,
      &          useSMOOTH,
      &          usePROFILES,
+     &          useOBSFIT,
      &          useECCO,
      &          useCTRL,
      &          useSBO,
@@ -130,6 +131,7 @@ c     useGAD          =.FALSE.
       useGrdchk       =.FALSE.
       useSMOOTH       =.FALSE.
       usePROFILES     =.FALSE.
+      useOBSFIT       =.FALSE.
       useECCO         =.FALSE.
       useCTRL         =.FALSE.
       useSBO          =.FALSE.
@@ -203,10 +205,26 @@ C--   packages with hard-coded switch
      &                      SQUEEZE_RIGHT, myThid )
         usePROFILES=.FALSE.
       ENDIF
+      IF (useOBSFIT) THEN
+        WRITE(msgBuf,'(2A)') '** WARNING ** pkg/obsfit uses NetCDF',
+     &   ' which is unavailable (genmake2 test failed)'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)') '** WARNING ** PACKAGES_BOOT:',
+     &                       ' ==> Reset useOBSFIT to FALSE'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)') ' PACKAGES_BOOT: undef HAVE_NETCDF',
+     &                       ' ==> Reset useOBSFIT to FALSE'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        useOBSFIT=.FALSE.
+      ENDIF
 #endif
 
 #ifdef ALLOW_CAL
       IF (usePROFILES) useCAL = .TRUE.
+      IF (useOBSFIT) useCAL = .TRUE.
       IF (useECCO) useCAL = .TRUE.
 #endif
 
@@ -315,6 +333,9 @@ C----- pkgs with a standard "usePKG" On/Off switch in "data.pkg":
 #endif
 #ifdef ALLOW_PROFILES
       CALL PACKAGES_PRINT_MSG( usePROFILES,   'PROFILES',    ' ' )
+#endif
+#ifdef ALLOW_OBSFIT
+      CALL PACKAGES_PRINT_MSG( useOBSFIT,     'OBSFIT',      ' ' )
 #endif
 #ifdef ALLOW_ECCO
       CALL PACKAGES_PRINT_MSG( useECCO,       'ECCO',        ' ' )
@@ -435,10 +456,6 @@ C----- pkgs without standard "usePKG" in "data.pkg":
 #ifdef ALLOW_MONITOR
       locFlag = monitorFreq.GT.0.
       CALL PACKAGES_PRINT_MSG( locFlag, 'MONITOR', 'monitorFreq > 0.' )
-#endif
-#ifdef ALLOW_TIMEAVE
-      locFlag = taveFreq.GT.0.
-      CALL PACKAGES_PRINT_MSG( locFlag,  'TIMEAVE', 'taveFreq > 0.' )
 #endif
 #ifdef ALLOW_DEBUG
       CALL PACKAGES_PRINT_MSG( debugMode, 'DEBUG', 'debugMode' )

@@ -23,7 +23,7 @@ C     GM_AdvSeparate   :: do separately advection by Eulerian and Bolus velocity
 C     GM_useBVP        :: use Boundary-Value-Problem method for Bolus transport
 C     GM_useSubMeso    :: use parameterization of mixed layer (Sub-Mesoscale)
 C                         eddies
-C     GM_ExtraDiag     :: select extra diagnostics
+C     GM_ExtraDiag     :: use Extra Off-Diagonal tensor elements (Kuz,Kvz)
 C     GM_InMomAsStress :: apply GM as a stress in momentum Eq.
 C     GM_MNC           ::
 C     GM_MDSIO         ::

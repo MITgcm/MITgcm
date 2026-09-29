@@ -28,46 +28,6 @@ C              note: for non-zero AREA, actual snow thickness is HSNOW / AREA
 C \ev
 CEOP
 
-C--   Grid variables for seaice
-C     static masks (depend only on geometry)
-C     HEFFM     :: land-sea mask at C-points (copy of maskC(k=kSrf))
-C     SIMaskU/V :: land-sea mask at U/V-points (copies of maskW/S(k=kSrf))
-      COMMON/ARRAY/HEFFM, SIMaskU, SIMaskV
-      _RL HEFFM      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL SIMaskU    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL SIMaskV    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
-#if ( defined SEAICE_CGRID || defined SEAICE_BGRID_DYNAMICS )
-      COMMON/ARRAYMETRIC/  k1AtC, k2AtC
-      _RS k1AtC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS k2AtC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif
-
-#ifdef SEAICE_CGRID
-      COMMON/ARRAYC/ seaiceMaskU, seaiceMaskV
-C     dynamic masks (depend on area)
-      _RL seaiceMaskU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL seaiceMaskV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-C     k1/2AtZ :: coefficients at C and Z points
-C     k1/2AtC    for metric terms in U/V ice equations.
-      COMMON/ARRAYCMETRIC/  k1AtZ, k2AtZ
-      _RS k1AtZ      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS k2AtZ      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif /* SEAICE_CGRID */
-
-#ifdef SEAICE_BGRID_DYNAMICS
-C     UVM         :: B-grid velocity-point mask
-      COMMON/ARRAYB/ UVM
-      _RS UVM        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-C     k1/2AtC/U/V :: coefficients at C, U, and V points
-C                    for metric terms in U/V ice equations.
-      COMMON/ARRAYBMETRIC/ k1AtU, k1AtV, k2AtU, k2AtV
-      _RS k1AtU      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS k1AtV      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS k2AtU      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS k2AtV      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif /* SEAICE_BGRID_DYNAMICS */
-
 C--   Dynamical variables
       COMMON/SEAICE_DYNVARS_1/
      &     AREA, HEFF, HSNOW, UICE, VICE
@@ -188,6 +148,20 @@ C     CbobC :: (linear) bottom drag coefficient for basals stress param.
       _RL CbotC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 # endif /* SEAICE_ALLOW_BOTTOMDRAG */
 
+# ifdef SEAICE_ALLOW_SIDEDRAG
+C     coastRoughU/V :: coast line roughness (w/out units) in U and V direction,
+C                      computed from the coastline length at corner points,
+C                      interpolated to U/V points, and scaled by the grid cell
+C                      width
+C     sideDragU/V   :: drag coefficients for lateral drag a parameterisation
+      COMMON/SEAICE_SIDEDRAG/ sideDragU, sideDragV,
+     &     coastRoughU, coastRoughV
+      _RL sideDragU  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL sideDragV  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL coastRoughU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL coastRoughV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+# endif /* SEAICE_ALLOW_SIDEDRAG */
+
 # if ( defined SEAICE_ALLOW_JFNK ||  defined SEAICE_ALLOW_KRYLOV )
 C     diagnostics for the JFNK and Krylov solver
       INTEGER totalNewtonIters
@@ -269,18 +243,6 @@ C                   that is, ice due to precipitation or snow
 C     TICES :: Seaice/snow surface temperature for each category
       COMMON/MULTICATEGORY/TICES
       _RL TICES      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nITD,nSx,nSy)
-
-C     SEAICE_SWFrac :: Fraction of surface Short-Wave radiation reaching
-C                      the bottom of ocean surface level. Currently,
-C                      this is just a function of surface cell
-C                      thickness, and hence a constant parameter
-C                      computed in seaice_init_fixed.F in a given
-C                      simulation, but in the future this variable may
-C                      depend on variable turbidity or chlorphyll
-C                      concentration and can change with space and time.
-      _RL SEAICE_SWFrac
-      COMMON /SEAICE_SW_R/
-     &       SEAICE_SWFrac
 
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***

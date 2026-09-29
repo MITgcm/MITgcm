@@ -6,7 +6,7 @@ C     !INTERFACE:
       SUBROUTINE INTEGRATE_FOR_W(
      I                     bi, bj, k, uFld, vFld, mFld, rStarDhDt,
      O                     wFld,
-     I                     myThid )
+     I                     myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -30,6 +30,8 @@ C     uFld, vFld :: Zonal and meridional flow
 C     mFld       :: added mass
 C     rStarDhDt  :: relative time derivative of column thickness = d.eta/dt / H
 C     wFld       :: Vertical flow
+C     myIter     :: Current iteration number in simulation
+C     myThid     :: my Thread Id. number
       INTEGER bi,bj,k
       _RL  uFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  vFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -39,11 +41,12 @@ C     wFld       :: Vertical flow
       _RL  mFld (1)
 #endif
 #if (defined NONLIN_FRSURF) && !(defined DISABLE_RSTAR_CODE)
-      _RL rStarDhDt(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL rStarDhDt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #else
       _RL rStarDhDt(1)
 #endif
       _RL  wFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      INTEGER myIter
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
@@ -75,7 +78,7 @@ C     tracer cell faces (anelastic: scaled as a mass transport).
         ENDDO
       ENDDO
 #ifdef ALLOW_ADDFLUID
-      IF ( selectAddFluid.GE.1 ) THEN
+      IF ( selectAddFluid.GE.1 .AND. myIter.NE.0 ) THEN
        DO j=1,sNy
         DO i=1,sNx
           conv2d(i,j) = conv2d(i,j)

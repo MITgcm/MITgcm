@@ -107,4 +107,10 @@ C     SPkBottom       :: bottom kLev associated with SaltPlumeDepth
      &     ,SPplumek
 #endif
       COMMON /FFIELDS_saltPlumeFlux/ saltPlumeFlux
+c#ifndef SALT_PLUME_OPTIONS_H
+C--   Since many common block here depend on Options, not safe to have this
+C     header included without SALT_PLUME_OPTIONS.h. Safety-check below:
+C     this line will fail to compile src code if Option file is not included
+c     STOP 'need "SALT_PLUME_OPTIONS.h" to include "SALT_PLUME.h"'
+c#endif
 #endif /* ALLOW_SALT_PLUME */

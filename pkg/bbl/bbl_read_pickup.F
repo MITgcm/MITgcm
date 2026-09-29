@@ -145,7 +145,7 @@ C--    Check for missing fields:
         ioUnit = errorMessageUnit
         DO j=1,nMissing
          WRITE(msgBuf,'(4A)') 'BBL_READ_PICKUP: ',
-     &       'cannot restart without field "',missFldList(nj),'"'
+     &       'cannot restart without field "',missFldList(j),'"'
          CALL PRINT_ERROR( msgBuf, myThid )
         ENDDO
         STOP 'ABNORMAL END: S/R BBL_READ_PICKUP'

@@ -20,7 +20,7 @@
 
       real*8 adj_fp_err_change
 
-#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+#ifdef ALLOW_STREAMICE_FP_ADJ
 
 #ifdef STREAMICE_ALLOW_FRIC_CONTROL
       Real*8 C_basal_dummy_d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -458,7 +458,7 @@
            if (adj_iter.eq.MAXNLITER) then
             STREAMICE_need2createmat=.true.
             STREAMICE_need2destroymat=.true.
-            CALL streamice_petscmatdestroy(myThid)
+            CALL streamice_petscmatdestroy()
             PETSC_PRECOND_TYPE = PETSC_PRECOND_TMP
            endif
           ENDIF
@@ -528,7 +528,7 @@
             IF (STREAMICE_OAD_petsc_reuse.AND.ADJ_CONVERGED) THEN
               STREAMICE_need2createmat=.true.
               STREAMICE_need2destroymat=.true.
-              CALL streamice_petscmatdestroy(myThid)
+              CALL streamice_petscmatdestroy()
               PETSC_PRECOND_TYPE = PETSC_PRECOND_TMP
             ENDIF
 #endif

@@ -1,0 +1,4 @@
+ &PROFILES_NML
+ prof_dBugLevel = 1,
+ profilesfiles(1)= 'prof_example',
+ &

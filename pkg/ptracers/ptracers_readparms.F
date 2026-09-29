@@ -33,17 +33,21 @@ CEOP
 C     !LOCAL VARIABLES:
 C     k,iTracer  :: loop indices
 C     iUnit      :: unit number for I/O
+C     errCount   :: error counter
 C     msgBuf     :: message buffer
+C     tauTr1ClimRelax :: old parameter (will be removed 1 day)
       INTEGER k, iTracer
-      INTEGER iUnit
+      INTEGER iUnit, errCount
       INTEGER ic
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL PTRACERS_diffKr(PTRACERS_num)
       _RL tauTr1ClimRelax
-
+C--   retired parameters:
 C     PTRACERS_taveFreq :: Frequency with which time-averaged PTRACERS
 C                          are written to post-processing files.
-C     tauTr1ClimRelax :: old parameter (will be removed 1 day)
+      _RL PTRACERS_taveFreq
+      LOGICAL PTRACERS_timeave_mnc
+
       NAMELIST /PTRACERS_PARM01/
      &     tauTr1ClimRelax,
      &     PTRACERS_numInUse,
@@ -94,6 +98,7 @@ C     print a (weak) warning if data.ptracers is found
 
       _BEGIN_MASTER(myThid)
 
+      errCount = 0
 C     Set ptracer IO & diagnostics labels (2 characters long)
       CALL PTRACERS_SET_IOLABEL(
      O                           PTRACERS_ioLabel,
@@ -101,7 +106,6 @@ C     Set ptracer IO & diagnostics labels (2 characters long)
 
 C     Set defaults values for parameters in PTRACERS.h
       PTRACERS_dumpFreq    = dumpFreq
-      PTRACERS_taveFreq    = taveFreq
       PTRACERS_monitorFreq = monitorFreq
       PTRACERS_Iter0   = 0
       PTRACERS_numInUse=-1
@@ -139,13 +143,11 @@ C     Set defaults values for parameters in PTRACERS.h
       PTRACERS_addSrelax2EmP    = .FALSE.
       PTRACERS_useRecords       = .FALSE.
 #ifdef ALLOW_MNC
-      PTRACERS_timeave_mnc      = useMNC .AND. timeave_mnc
       PTRACERS_snapshot_mnc     = useMNC .AND. snapshot_mnc
       PTRACERS_monitor_mnc      = useMNC .AND. monitor_mnc
       PTRACERS_pickup_write_mnc = useMNC .AND. pickup_write_mnc
       PTRACERS_pickup_read_mnc  = useMNC .AND. pickup_read_mnc
 #else
-      PTRACERS_timeave_mnc      = .FALSE.
       PTRACERS_snapshot_mnc     = .FALSE.
       PTRACERS_monitor_mnc      = .FALSE.
       PTRACERS_pickup_write_mnc = .FALSE.
@@ -159,6 +161,9 @@ C     Set defaults values for parameters in PTRACERS.h
         PTRACERS_dTLev(k) = dTtracerLev(k)
 #endif
       ENDDO
+C-    retired params default:
+      PTRACERS_taveFreq    = UNSET_RL
+      PTRACERS_timeave_mnc = .FALSE.
 
 C     Open and read the data.ptracers file
       WRITE(msgBuf,'(A)') ' PTRACERS_READPARMS: opening data.ptracers'
@@ -181,14 +186,35 @@ C     Close the open data file
       CLOSE(iUnit,STATUS='DELETE')
 #endif /* SINGLE_DISK_IO */
 
-C     Check for retired parameters:
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C--   Check for retired parameters:
+      IF ( PTRACERS_taveFreq .NE. UNSET_RL ) THEN
+        WRITE(msgBuf,'(2A)') 'PTRACERS_READPARMS: "PTRACERS_taveFreq"',
+     &    ' is no longer allowed in file "data.ptracers"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'PTRACERS_READPARMS: ',
+     &    ' since "pkg/timeave" has been removed.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+      IF ( PTRACERS_timeave_mnc ) THEN
+        WRITE(msgBuf,'(3A)') 'PTRACERS_READPARMS: ',
+     &    '"PTRACERS_timeave_mnc" is no longer allowed ',
+     &    'in file "data.ptracers"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'PTRACERS_READPARMS: ',
+     &    ' since "pkg/timeave" has been removed.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+
 C     Tracer 1 climatology relaxation time scale (<- but the code is gone !)
       IF ( tauTr1ClimRelax .NE. 0. ) THEN
 #ifndef ALLOW_COST
         WRITE(msgBuf,'(2A)')' PTRACERS_READPARMS: ',
      &       'tauTr1ClimRelax has been removed (code is gone)'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R PTRACERS_READPARMS'
+        errCount = errCount + 1
 #else
        lambdaTr1ClimRelax = 1./tauTr1ClimRelax
       ELSE
@@ -211,7 +237,7 @@ C     Check we are not trying to use more tracers than allowed
      &       ' tracers at run time when only',PTRACERS_num,
      &       ' were specified at compile time. Naughty! '
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R PTRACERS_READPARMS'
+        errCount = errCount + 1
       ENDIF
 
 C     Set vertical diffusion array
@@ -237,7 +263,7 @@ C     Set flag to check when each tracer starts
         WRITE(msgBuf,'(A)')
      &   'to use different starting time (PTRACERS_startStepFwd)'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R PTRACERS_READPARMS'
+        errCount = errCount + 1
       ENDIF
 #endif /* ALLOW_AUTODIFF */
 
@@ -249,14 +275,11 @@ C     (this may also be enabled elsewhere)
       ENDDO
 
 #ifdef ALLOW_MNC
-      PTRACERS_timeave_mnc      = useMNC .AND. PTRACERS_timeave_mnc
       PTRACERS_snapshot_mnc     = useMNC .AND. PTRACERS_snapshot_mnc
       PTRACERS_monitor_mnc      = useMNC .AND. PTRACERS_monitor_mnc
       PTRACERS_pickup_write_mnc = useMNC .AND. PTRACERS_pickup_write_mnc
       PTRACERS_pickup_read_mnc  = useMNC .AND. PTRACERS_pickup_read_mnc
 
-      PTRACERS_timeave_mdsio      = (.NOT. PTRACERS_timeave_mnc)
-     &     .OR. outputTypesInclusive
       PTRACERS_snapshot_mdsio     = (.NOT. PTRACERS_snapshot_mnc)
      &     .OR. outputTypesInclusive
       PTRACERS_monitor_stdio      = (.NOT. PTRACERS_monitor_mnc)
@@ -266,19 +289,25 @@ C     (this may also be enabled elsewhere)
       PTRACERS_pickup_read_mdsio  = (.NOT. PTRACERS_pickup_read_mnc)
      &     .OR. outputTypesInclusive
 #else
-      PTRACERS_timeave_mnc        = .FALSE.
       PTRACERS_snapshot_mnc       = .FALSE.
       PTRACERS_monitor_mnc        = .FALSE.
       PTRACERS_pickup_write_mnc   = .FALSE.
       PTRACERS_pickup_read_mnc    = .FALSE.
-      PTRACERS_timeave_mdsio      = .TRUE.
       PTRACERS_snapshot_mdsio     = .TRUE.
       PTRACERS_monitor_stdio      = .TRUE.
       PTRACERS_pickup_write_mdsio = .TRUE.
       PTRACERS_pickup_read_mdsio  = .TRUE.
 #endif
 
-C--   Print a summary of pTracer parameter values:
+C--   Print a summary of pTracer parameter values: <- done in PTRACERS_CHECK
+
+      IF ( errCount.GE.1 ) THEN
+        WRITE(msgBuf,'(A,I3,A)')
+     &       'PTRACERS_READPARMS: detected', errCount,' fatal error(s)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( 0 )
+        STOP 'ABNORMAL END: S/R PTRACERS_READPARMS'
+      ENDIF
 
       _END_MASTER(myThid)
 C     Everyone else must wait for the parameters to be loaded

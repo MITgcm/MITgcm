@@ -38,10 +38,22 @@ C     msgBuf :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #endif
 
-      k = 1
       twoThird = 2. _d 0 / 3. _d 0
       recip_dt = 1. _d 0
       IF ( deltaTMom.NE.0. ) recip_dt = 1. _d 0/deltaTMom
+
+      _BEGIN_MASTER(myThid)
+      DO k=1,Nr
+        deepFacAdv(k) = 1. _d 0
+      ENDDO
+#ifndef MOM_USE_OLD_DEEP_VERT_ADV
+      IF ( useNHMTerms ) THEN
+       DO k=1,Nr
+        deepFacAdv(k) = deepFacC(k)
+       ENDDO
+      ENDIF
+#endif
+      _END_MASTER(myThid)
 
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)

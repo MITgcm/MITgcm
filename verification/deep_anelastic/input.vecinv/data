@@ -1,0 +1,68 @@
+# Continuous equation parameters
+#-note: rhoRefFile is used to turn on the anelastic formulation
+ &PARM01
+ rhoRefFile='rhoLin_x2.bin',
+ tRefFile='TRefFile.bin',
+ sRef=120*0.,
+ viscAh=1.E6,
+ viscAr=1.E6,
+ no_slip_sides=.FALSE.,
+ no_slip_bottom=.FALSE.,
+ diffKhT=1.E5,
+ diffKrT=1.E5,
+ rotationPeriod=86400.,
+ gravity=9.81,
+ rhoConst=1000.,
+ implicitFreeSurface=.TRUE.,
+ implicitDiffusion=.TRUE.,
+ implicitViscosity=.TRUE.,
+ tempAdvScheme=77,
+ staggerTimeStep=.TRUE.,
+ saltStepping=.FALSE.,
+ eosType='LINEAR',
+ vectorInvariantMomentum=.TRUE.,
+ nonHydrostatic=.TRUE.,
+ useNHMTerms=.TRUE.,
+ readBinaryPrec= 64,
+ writeBinaryPrec= 64,
+#useSingleCpuIO=.TRUE.,
+#debugLevel=1,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=1000,
+ cg2dTargetResidual=1.E-13,
+ cg3dMaxIters= 40,
+ cg3dTargetResidual=1.E-13,
+ &
+
+# Time stepping parameters
+ &PARM03
+ nIter0=0,
+ nTimeSteps=18,
+ deltaT=300.,
+ abEps=0.1,
+ pChkptFreq=86400.,
+ chkptFreq=0.,
+ dumpFreq=7200.,
+ monitorSelect=2,
+ monitorFreq=1.,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingSphericalPolarGrid=.TRUE.,
+ deepAtmosphere=.TRUE.,
+ rSphere=6370.E+3,
+ delR=120*25.E+3,
+ delX=1*10.,
+ delY=160*1.,
+ ygOrigin=-80.,
+ &
+
+# Input datasets
+ &PARM05
+ bathyFile='bathymetry.bin',
+ hydrogThetaFile='init_temp.bin',
+ &

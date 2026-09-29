@@ -1,3 +1,8 @@
+C--  PROF_PARAMS common block:
+C    prof_dBugLevel :: control debug print to STDOUT or log file, higher -> more
+      INTEGER prof_dBugLevel
+      COMMON /PROF_PARAMS_I/ prof_dBugLevel
+
 C===========================================================
 C variables
 C===========================================================
@@ -51,6 +56,7 @@ C===========================================================
       integer profiles_curfile_buff(nsx,nsy)
 
       logical profilesDoNcOutput, profilesDoGenGrid
+      logical prof_make_nc
       integer prof_num_var_tot(NFILESPROFMAX,nsx,nsy)
       integer prof_num_var_cur(NFILESPROFMAX,NVARMAX,nsx,nsy)
 
@@ -102,7 +108,7 @@ C===========================================================
 #endif
 
       COMMON /profiles_l/ vec_quantities, profilesDoNcOutput, 
-     & profilesDoGenGrid
+     & profilesDoGenGrid, prof_make_nc
       COMMON /profiles_c/ prof_names, prof_namesmask,
 #ifdef ALLOW_PROFILES_CLIMMASK
      & prof_namesclim,

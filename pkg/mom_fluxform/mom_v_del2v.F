@@ -1,4 +1,7 @@
 #include "MOM_FLUXFORM_OPTIONS.h"
+#ifdef ALLOW_MOM_COMMON
+# include "MOM_COMMON_OPTIONS.h"
+#endif
 
 CBOP
 C !ROUTINE: MOM_V_DEL2V
@@ -39,7 +42,7 @@ C  del2v                :: Laplacian
 
 C !LOCAL VARIABLES: ====================================================
 C  i,j                  :: loop indices
-      INTEGER I,J
+      INTEGER i,j
       _RL fZon(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fMer(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS hFacZClosedE, hFacZClosedW
@@ -53,7 +56,7 @@ C     Zonal flux d/dx V
      &   *_recip_dxV(i,j,bi,bj)
      &   *(vFld(i,j)-vFld(i-1,j))
 #ifdef COSINEMETH_III
-     &   *sqCosFacV(J,bi,bj)
+     &   *sqCosFacV(j,bi,bj)
 #endif
 c    &   *deepFacC(k)        ! dyU scaling factor
 c    &   *recip_deepFacC(k)  ! recip_dxV scaling factor
@@ -68,7 +71,7 @@ C     Meridional flux d/dy V
      &   *_recip_dyF(i,j,bi,bj)
      &   *(vFld(i,j+1)-vFld(i,j))
 #if (defined (ISOTROPIC_COS_SCALING) && defined (COSINEMETH_III))
-     &   *sqCosFacU(J,bi,bj)
+     &   *sqCosFacU(j,bi,bj)
 #endif
 #ifdef ALLOW_OBCS
      &   *maskInC(i,j,bi,bj)
