@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ecco & ctrl:
+  - quick fix for "xx_geothermal" ctrl when compiling with _RS being real*4
+  - add secondary test ideal_2D_oce.geom to the list of mutl-threaded tests
 o pkg/cheapaml:
   - fix cheapaml implementation of Large and Pond surface flux and add a
     secondary test in experiment cheapAML_box that uses 'LANL' flux formula.
