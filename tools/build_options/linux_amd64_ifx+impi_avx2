@@ -5,6 +5,19 @@
 #  Tested on engaging (Rocky 8) with ifx 2024.2.1 and impi 2021-13.
 #  Executable will run on Sandybridge, Haswell, Broadwell, Skylake and above.
 #
+#  to compile and run with NetCdF:
+#     > module use /home/jahn/software/modulefiles
+#     > module load intel/2024.2.1
+#     > module load jahn/netcdf-fortran/4.6.2_intel-2024.2.1
+#-------
+# run with OpenMP: needs to set environment var. OMP_NUM_THREADS
+#    and generally, needs to increase the stack-size:
+#   * sh,bash:
+#     > export OMP_NUM_THREADS=2
+#     > export KMP_STACKSIZE=400m
+#   * csh,tcsh:
+#     > setenv OMP_NUM_THREADS 2
+#     > setenv KMP_STACKSIZE 400m
 #-------
 
 if test "x$MPI" = xtrue ; then
@@ -35,20 +48,13 @@ if ! [[ $fcVers =~ ^[0-9]+$ ]] ; then
   echo "    un-recognized Compiler-release '$fcVers' ; ignored (-> set to 0)" ; fcVers=0 ;
 else echo "    get Compiler-release: '$fcVers'" ; fi
 
-#PROCF="-xcore-avx2"
-# for amd or intel processors
-#PROCF=-march=core-avx2
 # This will run on Skylake or higher, but may give different results
-#PROCF=-xCORE-AVX512
 PROCF="-mavx2 -mno-avx512f -fp-model=precise -fimf-arch-consistency=true -no-fma"
 #PROCF="-fp-model consistent"
 
 CFLAGS="-O0 -m64 $PROCF"
 FFLAGS="$FFLAGS -m64 -convert big_endian -assume byterecl"
-#- for big setups, compile & link with "-fPIC" or set memory-model to "medium":
-#CFLAGS="$CFLAGS -fPIC"
-#FFLAGS="$FFLAGS -fPIC"
-#-  with FC 19, need to use this without -fPIC (which cancels -mcmodel option):
+#- for big setups, compile & link with memory-model set to "medium":
  CFLAGS="$CFLAGS -mcmodel=medium"
  FFLAGS="$FFLAGS -mcmodel=medium"
 #- might want to use '-r8' for fizhi pkg:
