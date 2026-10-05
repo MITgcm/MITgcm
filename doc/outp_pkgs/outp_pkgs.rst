@@ -351,7 +351,9 @@ are ``THETA`` and ``SALT``.  It interpolates vertically to the pressure levels
 The parameter :varlink:`timePhase` is used to refine the output time within the
 :varlink:`frequency` interval (i.e., to set the phase) as well as to delay the
 first output until time :varlink:`timePhase` is reached:
-|  output-time :math:`=  timePhase + N * \| frequency \|` , with integer :math:` N \ge 0`
+
+| output-time :math:`=  timePhase + N * | frequency |` , with integer :math:`N \ge 0`
+
 :varlink:`timePhase` defaults to zero for positive :varlink:`frequency`
 so that, by default, time averages are written at the end of the time interval
 specified by :varlink:`frequency`; and to ``-0.5*`` \| :varlink:`frequency` \|
@@ -359,10 +361,10 @@ for negative :varlink:`frequency` so that, by default, snapshots are written
 in the middle of the time interval specified by :varlink:`frequency`.
 
 Note that when delaying the first time-averaged output (with
-:varlink:`timePhase` :math:`\gt` :varlink:`frequency`) the resulting first
-output will be averaged over a longer time interval than :varlink:`frequency`
-and longer than the subsequent output as the averaging starts at the first
-time-step.
+:varlink:`timePhase` :math:`\gt` \| :varlink:`frequency` \|) the resulting
+first output will be averaged over a longer time interval than
+:varlink:`frequency` and longer than the subsequent output as the averaging
+starts at the first time-step.
 
 There is a special case when using :filelink:`pkg/cal` (``useCAL=T``) with
 :varlink:`calendarDumps` set to ``.TRUE.`` (in :filelink:`data.cal`). In this
