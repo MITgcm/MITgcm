@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint69r (2026/10/05)
 o tools/build_options:
   - add gfortran and intel compiler optfile for newer AMD and Intel processors
     (e.g., engaging Rocky-8 nodes).
