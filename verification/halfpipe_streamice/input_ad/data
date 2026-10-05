@@ -30,7 +30,7 @@
 # chkptFreq=120000.,
 # dumpFreq=2592000.,
  monitorFreq=0.,
- externForcingCycle=18921600.
+ externForcingCycle=25228800.
  &
 
 # Gridding parameters

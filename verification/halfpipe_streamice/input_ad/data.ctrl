@@ -11,7 +11,8 @@
  xx_genarr2d_file(2)   = 'xx_h_streamice',
  xx_genarr2d_weight(2) = 'wunit',
  xx_gentim2d_file(1)   = 'xx_bdot_streamice',
- xx_gentim2d_period(1) = 6307200.,
+# period = 2*deltaT: ctrl time-interpolation weights are not all 0.5
+ xx_gentim2d_period(1) = 12614400.,
  xx_gentim2d_weight(1) = 'wunit',
 # genarr2dPrecond = 5 200
  &
