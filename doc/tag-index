@@ -1,6 +1,29 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint69r (2026/10/05)
+o tools/build_options:
+  - add gfortran and intel compiler optfile for newer AMD and Intel processors
+    (e.g., engaging Rocky-8 nodes).
+o pkg/ecco & ctrl:
+  - quick fix for "xx_geothermal" ctrl when compiling with _RS being real*4;
+  - add secondary test ideal_2D_oce.geom to the list of multi-threaded tests.
+o pkg/cheapaml:
+  - fix cheapaml implementation of Large and Pond surface flux and add a
+    secondary test in experiment cheapAML_box that uses 'LANL' flux formula.
+o pkg/cheapaml:
+  - fix LW derivative vs surf. temp (cheapaml_coare3_flux.F) which is used over
+    seaice ; update offline_cheapaml exp. (in verification_other) ref. output.
+o doc:
+  - add reference to MITgcmIS in Chapt.12
+o pkg/fizhi:
+  - fix indices in averaged variance (SVAR) for turbulence fluxes (S/R TRBFLX);
+    add new CPP option "FIZHI_TRBFLX_OLD_BUG" to recover old bug ; update ref.
+    output of the fizhi-cs test experiments.
+o model/src:
+  - fix TEOS-10 derivatives (bug) in FIND_ALPHA and FIND_BETA ;
+    add missing "_d 0" to constants in GSW_GIBBS_PT0_PT0.
+
 checkpoint69q (2026/08/24)
 o pkg/profiles:
   - improve error handling and check that number of depth levels (in profiles

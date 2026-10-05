@@ -205,9 +205,14 @@ C--   generic 2D control variables
      &  CALL CTRL_MAP_GENARR2D( bottomDragFld, igen_bdrag, myThid )
 #endif
 #ifdef ALLOW_GEOTHERMAL_FLUX
-      IF (igen_geoth.GT.0)
-     &  CALL CTRL_MAP_GENARR2D( geothermalFlux, igen_geoth, myThid )
-#endif
+      IF (igen_geoth.GT.0) THEN
+# ifdef REAL4_IS_SLOW
+        CALL CTRL_MAP_GENARR2D( geothermalFlux, igen_geoth, myThid )
+# else
+        STOP 'ABNORMAL END: S/R CTRL_MAP_INI_GENARR: missing RS S/R'
+# endif
+      ENDIF
+#endif /* ALLOW_GEOTHERMAL_FLUX */
 
 #ifdef ALLOW_SEAICE
       IF (igen_siarea.GT.0)

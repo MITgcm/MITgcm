@@ -1,0 +1,5 @@
+# Packages
+ &PACKAGES
+  useCheapAML=.TRUE.,
+  useDiagnostics=.TRUE.,
+ &
