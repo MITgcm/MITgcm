@@ -190,7 +190,7 @@ C--   Close the open data file
 
 C--   packages which were removed
 #ifdef ALLOW_OPENAD
-      WRITE(msgBuf,'(A)') ' PACKAGES_BOOT: pkg/openad got removed'
+      WRITE(msgBuf,'(A)') ' PACKAGES_BOOT: pkg/openad was removed'
       CALL PRINT_ERROR( msgBuf, myThid )
       CALL ALL_PROC_DIE( 0 )
       STOP 'ABNORMAL END: S/R PACKAGES_BOOT'
