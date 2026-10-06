@@ -27,8 +27,8 @@ C     === Global variables ===
 #include "GRID.h"
 #include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
+#include "SEAICE_GRID.h"
 #include "SEAICE.h"
-C#include "SEAICE_GRID.h"
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -175,7 +175,7 @@ C SET SOME VALUES
          ENDDO
         ENDDO
         DO J=1-OLy,sNy+OLy-1
-         DO I=1-OLy,sNx+OLy-1
+         DO I=1-OLx,sNx+OLx-1
           e11loc = 0.5 _d 0 * _recip_dxF(I,J,bi,bj) *
      &                (uIceB(I+1,J+1,bi,bj)+uIceB(I+1,J,bi,bj)
      &                -uIceB(I,  J+1,bi,bj)-uIceB(I,  J,bi,bj))

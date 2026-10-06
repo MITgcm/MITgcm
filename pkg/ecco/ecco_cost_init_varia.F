@@ -22,9 +22,6 @@ C     == Global variables ===
 #include "GRID.h"
 #include "ECCO_SIZE.h"
 #include "ECCO.h"
-#ifdef ALLOW_CTRL
-# include "CTRL_OBCS.h"
-#endif
 #ifdef ALLOW_COST
 # include "cost.h"
 #endif
@@ -65,19 +62,6 @@ C--   Initialize the tiled cost function contributions.
           ENDDO
 #endif
 
-#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
-          objf_obcsn(bi,bj) = 0. _d 0
-          objf_obcss(bi,bj) = 0. _d 0
-          objf_obcsw(bi,bj) = 0. _d 0
-          objf_obcse(bi,bj) = 0. _d 0
-          objf_ageos(bi,bj) = 0. _d 0
-          num_obcsn(bi,bj)  = 0. _d 0
-          num_obcss(bi,bj)  = 0. _d 0
-          num_obcsw(bi,bj)  = 0. _d 0
-          num_obcse(bi,bj)  = 0. _d 0
-          num_ageos(bi,bj)  = 0. _d 0
-#endif
-
         ENDDO
       ENDDO
 
@@ -88,14 +72,6 @@ C--   Initialize the tiled cost function contributions.
         ENDDO
       ENDDO
       _END_MASTER( myThid )
-
-C--   Initialise the "global" parts of the cost function.
-#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
-      _BEGIN_MASTER( myThid )
-        objf_obcsvol = 0. _d 0
-        num_obcsvol = 0. _d 0
-      _END_MASTER( myThid )
-#endif
 
       _BARRIER
 

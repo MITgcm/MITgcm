@@ -340,6 +340,7 @@ C     == Global variables ==
 # endif
 # ifdef ALLOW_SEAICE
 #  include "SEAICE_SIZE.h"
+#  include "SEAICE_GRID.h"
 #  include "SEAICE.h"
 #  include "SEAICE_COST.h"
 # endif
@@ -641,6 +642,11 @@ CADJ STORE pTracer    = comlev1, key = ikey_dynamics, kind = isbyte
 # endif /* ALLOW_PTRACERS */
 # ifdef ALLOW_DEPTH_CONTROL
 CADJ STORE hFacC      = comlev1, key = ikey_dynamics, kind = isbyte
+#  ifdef ALLOW_SEAICE
+CADJ STORE hFacS      = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE hFacW      = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE recip_hFacC= comlev1, key = ikey_dynamics, kind = isbyte
+#  endif
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 

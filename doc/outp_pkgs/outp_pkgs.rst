@@ -502,7 +502,7 @@ Additionally the packages :ref:`gmredi <sub_phys_pkg_gmredi>`,
 Some notes to the user
 ^^^^^^^^^^^^^^^^^^^^^^
 
-1. This feature is currently untested with OpenAD.
+1. This feature is currently untested with Tapenade.
 
 2. This feature does not work with the divided adjoint.
 

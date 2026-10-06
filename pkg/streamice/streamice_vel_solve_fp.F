@@ -6,16 +6,21 @@
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP
+C     !ROUTINE: STREAMICE_VEL_SOLVE_FP
+C     !INTERFACE:
       SUBROUTINE STREAMICE_VEL_SOLVE_FP ( myThid, maxNLIter,
      &                                maxCGiter, myIter )
-C     /============================================================\
+C     !DESCRIPTION: \bv
+C     *============================================================*
 C     | SUBROUTINE                                                 |
 C     | o                                                          |
-C     |============================================================|
+C     *============================================================*
 C     |                                                            |
-C     \============================================================/
-      IMPLICIT NONE
+C     *============================================================*
+C     \ev
 
+C     !USES:
+      IMPLICIT NONE
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -23,17 +28,15 @@ C     === Global variables ===
 #include "STREAMICE.h"
 #include "STREAMICE_CG.h"
 
-C     !INPUT/OUTPUT ARGUMENTS
+C     !INPUT/OUTPUT PARAMETERS:
       INTEGER myThid
       INTEGER maxNLIter
       INTEGER maxCGIter
       INTEGER myIter
 
 #ifdef ALLOW_STREAMICE
-
-C     LOCAL VARIABLES
-
 #ifdef ALLOW_STREAMICE_FP_ADJ
+C     !LOCAL VARIABLES:
       INTEGER i, j, k, l, bi, bj, loopiter
       INTEGER NL_iter
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -173,7 +176,18 @@ c      ENDDO
 
       ENDDO
 
-#ifdef ALLOW_OPENAD
+#ifndef ALLOW_OPENAD
+      CALL STREAMICE_VEL_PHISTAGE (
+     I                   myThid,
+     I                   maxNLIter,
+     I                   maxCGiter,
+     O                   cgtol,
+     O                   nL_iter,
+     O                   CONVERGED,
+     O                   err_last_change,
+     O                   err_init,
+     I                   isinloop2)
+#else
       CALL STREAMICE_VEL_PHISTAGE (
      I                   myThid,
      I                   maxNLIter,
@@ -211,7 +225,7 @@ C-------------------------------------------------------------------
 
       CALL TIMER_STOP ('STREAMICE_VEL_SOLVE',myThid)
 
-#endif
-#endif
+#endif /* ALLOW_STREAMICE_FP_ADJ */
+#endif /* ALLOW_STREAMICE */
       RETURN
       END

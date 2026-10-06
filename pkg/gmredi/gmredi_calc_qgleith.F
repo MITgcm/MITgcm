@@ -179,9 +179,9 @@ C        Average d/dx of stretching onto V-points to match vrtDX
      &                    + (stretching(i,j)-stretching(i-1,j))
      &                      *recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
      &                    + (stretching(i+1,j-1)-stretching(i,j-1))
-     &                      *recip_dxC(i,j-1,bi,bj)*recip_deepFacC(k)
+     &                      *recip_dxC(i+1,j-1,bi,bj)*recip_deepFacC(k)
      &                    + (stretching(i,j-1)-stretching(i-1,j-1))
-     &                      *recip_dxC(i-1,j-1,bi,bj)*recip_deepFacC(k)
+     &                      *recip_dxC(i,j-1,bi,bj)*recip_deepFacC(k)
      &                    )*maskS(i,j,k,bi,bj)
 #ifdef ALLOW_OBCS
      &                     *maskInS(i,j,bi,bj)

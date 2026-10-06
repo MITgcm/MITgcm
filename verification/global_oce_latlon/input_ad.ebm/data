@@ -42,10 +42,10 @@
  nIter0 =      0,
  nTimeSteps = 20,
 # 100 years of integration will yield a reasonable flow field
-# startTime  =          0.,
-# endTime    = 3110400000.,
- deltaTmom = 1200.,
- tauCD =     321428.,
+# startTime = 0.,
+# endTime   = 3110400000.,
+ tauCD =       321428.,
+ deltaTMom    =  1200.,
  deltaTtracer = 43200.,
  deltaTClock  = 43200.,
  deltaTFreeSurf=43200.,
@@ -57,12 +57,12 @@
  monitorFreq    = 432000.,
  adjMonitorFreq = 259200.,
 # 2 months restoring timescale for temperature
-#tauThetaClimRelax =  5184000.0,
+#tauThetaClimRelax = 5184000.,
 # 6 months restoring timescale for salinity
- tauSaltClimRelax = 15552000.0,
+ tauSaltClimRelax = 15552000.,
 #periodicExternalForcing=.TRUE.,
-#externForcingPeriod=2592000.,
-#externForcingCycle=31104000.,
+#externForcingPeriod= 2592000.,
+#externForcingCycle= 31104000.,
  &
 
 # Gridding parameters

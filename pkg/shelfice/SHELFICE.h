@@ -236,7 +236,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       _RS
      &   shelfIceMassDynTendency(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-#ifdef ALLOW_CTRL
+#if defined ALLOW_CTRL || defined ALLOW_ECCO
       COMMON /SHELFICE_MASKS_CTRL/ maskSHI
       _RS maskSHI  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif /* ALLOW_CTRL */
