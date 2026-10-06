@@ -30,6 +30,7 @@
 # profilesDir = 'PROF',
  profilesfiles(1) = 'sample_prof',
  prof_make_nc = .TRUE.,
+ prof_dBugLevel = 4,
  profilesDoNcOutput = .TRUE.,
 # has T, S, and pH constraints.
 # The default mult_profiles = 1,

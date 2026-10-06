@@ -22,6 +22,7 @@ C !USES: ===============================================================
 #include "FFIELDS.h"
 #include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
+#include "SEAICE_GRID.h"
 #include "SEAICE.h"
 #include "SEAICE_TRACER.h"
 
@@ -240,16 +241,11 @@ C--   Initialise grid info
 C-    loops on tile indices bi,bj:
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          HEFFM  (i,j,bi,bj) = 0. _d 0
-          SIMaskU(i,j,bi,bj) = 0. _d 0
-          SIMaskV(i,j,bi,bj) = 0. _d 0
-         ENDDO
-        ENDDO
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
           HEFFM  (i,j,bi,bj) = maskC(i,j,kSrf,bi,bj)
+#ifdef SEAICE_CGRID
           SIMaskU(i,j,bi,bj) = maskW(i,j,kSrf,bi,bj)
           SIMaskV(i,j,bi,bj) = maskS(i,j,kSrf,bi,bj)
+#endif
          ENDDO
         ENDDO
 #ifdef SEAICE_BGRID_DYNAMICS
@@ -264,133 +260,120 @@ C-    loops on tile indices bi,bj:
 #endif
 
 C     coefficients for metric terms
-#ifdef SEAICE_CGRID
+#if ( defined SEAICE_CGRID || defined SEAICE_BGRID_DYNAMICS )
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           k1AtC(i,j,bi,bj) = 0.0 _d 0
-          k1AtZ(i,j,bi,bj) = 0.0 _d 0
           k2AtC(i,j,bi,bj) = 0.0 _d 0
+          k1AtU(i,j,bi,bj) = 0.0 _d 0
+          k1AtV(i,j,bi,bj) = 0.0 _d 0
+          k2AtU(i,j,bi,bj) = 0.0 _d 0
+          k2AtV(i,j,bi,bj) = 0.0 _d 0
+# ifdef SEAICE_CGRID
+          k1AtZ(i,j,bi,bj) = 0.0 _d 0
           k2AtZ(i,j,bi,bj) = 0.0 _d 0
+# endif
          ENDDO
         ENDDO
-        IF ( usingSphericalPolarGrid .AND. SEAICEuseMetricTerms ) THEN
+        IF ( SEAICEselectMetricTerms .GT. 0 ) THEN
+         IF ( usingSphericalPolarGrid ) THEN
 C     This is the only case where tan(phi) is not zero. In this case
 C     C and U points, and Z and V points have the same phi, so that we
 C     only need a copy here. Do not use tan(YC) and tan(YG), because
 C     these
 C     can be the geographical coordinates and not the correct grid
 C     coordinates when the grid is rotated (phi/theta/psiEuler .NE. 0)
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           k2AtC(i,j,bi,bj) = - _tanPhiAtU(i,j,bi,bj)*recip_rSphere
-           k2AtZ(i,j,bi,bj) = - _tanPhiAtV(i,j,bi,bj)*recip_rSphere
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            k2AtC(i,j,bi,bj) = - _tanPhiAtU(i,j,bi,bj)*recip_rSphere
+            k2AtU(i,j,bi,bj) = - _tanPhiAtU(i,j,bi,bj)*recip_rSphere
+            k2AtV(i,j,bi,bj) = - _tanPhiAtV(i,j,bi,bj)*recip_rSphere
+# ifdef SEAICE_CGRID
+            k2AtZ(i,j,bi,bj) = - _tanPhiAtV(i,j,bi,bj)*recip_rSphere
+# endif
+           ENDDO
           ENDDO
-         ENDDO
-        ELSEIF ( usingCurvilinearGrid .AND. SEAICEuseMetricTerms ) THEN
+         ELSEIF ( usingCurvilinearGrid ) THEN
 C     compute metric term coefficients from finite difference
 C     approximation
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx-1
+            k1AtC(i,j,bi,bj) = _recip_dyF(i,j,bi,bj)
+     &           * ( _dyG(i+1,j,bi,bj) - _dyG(i,j,bi,bj) )
+     &           * _recip_dxF(i,j,bi,bj)
+           ENDDO
+          ENDDO
+          DO j=1-OLy,sNy+OLy-1
+           DO i=1-OLx,sNx+OLx
+            k2AtC(i,j,bi,bj) = _recip_dxF(i,j,bi,bj)
+     &           * ( _dxG(i,j+1,bi,bj) - _dxG(i,j,bi,bj) )
+     &           * _recip_dyF(i,j,bi,bj)
+           ENDDO
+          ENDDO
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx+1,sNx+OLx
+            k1AtU(i,j,bi,bj) = _recip_dyG(i,j,bi,bj)
+     &           * ( _dyF(i,j,bi,bj) - _dyF(i-1,j,bi,bj) )
+     &           * _recip_dxC(i,j,bi,bj)
+           ENDDO
+          ENDDO
+          DO j=1-OLy,sNy+OLy-1
+           DO i=1-OLx,sNx+OLx
+            k2AtU(i,j,bi,bj) = _recip_dxC(i,j,bi,bj)
+     &           * ( _dxV(i,j+1,bi,bj) - _dxV(i,j,bi,bj) )
+     &           * _recip_dyG(i,j,bi,bj)
+           ENDDO
+          ENDDO
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx-1
+            k1AtV(i,j,bi,bj) = _recip_dyC(i,j,bi,bj)
+     &           * ( _dyU(i+1,j,bi,bj) - _dyU(i,j,bi,bj) )
+     &           * _recip_dxG(i,j,bi,bj)
+           ENDDO
+          ENDDO
+          DO j=1-OLy+1,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            k2AtV(i,j,bi,bj) = _recip_dxG(i,j,bi,bj)
+     &           * ( _dxF(i,j,bi,bj) - _dxF(i,j-1,bi,bj) )
+     &           * _recip_dyC(i,j,bi,bj)
+           ENDDO
+          ENDDO
+# ifdef SEAICE_CGRID
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx+1,sNx+OLx
+            k1AtZ(i,j,bi,bj) = _recip_dyU(i,j,bi,bj)
+     &           * ( _dyC(i,j,bi,bj) - _dyC(i-1,j,bi,bj) )
+     &           * _recip_dxV(i,j,bi,bj)
+           ENDDO
+          ENDDO
+          DO j=1-OLy+1,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            k2AtZ(i,j,bi,bj) = _recip_dxV(i,j,bi,bj)
+     &           * ( _dxC(i,j,bi,bj) - _dxC(i,j-1,bi,bj) )
+     &           * _recip_dyU(i,j,bi,bj)
+           ENDDO
+          ENDDO
+# endif /* SEAICE_CGRID */
+         ENDIF
+        ENDIF
+#endif /* SEAICE_CGRID or SEAICE_BGRID_DYNAMICS */
+
+#ifdef SEAICE_CGRID
+        IF ( SEAICEselectMetricTerms .LT. 2 ) THEN
+C     Resetting metric factors at U,V-pointw to zero removes the extra
+C     terms in the stress divergence
          DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx-1
-           k1AtC(i,j,bi,bj) = _recip_dyF(i,j,bi,bj)
-     &          * ( _dyG(i+1,j,bi,bj) - _dyG(i,j,bi,bj) )
-     &          * _recip_dxF(i,j,bi,bj)
-          ENDDO
-         ENDDO
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx+1,sNx+OLx
-           k1AtZ(i,j,bi,bj) = _recip_dyU(i,j,bi,bj)
-     &          * ( _dyC(i,j,bi,bj) - _dyC(i-1,j,bi,bj) )
-     &          * _recip_dxV(i,j,bi,bj)
-          ENDDO
-         ENDDO
-         DO j=1-OLy,sNy+OLy-1
           DO i=1-OLx,sNx+OLx
-           k2AtC(i,j,bi,bj) = _recip_dxF(i,j,bi,bj)
-     &          * ( _dxG(i,j+1,bi,bj) - _dxG(i,j,bi,bj) )
-     &          * _recip_dyF(i,j,bi,bj)
-          ENDDO
-         ENDDO
-         DO j=1-OLy+1,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           k2AtZ(i,j,bi,bj) = _recip_dxV(i,j,bi,bj)
-     &          * ( _dxC(i,j,bi,bj) - _dxC(i,j-1,bi,bj) )
-     &          * _recip_dyU(i,j,bi,bj)
+           k1AtU(i,j,bi,bj) = 0.0 _d 0
+           k2AtU(i,j,bi,bj) = 0.0 _d 0
+           k1AtV(i,j,bi,bj) = 0.0 _d 0
+           k2AtV(i,j,bi,bj) = 0.0 _d 0
           ENDDO
          ENDDO
         ENDIF
 #endif /* SEAICE_CGRID */
 
 #ifdef SEAICE_BGRID_DYNAMICS
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          k1AtC(i,j,bi,bj) = 0.0 _d 0
-          k1AtU(i,j,bi,bj) = 0.0 _d 0
-          k1AtV(i,j,bi,bj) = 0.0 _d 0
-          k2AtC(i,j,bi,bj) = 0.0 _d 0
-          k2AtU(i,j,bi,bj) = 0.0 _d 0
-          k2AtV(i,j,bi,bj) = 0.0 _d 0
-         ENDDO
-        ENDDO
-        IF ( usingSphericalPolarGrid .AND. SEAICEuseMetricTerms ) THEN
-C     This is the only case where tan(phi) is not zero. In this case
-C     C and U points, and Z and V points have the same phi, so that we
-C     only need a copy here. Do not use tan(YC) and tan(YG), because
-C     these
-C     can be the geographical coordinates and not the correct grid
-C     coordinates when the grid is rotated (phi/theta/psiEuler .NE. 0)
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           k2AtC(i,j,bi,bj) = - _tanPhiAtU(i,j,bi,bj)*recip_rSphere
-           k2AtU(i,j,bi,bj) = - _tanPhiAtU(i,j,bi,bj)*recip_rSphere
-           k2AtV(i,j,bi,bj) = - _tanPhiAtV(i,j,bi,bj)*recip_rSphere
-          ENDDO
-         ENDDO
-        ELSEIF ( usingCurvilinearGrid .AND. SEAICEuseMetricTerms ) THEN
-C     compute metric term coefficients from finite difference
-C     approximation
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx-1
-           k1AtC(i,j,bi,bj) = _recip_dyF(i,j,bi,bj)
-     &          * ( _dyG(i+1,j,bi,bj) - _dyG(i,j,bi,bj) )
-     &          * _recip_dxF(i,j,bi,bj)
-          ENDDO
-         ENDDO
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx+1,sNx+OLx
-           k1AtU(i,j,bi,bj) = _recip_dyG(i,j,bi,bj)
-     &          * ( _dyF(i,j,bi,bj) - _dyF(i-1,j,bi,bj) )
-     &          * _recip_dxC(i,j,bi,bj)
-          ENDDO
-         ENDDO
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx-1
-           k1AtV(i,j,bi,bj) = _recip_dyC(i,j,bi,bj)
-     &          * ( _dyU(i+1,j,bi,bj) - _dyU(i,j,bi,bj) )
-     &          * _recip_dxG(i,j,bi,bj)
-          ENDDO
-         ENDDO
-         DO j=1-OLy,sNy+OLy-1
-          DO i=1-OLx,sNx+OLx
-           k2AtC(i,j,bi,bj) = _recip_dxF(i,j,bi,bj)
-     &          * ( _dxG(i,j+1,bi,bj) - _dxG(i,j,bi,bj) )
-     &          * _recip_dyF(i,j,bi,bj)
-          ENDDO
-         ENDDO
-         DO j=1-OLy,sNy+OLy-1
-          DO i=1-OLx,sNx+OLx
-           k2AtU(i,j,bi,bj) = _recip_dxC(i,j,bi,bj)
-     &          * ( _dxV(i,j+1,bi,bj) - _dxV(i,j,bi,bj) )
-     &          * _recip_dyG(i,j,bi,bj)
-          ENDDO
-         ENDDO
-         DO j=1-OLy+1,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           k2AtV(i,j,bi,bj) = _recip_dxG(i,j,bi,bj)
-     &          * ( _dxF(i,j,bi,bj) - _dxF(i,j-1,bi,bj) )
-     &          * _recip_dyC(i,j,bi,bj)
-          ENDDO
-         ENDDO
-        ENDIF
 C--   Choose a proxy level for geostrophic velocity,
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
