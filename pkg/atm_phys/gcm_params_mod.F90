@@ -99,7 +99,7 @@ subroutine gcm_params_init(                                          &
    gcm_debLev0     = inp_debLev0
    gcm_debLevA     = inp_debLevA
    gcm_debLevB     = inp_debLevB
-   gcm_debLevB     = inp_debLevC
+   gcm_debLevC     = inp_debLevC
    gcm_debLevD     = inp_debLevD
    gcm_debLevE     = inp_debLevE
    gcm_stdMsgUnit  = inp_stdMsgUnit

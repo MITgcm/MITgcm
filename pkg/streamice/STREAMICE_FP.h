@@ -14,7 +14,7 @@ C STREAMICE_FP.h
       COMMON /STREAMICE_PARM_FP_PETSC_L/
      & STREAMICE_need2createmat,
      & STREAMICE_need2destroymat,
-     & STREAMICE_OAD_petsc_reuse,
+     & STREAMICE_OAD_petsc_reuse
 
       COMMON /STREAMICE_PARM_FP_PETSC_C/
      & PETSC_PRECOND_TMP,

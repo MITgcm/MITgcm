@@ -4,8 +4,7 @@
 #- from this dir:
 fromDir="../input.natl_box"
 
-fileList=`( cd $fromDir ; echo kf_* POLY3.COEFFS data.kpp )`
-
+fileList=`( cd $fromDir ; echo kf_* POLY3.COEFFS )`
 #echo 'fileList=' $fileList
 
 #- and do a symbolic link in the current directory

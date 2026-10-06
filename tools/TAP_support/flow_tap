@@ -83,7 +83,16 @@ type: ()
 ReadNotWritten: ()
 ReadThenWritten: ()
 NotReadThenWritten: ()
+
 subroutine cg2d:
+  external:
+  shape: (param 1, param 2, param 3, param 4, param 5, param 6, param 7, param 8)
+  type: (none(),none(),none(),none(),none(),none(),none(),none())
+  ReadNotWritten:     (1,0,0,0,0,0,0,1)
+  NotReadThenWritten: (0,0,1,1,1,0,0,0)
+  ReadThenWritten:    (0,1,0,0,0,1,1,0)
+
+subroutine cg2d_sr:
   external:
   shape: (param 1, param 2, param 3, param 4, param 5, param 6, param 7, param 8)
   type: (none(),none(),none(),none(),none(),none(),none(),none())
@@ -264,21 +273,21 @@ subroutine mds_write_field:
 
 subroutine mds_read_sec_xz:
   external:
-  shape: (param 1, param 2, param 3, param 4, param 5, param 6, param 7, param 8, param 9)
-  type: (none(),none(),none(),none(),none(),none(),none(),none(),none())
-  NotReadNotWritten:  (0,0,0,0,0,0,0,0,0)
-  ReadNotWritten:     (1,1,1,1,1,0,0,1,1)
-  NotReadThenWritten: (0,0,0,0,0,1,1,0,0)
-  ReadThenWritten:    (0,0,0,0,0,0,0,0,0)
+  shape: (param 1, param 2, param 3, param 4, param 5, param 6, param 7, param 8, param 9, param 10, param 11)
+  type: (none(),none(),none(),none(),none(),none(),none(),none(),none(),none(),none())
+  NotReadNotWritten:  (0,0,0,0,0,0,0,0,0,0,0)
+  ReadNotWritten:     (1,1,1,1,1,1,1,0,0,1,1)
+  NotReadThenWritten: (0,0,0,0,0,0,0,1,1,0,0)
+  ReadThenWritten:    (0,0,0,0,0,0,0,0,0,0,0)
 
 subroutine mds_read_sec_yz:
   external:
-  shape: (param 1, param 2, param 3, param 4, param 5, param 6, param 7, param 8, param 9)
-  type: (none(),none(),none(),none(),none(),none(),none(),none(),none())
-  NotReadNotWritten:  (0,0,0,0,0,0,0,0,0)
-  ReadNotWritten:     (1,1,1,1,1,0,0,1,1)
-  NotReadThenWritten: (0,0,0,0,0,1,1,0,0)
-  ReadThenWritten:    (0,0,0,0,0,0,0,0,0)
+  shape: (param 1, param 2, param 3, param 4, param 5, param 6, param 7, param 8, param 9, param 10, param 11)
+  type: (none(),none(),none(),none(),none(),none(),none(),none(),none(),none(),none())
+  NotReadNotWritten:  (0,0,0,0,0,0,0,0,0,0,0)
+  ReadNotWritten:     (1,1,1,1,1,1,1,0,0,1,1)
+  NotReadThenWritten: (0,0,0,0,0,0,0,1,1,0,0)
+  ReadThenWritten:    (0,0,0,0,0,0,0,0,0,0,0)
 
 subroutine write_fld_xy_rl:
   external:
@@ -586,12 +595,12 @@ subroutine all_proc_die:
 
 subroutine diagnostics_switch_onoff:
   external:
-  shape: (param 1,param 2,param 3)
-  type: (none(),none(),none())
-  NotReadNotWritten:  (0,0,0)
-  ReadNotWritten:     (1,1,1)
-  NotReadThenWritten: (0,0,0)
-  ReadThenWritten:    (0,0,0)
+  shape: (param 1,param 2,param 3,param 4)
+  type: (none(),none(),none(),none())
+  NotReadNotWritten:  (0,0,0,0)
+  ReadNotWritten:     (1,1,1,1)
+  NotReadThenWritten: (0,0,0,0)
+  ReadThenWritten:    (0,0,0,0)
 
 subroutine check_pickup:
   external:
@@ -604,21 +613,21 @@ subroutine check_pickup:
 
 subroutine autodiff_inadmode_unset:
   external:
-  shape: (param 1)
-  type: (none())
-  NotReadNotWritten:  (0)
-  ReadNotWritten:     (1)
-  NotReadThenWritten: (0)
-  ReadThenWritten:    (0)
+  shape: (param 1, param 2, param 3)
+  type: (none(),none(),none())
+  NotReadNotWritten:  (0,0,0)
+  ReadNotWritten:     (1,1,1)
+  NotReadThenWritten: (0,0,0)
+  ReadThenWritten:    (0,0,0)
 
 subroutine autodiff_inadmode_set:
   external:
-  shape: (param 1)
-  type: (none())
-  NotReadNotWritten:  (0)
-  ReadNotWritten:     (1)
-  NotReadThenWritten: (0)
-  ReadThenWritten:    (0)
+  shape: (param 1, param 2, param 3)
+  type: (none(),none(),none())
+  NotReadNotWritten:  (0,0,0)
+  ReadNotWritten:     (1,1,1)
+  NotReadThenWritten: (0,0,0)
+  ReadThenWritten:    (0,0,0)
 
 subroutine timer_start:
   external:

@@ -27,18 +27,17 @@ Algorithms in Fortran), developed by Ralf Giering
 :cite:`giering:00`). The
 first application of the adjoint of MITgcm for sensitivity studies was
 published by Marotzke et al. (1999) :cite:`maro-eta:99`.
-Stammer et al. (1997, 2002) :cite:`stammer:97` :cite:`stammer:02` use MITgcm and its adjoint
-for ocean state estimation studies. In the following we shall refer to
-TAMC and TAF synonymously, except were explicitly stated otherwise.
+Stammer et al. (1997, 2002) :cite:`stammer:97` :cite:`stammer:02` use MITgcm
+and its adjoint for ocean state estimation studies. In the following we shall
+refer to TAMC and TAF synonymously, except were explicitly stated otherwise.
 
-As of mid-2007 we are also able to generate fairly efficient adjoint
-code of the MITgcm using a new, open-source AD tool, called OpenAD (see
-Naumann, 2006 :cite:`naumann:06` and Utke et al., 2008 :cite:`utke:08`).
-This enables us for the
-first time to compare adjoint models generated from different AD tools,
-providing an additional accuracy check, complementary to
-finite-difference gradient checks. OpenAD and its application to MITgcm
-is described in detail in :numref:`ad_openad`.
+As of mid-2007 an open-source AD tool, called OpenAD (see Naumann, 2006
+:cite:`naumann:06` and Utke et al., 2008 :cite:`utke:08`) was made available
+to generate adjoint code of MITgcm. The support for OpenAD ended in July 2026
+as OpenAD was no longer maintained.
+By that time the MITgcm interface with open-source AD tool Tapenade was fully
+operational (see :numref:`ad_tapenade`) and allows to generate fairly efficient
+adjoint and tangent-linear code of MITgcm (Gaikwad et al., 2024 :cite:`gaikwad:24`).
 
 The AD tool exploits the chain rule for computing the first derivative
 of a function with respect to a set of input variables. Treating a given
@@ -551,7 +550,6 @@ Restrepo et al., 1998 :cite:`restrepo:98`). It is depicted in :numref:`checkpoin
 a 3-level checkpointing (as an example, we give explicit numbers for a
 3-day integration with a 1-hourly timestep in square brackets).
 
-
  .. figure:: figs/checkpointing.png
     :width: 100%
     :align: center
@@ -665,7 +663,6 @@ The basic flow is as follows:
        |           o
        |    #endif
        o
-
 
 If CPP option
 :varlink:`ALLOW_AUTODIFF_TAMC` is defined, the driver routine
@@ -793,7 +790,6 @@ follows:
     % ../../../tools/genmake2 -mods=../code_ad [ -nocat4ad ]
     % make depend
     % make adall
-
 
 The AD build process in detail
 ------------------------------
@@ -1130,7 +1126,6 @@ initialization, perturbation) are controlled by the package :filelink:`pkg/ctrl`
               |-- cost_final
               o
 
-
 :filelink:`genmake2 <tools/genmake2>` and CPP options
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1386,7 +1381,6 @@ corresponding I/O flow is shown in :numref:`forward-adj_io`:
 
     Flow chart showing I/O in the forward/adjoint model.
 
-
 :filelink:`ctrl_unpack.F </pkg/ctrl/ctrl_unpack.F>` reads the updated control
 vector ``vector_ctrl_<k>``. It distributes the different control variables to
 2-D and 3-D files ``xx_«...»<k>``. At the start of the forward integration the
@@ -1395,7 +1389,6 @@ Correspondingly, at the end of the adjoint integration the adjoint fields are
 written to ``adxx_«...»<k>``, again via the active file routines. Finally,
 :filelink:`ctrl_pack.F </pkg/ctrl/ctrl_pack.F>` collects all adjoint files and
 writes them to the compressed vector file ``vector_grad_<k>``.
-
 
 .. _ad_gradient_check:
 
@@ -1430,7 +1423,6 @@ finite difference gradient from unity is less than 1 percent,
 
 Code description
 ----------------
-
 
 Code configuration
 ------------------
@@ -1654,6 +1646,16 @@ argument list automatically.
 
 Adjoint code generation using OpenAD
 ====================================
+
+**IMPORTANT NOTE:** As OpenAD is no longer maintained (latest OpenAD snapshot
+at Argonne National Lab was from March 2014), MITgcm stopped supporting the
+OpenAD interface after the ``checkpoint69o`` tag (from July 2026). In case you
+need to use OpenAD for a specific application, please use the last OpenAD
+supported code:
+
+::
+
+    % git checkout checkpoint69o
 
 Authors: Jean Utke, Patrick Heimbach and Chris Hill
 
@@ -1894,7 +1896,6 @@ current browser.
     module use /share/modulefiles/
     module load java/jdk/16.0.1 # Java required by Tapenade
 
-
 You should now have a working copy of Tapenade.
 
 For more information on the tapenade command and its arguments, type :
@@ -1918,7 +1919,6 @@ verification experiments for reference.
 ``ALLOW_AUTODIFF_MONITOR``.
 
 Rest of the setup remains unchanged.
-
 
 Building MITgcm TLM with Tapenade
 ---------------------------------
@@ -1944,7 +1944,7 @@ will look as follows -
     cd ../run
     rm -r *
     ln -s ../input_tap/* .
-    ../input_tap/prepare_run
+    ./prepare_run
     ln -s ../build/mitgcmuv_tap_tlm .
     ./mitgcmuv_tap_tlm > output_tap_tlm.txt 2>&1
 
@@ -1973,7 +1973,7 @@ flow will look as follows -
     cd ../run
     rm -r *
     ln -s ../input_tap/* .
-    ../input_tap/prepare_run
+    ./prepare_run
     ln -s ../build/mitgcmuv_tap_adj .
     ./mitgcmuv_tap_adj > output_tap_adj.txt 2>&1
 
