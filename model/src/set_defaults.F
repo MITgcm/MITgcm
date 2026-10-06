@@ -283,6 +283,10 @@ C--   Atmospheric physical parameters (e.g.: EOS)
       selectFindRoSurf = 0
 
 C--   Elliptic solver parameters
+      PcsiConvergenceCheckFreq  = 1
+      PcsiConvergenceCheckStart = 1
+      PcsiMaxIters              = 150
+      PcsiTargetResidual        = 1. _d -7
       cg2dMaxIters       = 150
       cg2dMinItersNSA    = 0
       cg2dTargetResidual = 1. _d -7
@@ -293,8 +297,10 @@ C--   Elliptic solver parameters
       cg3dMaxIters       = 150
       cg3dTargetResidual = 1. _d -7
       cg3dTargetResWunit = -1.
+      useCG2DPrecond     = .TRUE.
       useNSACGSolver     = .FALSE.
       useSRCGSolver      = .FALSE.
+      usePcsiSolver      = .FALSE.
 
 C--   Time stepping parameters
       deltaT            = 0. _d 0
