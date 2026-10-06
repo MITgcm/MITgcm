@@ -37,7 +37,7 @@
 #cg2dTargetResidual=1.E-13,
 #cg3dTargetResidual=1.E-11,
 #--
- cg2dTargetResWunit=1.0E-14,
+ cg2dTargetResWunit=7.0E-14,
  cg3dTargetResWunit=1.5E-17,
  &
 

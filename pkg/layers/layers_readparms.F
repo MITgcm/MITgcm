@@ -11,6 +11,7 @@ C     Read LAYERS parameters from data file.
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "LAYERS_SIZE.h"
+#include "LAYERS_P2SHARE.h"
 #include "LAYERS.h"
 
 C     INPUT PARAMETERS:
@@ -31,12 +32,19 @@ C      layers_G :: boundaries of tracer layers
       LOGICAL useBOLUS
       _RL layers_G(Nlayers+1)
 
+C-    retired parameters:
+      _RL layers_taveFreq
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       NAMELIST /LAYERS_PARM01/
      &       layers_G, layers_taveFreq, layers_diagFreq,
      &       LAYER_nb, layers_kref, useBOLUS, layers_bolus,
      &       layers_name, layers_bounds, layers_krho
+
+       _BEGIN_MASTER(myThid)
+       layers_useThermo = .FALSE.
+       _END_MASTER(myThid)
 
       IF ( .NOT.useLayers ) THEN
 C-    pkg LAYERS is not used
@@ -50,10 +58,14 @@ C     print a (weak) warning if data.layers is found
 
       _BEGIN_MASTER(myThid)
       errCount = 0
+      layers_taveFreq = UNSET_RL
 
 C--   Default values for LAYERS
-
-      layers_taveFreq = taveFreq
+#ifdef LAYERS_THERMODYNAMICS
+C-    Currently, there is no run-time switch for doing the "layers thermodynamics"
+C       part and this is turned on at compile time (with CPP option above):
+      layers_useThermo = .TRUE.
+#endif
       layers_diagFreq = dumpFreq
 C     The MNC stuff is not working yet
       layers_MNC = .FALSE.
@@ -141,6 +153,19 @@ C-    Transfert to new params setting:
         STOP 'ABNORMAL END: S/R LAYERS_READPARMS'
       ENDIF
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C--   Check for retired parameters:
+      IF ( layers_taveFreq .NE. UNSET_RL ) THEN
+        WRITE(msgBuf,'(2A)') 'LAYERS_READPARMS: "layers_taveFreq"',
+     &    ' is no longer allowed in file "data.layers"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'LAYERS_READPARMS: ',
+     &    ' since "pkg/timeave" has been removed.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+
 C--   Set layers_num according to layers_name:
       DO iLa=1,layers_maxNum
         layers_num(iLa) = 0
@@ -222,7 +247,7 @@ C     Fix to avoid running without getting any output:
 C--   Everyone else must wait for the parameters to be loaded
       _BARRIER
 
-#endif /* ALLOW_MYPACKAGE */
+#endif /* ALLOW_LAYERS */
 
       RETURN
       END

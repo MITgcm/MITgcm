@@ -28,6 +28,11 @@ else
   LINK=$F90C
 fi
 
+ABSOLUTE_ROOTDIR=$(cd $(dirname $0) && cd ../ && pwd)
+TAPENADECMD="docker container run --rm -u $(stat -f '%u:%g' ./) \
+ -v \${PWD}:\${PWD} -v ${ABSOLUTE_ROOTDIR}:${ABSOLUTE_ROOTDIR} -w \${PWD} \
+ registry.gitlab.inria.fr/tapenade/tapenade"
+
 FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X ## _"
 S64='$(TOOLSDIR)/set64bitConst.sh'
 DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR'

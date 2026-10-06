@@ -38,7 +38,7 @@ C     LOCAL VARIABLES
         DO j=1,sNy
          DO i=1,sNx
 cph(
-#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+#ifdef ALLOW_STREAMICE_FP_ADJ
           taubx_new_si (i,j,bi,bj) = 0.
           tauby_new_si (i,j,bi,bj) = 0.
 #else
@@ -61,7 +61,7 @@ c      &      tau_beta_eff_streamice(i,j,bi,bj) * V_streamice(i,j,bi,bj)
              umid = umid + 0.25 *
      &        dxG(i,j+l,bi,bj)*dyG(i+k,j,bi,bj) *
      &        recip_rA(i,j,bi,bj) *
-#if (defined (ALLOW_STREAMICE_OAD_FP))
+#ifdef ALLOW_STREAMICE_FP_ADJ
      &        U_new_si(i+k,j+l,bi,bj)
 #else
      &        U_streamice(i+k,j+l,bi,bj)
@@ -69,7 +69,7 @@ c      &      tau_beta_eff_streamice(i,j,bi,bj) * V_streamice(i,j,bi,bj)
              vmid = vmid + 0.25 *
      &        dxG(i,j+l,bi,bj)*dyG(i+k,j,bi,bj) *
      &        recip_rA(i,j,bi,bj) *
-#if (defined (ALLOW_STREAMICE_OAD_FP))
+#ifdef ALLOW_STREAMICE_FP_ADJ
      &        V_new_si(i+k,j+l,bi,bj)
 #else
      &        V_streamice(i+k,j+l,bi,bj)
@@ -77,7 +77,7 @@ c      &      tau_beta_eff_streamice(i,j,bi,bj) * V_streamice(i,j,bi,bj)
             ENDDO
            ENDDO
 
-#if (defined (ALLOW_STREAMICE_OAD_FP))
+#ifdef ALLOW_STREAMICE_FP_ADJ
            taubx_new_si (i,j,bi,bj) =
      &      tau_beta_eff_streamice(i,j,bi,bj) * umid
            tauby_new_si (i,j,bi,bj) =

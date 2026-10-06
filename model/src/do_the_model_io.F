@@ -28,11 +28,7 @@ C     DO_THE_MODEL_IO
 C       |
 C       |-- WRITE_STATE
 C       |
-C       |-- TIMEAVE_STATV_WRITE
-C       |
 C       |-- FIZHI_WRITE_STATE
-C       |
-C       |-- AIM_WRITE_TAVE
 C       |
 C       |-- LAND_OUTPUT
 C       |
@@ -61,8 +57,6 @@ C       |-- SEAICE_OUTPUT
 C       |
 C       |-- SHELFICE_OUTPUT
 C       |
-C       |-- BULKF_OUTPUT
-C       |
 C       |-- THSICE_OUTPUT
 C       |
 C       |-- PTRACERS_OUTPUT
@@ -71,10 +65,7 @@ C       |-- MATRIX_OUTPUT
 C       |
 C       |-- GCHEM_OUTPUT
 C       |
-C       |-- CPL_OUTPUT
-C       |
 C       |-- LAYERS_CALC
-C       |-- LAYERS_OUTPUT
 C       |
 C       |-- DIAGNOSTICS_WRITE
 
@@ -126,23 +117,11 @@ C     Write model state to binary file
         CALL WRITE_STATE( myTime, myIter, myThid )
       ENDIF
 
-#ifdef ALLOW_TIMEAVE
-C     Do time averages
-      IF (taveFreq.GT.0. .AND. myIter.NE.nIter0 ) THEN
-        CALL TIMEAVE_STATV_WRITE( myTime, myIter, myThid )
-      ENDIF
-#endif
-
 #ifdef ALLOW_FIZHI
       IF ( useFIZHI )
      &     CALL FIZHI_WRITE_STATE( myTime, myIter, myThid )
 #endif
 
-#ifdef ALLOW_AIM
-C     Do AIM time averages
-      IF ( useAIM )
-     &     CALL AIM_WRITE_TAVE( myTime, myIter, myThid )
-#endif
 #ifdef ALLOW_LAND
 C     Do LAND output
       IF ( useLAND )
@@ -222,12 +201,6 @@ C     Do SBO diagnostics.
       ENDIF
 #endif  /* ALLOW_SHELFICE */
 
-#ifdef ALLOW_BULK_FORCE
-C     Do bulkf output.
-      IF ( useBulkForce .AND. myIter.NE.nIter0 )
-     &     CALL BULKF_OUTPUT( myTime, myIter, myThid )
-#endif
-
 #ifdef ALLOW_THSICE
 C     Do seaice output.
       IF (useThSIce)
@@ -258,16 +231,9 @@ c     IF (useOffLine)
 c    & CALL OFFLINE_STATE( myTime, myIter, myThid )
 #endif
 
-#ifdef COMPONENT_MODULE
-      IF ( useCoupler )
-     &     CALL CPL_OUTPUT( myTime, myIter, myThid )
-#endif
-
-C-- added by RPA
 #ifdef ALLOW_LAYERS
       IF ( useLayers ) THEN
         CALL LAYERS_CALC( myTime, myIter, myThid )
-        CALL LAYERS_OUTPUT( myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_LAYERS */
 

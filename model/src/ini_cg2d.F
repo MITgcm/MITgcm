@@ -152,8 +152,8 @@ C-  when using a normalisation of RHS, tolerance has no unit => no conversion
       ELSEIF ( implicDiv2DFlow.GT.zeroRL ) THEN
 C-  convert Target-Residual (in W unit) to cg2d-solver residual unit [m^2/s^2]
         cg2dTolerance = cg2dNorm * cg2dTargetResWunit
-     &                           * implicDiv2DFlow
-     &                           * globalArea / deltaTMom
+     &                           * implicDiv2DFlow / deltaTMom
+     &                           * globalArea / SQRT( n2dWetPts )
       ELSE
 C-  special case implicDiv2DFlow=0 :
 C   not much to solve anyway, cg2dTolerance does not matter as long as it is > 0
@@ -170,7 +170,8 @@ CcnhDebugStarts
        CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
        IF (.NOT.cg2dNormaliseRHS) THEN
         WRITE(msgBuf,'(2A,1PE22.15,A,1PE16.10,A)') 'INI_CG2D: ',
-     &      'cg2dTolerance =', cg2dTolerance, ' (Area=',globalArea,')'
+     &      'cg2dTolerance =', cg2dTolerance,
+     &      ' (Area=', globalArea/SQRT(n2dWetPts), ')'
         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
        ENDIF
        WRITE(msgBuf,*) ' '

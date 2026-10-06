@@ -12,11 +12,6 @@ C     | o Initialisation routine for arrays that are used to
 C     |   buffer data that interfaces to the coupling layer.
 C     | - Atmospheric version -
 C     *==========================================================*
-C     | For now this routine sets these arrays to the right
-C     | state for an initial start-up. Eventually it should
-C     | include some way to load this data from non-volatile
-C     | external storage if they are needed during a restart.
-C     *==========================================================*
 C     \ev
 
 C     !USES:
@@ -31,20 +26,19 @@ C     == Global variables ==
 #include "ATMCPL.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
 C     myThid :: Thread number for this instance of the routine
       INTEGER myThid
-CEOP
 
 #ifdef COMPONENT_MODULE
-C     == Local variables ==
+C     !LOCAL VARIABLES:
 C     i,j,bi,bj :: Loop counters
       INTEGER i,j,bi,bj
+CEOP
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO J=1-OLy,sNy+OLy
-         DO I=1-OLx,sNx+OLx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
 C-        Export field
           atmSLPr       (i,j,bi,bj) = 0.
           HeatFlux      (i,j,bi,bj) = 0.

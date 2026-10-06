@@ -10,7 +10,6 @@ C     layers_name     ::
 C     layers_bolus    ::
 C     layers_MNC      ::
 C     layers_MDSIO    ::
-C     layers_taveFreq ::
 C     layers_diagFreq ::
 
       INTEGER layers_num(layers_maxNum), layers_krho(layers_maxNum)
@@ -24,15 +23,15 @@ C     layers_diagFreq ::
       COMMON /LAYERS_PARM_L/ layers_MNC, layers_MDSIO,
      &                       layers_bolus
 
-      _RL layers_taveFreq, layers_diagFreq
-      COMMON /LAYERS_PARM_RL/ layers_taveFreq, layers_diagFreq
+      _RL layers_diagFreq
+      COMMON /LAYERS_PARM_RL/ layers_diagFreq
 
-C --  Isopycnal grid parameters:
-C      layers_bounds :: boundaries of tracer layers
-C      dZZf     :: height of fine grid cells
-C      NZZ      :: the number of levels to use in the fine grid
-C      MapIndex :: indices for mapping ZZ to Z
-C      MapFact  :: factors for interpolating T(Z) to T(ZZ)
+C--   Isopycnal grid parameters:
+C     layers_bounds :: boundaries of tracer layers
+C     dZZf     :: height of fine grid cells
+C     NZZ      :: the number of levels to use in the fine grid
+C     MapIndex :: indices for mapping ZZ to Z
+C     MapFact  :: factors for interpolating T(Z) to T(ZZ)
 
       _RL layers_bounds(Nlayers+1,layers_maxNum)
       _RL dZZf(FineGridMax)
@@ -44,34 +43,36 @@ C      MapFact  :: factors for interpolating T(Z) to T(ZZ)
       COMMON /LAYERS_VERT_GRID_R/
      &      MapFact, dZZf, layers_bounds
 
-C -- Thermodynamics fields
-C    Right-hand-side tendency terms times thickness
+C-- Thermodynamics fields
+C     Right-hand-side tendency terms times thickness
 C
-C      layers_TtendSurf  :: Layer thickness tendency due to THETA surf. forc. (m/s)
-C      layers_TtendDiffh :: Layer thickness tendency due to THETA horiz. diff. (m/s)
-C      layers_TtendDiffr :: Layer thickness tendency due to THETA vert. diff. (m/s)
-C      layers_TtendAdvh  :: Layer thickness tendency due to THETA horiz. adv. (m/s)
-C      layers_TtendAdvr  :: Layer thickness tendency due to THETA vert. adv. (m/s)
-C      layers_StendSurf  :: Layer thickness tendency due to SALT surf. forc. (m/s)
-C      layers_StendDiffh :: Layer thickness tendency due to SALT horiz. diff. (m/s)
-C      layers_StendDiffr :: Layer thickness tendency due to SALT vert. diff. (m/s)
-C      layers_StendAdvh  :: Layer thickness tendency due to SALT horiz. adv. (m/s)
-C      layers_StendAdvr  :: Layer thickness tendency due to SALT vert. adv. (m/s)
-C  -- The following are temporary arrays that need to be stored.
-C  -- They are in regular vertical coordinates.
-C  -- The fourth index is tracer id: 1 for T and 2 for S
-C      layers_surfflux   :: surface temperature flux (same as diagnostics TFLUX and SFLUX)
-C      layers_dfx        :: zonal diffusive flux of T / S
-C      layers_dfy        :: meridional diffusive flux of T / S
-C      layers_dfr        :: vertical diffusive flux of T / S
-C      layers_afx        :: zonal advective flux of T / S
-C      layers_afy        :: meridional advective flux of T / S
-C      layers_afr        :: vertical advective flux of T / S
-C  -- to save memory, the same arrays are converted in place to divergences
+C     layers_TtendSurf  :: Layer thickness tend. due to THETA surf. forc. (m/s)
+C     layers_TtendDiffh :: Layer thickness tend. due to THETA horiz. diff. (m/s)
+C     layers_TtendDiffr :: Layer thickness tend. due to THETA vert. diff. (m/s)
+C     layers_TtendAdvh  :: Layer thickness tend. due to THETA horiz. adv. (m/s)
+C     layers_TtendAdvr  :: Layer thickness tend. due to THETA vert. adv. (m/s)
+C     layers_StendSurf  :: Layer thickness tend. due to SALT surf. forc. (m/s)
+C     layers_StendDiffh :: Layer thickness tend. due to SALT horiz. diff. (m/s)
+C     layers_StendDiffr :: Layer thickness tend. due to SALT vert. diff. (m/s)
+C     layers_StendAdvh  :: Layer thickness tend. due to SALT horiz. adv. (m/s)
+C     layers_StendAdvr  :: Layer thickness tend. due to SALT vert. adv. (m/s)
+C--   The following are temporary arrays that need to be stored.
+C--   They are in regular vertical coordinates.
+C--   The fourth index is tracer id: 1 for T and 2 for S
+C     layers_surfflux :: surface temperature flux
+C                        (same as diagnostics TFLUX and SFLUX)
+C     layers_dfx      :: zonal diffusive flux of T / S
+C     layers_dfy      :: meridional diffusive flux of T / S
+C     layers_dfr      :: vertical diffusive flux of T / S
+C     layers_afx      :: zonal advective flux of T / S
+C     layers_afy      :: meridional advective flux of T / S
+C     layers_afr      :: vertical advective flux of T / S
+C--   to save memory, the same arrays are converted in place to divergences
 C
-C  -- We also need the thermal / saline expansion coefficients for diapycnal fluxes
-C      layers_alpha      :: alpha factor for density eqn (-drhodT/rho)
-C      layers_beta       :: alpha factor for density eqn (-drhodS/rho)
+C--   We also need the thermal / saline expansion coefficients for
+C     diapycnal fluxes
+C     layers_alpha    :: alpha factor for density eqn (drho/dT = -rhoNil*alpha)
+C     layers_beta     :: beta  factor for density eqn (drho/dS =  rhoNil*beta)
 
 # ifdef LAYERS_THERMODYNAMICS
       COMMON /LAYERS_VAR_THERMODYNAMICS/
@@ -84,99 +85,59 @@ C      layers_beta       :: alpha factor for density eqn (-drhodS/rho)
      &    layers_Hcw,
      &    layers_surfflux, layers_dfx, layers_dfy, layers_dfr,
      &    layers_afx, layers_afy, layers_afr, layers_tottend
-      _RL layers_bounds_w(Nlayers, layers_maxNum)
+      _RL layers_bounds_w   (Nlayers,   layers_maxNum)
       _RL layers_recip_delta(Nlayers-1, layers_maxNum)
       _RL layers_TtendSurf (1-OLx:sNx+OLx,1-OLy:sNy+OLy,
-     &                                         Nlayers-1,nSx,nSy)
-      _RL layers_Ttendtot(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
-     &                                         Nlayers-1,nSx,nSy)
+     &                                           Nlayers-1,nSx,nSy)
+      _RL layers_Ttendtot  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,
+     &                                           Nlayers-1,nSx,nSy)
       _RL layers_TtendDiffh(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
-     &                                         Nlayers-1,nSx,nSy)
+     &                                           Nlayers-1,nSx,nSy)
       _RL layers_TtendDiffr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
-     &                                         Nlayers-1,nSx,nSy)
-      _RL layers_TtendAdvh(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
-     &                                         Nlayers-1,nSx,nSy)
-      _RL layers_TtendAdvr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
-     &                                         Nlayers-1,nSx,nSy)
+     &                                           Nlayers-1,nSx,nSy)
+      _RL layers_TtendAdvh (1-OLx:sNx+OLx,1-OLy:sNy+OLy,
+     &                                           Nlayers-1,nSx,nSy)
+      _RL layers_TtendAdvr (1-OLx:sNx+OLx,1-OLy:sNy+OLy,
+     &                                           Nlayers-1,nSx,nSy)
       _RL layers_StendSurf (1-OLx:sNx+OLx,1-OLy:sNy+OLy,
-     &                                         Nlayers-1,nSx,nSy)
-      _RL layers_Stendtot(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
-     &                                         Nlayers-1,nSx,nSy)
+     &                                           Nlayers-1,nSx,nSy)
+      _RL layers_Stendtot  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,
+     &                                           Nlayers-1,nSx,nSy)
       _RL layers_StendDiffh(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
-     &                                         Nlayers-1,nSx,nSy)
+     &                                           Nlayers-1,nSx,nSy)
       _RL layers_StendDiffr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
-     &                                         Nlayers-1,nSx,nSy)
-      _RL layers_StendAdvh(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
-     &                                         Nlayers-1,nSx,nSy)
-      _RL layers_StendAdvr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
-     &                                         Nlayers-1,nSx,nSy)
-      _RL layers_Hcw(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
-     &                                         Nlayers-1,nSx,nSy)
-      _RL layers_Hc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
-     &                                         Nlayers,nSx,nSy)
-      _RL layers_PIc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
-     &                                         Nlayers,nSx,nSy)
-      _RL layers_surfflux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,2,nSx,nSy)
-      _RL layers_dfx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,2,nSx,nSy)
-      _RL layers_dfy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,2,nSx,nSy)
-      _RL layers_dfr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,2,nSx,nSy)
-      _RL layers_afx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,2,nSx,nSy)
-      _RL layers_afy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,2,nSx,nSy)
-      _RL layers_afr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,2,nSx,nSy)
-      _RL layers_tottend(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,2,nSx,nSy)
+     &                                           Nlayers-1,nSx,nSy)
+      _RL layers_StendAdvh (1-OLx:sNx+OLx,1-OLy:sNy+OLy,
+     &                                           Nlayers-1,nSx,nSy)
+      _RL layers_StendAdvr (1-OLx:sNx+OLx,1-OLy:sNy+OLy,
+     &                                           Nlayers-1,nSx,nSy)
+      _RL layers_Hcw       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,
+     &                                           Nlayers-1,nSx,nSy)
+      _RL layers_Hc        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,
+     &                                             Nlayers,nSx,nSy)
+      _RL layers_PIc       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,
+     &                                             Nlayers,nSx,nSy)
+      _RL layers_surfflux(1-OLx:sNx+OLx,1-OLy:sNy+OLy, 1,2,nSx,nSy)
+      _RL layers_dfx     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,2,nSx,nSy)
+      _RL layers_dfy     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,2,nSx,nSy)
+      _RL layers_dfr     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,2,nSx,nSy)
+      _RL layers_afx     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,2,nSx,nSy)
+      _RL layers_afy     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,2,nSx,nSy)
+      _RL layers_afr     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,2,nSx,nSy)
+      _RL layers_tottend (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,2,nSx,nSy)
 
 #ifdef SHORTWAVE_HEATING
       COMMON /LAYERS_SW/ layers_sw
-      _RL layers_sw(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,1,nSx,nSy)
+      _RL layers_sw      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,1,nSx,nSy)
 #endif /* LAYERS_SHORTWAVE */
 
 #ifdef LAYERS_PRHO_REF
       COMMON /LAYERS_VAR_THERMODYNAMICS_PRHO/
      & layers_alpha, layers_beta
-      _RL layers_alpha(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL layers_beta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL layers_alpha   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,  nSx,nSy)
+      _RL layers_beta    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,  nSx,nSy)
 #endif
 
 # endif /* LAYERS_THERMODYAMICS */
-
-#ifdef ALLOW_TIMEAVE
-C-- The same variables, time-averaged
-
-C     Keep track of time
-      _RL layers_TimeAve(nSx,nSy)
-      COMMON /LAYERS_TAVE/ layers_TimeAve
-
-#ifdef LAYERS_UFLUX
-      _RL layers_UH_T(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
-     &                   nSx,nSy)
-#ifdef LAYERS_THICKNESS
-      _RL layers_Hw_T(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
-     &                   nSx,nSy)
-      COMMON /LAYERS_U_TAVE/ layers_UH_T,
-     &    layers_Hw_T
-#else  /* LAYERS_THICKNESS */
-      COMMON /LAYERS_U_TAVE/ layers_UH_T
-#endif /* LAYERS_THICKNESS */
-#endif /* LAYERS_UFLUX */
-
-#ifdef LAYERS_VFLUX
-      _RL layers_VH_T(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
-     &                   nSx,nSy)
-#ifdef LAYERS_THICKNESS
-      _RL layers_Hs_T(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
-     &                   nSx,nSy)
-      COMMON /LAYERS_V_TAVE/ layers_VH_T,
-     &    layers_Hs_T
-#else  /* LAYERS_THICKNESS */
-      COMMON /LAYERS_V_TAVE/ layers_VH_T
-#endif /* LAYERS_THICKNESS */
-#endif /* LAYERS_VFLUX */
-
-#ifdef LAYERS_PRHO_REF
-      _RL prho_tave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      COMMON /LAYERS_RPHO_TAVE/ prho_tave
-#endif
-
-#endif /* ALLOW_TIMEAVE */
 
 #endif /* ALLOW_LAYERS */

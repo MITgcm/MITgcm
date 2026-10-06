@@ -93,7 +93,7 @@ c#endif
 
 #ifdef ALLOW_PETSC
 
-#ifndef ALLOW_OPENAD
+#if ((!defined ALLOW_OPENAD) && (!defined ALLOW_TAPENADE))
       if (streamice_use_petsc.and.petscFlag.eq.1) then
 #else
       if (streamice_use_petsc) then
@@ -491,7 +491,7 @@ c     if iters has reached max_iters there is no convergence
 c       DO bj = myByLo(myThid), myByHi(myThid)
 c        DO bi = myBxLo(myThid), myBxHi(myThid)
 c         DO j=1-OLy,sNy+OLy
-c          DO i=1-OLy,sNx+OLy
+c          DO i=1-OLx,sNx+OLx
 c           IF (STREAMICE_umask(i,j,bi,bj).eq.3.0)
 c      &     cg_Uin(i,j,bi,bj)=u_bdry_values_SI(i,j,bi,bj)
 c           IF (STREAMICE_vmask(i,j,bi,bj).eq.3.0)

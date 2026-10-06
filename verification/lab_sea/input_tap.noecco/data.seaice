@@ -27,7 +27,6 @@
       SEAICE_availHeatFrac = 0.8,
       SEAICEdiffKhArea   = 200.,
       SEAICEwriteState   = .TRUE.,
-#     SEAICE_tave_mnc    = .FALSE.,
 #     SEAICE_dump_mnc    = .FALSE.,
 #     SEAICE_mon_mnc     = .FALSE.,
 # old defaults

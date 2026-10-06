@@ -39,9 +39,12 @@ C !USES: ===============================================================
 #  include "PTRACERS_SIZE.h"
 # endif
 #endif
+#ifdef ALLOW_LAYERS
+# include "LAYERS_P2SHARE.h"
+#endif
 #ifdef ALLOW_EXCH2
-#include "W2_EXCH2_SIZE.h"
-#include "W2_EXCH2_TOPOLOGY.h"
+# include "W2_EXCH2_SIZE.h"
+# include "W2_EXCH2_TOPOLOGY.h"
 #endif /* ALLOW_EXCH2 */
 
 C !INPUT PARAMETERS: ===================================================
@@ -464,7 +467,7 @@ C--  consistent with rescaling of tendencies (in FREESURF_RESCALE_G):
          CALL DIAGNOSTICS_FILL(afy,diagName, k,1, 2,bi,bj, myThid )
        ENDIF
 #ifdef ALLOW_LAYERS
-       IF ( useLayers ) THEN
+       IF ( layers_useThermo ) THEN
          CALL LAYERS_FILL(afx,tracerIdentity,'AFX',k,1,2,bi,bj,myThid)
          CALL LAYERS_FILL(afy,tracerIdentity,'AFY',k,1,2,bi,bj,myThid)
        ENDIF
@@ -659,7 +662,7 @@ C    inaccurate linFSConserveTr and "surfExpan_" monitor.
      &                          diagName, k,1, 2,bi,bj, myThid )
         ENDIF
 #ifdef ALLOW_LAYERS
-        IF ( useLayers ) THEN
+        IF ( layers_useThermo ) THEN
           CALL LAYERS_FILL(afr,tracerIdentity,'AFR',
      &                     k,1,2,bi,bj,myThid)
         ENDIF

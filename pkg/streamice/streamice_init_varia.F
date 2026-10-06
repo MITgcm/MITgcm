@@ -131,6 +131,7 @@ c          h_after_uflux_SI(i,j,bi,bj) = 0. _d 0
         cost_smooth_fric_streamice (bi,bj) = 0.0
         cost_smooth_glen_streamice (bi,bj) = 0.0
         cost_prior_streamice (bi,bj) = 0.0
+        cost_smooth_bdotmelt_streamice(bi,bj) = 0.0
 #endif
 
        ENDDO
@@ -678,7 +679,7 @@ c     TO AVOID POSSIBLE ADJOINT INSTABILITIES
 c     IT IS WRITTEN OVER IN FIRST TIMESTEP
 
 #if (defined (ALLOW_AUTODIFF))
-#ifndef ALLOW_STREAMICE_OAD_FP
+#ifndef ALLOW_STREAMICE_FP_ADJ
 
        CALL STREAMICE_UPD_FFRAC_UNCOUPLED ( myThid )
        CALL STREAMICE_VELMASK_UPD (myThid)

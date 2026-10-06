@@ -9,7 +9,6 @@
   mnc_outdir_date=.FALSE.,
   monitor_mnc=.FALSE.,
 # snapshot_mnc=.FALSE.,
-# timeave_mnc=.FALSE.,
   pickup_write_mnc=.FALSE.,
   pickup_read_mnc=.FALSE.,
  &

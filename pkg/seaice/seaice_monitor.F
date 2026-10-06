@@ -19,6 +19,9 @@ C     !USES:
 #include "GRID.h"
 #include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
+#ifdef SEAICE_BGRID_DYNAMICS
+# include "SEAICE_GRID.h"
+#endif
 #include "SEAICE.h"
 #include "SEAICE_TRACER.h"
 #ifdef ALLOW_MONITOR

@@ -1,9 +1,10 @@
 #!/bin/bash
 #
-# Test report running script for Travis CI 
-# - called from .travis.yml script: section with environment variables 
-#   possibly set.
-#   If they are not set then defaults are configured here.
+# Testreport running script for CI,
+# - now as GitHub action, called from build_testing.ym
+#   (formerly with Travis, called from .travis.yml script )
+# - section with environment variables:
+#   if they are not set then defaults are configured here.
 # MITGCM_DECMD - command to run under Docker
 # MITGCM_EXP   - MITgcm test to run
 # MITGCM_TROPT - Test report options

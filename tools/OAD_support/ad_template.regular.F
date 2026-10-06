@@ -31,7 +31,6 @@ c we may need these for the checkpointing
       use GLOBAL_SUM_mod
 #ifdef ALLOW_GMREDI
       use GMREDI_mod
-      use GMREDI_TAVE_mod
 #endif
       use GRID_mod
 #ifdef ALLOW_MOM_COMMON

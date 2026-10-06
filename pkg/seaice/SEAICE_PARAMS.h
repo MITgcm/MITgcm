@@ -54,8 +54,6 @@ C     SEAICEusePL       :: to use the parabolic lens yield curve (Zhang and
 C                          Rothrock, 2005) set this parameter to true,
 C                          default is false
 C     SEAICEuseTilt     :: If true then include surface tilt term in dynamics
-C     SEAICEuseMetricTerms :: use metric terms for dynamics solver
-C                          (default = .true. )
 C     SEAICE_no_slip    :: apply no slip boundary conditions to seaice velocity
 C     SEAICE_2ndOrderBC :: apply 2nd order no slip boundary conditions (works
 C                          only with EVP, JFNK or KRYLOV solver, default=F)
@@ -126,10 +124,8 @@ C                          ( default is false )
 C - other (I/O, ...):
 C     SEAICEwriteState  :: If true, write sea ice state to file;
 C                          default is false.
-C     SEAICE_tave_mdsio :: write TimeAverage output using MDSIO
 C     SEAICE_dump_mdsio :: write snap-shot output   using MDSIO
 C     SEAICE_mon_stdio  :: write monitor to std-outp
-C     SEAICE_tave_mnc   :: write TimeAverage output using MNC
 C     SEAICE_dump_mnc   :: write snap-shot output   using MNC
 C     SEAICE_mon_mnc    :: write monitor to netcdf file
       LOGICAL
@@ -142,7 +138,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICEusePicardAsPrecon,
      &     useHibler79IceStrength, SEAICEsimpleRidging,
      &     SEAICEuseLinRemapITD, SEAICEuseTD, SEAICEusePL,
-     &     SEAICEuseTEM, SEAICEuseTilt, SEAICEuseMetricTerms,
+     &     SEAICEuseTEM, SEAICEuseTilt,
      &     SEAICEuseMCS, SEAICEuseMCE,
      &     SEAICE_no_slip, SEAICE_2ndOrderBC,
      &     SEAICE_maskRHS, SEAICEscaleSurfStress,
@@ -160,8 +156,8 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICE_salinityTracer, SEAICE_ageTracer,
      &     SEAICErestoreUnderIce, SEAICE_growMeltByConv,
      &     SEAICEwriteState,
-     &     SEAICE_tave_mdsio, SEAICE_dump_mdsio, SEAICE_mon_stdio,
-     &     SEAICE_tave_mnc,   SEAICE_dump_mnc,   SEAICE_mon_mnc
+     &     SEAICE_dump_mdsio, SEAICE_mon_stdio,
+     &     SEAICE_dump_mnc,   SEAICE_mon_mnc
       COMMON /SEAICE_PARM_L/
      &     SEAICEuseDYNAMICS, SEAICEuseFREEDRIFT, SEAICEuseStrImpCpl,
      &     SEAICEuseEVP, SEAICEuseEVPstar, SEAICEuseEVPrev,
@@ -172,7 +168,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICEusePicardAsPrecon,
      &     useHibler79IceStrength, SEAICEsimpleRidging,
      &     SEAICEuseLinRemapITD, SEAICEuseTD, SEAICEusePL,
-     &     SEAICEuseTEM, SEAICEuseTilt, SEAICEuseMetricTerms,
+     &     SEAICEuseTEM, SEAICEuseTilt,
      &     SEAICEuseMCS, SEAICEuseMCE,
      &     SEAICE_no_slip, SEAICE_2ndOrderBC,
      &     SEAICE_maskRHS, SEAICEscaleSurfStress,
@@ -190,8 +186,8 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICE_salinityTracer, SEAICE_ageTracer,
      &     SEAICErestoreUnderIce, SEAICE_growMeltByConv,
      &     SEAICEwriteState,
-     &     SEAICE_tave_mdsio, SEAICE_dump_mdsio, SEAICE_mon_stdio,
-     &     SEAICE_tave_mnc,   SEAICE_dump_mnc,   SEAICE_mon_mnc
+     &     SEAICE_dump_mdsio, SEAICE_mon_stdio,
+     &     SEAICE_dump_mnc,   SEAICE_mon_mnc
 
 C--   COMMON /SEAICE_PARM_I/ Integer valued parameters of sea ice model.
 C     IMAX_TICE         :: number of iterations for ice surface temp
@@ -202,6 +198,11 @@ C                         0 = none, i.e., from last iter
 C                         1 = use linearized approx (consistent with tsurf
 C                             finding)
 C                         2 = full non-lin form
+C     SEAICEselectMetricTerms :: selector for metric terms in stress divergence
+C                         0 = none, (only implicit metric terms in
+C                             FV discretisation of stress divergence)
+C                         1 = in addition use metric terms in strain rates
+C                         2 = use all metric terms (default)
 C     SOLV_NCHECK         :: iteration interval for LSR-solver convergence test
 C     SEAICEnonLinIterMax :: number of allowed non-linear solver iterations
 C                            for implicit solvers (JFNK and Picard) (>= 2)
@@ -267,6 +268,7 @@ C     SEAICE_debugPointI :: I,J index for seaice-specific debuggin
 C     SEAICE_debugPointJ
 C
       INTEGER IMAX_TICE, postSolvTempIter
+      INTEGER SEAICEselectMetricTerms
       INTEGER SOLV_NCHECK
       INTEGER SEAICEnonLinIterMax, SEAICElinearIterMax
       INTEGER SEAICEpreconLinIter, SEAICEpreconNL_Iter
@@ -294,6 +296,7 @@ C
       INTEGER SEAICEridgingIterMax
       COMMON /SEAICE_PARM_I/
      &     IMAX_TICE, postSolvTempIter, SOLV_NCHECK,
+     &     SEAICEselectMetricTerms,
      &     SEAICEnonLinIterMax, SEAICElinearIterMax,
      &     SEAICEpreconLinIter, SEAICEpreconNL_Iter,
      &     LSR_mixIniGuess,
@@ -372,6 +375,10 @@ C     SEAICEaEVPcStar    :: multiple of stabilty factor: alpha*beta=cstar*gamma
 C     SEAICEaEVPalphaMin :: lower limit of alpha and beta, regularisation
 C                           to prevent singularities of system matrix,
 C                           e.g. when ice concentration is too low.
+C     SEAICE_evpAreaReg  :: Specifies a minimun ice fraction for the purposes
+C                           of regularizations in the calculation of denomU/V,
+C                           to enhance the stability of EVP; off by default,
+C                           turn on with a sensible value, e.g. 1e-5
 C     SEAICEnonLinTol    :: non-linear tolerance parameter for implicit solvers
 C     JFNKgamma_lin_min/max :: tolerance parameters for linear JFNK solver
 C     JFNKres_t          :: tolerance parameter for FGMRES residual
@@ -386,7 +393,6 @@ C     SEAICE_zetaMin     :: lower bound for viscosity (default = 0)    (N s/m^2)
 C     SEAICEpresH0       :: HEFF threshold for ice strength            (m)
 C     SEAICE_monFreq     :: SEAICE monitor frequency.                   (s)
 C     SEAICE_dumpFreq    :: SEAICE dump frequency.                      (s)
-C     SEAICE_taveFreq    :: SEAICE time-averaging frequency.            (s)
 C     SEAICE_initialHEFF :: initial sea-ice thickness                   (m)
 C     SEAICE_rhoAir      :: density of air                              (kg/m^3)
 C     SEAICE_rhoIce      :: density of sea ice                          (kg/m^3)
@@ -517,7 +523,7 @@ C                        useTEM options, default is one
 C
       _RL SEAICE_deltaTtherm, SEAICE_deltaTdyn, SEAICE_deltaTevp
       _RL SEAICE_LSRrelaxU, SEAICE_LSRrelaxV
-      _RL SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq
+      _RL SEAICE_monFreq, SEAICE_dumpFreq
       _RL SEAICE_initialHEFF
       _RL SEAICE_rhoAir, SEAICE_rhoIce, SEAICE_rhoSnow, ICE2WATR
       _RL SEAICE_cpAir
@@ -560,7 +566,7 @@ C
       _RL SEAICE_evpAlpha, SEAICE_evpBeta
       _RL SEAICE_evpDampC, SEAICE_zetaMin, SEAICE_zetaMaxFac
       _RL SEAICEaEVPcoeff, SEAICEaEVPcStar, SEAICEaEVPalphaMin
-      _RL SEAICEpresH0
+      _RL SEAICE_evpAreaReg, SEAICEpresH0
       _RL SEAICEdiffKhArea, SEAICEdiffKhHeff, SEAICEdiffKhSnow
       _RL SEAICEdiffKhSalt
       _RL SEAICE_tauAreaObsRelax
@@ -576,8 +582,8 @@ C
      &    SEAICE_evpAlpha, SEAICE_evpBeta,
      &    SEAICEaEVPcoeff, SEAICEaEVPcStar, SEAICEaEVPalphaMin,
      &    SEAICE_evpDampC, SEAICE_zetaMin, SEAICE_zetaMaxFac,
-     &    SEAICEpresH0,
-     &    SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq,
+     &    SEAICE_evpAreaReg, SEAICEpresH0,
+     &    SEAICE_monFreq, SEAICE_dumpFreq,
      &    SEAICE_initialHEFF,
      &    SEAICE_rhoAir, SEAICE_rhoIce, SEAICE_rhoSnow, ICE2WATR,
      &    SEAICE_drag, SEAICE_waterDrag, SEAICEdWatMin,

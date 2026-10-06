@@ -324,8 +324,6 @@ C--   print TKE vertical mixing parameters to stdout for better debugging
 
       CALL WRITE_0D_RL( GGL90dumpFreq, INDEX_NONE,'GGL90dumpFreq =',
      &'   /* GGL90 state write out interval ( s ). */')
-      CALL WRITE_0D_RL( GGL90taveFreq, INDEX_NONE,'GGL90taveFreq =',
-     &'   /* GGL90 averaging interval ( s ). */')
       CALL WRITE_0D_L(GGL90mixingMaps,INDEX_NONE,
      &     'GGL90mixingMAPS =', '   /* GGL90 IO flag */')
       CALL WRITE_0D_L(GGL90writeState,INDEX_NONE,

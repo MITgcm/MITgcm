@@ -148,6 +148,10 @@ C                       residual (was never coded)
 C Namelist PARM03:
 C   tauThetaClimRelax3Dim :: replaced by pkg/rbcs (3.D Relaxation B.Cs)
 C   tauSaltClimRelax3Dim  :: replaced by pkg/rbcs (3.D Relaxation B.Cs)
+C   taveFreq       :: Frequency output for time-averaged state vars ;
+C                     disabled as pkg/timeave has been removed
+C   tave_lastIter  :: last (within taveFreq period) time-step fraction in time-
+C                     averaded output ; disabled as pkg/timeave has been removed
 C   calendarDumps  :: moved to package "cal" (calendar)
 C Namelist PARM04:
 C   Ro_SeaLevel :: origin of the vertical R-coords axis ;
@@ -183,6 +187,7 @@ C-
       INTEGER cg2dChkResFreq, cg3dChkResFreq
 C-
       _RL tauThetaClimRelax3Dim, tauSaltClimRelax3Dim
+      _RL taveFreq, tave_lastIter
       LOGICAL calendarDumps
 C-
       LOGICAL groundAtK1
@@ -370,6 +375,8 @@ C--   Initialise retired parameters to unlikely value
       cg3dChkResFreq  = UNSET_I
       tauThetaClimRelax3Dim = UNSET_RL
       tauSaltClimRelax3Dim  = UNSET_RL
+      taveFreq        = UNSET_RL
+      tave_lastIter   = UNSET_RL
       calendarDumps   = .FALSE.
       Ro_SeaLevel     = UNSET_RL
       rkFac           = UNSET_RL
@@ -642,6 +649,12 @@ C-    use temp diffusivity as default salt diffusivity:
         convertFW2Salt = 35.
         IF (useRealFreshWaterFlux) convertFW2Salt=-1
         IF ( selectAddFluid.GE.1 ) convertFW2Salt=-1
+      ENDIF
+      IF ( selectPenetratingSW.EQ.UNSET_I ) THEN
+        selectPenetratingSW = 0
+#ifdef SHORTWAVE_HEATING
+        IF ( fluidIsWater ) selectPenetratingSW = 1
+#endif
       ENDIF
 
 C--   for backward compatibility :
@@ -989,6 +1002,23 @@ C     Check for retired parameters still being used
      & ' has moved to separate pkg/rbcs.'
        CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
+      IF ( taveFreq .NE. UNSET_RL ) THEN
+       nRetired = nRetired+1
+       WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: "taveFreq" ',
+     &  'is no longer allowed in file "data"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      IF ( tave_lastIter .NE. UNSET_RL ) THEN
+       nRetired = nRetired+1
+       WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: "tave_lastIter" ',
+     &  'is no longer allowed in file "data"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      IF ( taveFreq.NE.UNSET_RL .OR. tave_lastIter.NE.UNSET_RL ) THEN
+       WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: ',
+     & ' since "pkg/timeave" has been removed.'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
       IF ( calendarDumps ) THEN
        nRetired = nRetired+1
        WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: "calendarDumps" ',
@@ -1159,8 +1189,6 @@ C     o Monitor (should also add CPP flag for monitor?)
        IF (dumpFreq.NE.0.) monitorFreq=dumpFreq
        IF (diagFreq.NE.0..AND.diagFreq.LT.monitorFreq)
      &         monitorFreq=diagFreq
-       IF (taveFreq.NE.0..AND.taveFreq.LT.monitorFreq)
-     &         monitorFreq=taveFreq
        IF (chkPtFreq.NE.0..AND.chkPtFreq.LT.monitorFreq)
      &         monitorFreq=chkPtFreq
        IF (pChkPtFreq.NE.0..AND.pChkPtFreq.LT.monitorFreq)

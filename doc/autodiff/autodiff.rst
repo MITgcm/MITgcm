@@ -27,18 +27,17 @@ Algorithms in Fortran), developed by Ralf Giering
 :cite:`giering:00`). The
 first application of the adjoint of MITgcm for sensitivity studies was
 published by Marotzke et al. (1999) :cite:`maro-eta:99`.
-Stammer et al. (1997, 2002) :cite:`stammer:97` :cite:`stammer:02` use MITgcm and its adjoint
-for ocean state estimation studies. In the following we shall refer to
-TAMC and TAF synonymously, except were explicitly stated otherwise.
+Stammer et al. (1997, 2002) :cite:`stammer:97` :cite:`stammer:02` use MITgcm
+and its adjoint for ocean state estimation studies. In the following we shall
+refer to TAMC and TAF synonymously, except were explicitly stated otherwise.
 
-As of mid-2007 we are also able to generate fairly efficient adjoint
-code of the MITgcm using a new, open-source AD tool, called OpenAD (see
-Naumann, 2006 :cite:`naumann:06` and Utke et al., 2008 :cite:`utke:08`).
-This enables us for the
-first time to compare adjoint models generated from different AD tools,
-providing an additional accuracy check, complementary to
-finite-difference gradient checks. OpenAD and its application to MITgcm
-is described in detail in :numref:`ad_openad`.
+As of mid-2007 an open-source AD tool, called OpenAD (see Naumann, 2006
+:cite:`naumann:06` and Utke et al., 2008 :cite:`utke:08`) was made available
+to generate adjoint code of MITgcm. The support for OpenAD ended in July 2026
+as OpenAD was no longer maintained.
+By that time the MITgcm interface with open-source AD tool Tapenade was fully
+operational (see :numref:`ad_tapenade`) and allows to generate fairly efficient
+adjoint and tangent-linear code of MITgcm (Gaikwad et al., 2024 :cite:`gaikwad:24`).
 
 The AD tool exploits the chain rule for computing the first derivative
 of a function with respect to a set of input variables. Treating a given
@@ -551,7 +550,6 @@ Restrepo et al., 1998 :cite:`restrepo:98`). It is depicted in :numref:`checkpoin
 a 3-level checkpointing (as an example, we give explicit numbers for a
 3-day integration with a 1-hourly timestep in square brackets).
 
-
  .. figure:: figs/checkpointing.png
     :width: 100%
     :align: center
@@ -665,7 +663,6 @@ The basic flow is as follows:
        |           o
        |    #endif
        o
-
 
 If CPP option
 :varlink:`ALLOW_AUTODIFF_TAMC` is defined, the driver routine
@@ -793,7 +790,6 @@ follows:
     % ../../../tools/genmake2 -mods=../code_ad [ -nocat4ad ]
     % make depend
     % make adall
-
 
 The AD build process in detail
 ------------------------------
@@ -1130,7 +1126,6 @@ initialization, perturbation) are controlled by the package :filelink:`pkg/ctrl`
               |-- cost_final
               o
 
-
 :filelink:`genmake2 <tools/genmake2>` and CPP options
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1386,7 +1381,6 @@ corresponding I/O flow is shown in :numref:`forward-adj_io`:
 
     Flow chart showing I/O in the forward/adjoint model.
 
-
 :filelink:`ctrl_unpack.F </pkg/ctrl/ctrl_unpack.F>` reads the updated control
 vector ``vector_ctrl_<k>``. It distributes the different control variables to
 2-D and 3-D files ``xx_«...»<k>``. At the start of the forward integration the
@@ -1395,7 +1389,6 @@ Correspondingly, at the end of the adjoint integration the adjoint fields are
 written to ``adxx_«...»<k>``, again via the active file routines. Finally,
 :filelink:`ctrl_pack.F </pkg/ctrl/ctrl_pack.F>` collects all adjoint files and
 writes them to the compressed vector file ``vector_grad_<k>``.
-
 
 .. _ad_gradient_check:
 
@@ -1430,7 +1423,6 @@ finite difference gradient from unity is less than 1 percent,
 
 Code description
 ----------------
-
 
 Code configuration
 ------------------
@@ -1655,6 +1647,16 @@ argument list automatically.
 Adjoint code generation using OpenAD
 ====================================
 
+**IMPORTANT NOTE:** As OpenAD is no longer maintained (latest OpenAD snapshot
+at Argonne National Lab was from March 2014), MITgcm stopped supporting the
+OpenAD interface after the ``checkpoint69o`` tag (from July 2026). In case you
+need to use OpenAD for a specific application, please use the last OpenAD
+supported code:
+
+::
+
+    % git checkout checkpoint69o
+
 Authors: Jean Utke, Patrick Heimbach and Chris Hill
 
 Introduction
@@ -1791,22 +1793,41 @@ Environment.
 Steps for Mac OS
 ----------------
 
-Tapenade 3.16 distribution does not contain a fortranParser executable for
-MacOS. It uses a docker image from `here
-<https://gitlab.inria.fr/tapenade/tapenade>`__. You need docker on your Mac to
-run the Tapenade distribution with Fortran programs. Details on how to build
-fortranParser is `here
-<https://tapenade.gitlabpages.inria.fr/tapenade/docs/html/src/frontf/README.html?highlight=mac>`__. You
-may also build Tapenade on your Mac from the `gitlab repository
+Tapenade 3.16 distribution does not contain a fortranParser executable
+for MacOS. You need docker on your Mac to run the Tapenade
+distribution with Fortran programs with a docker image from `here
+<https://gitlab.inria.fr/tapenade/tapenade>`__. Details on how to
+build your own fortranParser is `here
+<https://tapenade.gitlabpages.inria.fr/tapenade/docs/html/src/frontf/README.html?highlight=mac>`__.
+You may also build Tapenade on your Mac from the `gitlab repository
 <https://tapenade.gitlabpages.inria.fr/tapenade/docs/html/distrib/README.html>`__.
 
-To use the docker image specify ``TAPENADECMD=tapenadocker`` in your
-build-options or in a ``genmake_local`` file (:numref:`genmake2_desc`).
-Running a docker image also requires absolute paths, e.g., to
-:filelink:`tools/TAP_support/flow_tap <tools/TAP_support/flow_tap>`. At the
-:filelink:`genmake2 <tools/genmake2>` step use the option ``-rootdir`` to
-specify the absolute path to your MITgcm directory (see also
-:numref:`command_line_options`).
+Running a docker image requires absolute paths, e.g., to
+:filelink:`tools/TAP_support/flow_tap <tools/TAP_support/flow_tap>`.
+To make it work,
+
+1. use the option ``-rootdir`` at the :filelink:`genmake2
+   <tools/genmake2>` step, or alternatively export environment
+   variable ``MITGCM_ROOTDIR``, to specify the absolute path to your
+   MITgcm directory (see also :numref:`command_line_options`).
+
+2. bind mount the absolute path in the docker command as a volume by putting
+   ::
+
+      BASEDIR="$(cd "$(dirname "$0")" && cd ../ && pwd)"
+      TAPENADECMD="docker container run --rm -u $(stat -f '%u:%g' ./) \
+                -v \${PWD}:\${PWD} -v ${BASEDIR}:${BASEDIR} -w \${PWD} \
+	        registry.gitlab.inria.fr/tapenade/tapenade"
+
+   in your build-options or in a ``genmake_local`` file
+   (:numref:`genmake2_desc`). ``BASENAME`` should expand to your
+   root directory (check ``TAPENADECMD`` in ``Makefile``).
+
+In order to run :filelink:`./testreport -tap $moreoption
+<verification/testreport>` in :filelink:`verification <verification>`,
+the root directory can be passed to :filelink:`genmake2
+<tools/genmake2>` via ``export MITGCM_ROOTDIR=$BASEDIR`` or setting it
+in your built-options or ``genmake_local`` file.
 
 Steps for Linux
 ---------------
@@ -1875,7 +1896,6 @@ current browser.
     module use /share/modulefiles/
     module load java/jdk/16.0.1 # Java required by Tapenade
 
-
 You should now have a working copy of Tapenade.
 
 For more information on the tapenade command and its arguments, type :
@@ -1899,7 +1919,6 @@ verification experiments for reference.
 ``ALLOW_AUTODIFF_MONITOR``.
 
 Rest of the setup remains unchanged.
-
 
 Building MITgcm TLM with Tapenade
 ---------------------------------
@@ -1925,7 +1944,7 @@ will look as follows -
     cd ../run
     rm -r *
     ln -s ../input_tap/* .
-    ../input_tap/prepare_run
+    ./prepare_run
     ln -s ../build/mitgcmuv_tap_tlm .
     ./mitgcmuv_tap_tlm > output_tap_tlm.txt 2>&1
 
@@ -1954,7 +1973,7 @@ flow will look as follows -
     cd ../run
     rm -r *
     ln -s ../input_tap/* .
-    ../input_tap/prepare_run
+    ./prepare_run
     ln -s ../build/mitgcmuv_tap_adj .
     ./mitgcmuv_tap_adj > output_tap_adj.txt 2>&1
 

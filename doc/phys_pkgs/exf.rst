@@ -290,7 +290,7 @@ Example configuration
 #####################
 
 The following block is taken from the ``data.exf`` file of the
-verification experiment ``global_with_exf/``. It defines attributes for
+verification experiment ``global_oce_latlon``. It defines attributes for
 the heat flux variable ``hflux``:
 
 ::

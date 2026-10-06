@@ -42,12 +42,12 @@
  &PARM02
  cg2dMaxIters=200,
 #cg2dTargetResidual=1.E-9,
- cg2dTargetResWunit=1.E-14,
+ cg2dTargetResWunit=6.65E-13,
  &
 
 # Time stepping parameters
  &PARM03
- nIter0=72000,
+ nIter0=36000,
  nTimeSteps=10,
 #endTime=31104000.,
  deltaTMom   =1200.,

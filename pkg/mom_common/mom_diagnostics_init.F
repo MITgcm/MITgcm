@@ -251,28 +251,28 @@ C--   add diagnostics of simple derivative quantities:
       diagName  = 'momHDiv '
       diagTitle = 'Horizontal Divergence (in momentum Eq.)'
       diagCode  = 'SMR     MR      '
-      diagUnits = 's^-1            '
+      diagUnits = '1/s             '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'momVort3'
       diagTitle = '3rd component (vertical) of Vorticity'
       diagCode  = 'SZR     MR      '
-      diagUnits = 's^-1            '
+      diagUnits = '1/s             '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'Strain  '
       diagTitle = 'Horizontal Strain of Horizontal Velocities'
       diagCode  = 'SZR     MR      '
-      diagUnits = 's^-1            '
+      diagUnits = '1/s             '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'Tension '
       diagTitle = 'Horizontal Tension of Horizontal Velocities'
       diagCode  = 'SMR     MR      '
-      diagUnits = 's^-1            '
+      diagUnits = '1/s             '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 #endif /* ALLOW_MOM_VECINV */
@@ -280,7 +280,7 @@ C--   add diagnostics of simple derivative quantities:
       diagName  = 'Stretch '
       diagTitle = 'Vortex stretching from QG Leith dynamic viscosity'
       diagCode  = 'SM      MR      '
-      diagUnits = 's^-1            '
+      diagUnits = '1/s             '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 

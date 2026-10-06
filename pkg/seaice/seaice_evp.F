@@ -36,6 +36,7 @@ C     === Global variables ===
 #include "GRID.h"
 #include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
+#include "SEAICE_GRID.h"
 #include "SEAICE.h"
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -660,12 +661,24 @@ C
      &           + seaice_sigma12(i,j+1,bi,bj) * _dxV(i,j+1,bi,bj)
      &           - seaice_sigma12(i,j  ,bi,bj) * _dxV(i,j  ,bi,bj)
      &           ) * recip_rAw(i,j,bi,bj)
+C     extra metric terms
+     &           + k2AtU(i,j,bi,bj)
+     &           * HALF*( seaice_sigma12(i,j+1,bi,bj)
+     &                  + seaice_sigma12(i,j  ,bi,bj) )
+     &           - k1AtU(i,j,bi,bj)
+     &           * HALF*( sig22(i,j) + sig22(i-1,j) )
             stressDivergenceY(i,j,bi,bj) =
      &           ( sig22(i,j  ) * _dxF(i,j  ,bi,bj)
      &           - sig22(i,j-1) * _dxF(i,j-1,bi,bj)
      &           + seaice_sigma12(i+1,j,bi,bj) * _dyU(i+1,j,bi,bj)
      &           - seaice_sigma12(i  ,j,bi,bj) * _dyU(i  ,j,bi,bj)
      &           ) * recip_rAs(i,j,bi,bj)
+C     extra metric terms
+     &           + k1AtV(i,j,bi,bj)
+     &           * HALF*( seaice_sigma12(i  ,j,bi,bj)
+     &                  + seaice_sigma12(i+1,j,bi,bj) )
+     &           - k2AtV(i,j,bi,bj)
+     &           * HALF*( sig11(i,j) + sig11(i,j-1) )
            ENDDO
           ENDDO
          ENDDO
@@ -883,12 +896,23 @@ CADJ STORE vIce(:,:,bi,bj) = comlev1_bibj_evp, key=tkey, byte=isbyte
             tmp        = evpStarFac*recip_deltaT
             betaFacP1V = betaFacV + tmp
             betaFacP1U = betaFacU + tmp
-            denomU = seaiceMassU(i,j,bi,bj)*betaFacP1U
+            IF ( SEAICE_evpAreaReg .GT. 0. _d 0 ) THEN
+             denomU = MAX(seaiceMassU(i,j,bi,bj),SEAICE_evpAreaReg
+     &           * seaice_rhoIce)*betaFacP1U
+     &           + 0.5 _d 0*( DWATN(i,j,bi,bj) + DWATN(i-1,j,bi,bj) )
+     &           * COSWAT * MAX(areaW(i,j,bi,bj),SEAICE_evpAreaReg)
+             denomV = MAX(seaiceMassV(i,j,bi,bj),SEAICE_evpAreaReg
+     &           * seaice_rhoIce)*betaFacP1V
+     &           + 0.5 _d 0*( DWATN(i,j,bi,bj) + DWATN(i,j-1,bi,bj) )
+     &           * COSWAT * MAX(areaS(i,j,bi,bj),SEAICE_evpAreaReg)
+            ELSE
+             denomU = seaiceMassU(i,j,bi,bj)*betaFacP1U
      &           + 0.5 _d 0*( DWATN(i,j,bi,bj) + DWATN(i-1,j,bi,bj) )
      &           * COSWAT * areaW(i,j,bi,bj)
-            denomV = seaiceMassV(i,j,bi,bj)*betaFacP1V
+             denomV = seaiceMassV(i,j,bi,bj)*betaFacP1V
      &           + 0.5 _d 0*( DWATN(i,j,bi,bj) + DWATN(i,j-1,bi,bj) )
      &           * COSWAT * areaS(i,j,bi,bj)
+            ENDIF
 #ifdef SEAICE_ALLOW_BOTTOMDRAG
             denomU = denomU + areaW(i,j,bi,bj)
      &           * 0.5 _d 0*( CbotC(i,j,bi,bj) + CbotC(i-1,j,bi,bj) )
