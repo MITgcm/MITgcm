@@ -84,7 +84,7 @@ C     print a (weak) warning if data.cheapaml is found
 
       _BEGIN_MASTER(myThid)
 
-      WRITE(msgBuf,'(A)') ' BULKF_READPARMS: opening data.cheapaml'
+      WRITE(msgBuf,'(A)') ' CHEAPAML_READPARMS: opening data.cheapaml'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
 
@@ -246,6 +246,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       WRITE(iUnit,*) 'Caml: useFreshWaterFlux  =',useFreshWaterFlux
       WRITE(iUnit,*) 'Caml: useFluxLimit       =',useFluxLimit
       WRITE(iUnit,*) 'Caml: useStressOption    =',useStressOption
+      WRITE(iUnit,*) 'Caml: useRelativeWind    =',useRelativeWind
       WRITE(iUnit,*) 'Caml: useCheapTracer     =',useCheapTracer
       WRITE(iUnit,*) 'Caml: useTimeVarBLH      =',useTimeVarBLH
       WRITE(iUnit,*) 'Caml: useClouds          =',useClouds

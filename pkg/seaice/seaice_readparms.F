@@ -74,11 +74,13 @@ C     MAX_TICE          :: maximum ice temperature   (deg C)
 C     LAD               :: time stepping used for sea-ice advection:
 C                          1 = LEAPFROG,  2 = BACKWARD EULER.
 C     SEAICE_freeze     :: FREEZING TEMP. OF SEA WATER
+C     SEAICEuseMetricTerms :: replaced by SEAICEselectMetricTerms
       _RL SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce
       _RL SEAICE_salinity, SIsalFRAC, SIsal0
       _RL SEAICE_lhSublim, SEAICE_freeze, MAX_HEFF
       _RL areaMin, areaMax, A22, hiceMin, MAX_TICE
       LOGICAL SEAICEadvAge
+      LOGICAL SEAICEuseMetricTerms
       INTEGER SEAICEadvSchAge, LAD, SEAICEturbFluxFormula
       INTEGER NPSEUDOTIMESTEPS, SOLV_MAX_ITERS
       INTEGER SEAICEnewtonIterMax, SEAICEkrylovIterMax
@@ -112,7 +114,8 @@ C--   SEAICE parameters
       NAMELIST /SEAICE_PARM01/
      & SEAICEuseDYNAMICS, SEAICEuseFREEDRIFT, SEAICEuseStrImpCpl,
      & SEAICEuseMCS, SEAICEuseMCE, SEAICEuseTD, SEAICEusePL,
-     & SEAICEuseTEM, SEAICEuseMetricTerms, SEAICEuseTilt,
+     & SEAICEuseTEM, SEAICEuseTilt,
+     & SEAICEuseMetricTerms, SEAICEselectMetricTerms,
      & useHB87stressCoupling, SEAICEupdateOceanStress,
      & usePW79thermodynamics, useMaykutSatVapPoly, SEAICEuseFlooding,
      & SEAICErestoreUnderIce, SEAICE_growMeltByConv,
@@ -254,6 +257,7 @@ C--   set default sea ice parameters
       SEAICEuseTD        = .FALSE.
       SEAICEusePL        = .FALSE.
       SEAICEuseMetricTerms = .TRUE.
+      SEAICEselectMetricTerms = UNSET_I
       SEAICEuseEVPpickup = .TRUE.
       SEAICEuseEVPstar   = .TRUE.
       SEAICEuseEVPrev    = .TRUE.
@@ -902,13 +906,45 @@ C     and EVP, JFNK, and Krylov solvers
       IF ( .NOT. SEAICE_no_slip ) SEAICE_2ndOrderBC = .FALSE.
       IF ( SEAICEuseLSR ) SEAICE_2ndOrderBC = .FALSE.
 
-C     2nd order boundary conditions require one more row of overlap for the additive Schwartz method
+C     2nd order boundary conditions require one more row of overlap for
+C     the additive Schwartz method
       IF ( SEAICE_2ndOrderBC ) THEN
        SEAICE_OLx = OLx-3
        SEAICE_OLy = OLy-3
       ENDIF
 
-C-    The old ways of specifying mcPheeTaper, mcPheePiston & frazilFrac:
+      IF ( SEAICEselectMetricTerms .EQ. UNSET_I ) THEN
+       IF ( SEAICEuseMetricTerms ) THEN
+        SEAICEselectMetricTerms = 2
+       ELSE
+C-    just for backward compatibility:
+        SEAICEselectMetricTerms = 0
+       ENDIF
+      ELSEIF ( .NOT.SEAICEuseMetricTerms .AND.
+     &         SEAICEselectMetricTerms .GT. 0  ) THEN
+C-    inconsistent setting:
+       WRITE(msgBuf,'(2A)') 'S/R SEAICE_READPARMS: ',
+     &      'Cannot set both: SEAICEuseMetricTerms= False'
+       CALL PRINT_ERROR( msgBuf , myThid)
+       WRITE(msgBuf,'(2A,I2)') 'S/R SEAICE_READPARMS: ',
+     &      ' AND SEAICEselectMetricTerms =', SEAICEselectMetricTerms
+       CALL PRINT_ERROR( msgBuf , myThid)
+       nError = nError + 1
+      ENDIF
+      IF ( SEAICEselectMetricTerms .LT. 0 .OR.
+     &     SEAICEselectMetricTerms .GT. 2 ) THEN
+       WRITE(msgBuf,'(2A,I2)') 'S/R SEAICE_READPARMS: ',
+     &      'SEAICEselectMetricTerms = ', SEAICEselectMetricTerms
+       CALL PRINT_ERROR( msgBuf , myThid)
+       WRITE(msgBuf,'(2A)') 'S/R SEAICE_READPARMS: ',
+     &      'SEAICEselectMetricTerms needs to be >=0 and <= 2'
+       CALL PRINT_ERROR( msgBuf , myThid)
+       nError = nError + 1
+      ENDIF
+C-    to skip some compution of metric terms (all zero on Cartesian-Grid)
+      IF ( usingCartesianGrid ) SEAICEselectMetricTerms = 0
+
+C     -    The old ways of specifying mcPheeTaper, mcPheePiston & frazilFrac:
 C     a) prevent multiple specification of the same coeff;
 C     b) if specified, then try to recover old way of setting & default.
       IF ( SEAICE_mcPheeTaper .EQ. UNSET_RL ) THEN

@@ -1,19 +1,22 @@
 #! /usr/bin/env bash
 
-#- in order to save disc space, take files:
-fileList="grid_cs32.face001.bin grid_cs32.face002.bin grid_cs32.face003.bin grid_cs32.face004.bin grid_cs32.face005.bin grid_cs32.face006.bin"
-
+#- in order to save disc space, take grid files
 #- from this dir:
 fromDir="../../tutorial_held_suarez_cs/input"
 
-#- and do a symbolic link in the current directory 
+fileList=`( cd $fromDir ; ls grid_cs32.face00?.bin )`
+#echo 'fileList=' $fileList
+
+#- from this dir:
+
+#- and do a symbolic link in the current directory
 #   (if the file does not already exist)
 if test -d $fromDir ; then
   lnkList='files:'
   for xx in $fileList
   do
-    if test -r ${fromDir}/$xx ; then 
-      if test ! -r $xx ; then 
+    if test -r ${fromDir}/$xx ; then
+      if test ! -r $xx ; then
         lnkList=${lnkList}" "$xx
         ln -sf ${fromDir}/$xx .
       fi

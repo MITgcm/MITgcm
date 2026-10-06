@@ -4,7 +4,7 @@ Tutorial Example: "Global Ocean State Estimation"
 
 Configure and compile the code:
   cd build
-  ../../../tools/genmake2 -mods ../code_ad -adof ../code_ad/ad_optfile.local [-of my_platform_optionFile]
+  ../../../tools/genmake2 -mods ../code_ad [-of my_platform_optionFile]
   make depend
   make adall
   cd ..
@@ -12,7 +12,7 @@ Configure and compile the code:
 To run:
   cd run
   ln -s ../input_ad/* .
-  ../input_ad/prepare_run
+  ./prepare_run
   ln -s ../build/mitgcmuv_ad .
   ./mitgcmuv_ad > output_adm.txt
   cd ..

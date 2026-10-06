@@ -75,51 +75,21 @@ jobs:
         MITGCM_TROPT: "-tap -adm -ncad -of=../tools/build_options/linux_amd64_gfortran -match 14"
         MITGCM_INPUT_DIR_PAT: '/input_tap.*'
        run: |
-         . tools/ci/runtr.sh         
-
- openad:
-   runs-on: ubuntu-latest
-
-   strategy:
-     matrix:
-      include:
-        - exp: "global_ocean.90x40x15"
-
-   continue-on-error: true
-
-   steps:
-
-     - name: Checkout
-       uses: actions/checkout@v2.2.0
-
-     - name: Get a docker image and set it running
-       run: |
-         docker pull mitgcm/mitgcm-openad-test:centos-test
-         docker run -i -t -v `pwd`:/MITgcm -d --name openad-testing --ulimit stack=-1:-1 --rm mitgcm/mitgcm-openad-test:centos-test /bin/bash
-
-     - name: Run testreport
-       env:
-        MITGCM_EXP: ${{ matrix.exp }}
-        MITGCM_DECMD: "docker exec -i openad-testing bash -lc"
-        MITGCM_TROPT: "-oad -devel -of=../tools/build_options/linux_amd64_gfortran -match 14"
-        MITGCM_INPUT_DIR_PAT: '/input_oad.*'
-       run: |
          . tools/ci/runtr.sh
 
- openad-other:
+ tapenade-other:
    runs-on: ubuntu-latest
    if: ${{ contains(github.event.pull_request.labels.*.name, 'adjoint') }}
 
    strategy:
      matrix:
       include:
-        - exp: "global_oce_latlon"
-        - exp: "halfpipe_streamice"
-        - exp: "hs94.1x64x5"
+        - exp: "global_oce_biogeo_bling"
+        - exp: "global_ocean.cd32x15"
         - exp: "isomip"
+        - exp: "lab_sea"
         - exp: "tutorial_global_oce_biogeo"
-        - exp: "tutorial_global_oce_optim"
-        - exp: "tutorial_tracer_adjsens"
+        - exp: "tutorial_tracel_adjsens"
 
    continue-on-error: true
 
@@ -130,15 +100,15 @@ jobs:
 
      - name: Get a docker image and set it running
        run: |
-         docker pull mitgcm/mitgcm-openad-test:centos-test
-         docker run -i -t -v `pwd`:/MITgcm -d --name openad-testing --ulimit stack=-1:-1 --rm mitgcm/mitgcm-openad-test:centos-test /bin/bash
+         docker pull mitgcm/tapenade-ubuntu:latest
+         docker run -i -t -v `pwd`:/MITgcm -d --name tapenade-testing --ulimit stack=-1:-1 --memory=4g -e _JAVA_OPTIONS=-Xmx2560m --rm mitgcm/tapenade-ubuntu:latest /bin/bash
 
      - name: Run testreport
        env:
         MITGCM_EXP: ${{ matrix.exp }}
-        MITGCM_DECMD: "docker exec -i openad-testing bash -lc"
-        MITGCM_TROPT: "-oad -devel -of=../tools/build_options/linux_amd64_gfortran -match 14"
-        MITGCM_INPUT_DIR_PAT: '/input_oad.*'
+        MITGCM_DECMD: "docker exec -i tapenade-testing bash -lc"
+        MITGCM_TROPT: "-tap -adm -ncad -of=../tools/build_options/linux_amd64_gfortran -match 14"
+        MITGCM_INPUT_DIR_PAT: '/input_tap.*'
        run: |
          . tools/ci/runtr.sh
 

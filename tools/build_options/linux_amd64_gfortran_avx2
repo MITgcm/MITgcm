@@ -1,0 +1,185 @@
+#!/bin/bash
+
+# Build options for gfortran compiler (GNU) on Linux AMD64 platform
+#
+# Should work with both AMD and Intel processors that support AVX2 instructions.
+#
+# Tested with gfortran 12.2.0
+#
+# MPI : Tested on engaging on Rocky Linux 8.10 with
+#       module load gcc/12.2.0
+#       module load openmpi/4.1.4
+#       module load netcdf-c/4.9.2
+#       module load netcdf-fortran/4.6.1
+# requires:
+#       export MPI_INC_DIR=/orcd/software/core/001/spack/pkg/openmpi/4.1.4/zahpnmk/include
+#       export LD_LIBRARY_PATH=/orcd/software/community/001/spack/pkg/netcdf-c/4.9.2/2uroesk/lib:/orcd/software/community/001/spack/pkg/netcdf-fortran/4.6.1/gxllmsl/lib:$LD_LIBRARY_PATH
+
+#-------
+# run with OpenMP: needs to set environment var. OMP_NUM_THREADS
+#    and generally, needs to increase the thread stack-size:
+#   -  sh,bash:
+#     > export OMP_NUM_THREADS=2
+#     > export GOMP_STACKSIZE=400m
+#   - csh,tcsh:
+#     > setenv OMP_NUM_THREADS 2
+#     > setenv GOMP_STACKSIZE 400m
+#-------
+
+if test "x$MPI" = xtrue ; then
+  CC=${MPICC:=mpicc}
+  FC=${MPIFC:=mpif77}
+  F90C=${MPIF90C:=mpif90}
+else
+  CC=gcc
+  FC=gfortran
+  F90C=gfortran
+fi
+
+DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR'
+EXTENDED_SRC_FLAG='-ffixed-line-length-132'
+F90FIXEDFORMAT='-ffixed-form'
+GET_FC_VERSION="--version"
+OMPFLAG='-fopenmp'
+
+NOOPTFLAGS='-O0'
+NOOPTFILES=''
+
+PROCF="-mavx2"
+
+CFLAGS="-O0 $PROCF"
+
+#- for setting specific options, check compiler version:
+fcVers=`$CC -dumpversion | head -n 1 | sed 's/^[^0-9]* //;s/\..*$//'`
+if ! [[ $fcVers =~ ^[0-9]+$ ]] ; then
+  echo "    un-recognized Compiler-version '$fcVers' ; ignored (-> set to 0)" ; fcVers=0 ;
+else echo "    get Compiler-version: '$fcVers'" ; fi
+
+if [ $fcVers -ge 10 ] ; then
+  FFLAGS="$FFLAGS -fallow-argument-mismatch"
+fi
+#- Requires gfortran from 2006 onwards for -fconvert=big-endian
+FFLAGS="$FFLAGS -fconvert=big-endian -fimplicit-none -frecursive"
+#- for big setups, compile & link with "-fPIC" or set memory-model to "medium":
+#CFLAGS="$CFLAGS -fPIC"
+#FFLAGS="$FFLAGS -fPIC"
+#-  with FC 19, need to use this without -fPIC (which cancels -mcmodel option):
+ CFLAGS="$CFLAGS -mcmodel=medium"
+ FFLAGS="$FFLAGS -mcmodel=medium"
+#- might want to use '-fdefault-real-8' for fizhi pkg:
+#FFLAGS="$FFLAGS -fdefault-real-8 -fdefault-double-8"
+
+if test "x$IEEE" = x ; then     #- with optimisation:
+   #- full optimisation
+    FOPTIM="-O3 -funroll-loops $PROCF"
+    NOOPTFILES="$NOOPTFILES ini_masks_etc.F"
+   #- can use -O2 (safe optimisation) to avoid Pb with some gcc version of -O3:
+   #FOPTIM='-O2 -funroll-loops'
+else
+   # these may also be useful, but require specific gfortran versions:
+   # -Wnonstd-intrinsics        for gfortran <= 4.3
+   # -Wintrinsics-std           for gfortran >= 4.4
+   # -Wno-tabs                  for gfortran >= 4.3
+   # -Wno-unused-dummy-argument for gfortran >= 4.6
+   #FFLAGS="$FFLAGS -Waliasing -Wampersand -Wsurprising -Wline-truncation"
+   #- or simply:
+    FFLAGS="$FFLAGS -Wall"
+    if [ $fcVers -ge 10 ] ; then
+      FFLAGS="$FFLAGS -Wno-unused-dummy-argument"
+    fi
+   #- to get plenty of warnings: -Wall -Wextra (older form: -Wall -W) or:
+   #FFLAGS="$FFLAGS -Wconversion -Wimplicit-interface -Wunused-labels"
+  if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
+    FOPTIM="-O0 $PROCF"
+  else                          #- development/check options:
+    FOPTIM="-O0 -g -fbounds-check $PROCF"
+    FOPTIM="$FOPTIM -ffpe-trap=invalid,zero,overflow -finit-real=inf"
+  fi
+fi
+
+F90FLAGS=$FFLAGS
+F90OPTIM=$FOPTIM
+
+INCLUDEDIRS=''
+INCLUDES=''
+LIBS=''
+
+if [ "x$NETCDF_ROOT" != x ] ; then
+    INCLUDEDIR="${NETCDF_ROOT}/include"
+    INCLUDES="-I${NETCDF_ROOT}/include"
+    LIBDIR="${NETCDF_ROOT}/lib"
+    LIBS="-L${NETCDF_ROOT}/lib"
+elif [ "x$NETCDF_HOME" != x ]; then
+    INCLUDEDIR="${NETCDF_HOME}/include"
+    INCLUDES="-I${NETCDF_HOME}/include"
+    LIBDIR="${NETCDF_HOME}/lib"
+    LIBS="-L${NETCDF_HOME}/lib"
+elif [ "x$NETCDF_INC" != x -a "x$NETCDF_LIB" != x ]; then
+    NETCDF_INC=`echo $NETCDF_INC | sed 's/-I//g'`
+    NETCDF_LIB=`echo $NETCDF_LIB | sed 's/-L//g'`
+    INCLUDEDIR="${NETCDF_INC}"
+    INCLUDES="-I${NETCDF_INC}"
+    LIBDIR="${NETCDF_LIB}"
+    LIBS="-L${NETCDF_LIB}"
+elif [ "x$NETCDF_INCDIR" != x -a "x$NETCDF_LIBDIR" != x ]; then
+    INCLUDEDIR="${NETCDF_INCDIR}"
+    INCLUDES="-I${NETCDF_INCDIR}"
+    LIBDIR="${NETCDF_LIBDIR}"
+    LIBS="-L${NETCDF_LIBDIR}"
+elif [[ -n $( nc-config --flibs 2> /dev/null ) && ($? == 0) ]] ; then
+    # NETCDF env variables are not set; try nc-config
+    # with recent netcdf, can get both c and fortran bits from nc-config
+    INCLUDES="$(nc-config --fflags)"
+    # sometimes path to c library is not included in --flibs, include explicitly
+    LIBS="$(nc-config --libs) $(nc-config --flibs)"
+elif [[ -n $( nf-config --includedir 2> /dev/null ) && ($? == 0) ]] ; then
+    # NETCDF env variables are not set, trying nf-config instead
+    INCLUDEDIR=$( nf-config --includedir )
+    INCLUDES="-I$INCLUDEDIR"
+    LIBS=$( nf-config --flibs )
+    # some broken installations (spack, homebrew) do not have the netcdf-c
+    # lib path in nf-config, so we'll add it here using nc-config
+    if [[ -n $( nc-config --libs 2> /dev/null ) && ($? == 0) ]] ; then
+        LIBS="$LIBS $( nc-config --libs )"
+    fi
+elif test -d /usr/include/netcdf-3 ; then
+    INCLUDES='-I/usr/include/netcdf-3'
+    LIBS='-L/usr/lib/netcdf-3 -L/usr/lib64/netcdf-3'
+elif test -d /usr/include/netcdf ; then
+    INCLUDES='-I/usr/include/netcdf'
+elif test -d /usr/local/netcdf ; then
+    INCLUDES='-I/usr/local/netcdf/include'
+    LIBS='-L/usr/local/netcdf/lib'
+elif test -d /usr/local/include/netcdf.inc ; then
+    INCLUDES='-I/usr/local/include'
+    LIBS='-L/usr/local/lib64'
+elif test -d /usr/include/netcdf.inc ; then
+    INCLUDES='-I/usr/include'
+    LIBS='-L/usr/lib64'
+fi
+
+if [ -n "$MPI_HOME" -a -z "$MPI_INC_DIR" ]; then
+    MPI_INC_DIR="$MPI_HOME/include"
+fi
+
+if [ "x$MPI" = xtrue ] ; then
+   if [ -z "$MPI_INC_DIR" ] ; then
+      # MPI env variables are not set, trying pkg-config instead
+      if [[ -n $( pkg-config --cflags-only-I ompi ) && ($? == 0) ]] ; then
+         MPI_INC_DIR=$(pkg-config --cflags-only-I ompi | awk '{ print $1 }' | sed -e "s/-I//" )
+      else
+         echo MPI_HOME is not set and pkg-config not available, aborting
+         exit 1
+      fi
+   fi
+   if [ -n "$MPI_INC_DIR" ] ; then
+      # only fill this if we can find MPI, otherwise triggers netcdf error
+      INCLUDES+=" -I$MPI_INC_DIR"
+      INCLUDEDIRS+=" $MPI_INC_DIR"
+      #- used for parallel (MPI) DIVA
+      MPIINCLUDEDIR="$MPI_INC_DIR"
+   else
+      echo could not set MPI_INC_DIR, aborting
+      exit 1
+   fi
+fi
