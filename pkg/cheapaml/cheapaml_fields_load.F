@@ -18,7 +18,6 @@ C     === Global variables ===
 #include "CHEAPAML.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     === Routine arguments ===
 C     myIter :: Simulation timestep number
 C     myTime :: Simulation time
 C     myThid :: Thread no. that called this routine.
@@ -37,10 +36,13 @@ C     ustress[01] :: wind stress [N/m2], u-component (on A-grid)
 C     vstress[01] :: wind stress [N/m2], v-component (on A-grid)
 C     wavesh[01]  ::
 C     wavesp[01]  ::
-C     rair[01]    ::
+CC    rair[01]    ::
+C     cheaph[01]  ::
+C     cheapcl[01] ::
+C     cheaplw[01] ::
 C     CheaptracerR[01] :: Relaxation profile for passive tracer
 
-      COMMON /BULKFFIELDS/
+      COMMON /CHEAPAML_FIELDS/
      &         trair0,   trair1,
      &         qrair0,   qrair1,
      &         Solar0,   Solar1,
@@ -89,11 +91,7 @@ c     _RL  rair1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  cheappr1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C     === Local arrays ===
-C     cheaph[01]  ::
-C     cheapcl[01] ::
-C     cheaplw[01] ::
 C     aWght,bWght :: Interpolation weights
-
       _RL aWght, bWght
 
       INTEGER bi, bj
@@ -166,7 +164,7 @@ C--   Now calculate whether it is time to update the forcing arrays
         CALL GET_PERIODIC_INTERVAL(
      O           intimeP, intime0, intime1, bWght, aWght,
      I           externForcingCycle_cheap, externForcingPeriod_cheap,
-     I           deltaTclock, myTime, myThid )
+     I           deltaTClock, myTime, myThid )
 
         IF ( intime0.NE.intimeP .OR. myIter.EQ.nIter0 ) THEN
 
