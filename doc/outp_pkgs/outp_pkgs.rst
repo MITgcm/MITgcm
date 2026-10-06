@@ -352,7 +352,7 @@ The parameter :varlink:`timePhase` is used to refine the output time within the
 :varlink:`frequency` interval (i.e., to set the phase) as well as to delay the
 first output until time :varlink:`timePhase` is reached:
 
-| output-time :math:`=` :varlink:`timePhase` :math:`+ N \times` 
+| output-time :math:`=` :varlink:`timePhase` :math:`+ N \times`
   \| :varlink:`frequency` \|, with integer :math:`N \ge 0`
 
 :varlink:`timePhase` defaults to zero for positive :varlink:`frequency`
@@ -362,7 +362,7 @@ for negative :varlink:`frequency` so that, by default, snapshots are written
 in the middle of the time interval specified by :varlink:`frequency`.
 
 Note that, when delaying the first time-averaged output (with
-:varlink:`timePhase` :math:`\gt` \| :varlink:`frequency` \|), the resulting
+:varlink:`timePhase` :math:`>` \| :varlink:`frequency` \|), the resulting
 first output will be averaged over a longer time interval than
 :varlink:`frequency` and longer than the subsequent output since the averaging
 starts at the first time-step.
@@ -378,9 +378,9 @@ the averaged or snapshot output after ``N`` months or years, where now the
 example, if you specify :varlink:`frequency` = 31363217 seconds (363 days and
 17 seconds, this awkward example is deliberate to make our point clear) with
 :varlink:`calendarDumps` ``=.TRUE.``, the model will write yearly averages at
-the end of each calendar year exactly; to start writing averages only after
-``N=50``, :varlink:`timePhase` needs be ``50*31363217 = 1568160850`` (taking
-into account all possible leap years, etc.).
+the end of each calendar year exactly (taking into account all possible leap
+years, etc.); to start writing averages only after ``N=50`` years,
+:varlink:`timePhase` needs be ``50*31363217 = 1568160850``.
 
 The :varlink:`fileFlags` parameter is explained in
 :numref:`diagnostic_fileFlags`.  Only the first three characters matter.  The
