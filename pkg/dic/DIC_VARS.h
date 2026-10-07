@@ -44,6 +44,7 @@ C     pH_isLoaded(2) :: = T when   3-D   pH is loaded from pickup file
        COMMON /CARBON_NEEDS/
      &              AtmospCO2, AtmosP, pH, pCO2, FluxCO2,
      &              wind, fIce, Kwexch_Pre, silicaSurf,
+     &              dicSST, dicSSS,
      &              calciteDissolRate, calciteDissolExp,
      &              calcOmegaCalciteFreq, zca,
      &              WsinkPIC, selectCalciteBottomRemin,
@@ -59,6 +60,8 @@ C     pH_isLoaded(2) :: = T when   3-D   pH is loaded from pickup file
       _RL  fIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  Kwexch_Pre(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  silicaSurf(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  dicSST(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  dicSSS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  calciteDissolRate(2), calciteDissolExp(2)
       _RL  calcOmegaCalciteFreq
       _RL  zca
@@ -243,7 +246,7 @@ C  DIC_atmospFile  :: file name of atmospheric pressure
 C  DIC_iceFile     :: file name of seaice fraction
 C  DIC_ironFile    :: file name of aeolian iron flux
 C  DIC_silicaFile  :: file name of surface silica
-C  DIC_deepSilicaFile  :: file name of 3D silica fields
+C  DIC_silicaDeepFile  :: file name of 3D silica fields
 C  DIC_parFile     :: file name of photosynthetically available radiation (PAR)
 C  DIC_chlaFile    :: file name of chlorophyll climatology
 C  DIC_forcingPeriod :: periodic forcing parameter specific for dic (seconds)
@@ -260,27 +263,55 @@ C  dic_int4          :: timestep between file entries
 C  dic_pCO2          :: atmospheric pCO2 to be read from data.dic
       COMMON /DIC_FILENAMES/
      &        DIC_windFile, DIC_atmospFile, DIC_silicaFile,
-     &        DIC_deepSilicaFile,
+     &        DIC_silicaDeepFile,
      &        DIC_iceFile, DIC_parFile,
      &        DIC_chlaFile, DIC_ironFile,
+     &        DIC_atmospCO2File, DIC_SSTFile, DIC_SSSFile,
      &        DIC_forcingPeriod, DIC_forcingCycle,
-     &        dic_pCO2, dic_int1, dic_int2, dic_int3, dic_int4
+     &        dic_pCO2, dic_int1, dic_int2, dic_int3, dic_int4,
+     &        dic_useEXF, dic_secondsPerYear
 
       CHARACTER*(MAX_LEN_FNAM) DIC_windFile
       CHARACTER*(MAX_LEN_FNAM) DIC_atmospFile
       CHARACTER*(MAX_LEN_FNAM) DIC_silicaFile
-      CHARACTER*(MAX_LEN_FNAM) DIC_deepSilicaFile
+      CHARACTER*(MAX_LEN_FNAM) DIC_silicaDeepFile
       CHARACTER*(MAX_LEN_FNAM) DIC_iceFile
       CHARACTER*(MAX_LEN_FNAM) DIC_parFile
       CHARACTER*(MAX_LEN_FNAM) DIC_chlaFile
       CHARACTER*(MAX_LEN_FNAM) DIC_ironFile
-      _RL     DIC_forcingPeriod
-      _RL     DIC_forcingCycle
-      _RL     dic_pCO2
+      CHARACTER*(MAX_LEN_FNAM) DIC_atmospCO2File
+      CHARACTER*(MAX_LEN_FNAM) DIC_SSTFile
+      CHARACTER*(MAX_LEN_FNAM) DIC_SSSFile
+
+      _RL  DIC_forcingPeriod
+      _RL  DIC_forcingCycle
+      _RL  dic_pCO2
+      _RL  dic_secondsPerYear
+      LOGICAL dic_useEXF
+
       INTEGER dic_int1
       INTEGER dic_int2
       INTEGER dic_int3
       INTEGER dic_int4
+
+C--   COMMON /DIC_FIELDS_CONST/
+      COMMON /DIC_FIELDS_CONST/
+     &     dic_SilicaSurf_const, dic_SilicaDeep_const, dic_par_const,
+     &     dic_iron_const, dic_atmospco2_const, dic_wind_const,
+     &     dic_atmosp_const, dic_chl_const, dic_ice_const,
+     &     dic_SST_const, dic_SSS_const
+
+      _RL dic_SilicaSurf_const
+      _RL dic_SilicaDeep_const
+      _RL dic_par_const
+      _RL dic_iron_const
+      _RL dic_atmospco2_const
+      _RL dic_wind_const
+      _RL dic_atmosp_const
+      _RL dic_chl_const
+      _RL dic_ice_const
+      _RL dic_SST_const
+      _RL dic_SSS_const
 
 #ifdef DIC_BIOTIC
 C     *==========================================================*

@@ -24,6 +24,7 @@ C     !USES:
 #ifdef ALLOW_COST
 # include "DIC_COST.h"
 #endif
+
 C     !INPUT PARAMETERS:
 C     myThid               :: my Thread Id number
       INTEGER myThid

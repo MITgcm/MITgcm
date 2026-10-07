@@ -16,6 +16,7 @@ C !USES: ===============================================================
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "DYNVARS.h"
 #include "DIC_VARS.h"
 #ifdef ALLOW_THSICE
 # include "THSICE_VARS.h"
@@ -42,13 +43,13 @@ C     myThid       :: my Thread Id number
 #ifdef ALLOW_DIC
 
 c !LOCAL VARIABLES: ===================================================
-#if defined(ALLOW_THSICE) || defined(ALLOW_SEAICE) || defined(COMPONENT_MODULE)
-      INTEGER i, j
-#endif
+C#if defined(ALLOW_THSICE) || defined(ALLOW_SEAICE) || defined(COMPONENT_MODULE)
+      INTEGER i, j, k
+C#endif
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
-        IF ( useThSIce ) THEN
+        IF ( useThSIce .AND. dic_iceFile .EQ. ' ' ) THEN
 #ifdef ALLOW_THSICE
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
@@ -56,7 +57,7 @@ CEOP
            ENDDO
           ENDDO
 #endif /* ALLOW_THSICE */
-        ELSEIF ( useSEAICE ) THEN
+        ELSEIF ( useSEAICE .AND. dic_iceFile .EQ. ' ' ) THEN
 #ifdef ALLOW_SEAICE
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
@@ -66,7 +67,7 @@ CEOP
 #endif /* ALLOW_SEAICE */
         ELSEIF ( useCoupler ) THEN
 #ifdef ALLOW_OCN_COMPON_INTERF
-         IF ( useImportFice ) THEN
+         IF ( useImportFice .AND. dic_iceFile .EQ. ' ' ) THEN
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
              fIce(i,j,bi,bj) = sIceFrac_cpl(i,j,bi,bj)
@@ -78,14 +79,14 @@ CEOP
 
 #ifdef ALLOW_OCN_COMPON_INTERF
         IF ( useCoupler ) THEN
-         IF ( useImportCO2 ) THEN
+         IF ( useImportCO2 .AND. dic_atmospCO2File .EQ. ' ' ) THEN
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
              AtmospCO2(i,j,bi,bj) = airCO2(i,j,bi,bj)
             ENDDO
            ENDDO
          ENDIF
-         IF ( useImportWSpd ) THEN
+         IF ( useImportWSpd .AND. dic_windFile .EQ. ' ' ) THEN
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
              wind(i,j,bi,bj) = surfWSpeed(i,j,bi,bj)
@@ -95,6 +96,22 @@ CEOP
         ENDIF
 #endif /* ALLOW_OCN_COMPON_INTERF */
 
+C  Get SST, SSS and ice fraction from the main model if not supplied      
+        k = 1
+        IF ( dic_SSTFile .EQ. ' ' ) THEN
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            dicSST(i,j,bi,bj) = theta(i,j,k,bi,bj)
+           ENDDO
+          ENDDO
+        ENDIF
+        IF ( dic_SSSFile .EQ. ' ' ) THEN
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            dicSSS(i,j,bi,bj) = salt(i,j,k,bi,bj)
+           ENDDO
+          ENDDO
+        ENDIF
 #endif /* ALLOW_DIC */
       RETURN
       END

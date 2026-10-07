@@ -3,9 +3,11 @@ C     DIC_ldRec     :: time-record currently loaded (in temp arrays *[1])
 C     chlinput      :: chlorophyll climatology input field [mg/m3]
 
       COMMON /DIC_LOAD_I/ DIC_ldRec
+      
       COMMON /DIC_LOAD_RS/
      &    dicwind0, dicwind1, ice0, ice1, atmosp0, atmosp1,
-     &    silicaSurf0, silicaSurf1
+     &    silicaSurf0, silicaSurf1, AtmospCO20, AtmospCO21,
+     &    dicSST0, dicSST1, dicSSS0, dicSSS1
 #ifdef DIC_CALCITE_SAT
      &  , silicaDeep0, silicaDeep1
 #endif
@@ -28,6 +30,12 @@ C     chlinput      :: chlorophyll climatology input field [mg/m3]
       _RS atmosp1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS silicaSurf0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS silicaSurf1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS AtmospCO20(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS AtmospCO21(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS dicSST0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS dicSST1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS dicSSS0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS dicSSS1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifdef DIC_CALCITE_SAT
       _RS silicaDeep0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS silicaDeep1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
