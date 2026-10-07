@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/cal:
+  - fix the handling of the "phase" in cal_time2dump.F, when calendarDumps=T,
+    specially for the case where phase > |freq| (for skipping early output).
+
 checkpoint69r (2026/10/05)
 o tools/build_options:
   - add gfortran and intel compiler optfile for newer AMD and Intel processors
