@@ -47,7 +47,7 @@ C     !LOCAL VARIABLES:
       INTEGER IL
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-      IF ( obsfit_debugLevel .GE. debLevA .AND. STATUS .NE. NF_NOERR ) THEN
+      IF ( obsfit_dBugLevel .GE. debLevA .AND. STATUS .NE. NF_NOERR ) THEN
         IL = ILNBLNK(message)
         IF ( IL .GT. 0 ) THEN
           IF ( (bi.GT.0).AND.(bj.GT.0) ) THEN
