@@ -126,19 +126,6 @@ C         easier to transfer analyse a particular snap-shots
             CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
           ENDIF
 
-#ifdef ALLOW_OPENAD
-# ifndef ALLOW_STREAMICE
-          CALL WRITE_FLD_XYZ_RL( 'U.',suff,uVel%v,myIter,myThid)
-          CALL WRITE_FLD_XYZ_RL( 'V.',suff,vVel%v,myIter,myThid)
-          CALL WRITE_FLD_XYZ_RL( 'T.',suff,theta%v,myIter,myThid)
-          CALL WRITE_FLD_XYZ_RL( 'S.',suff,salt%v,myIter,myThid)
-          CALL WRITE_FLD_XY_RL('Eta.',suff,etaN%v,myIter,myThid)
-          CALL WRITE_FLD_XYZ_RL( 'W.',suff,wVel%v,myIter,myThid)
-          IF ( storePhiHyd4Phys .OR. myIter.NE.nIter0 ) THEN
-            CALL WRITE_FLD_XYZ_RL('PH.',suff,totPhiHyd%v,myIter,myThid)
-          ENDIF
-# endif
-#else
           CALL WRITE_FLD_XYZ_RL( 'U.',suff,uVel,myIter,myThid)
           CALL WRITE_FLD_XYZ_RL( 'V.',suff,vVel,myIter,myThid)
           CALL WRITE_FLD_XYZ_RL( 'T.',suff,theta,myIter,myThid)
@@ -148,7 +135,6 @@ C         easier to transfer analyse a particular snap-shots
           IF ( storePhiHyd4Phys .OR. myIter.NE.nIter0 ) THEN
             CALL WRITE_FLD_XYZ_RL('PH.',suff,totPhiHyd,myIter,myThid)
           ENDIF
-#endif
 
           IF ( fluidIsWater .AND. (myIter.NE.nIter0) ) THEN
             CALL WRITE_FLD_XY_RL('PHL.',suff,phiHydLow,myIter,myThid)

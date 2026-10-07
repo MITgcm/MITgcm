@@ -183,11 +183,6 @@ C                                          vel solve
 C     streamice_maxcgiter_cpl           :: max CG iters, coupled mode
 C     streamice_maxnliter_cpl           :: max NL iters, coupled mode
 C     streamice_maxnliter_Petsc         :: max NL iters with PETSC
-C                                          unavailable with OpenAD
-C     streamice_smooth_thick_adjoint    :: facility to smooth adjoint
-C                                          thickness sensitivity after
-C                                          advect_thickness
-C                                          0 -> no smoothing
 C     streamice_petsc_pcfactorlevels    :: fill level of incomplete
 C                                          cholesky preconditioner
 C                                          for use with PETSC and
@@ -210,9 +205,6 @@ C       [STREAMICEsurfOptimTCBasename][timestep in 10 digit format][u/v/err].bin
      &     streamice_maxcgiter_cpl, streamice_maxnliter_cpl,
      &     streamice_maxnliter_Petsc, petscFlag,
      &     streamice_petsc_pcfactorlevels
-#ifdef ALLOW_OPENAD
-     &     ,streamice_smooth_thick_adjoint
-#endif
 c     &     streamice_n_sub_regularize
 
       INTEGER streamice_max_cg_iter, streamice_max_nl_iter
@@ -220,17 +212,13 @@ c     &     streamice_n_sub_regularize
       INTEGER streamice_maxcgiter_cpl, streamice_maxnliter_cpl
       INTEGER streamice_maxnliter_Petsc, petscFlag
       INTEGER streamice_petsc_pcfactorlevels
-#ifdef ALLOW_OPENAD
-      INTEGER streamice_smooth_thick_adjoint
-#endif
 c      INTEGER streamice_n_sub_regularize
 
 #ifdef ALLOW_STREAMICE_FP_ADJ
-      COMMON /STREAMICE_PARMS_I_OPENAD/
+      COMMON /STREAMICE_PARMS_FP_ADJ/
      &     isinloop0, isinloop1, isinloop2
 
       INTEGER isinloop0, isinloop1, isinloop2
-
 #endif
 
 #ifdef ALLOW_STREAMICE_TC_COST
@@ -997,35 +985,14 @@ C        velocity initial guess, so they are kept
       INTEGER n_dofs_process (0:nPx*nPy-1)
 #endif
 
-#if (defined(ALLOW_STREAMICE_FP_ADJ) && defined(ALLOW_OPENAD))
-      COMMON /STREAMICE_PHISTAGE_ADARRS/
-     &      U_streamice_dvals,
-     &      V_streamice_dvals
-      _RL U_streamice_dvals
-     & (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL V_streamice_dvals
-     & (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif
-
 #ifdef ALLOW_STREAMICE_FP_ADJ
 #ifdef STREAMICE_HYBRID_STRESS
-
       COMMON /STREAMICE_PHISTAGE_ADARRS_HYBRID/
      & taubx_new_si, tauby_new_si,
      & visc_full_new_si
-#ifdef ALLOW_OPENAD
-     & ,taubx_dvals, tauby_dvals,
-     & visc_full_dvals,
-#endif
       _RL taubx_new_si (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL tauby_new_si (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL visc_full_new_si (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-#ifdef ALLOW_OPENAD
-      _RL tauby_dvals (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL taubx_dvals (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL visc_full_dvals (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-#endif
-
 #endif
 #endif
 

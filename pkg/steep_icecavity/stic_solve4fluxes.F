@@ -34,24 +34,23 @@ C     === Global variables ===
 #endif
 
 C     !INPUT PARAMETERS:
-C     tLoc         ::
-C     sLoc         ::
-C     pLoc         ::
-C     gammaT ::
-C     gammaS ::
+C     tLoc       ::
+C     sLoc       ::
+C     pLoc       ::
+C     gammaT     ::
+C     gammaS     ::
 C     bi,bj      :: tile indices
 C     myTime     :: current time in simulation
 C     myIter     :: iteration number in simulation
 C     myThid     :: my Thread Id number
 
 C     !OUTPUT PARAMETERS:
-C     heatFlux       ::
-C     fwFlux ::
-C     forcingT       ::
-C     forcingS       ::
-C     insitutLoc   ::
+C     heatFlux   ::
+C     fwFlux     ::
+C     forcingT   ::
+C     forcingS   ::
+C     insitutLoc ::
 C----------
-
       _RL tLoc, sLoc, pLoc
       _RL gammaT, gammaS
       _RL iceConductionDistance, thetaIceConduction
@@ -61,13 +60,11 @@ C----------
       INTEGER myIter, myThid
 CEOP
 
-#ifndef ALLOW_OPENAD
+C     !FUNCTIONS:
       _RL SW_TEMP
       EXTERNAL SW_TEMP
-#endif
 
 C     !LOCAL VARIABLES:
-C     === Local variables ===
       _RL thetaFreeze, saltFreeze
       _RL eps1, eps2, eps3, eps4, eps6, eps7, eps8
       _RL aqe, bqe, cqe, discrim, recip_aqe

@@ -1,5 +1,3 @@
-C this needs changes
-
 #include "STREAMICE_OPTIONS.h"
 #ifdef ALLOW_COST
 # include "COST_OPTIONS.h"
@@ -126,9 +124,6 @@ c      _RL streamice_bdot_maxmelt
      &     useStreamiceFlowlineButtr,
 #endif
      &     STREAMICE_allow_cpl
-#ifdef ALLOW_OPENAD
-     &     ,streamice_smooth_thick_adjoint
-#endif
 
 #ifdef ALLOW_STREAMICE_2DTRACER
       NAMELIST /STREAMICE_PARMTRACER/
@@ -268,9 +263,6 @@ C--   Default values for STREAMICE
       streamice_maxcgiter_cpl = 0
       streamice_maxnliter_cpl = 0
       streamice_petsc_pcfactorlevels = 0
-#ifdef ALLOW_OPENAD
-      streamice_smooth_thick_adjoint = 0
-#endif
 c      streamice_n_sub_regularize = 4
       streamice_CFL_factor = .5
       streamice_adjDump = 0.

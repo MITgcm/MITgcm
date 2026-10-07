@@ -34,13 +34,12 @@ C     !USES:
 #endif /* ALLOW_EXCH2 */
 #include "EOS.h"
 #include "GRID.h"
+#include "SET_GRID.h"
 #ifdef ALLOW_MOM_COMMON
 # include "MOM_VISC.h"
 #endif
-C- need to put SET_GRID in last position for module conversion with OpenAD
-#include "SET_GRID.h"
 #ifdef ALLOW_MNC
-#include "MNC_PARAMS.h"
+# include "MNC_PARAMS.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
