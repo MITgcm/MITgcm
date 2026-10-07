@@ -20,8 +20,8 @@
  &
 
  &DIC_FORCING
-  DIC_iceFile='fice_box.bin',
-  DIC_windFile='tren_speed_box.bin',
-  DIC_silicaFile='sillev1_box.bin',
-  DIC_deepSilicaFile='silicate_3D_12m_box.bin',
+#  DIC_iceFile='fice_box.bin',
+#  DIC_windFile='tren_speed_box.bin',
+#  DIC_silicaFile='sillev1_box.bin',
+#  DIC_deepSilicaFile='silicate_3D_12m_box.bin',
  &

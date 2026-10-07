@@ -44,6 +44,7 @@ C     pH_isLoaded(2) :: = T when   3-D   pH is loaded from pickup file
        COMMON /CARBON_NEEDS/
      &              AtmospCO2, AtmosP, pH, pCO2, FluxCO2,
      &              wind, fIce, Kwexch_Pre, silicaSurf,
+     &              dicSST, dicSSS,
      &              calciteDissolRate, calciteDissolExp,
      &              calcOmegaCalciteFreq, zca,
      &              WsinkPIC, selectCalciteBottomRemin,
@@ -59,6 +60,8 @@ C     pH_isLoaded(2) :: = T when   3-D   pH is loaded from pickup file
       _RL  fIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  Kwexch_Pre(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  silicaSurf(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  dicSST(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  dicSSS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  calciteDissolRate(2), calciteDissolExp(2)
       _RL  calcOmegaCalciteFreq
       _RL  zca

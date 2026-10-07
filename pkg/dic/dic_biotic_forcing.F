@@ -124,13 +124,11 @@ CEOP
 #ifdef ALLOW_AUTODIFF_TAMC
       tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
 #endif
-      IF ( useThSIce .OR. useSEAICE .OR. useCoupler ) THEN
 #ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('DIC_FIELDS_UPDATE',myThid)
 #endif
         CALL DIC_FIELDS_UPDATE(
      I                    bi, bj, myTime, myIter, myThid )
-      ENDIF
 
        DO k=1,Nr
          DO j=1-OLy,sNy+OLy

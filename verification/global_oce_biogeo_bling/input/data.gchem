@@ -1,4 +1,15 @@
  &GCHEM_PARM01
   useBLING=.TRUE.,
   nsubtime=1,
+  gchem_windFile='tren_speed.bin',
+  gchem_iceFile='fice.bin',
+  gchem_SiFile='sillev1.bin',
+  gchem_FeFile='mah_flux_smooth.bin',
+#
+  gchem_apco2_const = 380.5e-6,
+  gchem_wind_const  = 5.,
+  gchem_apres_const = 1.01325e5,
+  gchem_par_const   = 140.0,
+  gchem_Fe_const    = 1.e-11,
+  gchem_Si_const    = 7.6838e-3,
  &
