@@ -63,6 +63,7 @@ C     !LOCAL VARIABLES:
       _RL maxSlopeSqr
       _RL slopeCutoff
       _RL loc_maxSlope, loc_rMaxSlope
+      _RL smallNumberSlp, smallNumberDr
       _RL fpi
       PARAMETER( fpi = PI )
       INTEGER i, j
@@ -77,15 +78,13 @@ CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      slopeCutoff = SQRT( GM_slopeSqCutoff )
-C-    Note regarding slopeCutoff: current code by-passes the reduction of taper
-C     fct when slope is larger than "slopeCutoff", and this is not very safe !
-C     However, with default GM_Small_Number (=1.E-20) and default value of
-C     GM_slopeSqCutoff (=1.E+48), this is unlikely to occur as it would require
-C     |sigmaX/Y| > 1.e+4
-
+C     smallNumberSlp/Dr are only needed for comparability with between
+C     z- and p-coordinate simulations
+      smallNumberSlp= GM_Small_Number*wUnit2rVel(k)
+      smallNumberDr = GM_Small_Number*rVel2wUnit(k)
       loc_maxSlope  = GM_maxSlope*wUnit2rVel(k)
       loc_rMaxSlope = GM_rMaxSlope*rVel2wUnit(k)
+      slopeCutoff   = SQRT( GM_slopeSqCutoff )*wUnit2rVel(k)
 
 #ifdef ALLOW_AUTODIFF_TAMC
       kkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
@@ -117,7 +116,7 @@ C-- X-comp
 C-      Cox 1987 "Slope clipping"
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx+1,sNx+OLx
-          dSigmaDrLtd(i,j) = GM_Small_Number
+          dSigmaDrLtd(i,j) = smallNumberDr
      &     + ABS(SlopeX(i,j))*loc_rMaxSlope
          ENDDO
         ENDDO
@@ -152,7 +151,7 @@ C-- Y-comp
 #endif /* ALLOW_AUTODIFF */
         DO j=1-OLy+1,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          dSigmaDrLtd(i,j) = GM_Small_Number
+          dSigmaDrLtd(i,j) = smallNumberDr
      &     + ABS(SlopeY(i,j))*loc_rMaxSlope
          ENDDO
         ENDDO
@@ -199,8 +198,8 @@ C- Compute the slope, no clipping, but avoid reverse slope in negatively
 C                                  stratified (dSigmaDr < 0) region :
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx+1,sNx+OLx
-          IF (dSigmaDrW(i,j).LE.GM_Small_Number)
-     &        dSigmaDrW(i,j) = GM_Small_Number
+          IF (dSigmaDrW(i,j).LE.smallNumberDr)
+     &        dSigmaDrW(i,j) = smallNumberDr
          ENDDO
         ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -233,8 +232,8 @@ CADJ STORE dSigmaDrS(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 
         DO j=1-OLy+1,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          IF (dSigmaDrS(i,j).LE.GM_Small_Number)
-     &        dSigmaDrS(i,j) = GM_Small_Number
+          IF (dSigmaDrS(i,j).LE.smallNumberDr)
+     &        dSigmaDrS(i,j) = smallNumberDr
          ENDDO
         ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -275,7 +274,7 @@ C-      Simplest adiabatic tapering = Smax/Slope (linear)
           Smod = ABS(SlopeX(i,j))
           IF ( Smod .GT. loc_maxSlope .AND.
      &         Smod .LT. slopeCutoff )
-     &      taperX(i,j) = loc_maxSlope/(Smod+GM_Small_Number)
+     &      taperX(i,j) = loc_maxSlope/(Smod+smallNumberSlp)
          ENDDO
         ENDDO
         DO j=1-OLy+1,sNy+OLy
@@ -283,7 +282,7 @@ C-      Simplest adiabatic tapering = Smax/Slope (linear)
           Smod = ABS(SlopeY(i,j))
           IF ( Smod .GT. loc_maxSlope .AND.
      &         Smod .LT. slopeCutoff )
-     &      taperY(i,j) = loc_maxSlope/(Smod+GM_Small_Number)
+     &      taperY(i,j) = loc_maxSlope/(Smod+smallNumberSlp)
          ENDDO
         ENDDO
 
@@ -298,7 +297,7 @@ C-      Gerdes, Koberle and Willebrand, Clim. Dyn. 1991
           IF ( Smod .GT. loc_maxSlope .AND.
      &         Smod .LT. slopeCutoff )
      &      taperX(i,j) = maxSlopeSqr/
-     &           ( SlopeX(i,j)*SlopeX(i,j) + GM_Small_Number )
+     &           ( SlopeX(i,j)*SlopeX(i,j) + smallNumberSlp )
          ENDDO
         ENDDO
         DO j=1-OLy+1,sNy+OLy
@@ -307,7 +306,7 @@ C-      Gerdes, Koberle and Willebrand, Clim. Dyn. 1991
           IF ( Smod .GT. loc_maxSlope .AND.
      &         Smod .LT. slopeCutoff )
      &      taperY(i,j) = maxSlopeSqr/
-     &           ( SlopeY(i,j)*SlopeY(i,j) + GM_Small_Number )
+     &           ( SlopeY(i,j)*SlopeY(i,j) + smallNumberSlp )
          ENDDO
         ENDDO
 
