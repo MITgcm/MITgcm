@@ -41,8 +41,9 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "BLING_VARS.h"
-#ifdef USE_QSW
+#ifdef ALLOW_EXF
 # include "FFIELDS.h"
+# include "EXF_PARAM.h"
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -106,13 +107,11 @@ C     kkey :: tape key (tile and level dependent)
 CEOP
 
 C  Remove light under ice
-C  If using Qsw and seaice/thsice, then ice fraction is already
+C  If using seaice/thsice, ice fraction is already
 C  taken into account
       QSW_underice = .FALSE.
-#ifdef USE_QSW
       IF ( useSEAICE ) QSW_underice = .TRUE.
       IF ( useThSIce ) QSW_underice = .TRUE.
-#endif
 
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
@@ -151,16 +150,31 @@ C  in red and blue-green fractions (Morel 1988; Foujols et al. 2000)
 #endif
 
 C ---------------------------------------------------------------------
-C  instantaneous light, mixed layer averaged light
+C  Instantaneous light, mixed layer averaged light
 
-#ifdef USE_QSW
+#ifdef ALLOW_EXF
+      IF (swdownfile.NE.' ') THEN
 C  Convert insolation to photosynthetically-available radiations (PAR)
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        irr_surf(i,j) = MAX( epsln,
-     &                  -parfrac*Qsw(i,j,bi,bj)*maskInC(i,j,bi,bj))
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         irr_surf(i,j) = MAX( epsln,
+     &                   -parfrac*Qsw(i,j,bi,bj)*maskInC(i,j,bi,bj))
+        ENDDO
        ENDDO
-      ENDDO
+      ELSE
+C  Find surface insolation (light) as function of date and latitude
+       CALL GCHEM_INSOLATION(
+     O      sfac,
+     I      iMin, iMax, jMin, jMax, bi, bj,
+     I      myTime, myIter, myThid)
+
+C Photosynthetically active solar radiation (PAR) just below surface
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         irr_surf(i,j) = MAX(1. _d -5,sfac(i,j)*parfrac)
+        ENDDO
+       ENDDO
+      ENDIF
 #else
 C  Find surface insolation (light) as function of date and latitude
       CALL GCHEM_INSOLATION(
@@ -174,7 +188,7 @@ C Photosynthetically active solar radiation (PAR) just below surface
         irr_surf(i,j) = MAX(1. _d -5,sfac(i,j)*parfrac)
        ENDDO
       ENDDO
-#endif /* USE_QSW */
+#endif /* ALLOW_EXF */
 
 C  Remove light under ice
       IF ( .NOT. QSW_underice ) THEN

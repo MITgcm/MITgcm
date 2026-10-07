@@ -35,9 +35,9 @@ C                   (during read) or copy to (during write).
       COMMON /MDS_WH_BUFFERS_3D_L/ writeWh
       LOGICAL writeWh
       COMMON /MDS_WH_BUFFERS_3D_I/ iWh, jWh
-      INTEGER nWh, iWh, jWh
-      PARAMETER (nWh=636)
-      COMMON /MDS_WH_BUFFERS_3D_R8/ fld3d_procbuff_r8
+      integer nWh, iWh, jWh
+      PARAMETER (nWh=683)
+      COMMON /MDS_WH_BUFFERS_3D_RL/ fld3d_procbuff_r8
 #  ifdef INCLUDE_WHIO_GLOBUFF_3D
      &                            , fld3d_globuff_r8
 #  endif
