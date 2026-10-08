@@ -19,6 +19,7 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "FFIELDS.h"
+#include "GCHEM_VARS.h"
 #include "BLING_VARS.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
@@ -33,6 +34,7 @@ C     myThid               :: thread Id. number
 C     === Local variables ===
        INTEGER i,j, k, it
        INTEGER intimeP, intime0, intime1
+       LOGICAL debugPrt
        _RL aWght, bWght, co3dummy
 C Number of iterations for pCO2 solvers...
 C Solubility relation coefficients
@@ -139,12 +141,10 @@ C =================================================================
           ft(i,j,bi,bj)=0. _d 0
           st(i,j,bi,bj)=0. _d 0
           bt(i,j,bi,bj)=0. _d 0
-#ifdef CARBONCHEM_SOLVESAPHE
           cat(i,j,bi,bj)=0. _d 0
           akn(i,j,bi,bj)=0. _d 0
           akhs(i,j,bi,bj)=0. _d 0
           aphscale(i,j,bi,bj)=0. _d 0
-#endif
          ENDDO
         ENDDO
        ENDDO
@@ -198,45 +198,52 @@ C FOR NON-INTERACTIVE Si
           ENDDO
          ENDDO
 
-#ifdef CARBONCHEM_SOLVESAPHE
+#ifndef ALLOW_AUTODIFF
+         IF ( selectModernCoeffs.GT.0 ) THEN
 #ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('DIC_COEFFS_DEEP',myThid)
+          IF (debugMode) CALL DEBUG_CALL('GCHEM_COEFFS_DEEP',myThid)
 #endif
-        CALL DIC_COEFFS_SURF(
+          CALL GCHEM_COEFFS_SURF(
 cav changing surftheta to thetatmp
      I                       thetatmp,salttmp,
      I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
 C Now correct the coefficients for pressure dependence
-        CALL DIC_COEFFS_DEEP(
+          CALL GCHEM_COEFFS_DEEP(
      I                       thetatmp,salttmp,
      I                       bi,bj,iMin,iMax,jMin,jMax,
      I                       k,myThid)
-#else
-#ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('CARBON_COEFFS',myThid)
+         ELSE
 #endif
-         CALL CARBON_COEFFS_PRESSURE_DEP(
+#ifdef ALLOW_DEBUG
+          IF (debugMode)
+     &       CALL DEBUG_CALL('GCHEM_CARBON_COEFFS_PRESSURE_DEP',myThid)
+#endif
+          CALL GCHEM_CARBON_COEFFS(
      I                       thetatmp,salttmp,
+     I                       atmosP(1-OLx,1-OLy,bi,bj),
      I                       bi,bj,iMin,iMax,jMin,jMax,k,myThid)
+#ifndef ALLOW_AUTODIFF
+         ENDIF
 #endif
 
 C====================================================================
 
 c first approximation
 
+          debugPrt = .FALSE.
           DO j=jMin,jMax
            DO i=iMin,iMax
             IF ( maskC(i,j,k,bi,bj) .NE. 0. _d 0) THEN
 
-#ifdef CARBONCHEM_SOLVESAPHE
+#ifndef ALLOW_AUTODIFF
              IF ( selectPHsolver.GT.0 ) THEN
 C Use Munhoven (2013) Solvesaphe routine to initialize pH
 #ifdef ALLOW_DEBUG
               IF (debugMode) CALL DEBUG_CALL(
-     &            'AHINI_FOR_AT',myThid)
+     &            'GCHEM_AHINI_FOR_AT',myThid)
 #endif
-C call AHINI_FOR_AT to get better initial guess of pH
-              CALL AHINI_FOR_AT(
+C call GCHEM_AHINI_FOR_AT to get better initial guess of pH
+              CALL GCHEM_AHINI_FOR_AT(
      I           alktmp(i,j)*permil,
      I           dictmp(i,j)*permil,
      I           bt(i,j,bi,bj),
@@ -246,24 +253,25 @@ CAV C$TAF STORE pH(i,j,k,bi,bj)                            = dic_surf
 CAV C$TAF STORE alktmp(i,j), phostmp(i,j), sitmp(i,j)      = dic_surf
 #ifdef ALLOW_DEBUG
               IF (debugMode) CALL DEBUG_CALL(
-     &           'CALC_PCO2_SOLVESAPHE',myThid)
+     &           'GCHEM_CALC_PCO2_SOLVESAPHE',myThid)
 #endif
-              CALL CALC_PCO2_SOLVESAPHE(
+              CALL GCHEM_CALC_PCO2_SOLVESAPHE(
      I        thetatmp(i,j),salttmp(i,j),
      I        dictmp(i,j), phostmp(i,j),
-     I        sitmp(i,j),alktmp(i,j),
+     I        sitmp(i,j),alktmp(i,j),permil,
      U        pH(i,j,k,bi,bj),pCO2(i,j,bi,bj),co3dummy,
-     I        i,j,k,bi,bj, it ,  myThid )
+     I        i,j,k,bi,bj,debugPrt, it ,  myThid )
+              debugPrt = .FALSE.
              ELSE
+#endif /* ALLOW_AUTODIFF */
 C Use the original Follows et al. (2006) solver
-#endif /* CARBONCHEM_SOLVESAPHE */
 #ifdef ALLOW_DEBUG
               IF (debugMode) CALL DEBUG_CALL(
-     &           'CALC_PCO2_APPROX',myThid)
+     &           'GCHEM_CALC_PCO2_APPROX',myThid)
 #endif
 
              DO it=1,10
-              CALL CALC_PCO2_APPROX(
+              CALL GCHEM_CALC_PCO2_APPROX(
      I        thetatmp(i,j),salttmp(i,j),
      I        dictmp(i,j), phostmp(i,j),
      I        sitmp(i,j),alktmp(i,j),
@@ -274,13 +282,14 @@ C Use the original Follows et al. (2006) solver
      I        ak0(i,j,bi,bj), fugf(i,j,bi,bj),
      I        ff(i,j,bi,bj),
      I        bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
+     I        permil,
      U        pH(i,j,k,bi,bj),pCO2(i,j,bi,bj),co3dummy,
      I        i,j,k,bi,bj, it ,  myThid )
              ENDDO
+#ifndef ALLOW_AUTODIFF
             ENDIF
-#ifdef CARBONCHEM_SOLVESAPHE
-             ENDIF
-#endif /* CARBONCHEM_SOLVESAPHE */
+#endif /* ALLOW_AUTODIFF */
+            ENDIF
            ENDDO
           ENDDO
          ENDDO
