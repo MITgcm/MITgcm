@@ -1,23 +1,23 @@
 #ifdef ALLOW_PTRACERS
 #ifdef PTRACERS_ALLOW_DYN_STATE
 
-CBOP
-C    !ROUTINE: PTRACERS_MOD.h
-C    !INTERFACE:
-C #include PTRACERS_MOD.h
+!BOP
+!    !ROUTINE: PTRACERS_MOD.h
+!    !INTERFACE:
+! #include PTRACERS_MOD.h
 
-C    !DESCRIPTION:
-C Contains passive tracer modules and associated macros
+!    !DESCRIPTION:
+! Contains passive tracer modules and associated macros
 
-CEOP
+!EOP
 
       use ptracers_dyn_state_mod
       use ptracers_dyn_state_data_mod
 
-C     This macro allows the second-order-moment member of the ptracers
-C     internal state data structure to be used like an simple array.
-C     Names are chosen such that macro expansion does not increase
-C     line length
+! This macro allows the second-order-moment member of the ptracers
+! internal state data structure to be used like an simple array.
+! Names are chosen such that macro expansion does not increase
+! line length
 #define _Ptracers_som(a,b,c,d,e,f,g) \
         PtrISt(g)%som_P(a,b,c,d,e,f)
 

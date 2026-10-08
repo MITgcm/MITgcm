@@ -1,18 +1,18 @@
-C
-CBOP
-C    !ROUTINE: MASKW_MACROS.h
-C    !INTERFACE:
-C    include MASKW_MACROS.h
-C    !DESCRIPTION: \bv
-C     *==========================================================*
-C     | MASKW_MACROS.h                                            
-C     *==========================================================*
-C     | These macros are used to reduce memory requirement and/or 
-C     | memory references when variables are fixed along a given  
-C     | axis or axes.                                             
-C     *==========================================================*
-C     \ev
-CEOP
+!
+!BOP
+!    !ROUTINE: MASKW_MACROS.h
+!    !INTERFACE:
+!    include MASKW_MACROS.h
+!    !DESCRIPTION: \bv
+! *==========================================================*
+! | MASKW_MACROS.h
+! *==========================================================*
+! | These macros are used to reduce memory requirement and/or
+! | memory references when variables are fixed along a given
+! | axis or axes.
+! *==========================================================*
+! \ev
+!EOP
 
 #ifdef MASKW_CONST
 #define  _maskW(i,j,k,bi,bj) maskW(1,1,1,1,1)

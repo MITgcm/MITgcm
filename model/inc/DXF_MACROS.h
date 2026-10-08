@@ -1,18 +1,18 @@
-C
-CBOP
-C    !ROUTINE: DXF_MACROS.h
-C    !INTERFACE:
-C    include DXF_MACROS.h
-C    !DESCRIPTION: \bv
-C     *==========================================================*
-C     | DXF_MACROS.h                                              
-C     *==========================================================*
-C     | These macros are used to reduce memory requirement and/or 
-C     | memory references when variables are fixed along a given  
-C     | axis or axes.                                             
-C     *==========================================================*
-C     \ev
-CEOP
+!
+!BOP
+!    !ROUTINE: DXF_MACROS.h
+!    !INTERFACE:
+!    include DXF_MACROS.h
+!    !DESCRIPTION: \bv
+! *==========================================================*
+! | DXF_MACROS.h
+! *==========================================================*
+! | These macros are used to reduce memory requirement and/or
+! | memory references when variables are fixed along a given
+! | axis or axes.
+! *==========================================================*
+! \ev
+!EOP
 
 #ifdef DXF_CONST
 #define  _dxF(i,j,bi,bj) dxF(1,1,1,1)

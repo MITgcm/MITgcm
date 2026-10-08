@@ -1,27 +1,27 @@
 #ifdef ALLOW_PTRACERS
 
-CBOP
-C    !ROUTINE: PTRACERS_FIELDS.h
-C    !INTERFACE:
-C #include PTRACERS_FIELDS.h
+!BOP
+!    !ROUTINE: PTRACERS_FIELDS.h
+!    !INTERFACE:
+! #include PTRACERS_FIELDS.h
 
-C    !DESCRIPTION:
-C Contains passive tracer fields
+!    !DESCRIPTION:
+! Contains passive tracer fields
 
-CEOP
+!EOP
 
-C     COMMON /PTRACERS_FIELDS/
-C     pTracer  :: passive tracer concentration (tr per unit volume).
-C     gpTrNm1  :: work-space for time-stepping
-C     surfaceForcingPTr :: passive tracer surface forcing
-      _RL  pTracer (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,
-     &              PTRACERS_num)
-      _RL  gpTrNm1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,
-     &              PTRACERS_num)
-      _RL  surfaceForcingPTr (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,
-     &              PTRACERS_num)
-      COMMON /PTRACERS_FIELDS/
-     &              pTracer, gpTrNm1, surfaceForcingPTr
+! COMMON /PTRACERS_FIELDS/
+! pTracer  :: passive tracer concentration (tr per unit volume).
+! gpTrNm1  :: work-space for time-stepping
+! surfaceForcingPTr :: passive tracer surface forcing
+      _RL  pTracer (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,                       &
+     &      PTRACERS_num)
+      _RL  gpTrNm1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,                       &
+     &      PTRACERS_num)
+      _RL  surfaceForcingPTr (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,                &
+     &      PTRACERS_num)
+      COMMON /PTRACERS_FIELDS/                                                    &
+     &      pTracer, gpTrNm1, surfaceForcingPTr
 
       _RL totSurfCorPTr(PTRACERS_num)
       _RL meanSurfCorPTr(PTRACERS_num)
@@ -29,6 +29,6 @@ C     surfaceForcingPTr :: passive tracer surface forcing
 
 #endif /* ALLOW_PTRACERS */
 
-CEH3 ;;; Local Variables: ***
-CEH3 ;;; mode:fortran ***
-CEH3 ;;; End: ***
+!EH3 ;;; Local Variables: ***
+!EH3 ;;; mode:fortran ***
+!EH3 ;;; End: ***
