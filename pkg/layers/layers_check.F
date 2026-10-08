@@ -39,6 +39,10 @@ C--   Print out some key parameters :
        CALL WRITE_1D_RL( dZZf, NZZ, INDEX_K, 'dZZf =',
      &  ' /* fine vertical grid spacing for isopycnal interp */')
 
+       CALL WRITE_0D_L ( layers_useThermo, INDEX_NONE,
+     &      'layers_useThermo =',
+     &      ' /* use water mass transformation code */')
+
       DO iLa=1,layers_maxNum
        IF ( layers_num(iLa).NE.0 ) THEN
         sfx = '#'

@@ -43,10 +43,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &       layers_useThermo,
      &       layers_name, layers_bounds, layers_krho
 
-       _BEGIN_MASTER(myThid)
-       layers_useThermo = .FALSE.
-       _END_MASTER(myThid)
-
       IF ( .NOT.useLayers ) THEN
 C-    pkg LAYERS is not used
         _BEGIN_MASTER(myThid)
@@ -62,11 +58,7 @@ C     print a (weak) warning if data.layers is found
       layers_taveFreq = UNSET_RL
 
 C--   Default values for LAYERS
-#ifdef LAYERS_THERMODYNAMICS
-C-    Currently, there is no run-time switch for doing the "layers thermodynamics"
-C       part and this is turned on at compile time (with CPP option above):
-      layers_useThermo = .TRUE.
-#endif
+      layers_useThermo = .FALSE.
       layers_diagFreq = dumpFreq
 C     The MNC stuff is not working yet
       layers_MNC = .FALSE.
