@@ -1,0 +1,113 @@
+#!/bin/bash
+#
+# Build options for gfortran (GNU) on AMD64-Linux, Snellius supercomputer
+#
+# Tested with module stack:
+#   module purge
+#   module load 2024
+#   module load OpenMPI/5.0.3-GCC-13.3.0
+#   module load netCDF-Fortran/4.6.1-gompi-2024a
+#
+# Requirement in ~/.bashrc (or equivalent):
+#   export MPI_HOME=/sw/arch/RHEL9/EB_production/2024/software/OpenMPI/5.0.3-GCC-13.3.0
+#
+#-------------------------------------------
+# OpenMP runtime settings (example):
+#   export OMP_NUM_THREADS=2
+#   export OMP_STACKSIZE=400m      # portable name (GOMP_STACKSIZE also works)
+#-------------------------------------------
+
+#1) Compiler wrappers
+MPI=${MPI:=true}
+if [ "x$MPI" = xtrue ] ; then
+    CC=${CC:=mpicc}
+    FC=${FC:=mpif77}
+    F90C=${F90C:=mpif90}
+else
+    CC=gcc
+    FC=gfortran
+    F90C=gfortran
+fi
+
+#2) Base flags
+DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR'
+EXTENDED_SRC_FLAG='-ffixed-line-length-132'
+F90FIXEDFORMAT='-ffixed-form'
+OMPFLAG='-fopenmp'
+NOOPTFLAGS='-O0'
+NOOPTFILES=''
+CFLAGS='-O0'
+
+#3) Detect gfortran major version correctly
+fcVers=$("$FC" -dumpversion | cut -d. -f1)
+[[ $fcVers =~ ^[0-9]+$ ]] || { echo "  unknown gfortran version"; fcVers=0; }
+echo "  using gfortran major version $fcVers"
+
+#4) Mandatory flag for GCC 10+ implicit-interface MPI calls
+[ "$fcVers" -ge 10 ] && FFLAGS+=" -fallow-argument-mismatch"
+
+#5) Endian, implicit-none, memory model
+FFLAGS+=" -fconvert=big-endian -fimplicit-none"
+CFLAGS+=" -mcmodel=medium"
+FFLAGS+=" -mcmodel=medium"
+
+#6) Optimisation / debug choices
+if [ -z "${IEEE:-}" ] ; then
+    FOPTIM='-O3 -funroll-loops'
+    NOOPTFILES+=" ini_masks_etc.F"
+else
+    FFLAGS+=" -Wall"
+    [ "$fcVers" -ge 10 ] && FFLAGS+=" -Wno-unused-dummy-argument"
+    if [ -z "${DEVEL:-}" ] ; then
+        FOPTIM='-O0'
+    else
+        FOPTIM='-O0 -g -fbounds-check -ffpe-trap=invalid,zero,overflow -finit-real=inf'
+    fi
+fi
+F90FLAGS=$FFLAGS
+F90OPTIM=$FOPTIM
+
+#7) NetCDF / MPI include & lib paths
+INCLUDEDIRS='' ; INCLUDES='' ; LIBS=''
+
+#8) NetCDF (handle unset vars safely)
+if [ -n "${NETCDF_ROOT:-}" ] ; then
+    INCLUDES="-I${NETCDF_ROOT}/include"
+    LIBS="-L${NETCDF_ROOT}/lib"
+elif [ -n "${NETCDF_HOME:-}" ] ; then
+    INCLUDES="-I${NETCDF_HOME}/include"
+    LIBS="-L${NETCDF_HOME}/lib"
+elif [ -n "${NETCDF_INC:-}" ] && [ -n "${NETCDF_LIB:-}" ]; then
+    INCLUDES="-I${NETCDF_INC/-I/}"
+    LIBS="-L${NETCDF_LIB/-L/}"
+elif [ -n "${NETCDF_INCDIR:-}" ] && [ -n "${NETCDF_LIBDIR:-}" ]; then
+    INCLUDES="-I${NETCDF_INCDIR}"
+    LIBS="-L${NETCDF_LIBDIR}"
+elif nf-config --includedir &>/dev/null ; then
+    INCLUDES="-I$(nf-config --includedir)"
+    LIBS="$(nf-config --flibs)"
+elif [ -d /usr/include/netcdf-3 ] ; then
+    INCLUDES='-I/usr/include/netcdf-3'
+    LIBS='-L/usr/lib/netcdf-3 -L/usr/lib64/netcdf-3'
+elif [ -d /usr/include/netcdf ] ; then
+    INCLUDES='-I/usr/include/netcdf'
+elif [ -d /usr/local/netcdf ] ; then
+    INCLUDES='-I/usr/local/netcdf/include'
+    LIBS='-L/usr/local/netcdf/lib'
+fi
+
+#9) MPI include dir (handle unset vars safely)
+if [ -n "${MPI_HOME:-}" ] && [ -z "${MPI_INC_DIR:-}" ]; then
+    MPI_INC_DIR="$MPI_HOME/include"
+fi
+if [ "x$MPI" = xtrue ] ; then
+    if [ -z "${MPI_INC_DIR:-}" ] ; then
+        MPI_INC_DIR=$(pkg-config --cflags-only-I ompi 2>/dev/null | awk '{print $1}' | sed 's/-I//')
+    fi
+    if [ -n "${MPI_INC_DIR:-}" ] ; then
+        INCLUDES+=" -I$MPI_INC_DIR"
+        INCLUDEDIRS+=" $MPI_INC_DIR"
+    else
+        echo "Could not determine MPI include directory"; exit 1
+    fi
+fi
