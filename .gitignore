@@ -120,3 +120,8 @@ core
 # Ignore all files in the build directory
 /utils/python/MITgcmutils/build*
 *.egg-info
+
+# Ignore everything inside any *logs directory (logs, run_logs, output_logs, ...)
+**/*logs/**
+# ...but keep the .gitkeep files in logs directories
+!**/logs/.gitkeep
