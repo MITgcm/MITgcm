@@ -1,0 +1,7 @@
+#
+# ********************************
+# Off-line optimization parameters
+# ********************************
+ &OPTIM
+ optimcycle=0,
+ &
