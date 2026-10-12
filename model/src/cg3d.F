@@ -48,7 +48,6 @@ C     === Global data ===
 #ifdef ALLOW_NONHYDROSTATIC
 # include "PARAMS.h"
 # include "GRID.h"
-# include "SURFACE.h"
 # include "CG3D.h"
 #endif /* ALLOW_NONHYDROSTATIC */
 
@@ -104,10 +103,6 @@ C     msgBuf     :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       LOGICAL printResidual
       _RL     surfFac
-#ifdef NONLIN_FRSURF
-      INTEGER ks
-      _RL     surfTerm(sNx,sNy)
-#endif /* NONLIN_FRSURF */
 CEOP
 
 C--   Initialise auxiliary constant, some output variable
@@ -116,13 +111,6 @@ C--   Initialise auxiliary constant, some output variable
       ELSE
         surfFac = 0.
       ENDIF
-#ifdef NONLIN_FRSURF
-      DO j=1,sNy
-       DO i=1,sNx
-         surfTerm(i,j) = 0.
-       ENDDO
-      ENDDO
-#endif /* NONLIN_FRSURF */
 
 C--   Initialise inverter
       eta_qrNM1 = 1. _d 0
@@ -171,32 +159,6 @@ C--   Initial residual calculation (with free-Surface term)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         errTile(bi,bj)    = 0. _d 0
         sumRHStile(bi,bj) = 0. _d 0
-#ifdef NONLIN_FRSURF
-        IF ( select_rStar .NE. 0 ) THEN
-          DO j=1,sNy
-           DO i=1,sNx
-             surfTerm(i,j) = 0.
-           ENDDO
-          ENDDO
-          DO k=1,Nr
-           DO j=1,sNy
-            DO i=1,sNx
-             surfTerm(i,j) = surfTerm(i,j)
-     &         +cg3d_x(i,j,k,bi,bj)*drF(k)*h0FacC(i,j,k,bi,bj)
-            ENDDO
-           ENDDO
-          ENDDO
-          DO j=1,sNy
-           DO i=1,sNx
-             ks = kSurfC(i,j,bi,bj)
-             surfTerm(i,j) = surfTerm(i,j)*cg3dNorm
-     &              *recip_Rcol(i,j,bi,bj)*recip_Rcol(i,j,bi,bj)
-     &              *rA(i,j,bi,bj)*deepFac2F(ks)
-     &              *recip_Bo(i,j,bi,bj)/deltaTMom/deltaTFreeSurf
-           ENDDO
-          ENDDO
-        ENDIF
-#endif /* NONLIN_FRSURF */
         DO k=1,Nr
          km1 = MAX(k-1, 1 )
          kp1 = MIN(k+1, Nr)
@@ -218,9 +180,6 @@ C--   Initial residual calculation (with free-Surface term)
      &       +aV3d( i, j, k, bi,bj)*cg3d_x( i, j,km1,bi,bj)*maskM1
      &       +aV3d( i, j,kp1,bi,bj)*cg3d_x( i, j,kp1,bi,bj)*maskP1
      &       +aC3d( i, j, k, bi,bj)*cg3d_x( i, j, k, bi,bj)
-#ifdef NONLIN_FRSURF
-     &       -surfFac*surfTerm(i,j)*drF(k)*h0FacC(i,j,k,bi,bj)
-#endif /* NONLIN_FRSURF */
      &      )
            errTile(bi,bj) = errTile(bi,bj)
      &                    +cg3d_r(i,j,k,bi,bj)*cg3d_r(i,j,k,bi,bj)
@@ -353,32 +312,6 @@ C==    q = A.s
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          alphaTile(bi,bj) = 0. _d 0
-#ifdef NONLIN_FRSURF
-         IF ( select_rStar .NE. 0 ) THEN
-          DO j=1,sNy
-           DO i=1,sNx
-             surfTerm(i,j) = 0.
-           ENDDO
-          ENDDO
-          DO k=1,Nr
-           DO j=1,sNy
-            DO i=1,sNx
-             surfTerm(i,j) = surfTerm(i,j)
-     &         +cg3d_s(i,j,k,bi,bj)*drF(k)*h0FacC(i,j,k,bi,bj)
-            ENDDO
-           ENDDO
-          ENDDO
-          DO j=1,sNy
-           DO i=1,sNx
-             ks = kSurfC(i,j,bi,bj)
-             surfTerm(i,j) = surfTerm(i,j)*cg3dNorm
-     &              *recip_Rcol(i,j,bi,bj)*recip_Rcol(i,j,bi,bj)
-     &              *rA(i,j,bi,bj)*deepFac2F(ks)
-     &              *recip_Bo(i,j,bi,bj)/deltaTMom/deltaTFreeSurf
-           ENDDO
-          ENDDO
-         ENDIF
-#endif /* NONLIN_FRSURF */
          IF ( Nr .GT. 1 ) THEN
           k=1
 #ifdef TARGET_NEC_SX
@@ -393,9 +326,6 @@ C==    q = A.s
      &       +aS3d( i,j+1,k, bi,bj)*cg3d_s( i,j+1,k, bi,bj)
      &       +aV3d( i, j,k+1,bi,bj)*cg3d_s( i, j,k+1,bi,bj)
      &       +aC3d( i, j, k, bi,bj)*cg3d_s( i, j, k, bi,bj)
-#ifdef NONLIN_FRSURF
-     &       -surfFac*surfTerm(i,j)*drF(k)*h0FacC(i,j,k,bi,bj)
-#endif /* NONLIN_FRSURF */
             alphaTile(bi,bj) = alphaTile(bi,bj)
      &             +cg3d_s(i,j,k,bi,bj)*cg3d_q(i,j,k,bi,bj)
            ENDDO
@@ -413,9 +343,6 @@ C==    q = A.s
      &       +aS3d( i, j, k, bi,bj)*cg3d_s( i,j-1,k, bi,bj)
      &       +aS3d( i,j+1,k, bi,bj)*cg3d_s( i,j+1,k, bi,bj)
      &       +aC3d( i, j, k, bi,bj)*cg3d_s( i, j, k, bi,bj)
-#ifdef NONLIN_FRSURF
-     &       -surfFac*surfTerm(i,j)*drF(k)*h0FacC(i,j,k,bi,bj)
-#endif /* NONLIN_FRSURF */
             alphaTile(bi,bj) = alphaTile(bi,bj)
      &             +cg3d_s(i,j,k,bi,bj)*cg3d_q(i,j,k,bi,bj)
            ENDDO
@@ -435,9 +362,6 @@ C==    q = A.s
      &       +aV3d( i, j, k, bi,bj)*cg3d_s( i, j,k-1,bi,bj)
      &       +aV3d( i, j,k+1,bi,bj)*cg3d_s( i, j,k+1,bi,bj)
      &       +aC3d( i, j, k, bi,bj)*cg3d_s( i, j, k, bi,bj)
-#ifdef NONLIN_FRSURF
-     &       -surfFac*surfTerm(i,j)*drF(k)*h0FacC(i,j,k,bi,bj)
-#endif /* NONLIN_FRSURF */
             alphaTile(bi,bj) = alphaTile(bi,bj)
      &             +cg3d_s(i,j,k,bi,bj)*cg3d_q(i,j,k,bi,bj)
            ENDDO
@@ -457,9 +381,6 @@ C==    q = A.s
      &       +aS3d( i,j+1,k, bi,bj)*cg3d_s( i,j+1,k, bi,bj)
      &       +aV3d( i, j, k, bi,bj)*cg3d_s( i, j,k-1,bi,bj)
      &       +aC3d( i, j, k, bi,bj)*cg3d_s( i, j, k, bi,bj)
-#ifdef NONLIN_FRSURF
-     &       -surfFac*surfTerm(i,j)*drF(k)*h0FacC(i,j,k,bi,bj)
-#endif /* NONLIN_FRSURF */
             alphaTile(bi,bj) = alphaTile(bi,bj)
      &             +cg3d_s(i,j,k,bi,bj)*cg3d_q(i,j,k,bi,bj)
            ENDDO
