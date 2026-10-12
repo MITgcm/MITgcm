@@ -46,7 +46,6 @@ C     == Global variables ===
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
 C     myTime :: time counter for this thread
 C     myIter :: iteration counter for this thread
 C     myThid :: Thread number for this instance of the routine.
@@ -54,23 +53,22 @@ C     myThid :: Thread number for this instance of the routine.
       INTEGER myIter
       INTEGER myThid
 
-#if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_ADMTLM))
 #ifdef ALLOW_AUTODIFF_MONITOR
+#if (defined ALLOW_ADJOINT_RUN || defined ALLOW_ADMTLM )
 
 C     !FUNCTIONS:
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
 
 C     !LOCAL VARIABLES:
-C     == local variables ==
 C     suff   :: Hold suffix part of a filename
 C     msgBuf :: Error message buffer
 c     CHARACTER*(10) suff
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
-#ifdef ALLOW_MNC
+# ifdef ALLOW_MNC
       _RL var2Du(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL var2Dv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif
+# endif
       _RS dumRS(1)
       LOGICAL doExch
       LOGICAL doDump
@@ -81,18 +79,14 @@ C--- do dump?
 
 C--- Test for adexch based on dumpAdVarExch flag
       doExch = doDump
-#ifdef ALLOW_DIAGNOSTICS
+# ifdef ALLOW_DIAGNOSTICS
       doExch = doDump .OR. useDiag4AdjOutp
-#endif
+# endif
       doExch = doExch .AND. ( dumpAdVarExch.EQ.1 )
 
 C--- If necessary, do the exchanges
       IF ( doExch ) THEN
         CALL TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
-#ifdef ALLOW_OPENAD
-C--   need to all the correct OpenAD EXCH S/R ; left empty for now
-#else /* ALLOW_OPENAD */
-
 # ifdef AUTODIFF_TAMC_COMPATIBILITY
         CALL ADEXCH_XY_RL( myThid, adarea )
         CALL ADEXCH_XY_RL( myThid, adheff )
@@ -104,8 +98,7 @@ C--   need to all the correct OpenAD EXCH S/R ; left empty for now
         CALL ADEXCH_XY_RL( adhsnow, myThid )
         CALL ADEXCH_UV_3D_RL( aduice,advice, .TRUE., 1, myThid )
 # endif /* AUTODIFF_TAMC_COMPATIBILITY */
-#endif /* ALLOW_OPENAD */
-        ENDIF
+      ENDIF
 
 C-----------------------------------------------------------------------
 C--- Turn diagnostics on/off
@@ -139,7 +132,7 @@ C     ENDIF
 # endif
 
       IF ( doDump ) THEN
-#ifdef ALLOW_MNC
+# ifdef ALLOW_MNC
         IF (useMNC .AND. autodiff_mnc) THEN
 
          CALL MNC_CW_SET_UDIM('adseaice', -1, myThid)
@@ -159,7 +152,7 @@ c
           CALL COPY_ADVAR_OUTP( dumRS, adhsnow, var2Du, 1 , 12, myThid )
           CALL MNC_CW_RL_W('D','adseaice',0,0,'adhsnow',
      &         var2Du, myThid)
-# if ( defined SEAICE_CGRID || defined SEAICE_BGRID_DYNAMICS )
+#  if ( defined SEAICE_CGRID || defined SEAICE_BGRID_DYNAMICS )
 C          IF (SEAICEuseDYNAMICS) THEN
           CALL COPY_AD_UV_OUTP( dumRS, dumRS, aduice, advice,
      &         var2Du, var2Dv, 1, 34, myThid )
@@ -168,7 +161,7 @@ C          IF (SEAICEuseDYNAMICS) THEN
           CALL MNC_CW_RL_W('D','adseaice',0,0,'advice',
      &         var2Dv, myThid)
 C          ENDIF
-# endif
+#  endif
          ELSE
           CALL MNC_CW_RL_W('D','adseaice',0,0,'adarea',
      &         adarea, myThid)
@@ -176,25 +169,25 @@ C          ENDIF
      &         adheff, myThid)
           CALL MNC_CW_RL_W('D','adseaice',0,0,'adhsnow',
      &         adhsnow, myThid)
-# if ( defined SEAICE_CGRID || defined SEAICE_BGRID_DYNAMICS )
+#  if ( defined SEAICE_CGRID || defined SEAICE_BGRID_DYNAMICS )
 C          IF (SEAICEuseDYNAMICS) THEN
           CALL MNC_CW_RL_W('D','adseaice',0,0,'aduice',
      &         aduice, myThid)
           CALL MNC_CW_RL_W('D','adseaice',0,0,'advice',
      &         advice, myThid)
 C          ENDIF
-# endif
+#  endif
          ENDIF
 
         ENDIF
-#endif /* ALLOW_MNC */
+# endif /* ALLOW_MNC */
 
         CALL TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
 
       ENDIF
 
+#endif /* ALLOW_ADJOINT_RUN or ALLOW_ADMTLM */
 #endif /* ALLOW_AUTODIFF_MONITOR */
-#endif /* ALLOW_ADJOINT_RUN */
 
       RETURN
       END

@@ -241,11 +241,6 @@ C     flag is defined
 #ifdef ALLOW_GENARR_CONTROL
         do iarr = 1, maxCtrlArr2D
          write(xx_genarr2d_file(iarr)(1:MAX_LEN_FNAM),'(a)') ' '
-#ifdef ALLOW_OPENAD
-         write(xx_genarr2d_file(iarr)(1:14),'(a,i2.2)')
-     &        'xx_genarr2d_', iarr
-         write(xx_genarr2d_file(iarr)(15:MAX_LEN_FNAM),'(a)') ' '
-#endif
          write(xx_genarr2d_weight(iarr)(1:MAX_LEN_FNAM),'(a)') ' '
          genarr2dPrecond(iarr)  = 1. _d 0
          mult_genarr2d(iarr)    = UNSET_RL
@@ -262,11 +257,6 @@ C     flag is defined
 
         do iarr = 1, maxCtrlArr3D
          write(xx_genarr3d_file(iarr)(1:MAX_LEN_FNAM),'(a)') ' '
-#ifdef ALLOW_OPENAD
-         write(xx_genarr3d_file(iarr)(1:14),'(a,i2.2)')
-     &        'xx_genarr3d_', iarr
-         write(xx_genarr3d_file(iarr)(15:MAX_LEN_FNAM),'(a)') ' '
-#endif
          write(xx_genarr3d_weight(iarr)(1:MAX_LEN_FNAM),'(a)') ' '
          genarr3dPrecond(iarr)  = 1. _d 0
          mult_genarr3d(iarr)    = UNSET_RL
@@ -283,11 +273,6 @@ C     flag is defined
 
         do iarr = 1, maxCtrlTim2D
          write(xx_gentim2d_file(iarr)(1:MAX_LEN_FNAM),'(a)') ' '
-#ifdef ALLOW_OPENAD
-         write(xx_gentim2d_file(iarr)(1:14),'(a,i2.2)')
-     &        'xx_gentim2d_', iarr
-         write(xx_gentim2d_file(iarr)(15:MAX_LEN_FNAM),'(a)') ' '
-#endif
          write(xx_gentim2d_weight(iarr)(1:MAX_LEN_FNAM),'(a)') ' '
          xx_gentim2d_startdate1(iarr) = 0
          xx_gentim2d_startdate2(iarr) = 0
