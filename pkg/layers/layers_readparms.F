@@ -43,6 +43,12 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &       layers_useThermo,
      &       layers_name, layers_bounds, layers_krho
 
+      _BEGIN_MASTER(myThid)
+C     layers_useThermo is not private to pkg/layers so we need to set
+C     the default here because of the RETURN statement in the next block.
+      layers_useThermo = .FALSE.
+      _END_MASTER(myThid)
+
       IF ( .NOT.useLayers ) THEN
 C-    pkg LAYERS is not used
         _BEGIN_MASTER(myThid)
@@ -58,7 +64,7 @@ C     print a (weak) warning if data.layers is found
       layers_taveFreq = UNSET_RL
 
 C--   Default values for LAYERS
-      layers_useThermo = .FALSE.
+c     layers_useThermo = .FALSE.
       layers_diagFreq = dumpFreq
 C     The MNC stuff is not working yet
       layers_MNC = .FALSE.
