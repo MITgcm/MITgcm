@@ -113,7 +113,7 @@ C-     Check for valid density reference level:
 #ifndef LAYERS_THERMODYNAMICS
       IF ( layers_useThermo ) THEN
         WRITE(msgBuf,'(2A)') 'LAYERS_CHECK: ',
-     &    'layers_useTherm=T requires LAYERS_THERMODYNAMICS'
+     &    'layers_useThermo=T requires LAYERS_THERMODYNAMICS'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
