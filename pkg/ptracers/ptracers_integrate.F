@@ -89,6 +89,7 @@ C  gTracer          :: passive tracer tendency
 C  gTrForc          :: passive tracer forcing tendency
 C  gTr_AB           :: Adams-Bashforth tracer tendency increment
 C  gTr_trp          :: passive tracer total transport tendency before gchem
+C  tracTmp          :: tracer field intermediate value (after Multi-Dim Advect)
       INTEGER iTracer
       INTEGER iMin,iMax,jMin,jMax
       INTEGER i, j, k
@@ -108,6 +109,7 @@ C  gTr_trp          :: passive tracer total transport tendency before gchem
       _RL gTrForc (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL gTr_AB  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       LOGICAL calcAdvection
+      LOGICAL diagAdvVarE, diagAdvVarI
       INTEGER iterNb
       _RL dummy(Nr)
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -117,11 +119,14 @@ C     kkey :: tape key (depends on levels, tracer, and tiles)
       INTEGER  tkey, ikey, kkey
 #endif
 #ifdef ALLOW_DIAGNOSTICS
+      _RL tracTmp (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL gTr_trp (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL recip_dt
       CHARACTER*8 diagName
       CHARACTER*4 diagSufx
       LOGICAL diagForcing, diagAB_tend, diagTrp_tend
+#else /* ALLOW_DIAGNOSTICS */
+      _RL tracTmp(1)
 #endif /* ALLOW_DIAGNOSTICS */
 CEOP
 
@@ -179,6 +184,13 @@ C-    Initialise tracer tendency to zero
           diagTrp_tend = DIAGNOSTICS_IS_ON( diagName, myThid )
         ENDIF
 #endif
+        diagAdvVarE = .FALSE.
+        diagAdvVarI = .FALSE.
+        IF ( useDiagnostics )
+     &    CALL GAD_DIAG_VARIANCE_SET(
+     O             diagAdvVarE, diagAdvVarI,
+     I             PTRACERS_ImplVertAdv(iTracer),
+     I             GAD_TR, bi, bj, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
         tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
@@ -237,15 +249,15 @@ CADJ &      = comlev1_bibj_ptracers, key=ikey, byte=isbyte
          IF (debugMode) CALL DEBUG_CALL('GAD_SOM_ADVECT',myThid)
 # endif
           CALL GAD_SOM_ADVECT(
-     I                        PTRACERS_ImplVertAdv(iTracer),
-     I                        PTRACERS_advScheme(iTracer),
-     I                        PTRACERS_advScheme(iTracer),
-     I                        GAD_TR,
-     I                        PTRACERS_dTLev, uFld, vFld, wFld,
-     I                        pTracer(1-OLx,1-OLy,1,1,1,iTracer),
-     U                        _Ptracers_som(:,:,:,:,:,:,iTracer),
-     O                        gTracer,
-     I                        bi, bj, myTime, myIter, myThid )
+     I             PTRACERS_ImplVertAdv(iTracer), diagAdvVarE,
+     I             PTRACERS_advScheme(iTracer),
+     I             PTRACERS_advScheme(iTracer),
+     I             GAD_TR,
+     I             PTRACERS_dTLev, uFld, vFld, wFld,
+     I             pTracer(1-OLx,1-OLy,1,1,1,iTracer),
+     U             _Ptracers_som(:,:,:,:,:,:,iTracer),
+     O             gTracer, tracTmp,
+     I             bi, bj, myTime, myIter, myThid )
         ELSEIF ( PTRACERS_MultiDimAdv(iTracer) ) THEN
 #else /* PTRACERS_ALLOW_DYN_STATE */
         IF ( PTRACERS_MultiDimAdv(iTracer) ) THEN
@@ -254,14 +266,14 @@ CADJ &      = comlev1_bibj_ptracers, key=ikey, byte=isbyte
           IF (debugMode) CALL DEBUG_CALL('GAD_ADVECTION',myThid)
 # endif
           CALL GAD_ADVECTION(
-     I                        PTRACERS_ImplVertAdv(iTracer),
-     I                        PTRACERS_advScheme(iTracer),
-     I                        PTRACERS_advScheme(iTracer),
-     I                        GAD_TR,
-     I                        PTRACERS_dTLev, uFld, vFld, wFld,
-     I                        pTracer(1-OLx,1-OLy,1,1,1,iTracer),
-     O                        gTracer,
-     I                        bi, bj, myTime, myIter, myThid )
+     I             PTRACERS_ImplVertAdv(iTracer), diagAdvVarE,
+     I             PTRACERS_advScheme(iTracer),
+     I             PTRACERS_advScheme(iTracer),
+     I             GAD_TR,
+     I             PTRACERS_dTLev, uFld, vFld, wFld,
+     I             pTracer(1-OLx,1-OLy,1,1,1,iTracer),
+     O             gTracer, tracTmp,
+     I             bi, bj, myTime, myIter, myThid )
         ENDIF
 #endif /* DISABLE_MULTIDIM_ADVECTION */
 
@@ -396,6 +408,19 @@ CADJ &     key = kkey, kind = isbyte
           ENDIF
 #endif /* NONLIN_FRSURF */
 
+#ifdef ALLOW_DIAGNOSTICS
+          IF ( diagAdvVarE ) THEN
+            CALL GAD_DIAG_VARIANCE_K(
+     I               GAD_TR,
+     I               PTRACERS_MultiDimAdv(iTracer), calcAdvection,
+     I               xA, yA, uTrans, vTrans, rTransKp,
+     I               fZon, fMer, fVer(1-OLx,1-OLy,kDown), gTrForc,
+     I               pTracer(1-OLx,1-OLy,1,bi,bj,iTracer),
+     I               tracTmp, gTracer, PTRACERS_dTLev,
+     I               k, bi, bj, myTime, myIter, myThid )
+          ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+
 C-    end of vertical index (k) loop (Nr:1)
         ENDDO
 
@@ -455,22 +480,22 @@ CADJ STORE gTracer(:,:,:) = comlev1_bibj_ptracers, key=ikey, byte=isbyte
 C      to recover older (prior to 2016-10-05) results:
 c       IF ( PTRACERS_ImplVertAdv(iTracer) ) THEN
           CALL GAD_IMPLICIT_R(
-     I         PTRACERS_ImplVertAdv(iTracer),
-     I         PTRACERS_advScheme(iTracer), GAD_TR,
-     I         PTRACERS_dTLev, kappaRk, recip_hFac, wFld,
-     I         pTracer(1-OLx,1-OLy,1,bi,bj,iTracer),
-     U         gTracer,
-     I         bi, bj, myTime, myIter, myThid )
+     I             PTRACERS_ImplVertAdv(iTracer), diagAdvVarI,
+     I             PTRACERS_advScheme(iTracer), GAD_TR,
+     I             PTRACERS_dTLev, kappaRk, recip_hFac, wFld,
+     I             pTracer(1-OLx,1-OLy,1,bi,bj,iTracer),
+     U             gTracer,
+     I             bi, bj, myTime, myIter, myThid )
 
         ELSEIF ( implicitDiffusion ) THEN
 #else /* INCLUDE_IMPLVERTADV_CODE */
         IF ( implicitDiffusion ) THEN
 #endif /* INCLUDE_IMPLVERTADV_CODE */
           CALL IMPLDIFF(
-     I         bi, bj, iMin, iMax, jMin, jMax,
-     I         GAD_TR, kappaRk, recip_hFac,
-     U         gTracer,
-     I         myThid )
+     I             bi, bj, iMin, iMax, jMin, jMax,
+     I             GAD_TR, kappaRk, recip_hFac,
+     U             gTracer,
+     I             myThid )
         ENDIF
 
 #ifdef ALLOW_DIAGNOSTICS
