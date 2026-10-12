@@ -573,6 +573,13 @@ c     ENDIF
      I                   kLev, bi, bj, myTime, 0, myThid )
 #endif /* ALLOW_ICEFRONT */
 
+#ifdef ALLOW_ICEBERG
+      IF ( useICEBERG )
+     &     CALL ICEBERG_TENDENCY_APPLY_T(
+     U                   gT(1-OLx,1-OLy,kLev,bi,bj),
+     I                   kLev, bi, bj, myTime, 0, myThid )
+#endif /* ALLOW_ICEBERG */
+
 #ifdef ALLOW_SALT_PLUME
       IF ( useSALT_PLUME )
      &     CALL SALT_PLUME_TENDENCY_APPLY_T(
@@ -776,6 +783,13 @@ C     Ocean: Add salinity surface forcing (e.g., fresh-water) in surface level
      U                   gS(1-OLx,1-OLy,kLev,bi,bj),
      I                   kLev, bi, bj, myTime, 0, myThid )
 #endif /* ALLOW_ICEFRONT */
+
+#ifdef ALLOW_ICEBERG
+      IF ( useICEBERG )
+     &     CALL ICEBERG_TENDENCY_APPLY_S(
+     U                   gS(1-OLx,1-OLy,kLev,bi,bj),
+     I                   kLev, bi, bj, myTime, 0, myThid )
+#endif /* ALLOW_ICEBERG */
 
 #ifdef ALLOW_SALT_PLUME
       IF ( useSALT_PLUME )

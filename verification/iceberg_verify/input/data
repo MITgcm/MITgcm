@@ -1,0 +1,81 @@
+# ==================== 
+# | Model parameters | 
+# ==================== 
+
+# Continuous equation parameters
+ &PARM01
+# vectorInvariantMomentum=.TRUE.,
+ viscAz=1.00000000e-04,
+ viscAh=1.00000000e-03,
+ viscC2smag=2.20000000e+00,
+ tempAdvScheme=33,
+ saltAdvScheme=33,
+ saltStepping=.TRUE.,
+ staggerTimeStep=.TRUE.,
+ diffKhT=0.00000000e+00,
+ diffKhS=0.00000000e+00,
+ diffKzT=0.00000000e+00,
+ diffKzS=0.00000000e+00,
+ eosType='JMD95Z',
+ Tref=0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 
+      0.00000000e+00, 0.00000000e+00,
+ Sref=3.40000000e+01, 3.40000000e+01, 3.40000000e+01, 3.40000000e+01, 3.40000000e+01, 3.40000000e+01, 3.40000000e+01, 3.40000000e+01, 3.40000000e+01, 3.40000000e+01, 
+      3.40000000e+01, 3.40000000e+01,
+ no_slip_sides=.FALSE.,
+ no_slip_bottom=.FALSE.,
+ rigidLid=.FALSE.,
+ implicitFreeSurface=.TRUE.,
+ implicitViscosity=.TRUE.,
+ implicitDiffusion=.TRUE.,
+ f0=1.37000000e-04,
+ beta=0.00000000e+00,
+ gravity=9.81000000e+00,
+ hFacMin=5.00000000e-02,
+ nonHydrostatic=.FALSE.,
+ readBinaryPrec=64,
+ useSmag3D=.FALSE.,
+ smag3D_coeff=1.00000000e-04,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=300,
+ cg2dTargetResidual=1.00000000e-13,
+ cg3dMaxIters=20,
+ cg3dTargetResidual=1.00000000e-08,
+ &
+
+# Time stepping parameters
+ &PARM03
+ dumpInitAndLast=.FALSE.,
+ nIter0=0,
+ abEps=1.00000000e-01,
+ chkptFreq=0.00000000e+00,
+ pChkptFreq=8.64000000e+04,
+ taveFreq=0.00000000e+00,
+ dumpFreq=3600,
+ monitorFreq=2.16000000e+04,
+ monitorSelect=1,
+ endTime=864000,
+ deltaT=25,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingCartesianGrid=.TRUE.,
+ usingSphericalPolarGrid=.FALSE.,
+ delX=5.00000000e+02, 5.00000000e+02, 5.00000000e+02, 5.00000000e+02, 5.00000000e+02, 5.00000000e+02, 5.00000000e+02, 5.00000000e+02, 5.00000000e+02, 5.00000000e+02, 
+      5.00000000e+02, 5.00000000e+02, 5.00000000e+02, 5.00000000e+02, 5.00000000e+02, 5.00000000e+02, 5.00000000e+02, 5.00000000e+02, 5.00000000e+02, 5.00000000e+02, 
+      5.00000000e+02, 5.00000000e+02, 5.00000000e+02, 5.00000000e+02, 5.00000000e+02, 5.00000000e+02, 5.00000000e+02, 5.00000000e+02, 5.00000000e+02, 5.00000000e+02,
+ delY=5.00000000e+02, 5.00000000e+02, 5.00000000e+02, 5.00000000e+02, 5.00000000e+02, 5.00000000e+02, 5.00000000e+02, 5.00000000e+02, 5.00000000e+02, 5.00000000e+02,
+ delZ=1.25000000e+01, 1.93181818e+01, 2.61363636e+01, 3.29545455e+01, 3.97727273e+01, 4.65909091e+01, 5.34090909e+01, 6.02272727e+01, 6.70454545e+01, 7.38636364e+01, 
+      8.06818182e+01, 8.75000000e+01,
+ &
+
+# Input datasets
+ &PARM05
+ bathyFile='bathymetry.bin',
+ hydrogThetaFile='T.init',
+ hydrogSaltFile='S.init',
+ &
+

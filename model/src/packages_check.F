@@ -376,6 +376,12 @@ C---  Continue with standard packages (with standard usePKG flag)
      &                  'ICEFRONT', ' ', myThid )
 #endif
 
+#ifdef ALLOW_ICEBERG
+      IF (useICEBERG) CALL ICEBERG_CHECK( myThid )
+#else
+      IF (useICEBERG) CALL PACKAGES_ERROR_MSG('ICEBERG',' ',myThid)
+#endif
+
 #ifdef ALLOW_THSICE
       IF ( useThSIce ) CALL THSICE_CHECK( myThid )
 #else

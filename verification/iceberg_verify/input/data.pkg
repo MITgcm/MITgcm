@@ -1,0 +1,6 @@
+# Packages
+ &PACKAGES
+ useICEBERG=.TRUE.,
+ useDiagnostics=.TRUE.,
+ useOBCS=.TRUE.,
+ &
