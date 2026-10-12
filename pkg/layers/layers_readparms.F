@@ -44,8 +44,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &       layers_name, layers_bounds, layers_krho
 
       _BEGIN_MASTER(myThid)
-C     layers_useThermo is not private to pkg/layers so we need to set
-C     the default here because of the RETURN statement in the next block.
+C     layers_useThermo (in LAYERS_P2SHARE.h) is also used outside pkg/layers
+C     so needs to be set even if useLayers=F (therefore before the next block)
       layers_useThermo = .FALSE.
       _END_MASTER(myThid)
 
