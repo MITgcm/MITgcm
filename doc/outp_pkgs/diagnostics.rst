@@ -338,6 +338,40 @@ does time averaging every 3600. seconds and the names of diagnostics quantities
 are ``THETA`` and ``SALT``.  It interpolates vertically to the pressure levels
 100000 Pa, ..., 20000 Pa.
 
+The parameter :varlink:`timePhase` is used to refine the output time within the
+:varlink:`frequency` interval (i.e., to set the phase) as well as to delay the
+first output until time :varlink:`timePhase` is reached:
+
+| output-time :math:`=` :varlink:`timePhase` :math:`+ N \times`
+  \| :varlink:`frequency` \|, with integer :math:`N \ge 0`
+
+:varlink:`timePhase` defaults to zero for positive :varlink:`frequency`
+so that, by default, time averages are written at the end of the time interval
+specified by :varlink:`frequency`; and to ``-0.5*`` \| :varlink:`frequency` \|
+for negative :varlink:`frequency` so that, by default, snapshots are written
+in the middle of the time interval specified by :varlink:`frequency`.
+
+Note that, when delaying the first time-averaged output (with
+:varlink:`timePhase` :math:`>` \| :varlink:`frequency` \|), the resulting
+first output will be averaged over a longer time interval than
+:varlink:`frequency` and longer than the subsequent output since the averaging
+starts at the first time-step.
+
+There is a special case when using :filelink:`pkg/cal` (``useCAL=T``) with
+:varlink:`calendarDumps` set to ``.TRUE.`` (in :filelink:`data.cal`). In this
+case, any value of :varlink:`frequency` between 2592000 and 2678400 seconds (30
+and 31 days) triggers monthly output according to the specified calendar and
+any value betweeen 31104000 and 31968000 seconds (360 and 370 days) triggers
+yearly output. The parameter :varlink:`timePhase` can still be used to start
+the averaged or snapshot output after ``N`` months or years, where now the
+"unit" month or year is defined by the value of :varlink:`frequency`. For
+example, if you specify :varlink:`frequency` = 31363217 seconds (363 days and
+17 seconds, this awkward example is deliberate to make our point clear) with
+:varlink:`calendarDumps` ``=.TRUE.``, the model will write yearly averages at
+the end of each calendar year exactly (taking into account all possible leap
+years, etc.); to start writing averages only after ``N=50`` years,
+:varlink:`timePhase` needs be ``50*31363217 = 1568160850``.
+
 The :varlink:`fileFlags` parameter is explained in
 :numref:`diagnostic_fileFlags`.  Only the first three characters matter.  The
 first character determines the precision of the output files.  The default is
@@ -903,4 +937,3 @@ describing the package:
 -  :filelink:`pkg/shap_filt`: :ref:`available diagnostics <shapiro_diagnostics>`
 
 -  :filelink:`pkg/ptracers`: :ref:`available diagnostics <ptracers_diagnostics>`
-

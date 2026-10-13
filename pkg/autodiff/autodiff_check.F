@@ -24,6 +24,8 @@ C     \ev
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid -  Number of this instances
       INTEGER myThid
+
+C     !LOCAL VARIABLES:
 C     msgBuf :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
@@ -130,16 +132,6 @@ c#endif
        ENDIF
 # endif /*  ALLOW_DIAGNOSTICS */
 #endif /* ndef ALLOW_AUTODIFF_MONITOR */
-
-#ifdef ALLOW_OPENAD
-# if (defined (ALLOW_ECCO) || defined (ALLOW_PROFILES))
-       WRITE(msgBuf,'(2A)')
-     &  'AUTODIFF_CHECK: pkg ECCO or PROFILES not yet implemented ',
-     &  ' for ALLOW_AUTODIFF_OPENAD'
-       CALL PRINT_ERROR( msgBuf , myThid )
-       STOP 'ABNORMAL END: S/R AUTODIFF_CHECK'
-# endif
-#endif /* ALLOW_OPENAD */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

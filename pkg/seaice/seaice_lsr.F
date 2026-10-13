@@ -522,7 +522,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      O        gUmom, gVmom,
      I        myTime, myIter, myThid )
          DO j=jMin,jMax
-          DO i=jMin,jMax
+          DO i=iMin,iMax
            rhsU(i,j,bi,bj) = rhsU(i,j,bi,bj) + gUmom(i,j)
            rhsV(i,j,bi,bj) = rhsV(i,j,bi,bj) + gVmom(i,j)
           ENDDO
@@ -831,7 +831,7 @@ CADJ STORE uice, vice = comlev1_lsr, kind=isbyte, key = lnkey
               rhsVy(i,j,bi,bj) = ( rhsV(i,j,bi,bj)
      &             + vRt1(i,j,bi,bj)*vIce(i-1,j,bi,bj)
      &             + vRt2(i,j,bi,bj)*vIce(i+1,j,bi,bj)
-     &                           )*seaiceMaskU(i,j,bi,bj)
+     &                           )*seaiceMaskV(i,j,bi,bj)
              ENDDO
             ENDDO
            ENDIF
@@ -1908,7 +1908,7 @@ C     to save memory we re-use sig22 as sig11, hopefully without confusion
        DO j=jMin,jMax
         DO i=iMin,iMax
          rhsV(i,j,bi,bj) = rhsV(i,j,bi,bj)
-     &        + seaiceMaskU(i,j,bi,bj) * halfRL *
+     &        + seaiceMaskV(i,j,bi,bj) * halfRL *
      &        ( k1AtV(i,j,bi,bj) * ( sig12(i,j) + sig12(i+1,j) )
      &        - k2AtV(i,j,bi,bj) * ( sig22(i,j) + sig22(i,j-1) ) )
         ENDDO

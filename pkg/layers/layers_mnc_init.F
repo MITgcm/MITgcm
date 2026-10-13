@@ -17,8 +17,7 @@ C     !INPUT PARAMETERS:
       INTEGER myThid
 CEOP
 
-#ifdef ALLOW_LAYERS
-#ifdef ALLOW_MNC
+#if defined ALLOW_LAYERS && defined ALLOW_MNC
 
       IF (useMNC) THEN
 
@@ -38,11 +37,9 @@ C           'V_xy_Hn__G__t'
      &       'Northward Velocity Integrated Over Isopycnal Layer',
      &       myThid)
 
-
       ENDIF
 
-#endif /* ALLOW_MNC */
-#endif /* ALLOW_GMREDI */
+#endif /* ALLOW_LAYERS and ALLOW_MNC */
 
       RETURN
       END

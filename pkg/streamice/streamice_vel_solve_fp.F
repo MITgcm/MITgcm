@@ -6,16 +6,21 @@
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP
+C     !ROUTINE: STREAMICE_VEL_SOLVE_FP
+C     !INTERFACE:
       SUBROUTINE STREAMICE_VEL_SOLVE_FP ( myThid, maxNLIter,
      &                                maxCGiter, myIter )
-C     /============================================================\
+C     !DESCRIPTION: \bv
+C     *============================================================*
 C     | SUBROUTINE                                                 |
 C     | o                                                          |
-C     |============================================================|
+C     *============================================================*
 C     |                                                            |
-C     \============================================================/
-      IMPLICIT NONE
+C     *============================================================*
+C     \ev
 
+C     !USES:
+      IMPLICIT NONE
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -23,27 +28,20 @@ C     === Global variables ===
 #include "STREAMICE.h"
 #include "STREAMICE_CG.h"
 
-C     !INPUT/OUTPUT ARGUMENTS
+C     !INPUT/OUTPUT PARAMETERS:
       INTEGER myThid
       INTEGER maxNLIter
       INTEGER maxCGIter
       INTEGER myIter
 
 #ifdef ALLOW_STREAMICE
-
-C     LOCAL VARIABLES
-
 #ifdef ALLOW_STREAMICE_FP_ADJ
+C     !LOCAL VARIABLES:
       INTEGER i, j, k, l, bi, bj, loopiter
       INTEGER NL_iter
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL err_last_change, cgtol, err_init
       LOGICAL CONVERGED
-
-#ifdef ALLOW_OPENAD
-      INTEGER ADJ_ITER
-      LOGICAL ADJ_CONVERGED
-#endif
 
       isinloop0 =0
       isinloop1 =1
@@ -103,21 +101,6 @@ C     LOCAL VARIABLES
 
        endif
 
-#ifdef ALLOW_OPENAD
-      CALL STREAMICE_VEL_PHISTAGE (
-     I                   myThid,
-     I                   maxNLIter,
-     I                   maxCGiter,
-     O                   cgtol,
-     O                   nL_iter,
-     O                   adj_iter,
-     O                   CONVERGED,
-     O                   ADJ_CONVERGED,
-     O                   err_last_change,
-     O                   err_init,
-     I                   isinloop0)
-#endif
-
 #if (defined(ALLOW_STREAMICE_FP_ADJ) && defined(ALLOW_TAPENADE))
 #ifdef STREAMICE_HYBRID_STRESS
 !$AD FP-LOOP "u_streamice,v_streamice,streamice_taubx,streamice_tauby,visc_streamice_full" adj_reduction=1.e-6
@@ -134,7 +117,6 @@ C       but after convergence loop does nothing
 
 c        IF (.not.CONVERGED) THEN
 
-#ifndef ALLOW_OPENAD
       CALL STREAMICE_VEL_PHISTAGE (
      I                   myThid,
      I                   maxNLIter,
@@ -145,20 +127,6 @@ c        IF (.not.CONVERGED) THEN
      O                   err_last_change,
      O                   err_init,
      I                   isinloop1)
-#else
-      CALL STREAMICE_VEL_PHISTAGE (
-     I                   myThid,
-     I                   maxNLIter,
-     I                   maxCGiter,
-     O                   cgtol,
-     O                   nL_iter,
-     O                   adj_iter,
-     O                   CONVERGED,
-     O                   ADJ_CONVERGED,
-     O                   err_last_change,
-     O                   err_init,
-     I                   isinloop1)
-#endif
 
 c      DO bj = myByLo(myThid), myByHi(myThid)
 c       DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -173,20 +141,16 @@ c      ENDDO
 
       ENDDO
 
-#ifdef ALLOW_OPENAD
       CALL STREAMICE_VEL_PHISTAGE (
      I                   myThid,
      I                   maxNLIter,
      I                   maxCGiter,
      O                   cgtol,
      O                   nL_iter,
-     O                   adj_iter,
      O                   CONVERGED,
-     O                   ADJ_CONVERGED,
      O                   err_last_change,
      O                   err_init,
      I                   isinloop2)
-#endif
 
 C END NL ITER. LOOP
 C-------------------------------------------------------------------
@@ -211,7 +175,7 @@ C-------------------------------------------------------------------
 
       CALL TIMER_STOP ('STREAMICE_VEL_SOLVE',myThid)
 
-#endif
-#endif
+#endif /* ALLOW_STREAMICE_FP_ADJ */
+#endif /* ALLOW_STREAMICE */
       RETURN
       END

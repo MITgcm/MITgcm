@@ -394,7 +394,7 @@ C     Compute some donnor and receiver cell properties.
 C     Compute volume transport from donnor to receiver.
            dVol = min ( bblEta_d * rA(d,j,bi,bj) / 2. _d 0,
      &          resThk_r * rA(r,j,bi,bj) / 2. _d 0,
-     &          dxG(i+1,j,bi,bj) * bblEta_d * bbl_hvel * deltaT )
+     &          dyG(i+1,j,bi,bj) * bblEta_d * bbl_hvel * deltaT )
 
 C     Compute temperature tracer tendencies for donor and receiver cell.
            bbl_tend = dVol * (bblTheta_d - resTheta_r) / deltaT
@@ -496,7 +496,7 @@ C     Compute some donnor and receiver cell properties.
 C     Compute volume transport from donnor to receiver.
             dVol = min ( bblEta_d * rA(d,j,bi,bj) / 2. _d 0,
      &           resThk_r * rA(r,j,bi,bj) / 2. _d 0,
-     &           dxG(i+1,j,bi,bj) * bblEta_d * bbl_hvel * deltaT )
+     &           dyG(i+1,j,bi,bj) * bblEta_d * bbl_hvel * deltaT )
 
 C     Compute temperature tracer tendencies for donor and receiver cell.
             bbl_tend = dVol * (bblTheta_d - resTheta_r) / deltaT

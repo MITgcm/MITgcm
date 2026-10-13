@@ -39,7 +39,8 @@ C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_FNAM) fn
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER prec, ioUnit
-      _RL tmparr(2), dummyRS(1)
+      _RL tmpArr(2)
+      _RS dummyRS(1)
 CEOP
 
       WRITE(fn,'(A,A10)') 'pickup_ecco.',suff
@@ -47,12 +48,12 @@ CEOP
         ioUnit = 0
         prec = precFloat64
 
-        tmparr(1) = VOLsumGlob_0
-        tmparr(2) = RHOsumGlob_0
+        tmpArr(1) = VOLsumGlob_0
+        tmpArr(2) = RHOsumGlob_0
 #ifdef ALLOW_MDSIO
         CALL MDS_WRITEVEC_LOC(
      I             fn, prec, ioUnit,
-     I             'RL', 2, tmparr, dummyRS,
+     I             'RL', 2, tmpArr, dummyRS,
      I             0, 0, 1, myIter, myThid )
 #else
         STOP 'ABNORMAL END: S/R ECCO_WRITE_PICKUP: Needs MDSIO pkg'

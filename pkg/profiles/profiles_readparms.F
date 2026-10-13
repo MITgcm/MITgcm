@@ -56,7 +56,8 @@ C Number of independent samples
      &                   prof_itracer,
      &                   profilesDoNcOutput,
      &                   profilesDoGenGrid,
-     &                   prof_make_nc
+     &                   prof_make_nc,
+     &                   prof_dBugLevel
 
       IF ( .NOT.usePROFILES ) THEN
         _BEGIN_MASTER(myThid)
@@ -98,6 +99,7 @@ C Set default values.
 
       profilesDoNcOutput = .false.
       prof_make_nc = .false.
+      prof_dBugLevel = debugLevel
 
       IF ( (.NOT.usingSphericalPolarGrid.OR.rotateGrid) ) THEN
         profilesDoGenGrid = .true.
