@@ -68,14 +68,6 @@ CADJ STORE area_shelf_streamice = loctape_stream_adv, key = 1
 CADJ STORE bdot_streamice       = loctape_stream_adv, key = 1
 #endif
 
-#ifdef ALLOW_OPENAD
-      DO k=1,streamice_smooth_thick_adjoint
-      CALL STREAMICE_SMOOTH_ADJOINT_FIELD (
-     O            H_streamice,
-     I            myThid)
-      ENDDO
-#endif
-
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
 #endif

@@ -453,11 +453,7 @@ C--   Initialise fixed array for Float pkg
 # ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('STREAMICE_INIT_FIXED',myThid)
 # endif
-#ifndef ALLOW_OPENAD
        CALL STREAMICE_INIT_FIXED( myThid )
-#else
-       CALL OPENAD_STREAMICE_INIT_FIXED( myThid )
-#endif
       ENDIF
 #endif /* ALLOW_STREAMICE */
 

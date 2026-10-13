@@ -1,6 +1,22 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/layers:
+  - turn "layers_useThermo" into runtime parameter, default =False.
+o tools, pkgs and src code:
+  - remove all OpenAD bits from genmake2 & testreport, remove all OAD_support
+    and pkg/openad contents ; remove all OpenAD bits in model/src and pkgs.
+o pkg/cal:
+  - fix the handling of the "phase" in cal_time2dump.F, when calendarDumps=T,
+    specially for the case where phase > |freq| (for skipping early output).
+
+checkpoint69r (2026/10/05)
+o tools/build_options:
+  - add gfortran and intel compiler optfile for newer AMD and Intel processors
+    (e.g., engaging Rocky-8 nodes).
+o pkg/ecco & ctrl:
+  - quick fix for "xx_geothermal" ctrl when compiling with _RS being real*4;
+  - add secondary test ideal_2D_oce.geom to the list of multi-threaded tests.
 o pkg/cheapaml:
   - fix cheapaml implementation of Large and Pond surface flux and add a
     secondary test in experiment cheapAML_box that uses 'LANL' flux formula.
