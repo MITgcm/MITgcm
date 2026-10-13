@@ -1,30 +1,45 @@
-C CPP options file for LAYERS package
-C Use this file for selecting options within package "LAYERS"
-
 #ifndef LAYERS_OPTIONS_H
 #define LAYERS_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
-#ifdef ALLOW_LAYERS
-C     Package-specific Options & Macros go here
+CBOP
+C !ROUTINE: LAYERS_OPTIONS.h
+C !INTERFACE:
+C #include "LAYERS_OPTIONS.h"
 
-C Compute isopycnal tranports in the U direction?
+C !DESCRIPTION:
+C *==================================================================*
+C | CPP options file for pkg "layers":
+C | Control which optional features to compile in this package code.
+C *==================================================================*
+CEOP
+
+#ifdef ALLOW_LAYERS
+C---- Package-specific Options & Macros go here
+
+C-  Allow to use potential density as layer coordinate
+C   (layers defined as between isopycnal surfaces)
+#define LAYERS_PRHO_REF
+
+C-  Allow to use Moist Static Energy as layer coordinate (for atmospheric setup)
+#undef LAYERS_MSE
+
+C-- To map horizontal transport to layers (isothermal, isohaline, isopycnal):
+C   allow to map transport in U direction:
 #define LAYERS_UFLUX
-C Compute isopycnal tranports in the V direction?
+C   allow to map transport in V direction:
 #define LAYERS_VFLUX
-C Keep track of layer thicknesses?
+C   and allow to keep track of layer thickness and probability/occurence
 #define LAYERS_THICKNESS
-C Do water mass thermodynamics?
+
+C-- Enable water mass transformation budget:
 #define LAYERS_THERMODYNAMICS
-C Use refined grid for diapycnal terms? (gives worse results)
+C   using refined grid for diapycnal terms (gives worse results)
 #undef LAYERS_FINEGRID_DIAPYCNAL
 
-C The MNC stuff is too complicated
+C-  The MNC stuff is too complicated
 #undef LAYERS_MNC
-
-C Allow use of potential density as a layering field.
-#define LAYERS_PRHO_REF
 
 #endif /* ALLOW_LAYERS */
 #endif /* LAYERS_OPTIONS_H */
