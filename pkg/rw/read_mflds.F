@@ -280,7 +280,7 @@ C     !FUNCTIONS
       EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
-      INTEGER j, iL, ioUnit, globFile
+      INTEGER j, iL, ioUnit, glbFile
       LOGICAL prtMsg
       LOGICAL useCurrentDir
       _RS     dummyRS(1)
@@ -345,14 +345,12 @@ C-      increment record number
       IF ( nj.GE.1 ) THEN
 C--   read in array "field"
         fName = mFldsFile
-        globFile = glob_File
+        glbFile = glob_File
         useCurrentDir = .FALSE.
         fType = 'RL'
 #ifdef ALLOW_MDSIO
-c       CALL MDS_READ_FIELD(
-c    I                       fName, fPrec, useCurrentDir,
-        CALL MDS_READ_FIELD_NEW(
-     I                       fName, globFile, fPrec, useCurrentDir,
+        CALL MDS_READ_FIELD(
+     I                       fName, fPrec, glbFile, useCurrentDir,
      I                       fType, nNz, 1, nNz,
      O                       field, dummyRS,
      I                       nj, myThid )
@@ -412,7 +410,7 @@ C     !FUNCTIONS
       EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
-      INTEGER j, iL, ioUnit, globFile
+      INTEGER j, iL, ioUnit, glbFile
       LOGICAL prtMsg
       LOGICAL useCurrentDir
       _RS     dummyRS(1)
@@ -477,14 +475,12 @@ C-      increment record number
       IF ( nj.GE.1 ) THEN
 C--   read in array "field"
         fName = mFldsFile
-        globFile = glob_File
+        glbFile = glob_File
         useCurrentDir = .FALSE.
         fType = 'RL'
 #ifdef ALLOW_MDSIO
-c       CALL MDS_READ_FIELD(
-c    I                       fName, fPrec, useCurrentDir,
-        CALL MDS_READ_FIELD_NEW(
-     I                       fName, globFile, fPrec, useCurrentDir,
+        CALL MDS_READ_FIELD(
+     I                       fName, fPrec, glbFile, useCurrentDir,
      I                       fType, kSiz, kLo, kHi,
      O                       field, dummyRS,
      I                       nj, myThid )
@@ -544,7 +540,7 @@ C     !FUNCTIONS
       EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
-      INTEGER j, iL, ioUnit, globFile
+      INTEGER j, iL, ioUnit, glbFile
       LOGICAL prtMsg
       LOGICAL useCurrentDir
       _RL     dummyRL(1)
@@ -609,14 +605,12 @@ C-      increment record number
       IF ( nj.GE.1 ) THEN
 C--   read in array "field"
         fName = mFldsFile
-        globFile = glob_File
+        glbFile = glob_File
         useCurrentDir = .FALSE.
         fType = 'RS'
 #ifdef ALLOW_MDSIO
-c       CALL MDS_READ_FIELD(
-c    I                       fName, fPrec, useCurrentDir,
-        CALL MDS_READ_FIELD_NEW(
-     I                       fName, globFile, fPrec, useCurrentDir,
+        CALL MDS_READ_FIELD(
+     I                       fName, fPrec, glbFile, useCurrentDir,
      I                       fType, kSiz, kLo, kHi,
      O                       dummyRL, field,
      I                       nj, myThid )
