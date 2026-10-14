@@ -192,15 +192,9 @@ CEOP
         IF (debugMode) CALL DEBUG_CALL('FORWARD_STEP',myThid)
 #endif
 
-#ifdef ALLOW_ATM2D
-        CALL TIMER_START('FORWARD_STEP_ATM2D  [MAIN_DO_LOOP]',myThid)
-        CALL FORWARD_STEP_ATM2D( iloop, myTime, myIter, myThid )
-        CALL TIMER_STOP ('FORWARD_STEP_ATM2D  [MAIN_DO_LOOP]',myThid)
-#else
         CALL TIMER_START('FORWARD_STEP        [MAIN_DO_LOOP]',myThid)
         CALL FORWARD_STEP( iloop, myTime, myIter, myThid )
         CALL TIMER_STOP ('FORWARD_STEP        [MAIN_DO_LOOP]',myThid)
-#endif
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_LEAVE('MAIN_DO_LOOP',myThid)
