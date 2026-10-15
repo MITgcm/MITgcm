@@ -1916,7 +1916,8 @@ verification experiments for reference.
 
 ``autodiff`` is not completely untangled from the Tapenade setup yet. In
 ``code_tap/AUTODIFF_OPTIONS.h``, the only flag that can be defined safely is
-``ALLOW_AUTODIFF_MONITOR``.
+``ALLOW_AUTODIFF_MONITOR`` (which enables the adjoint output described in
+:numref:`ad_tapenade_output`).
 
 Rest of the setup remains unchanged.
 
@@ -1976,6 +1977,62 @@ flow will look as follows -
     ./prepare_run
     ln -s ../build/mitgcmuv_tap_adj .
     ./mitgcmuv_tap_adj > output_tap_adj.txt 2>&1
+
+.. _ad_tapenade_output:
+
+Adjoint and tangent-linear output with Tapenade
+-----------------------------------------------
+
+With ``ALLOW_AUTODIFF_MONITOR`` defined in ``AUTODIFF_OPTIONS.h``, a
+Tapenade-generated adjoint writes the same adjoint-state output as a
+TAF-generated one, controlled by the same run-time parameters of ``data`` and
+``data.autodiff``:
+
+- the binary dumps ``ADJtheta``, ``ADJsalt``, ``ADJuvel``, ``ADJvvel``,
+  ``ADJwvel`` and ``ADJetan`` every ``adjDumpFreq`` seconds; without
+  :filelink:`pkg/exf` and :filelink:`pkg/seaice` also the surface-forcing
+  adjoints ``ADJtaux``, ``ADJtauy``, ``ADJqnet``, ``ADJempr`` and (with
+  ``SHORTWAVE_HEATING``) ``ADJqsw``; and ``ADJdiffkr`` with
+  ``ALLOW_DIFFKR_CONTROL``. Before a field is written its tile-overlap
+  (halo) adjoint contributions are folded into the interior points that own
+  them when ``dumpAdVarExch = 1``, as with TAF; the ``ADEXCH_*`` routines that
+  do this are implemented in :filelink:`pkg/tapenade/stubs_tap_adj.F`;
+- the adjoint diagnostics of the same names (``ADJtheta``, ``ADJuvel``, ...)
+  through :filelink:`pkg/diagnostics` when ``useDiag4AdjOutp`` is set, with
+  the reversed-time bookkeeping of ``DIAGNOSTICS_SWITCH_ONOFF`` and
+  ``DIAGNOSTICS_WRITE_ADJ`` run at every backward time step;
+- the ``G_J*`` counterparts of the ``ADJ*`` dumps from a tangent-linear
+  build (``make tap_tlm``).
+
+The adjoint-mode parameter switches of ``data.autodiff`` (``viscFacInAd``,
+``useKPPinAdMode``, ``useGMRediInAdMode``, ``useSEAICEinAdMode``,
+``useApproxAdvectionInAdMode``, ...) are applied at the start of every
+backward time step and reverted at its end, as in a TAF-generated adjoint
+(see :filelink:`pkg/autodiff/autodiff_inadmode_set_ad.F`).
+
+How this works, for anyone who needs to add a field: TAF places its
+hand-written adjoint of a hook such as ``DUMMY_IN_STEPPING`` into the reverse
+sweep through the ``ADNAME`` and ``REQUIRED`` flow directives of
+:filelink:`pkg/autodiff/dummy_in_stepping.flow`. Tapenade has no such
+directive; an external routine whose arguments are all passive is simply left
+out of the generated adjoint. The Tapenade counterparts of the hooks
+(:filelink:`pkg/tapenade/dummy_tap.F`) therefore carry the field they act on as
+an argument, and the Tapenade external library
+:filelink:`tools/TAP_support/flow_tap` declares that argument as read then
+written. Tapenade then generates, at the mirror image of the forward call, a
+call to the hook's ``_B`` (adjoint), ``_D`` (tangent-linear) or ``_FWD``/``_BWD``
+(adjoint without checkpointing) routine, passing the derivative of the field
+as an extra argument; those routines are hand-written in ``dummy_tap.F`` and
+call the same ``DUMP_ADJ_*`` and ``WRITE_FLD_*`` helpers as the TAF path. The
+forward hooks themselves do nothing. The state and forcing fields are passed
+one field per call from :filelink:`pkg/tapenade/dummy_in_stepping_tap.F`, the
+one routine Tapenade differentiates (listed in
+:filelink:`pkg/tapenade/tapenade_ad_diff.list`); a field that is passive in a
+given configuration then simply loses its call, while a hook carrying several
+fields would be generated with a configuration-dependent argument list. To add
+a field, add one guarded call in ``dummy_in_stepping_tap.F`` (and, for a field
+shape that has no hook yet, one hook family in ``dummy_tap.F`` with its
+``flow_tap`` stanza).
 
 .. rubric:: Footnotes
 
