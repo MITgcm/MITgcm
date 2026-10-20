@@ -112,13 +112,8 @@ C     Write each passive tracer in its own file
          ENDIF
 #endif /* MULTIPLE_RECORD_STATE_FILES */
 
-#ifdef ALLOW_OPENAD
-         CALL WRITE_REC_XYZ_RL(pref,
-     &        pTracer(:,:,:,:,:,iTracer)%v,iRec,myIter,myThid)
-#else
          CALL WRITE_REC_XYZ_RL(pref,
      &        pTracer(1-OLx,1-OLy,1,1,1,iTracer),iRec,myIter,myThid)
-#endif
 
 C     End of tracer loop
         ENDDO
