@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/layers:
+  - turn "layers_useThermo" into runtime parameter, default =False.
 o tools, pkgs and src code:
   - remove all OpenAD bits from genmake2 & testreport, remove all OAD_support
     and pkg/openad contents ; remove all OpenAD bits in model/src and pkgs.
