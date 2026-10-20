@@ -184,8 +184,9 @@ C     once in the beginning
       ELSE
 
 C--   Now calculate whether it is time to update the forcing arrays
+C     fac is the weight of record count0, as in the useCAL=T case
        CALL GET_PERIODIC_INTERVAL(
-     O                   countP, count0, count1, tmpFac, fac,
+     O                   countP, count0, count1, fac, tmpFac,
      I                   externForcingCycle, xx_genperiod,
      I                   deltaTClock, myTime, myThid )
 

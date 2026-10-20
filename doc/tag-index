@@ -1,6 +1,21 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ctrl:
+  - fix interpolation weights in ctrl_get_gen_rec.F for time-varying controls
+    (gentim2d) without pkg/cal (useCAL=F);
+  - change ctrl period and externForcingCycle in halfpipe_streamice AD test
+    (in input_ad) to test time interpolation with weights other than 0.5;
+    and update TAF & Tapenade ref. output.
+o pkg/layers:
+  - turn "layers_useThermo" into runtime parameter, default =False.
+o tools, pkgs and src code:
+  - remove all OpenAD bits from genmake2 & testreport, remove all OAD_support
+    and pkg/openad contents ; remove all OpenAD bits in model/src and pkgs.
+o pkg/cal:
+  - fix the handling of the "phase" in cal_time2dump.F, when calendarDumps=T,
+    specially for the case where phase > |freq| (for skipping early output).
+
 checkpoint69r (2026/10/05)
 o tools/build_options:
   - add gfortran and intel compiler optfile for newer AMD and Intel processors
