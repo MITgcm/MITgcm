@@ -1,6 +1,12 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ctrl:
+  - fix interpolation weights in ctrl_get_gen_rec.F for time-varying controls
+    (gentim2d) without pkg/cal (useCAL=F);
+  - change ctrl period and externForcingCycle in halfpipe_streamice AD test
+    (in input_ad) to test time interpolation with weights other than 0.5;
+    and update TAF & Tapenade ref. output.
 o pkg/layers:
   - turn "layers_useThermo" into runtime parameter, default =False.
 o tools, pkgs and src code:
