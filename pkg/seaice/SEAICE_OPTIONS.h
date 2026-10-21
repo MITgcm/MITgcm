@@ -183,8 +183,9 @@ C     that needs to be tested. Can be used without vectorization options.
 C     Include code to print residual of nonlinear outer loop of LSR
 # undef SEAICE_ALLOW_CHECK_LSR_CONVERGENCE
 
-C     This flag is also required for an actual adjoint of seaice_lsr;
-C     increases memory requirements a lot.
+C     This flag is also required for an actual TAF-generated adjoint
+C     of seaice_lsr; increases memory requirements a lot.
+C     TAPENADE does not use or require this flag at all.
 # undef SEAICE_LSR_ADJOINT_ITER
 
 C     Allow using the flexible LSR solver, where the number of non-linear
