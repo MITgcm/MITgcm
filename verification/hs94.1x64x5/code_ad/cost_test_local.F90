@@ -1,7 +1,6 @@
 #include "PACKAGES_CONFIG.h"
-! Copied from default CPP_EEMACROS.h
-! To avoid this, we need to find a way to include CPP_EEMACROS.h
-#define _RL Real*8
+#include "CPP_OPTIONS.h"
+! End of included CPP Options files -- Do not delete or modify <<
 
 !BOP
 !     !ROUTINE: COST_TEST_LOCAL
@@ -42,6 +41,8 @@ subroutine cost_test_local ( &
   ! loop indices
   integer :: i, j, k, ig, jg
   integer :: bi, bj
+character*(2) sfx
+CHARACTER*(128) msgBuf
 !EOP
 
   do bj=myByLo,myByHi
