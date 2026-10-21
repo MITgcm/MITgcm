@@ -1,0 +1,4 @@
+ &GCHEM_PARM01
+  useBLING=.TRUE.,
+  nsubtime=1,
+ &
