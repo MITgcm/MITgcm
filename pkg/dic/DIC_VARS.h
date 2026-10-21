@@ -246,7 +246,7 @@ C  DIC_atmospFile  :: file name of atmospheric pressure
 C  DIC_iceFile     :: file name of seaice fraction
 C  DIC_ironFile    :: file name of aeolian iron flux
 C  DIC_silicaFile  :: file name of surface silica
-C  DIC_silicaDeepFile  :: file name of 3D silica fields
+C  DIC_deepSilicaFile  :: file name of 3D silica fields
 C  DIC_parFile     :: file name of photosynthetically available radiation (PAR)
 C  DIC_chlaFile    :: file name of chlorophyll climatology
 C  DIC_forcingPeriod :: periodic forcing parameter specific for dic (seconds)
@@ -263,7 +263,7 @@ C  dic_int4          :: timestep between file entries
 C  dic_pCO2          :: atmospheric pCO2 to be read from data.dic
       COMMON /DIC_FILENAMES/
      &        DIC_windFile, DIC_atmospFile, DIC_silicaFile,
-     &        DIC_silicaDeepFile,
+     &        DIC_deepSilicaFile,
      &        DIC_iceFile, DIC_parFile,
      &        DIC_chlaFile, DIC_ironFile,
      &        DIC_atmospCO2File, DIC_SSTFile, DIC_SSSFile,
@@ -274,7 +274,7 @@ C  dic_pCO2          :: atmospheric pCO2 to be read from data.dic
       CHARACTER*(MAX_LEN_FNAM) DIC_windFile
       CHARACTER*(MAX_LEN_FNAM) DIC_atmospFile
       CHARACTER*(MAX_LEN_FNAM) DIC_silicaFile
-      CHARACTER*(MAX_LEN_FNAM) DIC_silicaDeepFile
+      CHARACTER*(MAX_LEN_FNAM) DIC_deepSilicaFile
       CHARACTER*(MAX_LEN_FNAM) DIC_iceFile
       CHARACTER*(MAX_LEN_FNAM) DIC_parFile
       CHARACTER*(MAX_LEN_FNAM) DIC_chlaFile

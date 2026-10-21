@@ -165,7 +165,7 @@ C-      User set silicaDeep_nzin but not silicaDeep_dzin: fill from model grid
        ENDIF
 # endif /* USE_EXF_INTERPOLATION */
 
-       IF ( dic_silicaDeepFile .NE. ' ' ) THEN
+       IF ( dic_deepSilicaFile .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL(
      &           'GETFFIELD_START 3D silica',myThid)

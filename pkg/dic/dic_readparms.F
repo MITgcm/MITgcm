@@ -181,7 +181,7 @@ C                  read in rainRatioUniform and filled in 2d array rain_ratio
      &     DIC_useEXF,
      &     DIC_forcingPeriod, DIC_forcingCycle,
      &     DIC_windFile, DIC_atmospFile, DIC_silicaFile,
-     &     DIC_silicaDeepFile, DIC_iceFile, DIC_parFile,
+     &     DIC_deepSilicaFile, DIC_iceFile, DIC_parFile,
      &     DIC_chlaFile, DIC_ironFile,
      &     DIC_atmospCO2File, DIC_SSTFile, DIC_SSSFile,
      &     dic_int1, dic_int2, dic_int3, dic_int4, dic_pCO2,
@@ -357,7 +357,7 @@ C-- setting default values for Calcite Saturation params ends here.
        DIC_windFile       = ' '
        DIC_atmospFile     = ' '
        DIC_silicaFile     = ' '
-       DIC_silicaDeepFile = ' '
+       DIC_deepSilicaFile = ' '
        DIC_iceFile         = ' '
        DIC_parFile         = ' '
        DIC_atmospCO2File   = ' '
@@ -972,8 +972,8 @@ C- namelist DIC_FORCING
        CALL WRITE_0D_C( DIC_silicaFile, -1,INDEX_NONE,
      & 'DIC_silicaFile=','  /* File name of surface silica */')
       IF ( useCalciteSaturation ) THEN
-       CALL WRITE_0D_C( DIC_silicaDeepFile, -1,INDEX_NONE,
-     & 'DIC_silicaDeepFile=','  /* File name of 3d silica field */')
+       CALL WRITE_0D_C( DIC_deepSilicaFile, -1,INDEX_NONE,
+     & 'DIC_deepSilicaFile=','  /* File name of 3d silica field */')
       ENDIF
        CALL WRITE_0D_C( DIC_iceFile, -1, INDEX_NONE, 'DIC_iceFile =',
      & '  /* File name of seaice fraction */')
@@ -1099,9 +1099,9 @@ C--   dic surface silica
         ENDIF
 
 C--  dic deep silica
-        IF ( dic_SilicaDeepFile .NE. ' ' ) THEN
+        IF ( DIC_deepSilicaFile .NE. ' ' ) THEN
           CALL EXF_FLD_SUMMARY( 'deep silica',
-     I         dic_SilicaDeepFile, 
+     I         dic_deepSilicaFile, 
      I         dic_SilicaDeepRepCycle, 
      I         dic_SilicaDeepPeriod,
      I         dic_SilicaDeepStartTime, 
@@ -1510,10 +1510,10 @@ C Issue an error and stop for invalid selectCalciteDissolution
       ENDIF
 C Issue a soft message if a silicaDeepFile is supplied
 C    but will not be used because useCalciteSaturation is FALSE
-      IF ( DIC_silicaDeepFile .NE. ' ' .AND.
+      IF ( DIC_deepSilicaFile .NE. ' ' .AND.
      &                        .NOT. useCalciteSaturation ) THEN
         WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
-     &    'to use: DIC_silicaDeepFile (3d silicate input)'
+     &    'to use: DIC_deepSilicaFile (3d silicate input)'
          CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
         WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
      &    'needs: "useCalciteSaturation=.TRUE." in "data.dic"'
@@ -1534,9 +1534,9 @@ C    DIC_CALCITE_SATURATION code is not compiled
 
 C Issue an error and stop if silicaDeepFile is supplied but
 C    DIC_CALCITE_SATURATION code is not compiled
-      IF ( DIC_silicaDeepFile .NE. ' '  ) THEN
+      IF ( DIC_deepSilicaFile .NE. ' '  ) THEN
         WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
-     &    'to use: DIC_silicaDeepFile (3d silicate input)'
+     &    'to use: DIC_deepSilicaFile (3d silicate input)'
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
      &    'needs: "#define DIC_CALCITE_SAT" in "DIC_OPTIONS.h"'

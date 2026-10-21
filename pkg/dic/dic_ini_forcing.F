@@ -210,8 +210,8 @@ c#endif
 #endif /* DIC_BIOTIC */
 #ifdef DIC_CALCITE_SAT
        IF ( useCalciteSaturation .AND.
-     &      DIC_silicaDeepFile .NE. ' '  ) THEN
-         CALL READ_REC_XYZ_RL( DIC_silicaDeepFile, silicaDeep,
+     &      DIC_deepSilicaFile .NE. ' '  ) THEN
+         CALL READ_REC_XYZ_RL( DIC_deepSilicaFile, silicaDeep,
      &                        1, nIter0, myThid )
          _EXCH_XYZ_RL( silicaDeep, myThid )
        ENDIF
@@ -260,9 +260,9 @@ c     &     mythid )
        ENDIF
 
 #ifdef DIC_3D_SILICA
-       IF ( dic_SilicaDeepFile .NE. ' ' ) THEN
+       IF ( dic_deepSilicaFile .NE. ' ' ) THEN
          CALL EXF_SET_FLD3D(
-     &      'dicSilicaDeep', dic_SilicaDeepFile, dic_SilicaDeepMask,
+     &      'dicSilicaDeep', dic_deepSilicaFile, dic_SilicaDeepMask,
      &      dic_SilicaDeepStartTime, dic_SilicaDeepPeriod, 
      &      dic_SilicaDeepRepCycle,
      &      dic_inscal_SilicaDeep,

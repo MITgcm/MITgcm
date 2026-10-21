@@ -113,10 +113,10 @@ C     data for the period ahead and the period behind myTime.
      &         myIter,myThid )
          ENDIF
 #ifdef DIC_CALCITE_SAT
-         IF ( DIC_silicaDeepFile .NE. ' '  ) THEN
-          CALL READ_REC_XYZ_RS( DIC_silicaDeepFile,silicaDeep0,intime0,
+         IF ( DIC_deepSilicaFile .NE. ' '  ) THEN
+          CALL READ_REC_XYZ_RS( DIC_deepSilicaFile,silicaDeep0,intime0,
      &         myIter,myThid )
-          CALL READ_REC_XYZ_RS( DIC_silicaDeepFile,silicaDeep1,intime1,
+          CALL READ_REC_XYZ_RS( DIC_deepSilicaFile,silicaDeep1,intime1,
      &         myIter,myThid )
          ENDIF
 #endif
@@ -158,7 +158,7 @@ C--   fill-in overlap after loading temp arrays:
          _EXCH_XY_RS(silicaSurf0, myThid )
          _EXCH_XY_RS(silicaSurf1, myThid )
 #ifdef DIC_CALCITE_SAT
-       IF ( DIC_silicaDeepFile .NE. ' '  ) THEN
+       IF ( DIC_deepSilicaFile .NE. ' '  ) THEN
          _EXCH_XYZ_RS(silicaDeep0, myThid )
          _EXCH_XYZ_RS(silicaDeep1, myThid )
        ENDIF
@@ -214,7 +214,7 @@ c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    !QQQQ
 #endif
 #ifdef DIC_CALCITE_SAT
           IF ( useCalciteSaturation .AND.
-     &         DIC_silicaDeepFile .NE. ' '  ) THEN
+     &         DIC_deepSilicaFile .NE. ' '  ) THEN
            DO k=1,Nr
             DO j=1-OLy,sNy+OLy
              DO i=1-OLx,sNx+OLx
@@ -235,7 +235,7 @@ C If file provided for surface silicate, read it in
             ENDDO
 #ifndef ALLOW_AUTODIFF
 #ifdef DIC_CALCITE_SAT
-          ELSEIF ( DIC_silicaDeepFile .NE. ' '  ) THEN
+          ELSEIF ( DIC_deepSilicaFile .NE. ' '  ) THEN
             DO j=1-OLy,sNy+OLy
              DO i=1-OLx,sNx+OLx
 C If no surface silicate file but deep (3d) silicate provided, use top level
@@ -380,9 +380,9 @@ C EXFs pressure is in Pa, convert to atm for DIC package.
 
 #ifdef DIC_3D_SILICA
        IF ( useCalciteSaturation .AND.
-     &         DIC_silicaDeepFile .NE. ' '  ) THEN
+     &         DIC_deepSilicaFile .NE. ' '  ) THEN
         CALL EXF_SET_FLD3D(
-     &      'dicSilicaDeep', dic_SilicaDeepFile, dic_SilicaDeepMask,
+     &      'dicSilicaDeep', dic_deepSilicaFile, dic_SilicaDeepMask,
      &      dic_SilicaDeepStartTime, dic_SilicaDeepPeriod,
      &      dic_SilicaDeepRepCycle,
      &      dic_inscal_SilicaDeep,
