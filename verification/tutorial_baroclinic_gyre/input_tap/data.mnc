@@ -1,0 +1,7 @@
+# Example "data.mnc" file
+ &MNC_01
+ monitor_mnc=.FALSE.,
+ mnc_use_outdir=.TRUE.,
+ mnc_outdir_str='mnc_test_',
+ &
+
