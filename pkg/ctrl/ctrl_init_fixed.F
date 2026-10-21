@@ -227,18 +227,14 @@ C      Under iceshelf, use maskSHI for these
        ENDIF
 # endif
 
-#ifndef ALLOW_OPENAD
        IF (xx_genarr2d_weight(iarr).NE.' ') THEN
-#endif
         ivar = ivar+1
         CALL CTRL_INIT_CTRLVAR (
      I       xx_genarr2d_file(iarr),
      I       ivar, iarr, 1, 1, 1,
      I       sNx, sNy, 1, ncvargrdtmp, 'Arr2D', costFinalExist,
      I       myThid )
-#ifndef ALLOW_OPENAD
        ENDIF
-#endif
       ENDDO
 #endif /* ALLOW_GENARR2D_CONTROL */
 
@@ -247,18 +243,14 @@ C----------------------------------------------------------------------
 #ifdef ALLOW_GENARR3D_CONTROL
       DO iarr = 1, maxCtrlArr3D
        ncvargrdtmp='c'
-#ifndef ALLOW_OPENAD
        IF (xx_genarr3d_weight(iarr).NE.' ') THEN
-#endif
         ivar = ivar+1
         CALL CTRL_INIT_CTRLVAR (
      I       xx_genarr3d_file(iarr),
      I       ivar, iarr, 1, 1, 1,
      I       sNx, sNy, Nr, ncvargrdtmp, 'Arr3D', costFinalExist,
      I       myThid )
-#ifndef ALLOW_OPENAD
        ENDIF
-#endif
       ENDDO
 #endif /* ALLOW_GENARR3D_CONTROL */
 
@@ -293,9 +285,7 @@ C      Under iceshelf, use maskSHI for these
      O       diffrec, startrec, endrec,
      I       myThid )
 
-#ifndef ALLOW_OPENAD
        IF (xx_gentim2d_weight(iarr).NE.' ') THEN
-#endif
         DO k2 = 1, maxCtrlProc
          IF (xx_gentim2d_preproc(k2,iarr).EQ.'replicate')
      &    xx_gentim2d_preproc(k2,iarr)='docycle'
@@ -344,9 +334,7 @@ C     The length of adxx-files needs to be 1:endrec
      I       sNx, sNy, 1, ncvargrdtmp, 'Tim2D', costFinalExist,
      I       myThid )
 
-#ifndef ALLOW_OPENAD
        ENDIF
-#endif
 
       ENDDO
 #endif /* ALLOW_GENTIM2D_CONTROL */
