@@ -437,9 +437,11 @@ C--   Reset the model iteration counter and the model time.
       CALL AUTODIFF_INADMODE_UNSET( myTime, myIter, myThid )
 # ifdef ALLOW_TAPENADE
 C     Tapenade counterpart of the hook above (pkg/tapenade/dummy_tap.F):
-C     etaN, an active field, makes Tapenade generate the reverse-sweep
-C     call to ADAUTODIFF_INADMODE_UNSET at the mirror image of this
-C     point.
+C     generates the reverse-sweep call to ADAUTODIFF_INADMODE_UNSET at
+C     the mirror image of this point. etaN is only the active argument
+C     that makes Tapenade generate the call (its adjoint is untouched):
+C     a 2-D field, so the cheapest to carry, present in every
+C     configuration and in scope here.
       CALL AUTODIFF_INADMODE_UNSET_TAP( etaN, myTime, myIter, myThid )
 # endif
 #endif
@@ -1223,7 +1225,9 @@ C--   Save state for restarts
       CALL AUTODIFF_INADMODE_SET( myTime, myIter, myThid )
 # ifdef ALLOW_TAPENADE
 C     Tapenade counterpart of the hook above (pkg/tapenade/dummy_tap.F):
-C     generates the reverse-sweep call to ADAUTODIFF_INADMODE_SET.
+C     generates the reverse-sweep call to ADAUTODIFF_INADMODE_SET; etaN
+C     is only the active argument that makes Tapenade generate the call
+C     (see the UNSET hook above).
       CALL AUTODIFF_INADMODE_SET_TAP( etaN, myTime, myIter, myThid )
 # endif
 #endif
