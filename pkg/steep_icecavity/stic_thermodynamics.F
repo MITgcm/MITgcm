@@ -589,7 +589,7 @@ C     In units of kg/s  -- multiplication of area required first
       ENDDO /* bj */
 
 #ifdef ALLOW_ADDFLUID
-      IF ( selectAddFluid.NE.0 .AND. salt_addMass.NE.UNSET_RL ) THEN
+      IF ( selectAddFluid.NE.0 .AND. temp_addMass.NE.UNSET_RL ) THEN
         IF ( ( selectAddFluid.GE.1 .AND. nonlinFreeSurf.GT.0 )
      &       .OR. convertFW2Salt.EQ.-1. _d 0 ) THEN
           DO bj = myByLo(myThid), myByHi(myThid)
@@ -600,12 +600,6 @@ C     In units of kg/s  -- multiplication of area required first
                     stic_gT(i,j,k,bi,bj) = stic_gT(i,j,k,bi,bj)
      &                - stic_addMass(i,j,k,bi,bj)*mass2rUnit
      &                  *( temp_addMass - theta(i,j,k,bi,bj) )
-     &                  *recip_rA(i,j,bi,bj)
-     &                  *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
-C    &                  *recip_deepFac2C(k)*recip_rhoFacC(k)
-                    stic_gS(i,j,k,bi,bj) = stic_gS(i,j,k,bi,bj)
-     &                - stic_addMass(i,j,k,bi,bj)*mass2rUnit
-     &                  *( salt_addMass - salt(i,j,k,bi,bj) )
      &                  *recip_rA(i,j,bi,bj)
      &                  *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
 C    &                  *recip_deepFac2C(k)*recip_rhoFacC(k)
@@ -626,6 +620,38 @@ C    &                  *recip_deepFac2C(k)*recip_rhoFacC(k)
      &                  *recip_rA(i,j,bi,bj)
      &                  *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
 C    &                  *recip_deepFac2C(k)*recip_rhoFacC(k)
+                  ENDDO /* k */
+                ENDDO /* i */
+              ENDDO /* j */
+            ENDDO /* bi */
+          ENDDO /* bj */
+        ENDIF
+      ENDIF
+      IF ( selectAddFluid.NE.0 .AND. salt_addMass.NE.UNSET_RL ) THEN
+        IF ( ( selectAddFluid.GE.1 .AND. nonlinFreeSurf.GT.0 )
+     &       .OR. convertFW2Salt.EQ.-1. _d 0 ) THEN
+          DO bj = myByLo(myThid), myByHi(myThid)
+            DO bi = myBxLo(myThid), myBxHi(myThid)
+              DO j=0,sNy+1
+                DO i=0,sNx+1
+                  DO k=1,Nr
+                    stic_gS(i,j,k,bi,bj) = stic_gS(i,j,k,bi,bj)
+     &                - stic_addMass(i,j,k,bi,bj)*mass2rUnit
+     &                  *( salt_addMass - salt(i,j,k,bi,bj) )
+     &                  *recip_rA(i,j,bi,bj)
+     &                  *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
+C    &                  *recip_deepFac2C(k)*recip_rhoFacC(k)
+                  ENDDO /* k */
+                ENDDO /* i */
+              ENDDO /* j */
+            ENDDO /* bi */
+          ENDDO /* bj */
+        ELSE
+          DO bj = myByLo(myThid), myByHi(myThid)
+            DO bi = myBxLo(myThid), myBxHi(myThid)
+              DO j=0,sNy+1
+                DO i=0,sNx+1
+                  DO k=1,Nr
                     stic_gS(i,j,k,bi,bj) = stic_gS(i,j,k,bi,bj)
      &                - stic_addMass(i,j,k,bi,bj)*mass2rUnit
      &                  *( salt_addMass - sRef(k) )
