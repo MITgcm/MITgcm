@@ -317,6 +317,23 @@ C    the first timestep to initialize pH/pCO2
         _EXCH_XY_RL( dicSSS, myThid )
        ENDIF
 
+       IF ( dic_atmospCO2File .NE. ' ' ) THEN
+        CALL EXF_SET_FLD(
+     &     'dicAtmosCO2', dic_atmospCO2File, dic_atmospCO2Mask,
+     &     dic_atmospCO2StartTime, dic_atmospCO2Period, 
+     &     dic_atmospCO2RepCycle,  dic_inscal_atmospCO2,
+     &     dic_atmospCO2_exfremo_intercept, dic_atmospCO2_exfremo_slope,
+     &     atmospCO2, atmospCO20, atmospCO21,
+# ifdef USE_EXF_INTERPOLATION
+     &     atmospCO2_lon0, atmospCO2_lon_inc,
+     &     atmospCO2_lat0, atmospCO2_lat_inc,
+     &     atmospCO2_nlon, atmospCO2_nlat, xC, yC,
+     &     atmospCO2_interpMethod,
+# endif
+     &     myLocTime, nIter0, mythid )
+        _EXCH_XY_RL( atmospCO2, myThid )
+       ENDIF
+
        IF ( dic_WindFile .NE. ' ' ) THEN
         CALL EXF_INIT_FLD (
      &     'dicWind', dic_WindFile, dic_WindMask,
@@ -398,21 +415,21 @@ C    the first timestep to initialize pH/pCO2
        ENDIF
 #endif /* ALLOW_FE */
 
-       IF ( dic_atmospCO2File .NE. ' ' ) THEN
-        CALL EXF_INIT_FLD (
-     &     'dicapCO2', dic_atmospCO2File, dic_atmospCO2Mask,
-     &     dic_atmospCO2Period, dic_inscal_atmospCO2, 
-     &     dic_atmospCO2_const,
-     &     atmospCO2, atmospCO20, atmospCO21,
-# ifdef USE_EXF_INTERPOLATION
-     &     atmospCO2_lon0, atmospCO2_lon_inc,
-     &     atmospCO2_lat0, atmospCO2_lat_inc,
-     &     atmospCO2_nlon, atmospCO2_nlat, xC, yC,
-     &     atmospCO2_interpMethod,
-# endif
-     &     mythid )
-        _EXCH_XY_RL( atmospCO2, myThid )
-       ENDIF
+C       IF ( dic_atmospCO2File .NE. ' ' ) THEN
+C        CALL EXF_INIT_FLD (
+C     &     'dicapCO2', dic_atmospCO2File, dic_atmospCO2Mask,
+C     &     dic_atmospCO2Period, dic_inscal_atmospCO2, 
+C     &     dic_atmospCO2_const,
+C     &     atmospCO2, atmospCO20, atmospCO21,
+C# ifdef USE_EXF_INTERPOLATION
+C     &     atmospCO2_lon0, atmospCO2_lon_inc,
+C     &     atmospCO2_lat0, atmospCO2_lat_inc,
+C     &     atmospCO2_nlon, atmospCO2_nlat, xC, yC,
+C     &     atmospCO2_interpMethod,
+C# endif
+C     &     mythid )
+C        _EXCH_XY_RL( atmospCO2, myThid )
+C       ENDIF
 
 #ifdef LIGHT_CHL
        IF ( dic_chlaFile .NE. ' ' ) THEN

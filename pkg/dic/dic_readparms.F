@@ -377,7 +377,10 @@ C     some sensible defaults
       dic_atmosp_const     = 1.01325 _d 5
       dic_silicaSurf_const = 7.6838  _d -3
       dic_silicaDeep_const = 3.      _d -2
-      dic_atmospCO2_const  = dic_pCO2
+C     dic_atmospCO2_const defaults to dic_pCO2, but dic_pCO2 is itself
+C     read from the DIC_FORCING namelist below: leave it unset here and
+C     resolve the default after the namelist has been read.
+      dic_atmospCO2_const  = UNSET_RL
       dic_wind_const       = 5.      _d 0
       dic_par_const        = 100.    _d 0
       dic_iron_const       = 1.      _d -11
@@ -687,6 +690,13 @@ C--   Close the open data file
 
 C-    derive other parameters:
 C-    set parameter default values
+
+C     Uniform atmospheric pCO2 used by pkg/exf when no dic_atmospCO2File
+C     is given: default to dic_pCO2 so that dic_pCO2 remains the single
+C     user-facing control for a constant pCO2 (dic_int1=0 or 1).
+      IF ( dic_atmospCO2_const.EQ.UNSET_RL )
+     &     dic_atmospCO2_const = dic_pCO2
+
       IF ( selectBTconst  .EQ.UNSET_I ) selectBTconst   = 1
       IF ( selectFTconst  .EQ.UNSET_I ) selectFTconst   = 1
       IF ( selectHFconst  .EQ.UNSET_I ) selectHFconst   = 1
@@ -1386,6 +1396,41 @@ C     useEXF and useExfYearlyFields
       IF ( dic_int1.EQ.0 .AND. dic_pCO2.NE.278. _d -6 ) THEN
         WRITE(msgBuf,'(A)')
      &    'DIC_READPARMS: cannot change default dic_pCO2 if dic_int1=0'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+
+C-    dic_atmospCO2File is only read through pkg/exf (EXF_INIT_FLD in
+C     DIC_INI_FORCING and EXF_SET_FLD in DIC_FIELDS_LOAD): there is no
+C     non-exf branch reading it, so warn rather than silently ignore it.
+      IF ( dic_atmospCO2File.NE.' ' .AND. .NOT.dic_useEXF ) THEN
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
+     &    'dic_atmospCO2File requires dic_useEXF=.TRUE.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+
+C-    A spatially varying atmospheric pCO2 file and the time-varying
+C     uniform pCO2 options (dic_int1=2: read from co2atmos.dat ;
+C     dic_int1=3: interactive atmospheric box model) are mutually
+C     exclusive ways of setting AtmospCO2: reject the combination
+C     rather than let one silently overwrite the other.
+      IF ( dic_atmospCO2File.NE.' ' .AND.
+     &   ( dic_int1.EQ.2 .OR. dic_int1.EQ.3 ) ) THEN
+        WRITE(msgBuf,'(2A,I3)') 'DIC_READPARMS: ',
+     &    'cannot set dic_atmospCO2File with dic_int1=', dic_int1
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
+     &    'dic_int1=2 (pCO2 time-series from co2atmos.dat) and'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
+     &    'dic_int1=3 (interactive atmosphere) both set a uniform'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
+     &    'atmospheric pCO2, incompatible with a spatially varying'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
+     &    'field: use dic_int1=0 or 1 with dic_atmospCO2File'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
