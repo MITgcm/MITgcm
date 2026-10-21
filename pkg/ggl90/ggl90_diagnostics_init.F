@@ -188,12 +188,16 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif
 
 #ifdef ALLOW_AUTODIFF
+# ifndef ALLOW_TAPENADE
+C     not written by a Tapenade-generated adjoint (see
+C     pkg/tapenade/dummy_in_stepping_tap.F for the fields it writes)
       diagName  = 'ADJtke90'
       diagTitle = 'dJ/dTKE: Sensitivity to GGL90 TKE'
       diagUnits = 'dJ/(m^2/s^2)   '
       diagCode  = 'SMRA    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+# endif /* ndef ALLOW_TAPENADE */
 #endif
 
 #endif /* ALLOW_DIAGNOSTICS */
