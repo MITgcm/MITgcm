@@ -577,14 +577,14 @@ C     In units of kg/s  -- multiplication of area required first
 
       DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j = 1-OLy+1,sNy+OLy-1
-            DO i = 1-OLx+1,sNx+OLx-1
-              DO k = 1,Nr
+          DO k = 1,Nr
+            DO j = 1-OLy+1,sNy+OLy-1
+              DO i = 1-OLx+1,sNx+OLx-1
                  addMass(i,j,k,bi,bj) = addMass(i,j,k,bi,bj) +
      &               stic_addMass(i,j,k,bi,bj)
-              ENDDO /* k */
-            ENDDO /* i */
-          ENDDO /* j */
+              ENDDO /* i */
+            ENDDO /* j */
+          ENDDO /* k */
         ENDDO /* bi */
       ENDDO /* bj */
 
@@ -594,35 +594,35 @@ C     In units of kg/s  -- multiplication of area required first
      &       .OR. convertFW2Salt.EQ.-1. _d 0 ) THEN
           DO bj = myByLo(myThid), myByHi(myThid)
             DO bi = myBxLo(myThid), myBxHi(myThid)
-              DO j=0,sNy+1
-                DO i=0,sNx+1
-                  DO k=1,Nr
+              DO k=1,Nr
+                DO j=0,sNy+1
+                  DO i=0,sNx+1
                     stic_gT(i,j,k,bi,bj) = stic_gT(i,j,k,bi,bj)
      &                - stic_addMass(i,j,k,bi,bj)*mass2rUnit
      &                  *( temp_addMass - theta(i,j,k,bi,bj) )
      &                  *recip_rA(i,j,bi,bj)
      &                  *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
 C    &                  *recip_deepFac2C(k)*recip_rhoFacC(k)
-                  ENDDO /* k */
-                ENDDO /* i */
-              ENDDO /* j */
+                  ENDDO /* i */
+                ENDDO /* j */
+              ENDDO /* k */
             ENDDO /* bi */
           ENDDO /* bj */
         ELSE
           DO bj = myByLo(myThid), myByHi(myThid)
             DO bi = myBxLo(myThid), myBxHi(myThid)
-              DO j=0,sNy+1
-                DO i=0,sNx+1
-                  DO k=1,Nr
+              DO k=1,Nr
+                DO j=0,sNy+1
+                  DO i=0,sNx+1
                     stic_gT(i,j,k,bi,bj) = stic_gT(i,j,k,bi,bj)
      &                - stic_addMass(i,j,k,bi,bj)*mass2rUnit
      &                  *( temp_addMass - tRef(k) )
      &                  *recip_rA(i,j,bi,bj)
      &                  *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
 C    &                  *recip_deepFac2C(k)*recip_rhoFacC(k)
-                  ENDDO /* k */
-                ENDDO /* i */
-              ENDDO /* j */
+                  ENDDO /* i */
+                ENDDO /* j */
+              ENDDO /* k */
             ENDDO /* bi */
           ENDDO /* bj */
         ENDIF
@@ -632,35 +632,35 @@ C    &                  *recip_deepFac2C(k)*recip_rhoFacC(k)
      &       .OR. convertFW2Salt.EQ.-1. _d 0 ) THEN
           DO bj = myByLo(myThid), myByHi(myThid)
             DO bi = myBxLo(myThid), myBxHi(myThid)
-              DO j=0,sNy+1
-                DO i=0,sNx+1
-                  DO k=1,Nr
+              DO k=1,Nr
+                DO j=0,sNy+1
+                  DO i=0,sNx+1
                     stic_gS(i,j,k,bi,bj) = stic_gS(i,j,k,bi,bj)
      &                - stic_addMass(i,j,k,bi,bj)*mass2rUnit
      &                  *( salt_addMass - salt(i,j,k,bi,bj) )
      &                  *recip_rA(i,j,bi,bj)
      &                  *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
 C    &                  *recip_deepFac2C(k)*recip_rhoFacC(k)
-                  ENDDO /* k */
-                ENDDO /* i */
-              ENDDO /* j */
+                  ENDDO /* i */
+                ENDDO /* j */
+              ENDDO /* k */
             ENDDO /* bi */
           ENDDO /* bj */
         ELSE
           DO bj = myByLo(myThid), myByHi(myThid)
             DO bi = myBxLo(myThid), myBxHi(myThid)
-              DO j=0,sNy+1
-                DO i=0,sNx+1
-                  DO k=1,Nr
+              DO k=1,Nr
+                DO j=0,sNy+1
+                  DO i=0,sNx+1
                     stic_gS(i,j,k,bi,bj) = stic_gS(i,j,k,bi,bj)
      &                - stic_addMass(i,j,k,bi,bj)*mass2rUnit
      &                  *( salt_addMass - sRef(k) )
      &                  *recip_rA(i,j,bi,bj)
      &                  *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
 C    &                  *recip_deepFac2C(k)*recip_rhoFacC(k)
-                  ENDDO /* k */
-                ENDDO /* i */
-              ENDDO /* j */
+                  ENDDO /* i */
+                ENDDO /* j */
+              ENDDO /* k */
             ENDDO /* bi */
           ENDDO /* bj */
         ENDIF
