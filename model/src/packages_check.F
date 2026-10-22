@@ -388,10 +388,6 @@ C---  Continue with standard packages (with standard usePKG flag)
       IF ( useLand ) CALL PACKAGES_ERROR_MSG( 'Land', ' ', myThid )
 #endif
 
-#ifndef ALLOW_ATM2D
-      IF ( useATM2d ) CALL PACKAGES_ERROR_MSG( 'ATM2d', ' ', myThid )
-#endif
-
 #ifndef ALLOW_AIM
       IF ( useAIM ) CALL PACKAGES_ERROR_MSG( 'AIM', ' ', myThid )
 #endif

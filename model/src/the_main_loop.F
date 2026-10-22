@@ -86,12 +86,12 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 
-c**************************************
+C**************************************
 #ifdef ALLOW_AUTODIFF
 
-c These includes are needed for
-c AD-checkpointing.
-c They provide the fields to be stored.
+C These includes are needed for
+C AD-checkpointing.
+C They provide the fields to be stored.
 
 # include "GRID.h"
 # include "DYNVARS.h"
@@ -247,7 +247,7 @@ c#  include "KPP_PARAMS.h"
 # endif
 #endif /* ALLOW_TAPENADE */
 
-c**************************************
+C**************************************
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -291,18 +291,18 @@ CEOP
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-c--   Initialize storage for the cost function evaluation.
-c---------------------------------------------------------
-c--   Initialize storage for the initialisation phase.
+C--   Initialize storage for the cost function evaluation.
+C---------------------------------------------------------
+C--   Initialize storage for the initialisation phase.
 # if ( defined ALLOW_AUTODIFF_WHTAPEIO && !defined ALLOW_DIVIDED_ADJOINT )
 CADJ INIT tapelev_init       = COMMON, 1
 # else
 CADJ INIT tapelev_init       = USER
 # endif
-c--   this tape is never used
+C--   this tape is never used
 cCADJ INIT tapelev_ini_bibj   = USER
 # ifdef INCLUDE_CONVECT_INI_CALL
-c--   currently only used in convective_adjustement_ini.F
+C--   currently only used in convective_adjustement_ini.F
 #  if ( defined ALLOW_AUTODIFF_WHTAPEIO && !defined ALLOW_DIVIDED_ADJOINT )
 CADJ INIT tapelev_ini_bibj_k = COMMON, nSx*nSy*Nr
 #  else
@@ -310,11 +310,11 @@ CADJ INIT tapelev_ini_bibj_k = USER
 #  endif
 # endif
 # ifdef ALLOW_GENTIM2D_CONTROL
-c--   exclusive tape for variables with suffix "_dummy"
+C--   exclusive tape for variables with suffix "_dummy"
 CADJ INIT dummytape          = COMMON, 1
 # endif
 
-c--   Initialize storage for the outermost loop.
+C--   Initialize storage for the outermost loop.
 # ifdef ALLOW_TAMC_CHECKPOINTING
 #  if (defined (AUTODIFF_2_LEVEL_CHECKPOINT))
 CADJ  INIT tapelev2 = USER
@@ -375,14 +375,14 @@ C--   Set initial conditions (variable arrays)
       CALL TIMER_STOP ('SHOWFLOPS_INIT      [THE_MAIN_LOOP]', myThid)
 #endif
 
-c--   Do the model integration.
+C--   Do the model integration.
       CALL TIMER_START('MAIN LOOP           [THE_MAIN_LOOP]', myThid)
 
-c     >>>>>>>>>>>>>>>>>>>>>>>>>>>   LOOP   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
-c     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STARTS  <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+C     >>>>>>>>>>>>>>>>>>>>>>>>>>>   LOOP   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+C     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STARTS  <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 #ifdef USE_PDAF
-c     Initialize PDAF
+C     Initialize PDAF
       CALL TIMER_START('INIT_PDAF           [THE_MAIN_LOOP]', myThid)
       CALL INIT_PDAF( nIter0, myTime, myIter, myThid )
       CALL TIMER_STOP ('INIT_PDAF           [THE_MAIN_LOOP]', myThid)
@@ -393,10 +393,10 @@ C     end of initialisation and use of tapelev_init: write buffer to disk
       CALL AUTODIFF_WHTAPEIO_SYNC( 1 , 1, myThid )
 #endif
 
-c++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+C++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #ifdef ALLOW_AUTODIFF
 # ifdef ALLOW_TAMC_CHECKPOINTING
-c++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+C++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #  ifdef AUTODIFF_4_LEVEL_CHECKPOINT
       max_lev4=nTimeSteps/(nchklev_1*nchklev_2*nchklev_3)+1
@@ -406,16 +406,16 @@ c++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #  endif
       max_lev2=nTimeSteps/nchklev_1+1
 
-c**************************************
+C**************************************
 #  ifdef ALLOW_DIVIDED_ADJOINT
 CADJ loop = divided
 #  endif
-c**************************************
+C**************************************
 
 #  ifdef AUTODIFF_4_LEVEL_CHECKPOINT
       do ilev_4 = 1,nchklev_4
          if(ilev_4.le.max_lev4) then
-c**************************************
+C**************************************
 #   ifdef ALLOW_AUTODIFF_WHTAPEIO
             CALL AUTODIFF_WHTAPEIO_SYNC( 4 , 0, myThid )
 #   endif
@@ -425,8 +425,8 @@ c**************************************
 #   ifdef ALLOW_AUTODIFF_WHTAPEIO
             CALL AUTODIFF_WHTAPEIO_SYNC( 4 , 1, myThid )
 #   endif
-c**************************************
-c--     Initialise storage for the middle loop.
+C**************************************
+C--     Initialise storage for the middle loop.
 CADJ    INIT tapelev3 = USER
 CADJ    INIT tapelvi3 = USER,'adi'
 #  endif /* AUTODIFF_4_LEVEL_CHECKPOINT */
@@ -434,7 +434,7 @@ CADJ    INIT tapelvi3 = USER,'adi'
 #  ifndef AUTODIFF_2_LEVEL_CHECKPOINT
       do ilev_3 = 1,nchklev_3
          if(ilev_3.le.max_lev3) then
-c**************************************
+C**************************************
 #   ifdef ALLOW_AUTODIFF_WHTAPEIO
             CALL AUTODIFF_WHTAPEIO_SYNC( 3 , 0, myThid )
 #   endif
@@ -444,15 +444,15 @@ c**************************************
 #   ifdef ALLOW_AUTODIFF_WHTAPEIO
             CALL AUTODIFF_WHTAPEIO_SYNC( 3 , 1, myThid )
 #   endif
-c**************************************
-c--     Initialise storage for the middle loop.
+C**************************************
+C--     Initialise storage for the middle loop.
 CADJ    INIT tapelev2 = USER
 CADJ    INIT tapelvi2 = USER,'adi'
 #  endif /* AUTODIFF_2_LEVEL_CHECKPOINT */
 
         do ilev_2 = 1,nchklev_2
          if(ilev_2.le.max_lev2) then
-c**************************************
+C**************************************
 #  ifdef ALLOW_AUTODIFF_WHTAPEIO
             CALL AUTODIFF_WHTAPEIO_SYNC( 2 , 0, myThid )
 #  endif
@@ -462,15 +462,14 @@ c**************************************
 #  ifdef ALLOW_AUTODIFF_WHTAPEIO
             CALL AUTODIFF_WHTAPEIO_SYNC( 2 , 1, myThid )
 #  endif
-c**************************************
-
+C**************************************
 # endif /* ALLOW_TAMC_CHECKPOINTING */
 
 # ifdef ALLOW_AUTODIFF_TAMC
-c**************************************
-c--       Initialize storage for the innermost loop.
-c--       Always check common block sizes for the checkpointing!
-c--
+C**************************************
+C--       Initialize storage for the innermost loop.
+C--       Always check common block sizes for the checkpointing!
+C--
 CADJ INIT comlev1        = COMMON,nchklev_1
 CADJ INIT comlev1_bibj   = COMMON,nchklev_1*nSx*nSy
 CADJ INIT comlev1_bibj_k = COMMON,nchklev_1*nSx*nSy*Nr
@@ -478,36 +477,36 @@ CADJ INIT comlev1_bibj_k = COMMON,nchklev_1*nSx*nSy*Nr
 CADJ INIT comlev1_bibj_ijk = COMMON,
 CADJ &    nchklev_1*nSx*nSy*Nr*(2*OLy+sNy)*(2*OLx+sNx)
 #  endif
-c--
+C--
 #  ifdef ALLOW_KPP
 CADJ INIT comlev1_kpp    = COMMON,nchklev_1*nSx*nSy
 CADJ INIT comlev1_kpp_k  = COMMON,nchklev_1*nSx*nSy*Nr
 #  endif /* ALLOW_KPP */
-c--
+C--
 #  ifdef ALLOW_GMREDI
 CADJ INIT comlev1_gmredi_k_gad = COMMON,nchklev_1*nSx*nSy*Nr*maxpass
 cCADJ INIT comlev1_gmredi_slope = COMMON,nchklev_1*nSx*nSy*Nr*3
 #  endif /* ALLOW_GMREDI */
-c--
+C--
 #  ifdef ALLOW_PTRACERS
 CADJ INIT comlev1_bibj_ptracers = COMMON,
 CADJ &    nchklev_1*nSx*nSy*PTRACERS_num
 CADJ INIT comlev1_bibj_k_ptracers = COMMON,
 CADJ &    nchklev_1*nSx*nSy*PTRACERS_num*Nr
 #  endif /* ALLOW_PTRACERS */
-c--
+C--
 #  ifdef ALLOW_MOM_COMMON
 #   ifndef AUTODIFF_DISABLE_LEITH
 CADJ INIT comlev1_mom_ijk_loop
 CADJ &     = COMMON,nchklev_1*(sNx+2*OLx)*nSx*(sNy+2*OLy)*nSy*Nr
 #   endif /* AUTODIFF_DISABLE_LEITH */
 #  endif /* ALLOW_MOM_COMMON */
-c--
+C--
 #  if (defined ALLOW_EXF && defined ALLOW_BULKFORMULAE)
 CADJ INIT comlev1_exf_1 = COMMON,nchklev_1*sNx*nSx*sNy*nSy
 CADJ INIT comlev1_exf_2 = COMMON,niter_bulk*nchklev_1*sNx*nSx*sNy*nSy
 #  endif /* ALLOW_BULKFORMULAE */
-c--
+C--
 #  ifdef ALLOW_SEAICE
 #   ifdef SEAICE_CGRID
 CADJ INIT comlev1_dynsol = COMMON,nchklev_1*MPSEUDOTIMESTEPS
@@ -534,7 +533,7 @@ CADJ INIT comlev1_bibj_k_gadice_pass = COMMON,
 CADJ &    nchklev_1*nSx*nSy*maxpass*maxcube
 #   endif /* DISABLE_MULTIDIM_ADVECTION */
 #  endif /* ALLOW_SEAICE */
-c--
+C--
 #  ifdef ALLOW_THSICE
 C     Tape for thsice_advection, which is called for thSIce_nAdv (=5)
 C     different variables (thSIce_nAdv is set in THSICE_SIZE.h)
@@ -552,12 +551,12 @@ CADJ INIT comlev1_thsice_exf_ij    = COMMON,
 CADJ &    nchklev_1*nSx*nSy*(MaxTsf+1)*niter_bulk*sNx*sNy
 #   endif
 #  endif /* ALLOW_THSICE */
-c--
+C--
 #  ifdef ALLOW_STEEP_ICECAVITY
 CADJ INIT comlev1_stic_bibj_ijk = COMMON,
 CADJ &    nchklev_1*nSx*nSy*Nr*(2*OLy+sNy)*(2*OLx+sNx)
 #  endif
-c--
+C--
 #  ifdef ALLOW_STREAMICE
 CADJ INIT comlev1_stream_nl    = COMMON,nchklev_1*streamice_max_nl
 CADJ INIT comlev1_stream_front = COMMON,nchklev_1*4
@@ -565,17 +564,17 @@ CADJ INIT comlev1_stream_ij
 CADJ &     = COMMON,nchklev_1*4*(sNx+2)*nSx*(sNy+2)*nSy
 CADJ INIT comlev1_stream_hybrid = COMMON,nchklev_1*sNx*nSx*sNy*nSy*Nr
 #  endif
-c--
+C--
 #  ifdef ALLOW_CG2D_NSA
 CADJ INIT comlev1_cg2d      = COMMON,nchklev_1
 CADJ INIT comlev1_cg2d_iter = COMMON,nchklev_1*numItersMax
 #  endif
-# endif /* ALLOW_AUTODIFF_TAMC */
-c--
-# ifdef ALLOW_GENCOST_CONTRIBUTION
+C--
+#  ifdef ALLOW_GENCOST_CONTRIBUTION
 CADJ INIT comlev1_ngencost = COMMON,nchklev_1*NGENCOST
-# endif
-c**************************************
+#  endif
+# endif /* ALLOW_AUTODIFF_TAMC */
+C**************************************
 
 # ifdef STORE_LOADEDREC_TEST
           DO bj = myByLo(myThid), myByHi(myThid)
@@ -595,13 +594,12 @@ C     this bug is fixed (but it does not hurt, either).
 CADJ INCOMPLETE wVel
 #  endif
 # endif
-# ifdef ALLOW_TAMC_CHECKPOINTING
 
+# ifdef ALLOW_TAMC_CHECKPOINTING
           do ilev_1 = 1,nchklev_1
 
-c--         The if-statement below introduces a some flexibility in the
-c--         choice of the 3-tupel ( nchklev_1, nchklev_2, nchklev_3 ).
-
+C--         The if-statement below introduces a some flexibility in the
+C--         choice of the 3-tupel ( nchklev_1, nchklev_2, nchklev_3 ).
             iloop = (ilev_2 - 1)*nchklev_1 + ilev_1
 #  ifndef AUTODIFF_2_LEVEL_CHECKPOINT
      &            + (ilev_3 - 1)*nchklev_2*nchklev_1
@@ -613,108 +611,99 @@ c--         choice of the 3-tupel ( nchklev_1, nchklev_2, nchklev_3 ).
             if ( iloop .le. nTimeSteps ) then
 
 # else /* ALLOW_TAMC_CHECKPOINTING  undefined */
-
+C++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
       DO iloop = 1, nTimeSteps
-
-c++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # endif /* ALLOW_TAMC_CHECKPOINTING */
-#endif /* ALLOW_AUTODIFF */
-c++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-#ifndef ALLOW_AUTODIFF
+#else /* ALLOW_AUTODIFF undefined */
       DO iloop = 1, nTimeSteps
 #endif /* ALLOW_AUTODIFF */
 
-c--     >>> Loop body start <<<
+C--     >>> Loop body start <<<
 
 #ifdef ALLOW_AUTODIFF
-      nIter0 = NINT( (startTime-baseTime)/deltaTClock )
+       nIter0 = NINT( (startTime-baseTime)/deltaTClock )
 C--   Reset the model iteration counter and the model time.
-      myIter = nIter0 + (iloop-1)
-      myTime = startTime + deltaTClock*(iloop-1)
+       myIter = nIter0 + (iloop-1)
+       myTime = startTime + deltaTClock*(iloop-1)
 # ifdef ALLOW_AUTODIFF_TAMC
 #  ifdef ALLOW_TAMC_CHECKPOINTING
-      ikey_dynamics = ilev_1
+       ikey_dynamics = ilev_1
 #  else
-      ikey_dynamics = iloop
+       ikey_dynamics = iloop
 #  endif
 # endif
 #endif /* ALLOW_AUTODIFF */
 
 #ifdef ALLOW_ECCO
-      IF ( useECCO ) THEN
+       IF ( useECCO ) THEN
 # ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('COST_AVERAGESFIELDS',myThid)
 # endif
-c--   Accumulate time averages of temperature, salinity
-        CALL TIMER_START('COST_AVERAGESFIELDS [MAIN_DO_LOOP]',myThid)
+C--   Accumulate time averages of temperature, salinity
+        CALL TIMER_START('COST_AVERAGESFIELDS [THE_MAIN_LOOP]',myThid)
         CALL COST_AVERAGESFIELDS( myTime, myThid )
-        CALL TIMER_STOP ('COST_AVERAGESFIELDS [MAIN_DO_LOOP]',myThid)
-      ENDIF
+        CALL TIMER_STOP ('COST_AVERAGESFIELDS [THE_MAIN_LOOP]',myThid)
+       ENDIF
 #endif /* ALLOW_ECCO */
 
 #ifdef ALLOW_PROFILES
-      IF ( usePROFILES ) THEN
+       IF ( usePROFILES ) THEN
 #ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('PROFILES_INLOOP',myThid)
 #endif
-c--     Accumulate in-situ time averages of theta, salt, and SSH.
-        CALL TIMER_START('PROFILES_INLOOP    [MAIN_DO_LOOP]', myThid)
+C--     Accumulate in-situ time averages of theta, salt, and SSH.
+        CALL TIMER_START('PROFILES_INLOOP     [THE_MAIN_LOOP]',myThid)
         CALL PROFILES_INLOOP( myTime, myThid )
-        CALL TIMER_STOP ('PROFILES_INLOOP    [MAIN_DO_LOOP]', myThid)
-      ENDIF
+        CALL TIMER_STOP ('PROFILES_INLOOP     [THE_MAIN_LOOP]',myThid)
+       ENDIF
 #endif /* ALLOW_PROFILES */
 
 #ifdef ALLOW_OBSFIT
-      IF ( useOBSFIT ) THEN
+       IF ( useOBSFIT ) THEN
 #ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('OBSFIT_INLOOP',myThid)
 #endif
-c--     Accumulate in-situ time averages of theta, salt, and SSH.
-        CALL TIMER_START('OBSFIT_INLOOP      [MAIN_DO_LOOP]', myThid)
+C--     Accumulate in-situ time averages of theta, salt, and SSH.
+        CALL TIMER_START('OBSFIT_INLOOP       [THE_MAIN_LOOP]',myThid)
         CALL OBSFIT_INLOOP( myTime, myIter, myThid )
-        CALL TIMER_STOP ('OBSFIT_INLOOP      [MAIN_DO_LOOP]', myThid)
-      ENDIF
+        CALL TIMER_STOP ('OBSFIT_INLOOP       [THE_MAIN_LOOP]',myThid)
+       ENDIF
 #endif /* ALLOW_OBSFIT */
 
-      CALL TIMER_START('MAIN_DO_LOOP        [THE_MAIN_LOOP]', myThid)
-      CALL MAIN_DO_LOOP( iloop, myTime, myIter, myThid )
-      CALL TIMER_STOP ('MAIN_DO_LOOP        [THE_MAIN_LOOP]', myThid)
+       CALL TIMER_START('MAIN_DO_LOOP        [THE_MAIN_LOOP]', myThid)
+       CALL MAIN_DO_LOOP( iloop, myTime, myIter, myThid )
+       CALL TIMER_STOP ('MAIN_DO_LOOP        [THE_MAIN_LOOP]', myThid)
 
 #ifdef USE_PDAF
 C     PDAF analysis step
-      CALL TIMER_START('ASSIMILATE_PDAF     [THE_MAIN_LOOP]', myThid)
-      CALL ASSIMILATE_PDAF( myTime, myIter, myThid )
-      CALL TIMER_STOP ('ASSIMILATE_PDAF     [THE_MAIN_LOOP]', myThid)
+       CALL TIMER_START('ASSIMILATE_PDAF     [THE_MAIN_LOOP]', myThid)
+       CALL ASSIMILATE_PDAF( myTime, myIter, myThid )
+       CALL TIMER_STOP ('ASSIMILATE_PDAF     [THE_MAIN_LOOP]', myThid)
 #endif
 
-c--     >>> Loop body end <<<
-#ifdef ALLOW_AUTODIFF
-# ifdef ALLOW_TAMC_CHECKPOINTING
+C--     >>> Loop body end <<<
+#if ( defined ALLOW_AUTODIFF && defined ALLOW_TAMC_CHECKPOINTING )
             endif
           enddo
           endif
         enddo
-#  ifndef AUTODIFF_2_LEVEL_CHECKPOINT
+# ifndef AUTODIFF_2_LEVEL_CHECKPOINT
         endif
       enddo
-#  endif
-#  ifdef AUTODIFF_4_LEVEL_CHECKPOINT
+# endif
+# ifdef AUTODIFF_4_LEVEL_CHECKPOINT
        endif
       enddo
-#  endif
-# else /* ndef ALLOW_TAMC_CHECKPOINTING */
+# endif
+#else /* ndef ALLOW_AUTODIFF or ndef ALLOW_TAMC_CHECKPOINTING */
       ENDDO
-# endif /* ALLOW_TAMC_CHECKPOINTING */
-#else /* ALLOW_AUTODIFF */
-      ENDDO
-#endif /* ALLOW_AUTODIFF */
+#endif /* ALLOW_AUTODIFF & ALLOW_TAMC_CHECKPOINTING */
 
-c     >>>>>>>>>>>>>>>>>>>>>>>>>>>   LOOP   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
-c     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STOPS   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+C     >>>>>>>>>>>>>>>>>>>>>>>>>>>   LOOP   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+C     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STOPS   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 #ifdef ALLOW_ECCO
-c--     Accumulate time averages of temperature, salinity
+C--     Accumulate time averages of temperature, salinity
       CALL TIMER_START('COST_AVERAGESFIELDS [THE_MAIN_LOOP]',myThid)
       CALL COST_AVERAGESFIELDS( endtime, myThid )
       CALL TIMER_STOP ('COST_AVERAGESFIELDS [THE_MAIN_LOOP]',myThid)
@@ -722,36 +711,36 @@ c--     Accumulate time averages of temperature, salinity
 
 #ifdef ALLOW_PROFILES
       IF ( usePROFILES ) THEN
-c--   Accumulate in-situ time averages of temperature, salinity, SSH.
-        CALL TIMER_START('PROFILES_INLOOP    [THE_MAIN_LOOP]', myThid)
+C--   Accumulate in-situ time averages of temperature, salinity, SSH.
+        CALL TIMER_START('PROFILES_INLOOP     [THE_MAIN_LOOP]',myThid)
         CALL PROFILES_INLOOP( endtime, myThid )
-        CALL TIMER_STOP ('PROFILES_INLOOP    [THE_MAIN_LOOP]', myThid)
-c--   Compute all profiles cost function contributions.
+        CALL TIMER_STOP ('PROFILES_INLOOP     [THE_MAIN_LOOP]',myThid)
+C--   Compute all profiles cost function contributions.
         CALL PROFILES_COST( myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_PROFILES */
 
 #ifdef ALLOW_OBSFIT
       IF ( useOBSFIT ) THEN
-c--   Accumulate in-situ time averages of temperature, salinity, SSH.
-        CALL TIMER_START('OBSFIT_INLOOP      [THE_MAIN_LOOP]', myThid)
+C--   Accumulate in-situ time averages of temperature, salinity, SSH.
+        CALL TIMER_START('OBSFIT_INLOOP       [THE_MAIN_LOOP]',myThid)
         CALL OBSFIT_INLOOP( endtime, myIter, myThid )
-        CALL TIMER_STOP ('OBSFIT_INLOOP      [THE_MAIN_LOOP]', myThid)
-c--   Compute all obsfit cost function contributions.
+        CALL TIMER_STOP ('OBSFIT_INLOOP       [THE_MAIN_LOOP]',myThid)
+C--   Compute all obsfit cost function contributions.
         CALL OBSFIT_COST( myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_OBSFIT */
 
 #ifdef ALLOW_COST
-c--   Compute all cost function contributions.
-      CALL TIMER_START('COST_DRIVER        [THE_MAIN_LOOP]', myThid)
+C--   Compute all cost function contributions.
+      CALL TIMER_START('COST_DRIVER         [THE_MAIN_LOOP]', myThid)
       CALL COST_DRIVER ( endTime, myIter, myThid )
-      CALL TIMER_STOP ('COST_DRIVER        [THE_MAIN_LOOP]', myThid)
+      CALL TIMER_STOP ('COST_DRIVER         [THE_MAIN_LOOP]', myThid)
 
-c--   Sum all cost function contributions.
-      CALL TIMER_START('COST_FINAL         [THE_MAIN_LOOP]', myThid)
+C--   Sum all cost function contributions.
+      CALL TIMER_START('COST_FINAL          [THE_MAIN_LOOP]', myThid)
       CALL COST_FINAL ( myThid )
-      CALL TIMER_STOP ('COST_FINAL         [THE_MAIN_LOOP]', myThid)
+      CALL TIMER_STOP ('COST_FINAL          [THE_MAIN_LOOP]', myThid)
 #endif /* ALLOW_COST */
 
 #ifdef USE_PDAF
