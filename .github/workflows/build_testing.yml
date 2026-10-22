@@ -85,7 +85,7 @@ jobs:
      matrix:
       include:
         - exp: "global_oce_biogeo_bling"
-        - exp: "global_ocean.cd32x15"
+        - exp: "global_ocean.cs32x15"
         - exp: "isomip"
         - exp: "lab_sea"
         - exp: "tutorial_global_oce_biogeo"
