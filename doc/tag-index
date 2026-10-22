@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/atm2d & model/src:
+  - remove all pkg/atm2d content and corresponding bits in model/src ;
+  - simplify/fix TIMER report from "the_main_loop.F".
 o pkg/ctrl:
   - fix interpolation weights in ctrl_get_gen_rec.F for time-varying controls
     (gentim2d) without pkg/cal (useCAL=F);
