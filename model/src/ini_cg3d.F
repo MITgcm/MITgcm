@@ -1,5 +1,6 @@
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#include "BACKWARD_COMPAT_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: INI_CG3D
@@ -10,7 +11,8 @@ C     *==========================================================*
 C     | SUBROUTINE INI_CG3D
 C     | o Initialise 3d conjugate gradient solver operators.
 C     *==========================================================*
-C     | These arrays are purely a function of the basin geom.
+C     | These arrays are function of the basin geom. and time-step
+C     | (except for main-diagonal free-surface term).
 C     | We set then here once and them use then repeatedly.
 C     *==========================================================*
 C     \ev
@@ -37,16 +39,16 @@ C     bi,bj    :: tile indices
 C     i,j,k    :: Loop counters
 C     faceArea :: Temporary used to hold cell face areas.
 C     myNorm   :: Work variable used in clculating normalisation factor
+C     locFac   :: temp/local factor from this level
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER bi, bj
       INTEGER i, j, k, ks
-      _RL     faceArea
+      _RL     faceArea, tmpFac, dT2impl
       _RS     myNorm
       _RL     theRecip_Dr
       _RL     cg3dTolerance
       _RL     aU, aL, aW, aE, aN, aS
-      _RL     tmpFac, nh_Fac, igwFac
-      _RL     locGamma
+      _RL     nh_Fac, igwFac, locFac
 CEOP
 
 CcnhDebugStarts
@@ -81,17 +83,24 @@ C-       From common bloc CG3D_WK_R:
        ENDDO
       ENDDO
 
-      nh_Fac = 0.
-      igwFac = 0.
+      nh_Fac = 0. _d 0
+      igwFac = 0. _d 0
+      tmpFac = 0. _d 0
       IF ( nonHydrostatic
      &      .AND. nh_Am2.NE.0. ) nh_Fac = 1. _d 0 / nh_Am2
       IF ( implicitIntGravWave ) igwFac = 1. _d 0
 
       IF ( use3Dsolver ) THEN
 C--   Initialise laplace operator
+#ifdef PRESERVE_C69C_OUTPUT
 C     aW3d: Ax/dX
 C     aS3d: Ay/dY
 C     aV3d: Ar/dR
+#else
+C     aW3d: Ax/dX *deltaT
+C     aS3d: Ay/dY *deltaT
+C     aV3d: Ar/dR *deltaT
+#endif
       myNorm = 0. _d 0
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -104,7 +113,11 @@ C     aV3d: Ar/dR
      &               *maskInC(i,j,bi,bj)*maskInC(i-1,j,bi,bj)
 #endif
            aW3d(i,j,k,bi,bj) = faceArea*recip_dxC(i,j,bi,bj)
+#ifdef PRESERVE_C69C_OUTPUT
      &                        *implicitNHPress*implicDiv2DFlow
+#else
+     &                        *implicitNHPress*deltaTMom
+#endif
            myNorm = MAX(ABS(aW3d(i,j,k,bi,bj)),myNorm)
           ENDDO
          ENDDO
@@ -117,7 +130,11 @@ C  deep-model: *deepFacC (faceArea), /deepFacC (recip_dx,y): => no net effect
      &               *maskInC(i,j,bi,bj)*maskInC(i,j-1,bi,bj)
 #endif
            aS3d(i,j,k,bi,bj) = faceArea*recip_dyC(i,j,bi,bj)
+#ifdef PRESERVE_C69C_OUTPUT
      &                        *implicitNHPress*implicDiv2DFlow
+#else
+     &                        *implicitNHPress*deltaTMom
+#endif
            myNorm = MAX(ABS(aS3d(i,j,k,bi,bj)),myNorm)
           ENDDO
          ENDDO
@@ -130,9 +147,9 @@ C  deep-model: *deepFacC (faceArea), /deepFacC (recip_dx,y): => no net effect
          ENDDO
         ENDDO
         DO k=2,Nr
-         tmpFac = nh_Fac*rVel2wUnit(k)*rVel2wUnit(k)
+         locFac = nh_Fac*rVel2wUnit(k)*rVel2wUnit(k)
      &          + igwFac*dBdrRef(k)*deltaTMom*dTtracerLev(k)
-         IF (tmpFac.GT.0. ) tmpFac = 1. _d 0 / tmpFac
+         IF ( locFac.GT.zeroRL ) locFac = 1. _d 0 / locFac
          DO j=1,sNy
           DO i=1,sNx
            faceArea = _rA(i,j,bi,bj)*maskC(i,j, k ,bi,bj)
@@ -147,8 +164,12 @@ caja &      drF(k  )*_hFacC(i,j,k  ,bi,bj)*0.5
 caja &     +drF(k-1)*_hFacC(i,j,k-1,bi,bj)*0.5
 c          IF ( theRecip_Dr .NE. 0. )
 c    &      theRecip_Dr = 1. _d 0/theRecip_Dr
-           aV3d(i,j,k,bi,bj) = faceArea*theRecip_Dr*tmpFac
+           aV3d(i,j,k,bi,bj) = faceArea*theRecip_Dr*locFac
+#ifdef PRESERVE_C69C_OUTPUT
      &                        *implicitNHPress*implicDiv2DFlow
+#else
+     &                        *implicitNHPress*deltaTMom
+#endif
            myNorm = MAX(ABS(aV3d(i,j,k,bi,bj)),myNorm)
           ENDDO
          ENDDO
@@ -163,7 +184,7 @@ c    &      theRecip_Dr = 1. _d 0/theRecip_Dr
       ENDIF
 
       _BEGIN_MASTER( myThid )
-C-- set global parameter in common block:
+C-- set global parameter in common block, units of 1/(s.r-Unit):
        cg3dNorm = myNorm
 C-- Define the solver tolerance in the appropriate Unit :
       cg3dNormaliseRHS = cg3dTargetResWunit.LE.zeroRL
@@ -171,10 +192,16 @@ C-- Define the solver tolerance in the appropriate Unit :
 C-  when using a normalisation of RHS, tolerance has no unit => no conversion
         cg3dTolerance = cg3dTargetResidual
       ELSE
+#ifdef PRESERVE_C69C_OUTPUT
 C-  convert Target-Residual (in W unit) to cg3d-solver residual unit [m^2/s^2]
         cg3dTolerance = cg3dNorm * cg3dTargetResWunit
      &                           * implicDiv2DFlow / deltaTMom
      &                           * rAc_3dMean * SQRT( n3dWetPts )
+#else
+C-  convert Target-Residual (in W unit) to cg3d-solver residual unit [m^2/s^2]
+        cg3dTolerance = cg3dNorm * cg3dTargetResWunit
+     &                           * rAc_3dMean * SQRT( n3dWetPts )
+#endif
       ENDIF
       cg3dTolerance_sq = cg3dTolerance*cg3dTolerance
 C-- print param values:
@@ -214,31 +241,43 @@ C-    Set solver main diagonal term
           ENDDO
          ENDDO
         ENDDO
-C-    Add free-surface source term
+C-    Add free-surface source term:
         IF ( selectNHfreeSurf.GE.1 ) THEN
+C     since Gamma = drC(1)/( beta * gamma * g * deltaT^2 )
+C     1/[(1+Gamma)*g*beta*deltaT] = gamma*deltaT/(g*beta*gamma*deltaT^2 +drC(1))
+#ifdef PRESERVE_C69C_OUTPUT
+         tmpFac = freeSurfFac * implicitNHPress*implicDiv2DFlow
+#else
+         tmpFac = freeSurfFac * implicitNHPress*deltaTMom
+#endif
+         dT2impl = implicitNHPress * deltaTMom
+     &           * implicDiv2DFlow * deltaTFreeSurf
          DO j=1,sNy
           DO i=1,sNx
-           locGamma = drC(1)*recip_Bo(i,j,bi,bj)
-     &              /( deltaTMom*deltaTFreeSurf
-     &                *implicitNHPress*implicDiv2DFlow )
            ks = 1
 c          ks = kSurfC(i,j,bi,bj)
 c          IF ( ks.LE.Nr ) THEN
              aC3d(i,j,ks,bi,bj) = aC3d(i,j,ks,bi,bj)
-     &         - freeSurfFac*recip_Bo(i,j,bi,bj)
-     &          *rA(i,j,bi,bj)*deepFac2F(ks)/deltaTMom/deltaTFreeSurf
-     &          / (1. _d 0 + locGamma )
+     &                - tmpFac*rA(i,j,bi,bj)*deepFac2F(ks)
+     &                 /( dT2impl*Bo_surf(i,j,bi,bj) + drC(1) )
 c          ENDIF
           ENDDO
          ENDDO
         ELSE
+         IF ( implicDiv2DFlow.GT.zeroRL ) THEN
+           tmpFac = freeSurfFac /(implicDiv2DFlow*deltaTFreeSurf)
+         ENDIF
          DO j=1,sNy
           DO i=1,sNx
            ks = kSurfC(i,j,bi,bj)
            IF ( ks.LE.Nr ) THEN
              aC3d(i,j,ks,bi,bj) = aC3d(i,j,ks,bi,bj)
+#ifdef PRESERVE_C69C_OUTPUT
      &         - freeSurfFac*recip_Bo(i,j,bi,bj)
      &          *rA(i,j,bi,bj)*deepFac2F(ks)/deltaTMom/deltaTFreeSurf
+#else
+     &         - tmpFac*recip_Bo(i,j,bi,bj)*rA(i,j,bi,bj)*deepFac2F(ks)
+#endif
            ENDIF
           ENDDO
          ENDDO
@@ -276,7 +315,7 @@ C     assuming zML is lower and zMU is upper!
         DO k=1,Nr
          DO j=1,sNy
           DO i=1,sNx
-           IF ( aC3d(i,j,k,bi,bj) .NE. 0. ) THEN
+           IF ( aC3d(i,j,k,bi,bj) .NE. zeroRS ) THEN
             zMC(i,j,k,bi,bj) = aC3d(i,j,k,bi,bj)
             zML(i,j,k,bi,bj) = aV3d(i,j,k,bi,bj)
             IF ( k.NE.Nr ) THEN
@@ -300,14 +339,14 @@ CcnhDebugEnds
         k = 1
          DO j=1,sNy
           DO i=1,sNx
-           zMC(i,j,k,bi,bj) = 1. _d 0 / zMC(i,j,k,bi,bj)
+           zMC(i,j,k,bi,bj) = oneRS / zMC(i,j,k,bi,bj)
            zMU(i,j,k,bi,bj) = zMU(i,j,k,bi,bj)*zMC(i,j,k,bi,bj)
           ENDDO
          ENDDO
         DO k=2,Nr
          DO j=1,sNy
           DO i=1,sNx
-           zMC(i,j,k,bi,bj) = 1. _d 0 /
+           zMC(i,j,k,bi,bj) = oneRS /
      &     (zMC(i,j,k,bi,bj)-zML(i,j,k,bi,bj)*zMU(i,j,k-1,bi,bj))
            zMU(i,j,k,bi,bj) = zMU(i,j,k,bi,bj)*zMC(i,j,k,bi,bj)
           ENDDO
@@ -316,7 +355,7 @@ CcnhDebugEnds
         DO k=1,Nr
          DO j=1,sNy
           DO i=1,sNx
-           IF ( aC3d(i,j,k,bi,bj) .EQ. 0. ) THEN
+           IF ( aC3d(i,j,k,bi,bj) .EQ. zeroRS ) THEN
             zMC(i,j,k,bi,bj) = 1.
             zML(i,j,k,bi,bj) = 0.
             zMU(i,j,k,bi,bj) = 0.
@@ -338,6 +377,10 @@ C--   Update overlap regions
       _EXCH_XYZ_RS(zMU, myThid)
 
       IF ( debugLevel .GE. debLevC ) THEN
+        CALL WRITE_FLD_XYZ_RS( 'aW3d', ' ', aW3d, -1, myThid )
+        CALL WRITE_FLD_XYZ_RS( 'aS3d', ' ', aS3d, -1, myThid )
+        CALL WRITE_FLD_XYZ_RS( 'aV3d', ' ', aV3d, -1, myThid )
+        CALL WRITE_FLD_XYZ_RS( 'aC3d', ' ', aC3d, -1, myThid )
         CALL WRITE_FLD_XYZ_RS( 'zMC',' ',zMC, 0, myThid )
         CALL WRITE_FLD_XYZ_RS( 'zML',' ',zML, 0, myThid )
         CALL WRITE_FLD_XYZ_RS( 'zMU',' ',zMU, 0, myThid )
