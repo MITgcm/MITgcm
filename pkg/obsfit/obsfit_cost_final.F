@@ -49,7 +49,7 @@ C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
-c--   Each process has calculated the global part for itself.
+C     Each process has calculated the global part for itself.
       DO num_file_obs=1,NFILESMAX_OBS
         glofc = glofc + mult_obsfit(num_file_obs)
      &                 *objf_obsfit(num_file_obs)
@@ -63,15 +63,15 @@ C     other part of the code
       ENDDO
 
 CML I do not understand, why we do not need this or something like this here
+CAV I think maybe we do need it, because objf_obsfit is only computed by
+CAV process 0. The global sum would broadcast to all processes.
 CMLc--   Do global summation for each part of the cost function
-CML      DO num_var=1,NVARMAX
-CML       DO num_file=1,NFILESPROFMAX
+CML       DO num_file=1,NFILESOBSMAX
 CML        _GLOBAL_SUM_RL(f_obsfit(num_file_obs), myThid )
 CML        _GLOBAL_SUM_RL(no_obsfit(num_file_obs), myThid )
-CML       ENDDO
 CML      ENDDO
 
-C     start printing to STDOUT
+C     Start printing to STDOUT
       DO num_file_obs=1,NFILESMAX_OBS
        IF ( no_obsfit(num_file_obs).GT.zeroRL ) THEN
         WRITE(msgBuf,'(A,1PE22.14,I2,1X,1PE9.2)')
@@ -82,9 +82,7 @@ C     start printing to STDOUT
        ENDIF
       ENDDO
 
-c--   Each process has calculated the global part for itself.
-
-C     only master thread of master CPU open and write to file
+C     Only master thread of master CPU open and write to file
       IF ( ifc .NE. -1 ) THEN
 
        WRITE(cfname,'(A,I4.4)') 'costfunction_obsfit.',optimcycle
