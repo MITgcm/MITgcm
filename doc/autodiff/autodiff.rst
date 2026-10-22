@@ -2071,6 +2071,18 @@ reverse sweep through the flow directives of
 :filelink:`autodiff_inadmode.flow <pkg/autodiff/autodiff_inadmode.flow>`;
 Tapenade reaches them through the hooks described next.
 
+Whether a switched value reaches a given routine depends on how that
+routine is differentiated. In Tapenade's default mode a routine is
+re-executed inside its adjoint, after the switch has acted, so
+:varlink:`viscFacInAd` reaches the viscosities recomputed there. A routine
+differentiated in split mode (``-nocheckpoint``) instead replays the values
+recorded in the forward sweep, before any switch, and the factor does not
+reach it. This is the situation of a TAF adjoint in which the viscosities
+are stored rather than recomputed, which is why the store directives for
+them in :filelink:`mom_vecinv.F <pkg/mom_vecinv/mom_vecinv.F>` and
+:filelink:`mom_fluxform.F <pkg/mom_fluxform/mom_fluxform.F>` are left out
+when ``AUTODIFF_ALLOW_VISCFACADJ`` is defined.
+
 .. _ad_output_hooks:
 
 How the hand-written routines enter the reverse sweep
