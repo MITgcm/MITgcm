@@ -879,7 +879,10 @@ C     (_B) therefore runs at the START of each backward step and calls
 C     ADAUTODIFF_INADMODE_SET, the TAF-named routine that switches the
 C     inAd* parameters on (and the adjoint diagnostics). etaN is only the
 C     active argument that makes Tapenade generate the call; its adjoint
-C     is left untouched.
+C     is left untouched. It is the vehicle because it is a 2-D field, so
+C     the cheapest to carry, present in every configuration and active
+C     wherever the ocean state is. Any field active across the time step
+C     would do; both switches and DUMMY_FOR_ETAN_TAP use the same one.
 C     !USES:
       IMPLICIT NONE
 #include "SIZE.h"

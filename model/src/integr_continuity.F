@@ -312,8 +312,7 @@ C--   End bi,bj loops
 C     In reverse, print adjoint variable for etaN
       CALL DUMMY_FOR_ETAN( myTime, myIter, myThid )
 # ifdef ALLOW_TAPENADE
-C     Tapenade counterpart (pkg/tapenade/dummy_tap.F): etaN as an argument
-C     makes Tapenade generate the reverse-sweep call that writes ADJetan.
+C     Tapenade counterpart (pkg/tapenade/dummy_tap.F)
       CALL DUMMY_FOR_ETAN_TAP( etaN, myTime, myIter, myThid )
 # endif
       _EXCH_XY_RL( etaN , myThid )
