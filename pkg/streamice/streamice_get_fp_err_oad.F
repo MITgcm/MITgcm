@@ -55,9 +55,10 @@ C     !INPUT/OUTPUT ARGUMENTS
      &       ABS (U_streamice(i,j,bi,bj)-u_new_SI(i,j,bi,bj))
            ENDIF
            IF (STREAMICE_vmask(i,j,bi,bj).eq.1) THEN
-            err_tempv = MAX( err_tempu,
-     &       ABS (V_streamice(i,j,bi,bj)-v_new_SI(i,j,bi,bj)))
+            err_tempv = 
+     &       ABS (V_streamice(i,j,bi,bj)-v_new_SI(i,j,bi,bj))
            ENDIF
+           err_tempv = max(err_tempu, err_tempv)
            IF (err_tempv .ge. err_max) err_max = err_tempv
           ENDDO
          ENDDO

@@ -512,10 +512,10 @@ C                                        by factor of .5e2
 C     STREAMICE_diagnostic_only       :: do not update thickness
 C                                     :: or any other timedep flds
 C     STREAMICE_ppm_driving_stress    :: use partial parabolic method
-C                                        to reconstruct surf slope
+C                                        to reconstruct surf slope (REMOVED)
 C     STREAMICE_alt_driving_stress    :: use finite difference based
 C                                        driving stress
-C                                        (overrides above option)
+C                                        (overrides above option) (REMOVED)
 C     STREAMICE_chkfixedptconvergence :: terminate velocity iteration
 C                                         based on fp_error
 C     STREAMICE_chkresidconvergence   :: terminate velocity iteration
@@ -558,14 +558,12 @@ C                                    floating ice in cost function
       LOGICAL STREAMICE_construct_matrix
       LOGICAL STREAMICE_lower_cg_tol
       LOGICAL STREAMICE_diagnostic_only
-      LOGICAL STREAMICE_ppm_driving_stress
       LOGICAL STREAMICE_h_ctrl_const_surf
       LOGICAL STREAMICE_chkfixedptconvergence
       LOGICAL STREAMICE_chkresidconvergence
       LOGICAL STREAMICE_allow_cpl
       LOGICAL STREAMICE_use_petsc
       LOGICAL STREAMICE_apply_firn_correction
-      LOGICAL STREAMICE_alt_driving_stress
       LOGICAL STREAMICE_allow_reg_coulomb
       LOGICAL STREAMICE_use_log_ctrl
       LOGICAL STREAMICE_vel_ext
@@ -598,12 +596,10 @@ C      LOGICAL STREAMICE_hybrid_stress
      & STREAMICE_lower_cg_tol,
      & STREAMICE_NS_periodic, STREAMICE_EW_periodic,
      & STREAMICE_diagnostic_only,
-     & STREAMICE_ppm_driving_stress,
      & STREAMICE_h_ctrl_const_surf,
      & STREAMICE_chkfixedptconvergence,
      & STREAMICE_chkresidconvergence,
      & STREAMICE_allow_cpl, streamice_use_petsc,
-     & STREAMICE_alt_driving_stress,
      & STREAMICE_allow_reg_coulomb,
      & STREAMICE_vel_ext,
      & STREAMICE_vel_ext_cgrid,

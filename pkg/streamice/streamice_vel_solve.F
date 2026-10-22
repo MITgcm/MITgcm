@@ -57,13 +57,7 @@ c   real                     :: err_max, err_tempu, err_tempv, err_init, area, m
 c       _RL taudx (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 c       _RL taudy (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-      IF (STREAMICE_alt_driving_stress) THEN
-       CALL STREAMICE_DRIVING_STRESS_FD (myThid)
-      ELSEIF (STREAMICE_ppm_driving_stress) THEN
-       CALL STREAMICE_DRIVING_STRESS_PPM (myThid)
-      ELSE
-       CALL STREAMICE_DRIVING_STRESS (myThid)
-      ENDIF
+      CALL STREAMICE_DRIVING_STRESS (myThid)
 
 #ifdef ALLOW_AUTODIFF_TAMC
 #ifdef STREAMICE_STRESS_BOUNDARY_CONTROL

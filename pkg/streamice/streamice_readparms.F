@@ -99,7 +99,6 @@ c      _RL streamice_bdot_maxmelt
      &     bglenTimeDepFile,
      &     cfricTimeDepFile,
      &     STREAMICEGlenConstFile, STREAMICEGlenConstConfig,
-     &     STREAMICE_ppm_driving_stress,
      &     STREAMICE_h_ctrl_const_surf,
      &     streamice_addl_backstress,
      &     streamice_smooth_gl_width,
@@ -109,7 +108,6 @@ c      _RL streamice_bdot_maxmelt
      &     STREAMICE_ADV_SCHEME, streamice_forcing_period,
      &     STREAMICE_chkfixedptconvergence,
      &     STREAMICE_chkresidconvergence,
-     &     STREAMICE_alt_driving_stress,
      &     STREAMICE_allow_reg_coulomb,
      &     STREAMICE_use_log_ctrl,
      &     STREAMICE_vel_ext,
@@ -365,10 +363,8 @@ c      STREAMICE_construct_matrix = .TRUE.
 #ifdef STREAMICE_FLOWLINE_BUTTRESS
       useStreamiceFlowlineButtr=.FALSE.
 #endif
-      STREAMICE_ppm_driving_stress = .FALSE.
       STREAMICE_chkfixedptconvergence = .true.
       STREAMICE_chkresidconvergence = .true.
-      STREAMICE_alt_driving_stress = .FALSE.
       STREAMICE_allow_reg_coulomb = .FALSE.
       STREAMICE_h_ctrl_const_surf = .FALSE.
       STREAMICE_shelf_dhdt_ctrl = .FALSE.
