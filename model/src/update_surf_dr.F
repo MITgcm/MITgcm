@@ -1,3 +1,4 @@
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
@@ -21,6 +22,9 @@ C     == Global variables
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SURFACE.h"
+#ifdef ALLOW_WETDRY
+# include "WETDRY.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -133,6 +137,40 @@ C-- Update fractional thickness "hFacW" & "hFacS" (at U and V points)
         ENDDO
 
        ENDIF
+
+#ifdef ALLOW_WETDRY
+C-- Wetting-drying: close the faces shut by pkg/wetdry (maskW/S already
+C   updated in WETDRY_UPDATE_MASKS, so recip_hFacW/S only needs zeroing).
+C   Only level kSurfW/S is rebuilt above: restore the other levels to
+C   their resting value first, or a face that closed and reopened would
+C   stay shut below the surface level
+       IF ( useWETDRY .AND. nonlinFreeSurf.GT.0 ) THEN
+        DO k=1,Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           IF ( k.NE.kSurfW(i,j,bi,bj) ) THEN
+            hFacW(i,j,k,bi,bj) = h0FacW(i,j,k,bi,bj)
+            recip_hFacW(i,j,k,bi,bj) = 0. _d 0
+            IF ( h0FacW(i,j,k,bi,bj).GT.zeroRS )
+     &        recip_hFacW(i,j,k,bi,bj) = 1. _d 0 / h0FacW(i,j,k,bi,bj)
+           ENDIF
+           IF ( k.NE.kSurfS(i,j,bi,bj) ) THEN
+            hFacS(i,j,k,bi,bj) = h0FacS(i,j,k,bi,bj)
+            recip_hFacS(i,j,k,bi,bj) = 0. _d 0
+            IF ( h0FacS(i,j,k,bi,bj).GT.zeroRS )
+     &        recip_hFacS(i,j,k,bi,bj) = 1. _d 0 / h0FacS(i,j,k,bi,bj)
+           ENDIF
+            hFacW(i,j,k,bi,bj) = hFacW(i,j,k,bi,bj)*wdMaskW(i,j,bi,bj)
+            hFacS(i,j,k,bi,bj) = hFacS(i,j,k,bi,bj)*wdMaskS(i,j,bi,bj)
+            recip_hFacW(i,j,k,bi,bj) = recip_hFacW(i,j,k,bi,bj)
+     &                               * wdMaskW(i,j,bi,bj)
+            recip_hFacS(i,j,k,bi,bj) = recip_hFacS(i,j,k,bi,bj)
+     &                               * wdMaskS(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
+#endif /* ALLOW_WETDRY */
 
 C- end bi,bj loop
        ENDDO

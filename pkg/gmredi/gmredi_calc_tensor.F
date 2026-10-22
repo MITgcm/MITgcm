@@ -1117,6 +1117,11 @@ C     for backeard compatibility + for trying to generate a simpler adjoint code
       ENDDO
 #endif /* ndef GM_NON_UNITY_DIAGONAL */
 
+#ifdef ALLOW_WETDRY
+C--   wetting-drying: no GM/Redi in thin-water columns
+      IF ( useWETDRY ) CALL WETDRY_GMREDI_TAPER( bi, bj, myThid )
+#endif
+
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
         CALL GMREDI_DIAGNOSTICS_FILL( bi, bj, myThid )

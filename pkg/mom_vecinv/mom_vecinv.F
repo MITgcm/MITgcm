@@ -40,6 +40,9 @@ C     == Global variables ==
 #include "DYNVARS.h"
 #include "FFIELDS.h"
 #include "MOM_VISC.h"
+#ifdef ALLOW_WETDRY
+# include "WETDRY.h"
+#endif
 #if ( defined ALLOW_GGL90 && defined ALLOW_GGL90_LANGMUIR )
 # include "GGL90.h"
 #endif
@@ -98,6 +101,12 @@ C     i,j      :: Loop counters
       _RL      vrF(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL      uCf(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL      vCf(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#ifdef ALLOW_WETDRY
+C     wdGu,wdGv :: tendency before the advection terms (pkg/wetdry scales
+C                 the advective part down on thin-water faces)
+      _RL    wdGu(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL    wdGv(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif
       _RS hFacZ   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS h0FacZ  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS r_hFacZ (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -739,6 +748,17 @@ CADJ STORE ucf(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
 CADJ STORE vcf(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
 #endif
 
+#ifdef ALLOW_WETDRY
+      IF ( useWETDRY .AND. momAdvection ) THEN
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         wdGu(i,j) = gU(i,j,k,bi,bj)
+         wdGv(i,j) = gV(i,j,k,bi,bj)
+        ENDDO
+       ENDDO
+      ENDIF
+#endif /* ALLOW_WETDRY */
+
       IF (momAdvection) THEN
 C--   Horizontal advection of relative (or absolute) vorticity
        IF ( (highOrderVorticity.OR.upwindVorticity)
@@ -873,6 +893,21 @@ C--   Bernoulli term
 
 C--   end if momAdvection
       ENDIF
+
+#ifdef ALLOW_WETDRY
+C--   Wetting-drying: momentum advection is unstable in thin water ;
+C     keep only the fraction wdAdvFacW/S (0 in shallow water) of it
+      IF ( useWETDRY .AND. momAdvection ) THEN
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         gU(i,j,k,bi,bj) = wdGu(i,j) + wdAdvFacW(i,j,bi,bj)
+     &                   *( gU(i,j,k,bi,bj) - wdGu(i,j) )
+         gV(i,j,k,bi,bj) = wdGv(i,j) + wdAdvFacS(i,j,bi,bj)
+     &                   *( gV(i,j,k,bi,bj) - wdGv(i,j) )
+        ENDDO
+       ENDDO
+      ENDIF
+#endif /* ALLOW_WETDRY */
 
 C--   3.D Coriolis term (horizontal momentum, Eastward component: -fprime*w)
       IF ( select3dCoriScheme.GE.1 ) THEN

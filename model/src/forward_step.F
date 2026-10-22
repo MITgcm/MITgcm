@@ -835,6 +835,14 @@ C-    update hfacC,W,S and recip_hFac according to etaH(n+1) :
 CADJ STORE rStarFacC, rStarFacS, rStarFacW =
 CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
 # endif
+#ifdef ALLOW_WETDRY
+C-    wetting-drying: open/close faces according to etaH(n)
+        IF ( useWETDRY ) THEN
+          CALL TIMER_START('WETDRY_UPDATE_MASKS [FORWARD_STEP]',myThid)
+          CALL WETDRY_UPDATE_MASKS( .TRUE., myTime, myIter, myThid )
+          CALL TIMER_STOP ('WETDRY_UPDATE_MASKS [FORWARD_STEP]',myThid)
+        ENDIF
+#endif /* ALLOW_WETDRY */
         CALL TIMER_START('UPDATE_R_STAR       [FORWARD_STEP]',myThid)
         CALL UPDATE_R_STAR( .TRUE., myTime, myIter, myThid )
         CALL TIMER_STOP ('UPDATE_R_STAR       [FORWARD_STEP]',myThid)
@@ -848,6 +856,13 @@ CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE hFac_surfC, hFac_surfS, hFac_surfW
 CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
 # endif
+#ifdef ALLOW_WETDRY
+        IF ( useWETDRY ) THEN
+          CALL TIMER_START('WETDRY_UPDATE_MASKS [FORWARD_STEP]',myThid)
+          CALL WETDRY_UPDATE_MASKS( .TRUE., myTime, myIter, myThid )
+          CALL TIMER_STOP ('WETDRY_UPDATE_MASKS [FORWARD_STEP]',myThid)
+        ENDIF
+#endif /* ALLOW_WETDRY */
         CALL TIMER_START('UPDATE_SURF_DR      [FORWARD_STEP]',myThid)
         CALL UPDATE_SURF_DR( .TRUE., myTime, myIter, myThid )
         CALL TIMER_STOP ('UPDATE_SURF_DR      [FORWARD_STEP]',myThid)
@@ -921,6 +936,16 @@ C--   Correct divergence in flow field and cycle time-stepping momentum
 CADJ STORE uVel, vVel = comlev1, key = ikey_dynamics, kind = isbyte
 #endif
 
+#ifdef ALLOW_WETDRY
+C--   wetting-drying: limit outflow so that no column drains below the film
+      IF ( useWETDRY .AND. momStepping ) THEN
+        CALL TIMER_START('WETDRY_LIMIT_OUTFLOW   [FORWARD_STEP]',myThid)
+        CALL WETDRY_LIMIT_OUTFLOW( myTime, myIter, myThid )
+        CALL WETDRY_CHECK_SPEED( myTime, myIter, myThid )
+        CALL TIMER_STOP ('WETDRY_LIMIT_OUTFLOW   [FORWARD_STEP]',myThid)
+      ENDIF
+#endif /* ALLOW_WETDRY */
+
       IF ( calc_wVelocity ) THEN
 C--     Integrate continuity vertically for vertical velocity
 C       (+ update "etaN" & "etaH", exact volume conservation):
@@ -928,6 +953,14 @@ C       (+ update "etaN" & "etaH", exact volume conservation):
         CALL INTEGR_CONTINUITY( uVel, vVel, myTime, myIter, myThid)
         CALL TIMER_STOP ('INTEGR_CONTINUITY   [FORWARD_STEP]',myThid)
       ENDIF
+#ifdef ALLOW_WETDRY
+C--   wetting-drying: keep a film of wdMinDepth in every column
+      IF ( useWETDRY ) THEN
+        CALL TIMER_START('WETDRY_APPLY_FLOOR     [FORWARD_STEP]',myThid)
+        CALL WETDRY_APPLY_FLOOR( .TRUE., myTime, myIter, myThid )
+        CALL TIMER_STOP ('WETDRY_APPLY_FLOOR     [FORWARD_STEP]',myThid)
+      ENDIF
+#endif /* ALLOW_WETDRY */
 #ifdef ALLOW_AUTODIFF_TAMC
 C--   These store directives avoid an (expensive) extra
 C     "call solve_for_pressure" in forward_step_ad
