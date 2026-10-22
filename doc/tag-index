@@ -1,6 +1,12 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/mdsio & rw:
+  - add one input argument to S/R MDS_READ_FIELD to allow to read-in tiled
+    files even if useSingleCpuIO=T ; add 1 output arg. to MDS_READ_META and
+    update calls to these 2 S/R without changing behavior.
+  - adjust Multiple-fields reading S/R (in pkg/rw/read_mflds.F) to read-in
+    global/tiled binary files when corresponding global/tiled meta files exist.
 o pkg/atm2d & model/src:
   - remove all pkg/atm2d content and corresponding bits in model/src ;
   - simplify/fix TIMER report from "the_main_loop.F".
