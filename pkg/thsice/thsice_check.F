@@ -44,8 +44,8 @@ CEOP
      &                     SQUEEZE_RIGHT, myThid )
 
 C--   Check parameter consistency:
-      IF ( .NOT.( thSIce_skipThermo .OR. useBulkForce .OR. useEXF
-     &       .OR. useAIM .OR. useCheapAML .OR. useATM2d ) ) THEN
+      IF ( .NOT.( thSIce_skipThermo .OR. useBulkForce .OR.
+     &            useEXF .OR. useAIM .OR. useCheapAML ) ) THEN
 C-    need some form of ATM-surface pkg to provide Air-Ice surf fluxes
         WRITE(msgBuf,'(2A)')
      &   'THSICE_CHECK: needs some PKG (EXF,Bulk-Force,AIM,CheapAML)'

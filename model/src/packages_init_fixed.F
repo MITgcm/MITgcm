@@ -100,8 +100,6 @@ C       |-- THSICE_INIT_FIXED
 C       |
 C       |-- LAND_INIT_FIXED
 C       |
-C       |-- ATM2D_INIT_FIXED
-C       |
 C       |-- AIM_INITIALISE
 C       |
 C       |-- ATM_PHYS_INIT_FIXED
@@ -539,18 +537,9 @@ C--   Initialise Land package
       ENDIF
 #endif
 
-#ifdef ALLOW_ATM2D
-      IF ( useAtm2d ) THEN
-# ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('ATM2D_INIT_FIXED',myThid)
-# endif
-        CALL ATM2D_INIT_FIXED( myThid )
-      ENDIF
-#endif
-
 #ifdef ALLOW_AIM
 C--   Initialise & Read AIM physical parameters
-      IF (useAIM) THEN
+      IF ( useAIM ) THEN
 # ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('AIM_INITIALISE',myThid)
 # endif

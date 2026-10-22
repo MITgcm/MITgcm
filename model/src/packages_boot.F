@@ -29,17 +29,19 @@ C     === Global variables ===
 #include "PARAMS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     === Routine arguments ===
 C     myThid   :: my Thread Id number
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
-C     === Local variables ===
 C     msgBuf   :: Informational/error message buffer
 C     iUnit    :: Work variable for IO unit number
+C     errCount :: error counter (inconsitent params and other errors)
+C     useATM2d :: retired atm2d pkg switch
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
+      INTEGER errCount
       LOGICAL locFlag
+      LOGICAL useATM2d
 CEOP
 
 C     data.pkg namelists
@@ -84,7 +86,6 @@ C     data.pkg namelists
      &          useICEFRONT,
      &          useThSIce,
      &          useLand,
-     &          useATM2d,
      &          useAIM,
      &          useAtm_Phys,
      &          useFizhi,
@@ -95,9 +96,11 @@ C     data.pkg namelists
      &          useMNC,
      &          useRunClock,
      &          useEMBED_FILES,
-     &          useMYPACKAGE
+     &          useMYPACKAGE,
+     &          useATM2d
 
       _BEGIN_MASTER(myThid)
+      errCount = 0
 
       WRITE(msgBuf,'(A)') ' PACKAGES_BOOT: opening data.pkg'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -150,7 +153,6 @@ c     useGAD          =.FALSE.
       useICEFRONT     =.FALSE.
       useThSIce       =.FALSE.
       useLand         =.FALSE.
-      useATM2d        =.FALSE.
       useAIM          =.FALSE.
       useAtm_Phys     =.FALSE.
       useFizhi        =.FALSE.
@@ -162,6 +164,8 @@ c     useGAD          =.FALSE.
       useRunClock     =.FALSE.
       useEMBED_FILES  =.FALSE.
       useMYPACKAGE    =.FALSE.
+C-    retired pkgs:
+      useATM2d        =.FALSE.
 
 C-    Adjust default to account for pkgs without run-time On/Off switch
 #ifdef ALLOW_AUTODIFF
@@ -192,9 +196,19 @@ C--   packages which were removed
 #ifdef ALLOW_OPENAD
       WRITE(msgBuf,'(A)') ' PACKAGES_BOOT: pkg/openad was removed'
       CALL PRINT_ERROR( msgBuf, myThid )
-      CALL ALL_PROC_DIE( 0 )
-      STOP 'ABNORMAL END: S/R PACKAGES_BOOT'
+      errCount = errCount + 1
 #endif
+#ifdef ALLOW_ATM2D
+      WRITE(msgBuf,'(A)') ' PACKAGES_BOOT: pkg/atm2d was removed'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      errCount = errCount + 1
+#endif
+      IF ( useATM2d ) THEN
+        WRITE(msgBuf,'(2A)') ' PACKAGES_BOOT: "useATM2d" ',
+     &   'no longer allowed in "data.pkg" (pkg/atm2d was removed)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
 
 C--   packages with hard-coded switch
 #ifndef HAVE_NETCDF
@@ -269,6 +283,15 @@ C--   Double warning (StdErr & StdOut) after changing useCAL setting
      &                      SQUEEZE_RIGHT, myThid )
       ENDIF
 #endif /* ALLOW_CAL */
+
+C--   Stop if any error was found (including retired params):
+      IF ( errCount .GE. 1 ) THEN
+        WRITE(msgBuf,'(A,I3,A)')
+     &       'S/R PACKAGES_BOOT: detected', errCount,' fatal error(s)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( 0 )
+        STOP 'ABNORMAL END: S/R PACKAGES_BOOT'
+      ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Short summary of which package is compiled and used
@@ -401,9 +424,6 @@ C----- pkgs with a standard "usePKG" On/Off switch in "data.pkg":
 #endif
 #ifdef ALLOW_LAND
       CALL PACKAGES_PRINT_MSG( useLand,       'Land',        ' ' )
-#endif
-#ifdef ALLOW_ATM2D
-      CALL PACKAGES_PRINT_MSG( useATM2d,      'ATM2d',       ' ' )
 #endif
 #ifdef ALLOW_AIM_V23
       CALL PACKAGES_PRINT_MSG( useAIM,        'aim_v23', 'useAIM' )
