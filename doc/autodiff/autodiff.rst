@@ -1992,6 +1992,8 @@ model and whose adjoint and tangent-linear counterparts are written by hand.
 This section describes the output, the parameters, and how the hand-written
 routines are made part of the generated code with TAF and with Tapenade.
 
+Authors: Tanvir Shahriar and Patrick Heimbach
+
 .. _ad_output_dumps_diags:
 
 Dumps and diagnostics of the adjoint state
