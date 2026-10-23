@@ -58,7 +58,8 @@ C- end bi,bj loops
        ENDDO
       ENDDO
 
-#ifdef ALLOW_SHITRANSCOEFF_3D
+#ifdef ALLOW_SHELFICE
+# ifdef ALLOW_SHITRANSCOEFF_3D
       IF ( .NOT. SHELFICEuseGammaFrict ) THEN
        IF ( SHELFICETransCoeffTFile .NE. ' ' ) THEN
         CALL READ_FLD_XYZ_RL( SHELFICETransCoeffTFile, ' ',
@@ -92,7 +93,8 @@ C     set coefficients to constant values
         ENDDO
        ENDIF
       ENDIF
-#endif
+# endif /* ALLOW_SHITRANSCOEFF_3D */
+#endif /* ALLOW_SHELFICE */
 
       RETURN
       END

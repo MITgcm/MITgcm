@@ -66,6 +66,7 @@ C     myThid :: thread number for this instance of the routine.
       INTEGER myIter
       INTEGER myThid
 
+#ifdef ALLOW_SHELFICE
 C     !LOCAL VARIABLES :
 C     === Local variables ===
 C     i,j,k,bi,bj      :: loop counters
@@ -575,6 +576,7 @@ C     In units of kg/s  -- multiplication of area required first
         ENDDO /* bi */
       ENDDO /* bj */
 
+#ifdef ALLOW_ADDFLUID
       DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
           DO k = 1,Nr
@@ -588,7 +590,6 @@ C     In units of kg/s  -- multiplication of area required first
         ENDDO /* bi */
       ENDDO /* bj */
 
-#ifdef ALLOW_ADDFLUID
       IF ( selectAddFluid.NE.0 .AND. temp_addMass.NE.UNSET_RL ) THEN
         IF ( ( selectAddFluid.GE.1 .AND. nonlinFreeSurf.GT.0 )
      &       .OR. convertFW2Salt.EQ.-1. _d 0 ) THEN
@@ -734,9 +735,9 @@ c     ENDIF
      &      0,1,0,1,1,myThid)
 #endif
 
-        CALL DIAGNOSTICS_FILL(icfFreshWaterFlux, 'STCfwFlx',
+       CALL DIAGNOSTICS_FILL(icfFreshWaterFlux, 'STCfwFlx',
      &      0,Nr,0,1,1,myThid)
-        CALL DIAGNOSTICS_FILL(icfHeatFlux, 'STChtFlx',
+       CALL DIAGNOSTICS_FILL(icfHeatFlux, 'STChtFlx',
      &      0,Nr,0,1,1,myThid)
 
 C     SHIForcT (Ice shelf forcing for theta [W/m2], >0 increases theta)
@@ -777,6 +778,8 @@ C     Friction velocity
 
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
+
+#endif /* ALLOW_SHELFICE */
 
       RETURN
       END

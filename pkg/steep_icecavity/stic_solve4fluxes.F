@@ -60,6 +60,7 @@ C----------
       INTEGER myIter, myThid
 CEOP
 
+#ifdef ALLOW_SHELFICE
 C     !FUNCTIONS:
       _RL SW_TEMP
       EXTERNAL SW_TEMP
@@ -290,6 +291,8 @@ C--   are the turbulent fluxes.
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT , 1)
       ENDIF
+
+#endif /* ALLOW_SHELFICE */
 
       RETURN
       END
