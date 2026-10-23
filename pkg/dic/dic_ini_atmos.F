@@ -169,15 +169,21 @@ C end if dic_int1 = 0,1,2,or 3
       ENDIF
 
 C--   Set initial AtmospCO2:
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-            AtmospCO2(i,j,bi,bj) = atm_pCO2
+C     Skip this when a spatially varying atmospheric pCO2 file is supplied:
+C     in that case AtmospCO2 has already been filled from DIC_atmospCO2File
+C     (by DIC_INI_FORCING, via pkg/exf, or by DIC_FIELDS_LOAD otherwise)
+C     and must not be overwritten by the uniform value atm_pCO2.
+      IF ( DIC_atmospCO2File .EQ. ' ' ) THEN
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+             AtmospCO2(i,j,bi,bj) = atm_pCO2
+           ENDDO
           ENDDO
-         ENDDO
+        ENDDO
        ENDDO
-      ENDDO
+      ENDIF
 
 #endif /* ALLOW_DIC */
 

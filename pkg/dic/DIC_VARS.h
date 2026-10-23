@@ -44,6 +44,7 @@ C     pH_isLoaded(2) :: = T when   3-D   pH is loaded from pickup file
        COMMON /CARBON_NEEDS/
      &              AtmospCO2, AtmosP, pH, pCO2, FluxCO2,
      &              wind, fIce, Kwexch_Pre, silicaSurf,
+     &              dicSST, dicSSS,
      &              calciteDissolRate, calciteDissolExp,
      &              calcOmegaCalciteFreq, zca,
      &              WsinkPIC, selectCalciteBottomRemin,
@@ -59,6 +60,8 @@ C     pH_isLoaded(2) :: = T when   3-D   pH is loaded from pickup file
       _RL  fIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  Kwexch_Pre(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  silicaSurf(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  dicSST(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  dicSSS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  calciteDissolRate(2), calciteDissolExp(2)
       _RL  calcOmegaCalciteFreq
       _RL  zca
@@ -263,8 +266,10 @@ C  dic_pCO2          :: atmospheric pCO2 to be read from data.dic
      &        DIC_deepSilicaFile,
      &        DIC_iceFile, DIC_parFile,
      &        DIC_chlaFile, DIC_ironFile,
+     &        DIC_atmospCO2File, DIC_SSTFile, DIC_SSSFile,
      &        DIC_forcingPeriod, DIC_forcingCycle,
-     &        dic_pCO2, dic_int1, dic_int2, dic_int3, dic_int4
+     &        dic_pCO2, dic_int1, dic_int2, dic_int3, dic_int4,
+     &        dic_useEXF, dic_secondsPerYear
 
       CHARACTER*(MAX_LEN_FNAM) DIC_windFile
       CHARACTER*(MAX_LEN_FNAM) DIC_atmospFile
@@ -274,13 +279,39 @@ C  dic_pCO2          :: atmospheric pCO2 to be read from data.dic
       CHARACTER*(MAX_LEN_FNAM) DIC_parFile
       CHARACTER*(MAX_LEN_FNAM) DIC_chlaFile
       CHARACTER*(MAX_LEN_FNAM) DIC_ironFile
-      _RL     DIC_forcingPeriod
-      _RL     DIC_forcingCycle
-      _RL     dic_pCO2
+      CHARACTER*(MAX_LEN_FNAM) DIC_atmospCO2File
+      CHARACTER*(MAX_LEN_FNAM) DIC_SSTFile
+      CHARACTER*(MAX_LEN_FNAM) DIC_SSSFile
+
+      _RL  DIC_forcingPeriod
+      _RL  DIC_forcingCycle
+      _RL  dic_pCO2
+      _RL  dic_secondsPerYear
+      LOGICAL dic_useEXF
+
       INTEGER dic_int1
       INTEGER dic_int2
       INTEGER dic_int3
       INTEGER dic_int4
+
+C--   COMMON /DIC_FIELDS_CONST/
+      COMMON /DIC_FIELDS_CONST/
+     &     dic_SilicaSurf_const, dic_SilicaDeep_const, dic_par_const,
+     &     dic_iron_const, dic_atmospco2_const, dic_wind_const,
+     &     dic_atmosp_const, dic_chl_const, dic_ice_const,
+     &     dic_SST_const, dic_SSS_const
+
+      _RL dic_SilicaSurf_const
+      _RL dic_SilicaDeep_const
+      _RL dic_par_const
+      _RL dic_iron_const
+      _RL dic_atmospco2_const
+      _RL dic_wind_const
+      _RL dic_atmosp_const
+      _RL dic_chl_const
+      _RL dic_ice_const
+      _RL dic_SST_const
+      _RL dic_SSS_const
 
 #ifdef DIC_BIOTIC
 C     *==========================================================*
