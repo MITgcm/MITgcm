@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - fix TAF-generated adjoint of seaice_lsr.F ; update lab-sea Adm ref output.
 o pkg/mdsio & rw:
   - add one input argument to S/R MDS_READ_FIELD to allow to read-in tiled
     files even if useSingleCpuIO=T ; add 1 output arg. to MDS_READ_META and
