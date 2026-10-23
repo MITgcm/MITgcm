@@ -53,15 +53,12 @@ C--  Check parameters:
        IF ( .NOT. useSHELFICE ) THEN
 #ifndef ALLOW_SHELFICE
         WRITE(msgBuf,'(A)')
-     &      'pkg/steep_icecavity requires pkg/shelfice,'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(A)')
-     &      'please add shelfice to packages.conf'
+     &      'pkg/steep_icecavity requires to compile pkg/shelfice'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
 #endif
-        WRITE(msgBuf,'(A)')
-     &       'pkg/steep_icecavity requires useShelfIce = T, '//
+        WRITE(msgBuf,'(2A)')
+     &       'pkg/steep_icecavity requires useShelfIce = T, ',
      &       'set useShelfIce = .TRUE., in data.pkg'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
@@ -88,8 +85,8 @@ C--  Check parameters:
        ENDIF
 
 #ifndef ALLOW_ADDFLUID
-       WRITE(msgBuf,'(A,A)')
-     &      'pkg/steep_icecavity requires'
+       WRITE(msgBuf,'(2A)')
+     &      'pkg/steep_icecavity requires ',
      &      'CPP flag ALLOW_ADDFLUID to be defined'
        CALL PRINT_ERROR( msgBuf, myThid )
        errCount = errCount + 1

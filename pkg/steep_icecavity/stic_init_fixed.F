@@ -112,6 +112,7 @@ C--  STEEP_ICECAVITY parameters (BEGIN)
       ENDDO
 C--  STEEP_ICECAVITY parameters (END)
 
+#ifdef ALLOW_SHELFICE
 C--   Create masks for shelf-ice and ice-front by modifyig code from
 C     shelfice_thermodynamics.F minimum fraction of a cell adjacent to an
 C     ice front that must be wet for exchange to happen
@@ -297,6 +298,7 @@ C     output the masks
       CALL WRITE_FLD_XYZ_RS( 'mask3dICF',' ',mask3dICF, 0,myThid)
       CALL WRITE_FLD_XY_RS ( 'R_stic',' ',R_stic,-1,myThid)
       CALL WRITE_FLD_XY_RS ( 'kIcf',' ',fK_icefront,-1,myThid)
+#endif /* ALLOW_SHELFICE */
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
@@ -375,7 +377,7 @@ c      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
 c    I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       ENDIF
-#endif
+#endif /* ALLOW_DIAGNOSTICS */
 
       RETURN
       END
