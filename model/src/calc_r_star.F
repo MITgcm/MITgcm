@@ -175,7 +175,8 @@ C-     Simple average
 #endif /* ALLOW_OBCS */
 
 C-    Needs to do something when r* ratio is too small ;
-C     for now, just stop
+C     for now, just stop (except with pkg/wetdry, which keeps a thin film
+C     in dry columns and closes the faces around them)
         icntc1 = 0
         icntc2 = 0
         icntw  = 0
@@ -198,7 +199,7 @@ C     for now, just stop
          ENDDO
         ENDDO
 
-        IF ( icntc1+icnts+icntw .GT. 0 ) THEN
+        IF ( icntc1+icnts+icntw .GT. 0 .AND. .NOT.useWETDRY ) THEN
 C-    Print an error msg and then stop:
          DO j=1,sNy+1
           DO i=1,sNx+1

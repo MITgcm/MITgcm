@@ -534,6 +534,12 @@ C--   Initialise the 2-Way Nesting packages variables
       ENDIF
 #endif /* COMPONENT_MODULE */
 
+#ifdef ALLOW_WETDRY
+      IF ( useWETDRY ) THEN
+        CALL WETDRY_INIT_VARIA( myThid )
+      ENDIF
+#endif /* ALLOW_WETDRY */
+
 #ifdef ALLOW_MYPACKAGE
       IF ( useMYPACKAGE ) THEN
         CALL MYPACKAGE_INIT_VARIA( myThid )

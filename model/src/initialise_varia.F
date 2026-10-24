@@ -304,6 +304,10 @@ C     and modify hFac(C,W,S) accordingly :
       IF ( nonlinFreeSurf.GT.0 ) THEN
        IF ( select_rStar.GT.0 ) THEN
 # ifndef DISABLE_RSTAR_CODE
+#  ifdef ALLOW_WETDRY
+        IF ( useWETDRY )
+     &   CALL WETDRY_UPDATE_MASKS( .FALSE., startTime, nIter0, myThid )
+#  endif
         CALL UPDATE_R_STAR( .TRUE., startTime, nIter0, myThid )
 # endif /* DISABLE_RSTAR_CODE */
        ELSEIF ( selectSigmaCoord.NE.0 ) THEN
@@ -318,6 +322,10 @@ C     confused about it so that their contribution is not always added
 C     to the hfac*_ad lateron. This directive fixes that.
 CADJ INCOMPLETE recip_hFacC, recip_hFacW, recip_hFacS
 #endif /* ALLOW_AUTODIFF_TAMC */
+#ifdef ALLOW_WETDRY
+        IF ( useWETDRY )
+     &   CALL WETDRY_UPDATE_MASKS( .FALSE., startTime, nIter0, myThid )
+#endif
         CALL UPDATE_SURF_DR( .TRUE., startTime, nIter0, myThid )
        ENDIF
       ENDIF
