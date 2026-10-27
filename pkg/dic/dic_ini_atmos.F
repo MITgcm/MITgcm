@@ -12,6 +12,7 @@ C  Calculate the atmospheric pCO2
 C  dic_int1:
 C  0=use default 278.d-6
 C  1=use constant value - dic_pCO2, read in from data.dic
+C     (if dic_useEXF=T: dic_atmospCO2_const, default = dic_pCO2)
 C  2=read in from file
 C  3=interact with atmospheric box (use dic_pCO2 as initial atmos. value)
 
@@ -70,7 +71,11 @@ c     atpco2 = 0.
 C user specified value (or default = 278 ppm)- set only once
       IF ( dic_int1.EQ.0 .OR. dic_int1.EQ.1 ) THEN
 
-         atm_pCO2 = dic_pCO2
+         IF ( dic_useEXF ) THEN
+          atm_pCO2 = dic_atmospCO2_const
+         ELSE
+          atm_pCO2 = dic_pCO2
+         ENDIF
 
       ELSEIF (dic_int1.EQ.2) THEN
 C read from a file and linearly interpolate between file entries
@@ -163,8 +168,6 @@ C print out budget:
        _BARRIER
 
         atm_pCO2 = atpco2
-      ELSE
-        atm_pCO2 = dic_pCO2
 C end if dic_int1 = 0,1,2,or 3
       ENDIF
 

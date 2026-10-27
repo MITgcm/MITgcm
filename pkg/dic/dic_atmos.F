@@ -182,6 +182,8 @@ C if end of forcing cycle, find total change in ocean carbon
 #endif
 
        atm_pCO2 = atpco2
+      ELSEIF ( dic_useEXF ) THEN
+       atm_pCO2 = dic_atmospCO2_const
       ELSE
        atm_pCO2 = dic_pCO2
       ENDIF

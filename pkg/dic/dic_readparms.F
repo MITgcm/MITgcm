@@ -72,6 +72,7 @@ C.      (physical model not using pkg/exf)
       INTEGER j
 # endif
 #endif
+      LOGICAL atmCO2constSet      
 CEOP
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -691,11 +692,11 @@ C--   Close the open data file
 C-    derive other parameters:
 C-    set parameter default values
 
-C     Uniform atmospheric pCO2 used by pkg/exf when no dic_atmospCO2File
-C     is given: default to dic_pCO2 so that dic_pCO2 remains the single
-C     user-facing control for a constant pCO2 (dic_int1=0 or 1).
-      IF ( dic_atmospCO2_const.EQ.UNSET_RL )
-     &     dic_atmospCO2_const = dic_pCO2
+C     Uniform atmospheric pCO2 used (S/R DIC_INI_ATMOS, DIC_ATMOS) when
+C     dic_useEXF=T, dic_int1=0 or 1 and no dic_atmospCO2File is given:
+C     defaults to dic_pCO2.
+      atmCO2constSet = ( dic_atmospCO2_const.NE.UNSET_RL )
+      IF ( .NOT.atmCO2constSet ) dic_atmospCO2_const = dic_pCO2
 
       IF ( selectBTconst  .EQ.UNSET_I ) selectBTconst   = 1
       IF ( selectFTconst  .EQ.UNSET_I ) selectFTconst   = 1
@@ -1393,6 +1394,13 @@ C     dic_useEXF and useExfYearlyFields
 C     useEXF and useExfYearlyFields
 #endif /* ALLOW_EXF */
 
+      IF ( dic_int1.LT.0 .OR. dic_int1.GT.3 ) THEN
+        WRITE(msgBuf,'(2A,I6,A)') 'DIC_READPARMS: ',
+     &    'dic_int1=', dic_int1, ' is not valid (allowed: 0,1,2,3)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+
       IF ( dic_int1.EQ.0 .AND. dic_pCO2.NE.278. _d -6 ) THEN
         WRITE(msgBuf,'(A)')
      &    'DIC_READPARMS: cannot change default dic_pCO2 if dic_int1=0'
@@ -1434,6 +1442,41 @@ C     rather than let one silently overwrite the other.
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
+C-    Warn when a user-set pCO2 value is silently not used
+      IF ( dic_int1.EQ.2 .AND. dic_pCO2.NE.278. _d -6 ) THEN
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS WARNING: ',
+     &    'dic_pCO2 is ignored with dic_int1=2 (uses co2atmos.dat)'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     I                      SQUEEZE_RIGHT, myThid )
+      ENDIF
+      IF ( dic_int1.EQ.1 .AND. dic_atmospCO2File.NE.' ' ) THEN
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS WARNING: ',
+     &    'dic_pCO2 is ignored with dic_int1=1 and dic_atmospCO2File'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     I                      SQUEEZE_RIGHT, myThid )
+      ENDIF
+      IF ( atmCO2constSet .AND.
+     &     ( dic_atmospCO2File.NE.' ' .OR. .NOT.dic_useEXF
+     &       .OR. dic_int1.GE.2 ) ) THEN
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS WARNING: ',
+     &    'dic_atmospCO2_const only used with dic_useEXF=T,'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     I                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS WARNING: ',
+     &    'dic_int1=0 or 1 and no dic_atmospCO2File: ignored here'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     I                      SQUEEZE_RIGHT, myThid )
+      ENDIF
+      IF ( atmCO2constSet .AND. dic_useEXF .AND. dic_int1.LE.1
+     &     .AND. dic_atmospCO2File.EQ.' '
+     &     .AND. dic_pCO2.NE.278. _d -6
+     &     .AND. dic_atmospCO2_const.NE.dic_pCO2 ) THEN
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS WARNING: ',
+     &    'dic_pCO2 ignored: dic_atmospCO2_const takes precedence'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     I                      SQUEEZE_RIGHT, myThid )
+      ENDIF
+
 #ifdef ALLOW_OLD_VIRTUALFLUX
       IF ( PTRACERS_EvPrRn(1).NE.UNSET_RL .OR.
      &     PTRACERS_EvPrRn(2).NE.UNSET_RL ) THEN
