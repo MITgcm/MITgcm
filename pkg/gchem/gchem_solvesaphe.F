@@ -16,7 +16,7 @@ C--   o GCHEM_COEFFS_SURF
 C--   o GCHEM_COEFFS_DEEP
 C--   o GCHEM_SOLVE_AT_FAST
 C--   o GCHEM_SOLVE_AT_GENERAL
-C--   o GCHEM_GCHEM_SOLVE_AT_GENERAL_SEC
+C--   o GCHEM_SOLVE_AT_GENERAL_SEC
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C    SolveSAPHE is free software: you can redistribute it and/or modify
@@ -313,9 +313,9 @@ C Load from the carbon_chem common block
       ELSEIF ( selectPHsolver.EQ.2 ) THEN
 #ifdef ALLOW_DEBUG
         IF (debugPrt)
-     &      CALL DEBUG_CALL('GCHEM_GCHEM_SOLVE_AT_GENERAL_SEC',myThid)
+     &      CALL DEBUG_CALL('GCHEM_SOLVE_AT_GENERAL_SEC',myThid)
 #endif
-        CALL GCHEM_GCHEM_SOLVE_AT_GENERAL_SEC(
+        CALL GCHEM_SOLVE_AT_GENERAL_SEC(
      &                z_alktot, z_dictot, z_bortot,
      &                z_po4tot, z_siltot, z_nh4tot, z_h2stot,
      &                z_so4tot, z_flutot, z_hini,   z_val,
@@ -1786,7 +1786,7 @@ C      END FUNCTION GCHEM_SOLVE_AT_GENERAL
 C      =========================================================================
 
 C      =========================================================================
-      SUBROUTINE GCHEM_GCHEM_SOLVE_AT_GENERAL_SEC(p_alktot, p_dictot,
+      SUBROUTINE GCHEM_SOLVE_AT_GENERAL_SEC(p_alktot, p_dictot,
      &                           p_bortot, p_po4tot,
      &                           p_siltot, p_nh4tot,
      &                           p_h2stot, p_so4tot,
@@ -1844,11 +1844,11 @@ C      IF(PRESENT(p_hini)) THEN
         zh_ini = p_hini
 C      ELSE
 C#if defined(DEBUG_PHSOLVERS)
-C        PRINT*, '[GCHEM_GCHEM_SOLVE_AT_GENERAL_SEC] Calling GCHEM_AHINI_FOR_AT for h_ini'
+C        PRINT*, '[GCHEM_SOLVE_AT_GENERAL_SEC] Calling GCHEM_AHINI_FOR_AT for h_ini'
 C#endif
 C       CALL GCHEM_AHINI_FOR_AT(p_alktot, p_dictot, p_bortot, zh_ini)
 C#if defined(DEBUG_PHSOLVERS)
-C        PRINT*, '[GCHEM_GCHEM_SOLVE_AT_GENERAL_SEC] h_ini :', zh_ini
+C        PRINT*, '[GCHEM_SOLVE_AT_GENERAL_SEC] h_ini :', zh_ini
 C#endif
 C      ENDIF
 
@@ -1881,8 +1881,8 @@ C      ENDIF
       ENDIF
 
 C#if defined(DEBUG_PHSOLVERS)
-C           PRINT*, '[GCHEM_GCHEM_SOLVE_AT_GENERAL_SEC] h_min :', zh_min
-C           PRINT*, '[GCHEM_GCHEM_SOLVE_AT_GENERAL_SEC] h_max :', zh_max
+C           PRINT*, '[GCHEM_SOLVE_AT_GENERAL_SEC] h_min :', zh_min
+C           PRINT*, '[GCHEM_SOLVE_AT_GENERAL_SEC] h_max :', zh_max
 C#endif
 
 C     Uncomment this line for the "safe" initialisation test
@@ -1933,7 +1933,7 @@ C                 to a bisection step on [pH@zh_min, pH@zh_max]
 
       ELSE
 C       we have got the root; unlikely, but one never knows
-C        GCHEM_GCHEM_SOLVE_AT_GENERAL_SEC = zh_2
+C        GCHEM_SOLVE_AT_GENERAL_SEC = zh_2
          p_hnew = zh_2
 C        IF(PRESENT(p_val)) p_val = zeqn_2
          p_val = zeqn_2
@@ -1965,7 +1965,7 @@ C      or zh_min <= zh <= zh_1 (if zeqn_1 < 0), so this can always be done
         zh_max = zh_1
       ELSE
 C      zh_1 is the root
-C        GCHEM_GCHEM_SOLVE_AT_GENERAL_SEC = zh_1
+C        GCHEM_SOLVE_AT_GENERAL_SEC = zh_1
         p_hnew = zh_1
 C        IF(PRESENT(p_val)) p_val = zeqn_1
         p_val = zeqn_1
@@ -2065,7 +2065,7 @@ C            H_new = H_1 + \Delta H
            zh      = zh_1 + zh_delta
 
 C#if defined(DEBUG_PHSOLVERS)
-C           PRINT*, '[GCHEM_GCHEM_SOLVE_AT_GENERAL_SEC] testing zh :', zh, zeqn, zh_delta
+C           PRINT*, '[GCHEM_SOLVE_AT_GENERAL_SEC] testing zh :', zh, zeqn, zh_delta
 C#endif
            IF( zh .LT. zh_min ) THEN
 C              if [H]_new < [H]_min
@@ -2108,7 +2108,7 @@ C        IF(l_exitnow) EXIT
        ENDIF
       ENDDO
 
-C      GCHEM_GCHEM_SOLVE_AT_GENERAL_SEC = zh
+C      GCHEM_SOLVE_AT_GENERAL_SEC = zh
       p_hnew = zh
 
 C      IF(PRESENT(p_val)) THEN
@@ -2129,5 +2129,5 @@ C      ENDIF
 
       RETURN
       END
-C      END FUNCTION GCHEM_GCHEM_SOLVE_AT_GENERAL_SEC
+C      END FUNCTION GCHEM_SOLVE_AT_GENERAL_SEC
 C      =========================================================================
