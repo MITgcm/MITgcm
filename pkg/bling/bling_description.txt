@@ -1,0 +1,120 @@
+The "BLING" package is adapted from the Biogeochemistry with Light, Iron, Nutrient and Gas model developed at GFDL by Eric Galbraith and collaborators. Several subroutines, such as air-sea exchange and carbonate chemistry, are adapted from the "DIC" package. It is compatible with the MITgcm adjoint.
+
+N-BLING, with nitrogen cycling, is the default code. It includes 8 tracers: DIC, ALK, O2, NO3, PO4, Fe, DON, DOP (in that order in data.ptracers). Prognostic tracers for silica and phytoplankton biomass are optional.
+
+The original 6-tracer BLING code (Galbraith et al., 2010) can be compiled by defining the flag USE_BLING_V1. The tracers in data.ptracers must then be specified in the following order: DIC, ALK, O2, PO4, Fe, DOP.
+
+
+
+For more information see:
+-------------------------
+
+Galbraith, E.D., Gnanadesikan, A., Dunne, J. and Hiscock, M. 2010. Regional impacts of iron-light colimitation in a global biogeochemical model. Biogeosciences, 7, 1043-1064.
+
+http://www.gfdl.noaa.gov/simplified-ocean-biogeochemistry-bling
+
+https://sites.google.com/site/blingmodel/
+
+
+
+Below are the notes from the file generic_BLING.v2.F90:
+-------------------------------------------------------
+
+Biogeochemistry with Light, Iron, Nutrient and Gas version two (BLINGv2) includes an implicit ecological model of growth limitation by light, temperature, nitrogen, phosphorus and iron, and simulates organic and O2 pools.
+
+BLINGv2 differs from blingv0 by including a nitrogen cycle (with N2 fixation and denitrification) and flexible N:P stoichiometry. The iron limitation is now treated slightly differently, in order to be consistent with P. In addition, the phytoplankton biomass is now treated as a non-advected tracer (i.e. a diagnostic tracer in GFDL parlance) for the purpose of calculating uptake, which relaxes the strict assumption of balanced growth. There is also a subgridscale sediment parameterization, to capture fine-scale bathymetric features in particle remineralization, and a diel vertical migrator (DVM) parameterization for export and remineralization. In addition, there are numerous small changes and re-tunings.
+
+Food web processing in the euphotic zone is handled following the empirical relationships discussed by Dunne et al.(2005). O2 equilibria and gas exchange follow OCMIP2 protocols.
+
+BLING is a biogeochemistry tool, with ecosystem-like behaviour, rather than a full-complexity ecosystem model. It takes certain computational shortcuts in order to represent well-known features of ecosystems, but without having to resolve the ecosystem components explicitly. Most importantly, living and particulate organic matter is not subject to advection and mixing due to ocean circulation. Particular caution should be applied when interpreting small-scale behaviour (scales of advection per week) and the detailed timing of growth in dynamic environments, such as during spring blooms.
+
+Additional functionality comes from an optional carbon cycle that is non-interactive, i.e. does not change the core bling behaviour, as well as tracers including radiocarbon (14c), d13C (13c), a decomposition of carbon components by gas exchange and remineralization (carbon_pre), a nutrient source tagging module (nut_source) that uses a global pycnocline (pyc_ave), a decomposition of oxygen as preformed and total (o2_pre) as well as photosynthetic, and a decomposition of phosphate and nitrate as preformed and remineralized (nut_pre). All of this - and more! - is found in the module BLING_extras.
+
+This model is available for public use. The current version is blingv2. The version number refers to the core model behaviour; additional tracers exist in different iterations of the module. There is not yet a publication. blingv0 can be referenced as:
+Galbraith, E.D., Gnanadesikan, A., Dunne, J. and Hiscock, M. 2010. Regional impacts of iron-light colimitation in a global biogeochemical model. Biogeosciences, 7, 1043-1064.
+
+All parameter values are as described in this paper. Note that this reference is only for the core model components, and does not include any of the additional functionalities, which remain undocumented. Please contact Eric Galbraith (eric.galbraith@mcgill.ca) for more information.
+
+
+
+
+
+
+
+Notes on running BLING in MITgcm:
+---------------------------------
+
+(See the example in MITgcm_contrib/verification_other/global_oce_biogeo_bling)
+
+1) make sure that you have the current BLING code:
+in your pkg/bling directory
+type:
+cvs update
+
+2) in your code folder, add these to packages.conf:
+gchem
+ptracers
+bling
+
+3) in your code folder, copy pkg/bling/BLING_OPTIONS.h
+and define / undef options
+
+4) in your run folder, add
+data.gchem (useBLING=.TRUE.)
+data.ptracers (specify ICS for ptracers)
+data.bling (specify atm pCO2, silica field, iron atm deposition field)
+You can find examples of these files in MITgcm_contrib/verification_other/global_oce_biogeo_bling/input/
+
+5) in your run folder, update
+data.pkg (usePTRACERS=.TRUE., useGCHEM=.TRUE.)
+and if you use it
+data.obcs or data.rbcs (specify OBCS for ptracers)
+
+
+
+
+
+
+BLING-specific options (to be specified in BLING_OPTIONS.h):
+------------------------------------------------------------
+
+BLING_NO_NEG
+When biogeochemical tracer fields become negative (which can happen when advecting fields with low values and high spatial gradients), change negative values to small positive values before nutrient limitations are calculated in bling_production.
+
+ML_MEAN_LIGHT
+Assume that phytoplankton in the mixed layer experience the average light over the mixed layer (as in original BLING model)
+
+ML_MEAN_PHYTO
+Assume that phytoplankton are homogenized in the mixed layer
+
+ADVECT_PHYTO
+Adds a prognostic tracer for total phytoplankton biomass
+
+BLING_ADJOINT_SAFE
+Simplify some parts of the code that are problematic when using the adjoint
+
+USE_QSW
+Determine PAR from shortwave radiation Qsw (instead of based on location & time)
+
+
+
+
+Notes on BLING_ADJOINT SAFE:
+
+- minimum value for Pc_m and Pc_m_diaz
+- FreeFe and pfeflux_l are not set to 0 when anoxic
+- using fixed wsink0 rather than variable wsink in organic Fe adsorption calculation
+- no benthic denitrification
+- no DVM
+
+
+
+
+
+
+
+
+
+
+
+

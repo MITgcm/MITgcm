@@ -17,12 +17,23 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "BLING_VARS.h"
+#ifdef ALLOW_CAL
+# include "cal.h"
+#endif
 #ifdef ALLOW_EXF
 # include "EXF_PARAM.h"
-# include "EXF_INTERP_SIZE.h"
-# include "EXF_INTERP_PARAM.h"
+# ifdef USE_EXF_INTERPOLATION
+c#  ifdef ALLOW_EXCH2
+c#   include "W2_EXCH2_SIZE.h"
+c#   include "W2_EXCH2_TOPOLOGY.h"
+c#  endif /* ALLOW_EXCH2 */
+#  include "SET_GRID.h"
+#  include "EXF_INTERP_SIZE.h"
+#  include "EXF_INTERP_PARAM.h"
+# endif /* USE_EXF_INTERPOLATION */
+# include "BLING_EXF.h"
 #endif /* ALLOW_EXF */
-#include "BLING_VARS.h"
 
 C     === Routine arguments ===
 C     myThid    :: My Thread Id. number
@@ -38,6 +49,19 @@ C     iUnit     :: Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER errCount
       INTEGER iUnit
+      _RL secperday
+#ifdef ALLOW_EXF
+C     Local helper parameters that can be set in case we want to use
+C       pkg/exf machinery for bling fields with bling_useEXF=T but useEXF=F 
+C.      (physical model not using pkg/exf)
+      INTEGER bling_exf_iprec, bling_exf_debugLev
+      LOGICAL bling_useExfYearlyFields, bling_twoDigitYear
+      LOGICAL prtBlkLn, addBlkLn
+# ifdef USE_EXF_INTERPOLATION
+      LOGICAL bling_exf_output_interp
+      INTEGER j
+# endif
+#endif
 
 C ==========================================================
 C   Abiotic parameters
@@ -75,6 +99,7 @@ C     selectPHsolver=3 for Munhoven (2013) solvesaphe fast
 C ==========================================================
 
       NAMELIST /ABIOTIC_PARMS/
+     &                      bling_debugLevel,
      &                      permil,
      &                      Pa2Atm,
      &                      epsln
@@ -179,12 +204,9 @@ C ==========================================================
      &                     river_conc_po4,
      &                     river_dom_to_nut
 
-C ==========================================================
-C   BLING forcing
-C ==========================================================
-
       NAMELIST /BLING_FORCING/
-     &          bling_windFile, bling_atmospFile, bling_iceFile,
+     &          bling_useEXF,
+     &          bling_windFile, bling_apressFile, bling_iceFile,
      &          bling_ironFile, bling_silicaFile,
      &          bling_psmFile, bling_plgFile, bling_PdiazFile,
      &          bling_forcingPeriod, bling_forcingCycle,
@@ -197,26 +219,74 @@ C ==========================================================
      &          bling_pCO2,
      &          river_conc_po4, river_dom_to_nut
 #ifdef ALLOW_EXF
-     &         ,apco2file, apco2startdate1, apco2startdate2,
-     &          apco2RepCycle, apco2period, apco2StartTime,
-     &          exf_inscal_apco2, exf_outscal_apco2, apco2const,
-     &          apco2_exfremo_intercept, apco2_exfremo_slope,
-     &          BLING_silicafile, silicastartdate1, silicastartdate2,
-     &          silicaRepCycle, silicaperiod, silicaStartTime,
-     &          exf_inscal_apco2, exf_outscal_silica, silicaconst,
-     &          silica_exfremo_intercept, silica_exfremo_slope,
-     &          BLING_ironfile, ironstartdate1, ironstartdate2,
-     &          ironRepCycle, ironperiod, ironStartTime,
-     &          exf_inscal_iron, exf_outscal_iron, ironconst,
-     &          iron_exfremo_intercept, iron_exfremo_slope
+     &        , bling_exf_iprec, bling_exf_debugLev,
+     &          bling_useExfYearlyFields, bling_twoDigitYear,
+     &          bling_apco2File, bling_apco2StartDate1,
+     &          bling_apco2StartDate2,
+     &          bling_apco2RepCycle, bling_apco2Period,
+     &          bling_apco2StartTime,
+     &          bling_inscal_apco2, bling_outscal_apco2,
+     &          bling_apco2Const,
+     &          bling_apco2_exfremo_intercept,
+     &          bling_apco2_exfremo_slope,
+     &          bling_silicaStartDate1, bling_silicaStartDate2,
+     &          bling_silicaRepCycle, bling_silicaPeriod,
+     &          bling_silicaStartTime,
+     &          bling_inscal_silica, bling_outscal_silica,
+     &          bling_silicaConst,
+     &          bling_silica_exfremo_intercept,
+     &          bling_silica_exfremo_slope,
+     &          bling_ironStartDate1, bling_ironStartDate2,
+     &          bling_ironRepCycle, bling_ironPeriod,
+     &          bling_ironStartTime,
+     &          bling_inscal_iron, bling_outscal_iron, bling_ironConst,
+     &          bling_iron_exfremo_intercept, bling_iron_exfremo_slope,
+     &          bling_windStartDate1, bling_windStartDate2,
+     &          bling_windRepCycle, bling_windPeriod,
+     &          bling_windStartTime,
+     &          bling_inscal_wind, bling_outscal_wind,
+     &          bling_windConst,
+     &          bling_wind_exfremo_intercept,
+     &          bling_wind_exfremo_slope,
+     &          bling_iceStartDate1, bling_iceStartDate2,
+     &          bling_iceRepCycle, bling_icePeriod,
+     &          bling_iceStartTime,
+     &          bling_inscal_ice, bling_outscal_ice,
+     &          bling_iceConst,
+     &          bling_ice_exfremo_intercept,
+     &          bling_ice_exfremo_slope,
+     &          bling_apressStartDate1, bling_apressStartDate2,
+     &          bling_apressRepCycle, bling_apressPeriod,
+     &          bling_apressStartTime,
+     &          bling_inscal_apress, bling_outscal_apress,
+     &          bling_apressConst,
+     &          bling_apress_exfremo_intercept,
+     &          bling_apress_exfremo_slope
 #ifdef USE_EXF_INTERPOLATION
-     &         ,apco2_lon0, apco2_lon_inc, apco2_lat0, apco2_lat_inc,
-     &          apco2_nlon, apco2_nlat, apco2_interpMethod,
-     &          silica_lon0, silica_lon_inc, 
-     &          silica_lat0, silica_lat_inc,
-     &          silica_nlon, silica_nlat, silica_interpMethod,
-     &          iron_lon0, iron_lon_inc, iron_lat0, iron_lat_inc,
-     &          iron_nlon, iron_nlat, iron_interpMethod
+     &         ,bling_apco2_lon0, bling_apco2_lon_inc,
+     &          bling_apco2_lat0, bling_apco2_lat_inc,
+     &          bling_apco2_nlon, bling_apco2_nlat,
+     &          bling_apco2_interpMethod,
+     &          bling_silica_lon0, bling_silica_lon_inc, 
+     &          bling_silica_lat0, bling_silica_lat_inc,
+     &          bling_silica_nlon, bling_silica_nlat,
+     &          bling_silica_interpMethod,
+     &          bling_iron_lon0, bling_iron_lon_inc,
+     &          bling_iron_lat0, bling_iron_lat_inc,
+     &          bling_iron_nlon, bling_iron_nlat,
+     &          bling_iron_interpMethod,
+     &          bling_wind_lon0, bling_wind_lon_inc,
+     &          bling_wind_lat0, bling_wind_lat_inc,
+     &          bling_wind_nlon, bling_wind_nlat,
+     &          bling_wind_interpMethod,
+     &          bling_ice_lon0, bling_ice_lon_inc,
+     &          bling_ice_lat0, bling_ice_lat_inc,
+     &          bling_ice_nlon, bling_ice_nlat,
+     &          bling_ice_interpMethod,
+     &          bling_apress_lon0, bling_apress_lon_inc,
+     &          bling_apress_lat0, bling_apress_lat_inc,
+     &          bling_apress_nlon, bling_apress_nlat,
+     &          bling_apress_interpMethod
 #endif /* USE_EXF_INTERPOLATION */
 #endif /* ALLOW_EXF */
 
@@ -308,13 +378,6 @@ C   river_conc_po4   :: Phosphate concentration in river runoff
 C   river_dom_to_nut :: DOM to PO4 ratio in river runoff
 C   chlsat_locTimWindow(1:2) :: local-time window (in h) for
 C                       satellite-equivalent chlorophyll diagnostic (and cost)
-
-      _RL secperday
-#ifdef ALLOW_EXF
-#ifdef USE_EXF_INTERPOLATION
-      INTEGER j
-#endif /* USE_EXF_INTERPOLATION */
-#endif /* ALLOW_EXF */
 
       _BEGIN_MASTER(myThid)
       errCount = 0
@@ -431,8 +494,11 @@ C     Default values
       chlsat_locTimWindow(1) = 12.0 _d 0
       chlsat_locTimWindow(2) = 13.5 _d 0
 
+      bling_debugLevel       = 0
+      bling_useEXF           = .FALSE.
+      bling_apco2File        = ' '
       bling_windFile         = ' '
-      bling_atmospFile       = ' '
+      bling_apressFile       = ' '
       bling_iceFile          = ' '
       bling_ironFile         = ' '
       bling_silicaFile       = ' '
@@ -455,76 +521,168 @@ C     Default values
       river_conc_po4         = 0.007 _d 0
       river_dom_to_nut       = 0. _d 0
 
-#ifdef ALLOW_EXF
-      apco2startdate1         = 0
-      apco2startdate2         = 0
-      apco2StartTime          = UNSET_RL
-      apco2period             = 0.0 _d 0
-      apco2RepCycle           = repeatPeriod
-      apco2const              = 0.0 _d 0
-      apco2_exfremo_intercept = 0.0 _d 0
-      apco2_exfremo_slope     = 0.0 _d 0
-      apco2file               = ' '
-      exf_inscal_apco2        =  1. _d 0
-      exf_outscal_apco2       =  1. _d 0
-      silicastartdate1        = 0
-      silicastartdate2        = 0
-      silicaStartTime         = UNSET_RL
-      silicaperiod            = 0.0 _d 0
-      silicaRepCycle          = repeatPeriod
-      silicaconst             = 0.0 _d 0
-      silica_exfremo_intercept = 0.0 _d 0
-      silica_exfremo_slope    = 0.0 _d 0
-      BLING_silicafile        = ' '
-      exf_inscal_silica       =  1. _d 0
-      exf_outscal_silica      =  1. _d 0
-      ironstartdate1          = 0
-      ironstartdate2          = 0
-      ironStartTime           = UNSET_RL
-      ironperiod              = 0.0 _d 0
-      ironRepCycle            = repeatPeriod
-      ironconst               = 0.0 _d 0
-      iron_exfremo_intercept  = 0.0 _d 0
-      iron_exfremo_slope      = 0.0 _d 0
-      BLING_ironfile          = ' '
-      exf_inscal_iron         =  1. _d 0
-      exf_outscal_iron        =  1. _d 0
-#ifdef USE_EXF_INTERPOLATION
-C--   set default input location to match (in case of simple Lat-Long grid)
-C     model grid cell-center position (leading to trivial interpolation)
-      apco2_lon0         = inp_lon0
-      apco2_lat0         = inp_lat0
-      apco2_nlon         = inp_gNx
-      apco2_nlat         = inp_gNy
-      apco2_lon_inc      = inp_dLon
-      DO j=1,MAX_LAT_INC
-        apco2_lat_inc(j) = inp_dLat(j)
-      ENDDO
-      apco2_interpMethod = 1
-      silica_lon0        = inp_lon0
-      silica_lat0        = inp_lat0
-      silica_nlon        = inp_gNx
-      silica_nlat        = inp_gNy
-      silica_lon_inc     = inp_dLon
-      DO j=1,MAX_LAT_INC
-        silica_lat_inc(j) = inp_dLat(j)
-      ENDDO
-      silica_interpMethod = 1
-      iron_lon0          = inp_lon0
-      iron_lat0          = inp_lat0
-      iron_nlon          = inp_gNx
-      iron_nlat          = inp_gNy
-      iron_lon_inc       = inp_dLon
-      DO j=1,MAX_LAT_INC
-        iron_lat_inc(j) = inp_dLat(j)
-      ENDDO
-      iron_interpMethod = 1
-#endif /* USE_EXF_INTERPOLATION */
-#endif /* ALLOW_EXF */
+C     some sensible defaults
+      bling_iceConst        = 0.      _d 0
+      bling_apressConst     = 1.01325 _d 5
+      bling_silicaConst     = 7.6838  _d -3
+C     bling_apco2Const defaults to bling_pCO2, but bling_pCO2 is itself
+C     read from the BLING_FORCING namelist below: leave it unset here and
+C     resolve the default after the namelist has been read.
+      bling_apco2Const      = UNSET_RL
+      bling_windConst       = 5.      _d 0
+      bling_ironConst       = 1.      _d -11
 
 C     default periodic forcing to same as for physics
       bling_forcingPeriod = externForcingPeriod
       bling_forcingCycle  = externForcingCycle
+
+#ifdef ALLOW_EXF
+C     If useEXF=F, s/r exf_readparms is not called and exf-parameters
+C     are not initialiased properly. The following few exf-related
+C     parameters need to have a defined value to be used in s/r
+C     exf_set_fld.
+       bling_exf_iprec           = 32
+       bling_useExfYearlyFields  = .FALSE.
+       bling_twoDigitYear        = .FALSE.
+       bling_exf_debugLev        = debugLevel
+
+C     repeatPeriod is needed now as default for bling_*RepCycle
+       IF ( .NOT. useEXF ) repeatPeriod = bling_ForcingCycle
+
+      bling_apco2StartDate1         = 0
+      bling_apco2StartDate2         = 0
+      bling_apco2StartTime          = UNSET_RL
+      bling_apco2Period             = 0.0 _d 0
+      bling_apco2RepCycle           = repeatPeriod
+      bling_apco2_exfremo_intercept = 0.0 _d 0
+      bling_apco2_exfremo_slope     = 0.0 _d 0
+      bling_inscal_apco2            =  1. _d 0
+      bling_outscal_apco2           =  1. _d 0
+      bling_silicaStartDate1        = 0
+      bling_silicaStartDate2        = 0
+      bling_silicaStartTime         = UNSET_RL
+      bling_silicaPeriod            = 0.0 _d 0
+      bling_silicaRepCycle          = repeatPeriod
+      bling_silica_exfremo_intercept= 0.0 _d 0
+      bling_silica_exfremo_slope    = 0.0 _d 0
+      bling_inscal_silica           =  1. _d 0
+      bling_outscal_silica          =  1. _d 0
+      bling_ironStartDate1          = 0
+      bling_ironStartDate2          = 0
+      bling_ironStartTime           = UNSET_RL
+      bling_ironPeriod              = 0.0 _d 0
+      bling_ironRepCycle            = repeatPeriod
+      bling_iron_exfremo_intercept  = 0.0 _d 0
+      bling_iron_exfremo_slope      = 0.0 _d 0
+      bling_inscal_iron             =  1. _d 0
+      bling_outscal_iron            =  1. _d 0
+      bling_apressStartDate1        = 0
+      bling_apressStartDate2        = 0
+      bling_apressStartTime         = UNSET_RL
+      bling_apressPeriod            = 0.0 _d 0
+      bling_apressRepCycle          = repeatPeriod
+      bling_apress_exfremo_intercept= 0.0 _d 0
+      bling_apress_exfremo_slope    = 0.0 _d 0
+      bling_inscal_apress           =  1. _d 0
+      bling_outscal_apress          =  1. _d 0
+      bling_windStartDate1          = 0
+      bling_windStartDate2          = 0
+      bling_windStartTime           = UNSET_RL
+      bling_windPeriod              = 0.0 _d 0
+      bling_windRepCycle            = repeatPeriod
+      bling_wind_exfremo_intercept  = 0.0 _d 0
+      bling_wind_exfremo_slope      = 0.0 _d 0
+      bling_inscal_wind             =  1. _d 0
+      bling_outscal_wind            =  1. _d 0
+      bling_iceStartDate1           = 0
+      bling_iceStartDate2           = 0
+      bling_iceStartTime            = UNSET_RL
+      bling_icePeriod               = 0.0 _d 0
+      bling_iceRepCycle             = repeatPeriod
+      bling_ice_exfremo_intercept   = 0.0 _d 0
+      bling_ice_exfremo_slope       = 0.0 _d 0
+      bling_inscal_ice              =  1. _d 0
+      bling_outscal_ice             =  1. _d 0
+
+#ifdef USE_EXF_INTERPOLATION
+
+       IF ( .NOT. useEXF ) THEN
+C     This is done in s/r exf_init_interp only if useEXF=T
+# ifdef ALLOW_EXCH2
+        inp_gNx = exch2_mydNx(1)
+        inp_gNy = exch2_mydNy(1)
+# else /* ALLOW_EXCH2 */
+        inp_gNx = Nx
+        inp_gNy = Ny
+# endif /* ALLOW_EXCH2 */
+
+        inp_lon0 = xgOrigin + delX(1)*halfRL
+        inp_lat0 = ygOrigin + delY(1)*halfRL
+
+        inp_dLon = delX(1)
+        DO j=1,MAX_LAT_INC
+         IF (j.LT.inp_gNy) THEN
+           inp_dLat(j) = (delY(j) + delY(j+1))*halfRL
+         ELSE
+           inp_dLat(j) = 0.
+         ENDIF
+        ENDDO
+       ENDIF
+
+      bling_apco2_lon0          = inp_lon0
+      bling_apco2_lat0          = inp_lat0
+      bling_apco2_nlon          = inp_gNx
+      bling_apco2_nlat          = inp_gNy
+      bling_apco2_lon_inc       = inp_dLon
+      bling_apco2_interpMethod  = 1
+      bling_silica_lon0         = inp_lon0
+      bling_silica_lat0         = inp_lat0
+      bling_silica_nlon         = inp_gNx
+      bling_silica_nlat         = inp_gNy
+      bling_silica_lon_inc      = inp_dLon
+      bling_silica_interpMethod = 1
+      bling_iron_lon0           = inp_lon0
+      bling_iron_lat0           = inp_lat0
+      bling_iron_nlon           = inp_gNx
+      bling_iron_nlat           = inp_gNy
+      bling_iron_lon_inc        = inp_dLon
+      bling_iron_interpMethod   = 1
+      bling_wind_lon0           = inp_lon0
+      bling_wind_lat0           = inp_lat0
+      bling_wind_nlon           = inp_gNx
+      bling_wind_nlat           = inp_gNy
+      bling_wind_lon_inc        = inp_dLon
+      bling_wind_interpMethod   = 1
+      bling_apress_lon0         = inp_lon0
+      bling_apress_lat0         = inp_lat0
+      bling_apress_nlon         = inp_gNx
+      bling_apress_nlat         = inp_gNy
+      bling_apress_lon_inc      = inp_dLon
+      bling_apress_interpMethod = 1
+      bling_ice_lon0            = inp_lon0
+      bling_ice_lat0            = inp_lat0
+      bling_ice_nlon            = inp_gNx
+      bling_ice_nlat            = inp_gNy
+      bling_ice_lon_inc         = inp_dLon
+      bling_ice_interpMethod    = 1
+
+      DO j=1,MAX_LAT_INC
+        bling_apco2_lat_inc(j)  = inp_dLat(j)
+        bling_silica_lat_inc(j) = inp_dLat(j)
+        bling_iron_lat_inc(j)   = inp_dLat(j)
+        bling_apress_lat_inc(j) = inp_dLat(j)
+        bling_wind_lat_inc(j)   = inp_dLat(j)
+        bling_ice_lat_inc(j)    = inp_dLat(j)
+      ENDDO
+
+       bling_exf_output_interp = .FALSE.
+
+       IF ( .NOT. useEXF ) THEN
+        exf_output_interp      = bling_exf_output_interp
+       ENDIF
+
+#endif /* USE_EXF_INTERPOLATION */
+#endif /* ALLOW_EXF */
 
       WRITE(msgBuf,'(A)') ' BLING_READPARMS: opening data.bling'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -543,6 +701,26 @@ C-    BLING parameters
 
 C-    forcing filenames and parameters
       READ(UNIT=iUnit,NML=BLING_FORCING)
+      IF ( bling_apco2Const .EQ. UNSET_RL )
+     &     bling_apco2Const = bling_pCO2
+
+#ifdef ALLOW_EXF
+C     pass the exf-related parameters read from data.bling to pkg/exf
+C     (only if pkg/exf is not used; otherwise set in data.exf)
+      IF ( .NOT. useEXF ) THEN
+        exf_iprec          = bling_exf_iprec
+        useExfYearlyFields = bling_useExfYearlyFields
+        twoDigitYear       = bling_twoDigitYear
+        exf_debugLev       = bling_exf_debugLev
+      ENDIF
+#else /* ALLOW_EXF */
+      IF ( bling_useEXF ) THEN
+        WRITE(msgBuf,'(2A)') 'BLING_READPARMS: ',
+     &   'bling_useEXF=.TRUE. requires pkg/exf (ALLOW_EXF undefined)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+#endif /* ALLOW_EXF */
 
       WRITE(msgBuf,'(A)')
      &   ' BLING_READPARMS: finished reading data.BLING'
@@ -644,14 +822,6 @@ C OCMIP2 Coefficients from S/R CARBON_COEFFS in CARBON_CHEM.F
       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
 #endif
 
-      IF ( errCount.GE.1 ) THEN
-       WRITE(msgBuf,'(A,I3,A)')
-     &     'BLING_READPARMS: detected', errCount,' fatal error(s)'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       CALL ALL_PROC_DIE( 0 )
-       STOP 'ABNORMAL END: S/R BLING_READPARMS'
-      ENDIF
-
 #ifdef CARBONCHEM_SOLVESAPHE
       IF ( selectHFconst.GT.2 .OR. selectBTconst.GT.2
      & .OR. selectFTconst.GT.2 ) THEN
@@ -671,6 +841,240 @@ C OCMIP2 Coefficients from S/R CARBON_COEFFS in CARBON_CHEM.F
         STOP 'ABNORMAL END: S/R BLING_READPARMS: select pH solver error'
       ENDIF
 #endif
+
+#ifdef ALLOW_EXF
+      IF ( bling_useEXF ) THEN
+C--   Print general parameters:
+        WRITE(msgBuf,'(A)') ' bling_useEXF general parameters:'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid )
+        WRITE(msgBuf,'(A)') ' '
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid )
+#ifdef USE_EXF_INTERPOLATION
+        WRITE(msgBuf,'(A)')
+     &  '// USE_EXF_INTERPOLATION:              defined'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid)
+#else
+          WRITE(msgBuf,'(A)')
+     &  '// USE_EXF_INTERPOLATION:          NOT defined'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid)
+#endif
+C--   For each data set used the summary prints the calendar data
+C     and the corresponding file from which the data will be read.
+      prtBlkLn = .FALSE.
+      addBlkLn = .TRUE.
+
+C--   bling wind speed
+        IF ( bling_windFile .NE. ' ' ) THEN
+          CALL EXF_FLD_SUMMARY( 'wind speed',
+     I         bling_windFile, 
+     I         bling_windRepCycle, 
+     I         bling_windPeriod,
+     I         bling_windStartTime, 
+     I         useExfYearlyFields,
+     I         addBlkLn, 
+     I         myThid )
+#ifdef USE_EXF_INTERPOLATION
+          CALL EXF_PRINT_INTERP( 'blingWind',
+     I         bling_wind_lon0, 
+     I         bling_wind_lon_inc, 
+     I         bling_wind_lat0, 
+     I         bling_wind_lat_inc,
+     I         bling_wind_nlon, 
+     I         bling_wind_nlat, 
+     I         bling_wind_interpMethod, 
+     I         myThid )
+#endif   
+          prtBlkLn = .TRUE.
+        ENDIF
+
+C--   bling atmospheric pressure
+        IF ( bling_apressFile .NE. ' ' ) THEN
+          CALL EXF_FLD_SUMMARY( 'atmospheric pressure',
+     I         bling_apressFile, 
+     I         bling_apressRepCycle, 
+     I         bling_apressPeriod,
+     I         bling_apressStartTime, 
+     I         useExfYearlyFields, 
+     I         addBlkLn, 
+     I         myThid )
+#ifdef USE_EXF_INTERPOLATION
+          CALL EXF_PRINT_INTERP( 'blingApress',
+     I         bling_apress_lon0, 
+     I         bling_apress_lon_inc, 
+     I         bling_apress_lat0, 
+     I         bling_apress_lat_inc,
+     I         bling_apress_nlon, 
+     I         bling_apress_nlat, 
+     I         bling_apress_interpMethod, 
+     I         myThid )
+#endif  
+         prtBlkLn = .TRUE.
+        ENDIF 
+
+C--   bling surface silica
+        IF ( bling_silicaFile .NE. ' ' ) THEN
+          CALL EXF_FLD_SUMMARY( 'surface silica',
+     I         bling_silicaFile, 
+     I         bling_silicaRepCycle, 
+     I         bling_silicaPeriod,
+     I         bling_silicaStartTime, 
+     I         useExfYearlyFields, 
+     I         addBlkLn, 
+     I         myThid )
+#ifdef USE_EXF_INTERPOLATION
+          CALL EXF_PRINT_INTERP( 'blingSilica',
+     I         bling_silica_lon0, 
+     I         bling_silica_lon_inc, 
+     I         bling_silica_lat0, 
+     I         bling_silica_lat_inc,
+     I         bling_silica_nlon, 
+     I         bling_silica_nlat, 
+     I         bling_silica_interpMethod, 
+     I         myThid )
+#endif   
+          prtBlkLn = .TRUE.
+        ENDIF
+
+C--   bling iron forcing
+        IF ( bling_ironFile .NE. ' ' ) THEN
+          CALL EXF_FLD_SUMMARY( 'aeolian iron flux',
+     I         bling_ironFile, 
+     I         bling_ironRepCycle, 
+     I         bling_ironPeriod,
+     I         bling_ironStartTime, 
+     I         useExfYearlyFields, 
+     I         addBlkLn, 
+     I         myThid )
+#ifdef USE_EXF_INTERPOLATION
+          CALL EXF_PRINT_INTERP( 'InputFe',
+     I         bling_iron_lon0, 
+     I         bling_iron_lon_inc, 
+     I         bling_iron_lat0, 
+     I         bling_iron_lat_inc,
+     I         bling_iron_nlon, 
+     I         bling_iron_nlat, 
+     I         bling_iron_interpMethod, 
+     I         myThid )
+#endif   
+          prtBlkLn = .TRUE.
+      ENDIF
+
+C--   bling atmospheric CO2 forcing
+        IF ( bling_apco2File .NE. ' ' ) THEN
+          CALL EXF_FLD_SUMMARY( 'atmospheric CO2',
+     I         bling_apco2File, 
+     I         bling_apco2RepCycle, 
+     I         bling_apco2Period,
+     I         bling_apco2StartTime, 
+     I         useExfYearlyFields, 
+     I         addBlkLn, 
+     I         myThid)
+#ifdef USE_EXF_INTERPOLATION
+          CALL EXF_PRINT_INTERP( 'blingAtmosCO2',
+     I         bling_apco2_lon0, 
+     I         bling_apco2_lon_inc, 
+     I         bling_apco2_lat0, 
+     I         bling_apco2_lat_inc,
+     I         bling_apco2_nlon, 
+     I         bling_apco2_nlat, 
+     I         bling_apco2_interpMethod, 
+     I         myThid )
+#endif  
+         prtBlkLn = .TRUE.
+        ENDIF
+
+C--  bling sea ice forcing
+        IF ( bling_iceFile .NE. ' ' ) THEN
+          CALL EXF_FLD_SUMMARY( 'sea ice fraction',
+     I         bling_iceFile, 
+     I         bling_iceRepCycle, 
+     I         bling_icePeriod,
+     I         bling_iceStartTime, 
+     I         useExfYearlyFields, 
+     I         addBlkLn, 
+     I         myThid ) 
+#ifdef USE_EXF_INTERPOLATION
+          CALL EXF_PRINT_INTERP( 'blingIce',
+     I         bling_ice_lon0, 
+     I         bling_ice_lon_inc, 
+     I         bling_ice_lat0, 
+     I         bling_ice_lat_inc,
+     I         bling_ice_nlon, 
+     I         bling_ice_nlat, 
+     I         bling_ice_interpMethod, 
+     I         myThid )
+#endif   
+          prtBlkLn = .TRUE.
+        ENDIF
+
+C bling_useEXF
+      ENDIF
+
+C     bling_useEXF and useExfYearlyFields
+      IF ( bling_useEXF .AND. useExfYearlyFields ) THEN
+       IF ( bling_ironFile.NE.' ' .AND.
+     &      bling_ironRepCycle.NE.0. ) THEN
+        WRITE(msgBuf,'(3A)') 'BLING_READPARMS: The use of ',
+     &   'useExfYearlyFields AND bling_ironRepCycle ',
+     &   'is not implemented'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+       IF ( bling_silicaFile.NE.' ' .AND.
+     &      bling_silicaRepCycle.NE.0. ) THEN
+        WRITE(msgBuf,'(3A)') 'BLING_READPARMS: The use of ',
+     &   'useExfYearlyFields AND bling_silicaRepCycle ',
+     &   'is not implemented'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+       IF ( bling_apco2File.NE.' ' .AND.
+     &      bling_apco2RepCycle.NE.0. ) THEN
+        WRITE(msgBuf,'(3A)') 'BLING_READPARMS: The use of ',
+     &   'useExfYearlyFields AND bling_apco2RepCycle ',
+     &   'is not implemented'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+       IF ( bling_windFile.NE.' ' .AND.
+     &      bling_windRepCycle.NE.0. ) THEN
+        WRITE(msgBuf,'(3A)') 'BLING_READPARMS: The use of ',
+     &   'useExfYearlyFields AND bling_windRepCycle ',
+     &   'is not implemented'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+       IF ( bling_iceFile.NE.' ' .AND.
+     &      bling_iceRepCycle.NE.0. ) THEN
+        WRITE(msgBuf,'(3A)') 'BLING_READPARMS: The use of ',
+     &   'useExfYearlyFields AND bling_iceRepCycle ',
+     &   'is not implemented'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+       IF ( bling_apressFile.NE.' ' .AND.
+     &      bling_apressRepCycle.NE.0. ) THEN
+        WRITE(msgBuf,'(3A)') 'BLING_READPARMS: The use of ',
+     &   'useExfYearlyFields AND bling_apressRepCycle ',
+     &   'is not implemented'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+      ENDIF
+C     useEXF and useExfYearlyFields
+#endif /* ALLOW_EXF */
+
+      IF ( errCount.GE.1 ) THEN
+        WRITE(msgBuf,'(A,I3,A)')
+     &       'BLING_READPARMS: detected', errCount,' fatal error(s)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( 0 )
+        STOP 'ABNORMAL END: S/R BLING_READPARMS'
+      ENDIF
 
       _END_MASTER(myThid)
 

@@ -1,4 +1,7 @@
 #include "BLING_OPTIONS.h"
+#ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+#endif
 
 CBOP
       subroutine BLING_INIT_VARIA( myThid )
@@ -18,6 +21,11 @@ C     === Global variables ===
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
 #include "BLING_VARS.h"
+#include "BLING_LOAD.h"
+#ifdef ALLOW_EXF
+# include "EXF_INTERP_SIZE.h"
+# include "BLING_EXF.h"
+#endif
 
 C     !INPUT PARAMETERS:
 C     myThid               :: thread number
@@ -27,7 +35,6 @@ CEOP
 #ifdef ALLOW_BLING
       INTEGER i,j, bi,bj
       INTEGER k
-c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -37,6 +44,7 @@ C--   Initialise global variables
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           DO k = 1, Nr
+            pH(i,j,k,bi,bj)         = 8. _d 0
             omegaC(i,j,k,bi,bj)     = 0. _d 0
             omegaAr(i,j,k,bi,bj)    = 0. _d 0
             irr_mem(i,j,k,bi,bj)    = 1. _d 0
@@ -48,6 +56,7 @@ C--   Initialise global variables
             phyto_diaz(i,j,k,bi,bj) = 4. _d -7 / permil
 #endif
           ENDDO
+          FluxCO2(i,j,bi,bj)        = 0. _d 0
           chl_sat(i,j,bi,bj)        = 0. _d 0
           gamma_POM_2d(i,j,bi,bj)   = gamma_POM
           wsink0_2d(i,j,bi,bj)      = wsink0
@@ -185,7 +194,6 @@ C      IF ( nIter0.GT.PTRACERS_Iter0 .OR.
 C     &    (nIter0.EQ.PTRACERS_Iter0 .AND. pickupSuff.NE.' ')
 C IF ABOVE TRUE phyto READ FROM PICKUP AND OVERWRITES IC READ
 C PICKUP CALLED FROM bling_carbonate_init.F
-C
 
 #endif /* ALLOW_BLING */
 

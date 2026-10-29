@@ -175,7 +175,8 @@ Cblg_invdz should be DRF
 CMM %TAKE WHERE STRAT IS FASTEST INCREASING ABOVE PYCNOCLINE
             IF (blgJ.LT.blgI)  blgI = blgJ
 
-            IF ( (blg_str2(blgI).LT. 0. _d 0) .AND. (blgI.EQ.blgJ) )
+            IF ( bling_debugLevel.GE.1 .AND.
+     &           (blg_str2(blgI).LT. 0. _d 0) .AND. (blgI.EQ.blgJ) )
 CMM; %error: strat should increase or be flat
      &       print*,'error: strat should increase or be flat'
 

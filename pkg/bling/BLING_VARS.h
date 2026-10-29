@@ -1,29 +1,14 @@
-C ==========================================================
-C   Carbon chemistry variables
-C ==========================================================
-
        COMMON /CARBON_NEEDS/
-     &                      apCO2, AtmosP, pH, pCO2, FluxCO2,
-     &                      wind, FIce, Silica
-#ifdef ALLOW_EXF
-     &                      , apco20, apco21
-#endif
-      _RL  apCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+     &                      apco2, AtmosP, pH, pCO2, FluxCO2,
+     &                      wind, fIce, Silica
+      _RL  apco2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  AtmosP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  pH(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  pCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  FluxCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  wind(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  FIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  fIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  Silica(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#ifdef ALLOW_EXF
-      _RL  apco20(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  apco21(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif
-
-C ==========================================================
-C   Carbon and oxygen chemistry parameters
-C ==========================================================
 
        COMMON /CARBON_CHEM/
      &                     ak0,ak1,ak2,akw,akb,aks,akf,
@@ -105,6 +90,7 @@ C     =3 :: use FAST solver routine.
       INTEGER selectPHsolver
 #endif /* CARBONCHEM_SOLVESAPHE */
 
+C Store dissociation coefficients for O2 solubility
        COMMON /OXYGEN_CHEM/
      &                     oA0,oA1,oA2,oA3,oA4,oA5,
      &                     oB0,oB1,oB2,oB3,
@@ -113,103 +99,28 @@ C     =3 :: use FAST solver routine.
       _RL oB0,oB1,oB2,oB3
       _RL oC0
 
+C Store surface mean tracer values for virtual FW fluxes
+C permil : is conversion factor for mol/m3 to mol/kg
+C          assumes uniform (surface) density
+C Pa2Atm : for conversion of atmospheric pressure
+C          when coming from atmospheric model
        COMMON /GLOBAL_SURF_MEAN/
      &                          permil,Pa2Atm,epsln
-
-C      permil : is conversion factor for mol/m3 to mol/kg
-C               assumes uniform (surface) density
-C      Pa2Atm : for conversion of atmospheric pressure
-C               when coming from atmospheric model
-
       _RL  permil
       _RL  Pa2Atm
       _RL  epsln
 
-       COMMON /SCHMIDT_NO/
+C Schmidt number coefficients for air sea gas exchange of
+C carbon and oxygen
+       COMMON /BLING_SCHMIDT_NO/
      &                    sca1, sca2, sca3, sca4,
      &                    sox1, sox2, sox3, sox4
-
-C      Schmidt number coefficients
-
       _RL  sca1,sca2,sca3,sca4
       _RL  sox1,sox2,sox3,sox4
 
-#ifdef ALLOW_EXF
-      integer apco2startdate1
-      integer apco2startdate2
-      integer silicastartdate1
-      integer silicastartdate2
-      integer ironstartdate1
-      integer ironstartdate2
-      _RL     apco2StartTime
-      _RL     apco2period
-      _RL     apco2RepCycle
-      _RL     apco2const
-      _RL     apco2_exfremo_intercept
-      _RL     apco2_exfremo_slope
-      _RL     silicaStartTime
-      _RL     silicaperiod
-      _RL     silicaRepCycle
-      _RL     silicaconst
-      _RL     silica_exfremo_intercept
-      _RL     silica_exfremo_slope
-      _RL     ironStartTime
-      _RL     ironperiod
-      _RL     ironRepCycle
-      _RL     ironconst
-      _RL     iron_exfremo_intercept
-      _RL     iron_exfremo_slope
-      CHARACTER*1 apco2mask
-      CHARACTER*1 silicamask
-      CHARACTER*1 ironmask
-#endif
-
-C ==========================================================
-C   Bling inputs (specified in data.bling)
-C
-C  bling_k0_2dFile :: File containing a 2D spatial field of light attenuation
-C        coefficient (k0_2d, in m^-1). This coefficient regulates underwater
-C        light availability in the BLING model. If not specified, a constant
-C        value k0 (default= 0.04 m^-1) is applied for entire domain.
-C ==========================================================
-
-       COMMON /BLING_INPUTS/
-     &        bling_windFile, bling_atmospFile, bling_iceFile,
-     &        bling_ironFile, bling_silicaFile,
-     &        bling_psmFile, bling_plgFile, bling_pdiazFile,
-     &        bling_forcingPeriod, bling_forcingCycle,
-     &        bling_pCO2,
-     &        river_conc_po4, river_dom_to_nut,
-     &        bling_Pc_2dFile, bling_Pc_2d_diazFile,
-     &        bling_k0_2dFile,
-     &        bling_alpha_photo2dFile,bling_phi_DOM2dFile,
-     &        bling_k_Fe2dFile, bling_k_Fe_diaz2dFile,
-     &        bling_gamma_POM2dFile, bling_wsink0_2dFile,
-     &        bling_phi_lg2dFile, bling_phi_sm2dFile
-#ifdef ALLOW_EXF
-     &       ,apco2startdate1, apco2startdate2,
-     &        silicastartdate1, silicastartdate2,
-     &        ironstartdate1, ironstartdate2,
-     &        apco2StartTime, apco2period, apco2RepCycle,
-     &        apco2const,
-     &        apco2_exfremo_intercept,
-     &        apco2_exfremo_slope,
-     &        silicaStartTime, silicaperiod, silicaRepCycle,
-     &        silicaconst,
-     &        silica_exfremo_intercept,
-     &        silica_exfremo_slope,
-     &        ironStartTime, ironperiod, ironRepCycle,
-     &        ironconst,
-     &        iron_exfremo_intercept,
-     &        iron_exfremo_slope,
-     &        apco2file, 
-     &        apco2mask,
-     &        silicamask,
-     &        ironmask
-#endif
-
+C--    COMMON /BLING_INPUTS/
 C      bling_windFile      :: file name of wind speeds
-C      bling_atmospFile    :: file name of atmospheric pressure
+C      bling_apressFile    :: file name of atmospheric pressure
 C      bling_iceFile       :: file name of sea ice fraction
 C      bling_ironFile      :: file name of aeolian iron flux
 C      bling_silicaFile    :: file name of surface silica
@@ -220,10 +131,29 @@ C      bling_forcingPeriod :: period of forcing for biogeochemistry (seconds)
 C      bling_forcingCycle  :: periodic forcing parameter for biogeochemistry
 C      bling_pCO2          :: Atmospheric pCO2 to be read in data.bling
 C      river_conc_trac     :: River concentration, bgc tracers
-C      apco2               :: Atmospheric pCO2 to be read in with exf pkg
+C      bling_apco2       :: Atmospheric pCO2 to be read in
+C                             with exf pkg
+       COMMON /BLING_INPUT/
+     &        bling_windFile, bling_apressFile, bling_iceFile,
+     &        bling_ironFile, bling_silicaFile,
+     &        bling_psmFile, bling_plgFile, bling_pdiazFile,
+     &        bling_forcingPeriod, bling_forcingCycle,
+     &        bling_pCO2,
+     &        river_conc_po4, river_dom_to_nut,
+     &        bling_Pc_2dFile, bling_Pc_2d_diazFile,
+     &        bling_k0_2dFile,
+     &        bling_alpha_photo2dFile,bling_phi_DOM2dFile,
+     &        bling_k_Fe2dFile, bling_k_Fe_diaz2dFile,
+     &        bling_gamma_POM2dFile, bling_wsink0_2dFile,
+     &        bling_phi_lg2dFile, bling_phi_sm2dFile,
+     &        bling_apco2File, bling_useEXF
 
+C     bling_debugLevel :: =0 (default) no extra prints; =1 print
+C                         warnings from carbon chemistry and MLD
+      COMMON /BLING_PARAMS_I/ bling_debugLevel
+      INTEGER bling_debugLevel
       CHARACTER*(MAX_LEN_FNAM) bling_windFile
-      CHARACTER*(MAX_LEN_FNAM) bling_atmospFile
+      CHARACTER*(MAX_LEN_FNAM) bling_apressFile
       CHARACTER*(MAX_LEN_FNAM) bling_iceFile
       CHARACTER*(MAX_LEN_FNAM) bling_ironFile
       CHARACTER*(MAX_LEN_FNAM) bling_silicaFile
@@ -241,61 +171,23 @@ C      apco2               :: Atmospheric pCO2 to be read in with exf pkg
       CHARACTER*(MAX_LEN_FNAM) bling_phi_DOM2dFile
       CHARACTER*(MAX_LEN_FNAM) bling_phi_lg2dFile
       CHARACTER*(MAX_LEN_FNAM) bling_phi_sm2dFile
-#ifdef ALLOW_EXF
-      CHARACTER*(MAX_LEN_FNAM) apco2file
-#endif
+      CHARACTER*(MAX_LEN_FNAM) bling_apco2File
       _RL     bling_forcingPeriod
       _RL     bling_forcingCycle
       _RL     bling_pCO2
       _RL     river_conc_po4
       _RL     river_dom_to_nut
+      LOGICAL bling_useEXF
 
-C ==========================================================
-C   EXF input/output scaling factors for unit conversion if needed
-C ==========================================================
-#ifdef ALLOW_EXF
-      _RL     exf_inscal_apco2
-      _RL     exf_outscal_apco2
-      _RL     exf_inscal_silica
-      _RL     exf_outscal_silica
-      _RL     exf_inscal_iron
-      _RL     exf_outscal_iron
-      COMMON /BLG_PARAM_SCAL/
-     &                    exf_inscal_apco2,
-     &                    exf_outscal_apco2,
-     &                    exf_inscal_silica,
-     &                    exf_outscal_silica,
-     &                    exf_inscal_iron,
-     &                    exf_outscal_iron
-#endif
-
-C ==========================================================
-C   EXF interpolation needs
-C ==========================================================
-#ifdef ALLOW_EXF
-#ifdef USE_EXF_INTERPOLATION
-      _RL apco2_lon0, apco2_lon_inc
-      _RL apco2_lat0, apco2_lat_inc(MAX_LAT_INC)
-      _RL silica_lon0, silica_lon_inc
-      _RL silica_lat0, silica_lat_inc(MAX_LAT_INC)
-      _RL iron_lon0, iron_lon_inc
-      _RL iron_lat0, iron_lat_inc(MAX_LAT_INC)
-      INTEGER apco2_nlon, apco2_nlat, apco2_interpMethod
-      INTEGER silica_nlon, silica_nlat, silica_interpMethod
-      INTEGER iron_nlon, iron_nlat, iron_interpMethod
-
-      COMMON /BLG_EXF_INTERPOLATION/
-     &        apco2_lon0, apco2_lon_inc,
-     &        apco2_lat0, apco2_lat_inc,
-     &        silica_lon0, silica_lon_inc,
-     &        silica_lat0, silica_lat_inc,
-     &        iron_lon0, iron_lon_inc,
-     &        iron_lat0, iron_lat_inc,
-     &        apco2_nlon, apco2_nlat, apco2_interpMethod,
-     &        silica_nlon, silica_nlat, silica_interpMethod,
-     &        iron_nlon, iron_nlat, iron_interpMethod
-#endif
-#endif
+      COMMON /BLING_FIELDS_CONST/
+     &     bling_silicaConst, bling_ironConst, bling_windConst,
+     &     bling_apco2Const, bling_apressConst, bling_iceConst
+      _RL bling_windConst
+      _RL bling_apressConst
+      _RL bling_iceConst
+      _RL bling_ironConst
+      _RL bling_silicaConst
+      _RL bling_apco2Const
 
 C ==========================================================
 C   Ecosystem variables and parameters
