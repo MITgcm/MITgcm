@@ -1,0 +1,27 @@
+# *********************
+# External Forcing Data
+# *********************
+#
+ &EXF_NML_01
+#
+ exf_iprec         = 32,
+ exf_yftype        = 'RL',
+ useExfYearlyFields= .FALSE.,
+ useExfCheckRange  = .FALSE.,
+ useRelativeWind   = .FALSE.,
+ &
+# 
+ &EXF_NML_02
+ climsstFile     = 'lev_monthly_temp.bin',
+ climsssFile     = 'lev_monthly_salt.bin',
+ climsstTauRelax = 5184000.,
+ climsssTauRelax = 7776000.,
+ &
+#
+ &EXF_NML_03
+ &
+#
+ &EXF_NML_04
+#
+ /
+

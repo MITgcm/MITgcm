@@ -211,7 +211,7 @@ C       Print some statistics about input forcing fields
         ENDIF
 #endif
 #ifdef ALLOW_BLING
-        IF ( apco2file .NE. ' ' ) THEN
+        IF ( bling_useEXF .AND. bling_apco2File .NE. ' ' ) THEN
           CALL MON_WRITESTATS_RL( 1, apCO2, '_apco2',
      &             maskInC, maskInC, rA , drF, dummyRL, myThid )
         ENDIF

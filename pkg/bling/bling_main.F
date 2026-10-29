@@ -157,6 +157,11 @@ c  Initialize local variables
        ENDDO
       ENDDO
 
+c      print*,'CAV1',silica(10,10,1,1)
+c      print*,'CAV1',PTR_DIC(10,10,1),PTR_O2(10,10,1),
+c     &  PTR_PO4(10,10,1),PTR_ALK(10,10,1)
+c       print*,'CAV1',InputFe(10,10,1,1)
+
 c-----------------------------------------------------------
 c  carbon and oxygen air-sea interaction
        CALL BLING_AIRSEAFLUX(
@@ -173,6 +178,10 @@ CADJ STORE ph(:,:,:,bi,bj), ak0(:,:,bi,bj), fugf(:,:,bi,bj)
 CADJ &     = comlev1_bibj, key = tkey, kind = isbyte
 #endif
 
+c      print*,'CAV2',silica(10,10,1,1)
+c      print*,'CAV2',surf_DIC(10,10),surf_O2(10,10)
+c      print*,'CAV2',InputFe(10,10,1,1)
+
 c-----------------------------------------------------------
 c  determine calcite saturation for remineralization
        CALL BLING_CARBONATE_SYS(
@@ -186,6 +195,9 @@ c  determine calcite saturation for remineralization
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE omegaC(:,:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
 #endif
+
+c      print*,'CAV3',silica(10,10,1,1)
+c      print*,'CAV3',InputFe(10,10,1,1)
 
 C-----------------------------------------------------------
 C  biological activity
@@ -215,6 +227,12 @@ C  call either "BLING" or "BLING + nitrogen"
      I                 bi, bj, imin, imax, jmin, jmax,
      I                 myTime, myIter, myThid)
 #endif
+
+c      print*,'CAV4',silica(10,10,1,1)
+c      print*,'CAV4',G_DIC(10,10,1),G_ALK(10,10,1),
+c     &  G_O2(10,10,1), G_FE(10,10,1), G_PO4(10,10,1), 
+c     &  G_DOP(10,10,1), G_NO3(10,10,1), G_DON(10,10,1)
+c      print*,'CAV4',InputFe(10,10,1,1)
 
 C-----------------------------------------------------------
 C  Calculate river runoff source
@@ -293,7 +311,7 @@ C-----------------------------------------------------------
         CALL DIAGNOSTICS_FILL(fluxCO2 ,'BLGCFLX ',0,1 ,1,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(fluxO2  ,'BLGOFLX ',0,1 ,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(surf_Fe ,'BLGSURFE',0,1, 2,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(apco2,'BLGapco2',0,1, 1,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(apco2   ,'BLGapco2',0,1, 1,bi,bj,myThid)
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 

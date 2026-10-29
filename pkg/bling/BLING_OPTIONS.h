@@ -15,12 +15,12 @@ C define USE_BLING_V1 - but note the different order of tracers in data.ptracers
 C Options for BLING+Nitrogen code:
 C SiBLING: add a 9th tracer for silica
 #undef USE_SIBLING
-C apply remineralization from diel vertical migration
+
+C Apply remineralization from diel vertical migration
 #undef USE_BLING_DVM
-C active tracer for total phytoplankton biomass
+
+C Active tracer for total phytoplankton biomass
 #undef ADVECT_PHYTO
-C sub grid scale sediments - NOT IMPLEMENTED YET
-c #undef USE_SGS_SED
 
 C Prevents negative values in nutrient fields
 #define BLING_NO_NEG
@@ -44,14 +44,12 @@ C Calculate MLD using a threshold criterion. If undefined,
 C MLD is calculated using the second derivative of rho(z)
 #undef BLING_USE_THRESHOLD_MLD
 
-C Determine PAR from shortwave radiation Qsw;
-C otherwise determined from date and latitude
-C (Do not define if not using pkg/exf)
-#undef USE_QSW
-
 C Light absorption scheme from Manizza et al. (2005),
 C with self shading from phytoplankton
 #undef PHYTO_SELF_SHADING
+
+C Note: shortwave radiation (Qsw) from PKG/EXF is always used to
+C determine PAR if available; otherwise determined from date and latitude
 
 C Note: atm pressure from PKG/EXF is always used for air-sea flux calculation
 C if available; otherwise read from file or set to constant value (1 atm)

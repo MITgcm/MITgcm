@@ -1,7 +1,7 @@
 #ifdef ALLOW_BLING
 
 CADJ STORE pH                = tapelev3, key = ilev_3
-cCADJ STORE fice              = tapelev3, key = ilev_3
+cCADJ STORE fIce              = tapelev3, key = ilev_3
 cCADJ STORE atmosP            = tapelev3, key = ilev_3
 cCADJ STORE wind              = tapelev3, key = ilev_3
 cCADJ STORE silica            = tapelev3, key = ilev_3
@@ -23,20 +23,20 @@ CADJ STORE phyto_diaz        = tapelev3, key = ilev_3
 
 CADJ STORE dicwind0          = tapelev3, key = ilev_3
 CADJ STORE dicwind1          = tapelev3, key = ilev_3
-CADJ STORE atmosp0           = tapelev3, key = ilev_3
-CADJ STORE atmosp1           = tapelev3, key = ilev_3
+CADJ STORE apress0           = tapelev3, key = ilev_3
+CADJ STORE apress1           = tapelev3, key = ilev_3
 CADJ STORE silica0           = tapelev3, key = ilev_3
 CADJ STORE silica1           = tapelev3, key = ilev_3
 CADJ STORE ice0              = tapelev3, key = ilev_3
 CADJ STORE ice1              = tapelev3, key = ilev_3
-CADJ STORE feinput0          = tapelev3, key = ilev_3
-CADJ STORE feinput1          = tapelev3, key = ilev_3
+CADJ STORE InputFe0          = tapelev3, key = ilev_3
+CADJ STORE InputFe1          = tapelev3, key = ilev_3
+CADJ STORE bling_apco20      = tapelev3, key = ilev_3
+CADJ STORE bling_apco21      = tapelev3, key = ilev_3
 
 #ifdef ALLOW_EXF
 CADJ STORE apressure         = tapelev3, key = ilev_3
 CADJ STORE wspeed            = tapelev3, key = ilev_3
-CADJ STORE apco20            = tapelev3, key = ilev_3
-CADJ STORE apco21            = tapelev3, key = ilev_3
 # endif
 
 #endif /* ALLOW_BLING */
