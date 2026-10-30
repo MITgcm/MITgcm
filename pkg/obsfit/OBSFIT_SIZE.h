@@ -22,13 +22,11 @@ C Max number of input files listed in data.obsfit
       INTEGER NFILESMAX_OBS
       PARAMETER ( NFILESMAX_OBS=2 )
 
-C Max number of "valid" observations (i.e. with date within
-C the model run)
+C Max number of "valid" observations (i.e. with date within the model run)
       INTEGER NOBSMAX_OBS
       PARAMETER ( NOBSMAX_OBS=2000 )
 
-C Max total number of samples in the file
-C (not only "valid" samples)
+C Max total number of samples in the file (not only "valid" samples)
       INTEGER NSAMPLES_MAX_GLO
       PARAMETER ( NSAMPLES_MAX_GLO=2000 )
 
@@ -36,9 +34,9 @@ C Max number of "valid" samples in each tile
       INTEGER NSAMP_PER_TILE_MAX
       PARAMETER ( NSAMP_PER_TILE_MAX=2000 )
 
-C Max number of samples per observation. For point observations 
-C this is 1. For spatial averages or integrals, set this to the 
-C maximum number of sampled points contributing to a single observation. 
+C Max number of samples per observation. For point observations this
+C is 1. For spatial averages or integrals, set this to the maximum
+C number of sampled points contributing to a single observation.
       INTEGER NSAMP_PER_OBS_MAX
       PARAMETER ( NSAMP_PER_OBS_MAX=1 )
 
@@ -46,3 +44,4 @@ C This number is not to be customized
       INTEGER NUM_INTERP_PTS_OBS
       PARAMETER ( NUM_INTERP_PTS_OBS=8 )
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

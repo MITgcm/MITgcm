@@ -50,10 +50,12 @@ C     !LOCAL VARIABLES:
 CEOP
 
 C     Each process has calculated the global part for itself.
+      _BEGIN_MASTER( myThid )
       DO num_file_obs=1,NFILESMAX_OBS
         glofc = glofc + mult_obsfit(num_file_obs)
      &                 *objf_obsfit(num_file_obs)
       ENDDO
+      _END_MASTER( myThid )
 
 C     This is just a copy since obsfit does not have the tile logic of
 C     other part of the code
