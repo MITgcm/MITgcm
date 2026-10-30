@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint69s (2026/10/30)
 o pkg/seaice:
   - fix TAF-generated adjoint of seaice_lsr.F ; update lab-sea Adm ref output.
 o pkg/mdsio & rw:
