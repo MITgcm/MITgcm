@@ -6,6 +6,6 @@
 # obsfitDir       = 'OBSFIT',
  obsfitFiles(1)   = 'obsfit_t',
  mult_obsfit(1)   = 1.0,
- obsfitdoncoutput = .false.,
- obsfit_dBugLevel = 0,
+ obsfitDoNcOutput = .FALSE.,
+#obsfit_dBugLevel = 0,
  &
