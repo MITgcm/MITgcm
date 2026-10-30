@@ -230,6 +230,9 @@ C--    Add diagnostics for other pkg contribution to ptracer solution
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_AUTODIFF
+# ifndef ALLOW_TAPENADE
+C      not written by a Tapenade-generated adjoint (see
+C      pkg/tapenade/dummy_in_stepping_tap.F for the fields it writes)
        WRITE(diagName,'(A6,A2)') 'ADJptr',PTRACERS_ioLabel(iTrc)
        WRITE(diagTitle,'(3A)') 'sensitivity to ',
      &                         longName(1:ilng), ' concentration'
@@ -237,6 +240,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        diagCode  = 'SMRA    MR      '
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+# endif /* ndef ALLOW_TAPENADE */
 #endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
