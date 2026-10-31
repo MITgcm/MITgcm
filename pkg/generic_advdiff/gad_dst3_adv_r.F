@@ -17,17 +17,15 @@ C  using 3rd-order Direct Space and Time (DST-3) Advection Scheme
 
 C !USES: ===============================================================
       IMPLICIT NONE
-
-C     == GLobal variables ==
+C     == Global variables ==
 #include "SIZE.h"
 #ifdef OLD_DST3_FORMULATION
-#include "EEPARAMS.h"
-#include "PARAMS.h"
+# include "EEPARAMS.h"
+# include "PARAMS.h"
 #endif
 #include "GRID.h"
 #include "GAD.h"
 
-C     == Routine arguments ==
 C !INPUT PARAMETERS: ===================================================
 C  bi,bj             :: tile indices
 C  k                 :: vertical level
@@ -47,7 +45,6 @@ C !OUTPUT PARAMETERS: ==================================================
 C  wT                :: vertical advective flux
       _RL wT    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
-C     == Local variables ==
 C !LOCAL VARIABLES: ====================================================
 C  i,j               :: loop indices
 C  km1               :: =max( k-1 , 1 )
@@ -59,6 +56,7 @@ C  wCFL              :: Courant-Friedrich-Levy number
 #ifdef OLD_DST3_FORMULATION
       _RL psiP,psiM,thetaP,thetaM
       _RL smallNo
+CEOP
 
 c     IF (inAdMode .AND. useApproxAdvectionInAdMode) THEN
 c      smallNo = 1.0D-20
@@ -78,7 +76,7 @@ c     ENDIF
         Rj =(tracer(i,j,km1)-tracer(i,j,k))
      &         *maskC(i,j,k,bi,bj)*maskC(i,j,km1,bi,bj)
         Rjm=(tracer(i,j,km2)-tracer(i,j,km1))
-     &         *maskC(i,j,km1,bi,bj)
+     &         *maskC(i,j,km2,bi,bj)
 
         wLoc = wFld(i,j)
 c       wLoc = rTrans(i,j)*recip_rA(i,j,bi,bj)

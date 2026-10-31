@@ -55,9 +55,9 @@ C  maskP1               :: =1 for k<Nr, =0 for k>=Nr
       _RL maskPM, maskBound
 CEOP
 
-      km2=MAX(1,k-2)
-      km1=MAX(1,k-1)
-      kp1=MIN(Nr,k+1)
+      km2 = MAX(1,k-2)
+      km1 = MAX(1,k-1)
+      kp1 = MIN(Nr,k+1)
       maskPM = 1.
       IF (k.LE.2 .OR. k.GE.Nr) maskPM = 0.
 
@@ -73,10 +73,9 @@ CEOP
          maskBound = maskPM*maskC(i,j,km2,bi,bj)*maskC(i,j,kp1,bi,bj)
          Rjp = (tracer(i,j,kp1)-tracer(i,j, k ))*maskC(i,j,kp1,bi,bj)
          Rj  = (tracer(i,j, k )-tracer(i,j,km1))
-         Rjm = (tracer(i,j,km1)-tracer(i,j,km2))*maskC(i,j,km1,bi,bj)
-     &
-         Rjjp=(Rjp-Rj)
-         Rjjm=(Rj-Rjm)
+         Rjm = (tracer(i,j,km1)-tracer(i,j,km2))*maskC(i,j,km2,bi,bj)
+         Rjjp = (Rjp-Rj)
+         Rjjm = (Rj-Rjm)
          wT(i,j) = maskC(i,j,km1,bi,bj)*(
      &     rTrans(i,j)*( (tracer(i,j,k)+tracer(i,j,km1))*0.5 _d 0
      &                  -oneSixth*(Rjjm+Rjjp)*0.5 _d 0 )
