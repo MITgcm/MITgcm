@@ -615,9 +615,6 @@ C Check that the maximum number of obs per file is not exceeded
               CALL PRINT_ERROR( msgbuf, myThid )
               stopObsfit = .TRUE.
              ENDIF
-             obs_ind_glob(num_file,ObsNo_valid) = ic+chunk
-C Number of samples in each valid observation
-             obs_np(num_file,ObsNo_valid) = np_cur
 C Check that the maximum number of samples per obs is not exceeded
              IF ( np_cur .GT. NSAMP_PER_OBS_MAX ) THEN
               WRITE(msgbuf,'(5A,I8)')
@@ -647,19 +644,28 @@ C Check that the maximum number of samples per file is not exceededed
               stopObsfit = .TRUE.
              ENDIF
 
+C Store obs info only if the size checks passed
+C (otherwise arrays would be written out of bounds)
+             IF ( .NOT.stopObsfit ) THEN
+              obs_ind_glob(num_file,ObsNo_valid) = ic+chunk
+C Number of samples in each valid observation
+              obs_np(num_file,ObsNo_valid) = np_cur
 C Position of first sample
-             obs_sample1_ind(num_file,ObsNo_valid) = sample_cnt
-             obs_delT(num_file,ObsNo_valid) = delT_cur
+              obs_sample1_ind(num_file,ObsNo_valid) = sample_cnt
+              obs_delT(num_file,ObsNo_valid) = delT_cur
+             ENDIF
             ENDIF !obsIsInRunTime.EQ.1
 
 C Regardless of whether obs is in run time or not,
 C keep track of sample index position
 C and assign time to samples
-            DO k = 1, np_cur
-             tmp_sample_time(sample_cnt) = diffsecs
-             tmp_sample_delT(sample_cnt) = delT_cur
-             sample_cnt = sample_cnt+1
-            ENDDO
+            IF ( .NOT.stopObsfit ) THEN
+             DO k = 1, np_cur
+              tmp_sample_time(sample_cnt) = diffsecs
+              tmp_sample_delT(sample_cnt) = delT_cur
+              sample_cnt = sample_cnt+1
+             ENDDO
+            ENDIF
 
            ENDIF !.not.stopObsfit
           ENDDO !ic
