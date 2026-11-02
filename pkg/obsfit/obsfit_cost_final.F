@@ -65,8 +65,6 @@ C     other part of the code
       ENDDO
 
 CML I do not understand, why we do not need this or something like this here
-CAV I think maybe we do need it, because objf_obsfit is only computed by
-CAV process 0. The global sum would broadcast to all processes.
 CMLc--   Do global summation for each part of the cost function
 CML       DO num_file=1,NFILESOBSMAX
 CML        _GLOBAL_SUM_RL(f_obsfit(num_file_obs), myThid )
