@@ -15,7 +15,7 @@ C     !INTERFACE:
      O                                   adactive_var,
      I                                   irec,
      I                                   lAdInit,
-     I                                   myIter,
+     I                                   myOptimIter,
      I                                   bi,
      I                                   bj,
      I                                   myThid )
@@ -39,14 +39,14 @@ C     !INPUT PARAMETERS:
 C     active_num_file: file number
 C     adactive_var:    array
 C     irec:            record number
-C     myIter:          number of optimization iteration (default: 0)
+C     myOptimIter:     number of optimization iteration (default: 0)
 C     myThid:          my thread ID number
 C     lAdInit:         initialisation of corresponding adjoint
 C                      variable and write to active file
       INTEGER active_num_file
       _RL     adactive_var
       INTEGER irec
-      INTEGER myIter
+      INTEGER myOptimIter
       INTEGER bi, bj, myThid
       LOGICAL lAdInit
 CEOP
@@ -56,7 +56,7 @@ CEOP
      I     fidadj_obs(active_num_file,bi,bj), active_num_file,
      O     adactive_var,
      I     lAdInit, irec, sample_ind_glob(active_num_file,irec,bi,bj),
-     I     REVERSE_SIMULATION, myIter, bi, bj, myThid )
+     I     REVERSE_SIMULATION, myOptimIter, bi, bj, myThid )
 
 #endif
 
@@ -72,7 +72,7 @@ C     !INTERFACE:
      I                                    active_num_file,
      I                                    adactive_var,
      I                                    irec,
-     I                                    myIter,
+     I                                    myOptimIter,
      I                                    bi,
      I                                    bj,
      I                                    myThid,
@@ -97,14 +97,14 @@ C     !INPUT PARAMETERS:
 C     active_num_file: file number
 C     adactive_var:    array
 C     irec:            record number
-C     myIter:          number of optimization iteration (default: 0)
+C     myOptimIter:     number of optimization iteration (default: 0)
 C     myThid:          my thread ID number
 C     lAdInit:         initialisation of corresponding adjoint
 C                      variable and write to active file
       INTEGER active_num_file
       _RL     adactive_var
       INTEGER irec
-      INTEGER myIter
+      INTEGER myOptimIter
       INTEGER bi, bj, myThid
       _RL     dummy
 CEOP
@@ -115,7 +115,7 @@ CEOP
      I     fidadj_obs(active_num_file,bi,bj),
      I     active_num_file, adactive_var,
      I     irec, sample_ind_glob(active_num_file,irec,bi,bj),
-     I     REVERSE_SIMULATION, myIter, bi, bj, myThid )
+     I     REVERSE_SIMULATION, myOptimIter, bi, bj, myThid )
 
 #endif
 
@@ -133,7 +133,7 @@ C     !INTERFACE:
      O                                   adactive_mask,
      I                                   irec,
      I                                   lAdInit,
-     I                                   myIter,
+     I                                   myOptimIter,
      I                                   myThid )
 
 C     !DESCRIPTION:
@@ -156,7 +156,7 @@ C     active_num_file: file number
 C     adactive_var:    array
 C     adactive_mask:   array mask
 C     irec:            record number
-C     myIter:          number of optimization iteration (default: 0)
+C     myOptimIter:     number of optimization iteration (default: 0)
 C     myThid:          my thread ID number
 C     lAdInit:         initialisation of corresponding adjoint
 C                      variable and write to active file
@@ -164,7 +164,7 @@ C                      variable and write to active file
       _RL     adactive_var
       _RL     adactive_mask
       INTEGER irec
-      INTEGER myIter
+      INTEGER myOptimIter
       INTEGER myThid
       LOGICAL lAdInit
 CEOP
@@ -175,7 +175,7 @@ CEOP
      I     fidadglobal(active_num_file), active_num_file,
      O     adactive_var, adactive_mask,
      I     lAdInit, irec, obs_ind_glob(active_num_file,irec),
-     I     REVERSE_SIMULATION, myIter, myThid )
+     I     REVERSE_SIMULATION, myOptimIter, myThid )
 
 #endif
 
@@ -192,7 +192,7 @@ C     !INTERFACE:
      I                                    adactive_var,
      I                                    adactive_mask,
      I                                    irec,
-     I                                    myIter,
+     I                                    myOptimIter,
      I                                    myThid,
      I                                    dummy )
 
@@ -216,7 +216,7 @@ C     active_num_file: file number
 C     adactive_var:    array
 C     adactive_mask:   array mask
 C     irec:            record number
-C     myIter:          number of optimization iteration (default: 0)
+C     myOptimIter:     number of optimization iteration (default: 0)
 C     myThid:          my thread ID number
 C     lAdInit:         initialisation of corresponding adjoint
 C                      variable and write to active file
@@ -224,7 +224,7 @@ C                      variable and write to active file
       _RL     adactive_var
       _RL     adactive_mask
       INTEGER irec
-      INTEGER myIter
+      INTEGER myOptimIter
       INTEGER myThid
       _RL     dummy
 CEOP
@@ -233,8 +233,8 @@ CEOP
       CALL ACTIVE_WRITE_OBS_GLOB_RL(
      I     fidadglobal(active_num_file), active_num_file,
      I     adactive_var, adactive_mask,
-     I     irec, obs_ind_glob(active_num_file,irec),
-     I     REVERSE_SIMULATION, myIter,myThid )
+     I     irec, obs_ind_glob(active_num_file, irec),
+     I     REVERSE_SIMULATION, myOptimIter, myThid )
 
 #endif
 

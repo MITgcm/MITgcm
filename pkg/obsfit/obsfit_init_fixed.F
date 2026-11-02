@@ -38,19 +38,16 @@ CEOP
 C     !FUNCTIONS:
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
-      INTEGER  MDS_RECLEN
-      EXTERNAL MDS_RECLEN
 
 C     !LOCAL VARIABLES:
 C     i,j,bi,bj    :: loop indices
 C     iG,jG        :: global indices
 C     diffsecs     :: absolute time
-      INTEGER i,j,k,l,bi,bj,iG,jG
+      INTEGER i, j, k, l, bi, bj, iG, jG
       INTEGER obs_num, num_file, sampleNo_tile
       INTEGER ic, ip, iq, kLev, iINTERP
       INTEGER chunkObs, chunk
       INTEGER iUnit
-      INTEGER stopObsfit, stopGenericGrid
       INTEGER loopThroughSamples, weighSamples, readDelT
       INTEGER obsIsInRunTime, sampleIsInTile, sampleIsValid
       INTEGER fid, dimid, varID(2)
@@ -62,10 +59,10 @@ C     diffsecs     :: absolute time
       INTEGER tmpdate(4), tmpdiff(4)
       INTEGER tmp_type2(1000), type_cur
       INTEGER sample_i, sample_j, sample_k1, sample_k2
-      INTEGER np_cur
-      INTEGER ObsNo_valid, ObsNo_div1000
+      INTEGER np_cur, op_cur
+      INTEGER ObsNo_valid, ObsNo_div1000, sampleNo_file
       INTEGER sample_cnt
-      INTEGER hh, obsNo_hh, obs_np_max
+      INTEGER hh, obsNo_hh, ObsNo_win
       INTEGER ntype_ssh,ntype_other, obs_is_ssh_loc
       INTEGER vec_start, vec_count
       INTEGER vec_start2(2), vec_count2(2)
@@ -102,7 +99,12 @@ c     _RL xy_buffer_r8(0:sNx+1,0:sNy+1)
       CHARACTER*(MAX_LEN_FNAM) tlobsfnameequinc, tlobsfnameequincglo
 # endif
       CHARACTER*(MAX_LEN_MBUF) msgbuf
-      LOGICAL exst
+      LOGICAL stopObsfit
+      INTEGER stopObsfit_cnt
+      INTEGER stopGenericGrid, stopGenericGrid_max
+
+      stopObsfit_cnt = 0
+      stopGenericGrid_max = 0
 
       iUnit = standardMessageUnit
       WRITE( msgbuf,'(A)' ) ' '
@@ -118,9 +120,6 @@ c     _RL xy_buffer_r8(0:sNx+1,0:sNy+1)
       CALL PRINT_MESSAGE( msgbuf, iUnit, SQUEEZE_RIGHT, myThid )
       WRITE(msgbuf,'(A)' ) ' '
       CALL PRINT_MESSAGE( msgbuf, iUnit, SQUEEZE_RIGHT, myThid )
-
-      stopObsfit=0
-      stopGenericGrid=0
 
       IF ( (.NOT.obsfitDoGenGrid) .AND.
      &     (.NOT.usingSphericalPolarGrid .OR. rotateGrid) ) THEN
@@ -146,7 +145,7 @@ c      ENDIF
       CALL PRINT_MESSAGE( msgbuf, iUnit, SQUEEZE_RIGHT, myThid )
       WRITE( msgbuf,'(A)' ) 'general packages parameters :'
 
-      JL  = ILNBLNK( obsfitDir )
+      JL = ILNBLNK( obsfitDir )
       IF (JL.NE.0) THEN
        WRITE( msgbuf,'(2A)' ) '  obsfitDir ',obsfitDir(1:JL)
       ELSE
@@ -176,8 +175,10 @@ C Initialize global variables for obsfit_read_obs.F
 
       DO num_file = 1, NFILESMAX_OBS
 
+       stopObsfit = .FALSE.
+       stopGenericGrid = 0
        ObsNo_hh=0
-       obs_np_max=0
+       ObsNo_win=0
        obs_is_ssh_loc=0
        obs_is_ssh(num_file)=0
 
@@ -201,18 +202,33 @@ C===========================================================
 
         WRITE( fnamedatanc,'(2A)' ) obsfitFile(1:IL),'.nc'
         err = NF_OPEN( fnamedatanc, NF_NOWRITE, fiddata_obs(num_file) )
+        nerr = ABS( err - NF_NOERR )
         CALL OBSFIT_NF_ERROR(
      &       'INIT_FIXED: NF_OPEN fiddata',err,0,0,myThid )
 
 C Read number of observations and available dimensions:
         fid = fiddata_obs(num_file)
 
-        err = NF_INQ_DIMID( fid,'iOBS', dimid )
-        CALL OBSFIT_NF_ERROR(
-     &       'INIT_FIXED: NF_INQ_DIMID iOBS',err,0,0,myThid )
+        IF ( nerr.EQ.0 ) THEN
+         err = NF_INQ_DIMID( fid,'iOBS', dimid )
+         nerr = ABS( err - NF_NOERR )
+         CALL OBSFIT_NF_ERROR(
+     &        'INIT_FIXED: NF_INQ_DIMID iOBS',err,0,0,myThid )
+        ENDIF
         err = NF_INQ_DIMLEN( fid, dimid, obsNo(num_file) )
+        nerr = nerr + ABS( err - NF_NOERR )
         CALL OBSFIT_NF_ERROR(
      &       'INIT_FIXED: NF_INQ_DIMLEN ObsNo',err,0,0,myThid )
+C Stop if the file cannot be opened or has no iOBS dimension
+C (ObsNo=0 so that the rest of this file's setup is skipped)
+        IF ( nerr.NE.0 ) THEN
+         WRITE( msgBuf,'(3A)' )
+     &        'OBSFIT_INIT_FIXED: cannot open file ',
+     &        fnamedatanc(1:IL+3), ' or read its iOBS dimension'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         stopObsfit = .TRUE.
+         ObsNo(num_file) = 0
+        ENDIF
 
         WRITE(msgbuf,'(A,I9)')
      &       '  # of observations in file                   =',
@@ -221,21 +237,36 @@ C Read number of observations and available dimensions:
 
 C Read number of interpolation points (generic grid only):
         err = NF_INQ_DIMID(fid,'iINTERP', dimid)
-        IF (err.EQ.NF_NOERR) THEN
+        IF ( err.EQ.NF_NOERR ) THEN
          err = NF_INQ_DIMLEN( fid, dimid, iINTERP )
+         CALL OBSFIT_NF_ERROR(
+     &        'INIT_FIXED: NF_INQ_DIMLEN iINTERP',err,0,0,myThid )
         ELSE
 
-         IF ( debugLevel .GE. debLevA ) THEN
+         IF ( obsfit_dBugLevel .GE. debLevA ) THEN
           WRITE( msgBuf,'(3A,I3)' )
      &         'S/R OBSFIT_INIT_FIXED: ',
-     &         'no iINTERP dim in data file using iINTERP ',
+     &         'no iINTERP dim in data file; using iINTERP ',
      &         '= NUM_INTERP_POINTS =', NUM_INTERP_PTS_OBS
           CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
          ENDIF
 
          iINTERP = NUM_INTERP_PTS_OBS
 
-        ENDIF!if (err.EQ.NF_NOERR)
+        ENDIF!if ( err.EQ.NF_NOERR )
+
+C Stop if there are more interpolation points than arrays can hold
+C (reset iINTERP so that the reads below stay in bounds)
+        IF ( obsfitDoGenGrid .AND.
+     &       ( iINTERP.GT.NUM_INTERP_PTS_OBS ) ) THEN
+         WRITE( msgBuf,'(3A,I4,A,I4)' )
+     &        'OBSFIT_INIT_FIXED: file ', obsfitFile(1:IL),
+     &        '.nc has iINTERP=', iINTERP,
+     &        ' > NUM_INTERP_PTS_OBS=', NUM_INTERP_PTS_OBS
+         CALL PRINT_ERROR( msgBuf, myThid )
+         stopObsfit = .TRUE.
+         iINTERP = NUM_INTERP_PTS_OBS
+        ENDIF
 
         WRITE( msgbuf,'(A,I9)' )
      &       '  # of interpolation points                   =',
@@ -245,11 +276,11 @@ C Read number of interpolation points (generic grid only):
 C Read number of samples (if missing, assume it's 1):
         loopThroughSamples = 1
         err = NF_INQ_VARID( fid, 'obs_np', varID0 )
-        IF (err.NE.NF_NOERR) THEN
+        IF ( err.NE.NF_NOERR ) THEN
          loopThroughSamples = 0
 
          WRITE( msgbuf,'(2A)' )
-     &        '      input obsfit file does not have NP ',
+     &        '      input obsfit file does not include NP ',
      &        '      (num. samples); assume NP=1 for all obs '
          CALL PRINT_MESSAGE( msgbuf, iUnit, SQUEEZE_RIGHT, myThid )
 
@@ -257,76 +288,77 @@ C Read number of samples (if missing, assume it's 1):
 
 C Read the info for observations:
         err = NF_INQ_VARID( fid, 'obs_YYYYMMDD', varID1a )
-        nerr = err
+        nerr = ABS( err - NF_NOERR )
         CALL OBSFIT_NF_ERROR(
-     &       'INIT_FIXED: NF_INQ_DIMID obs_YYYYMMDD',err,0,0,myThid )
+     &       'INIT_FIXED: NF_INQ_VARID obs_YYYYMMDD',err,0,0,myThid )
         err = NF_INQ_VARID( fid, 'obs_HHMMSS', varID1b )
-        nerr = nerr + err
+        nerr = nerr + ABS( err - NF_NOERR )
         CALL OBSFIT_NF_ERROR(
-     &       'INIT_FIXED: NF_INQ_DIMID obs_HHMMSS',err,0,0,myThid )
+     &       'INIT_FIXED: NF_INQ_VARID obs_HHMMSS',err,0,0,myThid )
         err = NF_INQ_VARID( fid, 'obs_val', varID6 )
-        nerr = nerr + err
+        nerr = nerr + ABS( err - NF_NOERR )
         CALL OBSFIT_NF_ERROR(
-     &       'INIT_FIXED: NF_INQ_DIMID obs_val',err,0,0,myThid )
+     &       'INIT_FIXED: NF_INQ_VARID obs_val',err,0,0,myThid )
         err = NF_INQ_VARID( fid, 'obs_uncert', varID7 )
-        nerr = nerr + err
+        nerr = nerr + ABS( err - NF_NOERR )
         CALL OBSFIT_NF_ERROR(
-     &       'INIT_FIXED: NF_INQ_DIMID obs_uncert',err,0,0,myThid )
+     &       'INIT_FIXED: NF_INQ_VARID obs_uncert',err,0,0,myThid )
 
-        IF (nerr.NE.NF_NOERR) THEN
+        IF ( nerr.NE.0 ) THEN
          IL  = ILNBLNK( obsfitFile )
          WRITE( msgBuf,'(3A)' )
      &        'OBSFIT_INIT_FIXED: file ', obsfitFile(1:IL),
      &        '.nc is not in the pkg/obsfit format'
          CALL PRINT_ERROR( msgBuf, myThid )
-         stopObsfit = 1
+         stopObsfit = .TRUE.
         ENDIF
 
         readDelT = 1
         err = NF_INQ_VARID( fid,'obs_delT', varID1c )
 C Time interval (if missing, assume instantaneous):
-        IF (err.NE.NF_NOERR) THEN
+        IF ( err.NE.NF_NOERR ) THEN
          readDelT = 0
          WRITE( msgbuf,'(2A)' )
-     &        '      input obsfit file does not have time interval;',
+     &        '      input obsfit file does not include time interval;',
      &        '      assume observations are instantaneous '
          CALL PRINT_MESSAGE( msgbuf, iUnit, SQUEEZE_RIGHT, myThid )
         ENDIF
 
 C Read the info for samples:
         err = NF_INQ_VARID( fid,'sample_type',varID2 )
-        nerr = err
+        nerr = ABS( err - NF_NOERR )
         CALL OBSFIT_NF_ERROR(
-     &       'INIT_FIXED: NF_INQ_DIMID sample_type',err,0,0,myThid )
+     &       'INIT_FIXED: NF_INQ_VARID sample_type',err,0,0,myThid )
         err = NF_INQ_VARID( fid,'sample_lon', varID3a )
-        nerr = err
+        nerr = nerr + ABS( err - NF_NOERR )
         CALL OBSFIT_NF_ERROR(
-     &       'INIT_FIXED: NF_INQ_DIMID sample_lon',err,0,0,myThid )
+     &       'INIT_FIXED: NF_INQ_VARID sample_lon',err,0,0,myThid )
         err = NF_INQ_VARID( fid,'sample_lat', varID3b )
-        nerr = err
+        nerr = nerr + ABS( err - NF_NOERR )
         CALL OBSFIT_NF_ERROR(
-     &       'INIT_FIXED: NF_INQ_DIMID sample_lat',err,0,0,myThid )
+     &       'INIT_FIXED: NF_INQ_VARID sample_lat',err,0,0,myThid )
         err = NF_INQ_VARID( fid,'sample_depth', varID4 )
-        nerr = err
+        nerr = nerr + ABS( err - NF_NOERR )
         CALL OBSFIT_NF_ERROR(
-     &       'INIT_FIXED: NF_INQ_DIMID sample_depth',err,0,0,myThid )
+     &       'INIT_FIXED: NF_INQ_VARID sample_depth',err,0,0,myThid )
 
-        IF (err.NE.NF_NOERR) THEN
+C Stop if any of the sample variables above is missing
+        IF ( nerr.NE.0 ) THEN
          IL  = ILNBLNK( obsfitFile )
          WRITE( msgBuf,'(3A)' )
      &        'OBSFIT_INIT_FIXED: file ', obsfitFile(1:IL),
      &        '.nc is not in the pkg/obsfit format'
          CALL PRINT_ERROR( msgBuf, myThid )
-         stopObsfit=1
+         stopObsfit = .TRUE.
         ENDIF
 
         weighSamples = 1
         err = NF_INQ_VARID( fid,'sample_weight', varID5 )
 C Weight for each sample (if missing, assume all samples weigh equally):
-        IF (err.NE.NF_NOERR) THEN
+        IF ( err.NE.NF_NOERR ) THEN
          weighSamples = 0
          WRITE( msgbuf,'(2A)' )
-     &        '      input obsfit file does not have sample weight;',
+     &        '      input obsfit file does not include sample weight;',
      &        '      assume all samples are weighed evenly '
          CALL PRINT_MESSAGE( msgbuf, iUnit, SQUEEZE_RIGHT, myThid )
         ENDIF
@@ -334,20 +366,28 @@ C Weight for each sample (if missing, assume all samples weigh equally):
         IF (obsfitDoGenGrid) THEN
 C Read interpolation information (grid points, fractions, etc.)
          err = NF_INQ_VARID(fid,'sample_interp_XC11',varID_intp1)
+         nerr = ABS( err - NF_NOERR )
          err = NF_INQ_VARID(fid,'sample_interp_YC11',varID_intp2)
+         nerr = nerr + ABS( err - NF_NOERR )
          err = NF_INQ_VARID(fid,'sample_interp_XCNINJ',varID_intp11)
+         nerr = nerr + ABS( err - NF_NOERR )
          err = NF_INQ_VARID(fid,'sample_interp_YCNINJ',varID_intp22)
+         nerr = nerr + ABS( err - NF_NOERR )
          err = NF_INQ_VARID(fid,'sample_interp_frac',varID_intp3)
+         nerr = nerr + ABS( err - NF_NOERR )
          err = NF_INQ_VARID(fid,'sample_interp_i',varID_intp4)
+         nerr = nerr + ABS( err - NF_NOERR )
          err = NF_INQ_VARID(fid,'sample_interp_j',varID_intp5)
+         nerr = nerr + ABS( err - NF_NOERR )
          err = NF_INQ_VARID(fid,'sample_interp_k',varID_intp6)
-         IF (err.NE.NF_NOERR) THEN
+         nerr = nerr + ABS( err - NF_NOERR )
+         IF ( nerr.NE.0 ) THEN
           IL  = ILNBLNK( obsfitFile )
           WRITE( msgBuf,'(3A)' )
      &         'OBSFIT_INIT_FIXED: file ', obsfitFile(1:IL), '.nc is',
      &         ' missing interpolation information (obsfitDoGenGrid)'
           CALL PRINT_ERROR( msgBuf, myThid )
-          stopGenericGrid=2
+          stopGenericGrid = 2
          ENDIF
         ENDIF
 
@@ -357,9 +397,12 @@ C Variables names for equi files
         obsfit_nameval = 'obs_val'
         obsfit_nameuncert = 'obs_uncert'
 
-C Create global files for obs-equivalent
-        IF ( myProcId .EQ. 0 ) THEN
+C Create global files for obs-equivalent; always (re)create them,
+C so that a file left from a previous run (possibly with a different
+C number of obs) is not reused
+        IF ( myProcId.EQ.0 .AND. .NOT.stopObsfit ) THEN
 
+         JL = ILNBLNK( obsfitDir )
          WRITE( obsfnameequincglo,'(3A)' )
      &        obsfitDir(1:JL),obsfitFile(1:IL),'.equi.nc'
 # ifdef ALLOW_ADJOINT_RUN
@@ -373,105 +416,86 @@ C Create global files for obs-equivalent
      &        obsfitFile(1:IL),'.equi.nc'
 # endif /* ALLOW_TANGENTLINEAR_RUN */
 
-         JL = ILNBLNK( obsfitDir )
-         INQUIRE( file=obsfnameequincglo, exist=exst )
-         IF (.NOT.exst) THEN
-          err = NF_CREATE( obsfnameequincglo, NF_CLOBBER,
-     &          fidglobal(num_file) )
-          err = NF_DEF_DIM( fidglobal(num_file), 'iOBS',
-     &          ObsNo(num_file), dimid )
-          err = NF_DEF_VAR( fidglobal(num_file),
-     &          obsfit_nameequi,NF_DOUBLE,1,dimid,varID(1) )
-          err = NF_PUT_ATT_DOUBLE( fidglobal(num_file),
-     &          varID(1),'_FillValue',NF_DOUBLE,1, -9999. _d 0 )
-          err = NF_DEF_VAR( fidglobal(num_file),
-     &          obsfit_namemask,NF_DOUBLE,1,dimid,varID(2) )
-          err = NF_PUT_ATT_DOUBLE( fidglobal(num_file),
-     &          varID(2),'_FillValue',NF_DOUBLE,1, -9999. _d 0 )
-          err = NF_ENDDEF( fidglobal(num_file) )
-          err = NF_CLOSE( fidglobal(num_file) )
-          err = NF_OPEN( obsfnameequincglo, NF_WRITE,
-     &          fidglobal(num_file) )
-         ELSE
-          err = NF_OPEN( obsfnameequincglo, NF_WRITE,
-     &          fidglobal(num_file) )
-          err = NF_INQ_VARID( fidglobal(num_file), obsfit_namemask,
-     &          varID(2) )
-
+C mod_val fill is -9999; mod_mask fill is 0, so that the mask
+C of obs not (yet) written is 0
+         CALL OBSFIT_INIT_GLOBFILE( obsfnameequincglo,
+     &        ObsNo(num_file), -9999. _d 0, 0. _d 0,
+     &        fidglobal(num_file), err, myThid )
+         IF ( err.NE.NF_NOERR ) THEN
+          JL = ILNBLNK( obsfnameequincglo )
+          WRITE( msgBuf,'(2A)' )
+     &         'OBSFIT_INIT_FIXED: cannot create file ',
+     &         obsfnameequincglo(1:JL)
+          CALL PRINT_ERROR( msgBuf, myThid )
+          stopObsfit = .TRUE.
          ENDIF
-C Initialize mask values to 0
-         DO obs_num = 1, ObsNo(num_file)
-          err = NF_PUT_VARA_DOUBLE( fidglobal(num_file), varID(2),
-     &          obs_num, 1, 0. _d 0 )
-          CALL OBSFIT_NF_ERROR(
-     &         'INIT_FIXED: NF_PUT_VARA_DOUBLE zero',err,0,0,myThid )
-         ENDDO
 
 #ifdef ALLOW_ADJOINT_RUN
-         INQUIRE( file=adobsfnameequincglo, exist=exst )
-         IF (.NOT.exst) THEN
-          err = NF_CREATE( adobsfnameequincglo,NF_CLOBBER,
-     &          fidadglobal(num_file) )
-          err = NF_DEF_DIM( fidadglobal(num_file),'iOBS',
-     &          ObsNo(num_file),dimid )
-          err = NF_DEF_VAR( fidadglobal(num_file),
-     &          'mod_val',NF_DOUBLE,1,dimid,varID(1) )
-          err = NF_PUT_ATT_DOUBLE( fidadglobal(num_file),
-     &          varID(1),'_FillValue', NF_DOUBLE,1, 0. _d 0 )
-          err = NF_DEF_VAR( fidadglobal(num_file),
-     &          'mod_mask',NF_DOUBLE, 1,dimid,varID(2) )
-          err = NF_PUT_ATT_DOUBLE( fidadglobal(num_file),
-     &          varID(2),'_FillValue',NF_DOUBLE,1, 0. _d 0 )
-          err = NF_ENDDEF( fidadglobal(num_file) )
-          err = NF_CLOSE( fidadglobal(num_file) )
-          err = NF_OPEN( adobsfnameequincglo, NF_WRITE,
-     &          fidadglobal(num_file) )
-         ELSE
-          err = NF_OPEN( adobsfnameequincglo, NF_WRITE,
-     &          fidadglobal(num_file) )
+         CALL OBSFIT_INIT_GLOBFILE( adobsfnameequincglo,
+     &        ObsNo(num_file), 0. _d 0, 0. _d 0,
+     &        fidadglobal(num_file), err, myThid )
+         IF ( err.NE.NF_NOERR ) THEN
+          JL = ILNBLNK( adobsfnameequincglo )
+          WRITE( msgBuf,'(2A)' )
+     &         'OBSFIT_INIT_FIXED: cannot create file ',
+     &         adobsfnameequincglo(1:JL)
+          CALL PRINT_ERROR( msgBuf, myThid )
+          stopObsfit = .TRUE.
          ENDIF
 #endif
 #ifdef ALLOW_TANGENTLINEAR_RUN
-         INQUIRE( file=tlobsfnameequincglo, exist=exst )
-         IF (.NOT.exst) THEN
-          err = NF_CREATE( tlobsfnameequincglo,NF_CLOBBER,
-     &          fidtanglobal(num_file) )
-          err = NF_DEF_DIM( fidtanglobal(num_file),'iOBS',
-     &          ObsNo(num_file),dimid )
-          err = NF_DEF_VAR( fidtanglobal(num_file),
-     &          'mod_val',NF_DOUBLE,1,dimid,varID(1) )
-          err = NF_PUT_ATT_DOUBLE( fidtanglobal(num_file),
-     &          varID(1),'_FillValue',NF_DOUBLE,1, 0. _d 0 )
-          err = NF_DEF_VAR( fidtanglobal(num_file),
-     &          'mod_mask',NF_DOUBLE,1,dimid,varID(2))
-          err = NF_PUT_ATT_DOUBLE( fidtanglobal(num_file),
-     &          varID(2),'_FillValue',NF_DOUBLE,1, 0. _d 0 )
-          err = NF_ENDDEF( fidtanglobal(num_file) )
-          err = NF_CLOSE( fidtanglobal(num_file) )
-          err = NF_OPEN( tlobsfnameequincglo, NF_WRITE,
-     &          fidtanglobal(num_file) )
-         ELSE
-          err = NF_OPEN( tlobsfnameequincglo, NF_WRITE,
-     &          fidtanglobal(num_file) )
+         CALL OBSFIT_INIT_GLOBFILE( tlobsfnameequincglo,
+     &        ObsNo(num_file), 0. _d 0, 0. _d 0,
+     &        fidtanglobal(num_file), err, myThid )
+         IF ( err.NE.NF_NOERR ) THEN
+          JL = ILNBLNK( tlobsfnameequincglo )
+          WRITE( msgBuf,'(2A)' )
+     &         'OBSFIT_INIT_FIXED: cannot create file ',
+     &         tlobsfnameequincglo(1:JL)
+          CALL PRINT_ERROR( msgBuf, myThid )
+          stopObsfit = .TRUE.
          ENDIF
 #endif
 
-C Global file for misfits
+C Global file for misfits: always (re)create it, so that no misfits
+C from a previous run are left over; it is filled in OBSFIT_COST
+         JL = ILNBLNK( obsfitDir )
          WRITE( fnamemisfit,'(3A)' )
      &        obsfitDir(1:JL),obsfitfile(1:IL),'.misfit.nc'
-         INQUIRE( file=fnamemisfit, exist=exst )
-         IF (.NOT.exst) THEN
-          err = NF_CREATE( fnamemisfit,NF_CLOBBER,fidmisfit(num_file) )
-          err = NF_DEF_DIM( fidmisfit(num_file),'iOBS',ObsNo(num_file),
-     &          dimid )
-          err = NF_DEF_VAR( fidmisfit(num_file),'misfit',
-     &          NF_DOUBLE,1,dimid,varID(1) )
-          err = NF_PUT_ATT_DOUBLE( fidmisfit(num_file),varID(1),
-     &          '_FillValue',NF_DOUBLE,1,-9999. _d 0 )
-          err = NF_ENDDEF( fidmisfit(num_file) )
-          err = NF_CLOSE( fidmisfit(num_file) )
-         ELSE
-          err = NF_OPEN( fnamemisfit, NF_WRITE,fidmisfit(num_file) )
+         err = NF_CREATE( fnamemisfit,NF_CLOBBER,fidmisfit(num_file) )
+         nerr = ABS( err - NF_NOERR )
+         CALL OBSFIT_NF_ERROR(
+     &        'INIT_FIXED: NF_CREATE fidmisfit',err,0,0,myThid )
+         err = NF_DEF_DIM( fidmisfit(num_file),'iOBS',ObsNo(num_file),
+     &         dimid )
+         nerr = nerr + ABS( err - NF_NOERR )
+         CALL OBSFIT_NF_ERROR(
+     &        'INIT_FIXED: NF_DEF_DIM misfit iOBS',err,0,0,myThid )
+         err = NF_DEF_VAR( fidmisfit(num_file),'misfit',
+     &         NF_DOUBLE,1,dimid,varID(1) )
+         nerr = nerr + ABS( err - NF_NOERR )
+         CALL OBSFIT_NF_ERROR(
+     &        'INIT_FIXED: NF_DEF_VAR misfit',err,0,0,myThid )
+         err = NF_PUT_ATT_DOUBLE( fidmisfit(num_file),varID(1),
+     &         '_FillValue',NF_DOUBLE,1,-9999. _d 0 )
+         nerr = nerr + ABS( err - NF_NOERR )
+         CALL OBSFIT_NF_ERROR(
+     &        'INIT_FIXED: NF_PUT_ATT misfit',err,0,0,myThid )
+         err = NF_ENDDEF( fidmisfit(num_file) )
+         nerr = nerr + ABS( err - NF_NOERR )
+         CALL OBSFIT_NF_ERROR(
+     &        'INIT_FIXED: NF_ENDDEF misfit',err,0,0,myThid )
+         err = NF_CLOSE( fidmisfit(num_file) )
+         nerr = nerr + ABS( err - NF_NOERR )
+         CALL OBSFIT_NF_ERROR(
+     &        'INIT_FIXED: NF_CLOSE misfit',err,0,0,myThid )
+         IF ( nerr.NE.0 ) THEN
+          JL = ILNBLNK( fnamemisfit )
+          WRITE( msgBuf,'(2A)' )
+     &         'OBSFIT_INIT_FIXED: cannot create file ',
+     &         fnamemisfit(1:JL)
+          CALL PRINT_ERROR( msgBuf, myThid )
+          stopObsfit = .TRUE.
          ENDIF
 
         ENDIF !myProcId
@@ -491,6 +515,9 @@ C Main loop: look for valid obs (within model run time)
 
 C Counter tracking position of first sample number for each obs
         sample_cnt = 1
+C Operation (0: instantaneous, 1: time average, 2: time integral);
+C set from the first obs, all obs in the file must have the same one
+        obsfitOperation(num_file) = -1
 
         DO chunkObs = 1, Obsno_div1000+1
          chunk = 1000*(chunkObs-1)
@@ -512,41 +539,47 @@ C Read a chunk
      &          'OBSFIT_INIT_FIXED: file ', obsfitFile(1:IL),
      &          '.nc was not read properly (case 1).'
            CALL PRINT_ERROR( msgBuf, myThid )
-           stopObsfit = 1
+           stopObsfit = .TRUE.
           ENDIF
 
-C Read time
+C Read time 
           err = NF_GET_VARA_DOUBLE( fid,varID1a,vec_start,
      &          vec_count, tmpyymmdd )
+          nerr = ABS( err - NF_NOERR )
           err = NF_GET_VARA_DOUBLE( fid,varID1b,vec_start,
      &          vec_count, tmphhmmss )
+          nerr = nerr + ABS( err - NF_NOERR )
 C Read time interval
           IF ( readDelT.GT.0 ) THEN
            err = NF_GET_VARA_DOUBLE( fid,varID1c,vec_start,
      &           vec_count, tmpdelT )
+           nerr = nerr + ABS( err - NF_NOERR )
           ENDIF
 C Read number of samples per obs
           IF ( loopThroughSamples.EQ.1 ) THEN
            err = NF_GET_VARA_DOUBLE( fid,varID0,vec_start,
      &           vec_count, tmpnp )
+           nerr = nerr + ABS( err - NF_NOERR )
           ENDIF
 
-          IF (err.NE.NF_NOERR) THEN
+          IF ( nerr.NE.0 ) THEN
            WRITE( msgBuf,'(3A)' )
      &          'OBSFIT_INIT_FIXED: file ', obsfitFile(1:IL),
      &          '.nc was not read properly (case 2).'
            CALL PRINT_ERROR( msgBuf, myThid )
-           stopObsfit = 1
+           stopObsfit = .TRUE.
           ENDIF
 
 C Loop through this chunk
           DO ic = 1, MIN(1000,ObsNo(num_file)-chunk)
 
-           IF ( stopObsfit .EQ. 0 ) THEN
+           IF ( .NOT.stopObsfit ) THEN
             obsIsInRunTime = 1
 
-CAV if obs starts before model run, will be ignored even if it ends after
-CAV model starts - ok for now
+C Obs that start before the model run are ignored, even if they end
+C after the run starts; obs whose averaging/integration window ends
+C after the run ends are also ignored (see below), so that only
+C complete windows are used
             IF (( ( tmpyymmdd(ic).GT.yymmddMin ) .OR.
      &           (( tmpyymmdd(ic).EQ.yymmddMin ) .AND.
      &            ( tmphhmmss(ic).GE.hhmmssMin )) ) .AND.
@@ -583,71 +616,132 @@ C If tmphhmmss is out of range then disregard obs
              IF ( tmpdelT(ic).GT.0. _d 0 ) THEN
 C delT>0: time average
               delT_cur = tmpdelT(ic)
-              obsfitOperation(num_file) = 1
+              op_cur = 1
              ELSEIF (tmpdelT(ic).LT.0. _d 0) THEN
 C delT<0: time integral
               delT_cur = -tmpdelT(ic)
-              obsfitOperation(num_file) = 2
+              op_cur = 2
              ELSE
 C delT=0: instantaneous
               delT_cur = 0. _d 0
-              obsfitOperation(num_file) = 0
+              op_cur = 0
              ENDIF
             ELSE
              delT_cur = 0. _d 0
-             obsfitOperation(num_file) = 0
+             op_cur = 0
+            ENDIF
+
+            IF ( obsfitOperation(num_file).LT.0 ) THEN
+             obsfitOperation(num_file) = op_cur
+            ELSEIF ( op_cur.NE.obsfitOperation(num_file) ) THEN
+             WRITE(msgbuf,'(3A,I9,A)')
+     &        'OBSFIT_INIT_FIXED: file ', obsfitFile(1:IL),
+     &        '.nc: obs #', ic+chunk, ' has a different operation'
+             CALL PRINT_ERROR( msgbuf, myThid )
+             WRITE(msgbuf,'(2A)')
+     &        '(sign of obs_delT) than the first obs; all obs in ',
+     &        'a file must be of the same type'
+             CALL PRINT_ERROR( msgbuf, myThid )
+             WRITE(msgbuf,'(A)')
+     &        '(delT>0: average, delT<0: integral, delT=0: instant.)'
+             CALL PRINT_ERROR( msgbuf, myThid )
+             stopObsfit = .TRUE.
+            ENDIF
+
+C Ignore obs whose time window is not complete within the run
+            IF ( (obsIsInRunTime.EQ.1).AND.(delT_cur.GT.0. _d 0).AND.
+     &           (diffsecs+delT_cur.GT.modelend) ) THEN
+             obsIsInRunTime = 0
+             diffsecs = -deltaTClock
+             ObsNo_win = ObsNo_win+1
             ENDIF
 
             IF ( obsIsInRunTime.EQ.1 ) THEN
-C If yes then store obs index position and number of samples:
+C If yes then store obs index position and number of samples
              ObsNo_valid = ObsNo_valid+1
-             obs_ind_glob(num_file,ObsNo_valid) = ic+chunk
+C Check that the maximum number of obs per file is not exceeded
+             IF ( ObsNo_valid .GT. NOBSMAX_OBS ) THEN
+              WRITE(msgbuf,'(5A,I8)')
+     &         'OBSFIT_INIT_FIXED: file ', obsfitFile(1:IL),
+     &         '.nc was not read properly.',
+     &         ' Number of valid observations in one file ',
+     &         ' exceeds NOBSMAX_OBS=', NOBSMAX_OBS
+              CALL PRINT_ERROR( msgbuf, myThid )
+              WRITE(msgbuf,'(A)')
+     &         'Increase NOBSMAX_OBS in OBSFIT_SIZE.h and recompile'
+              CALL PRINT_ERROR( msgbuf, myThid )
+              stopObsfit = .TRUE.
+             ENDIF
+C Check that the maximum number of samples per obs is not exceeded
+             IF ( np_cur .GT. NSAMP_PER_OBS_MAX ) THEN
+              WRITE(msgbuf,'(5A,I8)')
+     &         'OBSFIT_INIT_FIXED: file ', obsfitFile(1:IL),
+     &         '.nc was not read properly.',
+     &         ' Number of samples in one observation ',
+     &         ' exceeds NSAMP_PER_OBS_MAX=', NSAMP_PER_OBS_MAX
+              CALL PRINT_ERROR( msgbuf, myThid )
+              WRITE(msgbuf,'(2A)')
+     &        'Increase NSAMP_PER_OBS_MAX in OBSFIT_SIZE.h ',
+     &        'and recompile'
+              CALL PRINT_ERROR( msgbuf, myThid )
+              stopObsfit = .TRUE.
+             ENDIF
+C Store obs info only if the size checks passed
+C (otherwise arrays would be written out of bounds)
+             IF ( .NOT.stopObsfit ) THEN
+              obs_ind_glob(num_file,ObsNo_valid) = ic+chunk
 C Number of samples in each valid observation
-             obs_np(num_file,ObsNo_valid) = np_cur
-             IF ( np_cur.GT.obs_np_max ) obs_np_max = np_cur
+              obs_np(num_file,ObsNo_valid) = np_cur
 C Position of first sample
-             obs_sample1_ind(num_file,ObsNo_valid) = sample_cnt
-             obs_delT(num_file,ObsNo_valid) = delT_cur
+              obs_sample1_ind(num_file,ObsNo_valid) = sample_cnt
+              obs_delT(num_file,ObsNo_valid) = delT_cur
+             ENDIF
             ENDIF !obsIsInRunTime.EQ.1
+
+C Check that the maximum number of samples per file is not exceeded;
+C this applies to all obs, in run time or not, since samples are
+C indexed by their position in the file
+            IF ( sample_cnt+np_cur-1 .GT. NSAMPLES_MAX_GLO ) THEN
+             WRITE(msgbuf,'(5A,I8)')
+     &        'OBSFIT_INIT_FIXED: file ', obsfitFile(1:IL),
+     &        '.nc was not read properly. ',
+     &        'Total number of samples in file',
+     &        ' exceeds NSAMPLES_MAX_GLO=', NSAMPLES_MAX_GLO
+             CALL PRINT_ERROR( msgbuf, myThid )
+             WRITE(msgbuf,'(2A)')
+     &        'Increase NSAMPLES_MAX_GLO in OBSFIT_SIZE.h ',
+     &        'and recompile'
+             CALL PRINT_ERROR( msgbuf, myThid )
+             stopObsfit = .TRUE.
+            ENDIF
 
 C Regardless of whether obs is in run time or not,
 C keep track of sample index position
 C and assign time to samples
-            DO k = 1, np_cur
-             tmp_sample_time(sample_cnt) = diffsecs
-             tmp_sample_delT(sample_cnt) = delT_cur
-             sample_cnt = sample_cnt+1
-            ENDDO
-
-C Check that maximum size was not reached:
-            IF ( ObsNo_valid.GT.NOBSMAX_OBS ) THEN
-             WRITE( msgBuf,'(3A)' )
-     &            'OBSFIT_INIT_FIXED: file ', obsfitFile(1:IL),
-     &            '.nc was not read properly (increase NOBSMAX_OBS).'
-             CALL PRINT_ERROR( msgBuf, myThid )
-             stopObsfit = 1
+            IF ( .NOT.stopObsfit ) THEN
+             DO k = 1, np_cur
+              tmp_sample_time(sample_cnt) = diffsecs
+              tmp_sample_delT(sample_cnt) = delT_cur
+              sample_cnt = sample_cnt+1
+             ENDDO
             ENDIF
 
-C Check that maximum NP was not reached:
-            IF ( obs_np_max.GT.NSAMP_PER_OBS_MAX ) THEN
-             WRITE( msgBuf,'(3A)' )
-     &           'OBSFIT_INIT_FIXED: file ', obsfitFile(1:IL),
-     &           '.nc  was not read properly ',
-     &           '(increase NSAMP_PER_OBS_MAX).'
-             CALL PRINT_ERROR( msgBuf, myThid )
-             stopObsfit = 1
-            ENDIF
-
-           ENDIF !stopObsfit
+           ENDIF !.not.stopObsfit
           ENDDO !ic
          ENDIF !chunk
         ENDDO !chunkObs
 
 C Number of valid observations in the file
         ObsNo(num_file) = ObsNo_valid
+        IF ( obsfitOperation(num_file).LT.0 )
+     &       obsfitOperation(num_file) = 0
 
         WRITE( msgbuf,'(A,I9)' )
      &       '  # of obs with erroneous HHMMSS values =', ObsNo_hh
+        CALL PRINT_MESSAGE( msgbuf, iUnit, SQUEEZE_RIGHT, myThid )
+
+        WRITE( msgbuf,'(A,I9)' )
+     &       '  # of obs with window ending after run =', ObsNo_win
         CALL PRINT_MESSAGE( msgbuf, iUnit, SQUEEZE_RIGHT, myThid )
 
         WRITE(msgbuf,'(A,I9)')
@@ -657,17 +751,40 @@ C Number of valid observations in the file
 C===========================================================
 C Second: loop through samples
 C===========================================================
+C Total number of samples in the file
+        sampleNo_file = sample_cnt-1
+        err = NF_INQ_DIMID( fid,'iSAMPLE', dimid )
+C If iSAMPLE is not a dimension, use the total number of samples
+C counted above; otherwise it must be equal to that number (sample
+C times are only known for the samples counted above)
+        IF ( err.EQ.NF_NOERR ) THEN
+         err = NF_INQ_DIMLEN( fid, dimid, sampleNo_file )
+         CALL OBSFIT_NF_ERROR(
+     &        'INIT_FIXED: NF_INQ_DIMLEN iSAMPLE',err,0,0,myThid )
+         IF ( err.NE.NF_NOERR ) THEN
+          WRITE( msgBuf,'(3A)' )
+     &         'OBSFIT_INIT_FIXED: file ', obsfitFile(1:IL),
+     &         '.nc: cannot read the iSAMPLE dimension'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          stopObsfit = .TRUE.
+          sampleNo_file = 0
+         ELSEIF ( (.NOT.stopObsfit) .AND.
+     &            (sampleNo_file.NE.sample_cnt-1) ) THEN
+          WRITE( msgBuf,'(3A,I9,A,I9)' )
+     &         'OBSFIT_INIT_FIXED: file ', obsfitFile(1:IL),
+     &         '.nc has iSAMPLE=', sampleNo_file,
+     &         ' but the sum of obs_np is ', sample_cnt-1
+          CALL PRINT_ERROR( msgBuf, myThid )
+          stopObsfit = .TRUE.
+          sampleNo_file = 0
+         ENDIF
+        ENDIF
+
         DO bj = 1, nSy
          DO bi = 1, nSx
 
 C Main loop: look for valid samples (in tile)
-          err = NF_INQ_DIMID( fid,'iSAMPLE', dimid )
-C If isample is not a dimension, use iobs for size of sampleno
-          IF (err.NE.NF_NOERR) THEN
-           sampleNo(num_file,bi,bj) = ObsNo(num_file)
-          ELSE
-           err = NF_INQ_DIMLEN( fid, dimid, sampleNo(num_file,bi,bj) )
-          ENDIF
+          sampleNo(num_file,bi,bj) = sampleNo_file
 
           DO ip = 1, NSAMP_PER_TILE_MAX
            sample_timeS(num_file,ip,bi,bj)  = -999. _d 0
@@ -713,20 +830,26 @@ C Read a chunk
      &            'OBSFIT_INIT_FIXED: file ', obsfitFile(1:IL),
      &            '.nc was not read properly (case 3).'
              CALL PRINT_ERROR( msgBuf, myThid )
-             stopObsfit = 1
+             stopObsfit = .TRUE.
             ENDIF
 
+C Read sample info 
             err = NF_GET_VARA_INT( fid,varID2,vec_start,
      &            vec_count, tmp_type2 )
+            nerr = ABS( err - NF_NOERR )
             err = NF_GET_VARA_DOUBLE( fid,varID3a,vec_start,
      &            vec_count, tmp_lon2 )
+            nerr = nerr + ABS( err - NF_NOERR )
             err = NF_GET_VARA_DOUBLE( fid,varID3b,vec_start,
      &            vec_count, tmp_lat2 )
+            nerr = nerr + ABS( err - NF_NOERR )
             err = NF_GET_VARA_DOUBLE( fid,varID4,vec_start,
      &            vec_count, tmp_depth2 )
+            nerr = nerr + ABS( err - NF_NOERR )
             IF ( weighSamples.EQ.1 ) THEN
              err = NF_GET_VARA_DOUBLE( fid,varID5,vec_start,
      &             vec_count, tmp_weight2 )
+             nerr = nerr + ABS( err - NF_NOERR )
             ENDIF
 
 C If obsfitDoGenGrid then also read in the interpolation fractions
@@ -734,12 +857,16 @@ C and indices
             IF ( obsfitDoGenGrid ) THEN
              err = NF_GET_VARA_DOUBLE( fid,varID_intp1,vec_start,
      &             vec_count, tmp_xC11 )
+             nerr = nerr + ABS( err - NF_NOERR )
              err = NF_GET_VARA_DOUBLE( fid,varID_intp2,vec_start,
      &             vec_count, tmp_yC11 )
+             nerr = nerr + ABS( err - NF_NOERR )
              err = NF_GET_VARA_DOUBLE( fid,varID_intp11,vec_start,
      &             vec_count, tmp_xCNINJ )
+             nerr = nerr + ABS( err - NF_NOERR )
              err = NF_GET_VARA_DOUBLE( fid,varID_intp22,vec_start,
      &             vec_count, tmp_yCNINJ )
+             nerr = nerr + ABS( err - NF_NOERR )
              DO iq = 1, iINTERP
               vec_start2(1) = iq
               vec_start2(2) = 1+chunk
@@ -748,27 +875,31 @@ C and indices
      &        sampleNo(num_file,bi,bj)-chunk)
               err = NF_GET_VARA_DOUBLE( fid,varID_intp3,vec_start2,
      &              vec_count2, tmp_frac(1,iq) )
+              nerr = nerr + ABS( err - NF_NOERR )
               err = NF_GET_VARA_DOUBLE( fid,varID_intp4,vec_start2,
      &              vec_count2, tmp_i(1,iq) )
+              nerr = nerr + ABS( err - NF_NOERR )
               err = NF_GET_VARA_DOUBLE( fid,varID_intp5,vec_start2,
      &              vec_count2, tmp_j(1,iq) )
+              nerr = nerr + ABS( err - NF_NOERR )
               err = NF_GET_VARA_DOUBLE( fid,varID_intp6,vec_start2,
      &              vec_count2, tmp_k(1,iq) )
+              nerr = nerr + ABS( err - NF_NOERR )
              ENDDO
             ENDIF
 
-            IF ( err.NE.NF_NOERR ) THEN
+            IF ( nerr.NE.0 ) THEN
              WRITE( msgBuf,'(3A)' )
      &            'OBSFIT_INIT_FIXED: file ', obsfitFile(1:IL),
      &            '.nc was not read properly (case 4).'
              CALL PRINT_ERROR( msgBuf, myThid )
-             stopObsfit = 1
+             stopObsfit = .TRUE.
             ENDIF
 
 C Loop through this chunk
             DO ic = 1, MIN(1000,sampleNo(num_file,bi,bj)-chunk)
 
-             IF ( stopObsfit .EQ. 0) THEN
+             IF ( .NOT.stopObsfit ) THEN
 
               sampleIsValid = 1
               sampleIsInTile = 1
@@ -919,8 +1050,13 @@ C Value of i, west of the data point:
                ENDIF
 
                IF ( sampleIsInTile.EQ.1 ) THEN
-C If yes then store sample index position and number of samples:
                 sampleNo_tile = sampleNo_tile+1
+               ENDIF
+C If yes then store sample index position and number of samples
+C (beyond NSAMP_PER_TILE_MAX, do not store: the check after the
+C generic grid case sets stopObsfit and the run stops on all procs)
+               IF ( (sampleIsInTile.EQ.1).AND.
+     &              (sampleNo_tile.LE.NSAMP_PER_TILE_MAX) ) THEN
                 sample_ind_glob(num_file,sampleNo_tile,bi,bj)
      &           = ic+chunk
                 sample_timeS(num_file,sampleNo_tile,bi,bj)=
@@ -1072,8 +1208,13 @@ C Do nothing
                 ENDIF
 
                 IF ( sampleIsInTile.EQ.1 ) THEN
-C If yes then store sample_time and interpolation fractions and indices:
                  sampleNo_tile = sampleNo_tile+1
+                ENDIF
+C If yes then store sample_time and interpolation fractions and indices
+C (beyond NSAMP_PER_TILE_MAX, do not store: the check below sets
+C stopObsfit and the run stops on all procs)
+                IF ( (sampleIsInTile.EQ.1).AND.
+     &               (sampleNo_tile.LE.NSAMP_PER_TILE_MAX) ) THEN
                  sample_type(num_file,sampleNo_tile,bi,bj)=type_cur
                  sample_timeS(num_file,sampleNo_tile,bi,bj)=
      &            tmp_sample_time(ic+chunk)
@@ -1154,7 +1295,7 @@ C interpolation information consistent (self and with grid)
      &                  'OBSFIT_INIT_FIXED: file ',
      &                   obsfitFile(1:IL),
      &                   '.nc includes inconsistent interpolation ',
-     &                   ' points (obsfitDoGenGrid; sum not 0-1)'
+     &                   ' points (obsfitDoGenGrid; fracs not [0,1])'
                    CALL PRINT_ERROR( msgBuf, myThid )
                    stopGenericGrid = 1
                   ENDIF
@@ -1180,17 +1321,18 @@ C interpolation information consistent (self and with grid)
 
 C ==============================================================================
 
-C Check that maximum size was not reached:
+C Check that maximum number of samples per tile is not exceeded
               IF ( sampleNo_tile.GT.NSAMP_PER_TILE_MAX ) THEN
-               WRITE( msgBuf,'(3A)' )
+               WRITE( msgBuf,'(4A,I9,A)' )
      &              'OBSFIT_INIT_FIXED: file ', obsfitFile(1:IL),
      &              '.nc was not read properly ',
-     &              '(increase NSAMP_PER_TILE_MAX).'
+     &              '(increase NSAMP_PER_TILE_MAX=',
+     &              NSAMP_PER_TILE_MAX, ' in OBSFIT_SIZE.h).'
                CALL PRINT_ERROR( msgBuf, myThid )
-               stopObsfit = 1
+               stopObsfit = .TRUE.
               ENDIF
 
-             ENDIF !stopObsfit
+             ENDIF !.not.stopObsfit
             ENDDO !ic
            ENDIF !chunk
           ENDDO !chunkObs
@@ -1214,10 +1356,10 @@ C Number of valid samples in the file
            IF ( ntype_other.GT.0 ) THEN
             WRITE( msgBuf,'(4A)' )
      &           'OBSFIT_INIT_FIXED: file ', obsfitFile(1:IL),
-     &           'includes both SSH and non-SSH observations; ',
+     &           '.nc includes both SSH and non-SSH observations; ',
      &           'this is not currently supported.'
             CALL PRINT_ERROR( msgBuf, myThid )
-            stopObsfit = 1
+            stopObsfit = .TRUE.
            ELSE
             obs_is_ssh_loc = obs_is_ssh_loc+1
            ENDIF
@@ -1248,39 +1390,23 @@ C===========================================================
      &           obsfitDir(1:JL),'tl',obsfitFile(1:IL),
      &           '.',iG,'.',jG,'.equi.nc'
 #endif
-            INQUIRE( file=obsfnameequinc, exist=exst )
-            IF (.NOT.exst) THEN
+C Always (re)create the tile files, so that they start from zero
+C and no values from a previous run are accumulated
              CALL OBSFIT_INIT_EQUIFILES( num_file,
-     &            fiddata_obs(num_file),obsfnameequinc,
-     &            fidfwd_obs(num_file,bi,bj),
-     &            sampleNo(num_file,bi,bj),bi,bj,myThid )
-             ELSE
-              err = NF_OPEN( obsfnameequinc,NF_WRITE,
-     &              fidfwd_obs(num_file,bi,bj) )
-             ENDIF
+     &        fiddata_obs(num_file),obsfnameequinc,
+     &        fidfwd_obs(num_file,bi,bj),
+     &        sampleNo(num_file,bi,bj),bi,bj,myThid )
 #ifdef ALLOW_ADJOINT_RUN
-             INQUIRE( file=adobsfnameequinc, exist=exst )
-             IF (.NOT.exst) THEN
-              CALL OBSFIT_INIT_EQUIFILES( num_file,
-     &             fiddata_obs(num_file),adobsfnameequinc,
-     &             fidadj_obs(num_file,bi,bj),
-     &             sampleNo(num_file,bi,bj),bi,bj,myThid )
-             ELSE
-              err = NF_OPEN( adobsfnameequinc,NF_WRITE,
-     &              fidadj_obs(num_file,bi,bj) )
-             ENDIF
+             CALL OBSFIT_INIT_EQUIFILES( num_file,
+     &        fiddata_obs(num_file),adobsfnameequinc,
+     &        fidadj_obs(num_file,bi,bj),
+     &        sampleNo(num_file,bi,bj),bi,bj,myThid )
 #endif
 #ifdef ALLOW_TANGENTLINEAR_RUN
-             INQUIRE( file=tlobsfnameequinc, exist=exst )
-             IF (.NOT.exst) THEN
-              CALL OBSFIT_INIT_EQUIFILES( num_file,
-     &             fiddata_obs(num_file),tlobsfnameequinc,
-     &             fidtan_obs(num_file,bi,bj),
-     &             sampleNo(num_file,bi,bj),bi,bj,myThid )
-             ELSE
-              err = NF_OPEN( tlobsfnameequinc,NF_WRITE,
-     &              fidtan_obs(num_file,bi,bj) )
-             ENDIF
+             CALL OBSFIT_INIT_EQUIFILES( num_file,
+     &        fiddata_obs(num_file),tlobsfnameequinc,
+     &        fidtan_obs(num_file,bi,bj),
+     &        sampleNo(num_file,bi,bj),bi,bj,myThid )
 #endif
             ELSE !obsfitDoNcOutput
 
@@ -1298,63 +1424,41 @@ C===========================================================
      &            obsfitFile(1:IL),'.',iG,'.',jG,'.equi.data'
 #endif
 
-             INQUIRE( file=obsfnameequinc, exist=exst )
+C Always (re)create the tile files, so that they start from zero
+C and no values from a previous run are accumulated
 #ifdef OBSFIT_USE_MDSFINDUNITS
              CALL MDSFINDUNIT( fidfwd_obs(num_file,bi,bj), myThid )
 #else
              CALL OBSFIT_FINDUNIT( fidfwd_obs(num_file,bi,bj),
      &            myThid )
 #endif
-             IF (.NOT.exst) THEN
-              CALL OBSFIT_INIT_EQUIFILES( num_file,
-     &             fiddata_obs(num_file),obsfnameequinc,
-     &             fidfwd_obs(num_file,bi,bj),
-     &             sampleNo(num_file,bi,bj),bi,bj,myThid )
-             ELSE
-              OPEN( fidfwd_obs(num_file,bi,bj),
-     &              file=obsfnameequinc,form ='unformatted',
-     &              status='unknown',access='direct',
-     &              recl=2*WORDLENGTH*2 )
-             ENDIF
+             CALL OBSFIT_INIT_EQUIFILES( num_file,
+     &        fiddata_obs(num_file),obsfnameequinc,
+     &        fidfwd_obs(num_file,bi,bj),
+     &        sampleNo(num_file,bi,bj),bi,bj,myThid )
 #ifdef ALLOW_ADJOINT_RUN
-             INQUIRE( file=adobsfnameequinc, exist=exst )
 #ifdef OBSFIT_USE_MDSFINDUNITS
              CALL MDSFINDUNIT( fidadj_obs(num_file,bi,bj), myThid )
 #else
              CALL OBSFIT_FINDUNIT( fidadj_obs(num_file,bi,bj),
      &            myThid )
 #endif
-             IF (.NOT.exst) THEN
-              CALL OBSFIT_INIT_EQUIFILES( num_file,
-     &             fiddata_obs(num_file),adobsfnameequinc,
-     &             fidadj_obs(num_file,bi,bj),
-     &             sampleNo(num_file,bi,bj),bi,bj,myThid )
-             ELSE
-              OPEN( fidadj_obs(num_file,bi,bj),
-     &              file=adobsfnameequinc,form ='unformatted',
-     &              status='unknown', access='direct',
-     &              recl=2*WORDLENGTH*2 )
-             ENDIF
+             CALL OBSFIT_INIT_EQUIFILES( num_file,
+     &        fiddata_obs(num_file),adobsfnameequinc,
+     &        fidadj_obs(num_file,bi,bj),
+     &        sampleNo(num_file,bi,bj),bi,bj,myThid )
 #endif
 #ifdef ALLOW_TANGENTLINEAR_RUN
-             INQUIRE( file=tlobsfnameequinc, exist=exst )
 #ifdef OBSFIT_USE_MDSFINDUNITS
              CALL MDSFINDUNIT( fidtan_obs(num_file,bi,bj), myThid )
 #else
              CALL OBSFIT_FINDUNIT( fidtan_obs(num_file,bi,bj),
      &            myThid )
 #endif
-             IF (.NOT.exst) THEN
-              CALL OBSFIT_INIT_EQUIFILES( num_file,
-     &             fiddata_obs(num_file),tlobsfnameequinc,
-     &             fidtan_obs(num_file,bi,bj),
-     &             sampleNo(num_file,bi,bj),bi,bj,myThid )
-              ELSE
-               OPEN( fidtan_obs(num_file,bi,bj),file=
-     &               tlobsfnameequinc,form ='unformatted',
-     &               status='unknown', access='direct',
-     &               recl=2*WORDLENGTH*2 )
-            ENDIF
+             CALL OBSFIT_INIT_EQUIFILES( num_file,
+     &        fiddata_obs(num_file),tlobsfnameequinc,
+     &        fidtan_obs(num_file,bi,bj),
+     &        sampleNo(num_file,bi,bj),bi,bj,myThid )
 #endif
 
            ENDIF !ObsfitDoNcOutput
@@ -1362,7 +1466,8 @@ C===========================================================
          ENDDO !bj
         ENDDO !bi
 
-        CALL GLOBAL_SUM_INT(obs_is_ssh_loc, myThid)
+C Sum over processes is done after the master-thread section
+C (GLOBAL_SUM_INT has thread barriers, so all threads must call it)
         obs_is_ssh(num_file)=obs_is_ssh_loc
 
 C===========================================================
@@ -1398,6 +1503,15 @@ C===========================================================
         ENDDO !bj
 
        ENDIF !if (IL.NE.0)
+
+       stopObsfit = stopObsfit .OR. ( stopGenericGrid.GT.0 )
+       IF ( stopObsfit ) THEN
+        stopObsfit_cnt = stopObsfit_cnt+1
+       ENDIF
+       stopGenericGrid_max = MAX( stopGenericGrid_max,
+     &                            stopGenericGrid )
+
+
       ENDDO !num_file
 
 C===========================================================
@@ -1407,7 +1521,7 @@ C===========================================================
 c1) you want to provide interpolation information
 
 C For generic grid. Needs to go inside bi,bj loop
-      IF ( stopGenericGrid.EQ.2 ) THEN
+      IF ( stopGenericGrid_max.EQ.2 ) THEN
 c         iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
 c         jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
 ccgf XC grid
@@ -1463,22 +1577,35 @@ c       close(fid)
        WRITE( msgBuf,'(A)' )
      &      'use the grid info in profiles*incl1PointOverlap*data'
        CALL PRINT_ERROR( msgBuf, myThid )
-       stopObsfit=1
 
       ENDIF
 
       _END_MASTER( myThid )
       _BARRIER
 
+C Sum the number of tiles with SSH obs over processes (master thread
+C contributes the value for this process, other threads contribute 0)
+      DO num_file = 1, NFILESMAX_OBS
+       obs_is_ssh_loc = 0
+       _BEGIN_MASTER( myThid )
+       obs_is_ssh_loc = obs_is_ssh(num_file)
+       _END_MASTER( myThid )
+       CALL GLOBAL_SUM_INT( obs_is_ssh_loc, myThid )
+       _BEGIN_MASTER( myThid )
+       obs_is_ssh(num_file) = obs_is_ssh_loc
+       _END_MASTER( myThid )
+      ENDDO
+      _BARRIER
+
 c2) stop after other kind of errors
-      CALL GLOBAL_SUM_INT( stopObsfit , myThid )
-      IF ( stopObsfit.GE.1) THEN
+      CALL GLOBAL_SUM_INT( stopObsfit_cnt, myThid )
+      IF ( stopObsfit_cnt.GE.1 ) THEN
        CALL ALL_PROC_DIE( myThid )
        STOP 'ABNORMAL END: S/R OBSFIT_INIT_FIXED'
       ENDIF
 
-      CALL GLOBAL_SUM_INT( stopGenericGrid , myThid )
-      IF ( stopGenericGrid.GE.1) THEN
+      CALL GLOBAL_SUM_INT( stopGenericGrid_max, myThid )
+      IF ( stopGenericGrid_max.GE.1) THEN
        CALL ALL_PROC_DIE( myThid )
        STOP 'ABNORMAL END: S/R OBSFIT_INIT_FIXED'
       ENDIF
