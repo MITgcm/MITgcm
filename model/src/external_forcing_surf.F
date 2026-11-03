@@ -399,6 +399,11 @@ c         ENDDO
         ENDIF
 #endif /* ALLOW_SHELFICE */
 
+#ifdef ALLOW_WETDRY
+C--   wetting-drying: no surface forcing on dry columns
+        IF ( useWETDRY ) CALL WETDRY_DRY_FORCING( bi, bj, myThid )
+#endif /* ALLOW_WETDRY */
+
 C--   end bi,bj loops.
        ENDDO
       ENDDO
