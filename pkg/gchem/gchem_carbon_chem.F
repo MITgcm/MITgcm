@@ -561,6 +561,8 @@ C general
         _RL  ttemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
         _RL  stemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef ALLOW_BLING
+C atmsP is the atmospheric pressure (atm), only used for the fugacity
+C factor at the surface (kLevel < 1)
         _RL  atmsP(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
         INTEGER bi,bj,iMin,iMax,jMin,jMax
@@ -707,17 +709,20 @@ C added by Val Bennington Nov 2010
 C Fugacity Factor needed for non-ideality in ocean
 C ff used for atmospheric correction for water vapor and pressure
 C Weiss (1974) Marine Chemistry
-           P1atm = pSurf + pAppl  ! bars
-           Rgas = 83.1451 _d 0 ! bar*cm3/(mol*K)
-           RT = Rgas*tk
-           delta = (57.7 _d 0 - 0.118 _d 0*tk)
-           B1 = -1636.75 _d 0 + 12.0408 _d 0*tk - 0.0327957 _d 0*tk*tk
-           B = B1 + 3.16528 _d 0*tk*tk*tk*(0.00001 _d 0)
-           fugf(i,j,bi,bj) = exp( (B+2. _d 0*delta)
+C Only meaningful at the surface, so skip for kLevel >= 1 to avoid
+C overwriting the surface value.
+           IF (kLevel.LT.1) THEN
+            Rgas = 83.1451 _d 0 ! bar*cm3/(mol*K)
+            RT = Rgas*tk
+            delta = (57.7 _d 0 - 0.118 _d 0*tk)
+            B1 = -1636.75 _d 0 + 12.0408 _d 0*tk - 0.0327957 _d 0*tk*tk
+            B = B1 + 3.16528 _d 0*tk*tk*tk*(0.00001 _d 0)
+            fugf(i,j,bi,bj) = exp( (B+2. _d 0*delta)
 #ifdef ALLOW_BLING
      &          * atmsP(i,j)
 #endif
      &          * P1atm / RT)
+           ENDIF
 C------------------------------------------------------------------------
 C f = k0(1-pH2O)*correction term for non-ideality
 C Weiss & Price (1980, Mar. Chem., 8, 347-359; Eq 13 with table 6 values)
