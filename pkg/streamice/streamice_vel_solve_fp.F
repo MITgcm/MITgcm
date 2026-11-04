@@ -47,11 +47,7 @@ C     !LOCAL VARIABLES:
       isinloop1 =1
       isinloop2 =2
 
-      IF (STREAMICE_ppm_driving_stress) THEN
-       CALL STREAMICE_DRIVING_STRESS_PPM (myThid)
-      ELSE
-       CALL STREAMICE_DRIVING_STRESS (myThid)
-      ENDIF
+      CALL STREAMICE_DRIVING_STRESS (myThid)
 
 #ifdef STREAMICE_STRESS_BOUNDARY_CONTROL
       _EXCH_XY_RL( taudx_SI , myThid )

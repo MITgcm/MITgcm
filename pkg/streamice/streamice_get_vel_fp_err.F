@@ -71,13 +71,14 @@ C     !INPUT/OUTPUT ARGUMENTS
 #endif
            ENDIF
            IF (STREAMICE_vmask(i,j,bi,bj).eq.1) THEN
-            err_tempv = MAX( err_tempu,
+            err_tempv = 
 #ifdef ALLOW_STREAMICE_FP_ADJ
-     &       ABS (V_streamice(i,j,bi,bj)-v_new_SI(i,j,bi,bj)))
+     &       ABS (V_streamice(i,j,bi,bj)-v_new_SI(i,j,bi,bj))
 #else
-     &       ABS (V_streamice(i,j,bi,bj)-v_old_SI(i,j,bi,bj)))
+     &       ABS (V_streamice(i,j,bi,bj)-v_old_SI(i,j,bi,bj))
 #endif
            ENDIF
+           err_tempv = MAX(err_tempu, err_tempv)
            IF (err_tempv .ge. err_max) err_max = err_tempv
           ENDDO
          ENDDO

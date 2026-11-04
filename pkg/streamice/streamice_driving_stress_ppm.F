@@ -29,6 +29,7 @@ C     !INPUT/OUTPUT ARGUMENTS
 !       _RL taudx (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #ifdef ALLOW_STREAMICE
+#if 0      
 
 
 C     LOCAL VARIABLES
@@ -407,7 +408,7 @@ C     LOCAL VARIABLES
       ENDDO
 
 
-
+#endif
 #endif
       RETURN
       END
