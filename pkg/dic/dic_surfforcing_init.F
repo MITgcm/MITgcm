@@ -103,7 +103,7 @@ C determine inorganic carbon chem coefficients
      &                    * maskC(i,j,kLev,bi,bj)
 #endif
 #else /* DIC_BIOTIC */
-            surfalk(i,j)  = 2.366595 _d 0 *salt(i,j,kLev,bi,bj)/35. _d 0
+            surfalk(i,j)  = 2.366595 _d 0 *dicSSS(i,j,bi,bj)/35. _d 0
      &                    * maskC(i,j,kLev,bi,bj)
             surfphos(i,j) = 5.1225 _d -4 * maskC(i,j,kLev,bi,bj)
 #endif /* DIC_BIOTIC */
@@ -111,14 +111,14 @@ C for non-interactive Si
             surfsi(i,j)   = silicaSurf(i,j,bi,bj)*maskC(i,j,kLev,bi,bj)
 #ifdef DIC_BOUNDS
             surftemp(i,j) = MAX( -4. _d 0,
-     &                      MIN( 50. _d 0, theta(i,j,kLev,bi,bj) ) )
+     &                      MIN( 50. _d 0, dicSST(i,j,bi,bj) ) )
             surfsalt(i,j) = MAX( 4. _d 0,
-     &                      MIN( 50. _d 0, salt(i,j,kLev,bi,bj) ) )
+     &                      MIN( 50. _d 0, dicSSS(i,j,bi,bj) ) )
             surfdic(i,j)  = MAX( 0.4 _d 0,
      &                      MIN( 10. _d 0, PTRACER(i,j,kLev,bi,bj,1) ) )
 #else
-            surftemp(i,j) = theta(i,j,kLev,bi,bj)
-            surfsalt(i,j) = salt(i,j,kLev,bi,bj)
+            surftemp(i,j) = dicSST(i,j,bi,bj)
+            surfsalt(i,j) = dicSSS(i,j,bi,bj)
             surfdic(i,j)  = PTRACER(i,j,kLev,bi,bj,1)
      &                    * maskC(i,j,kLev,bi,bj)
 #endif
@@ -228,8 +228,8 @@ cC$TAF STORE surfalk(i,j), surfphos(i,j), surfsi(i,j)   = dic_surf
           jprt = MIN(20,sNy)
           WRITE(msgBuf,'(4(A,F9.6),2(A,F11.8),A,F9.6)')
      &        ' first guess pH=', pH(iprt,jprt,bi,bj),
-     &        ', Temp=',theta(iprt,jprt,1,bi,bj),
-     &        ', Salt=',salt(iprt,jprt,1,bi,bj),
+     &        ', Temp=',dicSST(iprt,jprt,bi,bj),
+     &        ', Salt=',dicSSS(iprt,jprt,bi,bj),
      &        ', DIC=', surfdic(iprt,jprt),
      &        ', PO4=', surfphos(iprt,jprt),
      &        ', SiT=', surfsi(iprt,jprt),

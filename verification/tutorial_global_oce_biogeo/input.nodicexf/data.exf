@@ -1,0 +1,44 @@
+# *********************
+# External Forcing Data
+# *********************
+#
+ &EXF_NML_01
+ readStressOnCgrid = .TRUE.,
+ repeatPeriod      = 31104000.,
+# The coldest temperature in 'lev_monthly_temp.bin' is -2.9...degC.
+# avoid clipping of input data to maintain results relative to ../input
+ climtempfreeze    = -3.0,
+#
+ exf_iprec         = 32,
+ exf_yftype        = 'RL',
+ &
+#
+ &EXF_NML_02
+ hfluxfile         = 'shi_qnet.bin',
+ hfluxperiod       = -12.,
+#
+ sfluxfile         = 'shi_empmr_year.bin',
+ sfluxperiod       = -12.,
+#
+ ustressfile       = 'tren_taux.bin',
+ ustressperiod     = -12.,
+#
+ vstressfile       = 'tren_tauy.bin',
+ vstressperiod     = -12.,
+#
+ climsstfile  = 'lev_monthly_temp.bin',
+ climsstperiod     = -12.,
+# 2 months restoring timescale for temperature
+ climsstTauRelax   = 5184000.,
+#
+ climsssfile  = 'lev_monthly_salt.bin',
+ climsssperiod     = -12.,
+# 3 months restoring timescale for salinity
+ climsssTauRelax   = 7776000.,
+ &
+#
+ &EXF_NML_03
+ &
+#
+ &EXF_NML_04
+ &

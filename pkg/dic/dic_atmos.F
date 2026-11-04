@@ -182,26 +182,34 @@ C if end of forcing cycle, find total change in ocean carbon
 #endif
 
        atm_pCO2 = atpco2
+      ELSEIF ( dic_useEXF ) THEN
+       atm_pCO2 = dic_atmospCO2_const
       ELSE
        atm_pCO2 = dic_pCO2
       ENDIF
 
+C--   Set AtmospCO2 for next iteration:
+C     Skip this when a spatially varying atmospheric pCO2 file is supplied:
+C     in that case AtmospCO2 is filled from DIC_atmospCO2File by
+C     DIC_FIELDS_LOAD (via pkg/exf when DIC_useEXF) and the uniform
+C     value atm_pCO2 must not overwrite it.
+      IF ( DIC_atmospCO2File .EQ. ' ' ) THEN
 #ifndef ALLOW_AUTODIFF
-      IF ( dic_int1.EQ.2 .OR. dic_int1.EQ.3 ) THEN
+       IF ( dic_int1.EQ.2 .OR. dic_int1.EQ.3 ) THEN
 #endif
-C--    Set AtmospCO2 for next iteration:
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-            AtmospCO2(i,j,bi,bj) = atm_pCO2
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+             AtmospCO2(i,j,bi,bj) = atm_pCO2
+           ENDDO
           ENDDO
          ENDDO
         ENDDO
-       ENDDO
 #ifndef ALLOW_AUTODIFF
-      ENDIF
+       ENDIF
 #endif
+      ENDIF
 
 #endif /* ALLOW_DIC */
 

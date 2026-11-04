@@ -66,8 +66,8 @@ C calculate SCHMIDT NO. for O2
         DO j=jmin,jmax
           DO i=imin,imax
             IF (maskC(i,j,k,bi,bj).NE.0.) THEN
-              ttemp = theta(i,j,k,bi,bj)
-              stemp = salt(i,j,k,bi,bj)
+              ttemp = dicSST(i,j,bi,bj)
+              stemp = dicSSS(i,j,bi,bj)
 
               SchmidtNoO2(i,j) =
      &            sox1

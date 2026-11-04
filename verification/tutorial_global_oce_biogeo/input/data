@@ -28,6 +28,7 @@
  tempAdvScheme       = 2,
  saltAdvScheme       = 2,
  allowFreezing=.TRUE.,
+ debugLevel = 4,
 # turn on looped cells
  hFacMin=.1,
  hFacMindz=50.,
