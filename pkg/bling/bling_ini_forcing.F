@@ -96,7 +96,7 @@ c set reasonable values to those that need at least something
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           wind(i,j,bi,bj)    = bling_windConst*maskC(i,j,1,bi,bj)
-          AtmosP(i,j,bi,bj)  = bling_apressConst/Pa2Atm
+          AtmosP(i,j,bi,bj)  = bling_apressConst
      &                                  *maskC(i,j,1,bi,bj)
           silica(i,j,bi,bj)  = bling_silicaConst
      &                                  *maskC(i,j,1,bi,bj)
@@ -275,7 +275,7 @@ C      Atmospheric pressure (AtmosP is in atm, bling_apressConst in Pa)
       CALL EXF_INIT_FLD(
      I     'AtmosP', bling_apressFile, bling_apressMask,
      I     bling_apressPeriod, bling_inscal_apress,
-     I     bling_apressConst/Pa2Atm,
+     I     bling_apressConst,
      O     AtmosP, apress0, apress1,
 # ifdef USE_EXF_INTERPOLATION
      I     bling_apress_lon0, bling_apress_lon_inc,

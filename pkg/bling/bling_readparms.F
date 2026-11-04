@@ -522,9 +522,9 @@ C     Default values
       river_dom_to_nut       = 0. _d 0
 
 C     some sensible defaults
-      bling_iceConst        = 0.      _d 0
-      bling_apressConst     = 1.01325 _d 5
-      bling_silicaConst     = 7.6838  _d -3
+      bling_iceConst        = 0.     _d 0
+      bling_apressConst     = 1.     _d 0
+      bling_silicaConst     = 7.6838 _d -3
 C     bling_apco2Const defaults to bling_pCO2, but bling_pCO2 is itself
 C     read from the BLING_FORCING namelist below: leave it unset here and
 C     resolve the default after the namelist has been read.
