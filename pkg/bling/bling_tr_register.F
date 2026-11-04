@@ -32,24 +32,24 @@ C     myThid     :: my Thread Id number
 C     !LOCAL VARIABLES:
 C     msgBuf     :: message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER BLING_Tr_num
+      INTEGER bling_Tr_num
 CEOP
 
 #ifndef USE_BLING_V1
 # ifdef USE_SIBLING
-      BLING_Tr_num = 9
+      bling_Tr_num = 9
 # else
-      BLING_Tr_num = 8
+      bling_Tr_num = 8
 # endif
 #else
-      BLING_Tr_num = 6
+      bling_Tr_num = 6
 #endif
 #ifdef ADVECT_PHYTO
-      BLING_Tr_num = BLING_Tr_num+1
+      bling_Tr_num = bling_Tr_num+1
 #endif
 
       WRITE(msgBuf,'(2A,2I5)') ' BLING_TR_REGISTER:',
-     &     ' number of BLING tracers=', BLING_Tr_num
+     &     ' number of BLING tracers=', bling_Tr_num
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(2A,2I5)') ' BLING_TR_REGISTER:',
@@ -57,8 +57,8 @@ CEOP
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
 
-      tracer_num = tracer_num + BLING_Tr_num
-      sepFTr_num = sepFTr_num + BLING_Tr_num
+      tracer_num = tracer_num + bling_Tr_num
+      sepFTr_num = sepFTr_num + bling_Tr_num
 
       WRITE(msgBuf,'(2A,2I5)') ' BLING_TR_REGISTER:',
      &     ' Numb. Trac & SepForc Trac:', tracer_num, sepFTr_num

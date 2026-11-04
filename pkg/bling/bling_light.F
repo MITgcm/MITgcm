@@ -41,8 +41,9 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "BLING_VARS.h"
-#ifdef USE_QSW
+#ifdef ALLOW_EXF
 # include "FFIELDS.h"
+# include "EXF_PARAM.h"
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -80,13 +81,11 @@ C !LOCAL VARIABLES: ====================================================
       _RL chl_sat_sum  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL atten
       _RL irr_surf  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL sfac      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef ML_MEAN_LIGHT
       _RL irr_mix   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL SumMLIrr  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tmp_ML    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-#endif
-#ifndef USE_QSW
-      _RL sfac      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
 #ifdef PHYTO_SELF_SHADING
       _RL k0_rd, chi_rd, e_rd
@@ -106,24 +105,20 @@ C     kkey :: tape key (tile and level dependent)
 CEOP
 
 C  Remove light under ice
-C  If using Qsw and seaice/thsice, then ice fraction is already
+C  If using seaice/thsice, ice fraction is already
 C  taken into account
       QSW_underice = .FALSE.
-#ifdef USE_QSW
       IF ( useSEAICE ) QSW_underice = .TRUE.
       IF ( useThSIce ) QSW_underice = .TRUE.
-#endif
 
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
         chl_sat_sum(i,j)   = 0. _d 0
         sat_atten_sum(i,j) = 0. _d 0
+        sfac(i,j)     = 0. _d 0
 #ifdef ML_MEAN_LIGHT
         SumMLIrr(i,j) = 0. _d 0
         tmp_ML(i,j)   = 0. _d 0
-#endif
-#ifndef USE_QSW
-        sfac(i,j)     = 0. _d 0
 #endif
        ENDDO
       ENDDO
@@ -151,17 +146,19 @@ C  in red and blue-green fractions (Morel 1988; Foujols et al. 2000)
 #endif
 
 C ---------------------------------------------------------------------
-C  instantaneous light, mixed layer averaged light
+C  Instantaneous light, mixed layer averaged light
 
-#ifdef USE_QSW
+#ifdef ALLOW_EXF
+      IF ((bling_useEXF).AND.(swdownfile.NE.' ')) THEN
 C  Convert insolation to photosynthetically-available radiations (PAR)
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        irr_surf(i,j) = MAX( epsln,
-     &                  -parfrac*Qsw(i,j,bi,bj)*maskInC(i,j,bi,bj))
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         irr_surf(i,j) = MAX( epsln,
+     &                   -parfrac*Qsw(i,j,bi,bj)*maskInC(i,j,bi,bj))
+        ENDDO
        ENDDO
-      ENDDO
-#else
+      ELSE
+#endif
 C  Find surface insolation (light) as function of date and latitude
       CALL GCHEM_INSOLATION(
      O     sfac,
@@ -174,13 +171,15 @@ C Photosynthetically active solar radiation (PAR) just below surface
         irr_surf(i,j) = MAX(1. _d -5,sfac(i,j)*parfrac)
        ENDDO
       ENDDO
-#endif /* USE_QSW */
+#ifdef ALLOW_EXF
+      ENDIF
+#endif /* ALLOW_EXF */
 
 C  Remove light under ice
       IF ( .NOT. QSW_underice ) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
-         irr_surf(i,j) = irr_surf(i,j)*(1. _d 0 - FIce(i,j,bi,bj))
+         irr_surf(i,j) = irr_surf(i,j)*(1. _d 0 - fIce(i,j,bi,bj))
         ENDDO
        ENDDO
       ENDIF

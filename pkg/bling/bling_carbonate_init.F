@@ -32,8 +32,7 @@ C     myThid               :: thread Id. number
 #ifdef ALLOW_BLING
 C     === Local variables ===
        INTEGER i,j, k, it
-       INTEGER intimeP, intime0, intime1
-       _RL aWght, bWght, co3dummy
+       _RL co3dummy
 C Number of iterations for pCO2 solvers...
 C Solubility relation coefficients
 C local variables for carbon chem
@@ -47,78 +46,10 @@ C local variables for carbon chem
       LOGICAL pH_isLoaded
 CEOP
 
-#ifndef USE_SIBLING
-      IF ( periodicExternalForcing ) THEN
-
-c read in silica field
-         CALL LEF_ZERO( silica0,myThid )
-         CALL LEF_ZERO( silica1,myThid )
-
-C--   Now calculate whether it is time to update the forcing arrays
-       CALL GET_PERIODIC_INTERVAL(
-     O                   intimeP, intime0, intime1, bWght, aWght,
-     I                   externForcingCycle, externForcingPeriod,
-     I                   deltaTClock, startTime, myThid )
-
-       _BARRIER
-       _BEGIN_MASTER(myThid)
-        WRITE(standardMessageUnit,'(A,I10,A,2(2I5,A))')
-     &   ' BLING_SURFFORCING_INIT, it=', nIter0,
-     &   ' : Reading new data, i0,i1=', intime0, intime1
-       _END_MASTER(myThid)
-
-       IF ( BLING_silicaFile .NE. ' '  ) THEN
-         CALL READ_REC_XY_RS( BLING_silicaFile,silica0,intime0,
-     &        nIter0,myThid )
-         CALL READ_REC_XY_RS( BLING_silicaFile,silica1,intime1,
-     &        nIter0,myThid )
-       ENDIF
-
-#ifdef ALLOW_OFFLINE
-       IF ( useOffLine ) THEN
-         CALL OFFLINE_FIELDS_LOAD( startTime, nIter0, myThid )
-       ENDIF
-#endif
-
-       _EXCH_XY_RS(silica0, myThid )
-       _EXCH_XY_RS(silica1, myThid )
-
-       IF ( BLING_silicaFile .NE. ' '  ) THEN
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-             silica(i,j,bi,bj)= bWght*silica0(i,j,bi,bj)
-     &                        + aWght*silica1(i,j,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDIF
-
-c end periodicExternalForcing
-      ENDIF
-c end SiBLING
-#endif
-
-C =================================================================
-
       jMin=1
       jMax=sNy
       iMin=1
       iMax=sNx
-
-      DO k=1,Nr
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-            pH(i,j,k,bi,bj) = 8. _d 0
-          ENDDO
-         ENDDO
-       ENDDO
-      ENDDO
-      ENDDO
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -253,7 +184,7 @@ CAV C$TAF STORE alktmp(i,j), phostmp(i,j), sitmp(i,j)      = dic_surf
      I        dictmp(i,j), phostmp(i,j),
      I        sitmp(i,j),alktmp(i,j),
      U        pH(i,j,k,bi,bj),pCO2(i,j,bi,bj),co3dummy,
-     I        i,j,k,bi,bj, it ,  myThid )
+     I        i,j,k,bi,bj,it,myThid )
              ELSE
 C Use the original Follows et al. (2006) solver
 #endif /* CARBONCHEM_SOLVESAPHE */

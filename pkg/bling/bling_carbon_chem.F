@@ -433,11 +433,12 @@ cmick - now estimate carbonate alkalinity
      &           - siooh3g
 CMM(
         IF ( cag .LT. (0.1 _d 0*ta) )  THEN
-       print *,'CMMcag1', cag,i,j,k,xC(i,j,1,1),yC(i,j,1,1)
-C myXGlobalLo-1+(bi-1)*sNx+i,        myYGlobalLo-1+(bj-1)*sNy+j
-       print *,'CMMcag2',ta,bohg,(kwlocal/hguess),hguess,hpo4g,
+         IF ( bling_debugLevel.GE.1 ) THEN
+          print *,'CMMcag1', cag,i,j,k,xC(i,j,bi,bj),yC(i,j,bi,bj)
+          print *,'CMMcag2',ta,bohg,(kwlocal/hguess),hguess,hpo4g,
      &           2.0 _d 0*po4g,h3po4g, siooh3g
-       cag = 0.1 _d 0*ta
+         ENDIF
+         cag = 0.1 _d 0*ta
         ENDIF
 CMM)
 cmick - now evaluate better guess of hydrogen ion conc

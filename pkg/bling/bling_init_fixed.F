@@ -1,4 +1,7 @@
 #include "BLING_OPTIONS.h"
+#ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+#endif
 
 CBOP
       subroutine BLING_INIT_FIXED( myThid )
@@ -16,6 +19,11 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "BLING_VARS.h"
+#ifdef ALLOW_EXF
+# include "EXF_PARAM.h"
+# include "EXF_INTERP_SIZE.h"
+# include "BLING_EXF.h"
+#endif
 
 C     !INPUT PARAMETERS:
 C     myThid       :: my Thread Id number
@@ -23,7 +31,8 @@ C     myThid       :: my Thread Id number
 CEOP
 
 #ifdef ALLOW_BLING
-c     CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER errCount
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -57,13 +66,102 @@ C coefficients for determining saturation O2
       oC0= -4.88682 _d -7
 
 #ifdef ALLOW_EXF
-      apco2mask = 'c'
-      IF ( useSEAICE ) THEN
-       apco2mask = ' '
-      ENDIF
-#endif
+      IF ( bling_useEXF ) THEN
+       errCount = 0
 
-C     Set other constant/flag
+      bling_apco2Mask = 'c'
+      IF ( useSEAICE ) THEN
+       bling_apco2Mask = ' '
+      ENDIF
+
+      IF ( bling_apco2File .NE. ' ' ) THEN
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START pCO2',
+     &  myThid)
+# endif
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                         'bling', 'apco2', bling_apco2Period,
+     I                         bling_apco2StartDate1, 
+     I                         bling_apco2StartDate2,
+     U                         bling_apco2StartTime, errCount,
+     I                         myThid )
+      ENDIF
+
+      IF ( bling_ironFile .NE. ' ' ) THEN
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START iron',
+     &  myThid)
+# endif
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                         'bling', 'InputFe', bling_ironPeriod,
+     I                         bling_ironStartDate1,
+     I                         bling_ironStartDate2,
+     U                         bling_ironStartTime, errCount,
+     I                         myThid )
+      ENDIF
+
+      IF ( bling_silicaFile .NE. ' ' ) THEN
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START silica',
+     &  myThid)
+# endif
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                         'bling', 'silica', bling_silicaPeriod,
+     I                         bling_silicaStartDate1,
+     I                         bling_silicaStartDate2,
+     U                         bling_silicaStartTime, errCount,
+     I                         myThid )
+       ENDIF
+
+      IF ( bling_apressFile .NE. ' ' ) THEN
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START apress',
+     &  myThid)
+# endif
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                         'bling', 'AtmosP', bling_apressPeriod,
+     I                         bling_apressStartDate1,
+     I                         bling_apressStartDate2,
+     U                         bling_apressStartTime, errCount,
+     I                         myThid )
+       ENDIF
+
+      IF ( bling_windFile .NE. ' ' ) THEN
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START wind',
+     &  myThid)
+# endif
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                         'bling', 'wind', bling_windPeriod,
+     I                         bling_windStartDate1,
+     I                         bling_windStartDate2,
+     U                         bling_windStartTime, errCount,
+     I                         myThid )
+       ENDIF
+
+      IF ( bling_iceFile .NE. ' ' ) THEN
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START ice',
+     &  myThid)
+# endif
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                         'bling', 'fIce', bling_icePeriod,
+     I                         bling_iceStartDate1,
+     I                         bling_iceStartDate2,
+     U                         bling_iceStartTime, errCount,
+     I                         myThid )
+       ENDIF
+
+       IF ( errCount.GE.1 ) THEN
+        WRITE(msgBuf,'(A,I3,A)')
+     &       'BLING_INIT_FIXED: detected', errCount,' fatal error(s)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( 0 )
+        STOP 'ABNORMAL END: S/R BLING_INIT_FIXED'
+       ENDIF
+
+      ENDIF /* bling_useEXF */
+#endif
 
       _END_MASTER(myThid)
 

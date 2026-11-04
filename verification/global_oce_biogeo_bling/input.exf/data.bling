@@ -1,0 +1,45 @@
+# BLING parameters 
+ &ABIOTIC_PARMS
+ &
+
+ &BIOTIC_PARMS
+ &
+
+ &BLING_FORCING
+  bling_useEXF = .TRUE.,
+#
+# Wind speed climatology
+  bling_windFile='tren_speed.bin',
+  bling_wind_interpMethod=0,
+  bling_windPeriod        = 2592000.,
+  bling_windRepCycle      = 31104000.,
+  bling_windStartDate1    = 20070116,
+  bling_windStartDate2    = 000000,
+#
+# Sea ice fraction climatology
+  bling_iceFile='fice.bin',
+  bling_ice_interpMethod=0,
+  bling_icePeriod        = 2592000.,
+  bling_iceRepCycle      = 31104000.,
+  bling_iceStartDate1    = 20070116,
+  bling_iceStartDate2    = 000000,
+#
+# Silica climatololgy
+  bling_silicaFile='sillev1.bin',
+  bling_silica_interpMethod=0,
+  bling_silicaPeriod      = 2592000.,
+  bling_silicaRepCycle    = 31104000.,
+  bling_silicaStartDate1  = 20070116,
+  bling_silicaStartDate2  = 000000,
+#
+# Iron dust seposition climatology
+  bling_ironFile='mah_flux_smooth.bin',
+  bling_iron_interpMethod=0,
+  bling_ironPeriod        = 2592000.,
+  bling_ironRepCycle      = 31104000.,
+  bling_ironStartDate1    = 20070116,
+  bling_ironStartDate2    = 000000,
+#
+# Atmospheric pCO2 monthly values
+  bling_pCO2=380.5E-6,
+ &
