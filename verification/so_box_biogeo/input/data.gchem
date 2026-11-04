@@ -1,4 +1,5 @@
  &GCHEM_PARM01
   useDIC=.TRUE.,
   nsubtime=1,
+  selectModernCoeffs=1,
  &

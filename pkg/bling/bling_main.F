@@ -47,6 +47,7 @@ C     === Global variables ===
 #endif
 #include "BLING_VARS.h"
 #ifdef ALLOW_AUTODIFF_TAMC
+# include "GCHEM_VARS.h"
 # include "tamc.h"
 #endif
 
