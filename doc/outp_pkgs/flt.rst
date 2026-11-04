@@ -1,3 +1,7 @@
+.. _sub_outp_pkg_flt:
+
+pkg/flt – Simulation of float / parcel displacements
+====================================================
 
 Introduction
 ------------
