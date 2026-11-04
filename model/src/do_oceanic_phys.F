@@ -373,7 +373,7 @@ CADJ STORE salt  = comlev1, key=ikey_dynamics, kind=isbyte
       ENDIF
 #endif /* ALLOW_FRAZIL */
 
-#if (defined ALLOW_THSICE) && !(defined ALLOW_ATM2D)
+#ifdef ALLOW_THSICE
       IF ( useThSIce .AND. fluidIsWater ) THEN
 # ifdef ALLOW_AUTODIFF_TAMC
 #  ifdef ALLOW_SEAICE

@@ -1,7 +1,4 @@
 #include "THSICE_OPTIONS.h"
-#ifdef ALLOW_ATM2D
-# include "ctrparam.h"
-#endif
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
 #endif
@@ -28,10 +25,6 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "FFIELDS.h"
-#ifdef  ALLOW_ATM2D
-# include "ATMSIZE.h"
-# include "ATM2D_VARS.h"
-#endif
 #include "THSICE_SIZE.h"
 #include "THSICE_PARAMS.h"
 #include "THSICE_VARS.h"
@@ -126,11 +119,7 @@ C-    Initialise
 #ifdef ALLOW_BULK_FORCE
           isIceFree(i,j) = .FALSE.
 #endif
-#ifdef ALLOW_ATM2D
-          sFluxFromIce(i,j) = 0. _d 0
-#else
           saltFlux(i,j,bi,bj) = 0. _d 0
-#endif
           frzSeaWat(i,j) = 0. _d 0
 #ifdef ALLOW_AUTODIFF
           iceFrac(i,j) = 0.
@@ -261,11 +250,6 @@ C--   Net fluxes :
 C-     weighted average net fluxes:
           icFrac = iceMask(i,j,bi,bj)
           opFrac= 1. _d 0-icFrac
-#ifdef ALLOW_ATM2D
-          pass_qnet(i,j) = pass_qnet(i,j) - icFrac*flx2oc(i,j)
-          pass_evap(i,j) = pass_evap(i,j) - icFrac*frw2oc(i,j)/rhofw
-          sFluxFromIce(i,j) = -icFrac*fsalt(i,j)
-#else
           icFlxAtm(i,j,bi,bj) = icFrac*icFlxAtm(i,j,bi,bj)
      &                        - opFrac*Qnet(i,j,bi,bj)
           icFrwAtm(i,j,bi,bj) = icFrac*icFrwAtm(i,j,bi,bj)
@@ -274,7 +258,6 @@ C-     weighted average net fluxes:
           EmPmR(i,j,bi,bj)= -icFrac*frw2oc(i,j)
      &                    +  opFrac*EmPmR(i,j,bi,bj)
           saltFlux(i,j,bi,bj) = -icFrac*fsalt(i,j)
-#endif
 #if defined(ALLOW_SALT_PLUME) || defined(ALLOW_ATM_COMPON_INTERF)
 C-    All seawater freezing (no reduction by surf. melting) from CALC_THICKN
 c         frzSeaWat(i,j) = icFrac*frzSeaWat(i,j)
@@ -332,15 +315,9 @@ CADJ STORE iceFrac               = comlev1_bibj,key=tkey,kind=isbyte
       DO j = jMin, jMax
        DO i = iMin, iMax
 C--    Net fluxes : (only non-zero contribution where frzmltMxL > 0 )
-#ifdef ALLOW_ATM2D
-          pass_qnet(i,j) = pass_qnet(i,j) - flx2oc(i,j)
-          pass_evap(i,j) = pass_evap(i,j) - frw2oc(i,j)/rhofw
-          sFluxFromIce(i,j)= sFluxFromIce(i,j) - fsalt(i,j)
-#else
           Qnet(i,j,bi,bj) = Qnet(i,j,bi,bj) - flx2oc(i,j)
           EmPmR(i,j,bi,bj)= EmPmR(i,j,bi,bj)- frw2oc(i,j)
           saltFlux(i,j,bi,bj)=saltFlux(i,j,bi,bj) - fsalt(i,j)
-#endif
 #if defined(ALLOW_SALT_PLUME) || defined(ALLOW_ATM_COMPON_INTERF)
           frzSeaWat(i,j) = frzSeaWat(i,j) + MAX(-frw2oc(i,j), 0. _d 0 )
 #endif
@@ -398,9 +375,6 @@ C--   Compute Sea-Ice Loading (= mass of sea-ice + snow / area unit)
           sIceLoad(i,j,bi,bj) = ( snowHeight(i,j,bi,bj)*rhos
      &                           + iceHeight(i,j,bi,bj)*rhoi
      &                          )*iceMask(i,j,bi,bj)
-#ifdef ALLOW_ATM2D
-          pass_sIceLoad(i,j)=sIceLoad(i,j,bi,bj)
-#endif
         ENDDO
        ENDDO
       ENDIF

@@ -17,13 +17,15 @@ C     sizFldList :: dimension of field-list arrays
       PARAMETER( sizFldList = 100 )
 
 C--   COMMON / RW_MFLDS_I / Integer valued MFLDS variables.
+C     glob_File :: =1 : reading a global file ; =-1 : tiled files ; =0 : unknown
 C     thirdDim  :: 3rd dimension of fields in current MFLDS file
 C     nFl3D     :: Number of 3-D fields in current MFLDS file
 C     nFlds     :: Number of fields (3D+2D) in current MFLDS file
 C     nMissFld  :: Number of missing fields (attempted to read but not found)
       COMMON / RW_MFLDS_I /
-     &        thirdDim, nFl3D, nFlds, nMissFld
+     &        glob_File, thirdDim, nFl3D, nFlds, nMissFld
 
+      INTEGER glob_File
       INTEGER thirdDim
       INTEGER nFl3D
       INTEGER nFlds
