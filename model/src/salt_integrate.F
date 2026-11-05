@@ -6,6 +6,9 @@
 #ifdef ALLOW_GENERIC_ADVDIFF
 # include "GAD_OPTIONS.h"
 #endif
+#ifdef ALLOW_GMREDI
+# include "GMREDI_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: SALT_INTEGRATE
@@ -13,7 +16,7 @@ C     !INTERFACE:
       SUBROUTINE SALT_INTEGRATE(
      I           bi, bj, recip_hFac,
      I           uFld, vFld, wFld,
-     U           KappaRk,
+     U           kappaRk,
      I           myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -69,7 +72,7 @@ C     bi, bj,    :: tile indices
 C     recip_hFac :: reciprocal of cell open-depth factor (@ next iter)
 C     uFld,vFld  :: Local copy of horizontal velocity field
 C     wFld       :: Local copy of vertical velocity field
-C     KappaRk    :: Vertical diffusion for Salinity
+C     kappaRk    :: Vertical diffusion for Salinity
 C     myTime     :: current time
 C     myIter     :: current iteration number
 C     myThid     :: my Thread Id. number
@@ -78,7 +81,7 @@ C     myThid     :: my Thread Id. number
       _RL uFld      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL vFld      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL wFld      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL KappaRk   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL kappaRk   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
@@ -230,7 +233,7 @@ CADJ STORE gsNm1(:,:,:,bi,bj)  = comlev1_bibj, key=tkey, kind=isbyte
 #ifdef INCLUDE_CALC_DIFFUSIVITY_CALL
       CALL CALC_3D_DIFFUSIVITY(
      I         bi, bj, iMin, iMax, jMin, jMax,
-     I         GAD_SALINITY, useGMredi, useKPP,
+     I         GAD_SALINITY, useGMRedi, useKPP,
      O         kappaRk,
      I         myThid )
 # ifdef ALLOW_AUTODIFF_TAMC
@@ -280,6 +283,22 @@ CADJ STORE som_S(:,:,:,bi,bj,:) = comlev1_bibj, key=tkey, kind=isbyte
      I             bi, bj, myTime, myIter, myThid )
       ENDIF
 #endif /* DISABLE_MULTIDIM_ADVECTION */
+
+#ifdef GM_TRIADS_SCHEME
+      IF ( useGMRedi ) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('GMREDI_TRIADS_DIFFUSE',myThid)
+# endif
+        CALL GMREDI_TRIADS_DIFFUSE(
+     I             GAD_SALINITY,
+     I             dTtracerLev,
+     I             rhoInSitu(1-OLx,1-OLy,1,bi,bj),
+     I             salt(1-OLx,1-OLy,1,bi,bj),
+     U             kappaRk,
+     U             gS_loc,
+     I             bi, bj, myTime, myIter, myThid )
+      ENDIF
+#endif /* GM_TRIADS_SCHEME */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -336,7 +355,7 @@ c       m1 = 1 + MOD(iterNb+1,2)
      I           xA, yA, maskUp, uFld(1-OLx,1-OLy,k),
      I           vFld(1-OLx,1-OLy,k), wFld(1-OLx,1-OLy,k),
      I           uTrans, vTrans, rTrans, rTransKp,
-     I           diffKhS, diffK4S, KappaRk(1-OLx,1-OLy,k), diffKr4S,
+     I           diffKhS, diffK4S, kappaRk(1-OLx,1-OLy,k), diffKr4S,
      I           salt(1-OLx,1-OLy,1,bi,bj),
      I           gsNm(1-OLx,1-OLy,1,bi,bj,m2), dTtracerLev,
      I           GAD_SALINITY, saltAdvScheme, saltVertAdvScheme,
@@ -351,7 +370,7 @@ c       m1 = 1 + MOD(iterNb+1,2)
      I           xA, yA, maskUp, uFld(1-OLx,1-OLy,k),
      I           vFld(1-OLx,1-OLy,k), wFld(1-OLx,1-OLy,k),
      I           uTrans, vTrans, rTrans, rTransKp,
-     I           diffKhS, diffK4S, KappaRk(1-OLx,1-OLy,k), diffKr4S,
+     I           diffKhS, diffK4S, kappaRk(1-OLx,1-OLy,k), diffKr4S,
      I           salt(1-OLx,1-OLy,1,bi,bj),
      I           gsNm1(1-OLx,1-OLy,1,bi,bj), dTtracerLev,
      I           GAD_SALINITY, saltAdvScheme, saltVertAdvScheme,
