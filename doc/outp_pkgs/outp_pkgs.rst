@@ -215,6 +215,8 @@ grid-attribute information. The :varlink:`gdiag` array is described in :numref:`
    +-----------+-----------------------+-----------------------------------------------------+
    |           | :math:`\rightarrow` V | V-vector component diagnostic                       |
    +-----------+-----------------------+-----------------------------------------------------+
+   |           | :math:`\rightarrow` W | W-vector component diagnostic                       |
+   +-----------+-----------------------+-----------------------------------------------------+
    | parse(2)  | :math:`\rightarrow` U | C-grid U-point                                      |
    +-----------+-----------------------+-----------------------------------------------------+
    |           | :math:`\rightarrow` V | C-grid V-point                                      |
@@ -269,7 +271,11 @@ grid-attribute information. The :varlink:`gdiag` array is described in :numref:`
 As an example, consider a diagnostic whose associated :varlink:`gdiag`
 parameter is equal to ``UUR     MR``. From :varlink:`gdiag` we can determine
 that this diagnostic is a U-vector component located at the C-grid U-point,
-model mid-level (M) with Nr levels (last R).
+model mid-level (M) with Nr levels (last R). Another example is a
+diagnostic whose :varlink:`gdiag` parameter of
+``WM     LR``. From :varlink:`gdiag` we determine this diagnostic 
+is a W-vector component located at the C-grid W-point, "top" of the grid cell (L)
+with Nr levels (last R).
 
 In this way, each diagnostic in the model has its attributes (i.e., vector
 or scalar, C-grid location, etc.) defined internally. The output
