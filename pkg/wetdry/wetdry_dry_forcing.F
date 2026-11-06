@@ -25,6 +25,12 @@ C     tracer content of that volume, PmEpR*(xx_EvPrRn - surface tracer),
 C     is part of surfaceForcingT/S/PTr; it is left unscaled, as the volume
 C     it belongs to (scaled, the fresh water would bring in the surface
 C     salinity: a salt source wherever fD < 1).
+C     With staggerTimeStep, PmEpR still holds the full E-P here, and
+C     WETDRY_LIMIT_OUTFLOW takes the ramp fD off evaporation later in the
+C     step, so that term uses fE = fD where E > P (otherwise evaporation
+C     concentrates salt in a film that loses no water). With synchronous
+C     time stepping, PmEpR comes from the last INTEGR_CONTINUITY: it is
+C     already the limited flux, and fE = 1.
 C     Called at the end of S/R EXTERNAL_FORCING_SURF.
 
 C !USES:
@@ -56,7 +62,7 @@ C !LOCAL VARIABLES:
       INTEGER iTr
 #endif
       LOGICAL realFW
-      _RL fwT, fwS
+      _RL fwT, fwS, fE
       _RL fD(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
       IF ( .NOT.( useWETDRY .AND. wdDryForcing ) ) RETURN
@@ -83,10 +89,13 @@ C-    as in EXTERNAL_FORCING_SURF: the fresh-water tracer-content term
          IF ( salt_EvPrRn.NE.UNSET_RL ) fwS = PmEpR(i,j,bi,bj)
      &      *( salt_EvPrRn - salt(i,j,ks,bi,bj) )*mass2rUnit
         ENDIF
+        fE = oneRL
+        IF ( staggerTimeStep .AND. PmEpR(i,j,bi,bj).LT.zeroRL )
+     &     fE = fD(i,j)
         surfaceForcingT(i,j,bi,bj) =
-     &     ( surfaceForcingT(i,j,bi,bj) - fwT )*fD(i,j) + fwT
+     &     ( surfaceForcingT(i,j,bi,bj) - fwT )*fD(i,j) + fwT*fE
         surfaceForcingS(i,j,bi,bj) =
-     &     ( surfaceForcingS(i,j,bi,bj) - fwS )*fD(i,j) + fwS
+     &     ( surfaceForcingS(i,j,bi,bj) - fwS )*fD(i,j) + fwS*fE
 C-    Qsw is not reloaded every step (only with EXF or periodic forcing):
 C     if it still holds our last output, scale the last input again
         IF ( Qsw(i,j,bi,bj).NE.wdQswOut(i,j,bi,bj) )
@@ -105,8 +114,12 @@ C     if it still holds our last output, scale the last input again
      &         PTRACERS_EvPrRn(iTr).NE.UNSET_RL ) fwS = PmEpR(i,j,bi,bj)
      &      *( PTRACERS_EvPrRn(iTr) - pTracer(i,j,ks,bi,bj,iTr) )
      &      *mass2rUnit
+          fE = oneRL
+          IF ( staggerTimeStep .AND. PmEpR(i,j,bi,bj).LT.zeroRL )
+     &       fE = fD(i,j)
           surfaceForcingPTr(i,j,bi,bj,iTr) =
-     &       ( surfaceForcingPTr(i,j,bi,bj,iTr) - fwS )*fD(i,j) + fwS
+     &       ( surfaceForcingPTr(i,j,bi,bj,iTr) - fwS )*fD(i,j)
+     &       + fwS*fE
          ENDDO
         ENDDO
        ENDDO
