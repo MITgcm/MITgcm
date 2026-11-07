@@ -1,0 +1,4 @@
+# Packages
+ &PACKAGES
+ useDiagnostics=.TRUE.,
+ &
