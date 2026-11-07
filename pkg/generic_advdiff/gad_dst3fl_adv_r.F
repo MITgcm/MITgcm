@@ -18,12 +18,11 @@ C  using 3rd Order DST Scheme with flux limiting
 C !USES: ===============================================================
       IMPLICIT NONE
 
-C     == GLobal variables ==
+C     == Global variables ==
 #include "SIZE.h"
 #include "GRID.h"
 #include "GAD.h"
 
-C     == Routine arguments ==
 C !INPUT PARAMETERS: ===================================================
 C  bi,bj             :: tile indices
 C  k                 :: vertical level
@@ -43,7 +42,6 @@ C !OUTPUT PARAMETERS: ==================================================
 C  wT                :: vertical advective flux
       _RL wT    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
-C     == Local variables ==
 C !LOCAL VARIABLES: ====================================================
 C  i,j               :: loop indices
 C  km1               :: =max( k-1 , 1 )
@@ -55,6 +53,7 @@ C  wCFL              :: Courant-Friedrich-Levy number
       _RL wLoc
       _RL thetaMax
       PARAMETER( thetaMax = 1.D+20 )
+CEOP
 
       km2=MAX(1,k-2)
       km1=MAX(1,k-1)
@@ -72,7 +71,7 @@ C     These lines make TAF create vectorizable code
         Rj =(tracer(i,j,km1)-tracer(i,j,k))
      &         *maskC(i,j,k,bi,bj)*maskC(i,j,km1,bi,bj)
         Rjm=(tracer(i,j,km2)-tracer(i,j,km1))
-     &         *maskC(i,j,km1,bi,bj)
+     &         *maskC(i,j,km2,bi,bj)
 
         wLoc = wFld(i,j)
         wCFL = ABS(wLoc*dTarg*recip_drC(k))

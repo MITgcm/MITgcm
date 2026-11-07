@@ -1,57 +1,82 @@
 #include "GAD_OPTIONS.h"
 
+CBOP
+C !ROUTINE: GAD_OS7MP_ADV_R
+
+C !INTERFACE: ==========================================================
+
       SUBROUTINE GAD_OS7MP_ADV_R(
-     I           bi,bj,k,deltaTloc,
+     I           bi, bj, k, deltaTloc,
      I           wTrans, wFld,
-     I           Q,
+     I           tracer,
      O           wT,
      I           myThid )
-C     /==========================================================\
-C     | SUBROUTINE GAD_OS7MP_ADV_R                               |
-C     | o Compute Vertical advective Flux of tracer Q using      |
-C     |   7th Order DST Sceheme with monotone preserving limiter |
-C     |==========================================================|
+
+C !DESCRIPTION:
+C  Compute Vertical advective Flux of a tracer
+C  using 7th Order DST Sceheme with monotone preserving limiter |
+
+C !USES: ===============================================================
       IMPLICIT NONE
 
-C     == GLobal variables ==
+C     == Global variables ==
 #include "SIZE.h"
 #include "GRID.h"
 #include "GAD.h"
 
-C     == Routine arguments ==
+C !INPUT PARAMETERS: ===================================================
+C  bi,bj             :: tile indices
+C  k                 :: vertical level
+C  deltaTloc         :: local time-step (s)
+C  wTrans            :: vertical volume transport
+C  wFld              :: vertical velocity
+C  tracer            :: tracer field
+C  myThid            :: thread number
       INTEGER bi,bj,k
       _RL deltaTloc
       _RL wTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL wFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL Q     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL wT    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER myThid
 
-C     == Local variables ==
-      INTEGER i,j,kp3,kp2,kp1,km1,km2,km3,km4
-      _RL cfl,Psi
-      _RL wLoc,Fac,DelIp,DelI,Phi,Eps,rp1h,rp1h_cfl
+C !OUTPUT PARAMETERS: ==================================================
+C  wT                :: vertical advective flux
+      _RL wT    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+
+C !LOCAL VARIABLES: ====================================================
+      INTEGER i, j, kp3, kp2, kp1, km1, km2, km3, km4
+      _RS msKp3, msKp2, msKp1, msKm1, msKm2, msKm3, msKm4
+      _RL cfl, Psi
+      _RL wLoc, Fac, DelIp, DelI, Phi, Eps, rp1h, rp1h_cfl
       _RL recip_DelIp, recip_DelI
-      _RL Qippp,Qipp,Qip,Qi,Qim,Qimm,Qimmm
-      _RL MskIpp,MskIp,MskI,MskIm,MskImm,MskImmm
-      _RL d2,d2p1,d2m1,A,B,C,D
-      _RL dp1h,dm1h, PhiMD,PhiLC,PhiMin,PhiMax
-      _RL DelM,DelP,DelMM,DelPP,DelMMM,DelPPP
-      _RL Del2MM,Del2M,Del2,Del2P,Del2PP
-      _RL Del3MM,Del3M,Del3P,Del3PP
-      _RL Del4M,Del4,Del4P
-      _RL Del5M,Del5P
+      _RL Qippp, Qipp, Qip, Qi, Qim, Qimm, Qimmm
+      _RL MskIpp, MskIp, MskI, MskIm, MskImm, MskImmm
+      _RL d2, d2p1, d2m1, A, B, C, D
+      _RL dp1h, dm1h,  PhiMD, PhiLC, PhiMin, PhiMax
+      _RL DelM, DelP, DelMM, DelPP, DelMMM, DelPPP
+      _RL Del2MM, Del2M, Del2, Del2P, Del2PP
+      _RL Del3MM, Del3M, Del3P, Del3PP
+      _RL Del4M, Del4, Del4P
+      _RL Del5M, Del5P
       _RL Del6
+CEOP
 
       Eps = 1. _d -20
 
-      km4=MAX(1,k-4)
-      km3=MAX(1,k-3)
-      km2=MAX(1,k-2)
-      km1=MAX(1,k-1)
-      kp1=MIN(Nr,k+1)
-      kp2=MIN(Nr,k+2)
-      kp3=MIN(Nr,k+3)
+      km4 = MAX(1,k-4)
+      km3 = MAX(1,k-3)
+      km2 = MAX(1,k-2)
+      km1 = MAX(1,k-1)
+      kp1 = MIN(Nr,k+1)
+      kp2 = MIN(Nr,k+2)
+      kp3 = MIN(Nr,k+3)
+      msKm4 = km3-km4
+      msKm3 = km2-km3
+      msKm2 = km1-km2
+      msKm1 = k  -km1
+      msKp1 = kp1-k
+      msKp2 = kp2-kp1
+      msKp3 = kp3-kp2
 
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
@@ -60,35 +85,35 @@ C     == Local variables ==
         cfl = abs(wLoc*deltaTloc*recip_drC(k))
 
         IF (wTrans(i,j).LT.0. _d 0) THEN
-         Qippp = Q(i,j,kp2)
-         Qipp  = Q(i,j,kp1)
-         Qip   = Q(i,j,k)
-         Qi    = Q(i,j,km1)
-         Qim   = Q(i,j,km2)
-         Qimm  = Q(i,j,km3)
-         Qimmm = Q(i,j,km4)
+         Qippp = tracer(i,j,kp2)
+         Qipp  = tracer(i,j,kp1)
+         Qip   = tracer(i,j,k)
+         Qi    = tracer(i,j,km1)
+         Qim   = tracer(i,j,km2)
+         Qimm  = tracer(i,j,km3)
+         Qimmm = tracer(i,j,km4)
 
-         MskIpp  = maskC(i,j,kp2,bi,bj) * float(kp2-kp1)
-         MskIp   = maskC(i,j,kp1,bi,bj) * float(kp1-k)
-         MskI    = maskC(i,j,k,bi,bj)   * float(k-km1)
-         MskIm   = maskC(i,j,km1,bi,bj) * float(km1-km2)
-         MskImm  = maskC(i,j,km2,bi,bj) * float(km2-km3)
-         MskImmm = maskC(i,j,km3,bi,bj) * float(km3-km4)
+         MskI = maskC(i,j,k,bi,bj)*maskC(i,j,km1,bi,bj)*msKm1
+         MskIp   = MskI   *maskC(i,j,kp1,bi,bj) * msKp1
+         MskIpp  = MskIp  *maskC(i,j,kp2,bi,bj) * msKp2
+         MskIm   = MskI   *maskC(i,j,km2,bi,bj) * msKm2
+         MskImm  = MskIm  *maskC(i,j,km3,bi,bj) * msKm3
+         MskImmm = MskImm *maskC(i,j,km4,bi,bj) * msKm4
         ELSEIF (wTrans(i,j).GT.0. _d 0) THEN
-         Qippp = Q(i,j,km3)
-         Qipp  = Q(i,j,km2)
-         Qip   = Q(i,j,km1)
-         Qi    = Q(i,j,k)
-         Qim   = Q(i,j,kp1)
-         Qimm  = Q(i,j,kp2)
-         Qimmm = Q(i,j,kp3)
+         Qippp = tracer(i,j,km3)
+         Qipp  = tracer(i,j,km2)
+         Qip   = tracer(i,j,km1)
+         Qi    = tracer(i,j,k)
+         Qim   = tracer(i,j,kp1)
+         Qimm  = tracer(i,j,kp2)
+         Qimmm = tracer(i,j,kp3)
 
-         MskIpp  = maskC(i,j,km2,bi,bj) * float(km2-km3)
-         MskIp   = maskC(i,j,km1,bi,bj) * float(km1-km2)
-         MskI    = maskC(i,j,k,bi,bj)   * float(k-km1)
-         MskIm   = maskC(i,j,kp1,bi,bj) * float(kp1-k)
-         MskImm  = maskC(i,j,kp2,bi,bj) * float(kp2-kp1)
-         MskImmm = maskC(i,j,kp3,bi,bj) * float(kp3-kp2)
+         MskI = maskC(i,j,k,bi,bj)*maskC(i,j,km1,bi,bj)*msKm1
+         MskIp   = MskI   *maskC(i,j,km2,bi,bj) * msKm2
+         MskIpp  = MskIp  *maskC(i,j,km3,bi,bj) * msKm3
+         MskIm   = MskI   *maskC(i,j,kp1,bi,bj) * msKp1
+         MskImm  = MskIm  *maskC(i,j,kp2,bi,bj) * msKp2
+         MskImmm = MskImm *maskC(i,j,kp3,bi,bj) * msKp3
         ELSE
          Qippp = 0. _d 0
          Qipp  = 0. _d 0
@@ -118,20 +143,20 @@ C        3rd order correction [i i-1 i-2]
          Phi = Phi - Fac * Del2
 C        4th order correction [i+1 i i-1 i-2]
          Fac = Fac * ( cfl - 2. _d 0 )/4. _d 0
-         DelPP = (Qipp-Qip)*MskIp*MskI
+         DelPP = (Qipp-Qip)*MskIp
          Del2P = DelPP - DelP
          Del3P = Del2P - Del2
          Phi = Phi + Fac * Del3p
 C        5th order correction [i+1 i i-1 i-2 i-3]
          Fac = Fac * ( cfl - 3. _d 0 )/5. _d 0
-         DelMM = (Qim-Qimm)*MskImm*MskIm
+         DelMM = (Qim-Qimm)*MskImm
          Del2M = DelM - DelMM
          Del3M = Del2 - Del2M
          Del4 = Del3P - Del3M
          Phi = Phi + Fac * Del4
 C        6th order correction [i+2 i+1 i i-1 i-2 i-3]
          Fac = Fac * ( cfl + 2. _d 0 )/6. _d 0
-         DelPPP = (Qippp-Qipp)*MskIpp*MskIp*MskI
+         DelPPP = (Qippp-Qipp)*MskIpp
          Del2PP = DelPP - DelP
          Del3PP = Del2PP - Del2P
          Del4P = Del3PP - Del3P
@@ -139,7 +164,7 @@ C        6th order correction [i+2 i+1 i i-1 i-2 i-3]
          Phi = Phi + Fac * Del5P
 C        7th order correction [i+2 i+1 i i-1 i-2 i-3 i-4]
          Fac = Fac * ( cfl + 2. _d 0 )/7. _d 0
-         DelMMM = (Qimm-Qimmm)*MskImmm*MskImm*MskIm
+         DelMMM = (Qimm-Qimmm)*MskImmm
          Del2MM = DelMM - DelMMM
          Del3MM = Del2M - Del2MM
          Del4M = Del3M - Del3MM

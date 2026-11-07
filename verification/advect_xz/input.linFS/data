@@ -1,0 +1,63 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+ implicitFreeSurface=.TRUE.,
+ exactConserv=.TRUE.,
+#linFSConserveTr=.TRUE.,
+ hFacInf=0.2,
+ hFacSup=2.0,
+ tAlpha=0.,
+ sBeta= 0.,
+ momStepping=.FALSE.,
+ hFacMin=0.1,
+ staggerTimeStep=.TRUE.,
+ tempAdvScheme=7,
+ saltAdvScheme=4,
+ diffKhS=1.E+2,
+ diffKrS=1.E-2,
+ readBinaryPrec=64,
+ writeBinaryPrec=64,
+#globalFiles=.TRUE.,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=100,
+ cg2dTargetResidual=1.E-13,
+ &
+
+# Time stepping parameters
+ &PARM03
+ startTime= 0.,
+ endTime= 172800.,
+ deltaT = 600.,
+ abEps=0.1,
+ pChkptFreq=0.,
+ chkptFreq= 0.,
+ dumpFreq = 21600.,
+ monitorSelect=2,
+ monitorFreq= 7200.,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingCartesianGrid=.TRUE.,
+ delR=20*100.,
+ dXspacing=10.E3,
+ dYspacing=10.E3,
+ &
+
+# Input datasets
+ &PARM05
+ bathyFile='bathy_slope.bin',
+ topoFile='top_boundary.bin',
+#uVelInitFile='Uvel.bin',
+ uVelInitFile='Udiv.bin',
+ hydrogThetaFile='Sini_G.bin',
+ hydrogSaltFile ='Sini_G.bin',
+#maskIniTemp=.FALSE.,
+ maskIniSalt=.FALSE.,
+ &
