@@ -22,12 +22,12 @@ zf=0:-dz:-H;
 
 wf=' write file: ';
 %- bathymetry :
-zb=-H*ones(nx,1);
+zb=-H*ones(nx,1); zT=0.;
 zb=-H*(1.-xc'/Lx/2);
 
 if w2file,
  bname='bathy_slope.bin';
- fid=fopen(bname,'w',ieee); fwrite(fid,zb,prec); fclose(fid); 
+ fid=fopen(bname,'w',ieee); fwrite(fid,zb,prec); fclose(fid);
  fprintf([wf,bname,'\n']);
 end
 
@@ -37,7 +37,17 @@ hFac=max(hFac,zb*ones(1,nz));
 hFac=ones(nx,1)*zf(1,[1:nz])-hFac;
 hFac=hFac/dz; hFac=max(0,hFac);
 
-rhFc=reshape(hFac,[nx*nz 1]); 
+%- add 1 layer of dry grid-points at the top: un-comment/comment out next line:
+% zT=-dz; hFac(:,1)=0.;
+zTop=zT*ones(nx,1);
+
+if w2file && zT ~=0. ,
+ bname='top_boundary.bin';
+ fid=fopen(bname,'w',ieee); fwrite(fid,zTop,prec); fclose(fid);
+ fprintf([wf,bname,'\n']);
+end
+
+rhFc=reshape(hFac,[nx*nz 1]);
 [IK]=find(rhFc > 0); rhFc(IK)=1./rhFc(IK);
 rhFc=reshape(rhFc,[nx nz]);
 
@@ -45,14 +55,14 @@ rhFc=reshape(rhFc,[nx nz]);
 psi=zeros(nx+1,nz+1);
 psi1=sin(pi*xf'/Lx)*ones(1,nz+1);
 zu=zeros(nx+1,1); zu(2:nx)=max(zb(2:nx),zb(1:nx-1));
-rHu=zeros(nx+1,1); rHu(2:nx)=-1./zu(2:nx);
-psi2=max( ones(nx+1,1)*zf, zu*ones(1,nz+1) );
-psi2=psi2.*(rHu*ones(1,nz+1));
-psi2=sin(pi*psi2);
+rHu=zeros(nx+1,1); rHu(2:nx)=1./(zT-zu(2:nx));
+ psi2=ones(nx+1,1)*zf-zT;
+ psi2=psi2.*(rHu*ones(1,nz+1));
+ psi2=sin(pi*psi2); psi2=min(psi2,0.);
 psi=H*psi1.*psi2;
 
 uTrans=psi(:,[1:nz])-psi(:,[2:nz+1]);
-u0=uTrans(1:nx,:).*rhFc/dz;
+u0=uTrans(1:nx,:).*rhFc/dz; %-- since slope is > 0, we can use 1/hFacC @ U-point
 
 %- add small, vertically uniform, divergent component:
 ud=psi1(:,1).*rHu;
@@ -62,19 +72,19 @@ u1(find(hFac==0.))=0.;
 
 if w2file,
  uname='Uvel.bin';
- fid=fopen(uname,'w',ieee); fwrite(fid,u0,prec); fclose(fid); 
+ fid=fopen(uname,'w',ieee); fwrite(fid,u0,prec); fclose(fid);
  fprintf([wf,uname,'\n']);
  uname='Udiv.bin';
- fid=fopen(uname,'w',ieee); fwrite(fid,u0+u1,prec); fclose(fid); 
+ fid=fopen(uname,'w',ieee); fwrite(fid,u0+u1,prec); fclose(fid);
  fprintf([wf,uname,'\n']);
 end
 
 %- Initial Temperature : Gaussian bump :
 t0=zeros(nx,nz);
 %  position of the center
-xM=xf(5); zM=zf(6); 
-%  size of the patch  
-dX=2*dx; dH=2*dz; 
+xM=xf(5); zM=zf(6-zT/dz);
+%  size of the patch
+dX=2*dx; dH=2*dz;
 %  amplitude:
 tA=exp(-0.5*(35/20)^2);
 %
@@ -82,11 +92,16 @@ r1=(xc'-xM)/dX; r2=(zc-zM)/dH;
 r1=r1.*r1; r2=r2.*r2;
 rD=r1*ones(1,nz)+ones(nx,1)*r2;
 t0=tA*exp(-rD/2);
+%-- add 35 to look like salinity:
+s1=35+t0;
 
 if w2file,
  tname='Tini_G.bin';
- fid=fopen(tname,'w',ieee); fwrite(fid,t0,prec); fclose(fid); 
+ fid=fopen(tname,'w',ieee); fwrite(fid,t0,prec); fclose(fid);
  fprintf([wf,tname,'\n']);
+ sname='Sini_G.bin';
+ fid=fopen(sname,'w',ieee); fwrite(fid,s1,prec); fclose(fid);
+ fprintf([wf,sname,'\n']);
 end
 
 %return
@@ -94,7 +109,7 @@ end
 %- make plots to check:
 figure(1);clf;
  subplot(211)
-%imagesc(xf,zf,psi1'); set(gca,'YDir','normal'); colorbar;
+%imagesc(xf,zf,psi2'); set(gca,'YDir','normal'); colorbar;
  imagesc(xf,zf,psi'); set(gca,'YDir','normal'); colorbar;
  hold on ; plot(xc,zb,'b-'); hold off ; grid
  title('Stream-Function [m^2/s]');
@@ -110,8 +125,10 @@ figure(2);clf;
  hold on ; plot(xc,zb,'k-'); hold off ; grid
  title('Recip hFac');
  subplot(212)
- imagesc(xc,zc,t0'); set(gca,'YDir','normal'); colorbar;
+ var=t0; titv='Theta';
+ var=s1; titv='Salt';
+ imagesc(xc,zc,var'); set(gca,'YDir','normal'); colorbar;
  hold on ; plot(xc,zb,'r-'); hold off ; grid
- title('Initial Theta');
+ title(['Initial ',titv]);
 
 return
