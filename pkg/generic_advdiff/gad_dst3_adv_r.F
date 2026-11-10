@@ -19,10 +19,6 @@ C !USES: ===============================================================
       IMPLICIT NONE
 C     == Global variables ==
 #include "SIZE.h"
-#ifdef OLD_DST3_FORMULATION
-# include "EEPARAMS.h"
-# include "PARAMS.h"
-#endif
 #include "GRID.h"
 #include "GAD.h"
 
@@ -53,17 +49,7 @@ C  wCFL              :: Courant-Friedrich-Levy number
       INTEGER i,j,kp1,km1,km2
       _RL wLoc
       _RL Rjm,Rj,Rjp,cfl,d0,d1
-#ifdef OLD_DST3_FORMULATION
-      _RL psiP,psiM,thetaP,thetaM
-      _RL smallNo
 CEOP
-
-c     IF (inAdMode .AND. useApproxAdvectionInAdMode) THEN
-c      smallNo = 1.0D-20
-c     ELSE
-       smallNo = 1.0D-20
-c     ENDIF
-#endif
 
       km2=MAX(1,k-2)
       km1=MAX(1,k-1)
@@ -83,35 +69,12 @@ c       wLoc = rTrans(i,j)*recip_rA(i,j,bi,bj)
         cfl=ABS(wLoc*dTarg*recip_drC(k))
         d0=(2.-cfl)*(1.-cfl)*oneSixth
         d1=(1.-cfl*cfl)*oneSixth
-#ifdef OLD_DST3_FORMULATION
-        IF ( ABS(Rj).LT.smallNo .OR.
-     &       ABS(Rjm).LT.smallNo ) THEN
-         thetaP=0.
-         psiP=0.
-        ELSE
-         thetaP=(Rjm+smallNo)/(smallNo+Rj)
-         psiP=d0+d1*thetaP
-        ENDIF
-        IF ( ABS(Rj).LT.smallNo .OR.
-     &       ABS(Rjp).LT.smallNo ) THEN
-         thetaM=0.
-         psiM=0.
-        ELSE
-         thetaM=(Rjp+smallNo)/(smallNo+Rj)
-         psiM=d0+d1*thetaM
-        ENDIF
-         wT(i,j)=
-     &    0.5*(rTrans(i,j)+ABS(rTrans(i,j)))
-     &       *( tracer(i,j, k ) + psiM*Rj )
-     &   +0.5*(rTrans(i,j)-ABS(rTrans(i,j)))
-     &       *( tracer(i,j,km1) - psiP*Rj )
-#else /* OLD_DST3_FORMULATION */
+
         wT(i,j)=
      &    0.5*(rTrans(i,j)+ABS(rTrans(i,j)))
      &       *( tracer(i,j, k ) + (d0*Rj+d1*Rjp) )
      &   +0.5*(rTrans(i,j)-ABS(rTrans(i,j)))
      &       *( tracer(i,j,km1) - (d0*Rj+d1*Rjm) )
-#endif /* OLD_DST3_FORMULATION */
 
        ENDDO
       ENDDO
