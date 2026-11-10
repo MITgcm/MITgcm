@@ -17,7 +17,7 @@ C  tracer using 3rd-order Direct Space and Time (DST-3) Advection Scheme
 C !USES: ===============================================================
       IMPLICIT NONE
 
-C     == GLobal variables ==
+C     == Global variables ==
 #include "SIZE.h"
 #include "GRID.h"
 #include "GAD.h"
