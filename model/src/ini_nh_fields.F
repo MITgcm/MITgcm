@@ -30,20 +30,15 @@ C     === Global variables ===
 #include "NH_VARS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
 C     myThid  :: My Thread Id number
       INTEGER myThid
 
 #ifdef ALLOW_NONHYDROSTATIC
 C     !LOCAL VARIABLES:
-C     == Local variables ==
-      INTEGER bi,bj
-      INTEGER i,j
+      INTEGER bi, bj
+      INTEGER i, j, k
       INTEGER ks
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-#ifdef NONLIN_FRSURF
-      INTEGER k
-#endif
 CEOP
 
       IF ( startTime .EQ. baseTime .AND.  nIter0 .EQ. 0
@@ -65,13 +60,32 @@ C--   Case where restarting from a pickup
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
        _END_MASTER(myThid)
-       IF ( exactConserv .AND. dPhiNHstatus.EQ.0 ) THEN
-c      IF ( exactConserv ) THEN
-C--   Separate the Hydrostatic Surface Pressure adjusment (=> put it in dPhiNH)
-C     from the Non-hydrostatic pressure (since cg3d_x contains both contribution)
+
+C-- if solveForDeltaP=F:
+C   a) case selectNHfreeSurf=0 : dPhiNH is not in pickup (and dPhiNHstatus=0)
+C        and we set dPhiNH from phi_nh(k=1) as done in S/R POST_CG3D)
+C   b) case selectNHfreeSurf=1 : dPhiNH is written to pickup so should have been
+C        loaded (-> dPhiNHstatus=1), and in this case, nothing special to do.
+C        if not loaded (e.g., restarting from run with selectNHfreeSurf=0),
+C        best approach is to do the same copy as for the case (a) above
+C-- if solveForDeltaP=T and pickup written from run using solveForDeltaP=F:
+C   a) case selectNHfreeSurf=0 : need to substract phi_nh(k=1) from phi_nh
+C        to get the true NH kinematic pressure.
+C   b) case selectNHfreeSurf=1 : dPhiNH is written to pickup so should have been
+C        loaded (-> dPhiNHstatus=1), and in this case, can be substracted from
+C        phi_nh to get the true NH kinematic pressure.
+C        if not loaded from pickup, best approach is to proceed as in (a) above
+C-- if solveForDeltaP=T and pickup written from run using solveForDeltaP=T:
+C        dPhiNH is not used (and will be zero); just make sure processing above
+C        does not affect this restart.
+
+       IF ( ( exactConserv .AND. dPhiNHstatus.EQ.0 )
+     &       .OR. solveForDeltaP ) THEN
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          IF ( select_rStar.EQ.0 .AND. uniformFreeSurfLev ) THEN
+
+          IF ( exactConserv .AND. dPhiNHstatus.EQ.0
+     &                      .AND. uniformFreeSurfLev ) THEN
 C-       Z coordinate: assume surface @ level k=1
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
@@ -79,7 +93,7 @@ C-       Z coordinate: assume surface @ level k=1
 c             dPhiNH(i,j,bi,bj) = 0.
             ENDDO
            ENDDO
-          ELSEIF ( select_rStar.EQ.0 ) THEN
+          ELSEIF ( exactConserv .AND. dPhiNHstatus.EQ.0 ) THEN
 C-       Other than Z coordinate: no assumption on surface level index
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
@@ -91,33 +105,23 @@ C-       Other than Z coordinate: no assumption on surface level index
              ENDIF
             ENDDO
            ENDDO
-#ifdef NONLIN_FRSURF
-          ELSE
-C        rStar : take vertical average of P_NH as Hyd.Surf.Press adjustment
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-              dPhiNH(i,j,bi,bj) = 0.
-            ENDDO
-           ENDDO
+          ENDIF
+
+          IF ( solveForDeltaP ) THEN
            DO k=1,Nr
             DO j=1-OLy,sNy+OLy
              DO i=1-OLx,sNx+OLx
-              dPhiNH(i,j,bi,bj) = dPhiNH(i,j,bi,bj)
-     &          + phi_nh(i,j,k,bi,bj)*drF(k)*hFacC(i,j,k,bi,bj)
+              phi_nh(i,j,k,bi,bj) = ( phi_nh(i,j,k,bi,bj)
+     &                              - dPhiNH(i,j,bi,bj)
+     &                              )*maskC(i,j,k,bi,bj)
              ENDDO
             ENDDO
            ENDDO
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-              dPhiNH(i,j,bi,bj) = dPhiNH(i,j,bi,bj)
-     &                           *recip_Rcol(i,j,bi,bj)
-            ENDDO
-           ENDDO
-#endif /* NONLIN_FRSURF */
           ENDIF
+
          ENDDO
         ENDDO
-C-     end of if-block: dPhiNH_status
+C-     end of if-block: dPhiNH_status OR solveForDeltaP
        ENDIF
 
       ENDIF
