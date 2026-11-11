@@ -73,7 +73,7 @@ C Implies that a forward loop is calling
         ENDIF !IF (profiles_curfile_buff(bi,bj).NE.fNb)
 
 # ifdef ALLOW_DEBUG
-        IF (debugLevel.GE.debLevD) THEN
+        IF (prof_dBugLevel.GE.debLevD) THEN
           WRITE(msgBuf,'(A,5I9)')
      &     'buffer readvector ',
      &     profiles_minind_buff(bi,bj), profiles_maxind_buff(bi,bj),
@@ -139,7 +139,7 @@ C Implies that a forward loop is calling
                 profiles_weight_buff(v1,v2,num_var,bi,bj) =
      &           vec_tmp2((v2-1)*vec_count(1)+v1)
 
-# ifdef ALLOW_PROFILES_CLIMMAS
+# ifdef ALLOW_PROFILES_CLIMMASK
                 IF (vec_tmp3((v2-1)*vec_count(1)+v1).LE.-990. _d 0)
      &            profiles_weight_buff(v1,v2,num_var,bi,bj) = 0. _d 0
 

@@ -569,7 +569,7 @@ C       Ubaro is at the C-point.
      &                - gradf(i,j,bi,bj)*Rdef(i,j,bi,bj)*Rdef(i,j,bi,bj)
 C       Limit the wave speed to the namelist variable GM_Bates_maxC
         IF (ABS(cDopp(i,j)).GT.GM_Bates_maxC) THEN
-          cDopp(i,j) = MAX(GM_Bates_maxC, cDopp(i,j))
+          cDopp(i,j) = SIGN(GM_Bates_maxC, cDopp(i,j))
         ENDIF
 
        ENDDO

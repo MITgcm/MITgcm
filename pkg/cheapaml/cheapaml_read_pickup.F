@@ -143,7 +143,7 @@ C---    read CHEAPAML 2-D fields for restart
         IF(useCheaptracer)THEN
         CALL READ_MFLDS_3D_RL( 'cTracer ', Cheaptracer,
      &                                 nj, fp, 1 ,myIter, myThid )
-        CALL READ_MFLDS_3D_RL( 'gTracNm1', Cheaptracer,
+        CALL READ_MFLDS_3D_RL( 'gTracNm1', gCheaptracerm,
      &                                 nj, fp, 1 ,myIter, myThid )
         ENDIF
 
@@ -177,7 +177,7 @@ C--    Check for missing fields:
          ELSE
           stopFlag = .TRUE.
           WRITE(msgBuf,'(4A)') 'CHEAPAML_READ_PICKUP: ',
-     &       'cannot restart without field "',missFldList(nj),'"'
+     &       'cannot restart without field "',missFldList(j),'"'
           CALL PRINT_ERROR( msgBuf, myThid )
          ENDIF
         ENDDO

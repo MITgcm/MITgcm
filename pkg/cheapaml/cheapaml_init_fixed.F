@@ -22,7 +22,6 @@ C     === Global variables ===
 #include "CHEAPAML.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     === Routine arguments ===
 C     myThid ::  my Thread Id number
       INTEGER myThid
 
@@ -42,7 +41,7 @@ C     xgs       :: relaxation coefficient [units: 1/s]
       INTEGER xmw
       _RL xmf, tmpVar
       _RL relaxMask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL xgs      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL xgs      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER iL, ioUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef CHEAPAML_OLD_MASK_SETTING
@@ -60,7 +59,6 @@ C--   Initialise CheapAML local & fixed variables
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           relaxMask(i,j,bi,bj) = 0. _d 0
-          xgs      (i,j,bi,bj) = 0. _d 0
           xrelf    (i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
@@ -70,19 +68,23 @@ C--   Initialise CheapAML local & fixed variables
 #ifdef CHEAPAML_OLD_MASK_SETTING
       cheapaml_taurelax      =  cheap_tauRelax   /86400. _d 0
       cheapaml_taurelaxocean =  cheap_tauRelaxOce/86400. _d 0
+#endif
 
-c--   Setup CheapAML mask (for relaxation):
-C Do  mask
-      IF ( cheapMaskFile .NE. ' ') THEN
-         iL = ILNBLNK(cheapMaskFile)
-         WRITE(msgBuf,'(4A)') 'CHEAPAML_INIT_VARIA: ',
+C--   Setup CheapAML mask (for relaxation):
+      IF ( cheapMaskFile .NE. ' ' ) THEN
+C-    read mask from file
+        iL = ILNBLNK(cheapMaskFile)
+        WRITE(msgBuf,'(4A)') 'CHEAPAML_INIT_FIXED: ',
      &      'Relaxation Mask read from ->', cheapMaskFile(1:iL), '<-'
-         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-         CALL READ_FLD_XY_RL( cheapMaskFile,' ',relaxMask,0,myThid )
+        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+        CALL READ_FLD_XY_RL( cheapMaskFile,' ',relaxMask,0,myThid )
       ELSE
-         WRITE(msgBuf,'(4A)') 'CHEAPAML_INIT_VARIA: ',
-     &      'Generate Cheapaml mask'
-         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(4A)') 'CHEAPAML_INIT_FIXED: ',
+     &     'Generate Cheapaml mask'
+        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+
+#ifdef CHEAPAML_OLD_MASK_SETTING
+C Do  mask
          xmw = Cheapaml_mask_width
          recipMW = ( xmw - 1 )
          IF ( xmw.NE.1 ) recipMW = 1. _d 0 / recipMW
@@ -118,6 +120,7 @@ C Do  mask
            ENDDO
           ENDDO
          ENDDO
+C-    end if/else block cheapMaskFile <> ' '
       ENDIF
 
 C     relaxation forced on land
@@ -135,41 +138,8 @@ C     relaxation over the ocean
            ENDDO
          ENDDO
        ENDDO
-       _EXCH_XY_RL( relaxMask, myThid )
-
-C relaxation time scales from input
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           IF (relaxMask(i,j,bi,bj).NE.0.) THEN
-            xgs(i,j,bi,bj)=1. _d 0/relaxMask(i,j,bi,bj)/8.64 _d 4
-           ELSE
-            xgs(i,j,bi,bj)=0. _d 0
-           ENDIF
-           xrelf(i,j,bi,bj)= xgs(i,j,bi,bj)*deltaT
-     &                     /(1. _d 0+xgs(i,j,bi,bj)*deltaT)
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-c      _EXCH_XY_RL( xgs, myThid )
-c      _EXCH_XY_RL( xrelf, myThid )
 
 #else /* CHEAPAML_OLD_MASK_SETTING */
-
-C--   Setup CheapAML mask (for relaxation):
-      IF ( cheapMaskFile .NE. ' ' ) THEN
-C-    read mask from file
-        iL = ILNBLNK(cheapMaskFile)
-        WRITE(msgBuf,'(4A)') 'CHEAPAML_INIT_VARIA: ',
-     &      'Relaxation Mask read from ->', cheapMaskFile(1:iL), '<-'
-        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-        CALL READ_FLD_XY_RL( cheapMaskFile,' ',relaxMask,0,myThid )
-      ELSE
-        WRITE(msgBuf,'(4A)') 'CHEAPAML_INIT_VARIA: ',
-     &     'Generate Cheapaml mask'
-        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
 C-    set mask according to boundaries
@@ -212,23 +182,46 @@ C-    set mask to one over land:
           ENDDO
          ENDDO
         ENDDO
+
+C-    end if/else block cheapMaskFile <> ' '
       ENDIF
+#endif /* CHEAPAML_OLD_MASK_SETTING */
+
       _EXCH_XY_RL( relaxMask, myThid )
 
+#ifdef CHEAPAML_OLD_MASK_SETTING
+C relaxation time scales from input
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           IF (relaxMask(i,j,bi,bj).NE.0.) THEN
+            xgs(i,j)=1. _d 0/relaxMask(i,j,bi,bj)/8.64 _d 4
+           ELSE
+            xgs(i,j)=0. _d 0
+           ENDIF
+           xrelf(i,j,bi,bj)= xgs(i,j)*deltaT
+     &                     /(1. _d 0+xgs(i,j)*deltaT)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+c      _EXCH_XY_RL( xrelf, myThid )
+
+#else /* CHEAPAML_OLD_MASK_SETTING */
 C-    Set relaxation coeff "xgs"
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-         IF ( cheap_tauRelax .LE. zeroRL ) THEN
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-              xgs(i,j,bi,bj) = 0. _d 0
-            ENDDO
-           ENDDO
-         ELSE
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+            xgs(i,j) = 0. _d 0
+          ENDDO
+         ENDDO
+         IF ( cheap_tauRelax .GT. zeroRL ) THEN
            tmpVar =  oneRL/cheap_tauRelax
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
-              xgs(i,j,bi,bj) = relaxMask(i,j,bi,bj)*tmpVar
+              xgs(i,j) = relaxMask(i,j,bi,bj)*tmpVar
             ENDDO
            ENDDO
          ENDIF
@@ -237,14 +230,14 @@ C-    Set relaxation coeff "xgs"
            tmpVar =  oneRL/cheap_tauRelaxOce
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
-              xgs(i,j,bi,bj) = MAX( xgs(i,j,bi,bj), tmpVar )
+              xgs(i,j) = MAX( xgs(i,j), tmpVar )
             ENDDO
            ENDDO
          ENDIF
 C-    Calculate implicit relaxation factor "xrelf"
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-            tmpVar = xgs(i,j,bi,bj)*deltaT
+            tmpVar = xgs(i,j)*deltaT
             xrelf(i,j,bi,bj)= tmpVar/( oneRL + tmpVar )
           ENDDO
          ENDDO
@@ -256,17 +249,14 @@ C-    Calculate implicit relaxation factor "xrelf"
         CALL WRITE_FLD_XY_RL('CheapMask',  ' ', relaxMask, 0, myThid )
       ENDIF
       IF ( debugLevel.GE.debLevC .AND. nIter0.EQ.0 ) THEN
-        CALL WRITE_FLD_XY_RL('Cheap_xgs',   ' ', xgs,   0, myThid )
         CALL WRITE_FLD_XY_RL('Cheap_xrelf', ' ', xrelf, 0, myThid )
       ENDIF
 
-      _BEGIN_MASTER( myThid )
-
 C-    Initialise AB starting level
+      _BEGIN_MASTER( myThid )
       cheapTairStartAB = nIter0
       cheapQairStartAB = nIter0
       cheapTracStartAB = nIter0
-
       _END_MASTER( myThid )
 
 C-    Everyone else must wait for parameters to be set

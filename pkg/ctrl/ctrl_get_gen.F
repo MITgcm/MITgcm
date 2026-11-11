@@ -18,10 +18,9 @@ c     ==================================================================
 c     SUBROUTINE ctrl_get_gen
 c     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
 c     == global variables ==
-
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
@@ -46,15 +45,13 @@ c     == routine arguments ==
       integer myThid
 
 c     == external functions ==
-      integer  ilnblnk
-      external ilnblnk
+      integer  ILNBLNK
+      external ILNBLNK
 
 c     == local variables ==
       integer bi,bj
       integer i,j
-      integer jmin,jmax
-      integer imin,imax
-      integer ilgen
+      integer il, ilgen
 
       _RL     gensign
       _RL     genfac
@@ -63,7 +60,6 @@ c     == local variables ==
       logical genchanged
       integer gencount0
       integer gencount1
-
       logical doglobalread
       logical ladinit
 
@@ -79,22 +75,15 @@ c     == local variables ==
       character*(MAX_LEN_FNAM) xx_lwdown_file
       character*(MAX_LEN_FNAM) xx_swdown_file
 
-      INTEGER il
-
 c     == end of interface ==
-
-      jmin = 1-OLy
-      jmax = sNy+OLy
-      imin = 1-OLx
-      imax = sNx+OLx
 
 c--   Now, read the control vector.
       doglobalread = .false.
       ladinit      = .false.
-      il   =ilnblnk( ctrlDir )
+      il = ILNBLNK( ctrlDir )
 
       if ( optimcycle .ge. 0 ) then
-        ilgen=ilnblnk( xx_gen_file )
+        ilgen=ILNBLNK( xx_gen_file )
         write(fnamegen,'(2a,i10.10)')
      &    ctrlDir(1:il)//xx_gen_file(1:ilgen),'.effective.',optimcycle
       endif
@@ -107,11 +96,6 @@ c--   Get the counters, flags, and the interpolation factor.
      I                       myTime, myIter, myThid )
 
       if ( genfirst ) then
-cc#ifdef ALLOW_OPENAD
-cc        call oad_active_read_xy( fnamegen, xx_gen1, gencount0,
-cc     &                       doglobalread, ladinit, optimcycle,
-cc     &                       myThid, xx_gen_dummy )
-cc#else
 #ifdef ALLOW_AUTODIFF
         call active_read_xy( fnamegen, xx_gen1, gencount0,
      &                       doglobalread, ladinit, optimcycle,
@@ -124,7 +108,6 @@ cc#else
 #else
         CALL READ_REC_XY_RL( fnamegen, xx_gen1, gencount0, 1, myThid )
 #endif
-cc#endif /* ALLOW_OPENAD */
 
 #ifdef ALLOW_SMOOTH
 #ifdef ALLOW_SMOOTH_CTRL2D
@@ -141,11 +124,6 @@ cc#endif /* ALLOW_OPENAD */
       if (( genfirst ) .or. ( genchanged )) then
         call CTRL_SWAPFFIELDS( xx_gen0, xx_gen1, myThid )
 
-cc#ifdef ALLOW_OPENAD
-cc        call oad_active_read_xy( fnamegen, xx_gen1 , gencount1,
-cc     &                       doglobalread, ladinit, optimcycle,
-cc     &                       myThid, xx_gen_dummy )
-cc#else
 #ifdef ALLOW_AUTODIFF
         call active_read_xy( fnamegen, xx_gen1 , gencount1,
      &                       doglobalread, ladinit, optimcycle,
@@ -153,7 +131,6 @@ cc#else
 #else
         CALL READ_REC_XY_RL( fnamegen, xx_gen1, gencount1, 1, myThid )
 #endif
-cc#endif /* ALLOW_OPENAD */
 
 #ifdef ALLOW_SMOOTH
 #ifdef ALLOW_SMOOTH_CTRL2D
@@ -197,9 +174,9 @@ cph Initial wind stress adjustments are too vigorous.
       endif
       if ( xx_gen_file(1:7) .EQ. xx_tauu_file .OR.
      &     xx_gen_file(1:7) .EQ. xx_tauv_file ) then
-         gensign = -1.
+         gensign = -1. _d 0
       else
-         gensign = 1.
+         gensign = 1. _d 0
       endif
 
 cph since the above is ECCO specific, we undo it here:

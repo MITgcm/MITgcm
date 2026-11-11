@@ -27,16 +27,19 @@ c     == local variables ==
       INTEGER thisDate(4), prevDate(4)
       _RL posFreq
       _RL shTime, prTime
+C     to avoid including EEPARAMS.h:
+      _RL halfRL
+      PARAMETER ( halfRL = 0.5 _d 0 )
 
       IF ( calendarDumps .AND. freq .NE. 0. ) THEN
 C-     Same as in FCT DIFF_PHASE_MULTIPLE:
 c      IF ( myTime+step .GE. phase+baseTime ) THEN
 C-     should compare to phase+baseTime (above), but would need PARAMS.h ;
+       posFreq = ABS(freq)
 C      choose to disable this condition for negative time:
-       IF ( myTime+step.GE.phase .OR. myTime.LT.0. ) THEN
-        posFreq = ABS(freq)
+       IF ( myTime+posFreq*halfRL.GE.phase .OR. myTime.LT.0. ) THEN
 C-    First determine calendar dates for this and previous time step.
-        shTime = myTime - phase
+        shTime = myTime - MOD(phase, posFreq)
         prTime = shTime - step
         CALL CAL_GETDATE( myIter, shTime, thisDate, myThid )
         CALL CAL_GETDATE( myIter, prTime, prevDate, myThid )

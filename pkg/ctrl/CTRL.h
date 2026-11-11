@@ -204,30 +204,4 @@ C     Define unit weight as a placeholder
       DOUBLE PRECISION phtmpadmtlm(maxn)
 #endif
 
-C     Control variables:
-C     ==================
-
-#ifdef ALLOW_OPENAD
-
-      COMMON /controlvars_r_openad/
-     &        xx_place_holder
-# ifdef ALLOW_GENARR2D_CONTROL
-     &      , xx_genarr2d
-# endif
-# ifdef ALLOW_GENARR3D_CONTROL
-     &      , xx_genarr3d
-# endif
-
-      _RL xx_place_holder
-# ifdef ALLOW_GENARR2D_CONTROL
-      _RL xx_genarr2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,
-     &                maxCtrlArr2D)
-# endif
-# ifdef ALLOW_GENARR3D_CONTROL
-      _RL xx_genarr3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,
-     &                maxCtrlArr3D)
-# endif
-
-#endif /* ALLOW_OPENAD */
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

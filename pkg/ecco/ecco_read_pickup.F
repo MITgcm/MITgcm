@@ -37,7 +37,8 @@ C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER prec, IL, ioUnit
       LOGICAL exst
-      _RL tmparr(2), dummyRS(1)
+      _RL tmpArr(2)
+      _RS dummyRS(1)
 CEOP
 
 C--   Suffix for pickup files
@@ -75,12 +76,12 @@ C-    Check for global file with ".data" suffix
         prec = precFloat64
 #ifdef ALLOW_MDSIO
         CALL MDS_READVEC_LOC( fn, prec, ioUnit, 'RL',
-     &                        2, tmparr, dummyRS, 0, 0, 1, myThid )
+     &                        2, tmpArr, dummyRS, 0, 0, 1, myThid )
 #else
         STOP 'ABNORMAL END: S/R ECCO_READ_PICKUP: Needs MDSIO pkg'
 #endif
-        VOLsumGlob_0 = tmparr(1)
-        RHOsumGlob_0 = tmparr(2)
+        VOLsumGlob_0 = tmpArr(1)
+        RHOsumGlob_0 = tmpArr(2)
       ELSE
         WRITE(msgBuf,'(2A)') 'ECCO_READ_PICKUP: ',
      &        fn(1:IL)//' and '//fntmp(1:iL+5)//' not provided.'

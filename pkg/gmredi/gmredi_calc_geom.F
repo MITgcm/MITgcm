@@ -460,7 +460,7 @@ C ---- 1st order upwinding
 C ---- 1st order upwinding wave stuff
         c_dum = ( c_rosX(i-1,j) + c_rosX(i,j) )*halfRL
         fp_im = ( c_dum + ABS( c_dum ) )*maskW( i ,j,kSurf,bi,bj)
-        c_dum = ( c_rosX(i,j) + c_rosX(i+1,j) )
+        c_dum = ( c_rosX(i,j) + c_rosX(i+1,j) )*halfRL
         fm_ip = ( c_dum - ABS( c_dum ) )*maskW(i+1,j,kSurf,bi,bj)
         ene_wav_x(i,j) = -halfRL
      &    *( fp_im * dyG(i,j,bi,bj)
@@ -486,9 +486,9 @@ C ---- 1st order upwinding
      &       *( GEOM_EKE(i,j+1,bi,bj) - GEOM_EKE(i, j ,bi,bj) )
      &     )
 C ---- 1st order upwinding wave stuff
-        c_dum = ( c_rosY(i-1,j) + c_rosY(i,j) )*halfRL
+        c_dum = ( c_rosY(i,j-1) + c_rosY(i,j) )*halfRL
         fp_im = ( c_dum + ABS( c_dum ) )*maskS(i, j ,kSurf,bi,bj)
-        c_dum = ( c_rosY(i,j) + c_rosY(i,j+1) )
+        c_dum = ( c_rosY(i,j) + c_rosY(i,j+1) )*halfRL
         fm_ip = ( c_dum - ABS( c_dum ) )*maskS(i,j+1,kSurf,bi,bj)
         ene_wav_y(i,j) = -halfRL
      &    *( fp_im * dxG(i,j,bi,bj)

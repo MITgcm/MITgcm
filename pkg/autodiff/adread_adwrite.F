@@ -101,7 +101,6 @@ C     == global variables ==
 # include "CTRL.h"
 # include "OPTIMCYCLE.h"
 #endif
-C- OpenAD: this header is not converted to a module --> go after the others
 #include "AUTODIFF.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -296,7 +295,6 @@ C     == global variables ==
 # include "CTRL.h"
 # include "OPTIMCYCLE.h"
 #endif
-C- OpenAD: this header is not converted to a module --> go after the others
 #include "AUTODIFF.h"
 
 C     !INPUT/OUTPUT PARAMETERS:

@@ -1,4 +1,7 @@
 #include "EXF_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -111,7 +114,11 @@ C     msgBuf     :: Informational/error message buffer
 #endif /* USE_EXF_INTERPOLATION */
 CEOP
 
+#ifdef ALLOW_GENTIM2D_CONTROL
+      IF ( fldFile .NE. ' ' ) THEN
+#else
       IF ( fldFile .NE. ' ' .AND. fldPeriod .NE. 0. ) THEN
+#endif
 
          IF ( exf_debugLev.GE.debLevD ) THEN
            _BEGIN_MASTER( myThid )

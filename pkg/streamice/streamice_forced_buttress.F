@@ -76,7 +76,7 @@ C     LOCAL VARIABLES
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j=1-OLy+1,sNy+OLy-1
-         DO i=1-OLy+1,sNx+OLy-1
+         DO i=1-OLx+1,sNx+OLx-1
 c         taudx_SI(i,j,bi,bj) = 0. _d 0
 c         taudy_SI(i,j,bi,bj) = 0. _d 0
           IF (streamice_hmask(i,j,bi,bj).eq.1.0) THEN

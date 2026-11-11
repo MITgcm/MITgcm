@@ -239,9 +239,6 @@ C     !INPUT/OUTPUT PARAMETERS:
       INTEGER iarr
       INTEGER myThid
 
-#ifdef ALLOW_OPENAD
-      STOP 'ABNORMAL END: CTRL_MAP_GENARR3D is empty'
-#else /* ALLOW_OPENAD */
 #ifdef ALLOW_GENARR3D_CONTROL
 C     !FUNCTIONS:
       INTEGER  ILNBLNK
@@ -411,7 +408,6 @@ C$AD END-DO-NOT-DIFF
       IF (debugMode) CALL DEBUG_LEAVE('CTRL_MAP_GENARR3D', myThid )
 #endif
 #endif /* ALLOW_GENARR3D_CONTROL */
-#endif /* ALLOW_OPENAD */
 
       RETURN
       END

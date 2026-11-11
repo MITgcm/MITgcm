@@ -45,8 +45,8 @@ C  i,j                  :: loop indices
 CEOP
 
       IF ( k.GT.1 .AND. k.LE.Nr ) THEN
-        DO j=1-Olx,sNy+Oly-1
-         DO i=1-Olx,sNx+Olx-1
+        DO j=1-OLy,sNy+OLy-1
+         DO i=1-OLx,sNx+OLx-1
            wMetricTerms(i,j) = -gravitySign*wUnit2rVel(k)
      &      *recip_rSphere*recip_deepFacF(k)*(
      &          ( (uFld( i ,j,k-1,bi,bj)*uFld( i ,j,k-1,bi,bj)
@@ -62,8 +62,8 @@ CEOP
          ENDDO
         ENDDO
       ELSE
-        DO j=1-Olx,sNy+Oly-1
-         DO i=1-Olx,sNx+Olx-1
+        DO j=1-OLy,sNy+OLy-1
+         DO i=1-OLx,sNx+OLx-1
            wMetricTerms(i,j) = 0. _d 0
          ENDDO
         ENDDO

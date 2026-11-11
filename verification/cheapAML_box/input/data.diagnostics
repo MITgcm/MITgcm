@@ -23,6 +23,7 @@
 #--
   fields(1:6,1)  = 'CH_TAIR ','CH_QAIR ','CH_QNET ','CH_EmP  ','CH_Uwind','CH_Vwind',
    fileName(1) = 'cheapAML',
+# frequency(1) = 864000.,
   frequency(1) = 14400.,
  &
 
@@ -44,9 +45,12 @@
 #                (see "available_diagnostics.log" file for the full list of diags)
 #--------------------
  &DIAG_STATIS_PARMS
+  diagSt_mnc = .FALSE.,
 #---
-#stat_fields(1:5,1) = 'ETAN    ','UVEL    ','VVEL    ','WVEL    ',
-#                     'THETA   ',
-# stat_fName(1) = 'dynStDiag',
-#  stat_freq(1) = 1800.,
+ stat_fields(1:10,1) = 'ETAN    ','THETA   ','oceTAUX ','oceTAUY ',
+                       'CH_TAIR ','CH_QAIR ','CH_QNET ','CH_EmP  ',
+                       'CH_Uwind','CH_Vwind',
+  stat_fName(1) = 'dynStDiag',
+#  stat_freq(1) = 86400.,
+   stat_freq(1) = 7200.,
  &

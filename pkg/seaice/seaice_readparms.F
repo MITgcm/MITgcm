@@ -280,7 +280,7 @@ C     By default use partition function of Thorndyke et al. (1975) ...
 C     and redistribution function of Hibler (1980)
       SEAICEredistFunc      = 0
       SEAICEridgingIterMax  = 10
-C     This parameter is not well constraint (Lipscomb et al. 2007)
+C     This parameter is not well constrained (Lipscomb et al. 2007)
       SEAICEshearParm       = 0.5 _d 0
 C     Thorndyke et al. (1975)
       SEAICEgStar           = 0.15 _d 0

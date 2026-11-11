@@ -22,13 +22,6 @@ Usage: "$0" [OPTIONS]
 	  Here, "NAME" specifies a list of extra arguments to pass to the
 	  Tapenade command.
 
-    -oad | --oad
-	  Generate a Makefile for an OpenAD built
-    -oadsingularity NAME | --oadsingularity NAME | -oadsngl NAME | --oadsngl NAME
-      -oadsingularity=NAME | --oadsingularity=NAME | -oadsngl=NAME | --oadsngl=NAME
-	  Here, "NAME" specifies the singularity file
-	  that contains the OpenAD execulable.
-
     -nocat4ad | -dog4ad | -ncad | -dad
 	  do not concatenate (cat) source code sent to TAF
 	  resulting in compilation of multiple files
@@ -37,8 +30,7 @@ Usage: "$0" [OPTIONS]
       -adoptfile=NAME | --adoptfile=NAME | -adof=NAME | --adof=NAME
 	  Use "NAME" as the adoptfile.  By default, use file
 	  "tools/adjoint_options/adjoint_default" or
-	  "tools/adjoint_options/adjoint_tap" (for Tapenade built) or
-	  "tools/adjoint_options/adjoint_oad" (for OpenAD built).
+	  "tools/adjoint_options/adjoint_tap" (for Tapenade built)
 
     -optfile NAME | --optfile NAME | -of NAME | --of NAME
       -optfile=NAME | --optfile=NAME | -of=NAME | --of=NAME
@@ -1441,7 +1433,6 @@ TOOLSDIR=
 SOURCEDIRS=
 INCLUDEDIRS=
 STANDARDDIRS="USE_THE_DEFAULT"
-SINGULARITYFILE=
 
 #- local config file
 gm_local="genmake_local"
@@ -1472,7 +1463,6 @@ TAPENADE=
 TAPENADECMD=tapenade
 TAPENADE_FLAGS=
 TAP_EXTRA=
-OPENAD=
 CAT_SRC_FOR_TAF=1
 DEP_TAF_FILE='Makefile_taf.dep'
 TAF=
@@ -1501,7 +1491,7 @@ gm_s7="TMP THISHOST THISUSER THISDATE THISVER MACHINE FC_CHECK FC_NAMEMANGLE"
 gm_s8="HAVE_NETCDF HAVE_SYSTEM HAVE_FDATE HAVE_ETIME HAVE_LAPACK HAVE_FLUSH"
 
 #  The following are all related to adjoint/tangent-linear stuff
-gm_s10="AUTODIFF_PKG_USED AD_OPTFILE TAPENADE OPENAD"
+gm_s10="AUTODIFF_PKG_USED AD_OPTFILE TAPENADE"
 gm_s11="TAF AD_TAF_FLAGS FTL_TAF_FLAGS SVD_TAF_FLAGS TAF_F77_FLAGS TAF_F90_FLAGS"
 gm_s12="TAF_EXTRA DIVA MPIINCLUDEDIR MPI_HEADER_FILES"
 gm_s13="TAPENADECMD TAPENADE_FLAGS TAP_EXTRA"
@@ -1564,20 +1554,11 @@ for ac_option in "$@" ; do
 
 	-tap | --tap)
 	    TAPENADE="true" ; ALWAYS_USE_F90=1 ;;
-
-	-tap_extra | --tap_extra)
-	    ac_prev=TAP_EXTRA ;;
-	-tap_extra=* | --tap_extra=*)
-	    TAP_EXTRA=$ac_optarg ;;
-
-	-oad | --oad)
-	    OPENAD="true" ; ALWAYS_USE_F90=1 ;;
-	-oadsingularity | --oadsingularity | -oadsngl | --oadsngl)
-	    ac_prev=SINGULARITYFILE ;;
-	-oadsingularity=* | --oadsingularity=* | -oadsngl=* | --oadsngl=*)
-	    SINGULARITYFILE=$ac_optarg ;;
 	-nocat4ad | -dog4ad | -ncad | -dad)
 	    CAT_SRC_FOR_TAF=0 ;;
+	-oad | --oad) echo "Error: option '-oad' (OpenAD built) has been removed"
+	    exit 1 ;;
+
 	-adoptfile | --adoptfile | -adof | --adof)
 	    ac_prev=AD_OPTFILE ;;
 	-adoptfile=* | --adoptfile=* | -adof=* | --adof=*)
@@ -1722,6 +1703,11 @@ for ac_option in "$@" ; do
 	-taf_extra=* | --taf_extra=*)
 	    TAF_EXTRA=$ac_optarg ;;
 
+	-tap_extra | --tap_extra)
+	    ac_prev=TAP_EXTRA ;;
+	-tap_extra=* | --tap_extra=*)
+	    TAP_EXTRA=$ac_optarg ;;
+
 #	-taf_f77_flags | --taf_f77_flags)
 #	    ac_prev=TAF_F77_FLAGS ;;
 #	-taf_f77_flags=* | --taf_f77_flags=*)
@@ -1859,8 +1845,6 @@ if test "x${AD_OPTFILE}" = x ; then
 	AD_OPTFILE=$MITGCM_AD_OF
     elif test "x$TAPENADE" != x ; then
 	AD_OPTFILE=$ROOTDIR/tools/adjoint_options/adjoint_tap
-    elif test "x$OPENAD" != x ; then
-	AD_OPTFILE=$ROOTDIR/tools/adjoint_options/adjoint_oad
     else
 	AD_OPTFILE=$ROOTDIR/tools/adjoint_options/adjoint_default
     fi
@@ -2600,23 +2584,6 @@ EOF
     fi
 fi
 
-#  Make sure the openad package is enabled if using OpenAD
-if test "x$OPENAD" != x ; then
-    echo " $PACKAGES " | grep ' openad ' > /dev/null 2>&1
-    RETVAL=$?
-    if test "x$RETVAL" != x0 ; then
-	cat <<EOF
-
-*********************************************************************
-ERROR: when generating an adjoint with OpenAD, the openad package
-  must be enabled.  Please add it to packages.conf.
-*********************************************************************
-
-EOF
-        exit 1
-    fi
-fi
-
 if  test "x${PKG_DEPEND}" != x ; then
   echo "  applying package dependency rules"
   ck=
@@ -2891,48 +2858,6 @@ if test "x$TAPENADE" != x ; then
     echo "   TAPENADE exceptions:  "
 fi
 
-if test "x$OPENAD" != x ; then
-    OAD_DONT_COMPILE="/dev/null"
-    OAD_DONT_TRANSFORM="/dev/null"
-    OAD_KEEP_ORIGINAL="/dev/null"
-    OAD_CB2M_FILES="/dev/null"
-    OADTOOLS="$TOOLSDIR/OAD_support"
-    OADTOOLSMK='$(TOOLSDIR)/OAD_support'
-    echo "  looking for dontCompile file:  "
-    for i in "." $MODS $OADTOOLS ; do
-	if test -r $i"/dontCompile" ; then
-	    OAD_DONT_COMPILE=$i"/dontCompile"
-	    echo "     found $OAD_DONT_COMPILE"
-	    break
-	fi
-    done
-    echo "  looking for dontTransform file:  "
-    for i in "." $MODS $OADTOOLS ; do
-	if test -r $i"/dontTransform" ; then
-	    OAD_DONT_TRANSFORM=$i"/dontTransform"
-	    echo "     found $OAD_DONT_TRANSFORM"
-	    break
-	fi
-    done
-    echo "  looking for keepOriginal file:  "
-    for i in "." $MODS $OADTOOLS ; do
-	if test -r $i"/keepOriginal" ; then
-	    OAD_KEEP_ORIGINAL=$i"/keepOriginal"
-	    echo "     found $OAD_KEEP_ORIGINAL"
-	    break
-	fi
-    done
-    echo "  looking for cb2mFiles:  "
-    for i in "." $MODS $OADTOOLS ; do
-	if test -r $i"/cb2mFiles" ; then
-	    OAD_CB2M_FILES=$i"/cb2mFiles"
-	    echo "     found $OAD_CB2M_FILES"
-	    break
-	fi
-    done
-    echo "   OpenAD exceptions:  "
-fi
-
 echo "# This section creates symbolic links" > $TMP.srclinks
 echo "" >> $TMP.srclinks
 printf 'F77_SRC_FILES = ' > $TMP.F77srclist
@@ -2951,12 +2876,9 @@ for d in $alldirs ; do
     deplist=
     sfiles=`( cd $d; echo *.[h,c,F] *.flow )`
     sfiles=`( echo $sfiles; cd $d; echo *.F90 )`
-    if test "x$TAPENADE" != x ; then
-	sfiles=`( echo $sfiles | grep -v _cb2m\. )`
-    fi
-    if test "x$OPENAD" != x ; then
-	sfiles=`( echo $sfiles | grep -v _cb2m\. )`
-    fi
+#   if test "x$TAPENADE" != x ; then
+#	sfiles=`( echo $sfiles | grep -v _cb2m\. )`
+#   fi
     for sf in $sfiles ; do
 	if test ! -r "$TMP.links/$sf" ; then
 	    if test -f "$d/$sf" ; then
@@ -2997,8 +2919,8 @@ for d in $alldirs ; do
 			echo    " \\"  >> $TMP.F77srclist
 			printf " $sf" >> $TMP.F77srclist
 
-			if test "x$TAPENADE" = x -a "x$OPENAD" = x ; then
-			    #- default: neither Tapenade nor OpenAD
+			if test "x$TAPENADE" = x ; then
+			    #- default: not Tapenade
 			    isAD=`grep "^$sf\>" $TMP.adSrcFiles`
 			    if test -z "$isAD" ; then
 				echo    " \\"  >> $TMP.nonADF77srclist
@@ -3020,39 +2942,11 @@ for d in $alldirs ; do
 				fi
 			    fi
 			fi
-			if test "x$OPENAD" != x ; then
-			    #- OpenAD case:
-			    basename=${sf%%.F}
-			    isAD=`grep "^$sf\>" $TMP.adSrcFiles`
-			    if test -z "$isAD" ; then
-				toBeIgnored=`grep ^$basename'\>' ${OAD_DONT_COMPILE}`
-				if test -z "$toBeIgnored" ; then
-				    echo    " \\"  >> $TMP.nonADF77srclist
-				    printf " $sf" >> $TMP.nonADF77srclist
-				else
-				    echo "    not to be compiled   :  $sf"
-				fi
-			    else # file is initially listed as an AD file we want to exclude it
-				 # or we want to retain the untransformed version
-				notToBeTransformed=`grep ^$basename'\>' ${OAD_DONT_TRANSFORM}`
-				untransformedVersionToBeKept=`grep ^$basename ${OAD_KEEP_ORIGINAL}`
-				if test -n "$notToBeTransformed"; then
-				    echo "    not to be transformed:  $sf"
-				fi
-				if test -n "$untransformedVersionToBeKept" ; then
-				    echo "    original to be kept  :  $sf"
-				fi
-				if test -n "$notToBeTransformed" -o -n "$untransformedVersionToBeKept" ; then
-				    echo    " \\"  >> $TMP.nonADF77srclist
-				    printf " $sf" >> $TMP.nonADF77srclist
-				fi
-			    fi
-			fi
 			;;
 		    F90)
 			echo    " \\" >> $TMP.F90srclist
 			printf " $sf" >> $TMP.F90srclist
-			if ( test "x$OPENAD" = x && test "x$TAPENADE" = x ) ; then
+			if ( test "x$TAPENADE" = x ) ; then
 			    isAD=`grep "^$sf\>" $TMP.adF90Files`
 			    if test -z "$isAD" ; then
 				echo    " \\" >> $TMP.nonADF90srclist
@@ -3409,7 +3303,7 @@ EOF
 #===  Automatic Differentiation Rules  ===
 #===  for TAF  ===========================
 
-if test "x$TAPENADE" = x -a "x$OPENAD" = x ; then
+if test "x$TAPENADE" = x ; then
 
 cat >>$MAKEFILE <<EOF
 
@@ -3804,221 +3698,6 @@ EOF
 
 fi
 
-#===  for OpenAD  ========================
-
-if test "x$OPENAD" != x ; then
-
-# ============ begin OpenAD specific section ==============
-
-cat >>$MAKEFILE <<EOF
-# ... OpenAD ...
-
-# all the source files linked from the various locations:
-ALL_LINKED_FILES= \
-\$(F77_SRC_FILES) \
-\$(C_SRC_FILES) \
-\$(H_SRC_FILES) \
-\$(F90_SRC_FILES) \
-\$(SPECIAL_FILES)
-
-EOF
-
-if test "x$SINGULARITYFILE" != x ; then
-# run OpenAD commands in singularity container with standard paths
-cat >>$MAKEFILE <<EOF
-SINGULARITYCMD = singularity exec ${SINGULARITYFILE}
-export SINGULARITYENV_LD_LIBRARY_PATH=/OpenAD//Open64/osprey1.0/targ_ia64_ia64_linux/whirl2f/
-export OPENADROOT=/OpenAD
-export XAIFBOOSTERROOT=/OpenAD/xaifBooster/..
-export XAIFSCHEMAROOT=/OpenAD/xaif
-export OPENADFORTTK_BASE=/OpenAD/OpenADFortTk
-export OPEN64ROOT=/OpenAD/Open64/osprey1.0/targ_ia64_ia64_linux
-export OPENADFORTTK=/OpenAD/OpenADFortTk/OpenADFortTk-x86_64-Linux
-
-EOF
-else
-# run OpenAD directly
-cat >>$MAKEFILE <<EOF
-SINGULARITYCMD =
-
-EOF
-fi
-
-cat >>$MAKEFILE <<EOF
-ifndef OPENADROOT
-  \$(error "Error:  environment variable OPENADROOT not defined!")
-endif
-
-ifndef XAIFSCHEMAROOT
-  \$(error "Error:  environment variable XAIFSCHEMAROOT not defined!")
-endif
-
-ifndef XAIFBOOSTERROOT
-  \$(error "Error:  environment variable XAIFBOOSTERROOT not defined!")
-endif
-
-EOF
-
-echo "  Add the source list for common block to module conversion "
-echo >> $MAKEFILE
-printf "CB2M_F90_SRC_NAMES = " >> $MAKEFILE
-for i in `cat ${OAD_CB2M_FILES}` ; do
-  echo    " \\" >> $MAKEFILE
-  printf " $i" >> $MAKEFILE
-done
-echo >> $MAKEFILE
-
-echo "  Add the source list for AD code generation"
-echo >> $MAKEFILE
-printf "AD_FILES = " >> $MAKEFILE
-for i in `cat ${OAD_CB2M_FILES}` ; do
-  echo    " \\" >> $MAKEFILE
-  printf " ${i}_mod.f$FS90" >> $MAKEFILE
-done
-AD_FILES=`cat $TMP.adSrcFiles | sed "s/\.F/.f/g"`
-for i in $AD_FILES ; do
-  basename=${i%%.f}
-  toBeIgnored=`grep ^$basename'\>' ${OAD_DONT_COMPILE} ${OAD_DONT_TRANSFORM}`
-  if test -z "$toBeIgnored" ; then
-    echo    " \\" >> $MAKEFILE
-    printf " $i" >> $MAKEFILE
-  fi
-done
-echo >> $MAKEFILE
-rm -f $TMP.adSrcFiles $TMP.adF90Files
-cat $TMP.nonADF77srclist >> $MAKEFILE
-rm -f $TMP.nonADF77srclist $TMP.nonADF90srclist
-
-cat >>$MAKEFILE <<EOF
-
-adAll: ad_exe_target
-.PHONY: adAll
-
-ad_exe_target:
-	@echo Update AD_CONFIG.h and make \$(EXE_ADJ)
-	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "Adjoint version" -bAD_CONFIG_H -DALLOW_ADJOINT_RUN -UALLOW_TANGENTLINEAR_RUN > ad_config.template
-	@cmp ad_config.template AD_CONFIG.h || cat ad_config.template > AD_CONFIG.h
-	@-rm -f ad_config.template
-	\$(MAKE) -f \$(MAKEFILE) \$(EXE_ADJ)
-
-CB2M_F90_PP_SRC_FILES=\$(addsuffix _mod.f$FS90, \$(CB2M_F90_SRC_NAMES))
-
-.PRECIOUS: \$(CB2M_F90_PP_SRC_FILES) \$(NON_AD_F77_SRC_FILES:.F=_cb2m.f$FS90)
-
-.PHONY: adDepend
-adDepend: \$(ALL_LINKED_FILES) \$(addsuffix _mod.h, \$(CB2M_F90_SRC_NAMES)) \$(addsuffix _mod.FF90, \$(CB2M_F90_SRC_NAMES)) \$(F77_SRC_FILES:.F=_cb2m.FF90)
-	\$(MAKEDEPEND) -f \$(MAKEFILE) -o .$FS \$(DEFINES) \$(INCLUDES) \$(F77_SRC_FILES)
-	\$(TOOLSDIR)/f90mkdepend -fs $FS -fs90 $FS90 >> \$(MAKEFILE)
-	-rm -f makedepend.out
-
-OPENAD_SUPPORT_F90_SRC_FILES = \
-w2f__types.F90 \
-OAD_active.F90 \
-OAD_cp.F90 \
-OAD_rev.F90 \
-OAD_tape.F90 \
-OAD_regular_cp.F90 \
-revolve.F90
-
-OPENAD_SUPPORT_C_SRC_FILES = \
-iaddr.c \
-timeRatio.c
-
-f95_test_mods.f90: \$(OPENAD_SUPPORT_F90_SRC_FILES:F90=$FS90)
-	cat \$^ > \$@
-
-f95_test.f90: all_mods.xb.x2w.w2f.pp.f$FS90 \$(NON_AD_F77_SRC_FILES:.F=_cb2m.f$FS90) ad_input_code.w2f.pre.xb.x2w.w2f.td.pp.f$FS90
-	cat \$^ > \$@
-
-f95_test.out: f95_test_mods.f90 f95_test.f90
-	f95 -fixed -w=unused -maxcontin=132 -c f95_test_mods.f90 > \$@ 2>&1
-	f95 -fixed -w=unused -maxcontin=132 -c -fixed f95_test.f90 >> \$@ 2>&1
-
-CB2M_AD_FILES=\$(AD_FILES:.f=_cb2m.f$FS90)
-
-AD_OBJ_FILES_S1=\$(OPENAD_SUPPORT_F90_SRC_FILES:.F90=.o) \$(OPENAD_SUPPORT_C_SRC_FILES:.c=.o)  OAD_intrinsics_oad.o \$(CB2M_AD_FILES:.f$FS90=_oad.o)
-
-AD_OBJ_FILES_S2=\$(AD_OBJ_FILES_S1) \$(NON_AD_F77_SRC_FILES:.F=_cb2m.o) \$(C_SRC_FILES:.c=.o) \$(F90_SRC_FILES:.F90=.o)
-
-\$(EXE_ADJ): \$(ALL_LINKED_FILES) \$(addsuffix _mod.h, \$(CB2M_F90_SRC_NAMES)) postProcess.tag \$(AD_OBJ_FILES_S2)
-	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(AD_OBJ_FILES_S2) \$(LIBS)
-
-# create sources files modules from header files containing common blocks
-%_mod.FF90 : %.h \$(OADTOOLS)/cb2mGetModules.csh \$(OADTOOLS)/cb2mGetModules.awk
-	\$(OADTOOLS)/cb2mGetModules.csh $< \$(OADTOOLS)/cb2mGetModules.awk
-
-# create new header files with USE statements for the new modules made above
-%_mod.h : %.h \$(OADTOOLS)/cb2mGetHeaders.csh \$(OADTOOLS)/cb2mGetHeaders.awk
-	\$(OADTOOLS)/cb2mGetHeaders.csh $< \$(OADTOOLS)/cb2mGetHeaders.awk \$(CB2M_F90_SRC_NAMES)
-
-# change the include directives of everybody to refer to  the new header files with the USE statements
-%_cb2m.FF90 : %.F \$(OADTOOLS)/cb2mUseModules.bash
-	\$(OADTOOLS)/cb2mUseModules.bash $< ${MPI}
-
-# makefile debug rule
-small_f: \$(CB2M_F90_PP_SRC_FILES)
-.PHONY: small_f
-
-ad_input_code.f$FS90:  \$(CB2M_AD_FILES)
-	cat \$^ > \$@
-
-# canonicalizer
-ad_input_code_sf.pre.f90 : \$(CB2M_AD_FILES)
-	\${SINGULARITYCMD} \${OPENADFORTTK_BASE}/tools/SourceProcessing/preProcess.py --timing --r8 -H -S  -o \$@ \$^
-
-# replace stop statements (to avoid the implied unstructured control flow)  with print statements
-ad_input_code_sf.pre.s2p.f90 : ad_input_code_sf.pre.f90
-	cat \$< | sed -f \$(OADTOOLS)/stop2print.sed > ad_input_code_sf.pre.s2p.f90
-
-# F -> WHIRL
-ad_input_code_sf.pre.s2p.B: ad_input_code_sf.pre.s2p.f90
-	\${SINGULARITYCMD} \${OPEN64ROOT}/crayf90/sgi/mfef90 -r8 -z -F ad_input_code_sf.pre.s2p.f90
-
-# WHIRL -> XAIF
-ad_input_code_sf.pre.s2p.xaif : ad_input_code_sf.pre.s2p.B
-	\${SINGULARITYCMD} \${OPENADFORTTK}/bin/whirl2xaif -s -n --debug 1 -o \$@ \$<
-
-# XAIF -> XAIF'
-ad_input_code_sf.pre.s2p.xb.xaif : ad_input_code_sf.pre.s2p.xaif xaif.xsd xaif_base.xsd xaif_inlinable_intrinsics.xsd xaif_derivative_propagator.xsd xaif_output.xsd
-	\${SINGULARITYCMD} \${XAIFBOOSTERROOT}/xaifBooster/algorithms/BasicBlockPreaccumulationReverse/driver/oadDriver -f -t forward_step -i \$< -c \${XAIFSCHEMAROOT}/schema/examples/inlinable_intrinsics.xaif -o \$@ -I -r
-
-# XAIF' -> WHIRL'
-ad_input_code_sf.pre.s2p.xb.x2w.B : ad_input_code_sf.pre.s2p.xb.xaif
-	\${SINGULARITYCMD} \${OPENADFORTTK}/bin/xaif2whirl --debug 1 ad_input_code_sf.pre.s2p.B \$<
-
-# WHIRL' -> F'
-ad_input_code_sf.pre.s2p.xb.x2w.w2f.f$FS90: ad_input_code_sf.pre.s2p.xb.x2w.B
-	\${SINGULARITYCMD} \${OPEN64ROOT}/whirl2f/whirl2f -FLIST:ftn_file=\$@ -openad \$<
-
-# insert template directives
-ad_input_code_sf.pre.s2p.xb.x2w.w2f.td.f$FS90: ad_input_code_sf.pre.s2p.xb.x2w.w2f.f$FS90 \$(OADTOOLS)/insertTemplateDir.bash
-	\$(OADTOOLS)/insertTemplateDir.bash \$< \$@
-
-PPEXTRAS=\$(notdir \$(wildcard \$(OADTOOLS)/ad_template.*.F)) ad_inline.F
-# postprocess F'
-postProcess.tag: ad_input_code_sf.pre.s2p.xb.x2w.w2f.td.f$FS90 \$(PPEXTRAS:.F=.f) | w2f__types.f90
-	\${SINGULARITYCMD} \${OPENADFORTTK_BASE}/tools/SourceProcessing/postProcess.py --progress --timing --infoUnitFile w2f__types.f90 --outputFormat=fixed --separateOutput --pathSuffix "" --filenameSuffix "_oad" -m r -i ad_inline.f \$<
-	# the target is a placeholder to trigger a single execution of the rule
-	touch \$@
-# put this so make knows about the postprocessing output
-OAD_intrinsics_oad.f \$(CB2M_AD_FILES:.f$FS90=_oad.f): postProcess.tag
-
-# link the XAIF schema files
-%.xsd:
-	\$(LN) \${XAIFSCHEMAROOT}/schema/\$@ .
-
-# link the support files:
-\$(OPENAD_SUPPORT_F90_SRC_FILES) \$(OPENAD_SUPPORT_C_SRC_FILES) \$(PPEXTRAS):
-	\$(LN) \$(OADTOOLS)/\$@ .
-
-AD_CLEAN += *_mod.h *_mod.F90 *.FF90 *.mod-whirl temp.sed oad_cp.* postProcess.tag
-
-# ============ end OpenAD specific section ==============
-
-EOF
-
-fi
-
 #=========================================
 
 if test "x$EXEHOOK" != x ; then
@@ -4088,9 +3767,7 @@ if test $FC_CHECK = 5 ; then
     echo "  original 'Makefile' generated successfully"
     echo "=> next steps:"
     ad=`echo $PACKAGES | grep -c autodiff`
-    if test "x$OPENAD" != x ; then
-	echo "  > make adAll    (<-- adjoint executable)"
-    elif test $ad != 0 ; then
+    if test $ad != 0 ; then
 	echo "  > make depend"
       if test "x$TAPENADE" = x ; then
 	echo "    > make adall  (<-- adjoint  executable with TAF)"

@@ -54,7 +54,7 @@ fi
 #- from this dir:
 fromDir="../input_ad.w_exf"
 
-fileList=`( cd $fromDir ; echo data* eedata )`
+fileList=`( cd $fromDir ; echo data.* eedata )`
 
 #echo 'fileList=' $fileList
 

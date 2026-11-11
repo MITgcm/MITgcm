@@ -111,18 +111,10 @@ C     with nonlinFreeSurf=4 in CALC_PHI_HYD (eta contribution to phiHyd)
             IF ( Ro_surf(i,j,bi,bj).GT.0. _d 0
      &          .AND. kSurfC(i,j,bi,bj).LE.Nr ) THEN
              pLoc = Ro_surf(i,j,bi,bj)
-#ifdef ALLOW_OPENAD
-             CALL FIND_RHO_SCALAR(
-     I            tRef(kSurfC(i,j,bi,bj)),
-     I            sRef(kSurfC(i,j,bi,bj)),
-     I            pLoc,
-     O            rhoLoc, myThid )
-#else /* ALLOW_OPENAD */
              k = kSurfC(i,j,bi,bj)
              CALL FIND_RHO_SCALAR(
      I            tRef(k), sRef(k), pLoc,
      O            rhoLoc, myThid )
-#endif /* ALLOW_OPENAD */
              IF ( rhoLoc .EQ. 0. _d 0 ) THEN
               Bo_surf(i,j,bi,bj) = 0. _d 0
              ELSE

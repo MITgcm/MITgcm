@@ -105,7 +105,7 @@ C     ccccc
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
-         DO i=1-OLy,sNx+OLy
+         DO i=1-OLx,sNx+OLx
           IF (STREAMICE_umask(i,j,bi,bj).ne.1.0)
      &     cg_Uin(i,j,bi,bj)=0.0
           IF (STREAMICE_vmask(i,j,bi,bj).ne.1.0)
@@ -263,7 +263,7 @@ C    ACTUAL CG CALL
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
-         DO i=1-OLy,sNx+OLy
+         DO i=1-OLx,sNx+OLx
           IF (STREAMICE_umask(i,j,bi,bj).eq.3.0)
      &     cg_Uin(i,j,bi,bj)=u_bdry_values_SI(i,j,bi,bj)
           IF (STREAMICE_vmask(i,j,bi,bj).eq.3.0)

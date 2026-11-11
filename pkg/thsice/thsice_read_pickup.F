@@ -35,7 +35,7 @@ C     == Local variables ==
       CHARACTER*(10) suff
       CHARACTER*(MAX_LEN_FNAM) fn
 
-      IF ( .NOT. thSIce_pickup_write_mnc ) THEN
+      IF ( .NOT. thSIce_pickup_read_mnc ) THEN
 
         prec = precFloat64
         IF ( pickupSuff.EQ.' ' ) THEN
@@ -66,7 +66,7 @@ C     == Local variables ==
       ENDIF
 
 #ifdef ALLOW_MNC
-      IF ( thSIce_pickup_write_mnc ) THEN
+      IF ( thSIce_pickup_read_mnc ) THEN
         WRITE(fn,'(A)') 'pickup_ic'
         CALL MNC_FILE_CLOSE_ALL_MATCHING(fn, myThid)
         CALL MNC_CW_SET_UDIM(fn, 1, myThid)
@@ -76,7 +76,7 @@ C     == Local variables ==
         CALL MNC_CW_RL_R('D',fn,0,0,'snowHeight',snowHeight,myThid)
         CALL MNC_CW_RL_R('D',fn,0,0,'Tsrf',      Tsrf,      myThid)
         CALL MNC_CW_RL_R('D',fn,0,0,'Tice1',     Tice1,     myThid)
-        CALL MNC_CW_RL_R('D',fn,0,0,'Tice2',     Tice1,     myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,'Tice2',     Tice2,     myThid)
         CALL MNC_CW_RL_R('D',fn,0,0,'Qice1',     Qice1,     myThid)
         CALL MNC_CW_RL_R('D',fn,0,0,'Qice2',     Qice2,     myThid)
         CALL MNC_CW_RL_R('D',fn,0,0,'snowAge',   snowAge,   myThid)

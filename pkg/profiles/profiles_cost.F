@@ -73,14 +73,13 @@ CEOP
       _RL  num_prof_glo
 
 #ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
-      INTEGER iavgbin,ikzz
+      INTEGER iavgbin
       INTEGER itmp
-      INTEGER k2, ix9, iy9, ktmp
+      INTEGER ix9, iy9, ktmp
       INTEGER cunit
       CHARACTER*(MAX_LEN_FNAM) cfile
 
       _RL prof_data1D_mean(NLEVELMAX)
-      _RL prof_count1D(NLEVELMAX)
       _RL prof_weights1D_mean(NLEVELMAX)
       _RL recip_profiles_mean_indsamples(NVARMAX)
 
@@ -504,7 +503,7 @@ C Sync file so that data is not lost when run finishes
             ENDDO !DO prof_num
 
 #ifdef ALLOW_DEBUG
-            IF ( debugLevel .GE. debLevD ) THEN
+            IF ( prof_dBugLevel .GE. debLevD ) THEN
               IF (ProfNo(num_file,bi,bj).GT.0) THEN
                 DO num_var = 1, NVARMAX
                   WRITE(msgBuf,'(A,4I9)') 'bi,bj,prof_num,num_var ',
@@ -568,7 +567,7 @@ C Sync file so that data is not lost when run finishes
           ENDDO !DO num_var
 
 # ifdef ALLOW_DEBUG
-          IF ( debugLevel .GE. debLevD ) THEN
+          IF ( prof_dBugLevel .GE. debLevD ) THEN
             DO num_var = 1, NVARMAX
               WRITE(msgBuf,'(A,4I9)') 'bi,bj,num_var ',bi,bj,num_var
               CALL PRINT_MESSAGE( msgBuf,

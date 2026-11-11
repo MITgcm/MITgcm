@@ -45,7 +45,7 @@ CEOP
 
       IF ( selectMetricTerms.EQ.1 ) THEN
 C-    Using analytical expression for tan(Phi) (stored in: tanPhiAtU)
-        DO j=1-OLx,sNy+OLy-1
+        DO j=1-OLy,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx
            uMetricTerms(i,j) =
      &      uFld(i,j)*recip_rSphere*recip_deepFacC(k)*0.25 _d 0
@@ -56,7 +56,7 @@ C-    Using analytical expression for tan(Phi) (stored in: tanPhiAtU)
         ENDDO
       ELSE
 C-    Using grid-spacing gradient: estimates tan(Phi)/rSphere as -del^j(dxC)/rAz
-        DO j=2-OLx,sNy+OLy-1
+        DO j=2-OLy,sNy+OLy-1
          DO i=2-OLx,sNx+OLx
            uMetricTerms(i,j) = -halfRL*
      &     ( ( uFld(i,j-1) + uFld(i,j) )*halfRL

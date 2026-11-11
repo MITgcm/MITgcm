@@ -90,14 +90,13 @@ C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_FNAM) adfname
       INTEGER bi,bj
       INTEGER i,j,k
-      INTEGER jRec
-      INTEGER prec
+      INTEGER glbFile, prec, jRec
       LOGICAL w_globFile
       _RS  dummyRS(1)
       _RL  active_data_t(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 CEOP
 
-C     force 64-bit io
+      glbFile = 0
       prec = ctrlprec
       jRec = -ABS(iRec)
 
@@ -106,7 +105,7 @@ C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
 
 C     Read the active variable from file.
         CALL MDS_READ_FIELD(
-     I                activeVar_file, prec, useCurrentDir,
+     I                activeVar_file, prec, glbFile, useCurrentDir,
      I                'RL', myNr, 1, myNr,
      O                active_var, dummyRS,
      I                iRec, myThid )
@@ -143,7 +142,7 @@ C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. REVERSE_SIMULATION) THEN
 
         CALL MDS_READ_FIELD(
-     I                activeVar_file, prec, useCurrentDir,
+     I                activeVar_file, prec, glbFile, useCurrentDir,
      I                'RL', Nr, 1, myNr,
      O                active_data_t, dummyRS,
      I                iRec, myThid )
@@ -189,7 +188,7 @@ C     >>>>>>>>>>>>>>>>>>> TANGENT RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. TANGENT_SIMULATION) THEN
 C     Read the active variable from file.
         CALL MDS_READ_FIELD(
-     I                activeVar_file, prec, useCurrentDir,
+     I                activeVar_file, prec, glbFile, useCurrentDir,
      I                'RL', myNr, 1, myNr,
      O                active_var, dummyRS,
      I                iRec, myThid )
@@ -267,14 +266,13 @@ C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_FNAM) adfname
       INTEGER bi,bj
       INTEGER i,j,k
-      INTEGER jRec
-      INTEGER prec
+      INTEGER glbFile, prec, jRec
       LOGICAL w_globFile
       _RS  active_data_t(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  dummyRL(1)
 CEOP
 
-C     force 64-bit io
+      glbFile = 0
       prec = ctrlprec
       jRec = -ABS(iRec)
 
@@ -283,7 +281,7 @@ C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
 
 C     Read the active variable from file.
         CALL MDS_READ_FIELD(
-     I                activeVar_file, prec, useCurrentDir,
+     I                activeVar_file, prec, glbFile, useCurrentDir,
      I                'RS', myNr, 1, myNr,
      O                dummyRL, active_var,
      I                iRec, myThid )
@@ -320,7 +318,7 @@ C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. REVERSE_SIMULATION) THEN
 
         CALL MDS_READ_FIELD(
-     I                activeVar_file, prec, useCurrentDir,
+     I                activeVar_file, prec, glbFile, useCurrentDir,
      I                'RS', Nr, 1, myNr,
      O                dummyRL, active_data_t,
      I                iRec, myThid )
@@ -366,7 +364,7 @@ C     >>>>>>>>>>>>>>>>>>> TANGENT RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. TANGENT_SIMULATION) THEN
 C     Read the active variable from file.
         CALL MDS_READ_FIELD(
-     I                activeVar_file, prec, useCurrentDir,
+     I                activeVar_file, prec, glbFile, useCurrentDir,
      I                'RS', myNr, 1, myNr,
      O                dummyRL, active_var,
      I                iRec, myThid )
@@ -767,13 +765,12 @@ C     myThid         :: thread number for this instance
 C     !LOCAL VARIABLES:
       INTEGER  i,j,k
       INTEGER  bi,bj
-      INTEGER  jRec
-      INTEGER  prec
+      INTEGER glbFile, prec, jRec
       _RS  dummyRS(1)
       _RL  active_data_t(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 CEOP
 
-C     force 64-bit io
+      glbFile = 0
       prec = ctrlprec
       jRec = -ABS(iRec)
 
@@ -790,7 +787,7 @@ C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. REVERSE_SIMULATION) THEN
 
         CALL MDS_READ_FIELD(
-     I                activeVar_file, prec, useCurrentDir,
+     I                activeVar_file, prec, glbFile, useCurrentDir,
      I                'RL', Nr, 1, myNr,
      O                active_data_t, dummyRS,
      I                iRec, myThid )
@@ -889,13 +886,12 @@ C     myThid         :: thread number for this instance
 C     !LOCAL VARIABLES:
       INTEGER  i,j,k
       INTEGER  bi,bj
-      INTEGER  jRec
-      INTEGER  prec
+      INTEGER glbFile, prec, jRec
       _RS  active_data_t(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  dummyRL(1)
 CEOP
 
-C     force 64-bit io
+      glbFile = 0
       prec = ctrlprec
       jRec = -ABS(iRec)
 
@@ -912,7 +908,7 @@ C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. REVERSE_SIMULATION) THEN
 
         CALL MDS_READ_FIELD(
-     I                activeVar_file, prec, useCurrentDir,
+     I                activeVar_file, prec, glbFile, useCurrentDir,
      I                'RS', Nr, 1, myNr,
      O                dummyRL, active_data_t,
      I                iRec, myThid )

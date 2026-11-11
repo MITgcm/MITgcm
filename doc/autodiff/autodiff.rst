@@ -27,18 +27,17 @@ Algorithms in Fortran), developed by Ralf Giering
 :cite:`giering:00`). The
 first application of the adjoint of MITgcm for sensitivity studies was
 published by Marotzke et al. (1999) :cite:`maro-eta:99`.
-Stammer et al. (1997, 2002) :cite:`stammer:97` :cite:`stammer:02` use MITgcm and its adjoint
-for ocean state estimation studies. In the following we shall refer to
-TAMC and TAF synonymously, except were explicitly stated otherwise.
+Stammer et al. (1997, 2002) :cite:`stammer:97` :cite:`stammer:02` use MITgcm
+and its adjoint for ocean state estimation studies. In the following we shall
+refer to TAMC and TAF synonymously, except were explicitly stated otherwise.
 
-As of mid-2007 we are also able to generate fairly efficient adjoint
-code of the MITgcm using a new, open-source AD tool, called OpenAD (see
-Naumann, 2006 :cite:`naumann:06` and Utke et al., 2008 :cite:`utke:08`).
-This enables us for the
-first time to compare adjoint models generated from different AD tools,
-providing an additional accuracy check, complementary to
-finite-difference gradient checks. OpenAD and its application to MITgcm
-is described in detail in :numref:`ad_openad`.
+As of mid-2007 an open-source AD tool, called OpenAD (see Naumann, 2006
+:cite:`naumann:06` and Utke et al., 2008 :cite:`utke:08`) was made available
+to generate adjoint code of MITgcm. The support for OpenAD ended in July 2026
+as OpenAD was no longer maintained.
+By that time the MITgcm interface with open-source AD tool Tapenade was fully
+operational (see :numref:`ad_tapenade`) and allows to generate fairly efficient
+adjoint and tangent-linear code of MITgcm (Gaikwad et al., 2024 :cite:`gaikwad:24`).
 
 The AD tool exploits the chain rule for computing the first derivative
 of a function with respect to a set of input variables. Treating a given

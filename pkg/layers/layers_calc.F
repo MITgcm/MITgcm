@@ -118,7 +118,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IF ( myIter.EQ.nIter0 ) RETURN
 
 #ifdef LAYERS_THERMODYNAMICS
-      CALL LAYERS_CALC_RHS(myThid)
+      CALL LAYERS_CALC_DIVERGENCE(myThid)
 #endif
 
       DO iLa=1,layers_maxNum

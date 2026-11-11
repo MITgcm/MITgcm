@@ -114,9 +114,7 @@ C--   generic 2D control variables
        startrec=0
        endrec=0
 
-#ifndef ALLOW_OPENAD
        if (xx_gentim2d_weight(iarr).NE.' ') then
-#endif
 
         ilgen=ilnblnk( xx_gentim2d_file(iarr) )
         temp_genarr_fnamA = xx_gentim2d_file(iarr)
@@ -428,7 +426,6 @@ CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
      &        1, myThid )
 #endif
 
-#ifndef ALLOW_OPENAD
          jrec=1
 C Not clear which record to use for timevariable weights ;
 C For now, just assumes records from startrec to endrec are available in file
@@ -467,7 +464,6 @@ C--   Get appropriate mask
            ENDDO
           ENDDO
          ENDDO
-#endif /* ALLOW_OPENAD */
 
          CALL CTRL_BOUND_2D(xx_gen,mask2D,
      &        xx_gentim2d_bounds(1,iarr),myThid)
@@ -490,9 +486,7 @@ C--   Get appropriate mask
 C--   end iRec loop
         ENDDO
 
-#ifndef ALLOW_OPENAD
        endif
-#endif
 
 C--   end iarr loop
       ENDDO
