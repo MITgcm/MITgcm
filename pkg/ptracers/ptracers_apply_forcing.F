@@ -21,6 +21,9 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
+#ifdef ALLOW_KPP
+# include "KPP.h"
+#endif
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
 #include "PTRACERS_FIELDS.h"
@@ -53,7 +56,12 @@ C  i,j            :: loop indices
       INTEGER i,j
 C     number of surface interface layer
       INTEGER kSurface
-C      INTEGER kmld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+C  kSrfPf, kIfSrf, kDeep :: surface level, surface interface and deeper
+C                           interface of level k (preformed age tracer)
+C  dMix           :: depth (r-unit) below surface of deeper interface of level k
+C  locMLD         :: mixed-layer depth: KPPhbl if useKPP, otherwise hMixLayer
+      INTEGER kSrfPf, kIfSrf, kDeep
+      _RL dMix, locMLD
 CEOP
 
       IF ( fluidIsAir ) THEN
@@ -79,16 +87,6 @@ C     because it is needed by KPP_TRANSPORT_PTR.
       ENDIF
 #endif /* ALLOW_GCHEM */
 
-CC get index of MLD for resetting 
-C       DO j=0,sNy+1
-C        DO i=0,sNx+1
-C         IF ( maskC(i,j,k,bi,bj).NE.0. _d 0 
-C     &       .AND. abs(RF(k+1)).LT.hMixLayer(i,j,bi,bj) 
-C     &      ) 
-C     &      kmld(i,j)=k
-C        ENDDO
-C       ENDDO
-
       IF ( k .EQ. kSurface ) THEN
 c      DO j=jMin,jMax
 c       DO i=iMin,iMax
@@ -109,29 +107,45 @@ c       DO i=iMin,iMax
          ENDIF
         ENDDO
        ENDDO
-C Internal ocean sources and sinks of ptracers       
-      ELSEIF ( k .NE. kSurface .AND. 
-     &                     PTRACERS_preformedAgeTracer(iTracer)) THEN
-       IF (PTRACERS_preformedUseMLD(iTracer)) THEN
-        DO j=0,sNy+1
-         DO i=0,sNx+1
-          IF ( maskC(i,j,k,bi,bj).NE.0. _d 0 
-     &              .AND. abs(RF(k+1)).LT.hMixLayer(i,j,bi,bj)) THEN
-           gPtracer(i,j) = gPtracer(i,j)
-     &                          + 1. _d 0 * maskC(i,j,k,bi,bj)
-          ENDIF
-         ENDDO
-        ENDDO 
+      ENDIF
+
+C--   Age tracer: source of +1 (tracer unit per second) in the ocean
+C     interior, i.e., outside of the region (surface level, or mixed
+C     layer) where S/R PTRACERS_PREFORMED_RESET resets the tracer.
+      IF ( PTRACERS_preformedAgeTracer(iTracer) ) THEN
+       IF ( usingPCoords ) THEN
+        kSrfPf = Nr
+        kIfSrf = Nr+1
+        kDeep  = k
        ELSE
-        DO j=0,sNy+1
-         DO i=0,sNx+1
-          gPtracer(i,j) = gPtracer(i,j)
-     &                          + 1. _d 0 * maskC(i,j,k,bi,bj)
+        kSrfPf = 1
+        kIfSrf = 1
+        kDeep  = k+1
+       ENDIF
+       IF ( k.NE.kSrfPf ) THEN
+        IF ( PTRACERS_preformedUseMLD(iTracer) ) THEN
+         dMix = ABS( RF(kDeep) - RF(kIfSrf) )
+         DO j=0,sNy+1
+          DO i=0,sNx+1
+           locMLD = hMixLayer(i,j,bi,bj)
+#ifdef ALLOW_KPP
+           IF ( useKPP ) locMLD = KPPhbl(i,j,bi,bj)
+#endif
+           IF ( dMix.GE.locMLD ) THEN
+            gPtracer(i,j) = gPtracer(i,j) + maskC(i,j,k,bi,bj)
+           ENDIF
+          ENDDO
          ENDDO
-        ENDDO 
+        ELSE
+         DO j=0,sNy+1
+          DO i=0,sNx+1
+           gPtracer(i,j) = gPtracer(i,j) + maskC(i,j,k,bi,bj)
+          ENDDO
+         ENDDO
+        ENDIF
        ENDIF
       ENDIF
-      
+
       IF (PTRACERS_linFSConserve(iTracer)) THEN
        DO j=0,sNy+1
         DO i=0,sNx+1

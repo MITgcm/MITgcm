@@ -140,6 +140,10 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
+#ifdef ALLOW_PTRACERS
+# include "PTRACERS_SIZE.h"
+# include "PTRACERS_PARAMS.h"
+#endif
 #ifdef ALLOW_TIMEAVE
 # include "TIMEAVE_STATV.h"
 #endif
@@ -227,7 +231,7 @@ C     kSrf          :: surface index
       INTEGER i, j, k, kSrf
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER doDiagsRho
-      LOGICAL calcGMRedi, calcKPP, calcConvect
+      LOGICAL calcGMRedi, calcKPP, calcConvect, calcPtrMLD
 #ifdef ALLOW_DIAGNOSTICS
       LOGICAL  DIAGNOSTICS_IS_ON
       EXTERNAL DIAGNOSTICS_IS_ON
@@ -270,6 +274,10 @@ C--   dummy statement to end declaration part
 
       calcGMRedi  = useGMRedi
       calcKPP     = useKPP
+      calcPtrMLD  = .FALSE.
+#ifdef ALLOW_PTRACERS
+      IF ( usePTRACERS ) calcPtrMLD = PTRACERS_needMLD
+#endif
       calcConvect = ivdc_kappa.NE.0.
 #ifdef ALLOW_OFFLINE
       IF ( useOffLine ) THEN
@@ -754,7 +762,8 @@ C         slope terms (e.g. GM/Redi tensor or IVDC diffusivity)
           IF ( calcGMRedi .OR. (k.GT.1 .AND. calcConvect)
      &         .OR. usePP81 .OR. useKL10
      &         .OR. useMY82 .OR. useGGL90
-     &         .OR. useSALT_PLUME .OR. doDiagsRho.GE.1 ) THEN
+     &         .OR. useSALT_PLUME .OR. doDiagsRho.GE.1
+     &         .OR. calcPtrMLD ) THEN
             IF (k.GT.1) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE theta(:,:,k-1,bi,bj) = comlev1_bibj_k, key=kkey,kind=isbyte
@@ -843,7 +852,8 @@ CADJ STORE IVDConvCount(:,:,:,bi,bj)=comlev1_bibj,key=tkey,kind=isbyte
 #endif
 
 C--     Diagnose Mixed Layer Depth:
-        IF ( calcGMRedi .OR. MOD(doDiagsRho,2).EQ.1 ) THEN
+        IF ( calcGMRedi .OR. MOD(doDiagsRho,2).EQ.1
+     &       .OR. calcPtrMLD ) THEN
           CALL CALC_OCE_MXLAYER(
      I              rhoInSitu(1-OLx,1-OLy,kSrf,bi,bj), sigmaR,
      I              bi, bj, myTime, myIter, myThid )

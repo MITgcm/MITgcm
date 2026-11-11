@@ -142,11 +142,10 @@ C     Set defaults values for parameters in PTRACERS.h
         ENDDO
         PTRACERS_isPreformed(iTracer)         = .FALSE.
         PTRACERS_preformedUseMLD(iTracer)     = .FALSE.
-        PTRACERS_tauRelaxPreformed(iTracer)   = 1. _d 0
+        PTRACERS_tauRelaxPreformed(iTracer)   = UNSET_RL
         PTRACERS_preformedMate(iTracer)       = UNSET_I
-        PTRACERS_preformedFixedValue(iTracer) = 0. _d 0
+        PTRACERS_preformedFixedValue(iTracer) = UNSET_RL
         PTRACERS_preformedAgeTracer(iTracer)  = .FALSE.
-
       ENDDO
       PTRACERS_doAB_onGpTr      = doAB_onGtGs
       PTRACERS_addSrelax2EmP    = .FALSE.
@@ -235,6 +234,26 @@ C     Set vertical diffusion array
          ENDDO
         ENDIF
       ENDDO
+
+C     Preformed tracer: relax towards zero if neither a mate tracer
+C     nor a fixed value was specified (e.g., for an age tracer)
+      DO iTracer=1,PTRACERS_numInUse
+        IF ( PTRACERS_isPreformed(iTracer) .AND.
+     &       PTRACERS_preformedMate(iTracer).EQ.UNSET_I .AND.
+     &       PTRACERS_preformedFixedValue(iTracer).EQ.UNSET_RL )
+     &    PTRACERS_preformedFixedValue(iTracer) = 0. _d 0
+      ENDDO
+
+C     Whether S/R CALC_OCE_MXLAYER has to compute hMixLayer
+C     (KPPhbl is used instead when useKPP)
+      PTRACERS_needMLD = .FALSE.
+      IF ( .NOT.useKPP ) THEN
+       DO iTracer=1,PTRACERS_numInUse
+        IF ( PTRACERS_isPreformed(iTracer) .AND.
+     &       PTRACERS_preformedUseMLD(iTracer) )
+     &    PTRACERS_needMLD = .TRUE.
+       ENDDO
+      ENDIF
 
 C     Set flag to check when each tracer starts
       PTRACERS_startAllTrc = .TRUE.

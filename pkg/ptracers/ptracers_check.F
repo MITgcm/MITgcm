@@ -147,28 +147,23 @@ C--   Print a summary of pTracer parameter values:
         CALL WRITE_0D_L( PTRACERS_isPreformed(iTracer), INDEX_NONE,
      &     'PTRACERS_isPreformed =', ' /* preformed tracer */')
         IF ( PTRACERS_isPreformed(iTracer) ) THEN
-           CALL WRITE_0D_L( 
-     &        PTRACERS_preformedUseMLD(iTracer), INDEX_NONE,
-     &       'PTRACERS_preformedUseMLD =', 
-     &       ' /* reset tracer over MLD or just at the surface */')
-           CALL WRITE_0D_L( 
-     &        PTRACERS_preformedAgeTracer(iTracer), INDEX_NONE,
-     &       'PTRACERS_preformedAgeTracer =', 
-     &       ' /* Tracer ages in ocean interior */')
-           IF ( PTRACERS_preformedMate(iTracer).NE.UNSET_I ) 
-     &        CALL WRITE_0D_I( 
-     &            PTRACERS_preformedMate(iTracer), INDEX_NONE,
-     &           'PTRACERS_preformedMate =', 
-     &           ' /* Reset towards this tracer value */')
-           IF ( PTRACERS_preformedFixedValue(iTracer).NE.UNSET_RL ) 
-     &        CALL WRITE_0D_RL( 
-     &            PTRACERS_preformedFixedValue(iTracer), INDEX_NONE,
-     &           'PTRACERS_preformedFixedValue =', 
-     &           ' /* Reset towards this tracer value */')
-           CALL WRITE_0D_RL( 
-     &            PTRACERS_tauRelaxPreformed(iTracer), INDEX_NONE,
-     &           'PTRACERS_tauRelaxPreformed =', 
-     &           ' /* Reset timescale for preformed tracer */')
+         CALL WRITE_0D_L( PTRACERS_preformedUseMLD(iTracer), INDEX_NONE,
+     &     'PTRACERS_preformedUseMLD =',
+     &     ' /* reset tracer over MLD or just at the surface */')
+         CALL WRITE_0D_L( PTRACERS_preformedAgeTracer(iTracer),
+     &     INDEX_NONE, 'PTRACERS_preformedAgeTracer =',
+     &     ' /* tracer ages (+1 s/s) in ocean interior */')
+         IF ( PTRACERS_preformedMate(iTracer).NE.UNSET_I )
+     &    CALL WRITE_0D_I( PTRACERS_preformedMate(iTracer), INDEX_NONE,
+     &     'PTRACERS_preformedMate =',
+     &     ' /* reset towards this tracer number */')
+         IF ( PTRACERS_preformedFixedValue(iTracer).NE.UNSET_RL )
+     &    CALL WRITE_0D_RL( PTRACERS_preformedFixedValue(iTracer),
+     &     INDEX_NONE, 'PTRACERS_preformedFixedValue =',
+     &     ' /* reset towards this fixed value */')
+         CALL WRITE_0D_RL( PTRACERS_tauRelaxPreformed(iTracer),
+     &     INDEX_NONE, 'PTRACERS_tauRelaxPreformed =',
+     &     ' /* reset time-scale (s) for preformed tracer */')
         ENDIF
         CALL WRITE_1D_RL( PTRACERS_ref(1,iTracer), Nr, INDEX_K,
      &     'PTRACERS_ref =', ' /* Reference vertical profile */')
@@ -277,66 +272,61 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         errCount = errCount + 1
        ENDIF
 #endif
-C     Check preformed or age tracer parms that dont make sense
-        IF ( PTRACERS_isPreformed(iTracer) ) THEN
-C       Only set one of PTRACERS_preformedMate or PTRACERS_preformedFixedValue  
-           IF (
-     &         (PTRACERS_preformedMate(iTracer).EQ.UNSET_I .AND.
-     &         PTRACERS_preformedFixedValue(iTracer).EQ.UNSET_RL) .OR.
-     &         (PTRACERS_preformedMate(iTracer).NE.UNSET_I .AND.
-     &         PTRACERS_preformedFixedValue(iTracer).NE.UNSET_RL)
-     &          ) THEN   
-              WRITE(msgBuf,'(A,I4,A,A,I9,A,1PE23.14,A)')
-     &           ' PTRACERS_CHECK: You want ptracer ',
-     &           iTracer,
-     &           ' to be a preformed tracer,',
-     &           ' but PTRACERS_preformedMate is ', 
-     &           PTRACERS_preformedMate(iTracer),
-     &           ' and PTRACERS_preformedFixedValue is ',
-     &           PTRACERS_preformedFixedValue(iTracer),
-     &           '. You need to specify one or the other.'
-              CALL PRINT_ERROR( msgBuf, myThid )
-              errCount = errCount + 1
-C          Check that PTRACERS_preformedMate points to a real ptracer
-           ELSEIF (PTRACERS_preformedFixedValue(iTracer).EQ.UNSET_RL
-     &         .AND.PTRACERS_preformedMate(iTracer)
-     &                                       .GT.PTRACERS_numInUse) THEN
-              WRITE(msgBuf,'(A,I9,A,A,I9,A,I9,A)')
-     &           ' PTRACERS_CHECK: You want ptracer ',
-     &           iTracer,
-     &           ' to be a preformed tracer,',     
-     &           ' pointing to Ptr ' ,
-     &           PTRACERS_preformedMate(iTracer),
-     &           ' when only ',
-     &           PTRACERS_numInUse,
-     &           ' tracers are being used. '
-              CALL PRINT_ERROR( msgBuf, myThid )
-              errCount = errCount + 1
-           ENDIF
-C Soft warning for is the relaxation time is set to 1.234567e5. I mean,
-C   that could be a legitimate value
-           IF (PTRACERS_tauRelaxPreformed(iTracer).EQ.UNSET_RL) THEN
-              WRITE(msgBuf,'(A,I9,A,A,1PE23.14,A)')
-     &           ' PTRACERS_CHECK: You want ptracer ',
-     &           iTracer,
-     &           ' to be a preformed tracer,',
-     &           ' but the relaxation time is ',UNSET_RL,
-     &           ', are you sure?'
-              CALL PRINT_MESSAGE(msgBuf,errorMessageUnit,
-     &           SQUEEZE_RIGHT,myThid)
-C Soft warning for is the relaxation time is set to 0. I mean,
-C   could that be a legitimate value, probably not....
-           ELSEIF (PTRACERS_tauRelaxPreformed(iTracer).EQ.0. _d 0) THEN
-              WRITE(msgBuf,'(A,I9,A,A,1PE23.14,A)')
-     &           ' PTRACERS_CHECK: You want ptracer ',
-     &           iTracer,
-     &           ' to be a preformed tracer,',
-     &           ' but the relaxation time is set to ',0. _d 0,
-     &           ', are you sure?'
-              CALL PRINT_MESSAGE(msgBuf,errorMessageUnit,
-     &           SQUEEZE_RIGHT,myThid)
-           ENDIF
+C--   Check preformed / age tracer parameters
+       IF ( PTRACERS_isPreformed(iTracer) ) THEN
+C     Reset towards either another tracer or a fixed value, not both
+        IF ( PTRACERS_preformedMate(iTracer).NE.UNSET_I .AND.
+     &       PTRACERS_preformedFixedValue(iTracer).NE.UNSET_RL ) THEN
+         WRITE(msgBuf,'(A,I4,A)') 'PTRACERS_CHECK: preformed tracer ',
+     &     iTracer, ' has both PTRACERS_preformedMate and'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         WRITE(msgBuf,'(A)') 'PTRACERS_CHECK: '//
+     &     'PTRACERS_preformedFixedValue set; specify only one of them'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         errCount = errCount + 1
         ENDIF
+C     PTRACERS_preformedMate must point to another tracer in use
+        IF ( PTRACERS_preformedMate(iTracer).NE.UNSET_I ) THEN
+         IF ( PTRACERS_preformedMate(iTracer).LT.1 .OR.
+     &        PTRACERS_preformedMate(iTracer).GT.PTRACERS_numInUse .OR.
+     &        PTRACERS_preformedMate(iTracer).EQ.iTracer ) THEN
+          WRITE(msgBuf,'(A,I4,A,I9)') 'PTRACERS_CHECK: preformed '//
+     &      'tracer ', iTracer, ' has invalid PTRACERS_preformedMate=',
+     &      PTRACERS_preformedMate(iTracer)
+          CALL PRINT_ERROR( msgBuf, myThid )
+          WRITE(msgBuf,'(A,I4,A)') 'PTRACERS_CHECK: must be in 1,',
+     &      PTRACERS_numInUse, ' and different from the tracer itself'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          errCount = errCount + 1
+         ENDIF
+        ENDIF
+C     Relaxation time-scale: no default; 0 means instantaneous reset
+        IF ( PTRACERS_tauRelaxPreformed(iTracer).EQ.UNSET_RL .OR.
+     &       PTRACERS_tauRelaxPreformed(iTracer).LT.zeroRL ) THEN
+         WRITE(msgBuf,'(A,I4,A)') 'PTRACERS_CHECK: preformed tracer ',
+     &     iTracer, ' needs PTRACERS_tauRelaxPreformed >= 0'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         WRITE(msgBuf,'(A)') 'PTRACERS_CHECK: (0 = instantaneous reset)'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         errCount = errCount + 1
+        ENDIF
+C     Only implemented for the ocean without ice-shelf
+        IF ( .NOT.fluidIsWater .OR. useShelfIce ) THEN
+         WRITE(msgBuf,'(A,I4,A)') 'PTRACERS_CHECK: preformed tracer ',
+     &     iTracer, ' is only implemented for fluidIsWater and'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         WRITE(msgBuf,'(A)') 'PTRACERS_CHECK: without useShelfIce'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         errCount = errCount + 1
+        ENDIF
+       ELSEIF ( PTRACERS_preformedAgeTracer(iTracer) ) THEN
+        WRITE(msgBuf,'(A,I4,A)') 'PTRACERS_CHECK: tracer ', iTracer,
+     &    ' has PTRACERS_preformedAgeTracer=T but'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)') 'PTRACERS_CHECK: PTRACERS_isPreformed=F'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
       ENDDO
 
       IF ( errCount.GE.1 ) THEN

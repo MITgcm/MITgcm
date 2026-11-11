@@ -22,10 +22,10 @@ C              b) use pTracer surface (local) value if = UNSET_RL (default)
 C     PTRACERS_startStepFwd :: time to start stepping forward this tracer
 C     PTRACERS_resetFreq    :: Frequency (s) to reset ptracers to original val
 C     PTRACERS_resetPhase   :: Phase (s) to reset ptracers
-C     PTRACERS_tauRelaxPreformed :: Relaxation timescale for preformed tracers
-C                                    in the upper ocean
+C     PTRACERS_tauRelaxPreformed :: Relaxation timescale (s) of a preformed
+C                          tracer in the upper ocean (no default; 0 = reset)
 C     PTRACERS_preformedFixedValue :: Fixed value to relax a preformed tracer
-C                                      towards in the upper ocean.
+C                          towards in the upper ocean (default 0 if no mate)
       _RL PTRACERS_dTLev(Nr)
       _RL PTRACERS_dumpFreq
       _RL PTRACERS_taveFreq
@@ -68,7 +68,8 @@ C        (to be removed 1 day ...)
 C--   COMMON /PTRACERS_PARAMS_I/ PTRACERS integer-type parameters:
 C     PTRACERS_numInUse :: number of tracers to use
 C     PTRACERS_Iter0    :: timestep number when tracers are initialized
-C     PTRACERS_preformedMate :: Which ptracer to relax a preformed tracer towards
+C     PTRACERS_preformedMate :: Which ptracer to relax a preformed tracer
+C                          towards (UNSET_I: use PTRACERS_preformedFixedValue)
       INTEGER PTRACERS_Iter0
       INTEGER PTRACERS_numInUse
       INTEGER PTRACERS_advScheme(PTRACERS_num)
@@ -101,11 +102,15 @@ C                               (set internally)
 C     PTRACERS_linFSConserve :: apply mean Free-Surf source/sink at surface
 C     PTRACERS_stayPositive  :: use Smolarkiewicz Hack to ensure Tracer stays >0
 C     PTRACERS_useRecords    :: snap-shot output: put all pTracers in one file
-C     PTRACERS_isPreformed   :: set as a preformed tracer reset in the upper ocean        
+C     PTRACERS_isPreformed   :: preformed tracer, reset in the upper ocean
 C     PTRACERS_preformedUseMLD:: reset a preformed tracer throughout the mixed
-C                               layer depth, not just the surface level
-C     PTRACERS_preformedAgeTracer:: Is the preformed tracer an age-tracer, with
-C                               internal source
+C                               layer, not just the surface level
+C                               (uses KPPhbl if useKPP, otherwise hMixLayer)
+C     PTRACERS_needMLD       :: internal flag, true if S/R CALC_OCE_MXLAYER has
+C                               to compute hMixLayer for preformed tracers
+C                               (preformedUseMLD=T and not useKPP)
+C     PTRACERS_preformedAgeTracer:: age tracer: source of +1 (per s) outside of
+C                               the reset region (needs PTRACERS_isPreformed)
 
       LOGICAL PTRACERS_ImplVertAdv(PTRACERS_num)
       LOGICAL PTRACERS_MultiDimAdv(PTRACERS_num)
@@ -129,8 +134,9 @@ C                               internal source
      &     PTRACERS_timeave_mnc, PTRACERS_snapshot_mnc,
      &     PTRACERS_pickup_write_mnc, PTRACERS_pickup_read_mnc
       LOGICAL PTRACERS_isPreformed(PTRACERS_num)
-      LOGICAL PTRACERS_preformedUseMLD(PTRACERS_num)    
+      LOGICAL PTRACERS_preformedUseMLD(PTRACERS_num)
       LOGICAL PTRACERS_preformedAgeTracer(PTRACERS_num)
+      LOGICAL PTRACERS_needMLD
 
       COMMON /PTRACERS_PARAMS_L/
      &     PTRACERS_ImplVertAdv,
@@ -149,9 +155,9 @@ C                               internal source
      &     PTRACERS_monitor_stdio, PTRACERS_monitor_mnc,
      &     PTRACERS_timeave_mnc, PTRACERS_snapshot_mnc,
      &     PTRACERS_pickup_write_mnc, PTRACERS_pickup_read_mnc,
-     &     PTRACERS_isPreformed, PTRACERS_preformedUseMLD,    
-     &     PTRACERS_preformedAgeTracer  
-
+     &     PTRACERS_isPreformed, PTRACERS_preformedUseMLD,
+     &     PTRACERS_preformedAgeTracer,
+     &     PTRACERS_needMLD
 
 C--   COMMON /PTRACERS_PARAMS_C/ PTRACERS character-type parameters:
       CHARACTER*(MAX_LEN_FNAM) PTRACERS_initialFile(PTRACERS_num)

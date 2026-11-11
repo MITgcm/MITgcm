@@ -27,6 +27,10 @@ C     == Global variables ==
 #ifdef ALLOW_GMREDI
 # include "GMREDI.h"
 #endif
+#ifdef ALLOW_PTRACERS
+# include "PTRACERS_SIZE.h"
+# include "PTRACERS_PARAMS.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
@@ -74,6 +78,11 @@ CEOP
       IF ( useGMRedi .AND. .NOT.useKPP ) THEN
        calcMixLayerDepth = GM_useSubMeso .OR. GM_taper_scheme.EQ.'fm07'
      &       .OR. GM_useBatesK3d
+      ENDIF
+#endif
+#ifdef ALLOW_PTRACERS
+      IF ( usePTRACERS .AND. .NOT.calcMixLayerDepth ) THEN
+        calcMixLayerDepth = PTRACERS_needMLD
       ENDIF
 #endif
 #ifdef ALLOW_DIAGNOSTICS
