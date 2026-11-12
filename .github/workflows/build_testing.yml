@@ -89,7 +89,7 @@ jobs:
         - exp: "isomip"
         - exp: "lab_sea"
         - exp: "tutorial_global_oce_biogeo"
-        - exp: "tutorial_tracel_adjsens"
+        - exp: "tutorial_tracer_adjsens"
 
    continue-on-error: true
 
