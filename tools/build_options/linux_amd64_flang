@@ -19,6 +19,10 @@
 #  (seaice dynamics, thsice, idemix, in_p) and agree to only 10-13 digits.
 #  gfortran on the same system gives the same results as flang (bit-for-bit
 #  at -O0), so this is not a flang issue.
+#  To reproduce the reference outputs, link a correctly rounded libm that
+#  overrides exp/log/pow/... (e.g. CORE-MATH, see tools/ci/build_coremath.sh)
+#  by setting CR_LIBM to its link flags, e.g.:
+#     > export CR_LIBM=/path/to/libcoremath_rn.a
 #
 # OpenMP : needs the LLVM OpenMP runtime (e.g. libomp-23-dev)
 #     > export OMP_NUM_THREADS=2
@@ -103,4 +107,9 @@ if [ "x$MPI" = xtrue ] ; then
       echo could not set MPI_INC_DIR, aborting
       exit 1
    fi
+fi
+
+#- optional correctly rounded libm (must come before the implicit -lm)
+if [ "x$CR_LIBM" != x ] ; then
+    LIBS="$LIBS $CR_LIBM"
 fi

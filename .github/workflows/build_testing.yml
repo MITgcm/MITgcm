@@ -84,6 +84,21 @@ jobs:
          sudo apt-get -qq install flang-${LLVM_VERSION} clang-${LLVM_VERSION}
          flang-${LLVM_VERSION} --version
 
+     # results/ were made with glibc 2.27, whose exp/log/pow/sin/cos/tan/
+     # asin/acos/atan/atan2 are correctly rounded; glibc 2.39 is not, and some
+     # sea-ice/thsice/idemix set-ups then agree to only 10-13 digits. Linking
+     # the correctly rounded CORE-MATH versions restores the reference results.
+     - name: Cache CORE-MATH
+       uses: actions/cache@v4
+       with:
+        path: ${{ runner.temp }}/core-math
+        key: core-math-${{ runner.os }}-${{ hashFiles('tools/ci/build_coremath.sh') }}
+
+     - name: Build CORE-MATH
+       run: |
+         CC=clang-${{ matrix.llvm }} tools/ci/build_coremath.sh ${{ runner.temp }}/core-math
+         echo "CR_LIBM=${{ runner.temp }}/core-math/libcoremath_rn.a" >> $GITHUB_ENV
+
      - name: Run a test
        env:
         FC: flang-${{ matrix.llvm }}
@@ -91,10 +106,7 @@ jobs:
         MITGCM_EXP: ${{ matrix.exp }}
         MITGCM_DECMD: "bash -c"
         MITGCM_ROOT: ${{ github.workspace }}
-        # -match 10: results/ were made with glibc 2.27 (correctly rounded
-        # libm); with glibc >= 2.28 some sea-ice/thsice/idemix set-ups agree
-        # to only 10-13 digits, with gfortran as well as flang.
-        MITGCM_TROPT: "-devel -of=../tools/build_options/linux_amd64_flang -match 10"
+        MITGCM_TROPT: "-devel -of=../tools/build_options/linux_amd64_flang -match 14"
        run: |
          # flang places large local arrays on the stack
          ulimit -s unlimited
