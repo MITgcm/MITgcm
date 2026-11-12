@@ -36,13 +36,21 @@ CEOP
 #ifdef ALLOW_WETDRY
 C !LOCAL VARIABLES:
       _RL budget(3)
+      _RS dummyRS(1)
+      INTEGER ioUnit, iRec
       CHARACTER*(MAX_LEN_FNAM) fn
 
       budget(1) = wdVolAdj
       budget(2) = wdCumIn
       budget(3) = wdVol0
-      CALL WRITE_GLVEC_RL( 'pickup_wetdry.', suff, budget, 3,
-     &                     myIter, myThid )
+C-    always 64 bit: WRITE_GLVEC_RL writes at writeBinaryPrec but
+C     READ_GLVEC_RL reads at readBinaryPrec, which differ in many set-ups
+      ioUnit = 0
+      iRec   = 1
+      WRITE(fn,'(A,A)') 'pickup_wetdry.', suff
+      CALL MDS_WRITEVEC_LOC( fn, precFloat64, ioUnit, 'RL', 3,
+     &                       budget, dummyRS, 0, 0, iRec,
+     &                       myIter, myThid )
 C-    upwind side of each face (wdUpwindFace), for an exact restart
       WRITE(fn,'(A,A)') 'pickup_wetdryface.', suff
       CALL WRITE_REC_3D_RL( fn, precFloat64, 1, wdUpW, 1,

@@ -28,6 +28,8 @@ CEOP
 #ifdef ALLOW_WETDRY
 C !LOCAL VARIABLES:
       _RL budget(3)
+      _RS dummyRS(1)
+      INTEGER ioUnit, iRec
       CHARACTER*(10) suff
       CHARACTER*(MAX_LEN_FNAM) fn, filNam
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -42,7 +44,12 @@ C !LOCAL VARIABLES:
       ELSE
         suff = pickupSuff
       ENDIF
-      CALL READ_GLVEC_RL( 'pickup_wetdry.', suff, budget, 3, 1, myThid )
+C-    always 64 bit (see S/R WETDRY_WRITE_PICKUP)
+      ioUnit = 0
+      iRec   = 1
+      WRITE(fn,'(A,A)') 'pickup_wetdry.', suff
+      CALL MDS_READVEC_LOC( fn, precFloat64, ioUnit, 'RL', 3,
+     &                      budget, dummyRS, 0, 0, iRec, myThid )
 
       _BEGIN_MASTER(myThid)
       wdVolAdj = budget(1)
