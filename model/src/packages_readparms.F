@@ -418,6 +418,11 @@ C--   if useRunClock=T, set RUNCLOCK parameters; otherwise just return
       CALL RUNCLOCK_READPARMS( myThid )
 #endif
 
+#ifdef ALLOW_WETDRY
+C--   if useWETDRY=T, set wetting-drying parameters; otherwise just return
+      CALL WETDRY_READPARMS( myThid )
+#endif
+
 #ifdef ALLOW_MYPACKAGE
 C--   if useMYPACKAGE=T, set mypackage parameters; otherwise just return
       CALL MYPACKAGE_READPARMS( myThid )

@@ -586,6 +586,11 @@ c-----------------------------------------------------------------------
         ENDDO
        ENDDO
       ENDDO
+#ifdef ALLOW_WETDRY
+C--   wetting-drying: cap the non-local flux fraction at 1 (and
+C     optionally taper it off in thin-water columns)
+      IF ( useWETDRY ) CALL WETDRY_KPP_TAPER( bi, bj, myThid )
+#endif
       kSurf = 1
       DO j = jMin, jMax
        DO i = iMin, iMax
