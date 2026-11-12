@@ -19,7 +19,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: READ_REC_XY_RS
 C     !INTERFACE:
-      SUBROUTINE READ_REC_XY_RS( fName,field,iRec,myIter,myThid )
+      SUBROUTINE READ_REC_XY_RS( fName, field, iRec, myIter, myThid )
 C     !DESCRIPTION: \bv
 C READ_REC_XY_RS is a "front-end" interface to the low-level I/O
 C routines.
@@ -46,7 +46,7 @@ C Local
       LOGICAL useCurrentDir
       _RL dummyRL(1)
       CHARACTER*(2) fType
-      INTEGER nNz
+      INTEGER glbFile, fPrec, nNz
 c     INTEGER IL
 c     CHARACTER*(MAX_LEN_FNAM) fullName
 CEOP
@@ -58,12 +58,14 @@ c     ELSE
 c      fullName=fName
 c     ENDIF
 
+      fPrec = readBinaryPrec
       useCurrentDir = .FALSE.
-      fType='RS'
-      nNz=1
+      glbFile = 0
+      fType = 'RS'
+      nNz = 1
 #ifdef ALLOW_MDSIO
       CALL MDS_READ_FIELD(
-     I                     fName, readBinaryPrec, useCurrentDir,
+     I                     fName, fPrec, glbFile, useCurrentDir,
      I                     fType, nNz, 1, nNz,
      O                     dummyRL, field,
      I                     iRec, myThid )
@@ -75,7 +77,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: READ_REC_XY_RL
 C     !INTERFACE:
-      SUBROUTINE READ_REC_XY_RL( fName,field,iRec,myIter,myThid )
+      SUBROUTINE READ_REC_XY_RL( fName, field, iRec, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C READ_REC_XY_RL is a "front-end" interface to the low-level I/O
@@ -105,7 +107,7 @@ C Local
       LOGICAL useCurrentDir
       _RS dummyRS(1)
       CHARACTER*(2) fType
-      INTEGER nNz
+      INTEGER glbFile, fPrec, nNz
 c     INTEGER IL
 c     CHARACTER*(MAX_LEN_FNAM) fullName
 CEOP
@@ -117,12 +119,14 @@ c     ELSE
 c      fullName=fName
 c     ENDIF
 
+      fPrec = readBinaryPrec
       useCurrentDir = .FALSE.
-      fType='RL'
-      nNz=1
+      glbFile = 0
+      fType = 'RL'
+      nNz = 1
 #ifdef ALLOW_MDSIO
       CALL MDS_READ_FIELD(
-     I                     fName, readBinaryPrec, useCurrentDir,
+     I                     fName, fPrec, glbFile, useCurrentDir,
      I                     fType, nNz, 1, nNz,
      O                     field, dummyRS,
      I                     iRec, myThid )
@@ -134,7 +138,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: READ_REC_XYZ_RS
 C     !INTERFACE:
-      SUBROUTINE READ_REC_XYZ_RS( fName,field,iRec,myIter,myThid )
+      SUBROUTINE READ_REC_XYZ_RS( fName, field, iRec, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C READ_REC_XYZ_RS is a "front-end" interface to the low-level I/O
@@ -164,7 +168,7 @@ C Local
       LOGICAL useCurrentDir
       _RL dummyRL(1)
       CHARACTER*(2) fType
-      INTEGER nNz
+      INTEGER glbFile, fPrec, nNz
 c     INTEGER IL
 c     CHARACTER*(MAX_LEN_FNAM) fullName
 CEOP
@@ -176,12 +180,14 @@ c     ELSE
 c      fullName=fName
 c     ENDIF
 
+      fPrec = readBinaryPrec
       useCurrentDir = .FALSE.
-      fType='RS'
-      nNz=Nr
+      glbFile = 0
+      fType = 'RS'
+      nNz = Nr
 #ifdef ALLOW_MDSIO
       CALL MDS_READ_FIELD(
-     I                     fName, readBinaryPrec, useCurrentDir,
+     I                     fName, fPrec, glbFile, useCurrentDir,
      I                     fType, nNz, 1, nNz,
      O                     dummyRL, field,
      I                     iRec, myThid )
@@ -193,7 +199,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: READ_REC_XYZ_RL
 C     !INTERFACE:
-      SUBROUTINE READ_REC_XYZ_RL( fName,field,iRec,myIter,myThid )
+      SUBROUTINE READ_REC_XYZ_RL( fName, field, iRec, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C READ_REC_XYZ_RL is a "front-end" interface to the low-level I/O
@@ -223,7 +229,7 @@ C Local
       LOGICAL useCurrentDir
       _RS dummyRS(1)
       CHARACTER*(2) fType
-      INTEGER nNz
+      INTEGER glbFile, fPrec, nNz
 c     INTEGER IL
 c     CHARACTER*(MAX_LEN_FNAM) fullName
 CEOP
@@ -235,12 +241,14 @@ c     ELSE
 c      fullName=fName
 c     ENDIF
 
+      fPrec = readBinaryPrec
       useCurrentDir = .FALSE.
-      fType='RL'
-      nNz=Nr
+      glbFile = 0
+      fType = 'RL'
+      nNz = Nr
 #ifdef ALLOW_MDSIO
       CALL MDS_READ_FIELD(
-     I                     fName, readBinaryPrec, useCurrentDir,
+     I                     fName, fPrec, glbFile, useCurrentDir,
      I                     fType, nNz, 1, nNz,
      O                     field, dummyRS,
      I                     iRec, myThid )
@@ -288,6 +296,7 @@ C Local
       LOGICAL useCurrentDir
       _RL dummyRL(1)
       CHARACTER*(2) fType
+      INTEGER glbFile
 c     INTEGER IL
 c     CHARACTER*(MAX_LEN_FNAM) fullName
 CEOP
@@ -300,10 +309,11 @@ c      fullName=fName
 c     ENDIF
 
       useCurrentDir = .FALSE.
-      fType='RS'
+      glbFile = 0
+      fType = 'RS'
 #ifdef ALLOW_MDSIO
       CALL MDS_READ_FIELD(
-     I                     fName, fPrec, useCurrentDir,
+     I                     fName, fPrec, glbFile, useCurrentDir,
      I                     fType, nNz, 1, nNz,
      O                     dummyRL, field,
      I                     iRec, myThid )
@@ -351,6 +361,7 @@ C Local
       LOGICAL useCurrentDir
       _RS dummyRS(1)
       CHARACTER*(2) fType
+      INTEGER glbFile
 c     INTEGER IL
 c     CHARACTER*(MAX_LEN_FNAM) fullName
 CEOP
@@ -363,10 +374,11 @@ c      fullName=fName
 c     ENDIF
 
       useCurrentDir = .FALSE.
-      fType='RL'
+      glbFile = 0
+      fType = 'RL'
 #ifdef ALLOW_MDSIO
       CALL MDS_READ_FIELD(
-     I                     fName, fPrec, useCurrentDir,
+     I                     fName, fPrec, glbFile, useCurrentDir,
      I                     fType, nNz, 1, nNz,
      O                     field, dummyRS,
      I                     iRec, myThid )
@@ -415,6 +427,7 @@ C Local
       LOGICAL useCurrentDir
       _RL dummyRL(1)
       CHARACTER*(2) fType
+      INTEGER glbFile
 c     INTEGER IL
 c     CHARACTER*(MAX_LEN_FNAM) fullName
 CEOP
@@ -427,10 +440,11 @@ c      fullName=fName
 c     ENDIF
 
       useCurrentDir = .FALSE.
-      fType='RS'
+      glbFile = 0
+      fType = 'RS'
 #ifdef ALLOW_MDSIO
       CALL MDS_READ_FIELD(
-     I                     fName, fPrec, useCurrentDir,
+     I                     fName, fPrec, glbFile, useCurrentDir,
      I                     fType, kSiz, kLo, kHi,
      O                     dummyRL, field,
      I                     iRec, myThid )
@@ -479,6 +493,7 @@ C Local
       LOGICAL useCurrentDir
       _RS dummyRS(1)
       CHARACTER*(2) fType
+      INTEGER glbFile
 c     INTEGER IL
 c     CHARACTER*(MAX_LEN_FNAM) fullName
 CEOP
@@ -491,10 +506,11 @@ c      fullName=fName
 c     ENDIF
 
       useCurrentDir = .FALSE.
-      fType='RL'
+      glbFile = 0
+      fType = 'RL'
 #ifdef ALLOW_MDSIO
       CALL MDS_READ_FIELD(
-     I                     fName, fPrec, useCurrentDir,
+     I                     fName, fPrec, glbFile, useCurrentDir,
      I                     fType, kSiz, kLo, kHi,
      O                     field, dummyRS,
      I                     iRec, myThid )
