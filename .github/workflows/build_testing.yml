@@ -47,6 +47,56 @@ jobs:
        run: |
          . tools/ci/runtr.sh
 
+ flang:
+   runs-on: ubuntu-24.04
+
+   strategy:
+     matrix:
+      llvm: [ "23" ]
+      exp:
+        - "offline_exf_seaice"
+        - "global_ocean.cs32x15"
+        - "tutorial_deep_convection"
+        - "aim.5l_cs"
+        - "isomip"
+        - "global_ocean.90x40x15"
+        - "tutorial_plume_on_slope"
+        - "tutorial_advection_in_gyre"
+        - "hs94.cs-32x32x5"
+        - "tutorial_global_oce_biogeo"
+        - "tutorial_global_oce_in_p"
+        - "tutorial_cfc_offline"
+
+   continue-on-error: true
+
+   steps:
+
+     - name: Checkout
+       uses: actions/checkout@v4
+
+     - name: Set up LLVM flang
+       env:
+        LLVM_VERSION: ${{ matrix.llvm }}
+       run: |
+         wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
+         echo "deb https://apt.llvm.org/noble/ llvm-toolchain-noble-${LLVM_VERSION} main" | sudo tee /etc/apt/sources.list.d/llvm.list
+         sudo apt-get update
+         sudo apt-get -qq install flang-${LLVM_VERSION} clang-${LLVM_VERSION}
+         flang-${LLVM_VERSION} --version
+
+     - name: Run a test
+       env:
+        FC: flang-${{ matrix.llvm }}
+        CC: clang-${{ matrix.llvm }}
+        MITGCM_EXP: ${{ matrix.exp }}
+        MITGCM_DECMD: "bash -c"
+        MITGCM_ROOT: ${{ github.workspace }}
+        MITGCM_TROPT: "-devel -of=../tools/build_options/linux_amd64_flang -match 14"
+       run: |
+         # flang places large local arrays on the stack
+         ulimit -s unlimited
+         . tools/ci/runtr.sh
+
  tapenade:
    runs-on: ubuntu-latest
 

@@ -1,0 +1,98 @@
+#!/bin/bash
+
+# Build options for LLVM flang (formerly flang-new) on Linux AMD64 platform
+#
+#  Tested with LLVM flang v23 (packages from apt.llvm.org on Ubuntu)
+#
+#  The compiler executables can be overridden by setting FC, F90C and CC
+#  in the environment, e.g. to pick a versioned install:
+#     > export FC=flang-23 F90C=flang-23 CC=clang-23
+#
+#  flang puts large local arrays on the stack: some set-ups (e.g.
+#  tutorial_deep_convection) segfault unless the stack limit is raised:
+#     > ulimit -s unlimited
+#
+# OpenMP : needs the LLVM OpenMP runtime (e.g. libomp-23-dev)
+#     > export OMP_NUM_THREADS=2
+#     > export OMP_STACKSIZE=400m
+
+if test "x$MPI" = xtrue ; then
+  CC=${CC:=mpicc}
+  FC=${FC:=mpif77}
+  F90C=${F90C:=mpif90}
+else
+  CC=${CC:=clang}
+  FC=${FC:=flang}
+  F90C=${F90C:=$FC}
+fi
+
+DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR'
+EXTENDED_SRC_FLAG='-ffixed-line-length=132'
+F90FIXEDFORMAT='-ffixed-form'
+GET_FC_VERSION="--version"
+OMPFLAG='-fopenmp'
+
+NOOPTFLAGS='-O0'
+NOOPTFILES=''
+
+CFLAGS='-O0'
+
+FFLAGS="$FFLAGS -fconvert=big-endian -fimplicit-none"
+
+if test "x$IEEE" = x ; then     #- with optimisation:
+    FOPTIM='-O3'
+    NOOPTFILES="$NOOPTFILES ini_masks_etc.F"
+else
+  if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
+    FOPTIM='-O0'
+  else                          #- development/check options:
+    FOPTIM='-O0 -g'
+  fi
+fi
+
+F90FLAGS=$FFLAGS
+F90OPTIM=$FOPTIM
+
+INCLUDEDIRS=''
+INCLUDES=''
+LIBS=''
+
+if [ "x$NETCDF_ROOT" != x ] ; then
+    INCLUDEDIR="${NETCDF_ROOT}/include"
+    INCLUDES="-I${NETCDF_ROOT}/include"
+    LIBDIR="${NETCDF_ROOT}/lib"
+    LIBS="-L${NETCDF_ROOT}/lib"
+elif [ "x$NETCDF_INC" != x -a "x$NETCDF_LIB" != x ]; then
+    NETCDF_INC=`echo $NETCDF_INC | sed 's/-I//g'`
+    NETCDF_LIB=`echo $NETCDF_LIB | sed 's/-L//g'`
+    INCLUDEDIR="${NETCDF_INC}"
+    INCLUDES="-I${NETCDF_INC}"
+    LIBDIR="${NETCDF_LIB}"
+    LIBS="-L${NETCDF_LIB}"
+fi
+#- note: netcdf Fortran modules/libraries are compiler specific;
+#  a netcdf-fortran built with gfortran cannot be used with flang.
+
+if [ -n "$MPI_HOME" -a -z "$MPI_INC_DIR" ]; then
+    MPI_INC_DIR="$MPI_HOME/include"
+fi
+
+if [ "x$MPI" = xtrue ] ; then
+   if [ -z "$MPI_INC_DIR" ] ; then
+      # MPI env variables are not set, trying pkg-config instead
+      if [[ -n $( pkg-config --cflags-only-I ompi ) && ($? == 0) ]] ; then
+         MPI_INC_DIR=$(pkg-config --cflags-only-I ompi | awk '{ print $1 }' | sed -e "s/-I//" )
+      else
+         echo MPI_HOME is not set and pkg-config not available, aborting
+         exit 1
+      fi
+   fi
+   if [ -n "$MPI_INC_DIR" ] ; then
+      INCLUDES+=" -I$MPI_INC_DIR"
+      INCLUDEDIRS+=" $MPI_INC_DIR"
+      MPIINCLUDEDIR="$MPI_INC_DIR"
+   else
+      echo could not set MPI_INC_DIR, aborting
+      exit 1
+   fi
+fi
