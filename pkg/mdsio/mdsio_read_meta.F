@@ -7,6 +7,7 @@ C     !INTERFACE:
      I               fileName,
      O               simulName,
      O               titleLine,
+     O               globFile,
      O               filePrec,
      U               nDims,   nFlds,   nTimRec,
      O               dimList, fldList, timList,
@@ -41,6 +42,8 @@ C
 C     !OUTPUT PARAMETERS:
 C     simulName (string)  :: name of simulation (recorded in file)
 C     titleLine (string)  :: title or any descriptive comments (in file)
+C     globFile  (integer) :: =1 : global meta file ; =-1 : tiled meta file
+C                            =0 : no meta file found
 C     filePrec  (integer) :: number of bits per word in data-file (32 or 64)
 C     nDims     (integer) :: number of dimensions
 C     dimList   (integer) :: array of dimensions
@@ -56,6 +59,7 @@ C
       CHARACTER*(*) fileName
       CHARACTER*(*) simulName
       CHARACTER*(*) titleLine
+      INTEGER globFile
       INTEGER filePrec
       INTEGER nDims
       INTEGER dimList(3,*)
@@ -97,6 +101,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Initialise output arguments
       simulName = ' '
       titleLine = ' '
+      globFile  = 0
       filePrec  = 0
       nRecords  = 0
       fileIter  = 0
@@ -131,10 +136,11 @@ C     Assign special directory
       pL = ILNBLNK( mdsioLocalDir )
       IF ( useCurrentDir .OR. pL.EQ.0 ) THEN
         pfName = fileName
+        pL = iL
       ELSE
         WRITE(pfName,'(2A)') mdsioLocalDir(1:pL), fileName(1:iL)
+        pL = ILNBLNK( pfName )
       ENDIF
-      pL = ILNBLNK( pfName )
 
 C--   Search for meta file:
 C-    look for meta-file = {fileName}
@@ -179,6 +185,11 @@ c    &               fileName(1:iL), ' , ', mFileName(1:iLm)
       ELSE
 
 C--   File exist
+        IF ( globalFile ) THEN
+          globFile = 1
+        ELSE
+          globFile = -1
+        ENDIF
         IF ( debugLevel .GE. debLevB ) THEN
           WRITE(msgBuf,'(2A)') ' MDS_READ_META: opening file: ',
      &                        mFileName(1:iLm)
@@ -201,7 +212,7 @@ c       write(0,*) 'errIO=',errIO
         ENDIF
 
 C-    Read the meta file in the same way as S/R OPEN_COPY_DATA_FILE
-C     (which seems to be works on many platforms):
+C     (which seems to work on many platforms):
         DO WHILE ( .TRUE. )
          READ( mUnit, FMT='(A)', END=1001 ) lineBuf
 C--   Extract information from buffer: "lineBuf"

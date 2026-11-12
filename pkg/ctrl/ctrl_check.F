@@ -113,8 +113,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ENDIF
 #endif
 
-#ifndef ALLOW_OPENAD
-
 #ifdef ALLOW_GENARR2D_CONTROL
       DO iarr = 1, maxCtrlArr2D
         IF (((xx_genarr2d_weight(iarr).NE.' ').AND.
@@ -187,8 +185,6 @@ C     character 0 to 9 <-> 48 to 57
         ENDIF
       ENDDO
 #endif /* ALLOW_GENTIM2D_CONTROL */
-
-#endif /* ndef ALLOW_OPENAD */
 
 #ifdef ALLOW_DIFFKR_CONTROL
 C-    to use DIFFKR_CONTROL, needs to define ALLOW_3D_DIFFKR in CPP_OPTIONS.h

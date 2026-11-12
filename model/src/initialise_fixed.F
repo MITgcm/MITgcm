@@ -150,11 +150,7 @@ C     Variables defining model grid spacing are defined.
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('INI_GRID',myThid)
 #endif
-#ifdef ALLOW_OPENAD
-      CALL OpenAD_INI_GRID( myThid )
-#else
       CALL INI_GRID( myThid )
-#endif
 
 C--   Load reference profiles from files
 #ifdef ALLOW_DEBUG
@@ -184,22 +180,14 @@ C--   Initialise map of depths
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('INI_DEPTHS',myThid)
 #endif
-#ifdef ALLOW_OPENAD
-      CALL OpenAD_INI_DEPTHS( myThid )
-#else
       CALL INI_DEPTHS( myThid )
-#endif
 
-C--   Derive masks, lopping factors and recipricols of quantities.
+C--   Derive masks, lopping factors and reciprocals of quantities.
 C     Volumes and areas are set according to grid and depth map.
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('INI_MASKS_ETC',myThid)
 #endif
-#ifdef ALLOW_OPENAD
-      CALL OpenAD_INI_MASKS_ETC( myThid )
-#else
       CALL INI_MASKS_ETC( myThid )
-#endif
 
 C--   Synchronize all threads after setting masks and before pkgs init.
       _BARRIER
@@ -220,31 +208,19 @@ C--   Set Bo_surf => define the Linear Relation: Phi_surf(eta)
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('INI_LINEAR_PHISURF',myThid)
 #endif
-#ifdef ALLOW_OPENAD
-      CALL OpenAD_INI_LINEAR_PHISURF( myThid )
-#else
       CALL INI_LINEAR_PHISURF( myThid )
-#endif
 
 C--   Set coriolis operators
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('INI_CORI',myThid)
 #endif
-#ifdef ALLOW_OPENAD
-      CALL OpenAD_INI_CORI( myThid )
-#else
       CALL INI_CORI( myThid )
-#endif
 
 C--   Set laplace operators for use in 2D conjugate gradient solver.
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('INI_CG2D',myThid)
 #endif
-#ifdef ALLOW_OPENAD
-      CALL OpenAD_INI_CG2D( myThid )
-#else
       CALL INI_CG2D( myThid )
-#endif
 
 #ifdef ALLOW_NONHYDROSTATIC
 C--   Set laplace operators for use in 3D conjugate gradient solver.

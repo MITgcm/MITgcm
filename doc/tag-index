@@ -1,6 +1,37 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/steep_icecavity:
+  - fix temp_addMas/salt_addMass contribution to heating-tendency with
+    selectAddFluid=1 ; fix typo (wrong pkg name) in pkg/pkg_depend.
+
+checkpoint69s (2026/10/30)
+o pkg/seaice:
+  - fix TAF-generated adjoint of seaice_lsr.F ; update lab-sea Adm ref output.
+o pkg/mdsio & rw:
+  - add one input argument to S/R MDS_READ_FIELD to allow to read-in tiled
+    files even if useSingleCpuIO=T ; add 1 output arg. to MDS_READ_META and
+    update calls to these 2 S/R without changing behavior.
+  - adjust Multiple-fields reading S/R (in pkg/rw/read_mflds.F) to read-in
+    global/tiled binary files when corresponding global/tiled meta files exist.
+o pkg/atm2d & model/src:
+  - remove all pkg/atm2d content and corresponding bits in model/src ;
+  - simplify/fix TIMER report from "the_main_loop.F".
+o pkg/ctrl:
+  - fix interpolation weights in ctrl_get_gen_rec.F for time-varying controls
+    (gentim2d) without pkg/cal (useCAL=F);
+  - change ctrl period and externForcingCycle in halfpipe_streamice AD test
+    (in input_ad) to test time interpolation with weights other than 0.5;
+    and update TAF & Tapenade ref. output.
+o pkg/layers:
+  - turn "layers_useThermo" into runtime parameter, default =False.
+o tools, pkgs and src code:
+  - remove all OpenAD bits from genmake2 & testreport, remove all OAD_support
+    and pkg/openad contents ; remove all OpenAD bits in model/src and pkgs.
+o pkg/cal:
+  - fix the handling of the "phase" in cal_time2dump.F, when calendarDumps=T,
+    specially for the case where phase > |freq| (for skipping early output).
+
 checkpoint69r (2026/10/05)
 o tools/build_options:
   - add gfortran and intel compiler optfile for newer AMD and Intel processors

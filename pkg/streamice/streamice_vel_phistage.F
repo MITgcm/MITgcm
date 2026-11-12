@@ -6,7 +6,6 @@
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP
-#ifndef ALLOW_OPENAD
       SUBROUTINE STREAMICE_VEL_PHISTAGE (
      I                   myThid,
      I                   maxNLIter,
@@ -17,20 +16,6 @@ CBOP
      O                   err_last_change,
      O                   err_init,
      I                   isinloop)
-#else
-      SUBROUTINE STREAMICE_VEL_PHISTAGE (
-     I                   myThid,
-     I                   maxNLIter,
-     I                   maxCGiter,
-     O                   cgtol,
-     O                   nL_iter,
-     O                   adj_iter,
-     O                   CONVERGED,
-     O                   ADJ_CONVERGED,
-     O                   err_last_change,
-     O                   err_init,
-     I                   isinloop)
-#endif
 
 C     /============================================================\
 C     | SUBROUTINE                                                 |
@@ -58,10 +43,6 @@ C     !INPUT/OUTPUT ARGUMENTS
       INTEGER nL_iter
       LOGICAL CONVERGED
       INTEGER isinloop
-#ifdef ALLOW_OPENAD
-      INTEGER adj_iter
-      LOGICAL adj_CONVERGED
-#endif
 
 #ifdef ALLOW_STREAMICE_FP_ADJ
 
@@ -71,15 +52,7 @@ C     LOCAL VARIABLES
       _RL     err_max, err_max_fp
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-#ifdef ALLOW_OPENAD
-      adj_iter=0
-      adj_CONVERGED=.false.
-#endif
-
       IF (ISINLOOP .ne. 0) THEN
-#ifdef ALLOW_OPENAD
-        IF (.NOT. CONVERGED) THEN
-#endif
           NL_ITER = (NL_ITER + 1)
           CALL streamice_vel_phi(MYTHID,MAXNLITER,MAXCGITER,CGTOL
      +,CG_ITERS,err_max)
@@ -147,9 +120,6 @@ C!!!!!!!!!!! conv check
           ENDDO
 
 C!!!!!!!!!!! end conv check
-#ifdef ALLOW_OPENAD
-        ENDIF
-#endif
       ENDIF
 
 #endif /* ALLOW_STREAMICE_FP_ADJ */

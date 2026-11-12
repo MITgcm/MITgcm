@@ -1079,7 +1079,6 @@ C-- Logical flags for selecting packages
       LOGICAL useICEFRONT
       LOGICAL useThSIce
       LOGICAL useLand
-      LOGICAL useATM2d
       LOGICAL useAIM
       LOGICAL useAtm_Phys
       LOGICAL useFizhi
@@ -1102,7 +1101,7 @@ C-- Logical flags for selecting packages
      &        usePTRACERS, useGCHEM, useRBCS, useOffLine, useMATRIX,
      &        useFRAZIL, useSEAICE, useSALT_PLUME, useShelfIce, useSTIC,
      &        useStreamIce, useICEFRONT, useThSIce, useLand,
-     &        useATM2d, useAIM, useAtm_Phys, useFizhi, useGridAlt,
+     &        useAIM, useAtm_Phys, useFizhi, useGridAlt,
      &        useDiagnostics, useREGRID, useLayers, useMNC,
      &        useRunClock, useEMBED_FILES,
      &        useMYPACKAGE

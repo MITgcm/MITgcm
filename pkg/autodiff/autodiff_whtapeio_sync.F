@@ -26,9 +26,7 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "CTRL_SIZE.h"
 #include "CTRL.h"
-#ifndef ALLOW_OPENAD
-# include "AUTODIFF.h"
-#endif
+#include "AUTODIFF.h"
 #ifdef ALLOW_WHIO_3D
 # ifdef ALLOW_AUTODIFF_TAMC
 #  include "tamc.h"

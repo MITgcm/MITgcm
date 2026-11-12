@@ -22,13 +22,9 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "cost.h"
-#ifdef ALLOW_OPENAD
-# include "FFIELDS.h"
-#else
-# include "cost_local.h"
-# include "CTRL_SIZE.h"
-# include "CTRL_GENARR.h"
-#endif
+#include "cost_local.h"
+#include "CTRL_SIZE.h"
+#include "CTRL_GENARR.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid - Thread number for this instance of the routine.
@@ -39,18 +35,14 @@ C     !LOCAL VARIABLES:
       INTEGER i, j
       INTEGER bi, bj
       _RL     locfc, tmpC
-#ifndef ALLOW_OPENAD
       INTEGER iarr
-#endif
 CEOP
 
-#ifndef ALLOW_OPENAD
 C     iarr = 1 is set in data.ctrl (xx_gentim2d_file(1) = 'xx_qnet').
       iarr = 1
 C     By default xx_gentim2d_period(1)=0, so that control parameter
 C     xx_gentim2d(:,:,:,:,1) is the mean heat flux perturbation. Here we
 C     penalize deviations from the first guess = 0.
-#endif
       tmpC = 0. _d 0
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -73,11 +65,7 @@ C     penalize deviations from the first guess = 0.
           locfc = locfc + tmpC*maskC(i,j,1,bi,bj)*
      &        whfluxm(i,j,bi,bj)*
      &       (
-#ifdef ALLOW_OPENAD
-     &         Qnetm(i,j,bi,bj)
-#else
      &         xx_gentim2d(i,j,bi,bj,iarr)
-#endif
      &       )**2
          ENDDO
         ENDDO

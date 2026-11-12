@@ -268,7 +268,6 @@ cc          ENDDO
        ENDDO
       ENDDO
 
-c$openad xxx simple loop
       DO j = 1-cg_halo, sNy+cg_halo
        DO i = 1-cg_halo, sNx+cg_halo
         DO bj = myByLo(myThid), myByHi(myThid)

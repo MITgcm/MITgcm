@@ -42,9 +42,7 @@ C     myThid     :: Thread number for this instance of the routine.
 C     !LOCAL VARIABLES:
       INTEGER bi, bj
       CHARACTER*15  tile15c
-#ifndef ALLOW_OPENAD
       CHARACTER*(26) cfname
-#endif
 
       _RL f_shelfice
       _RL f_shifwflx
@@ -92,7 +90,6 @@ C--   Sum up all contributions.
       CALL GLOBAL_SUM_TILE_RL( objf_shelfice, f_shelfice, myThid )
 cML      CALL GLOBAL_SUM_TILE_RL( num_shelfice, no_shelfice, myThid )
 
-# ifndef ALLOW_OPENAD
 C--   Each process has calculated the global part for itself.
       IF ( ifc .NE. -1 ) THEN
 
@@ -108,7 +105,6 @@ cML       WRITE(ifc,*) 'f_shelfice =', f_shelfice, no_shelfice
        CLOSE(ifc)
 
       ENDIF
-# endif /* ALLOW_OPENAD */
 
 #endif /* ALLOW_COST */
 

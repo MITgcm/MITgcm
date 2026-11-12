@@ -31,12 +31,14 @@ C arr       ( RS/RL ) :: array to write, arr(:,:,nNz,:,:)
 C irecord   (integer) :: record number to read
 C myThid    (integer) :: thread identifier
 C
-C Routine now calls MDS_READ_FIELD, just a way to add 2 extra arguments
+C Routine now calls MDS_READ_FIELD, just a way to add 3 extra arguments
 C to the argument list. The 1rst new argument is to make the difference between
 C the vertical dimension (3rd dimension) of the output array and the number
 C of levels to read in. This routine assumes they are the same.
 C The 2nd new argument (useCurrentDir=.FALSE.) allows to read files from
 C the "mdsioLocalDir" directory (if it is set).
+C The 3rd new argument (globFile=0) is to always read global file if
+C useSingleCpuIO=T and, otherwise, global or tiled files (what is found).
 
       IMPLICIT NONE
 C Global variables / COMMON blocks
@@ -59,14 +61,14 @@ C Local variables
 
       IF ( arrType.EQ.'RL' ) THEN
         CALL MDS_READ_FIELD(
-     I                fName, filePrec, .FALSE., arrType, nNz, 1, nNz,
-     O                arr, dummyRS,
-     I                irecord, myThid )
+     I           fName, filePrec, 0, .FALSE., arrType, nNz, 1, nNz,
+     O           arr, dummyRS,
+     I           irecord, myThid )
       ELSE
         CALL MDS_READ_FIELD(
-     I                fName, filePrec, .FALSE., arrType, nNz, 1, nNz,
-     O                dummyRL, arr,
-     I                irecord, myThid )
+     I           fName, filePrec, 0, .FALSE., arrType, nNz, 1, nNz,
+     O           dummyRL, arr,
+     I           irecord, myThid )
       ENDIF
 
 #else /* USE_OBSOLETE_MDS_RW_FIELD */
@@ -97,12 +99,14 @@ C arr       ( RS/RL ) :: array to write, arr(:,:,nNz,:,:)
 C irecord   (integer) :: record number to read
 C myThid    (integer) :: thread identifier
 C
-C Routine now calls MDS_READ_FIELD, just a way to add 2 extra arguments
+C Routine now calls MDS_READ_FIELD, just a way to add 3 extra arguments
 C to the argument list. The 1rst new argument is to make the difference between
 C the vertical dimension (3rd dimension) of the output array and the number
 C of levels to read in. This routine assumes they are the same.
 C The 2nd new argument (useCurrentDir=.FALSE.) forces to ignore the
 C "mdsioLocalDir" parameter and to always read from the current directory.
+C The 3rd new argument (globFile=0) is to always read global file if
+C useSingleCpuIO=T and, otherwise, global or tiled files (what is found).
 
       IMPLICIT NONE
 C Global variables / COMMON blocks
@@ -125,14 +129,14 @@ C Local variables
 
       IF ( arrType.EQ.'RL' ) THEN
         CALL MDS_READ_FIELD(
-     I                fName, filePrec, .TRUE., arrType, nNz, 1, nNz,
-     O                arr, dummyRS,
-     I                irecord, myThid )
+     I           fName, filePrec, 0, .TRUE., arrType, nNz, 1, nNz,
+     O           arr, dummyRS,
+     I           irecord, myThid )
       ELSE
         CALL MDS_READ_FIELD(
-     I                fName, filePrec, .TRUE., arrType, nNz, 1, nNz,
-     O                dummyRL, arr,
-     I                irecord, myThid )
+     I           fName, filePrec, 0, .TRUE., arrType, nNz, 1, nNz,
+     O           dummyRL, arr,
+     I           irecord, myThid )
       ENDIF
 
 #else /* USE_OBSOLETE_MDS_RW_FIELD */
@@ -185,7 +189,7 @@ C Routine arguments
       LOGICAL globalFile
       CHARACTER*(2) arrType
       INTEGER nNz
-      _RL     arr(1-oLx:sNx+oLx,1-oLy:sNy+oLy,nNz,nSx,nSy)
+      _RL     arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nNz,nSx,nSy)
       INTEGER irecord
       INTEGER myIter
       INTEGER myThid
@@ -197,14 +201,14 @@ C Local variables
 
       IF ( arrType.EQ.'RL' ) THEN
         CALL MDS_WRITE_FIELD(
-     I                 fName, filePrec, globalFile, .FALSE.,
-     I                 arrType, nNz, 1, nNz, arr, dummyRS,
-     I                 irecord, myIter, myThid )
+     I           fName, filePrec, globalFile, .FALSE.,
+     I           arrType, nNz, 1, nNz, arr, dummyRS,
+     I           irecord, myIter, myThid )
       ELSE
         CALL MDS_WRITE_FIELD(
-     I                 fName, filePrec, globalFile, .FALSE.,
-     I                 arrType, nNz, 1, nNz, dummyRL, arr,
-     I                 irecord, myIter, myThid )
+     I           fName, filePrec, globalFile, .FALSE.,
+     I           arrType, nNz, 1, nNz, dummyRL, arr,
+     I           irecord, myIter, myThid )
       ENDIF
 
 #else /* USE_OBSOLETE_MDS_RW_FIELD */
@@ -257,7 +261,7 @@ C Routine arguments
       LOGICAL globalFile
       CHARACTER*(2) arrType
       INTEGER nNz
-      _RL     arr(1-oLx:sNx+oLx,1-oLy:sNy+oLy,nNz,nSx,nSy)
+      _RL     arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nNz,nSx,nSy)
       INTEGER irecord
       INTEGER myIter
       INTEGER myThid
@@ -269,14 +273,14 @@ C Local variables
 
       IF ( arrType.EQ.'RL' ) THEN
         CALL MDS_WRITE_FIELD(
-     I                 fName, filePrec, globalFile, .TRUE.,
-     I                 arrType, nNz, 1, nNz, arr, dummyRS,
-     I                 irecord, myIter, myThid )
+     I           fName, filePrec, globalFile, .TRUE.,
+     I           arrType, nNz, 1, nNz, arr, dummyRS,
+     I           irecord, myIter, myThid )
       ELSE
         CALL MDS_WRITE_FIELD(
-     I                 fName, filePrec, globalFile, .TRUE.,
-     I                 arrType, nNz, 1, nNz, dummyRL, arr,
-     I                 irecord, myIter, myThid )
+     I           fName, filePrec, globalFile, .TRUE.,
+     I           arrType, nNz, 1, nNz, dummyRL, arr,
+     I           irecord, myIter, myThid )
       ENDIF
 
 #else /* USE_OBSOLETE_MDS_RW_FIELD */
