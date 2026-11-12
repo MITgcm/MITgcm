@@ -12,6 +12,14 @@
 #  tutorial_deep_convection) segfault unless the stack limit is raised:
 #     > ulimit -s unlimited
 #
+#  Note on reproducibility: the verification reference outputs were made
+#  with glibc <= 2.27, whose libm exp/log/pow/atan/asin are correctly rounded.
+#  glibc >= 2.28 (e.g. Ubuntu >= 20.04) uses faster implementations that are
+#  off by 1 ulp for a small fraction of arguments. Some set-ups amplify this
+#  (seaice dynamics, thsice, idemix, in_p) and agree to only 10-13 digits.
+#  gfortran on the same system gives the same results as flang (bit-for-bit
+#  at -O0), so this is not a flang issue.
+#
 # OpenMP : needs the LLVM OpenMP runtime (e.g. libomp-23-dev)
 #     > export OMP_NUM_THREADS=2
 #     > export OMP_STACKSIZE=400m
