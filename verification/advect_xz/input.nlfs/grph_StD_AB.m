@@ -5,8 +5,8 @@
 %-
 %namA(2)={'r16a'};
 
-alphAB=0.6; %- Adams-bashforth parameter (= 0.5+abEps )
-alphAB=0.;
+ alphAB=0.6; %- Adams-bashforth parameter (= 0.5+abEps )
+ alphAB=0.; % <-- comment out to show Average-tracer with AB correction included
 
 nItMx=1e10*ones(1,Nexp); %nItMx(3)=11;
 nItMx=2400*ones(1,Nexp);
@@ -21,9 +21,6 @@ end
 if krd > 0,
 %- define list of fields to read in:
  clear listV ;
-%listV={'Eta','U','V','W','T','S','DETADT2','RELHUM','Phi'};
-%listV={'Eta','W','T','S','CONVADJ','DETADT2'};
-%listV={'Eta','UE_VEL_C','VN_VEL_C','W','T','DETADT2','Phi'};
 %listV={'Eta','U','W','T','S','ADVx_TH','ADVr_TH','AB_gT','AB_gS'};
 %listV={'Eta','U','W','T','S','ADVx_TH','ADVr_TH','gSinAB'};
 %- or take all them:
@@ -89,18 +86,13 @@ nbG=min(nbG,nbV); list_on(1:nbG)=1 ;
 %list_on(1:6)=[1 1 1 1 1 1];
 
 isA=ones(1,Nexp); ieA=ntA;
-%- limit the length : for search of isA <->1500y: find(ttA(:,2) == 1500)
+%- limit the length :
 %isA=isA*31 ; % drop the 1rst mnth (1 Monitor/d)
-%isA=isA*2 ; % drop the 1rst mnth (1 Monitor/30d)
-%isA(1)=31 ; isA(2)=4 ; % drop the 1rst mnth
 %ieA(:)=240; %isA(:)=1;
 
-linA(1,:)='k-'; % ieA(1)=60 ; % ieA(1)=1152 ;
-linA(2,:)='b-';
-linA(3,:)='r-';
-linA(4,:)='g-';
-linA(5,:)='m-';
-linA(6,:)='c-';
+lThick=0; %- default line thickness
+linA={'k-','b-','r-','g-','m-','c-'};
+% lThick=1.5;
 
 ieA=min(ieA,nItMx);
 %titall='AIM , Cubic-G (32x32) , cpl-FM Forcing' ;
@@ -126,14 +118,14 @@ for ng=1:nbV,
   figure(ng); set(ng,'position',[100+100*ng 60+40*ng 500 700]);clf;
   var=squeeze(vv1(1+kl,:,1,:,:)); dd=zeros(5,Nexp); av=zeros(5,Nexp);
 %------------
-  gAB=0;
+  gAB=0; titc=titv;
   if strcmp(namV,'T'),
     if length(strmatch('gTinAB',listV)) == 1, gAB=strmatch('gTinAB',listV); end
   end
   if strcmp(namV,'S'),
     if length(strmatch('gSinAB',listV)) == 1, gAB=strmatch('gSinAB',listV); end
   end
-  if gAB > 0,
+  if gAB*alphAB > 0,
     tmpvar=squeeze(vvA(1+kl,:,1,1,gAB,:));
     if Nexp == 1, tmpvar=tmpvar'; end
     delT=(tiA(2,2,:)-tiA(1,2,:)); delN=(tiA(2,1,:)-tiA(1,1,:));
@@ -141,7 +133,7 @@ for ng=1:nbV,
     tmpvar=tmpvar.*delT;
     tmpvar=alphAB*tmpvar;
     tmpvar=reshape(tmpvar,[nIt 1 Nexp]);
-    var(:,1,:)=var(:,1,:)-tmpvar;
+    var(:,1,:)=var(:,1,:)-tmpvar; titc=[titv,'\_ab'];
   end
 %------------
   for n=1:Nexp,
@@ -151,18 +143,19 @@ for ng=1:nbV,
   for nv=1:4,
     subplot(410+nv); ttmn=' Mx-mn:'; ttav=' Av:';
     for n=1:Nexp,
-      plot(ttA(isA(n):ieA(n),n),var(isA(n):ieA(n),nv,n),linA(n,:));
+      LL(n)=plot(ttA(isA(n):ieA(n),n),var(isA(n):ieA(n),nv,n),char(linA(n)));
       if n == 1, hold on ; end ;
       ttmn=sprintf([ttmn,' %2.1e ;'],dd(nv,n));
       ttav=sprintf([ttav,' %3.2e ;'],av(nv,n));
     end ; hold off ;
+    if lThick > 0, set(LL,'LineWidth',lThick); end
     AA=axis ; dAA=AA(4)-AA(3);
     if AA(3)*AA(4) <= 0, AA(3)=min(AA(3),-dAA/10); AA(4)=max(AA(4),dAA/10); end
     if ttax1 < ttax2, AA(1)=ttax1; AA(2)=ttax2; end;
     axis(AA); grid ;
-    if nv == 1, title(['Avr ',titv,'  ',ttmn]); end
+    if nv == 1, title(['Avr ',titc,'  ',ttmn]); end
     if nv == 2, title(['Std-Dev ',titv,'  ',ttav]); end
-    if nv == 3, title(['min ',titv,'  ',ttav]); legend(namLg,0); end
+    if nv == 3, title(['min ',titv,'  ',ttav]); legend(namLg,'Location','best'); end
     if nv == 4, title(['Max ',titv,'  ',ttav]); end
   end ; xlabel(titT);
 %--

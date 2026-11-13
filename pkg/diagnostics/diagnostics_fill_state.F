@@ -260,15 +260,27 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         IF ( DIAGNOSTICS_IS_ON('WVELTH  ',myThid) ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
-           DO k=1,Nr
-            km1 = MAX(k-1,1)
-            DO j = 1,sNy
-             DO i = 1,sNx
-               tmpMk(i,j,k,bi,bj) = wVel(i,j,k,bi,bj)*0.5 _d 0
+           IF ( uniformFreeSurfLev ) THEN
+            DO k=1,Nr
+             km1 = MAX(k-1,1)
+             DO j = 1,sNy
+              DO i = 1,sNx
+               tmpMk(i,j,k,bi,bj) = wVel(i,j,k,bi,bj)*halfRL
      &                  *(theta(i,j,k,bi,bj)+theta(i,j,km1,bi,bj))
+              ENDDO
              ENDDO
             ENDDO
-           ENDDO
+           ELSE
+            DO k=1,Nr
+             DO j = 1,sNy
+              DO i = 1,sNx
+               km1 = MAX( k-1, MIN(kSurfC(i,j,bi,bj),Nr) )
+               tmpMk(i,j,k,bi,bj) = wVel(i,j,k,bi,bj)*halfRL
+     &                  *(theta(i,j,k,bi,bj)+theta(i,j,km1,bi,bj))
+              ENDDO
+             ENDDO
+            ENDDO
+           ENDIF
           ENDDO
          ENDDO
          CALL DIAGNOSTICS_FILL(tmpMk,'WVELTH  ',0,Nr,0,1,1,myThid)
@@ -309,15 +321,27 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         IF ( DIAGNOSTICS_IS_ON('WVELSLT ',myThid) ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
-           DO k=1,Nr
-            km1 = MAX(k-1,1)
-            DO j = 1,sNy
-             DO i = 1,sNx
-               tmpMk(i,j,k,bi,bj) = wVel(i,j,k,bi,bj)*0.5 _d 0
+           IF ( uniformFreeSurfLev ) THEN
+            DO k=1,Nr
+             km1 = MAX(k-1,1)
+             DO j = 1,sNy
+              DO i = 1,sNx
+               tmpMk(i,j,k,bi,bj) = wVel(i,j,k,bi,bj)*halfRL
      &                  *(salt(i,j,k,bi,bj)+salt(i,j,km1,bi,bj))
+              ENDDO
              ENDDO
             ENDDO
-           ENDDO
+           ELSE
+            DO k=1,Nr
+             DO j = 1,sNy
+              DO i = 1,sNx
+               km1 = MAX( k-1, MIN(kSurfC(i,j,bi,bj),Nr) )
+               tmpMk(i,j,k,bi,bj) = wVel(i,j,k,bi,bj)*halfRL
+     &                  *(salt(i,j,k,bi,bj)+salt(i,j,km1,bi,bj))
+              ENDDO
+             ENDDO
+            ENDDO
+           ENDIF
           ENDDO
          ENDDO
          CALL DIAGNOSTICS_FILL(tmpMk,'WVELSLT ',0,Nr,0,1,1,myThid)
@@ -623,15 +647,27 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         IF ( DIAGNOSTICS_IS_ON('WTHMASS ',myThid) ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
-           DO k=1,Nr
-            km1 = MAX(k-1,1)
-            DO j = 1,sNy
-             DO i = 1,sNx
-               tmpMk(i,j,k,bi,bj) = wVel(i,j,k,bi,bj)*0.5 _d 0
+           IF ( uniformFreeSurfLev ) THEN
+            DO k=1,Nr
+             km1 = MAX(k-1,1)
+             DO j = 1,sNy
+              DO i = 1,sNx
+               tmpMk(i,j,k,bi,bj) = wVel(i,j,k,bi,bj)*halfRL
      &                  *(theta(i,j,k,bi,bj)+theta(i,j,km1,bi,bj))
+              ENDDO
              ENDDO
             ENDDO
-           ENDDO
+           ELSE
+            DO k=1,Nr
+             DO j = 1,sNy
+              DO i = 1,sNx
+               km1 = MAX( k-1, MIN(kSurfC(i,j,bi,bj),Nr) )
+               tmpMk(i,j,k,bi,bj) = wVel(i,j,k,bi,bj)*halfRL
+     &                  *(theta(i,j,k,bi,bj)+theta(i,j,km1,bi,bj))
+              ENDDO
+             ENDDO
+            ENDDO
+           ENDIF
           ENDDO
          ENDDO
          CALL DIAGNOSTICS_FILL(tmpMk,'WTHMASS ',0,Nr,0,1,1,myThid)
@@ -674,15 +710,27 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         IF ( DIAGNOSTICS_IS_ON('WSLTMASS',myThid) ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
-           DO k=1,Nr
-            km1 = MAX(k-1,1)
-            DO j = 1,sNy
-             DO i = 1,sNx
-               tmpMk(i,j,k,bi,bj) = wVel(i,j,k,bi,bj)*0.5 _d 0
+           IF ( uniformFreeSurfLev ) THEN
+            DO k=1,Nr
+             km1 = MAX(k-1,1)
+             DO j = 1,sNy
+              DO i = 1,sNx
+               tmpMk(i,j,k,bi,bj) = wVel(i,j,k,bi,bj)*halfRL
      &                  *(salt(i,j,k,bi,bj)+salt(i,j,km1,bi,bj))
+              ENDDO
              ENDDO
             ENDDO
-           ENDDO
+           ELSE
+            DO k=1,Nr
+             DO j = 1,sNy
+              DO i = 1,sNx
+               km1 = MAX( k-1, MIN(kSurfC(i,j,bi,bj),Nr) )
+               tmpMk(i,j,k,bi,bj) = wVel(i,j,k,bi,bj)*halfRL
+     &                  *(salt(i,j,k,bi,bj)+salt(i,j,km1,bi,bj))
+              ENDDO
+             ENDDO
+            ENDDO
+           ENDIF
           ENDDO
          ENDDO
          CALL DIAGNOSTICS_FILL(tmpMk,'WSLTMASS',0,Nr,0,1,1,myThid)
