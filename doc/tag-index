@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/streamice:
+  - fix metric terms k1AtC_str,k2AtC_str and how they are applied.
 o pkg/steep_icecavity:
   - fix temp_addMas/salt_addMass contribution to heating-tendency with
     selectAddFluid=1 ; fix typo (wrong pkg name) in pkg/pkg_depend.
