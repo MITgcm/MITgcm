@@ -112,6 +112,7 @@ C                   at the upper(U) and lower(D) faces of a cell.
 C     gT_loc     :: Temperature tendency (local to this S/R)
 C     gtForc     :: Temperature forcing tendency
 C     gt_AB      :: Adams-Bashforth temperature tendency increment
+C     tracTmp    :: tracer field intermediate value (after Multi-Dim Advect)
 C   useVariableK :: T when vertical diffusion is not constant
       INTEGER iMin, iMax, jMin, jMax
       INTEGER i, j, k
@@ -130,9 +131,13 @@ C   useVariableK :: T when vertical diffusion is not constant
       _RL gtForc  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL gt_AB   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef ALLOW_DIAGNOSTICS
+      _RL tracTmp (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       LOGICAL diagForcing, diagAB_tend
+#else
+      _RL tracTmp(1)
 #endif
       LOGICAL calcAdvection
+      LOGICAL diagAdvVarE, diagAdvVarI
       INTEGER iterNb
 #ifdef ALLOW_ADAMSBASHFORTH_3
       INTEGER m2
@@ -170,6 +175,12 @@ C     extended over 1 point in tile halo region (0:sNx+1,0:sNy=1).
       IF ( useDiagnostics .AND. AdamsBashforthGt )
      &     diagAB_tend = DIAGNOSTICS_IS_ON( 'AB_gT   ', myThid )
 #endif
+      diagAdvVarE = .FALSE.
+      diagAdvVarI = .FALSE.
+      IF ( useDiagnostics )
+     &    CALL GAD_DIAG_VARIANCE_SET(
+     O             diagAdvVarE, diagAdvVarI,
+     I             tempImplVertAdv, GAD_TEMPERATURE, bi, bj, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
       tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
@@ -261,12 +272,12 @@ CADJ STORE som_T(:,:,:,bi,bj,:) = comlev1_bibj, key=tkey, kind=isbyte
         IF (debugMode) CALL DEBUG_CALL('GAD_SOM_ADVECT',myThid)
 # endif
         CALL GAD_SOM_ADVECT(
-     I             tempImplVertAdv,
-     I             tempAdvScheme, tempVertAdvScheme, GAD_TEMPERATURE,
-     I             dTtracerLev, uFld, vFld, wFld, theta,
-     U             som_T,
-     O             gT_loc,
-     I             bi, bj, myTime, myIter, myThid )
+     I           tempImplVertAdv, diagAdvVarE,
+     I           tempAdvScheme, tempVertAdvScheme, GAD_TEMPERATURE,
+     I           dTtracerLev, uFld, vFld, wFld, theta,
+     U           som_T,
+     O           gT_loc, tracTmp,
+     I           bi, bj, myTime, myIter, myThid )
       ELSEIF (tempMultiDimAdvec) THEN
 #else /* GAD_ALLOW_TS_SOM_ADV */
       IF (tempMultiDimAdvec) THEN
@@ -275,11 +286,11 @@ CADJ STORE som_T(:,:,:,bi,bj,:) = comlev1_bibj, key=tkey, kind=isbyte
         IF (debugMode) CALL DEBUG_CALL('GAD_ADVECTION',myThid)
 # endif
         CALL GAD_ADVECTION(
-     I             tempImplVertAdv,
-     I             tempAdvScheme, tempVertAdvScheme, GAD_TEMPERATURE,
-     I             dTtracerLev, uFld, vFld, wFld, theta,
-     O             gT_loc,
-     I             bi, bj, myTime, myIter, myThid )
+     I           tempImplVertAdv, diagAdvVarE,
+     I           tempAdvScheme, tempVertAdvScheme, GAD_TEMPERATURE,
+     I           dTtracerLev, uFld, vFld, wFld, theta,
+     O           gT_loc, tracTmp,
+     I           bi, bj, myTime, myIter, myThid )
       ENDIF
 #endif /* DISABLE_MULTIDIM_ADVECTION */
 
@@ -439,6 +450,18 @@ CADJ STORE gtNm1(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, kind = isbyte
         ENDIF
 #endif /* NONLIN_FRSURF */
 
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( diagAdvVarE ) THEN
+          CALL GAD_DIAG_VARIANCE_K(
+     I             GAD_TEMPERATURE, tempMultiDimAdvec, calcAdvection,
+     I             xA, yA, uTrans, vTrans, rTransKp,
+     I             fZon, fMer, fVer(1-OLx,1-OLy,kDown), gtForc,
+     I             theta(1-OLx,1-OLy,1,bi,bj),
+     I             tracTmp, gT_loc, dTtracerLev,
+     I             k, bi, bj, myTime, myIter, myThid )
+        ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+
 C-    end of vertical index (k) loop (Nr:1)
       ENDDO
 
@@ -487,20 +510,21 @@ CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key = tkey, kind = isbyte
 CADJ STORE recip_hFac(:,:,:)  = comlev1_bibj, key = tkey, kind = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
         CALL GAD_IMPLICIT_R(
-     I         tempImplVertAdv, tempVertAdvScheme, GAD_TEMPERATURE,
-     I         dTtracerLev, kappaRk, recip_hFac, wFld,
-     I         theta(1-OLx,1-OLy,1,bi,bj),
-     U         gT_loc,
-     I         bi, bj, myTime, myIter, myThid )
+     I           tempImplVertAdv, diagAdvVarI,
+     I           tempVertAdvScheme, GAD_TEMPERATURE,
+     I           dTtracerLev, kappaRk, recip_hFac, wFld,
+     I           theta(1-OLx,1-OLy,1,bi,bj),
+     U           gT_loc,
+     I           bi, bj, myTime, myIter, myThid )
       ELSEIF ( implicitDiffusion ) THEN
 #else /* INCLUDE_IMPLVERTADV_CODE */
       IF     ( implicitDiffusion ) THEN
 #endif /* INCLUDE_IMPLVERTADV_CODE */
         CALL IMPLDIFF(
-     I         bi, bj, iMin, iMax, jMin, jMax,
-     I         GAD_TEMPERATURE, kappaRk, recip_hFac,
-     U         gT_loc,
-     I         myThid )
+     I           bi, bj, iMin, iMax, jMin, jMax,
+     I           GAD_TEMPERATURE, kappaRk, recip_hFac,
+     U           gT_loc,
+     I           myThid )
       ENDIF
 
       IF ( AdamsBashforth_T ) THEN
