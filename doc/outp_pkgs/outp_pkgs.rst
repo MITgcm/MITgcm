@@ -465,6 +465,8 @@ file ``data.diagnostics``. The parameter :varlink:`numperList` corresponds to th
 maximum number of diagnostics requested per output streams.
 
 
+.. _outp_pkg_diagnostics_adjoint_vars:
+
 Adjoint variables
 ~~~~~~~~~~~~~~~~~
 
@@ -536,7 +538,8 @@ Additionally the packages :ref:`gmredi <sub_phys_pkg_gmredi>`,
 Some notes to the user
 ^^^^^^^^^^^^^^^^^^^^^^
 
-1. This feature is currently untested with Tapenade.
+1. With Tapenade, only the adjoint diagnostics of the fields listed in
+   :numref:`ad_output_dumps_diags` are available.
 
 2. This feature does not work with the divided adjoint.
 

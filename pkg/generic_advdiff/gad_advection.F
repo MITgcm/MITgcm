@@ -190,7 +190,7 @@ CEOP
 C     make local copies to be tampered with if necessary
       advectionScheme = advectionSchArg
       vertAdvecScheme = vertAdvecSchArg
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
       IF ( inAdMode .AND. useApproxAdvectionInAdMode ) THEN
 C     In AD-mode, we change non-linear, potentially unstable AD advection
 C     schemes to linear schemes with more stability. So far only DST3 with
@@ -202,7 +202,7 @@ C     combination is possible.
      &      vertAdvecScheme = ENUM_DST3
 C     here is room for more advection schemes as this becomes necessary
       ENDIF
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
 
 #ifdef ALLOW_DIAGNOSTICS
 C--   Set diagnostics flags and suffix for the current tracer

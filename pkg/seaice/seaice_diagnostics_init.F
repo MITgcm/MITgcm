@@ -875,8 +875,10 @@ C=============== ice thickness categories ============
 #endif
 
 #ifdef ALLOW_AUTODIFF
+# ifndef ALLOW_TAPENADE
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C     Adjoint state variables
+C     Adjoint state variables (not written by a Tapenade-generated
+C     adjoint, see pkg/tapenade/dummy_in_stepping_tap.F)
       diagName  = 'ADJarea '
       diagTitle = 'dJ/darea: Sensitivity to seaice fractional ice-cover'
       diagUnits = 'dJ/(m^2/m^2)    '
@@ -921,6 +923,7 @@ C     Adjoint state variables
       diagMate  = diagNum
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+# endif /* ndef ALLOW_TAPENADE */
 #endif /* ALLOW_AUTODIFF */
 #endif /* ALLOW_DIAGNOSTICS */
 

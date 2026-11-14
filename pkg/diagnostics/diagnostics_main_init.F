@@ -1055,6 +1055,9 @@ C--   surface fluxes:
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+# ifndef ALLOW_TAPENADE
+C     Not written by a Tapenade-generated adjoint (see
+C     pkg/tapenade/dummy_in_stepping_tap.F for the fields it writes)
       diagName  = 'ADJsst'
       diagTitle = 'dJ/dSST: Sensitivity to Sea Surface Temperature'
       diagUnits = 'dJ/K'
@@ -1076,6 +1079,7 @@ C Miscellanious
       diagCode  = 'SM A    M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+# endif /* ndef ALLOW_TAPENADE */
 
       diagName  = 'ADJdifkr'
       diagTitle = 'dJ/dKr: Sensitivity to vertical diffusivity'
@@ -1084,6 +1088,7 @@ C Miscellanious
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+# ifndef ALLOW_TAPENADE
       diagName  = 'ADJepsix'
       diagTitle = 'dJ/dEddyPsiX: Sensitivity to zonal eddy'
      &           //'streamfunction'
@@ -1101,6 +1106,7 @@ C Miscellanious
       diagMate  = diagNum
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+# endif /* ndef ALLOW_TAPENADE */
 #endif /* ALLOW_AUTODIFF */
 
       RETURN

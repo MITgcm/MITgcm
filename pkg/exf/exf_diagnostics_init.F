@@ -223,8 +223,10 @@ C--   surface fluxes:
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
 #ifdef ALLOW_AUTODIFF
+# ifndef ALLOW_TAPENADE
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C     Adjoint state variables
+C     Adjoint state variables (not written by a Tapenade-generated
+C     adjoint, see pkg/tapenade/dummy_in_stepping_tap.F)
       diagName  = 'ADJustrs'
       diagTitle = 'dJ/dustress: Senstivity to zonal surface wind stress'
       diagUnits = 'dJ/(N/m^2)      '
@@ -326,6 +328,7 @@ C     Adjoint state variables
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+# endif /* ndef ALLOW_TAPENADE */
 #endif /* ALLOW_AUTODIFF */
 #endif /* ALLOW_DIAGNOSTICS */
 

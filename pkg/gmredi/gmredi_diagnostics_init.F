@@ -632,6 +632,9 @@ c     IF ( useDiagnotics ) THEN
 
 c     ENDIF
 # ifdef ALLOW_AUTODIFF
+#  ifndef ALLOW_TAPENADE
+C     not written by a Tapenade-generated adjoint (see
+C     pkg/tapenade/dummy_in_stepping_tap.F for the fields it writes)
       diagName  = 'ADJkapgm'
       diagTitle = 'dJ/dKgm: Sensitivity to GM Intensity'
       diagUnits = 'dJ/d[m^2/s]'
@@ -645,6 +648,7 @@ c     ENDIF
       diagCode  = 'SMRA    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+#  endif /* ndef ALLOW_TAPENADE */
 # endif
 
 #endif /* ALLOW_DIAGNOSTICS */
