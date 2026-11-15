@@ -22,7 +22,8 @@ C     == Global variables ===
 #ifdef ALLOW_OBSFIT
 # include "SIZE.h"
 # include "EEPARAMS.h"
-# include "PARAMS.h"
+# include "OBSFIT_SIZE.h"
+# include "OBSFIT.h"
 # include "netcdf.inc"
 #endif
 
@@ -46,7 +47,8 @@ C     !LOCAL VARIABLES:
       INTEGER IL
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-      IF ( debugLevel .GE. debLevA .AND. STATUS .NE. NF_NOERR ) THEN
+      IF ( obsfit_dBugLevel .GE. debLevB
+     &  .AND. STATUS .NE. NF_NOERR ) THEN
         IL = ILNBLNK(message)
         IF ( IL .GT. 0 ) THEN
           IF ( (bi.GT.0).AND.(bj.GT.0) ) THEN
@@ -146,6 +148,28 @@ C Global equi file
             CALL OBSFIT_NF_ERROR( msgBuf, STATUS,
      &           0, 0, myThid )
           ENDIF
+#ifdef ALLOW_ADJOINT_RUN
+C Global adjoint equi file
+          IF ( fidadglobal(num_file) .GT. 0 ) THEN
+            STATUS = NF_CLOSE( fidadglobal(num_file) )
+            WRITE( msgBuf,'(A,I3,I8)' )
+     &           'NC_CLOSE: NF_CLOSE global adj unit',
+     &           num_file, fidadglobal(num_file)
+            CALL OBSFIT_NF_ERROR( msgBuf, STATUS,
+     &           0, 0, myThid )
+          ENDIF
+#endif
+#ifdef ALLOW_TANGENTLINEAR_RUN
+C Global tangent linear equi file
+          IF ( fidtanglobal(num_file) .GT. 0 ) THEN
+            STATUS = NF_CLOSE( fidtanglobal(num_file) )
+            WRITE( msgBuf,'(A,I3,I8)' )
+     &           'NC_CLOSE: NF_CLOSE global tlm unit',
+     &           num_file, fidtanglobal(num_file)
+            CALL OBSFIT_NF_ERROR( msgBuf, STATUS,
+     &           0, 0, myThid )
+          ENDIF
+#endif
 
           IF (obsfitDoNcOutput) THEN
 c            DO bj = myByLo(myThid), myByHi(myThid)

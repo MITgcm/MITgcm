@@ -2,9 +2,9 @@
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
 #endif
-c#ifdef ALLOW_ECCO
-c# include "ECCO_OPTIONS.h"
-c#endif
+#ifdef ALLOW_ECCO
+# include "ECCO_OPTIONS.h"
+#endif
 c#ifdef ALLOW_BLING
 c# include "BLING_OPTIONS.h"
 c#endif
@@ -37,13 +37,10 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
-c#ifdef ALLOW_CAL
-c# include "cal.h"
-c#endif
-c#ifdef ALLOW_ECCO
-c# include "ECCO_SIZE.h"
-c# include "ECCO.h"
-c#endif
+#ifdef ALLOW_ECCO
+# include "ECCO_SIZE.h"
+# include "ECCO.h"
+#endif
 #ifdef ALLOW_OBSFIT
 # include "OBSFIT_SIZE.h"
 # include "OBSFIT.h"
@@ -100,10 +97,12 @@ C This is where sample types are assigned to model variables
          tab_coeffs1(iq) = theta(i_cur(iq),j_cur(iq),k_cur(iq),bi,bj)
         ELSEIF ( var_cur.EQ.2 ) THEN
          tab_coeffs1(iq) = salt(i_cur(iq),j_cur(iq),k_cur(iq),bi,bj)
+C Velocities: eastward and northward components at cell centers
+C (computed in OBSFIT_INLOOP, or in ECCO_PHYS if ALLOW_ECCO)
         ELSEIF ( var_cur.EQ.3 ) THEN
-         tab_coeffs1(iq) = uvel(i_cur(iq),j_cur(iq),k_cur(iq),bi,bj)
+         tab_coeffs1(iq) = m_UE(i_cur(iq),j_cur(iq),k_cur(iq),bi,bj)
         ELSEIF ( var_cur.EQ.4 ) THEN
-         tab_coeffs1(iq) = vvel(i_cur(iq),j_cur(iq),k_cur(iq),bi,bj)
+         tab_coeffs1(iq) = m_VN(i_cur(iq),j_cur(iq),k_cur(iq),bi,bj)
         ELSEIF ( var_cur.EQ.5 ) THEN
          tab_coeffs1(iq) = etan(i_cur(iq),j_cur(iq),bi,bj)
         ELSE

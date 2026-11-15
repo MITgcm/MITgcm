@@ -412,7 +412,7 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
        ELSE
 
         vec_tmp(1) = active_var
-        vec_tmp(2) = irec
+        vec_tmp(2) = irecglob
 #ifdef _BYTESWAPIO
         CALL MDS_BYTESWAPR8( 2, vec_tmp )
 #endif
@@ -494,12 +494,24 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
        _BEGIN_MASTER( myThid )
 
         err = NF_INQ_VARID( fid, obsfit_nameequi, varID1 )
+        CALL OBSFIT_NF_ERROR(
+     &   'ACTIVE_READ_GLOB: NF_INQ_VARID mod_val',
+     &   err,0,0,myThid )
         err = NF_GET_VARA_DOUBLE( fid, varID1, vec_start, vec_count,
      &   active_var )
+        CALL OBSFIT_NF_ERROR(
+     &   'ACTIVE_READ_GLOB: NF_GET_VARA_DOUBLE mod_val',
+     &   err,0,0,myThid )
 
         err = NF_INQ_VARID( fid, obsfit_namemask, varID2 )
+        CALL OBSFIT_NF_ERROR(
+     &   'ACTIVE_READ_GLOB: NF_INQ_VARID mod_mask',
+     &   err,0,0,myThid )
         err = NF_GET_VARA_DOUBLE( fid, varID2, vec_start, vec_count,
      &   active_mask )
+        CALL OBSFIT_NF_ERROR(
+     &   'ACTIVE_READ_GLOB: NF_GET_VARA_DOUBLE mod_mask',
+     &   err,0,0,myThid )
 
         _END_MASTER( myThid )
 
@@ -514,15 +526,27 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
        _BEGIN_MASTER( myThid )
 
        err = NF_INQ_VARID( fid, obsfit_nameequi, varID1 )
+       CALL OBSFIT_NF_ERROR(
+     &   'ACTIVE_READ_GLOB: NF_INQ_VARID mod_val',
+     &   err,0,0,myThid )
        err = NF_GET_VARA_DOUBLE( fid, varID1, vec_start, vec_count,
      &       active_data_t )
+       CALL OBSFIT_NF_ERROR(
+     &   'ACTIVE_READ_GLOB: NF_GET_VARA_DOUBLE mod_val',
+     &   err,0,0,myThid )
 
 C Add active_var from appropriate location to data
        active_data_t = active_data_t + active_var
 C Store the result on disk.
        err = NF_INQ_VARID( fid, obsfit_nameequi, varID1 )
+       CALL OBSFIT_NF_ERROR(
+     &   'ACTIVE_READ_GLOB: NF_INQ_VARID mod_val',
+     &   err,0,0,myThid )
        err = NF_PUT_VARA_DOUBLE( fid, varID1, vec_start, vec_count,
      &       active_data_t )
+       CALL OBSFIT_NF_ERROR(
+     &   'ACTIVE_READ_GLOB: NF_PUT_VARA_DOUBLE mod_val',
+     &   err,0,0,myThid )
 
 C Set active_var to zero
        active_var = 0. _d 0
@@ -540,8 +564,14 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
        _BEGIN_MASTER( myThid )
 
        err = NF_INQ_VARID( fid, obsfit_nameequi, varID1 )
+       CALL OBSFIT_NF_ERROR(
+     &   'ACTIVE_READ_GLOB: NF_INQ_VARID mod_val',
+     &   err,0,0,myThid )
        err = NF_GET_VARA_DOUBLE( fid, varID1, vec_start, vec_count,
      &       active_var )
+       CALL OBSFIT_NF_ERROR(
+     &   'ACTIVE_READ_GLOB: NF_GET_VARA_DOUBLE mod_val',
+     &   err,0,0,myThid )
 
        _END_MASTER( myThid )
 
@@ -615,12 +645,24 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
        _BEGIN_MASTER( myThid )
 
        err = NF_INQ_VARID( fid, obsfit_nameequi, varID1 )
+       CALL OBSFIT_NF_ERROR(
+     &   'ACTIVE_WRITE_GLOB: NF_INQ_VARID mod_val',
+     &   err,0,0,myThid )
        err = NF_PUT_VARA_DOUBLE( fid, varID1, vec_start, vec_count,
      &       active_var )
+       CALL OBSFIT_NF_ERROR(
+     &   'ACTIVE_WRITE_GLOB: NF_PUT_VARA_DOUBLE mod_val',
+     &   err,0,0,myThid )
 
        err = NF_INQ_VARID( fid, obsfit_namemask, varID2 )
+       CALL OBSFIT_NF_ERROR(
+     &   'ACTIVE_WRITE_GLOB: NF_INQ_VARID mod_mask',
+     &   err,0,0,myThid )
        err = NF_PUT_VARA_DOUBLE( fid, varID2, vec_start, vec_count,
      &       active_mask )
+       CALL OBSFIT_NF_ERROR(
+     &   'ACTIVE_WRITE_GLOB: NF_PUT_VARA_DOUBLE mod_mask',
+     &   err,0,0,myThid )
 
        _END_MASTER( myThid )
 
@@ -637,8 +679,14 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 cav       vec_start = irec
 cav       vec_count = 1
        err = NF_INQ_VARID( fid, obsfit_nameequi, varID1 )
+       CALL OBSFIT_NF_ERROR(
+     &   'ACTIVE_WRITE_GLOB: NF_INQ_VARID mod_val',
+     &   err,0,0,myThid )
        err = NF_GET_VARA_DOUBLE( fid, varID1, vec_start, vec_count,
      &       active_data_t )
+       CALL OBSFIT_NF_ERROR(
+     &   'ACTIVE_WRITE_GLOB: NF_GET_VARA_DOUBLE mod_val',
+     &   err,0,0,myThid )
 
 C Add active_var to data.
        active_var = active_var + active_data_t
@@ -648,8 +696,14 @@ cav       vec_start = irecglob
 cav       vec_count = 1
 
        err = NF_INQ_VARID( fid, obsfit_nameequi, varID1 )
+       CALL OBSFIT_NF_ERROR(
+     &   'ACTIVE_WRITE_GLOB: NF_INQ_VARID mod_val',
+     &   err,0,0,myThid )
        err = NF_PUT_VARA_DOUBLE( fid, varID1, vec_start, vec_count,
      &       active_data_t )
+       CALL OBSFIT_NF_ERROR(
+     &   'ACTIVE_WRITE_GLOB: NF_PUT_VARA_DOUBLE mod_val',
+     &   err,0,0,myThid )
 
        _END_MASTER( myThid )
 
@@ -664,8 +718,14 @@ C     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
        _BEGIN_MASTER( myThid )
 
        err = NF_INQ_VARID( fid, obsfit_nameequi, varID1 )
+       CALL OBSFIT_NF_ERROR(
+     &   'ACTIVE_WRITE_GLOB: NF_INQ_VARID mod_val',
+     &   err,0,0,myThid )
        err = NF_PUT_VARA_DOUBLE( fid, varID1, vec_start, vec_count,
      &       active_var )
+       CALL OBSFIT_NF_ERROR(
+     &   'ACTIVE_WRITE_GLOB: NF_PUT_VARA_DOUBLE mod_val',
+     &   err,0,0,myThid )
 
        _END_MASTER( myThid )
 

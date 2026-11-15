@@ -117,8 +117,8 @@ C Need to sync the file so that the data is not lost when run finishes
           ENDDO
         ENDDO
 
-C Loop over samples
-        DO ii = 1, NSAMP_PER_TILE_MAX
+C Loop over samples (buffers are indexed by global sample number)
+        DO ii = 1, NSAMPLES_MAX_GLO
           samples_buff(ii)      = zeroRL
           samples_mask_buff(ii) = zeroRL
         ENDDO
@@ -153,7 +153,7 @@ C Combine all threads here
         ENDDO !DO bi
 
 C Combine all processes
-        DO ii = 1, NSAMP_PER_TILE_MAX
+        DO ii = 1, NSAMPLES_MAX_GLO
           tmpgs = samples_buff(ii)
           _GLOBAL_SUM_RL(tmpgs, myThid)
           samples_modval_glob(ii) = tmpgs
@@ -263,9 +263,12 @@ C Read observation and uncertainty
               ENDIF !IF (obs_num.LE.ObsNo(num_file))
             ENDDO !DO obs_num
 
-            obs_mean = obs_mean/nobsmean
-            mod_mean = mod_mean/nobsmean
-            offset   = mod_mean-obs_mean
+C No offset if there are no valid obs (avoid division by zero)
+            IF ( nobsmean.GT.0 ) THEN
+              obs_mean = obs_mean/nobsmean
+              mod_mean = mod_mean/nobsmean
+              offset   = mod_mean-obs_mean
+            ENDIF
 
           ELSE
             offset = zeroRL
@@ -283,6 +286,8 @@ C Global file for misfits
             WRITE( fnamemisfit,'(3A)' )
      &       obsfitDir(1:JL),obsfitfile(1:IL),'.misfit.nc'
             err = NF_OPEN( fnamemisfit,NF_WRITE,fidmisfit(num_file) )
+            CALL OBSFIT_NF_ERROR(
+     &           'COST: NF_OPEN fidmisfit',err,0,0,myThid )
             err = NF_INQ_VARID( fidmisfit(num_file),'misfit',varID )
             CALL OBSFIT_NF_ERROR(
      &           'COST: NF_INQ_VARID misfit',err,0,0,myThid )
@@ -322,16 +327,26 @@ C Read model equivalent from global file
      &           + obs_modmask* obs_weight * misfit * misfit
                 num_obsfit(num_file)  = num_obsfit(num_file)
      &           + obs_modmask
-C Write misfit to global netcdf file
-                err = NF_PUT_VARA_DOUBLE( fidmisfit(num_file),varID,
-     &                obs_ind_glob(num_file,obs_num),1,misfit )
-                CALL OBSFIT_NF_ERROR(
-     &               'COST: NF_PUT_VARA_DOUBLE misfit',
-     &               err,0,0,myThid )
+C Write misfit to global netcdf file (only where the model was
+C sampled; masked obs keep the fill value)
+                IF ( obs_modmask.GT.zeroRL ) THEN
+                  err = NF_PUT_VARA_DOUBLE( fidmisfit(num_file),varID,
+     &                  obs_ind_glob(num_file,obs_num),1,misfit )
+                  CALL OBSFIT_NF_ERROR(
+     &                 'COST: NF_PUT_VARA_DOUBLE misfit',
+     &                 err,0,0,myThid )
+                ENDIF
               ENDIF
 
             ENDIF !IF (obs_num.LE.ObsNo(num_file))
           ENDDO !DO obs_num
+
+C Close misfit file so that the data is written to disk
+          IF (ObsNo(num_file).GT.0) THEN
+            err = NF_CLOSE( fidmisfit(num_file) )
+            CALL OBSFIT_NF_ERROR(
+     &           'COST: NF_CLOSE fidmisfit',err,0,0,myThid )
+          ENDIF
 
         ENDIF !IF myprocid = 0
       ENDDO !DO num_file

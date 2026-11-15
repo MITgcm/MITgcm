@@ -43,7 +43,8 @@ C     iUnit  :: Work variable for IO unit number
      &                 mult_obsfit,
      &                 obsfit_facmod,
      &                 obsfitDoNcOutput,
-     &                 obsfitDoGenGrid
+     &                 obsfitDoGenGrid,
+     &                 obsfit_dBugLevel
 
       IF ( .NOT.useOBSFIT ) THEN
         _BEGIN_MASTER(myThid)
@@ -69,6 +70,7 @@ C Default values for ObsFit
       ENDDO
 
       obsfitDoNcOutput = .false.
+      obsfit_dBugLevel = debugLevel
 
       IF ( (.NOT.usingSphericalPolarGrid .OR. rotateGrid) ) THEN
         obsfitDoGenGrid = .true.
