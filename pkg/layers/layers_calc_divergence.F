@@ -37,105 +37,138 @@ C !LOCAL VARIABLES:
 C     bi, bj   :: tile indices
 C     i,j      :: horizontal indices
 C     k        :: vertical index for model grid
-C     kdown    :: temporary placeholder
-C     fluxfac  :: scaling factor for converting surface flux to tendency
-C     fluxfac  :: scaling factor for converting diffusive flux to tendency
-C     downfac  :: mask for lower point
+C     kp1      :: vertical index plus one
+C     maskKp1  :: mask for kp1 level
+C     fluxFac  :: scaling factor for converting surface flux to tendency
+C     locVar   :: local 2-D array for horizontal (1-D) flux divergence
+C     recVol   :: local 2-D array for volume reciprocal
 
       INTEGER bi, bj
-      INTEGER i,j,k,kdown,iTracer
-      _RL fluxfac(2), downfac, tmpfac
+      INTEGER i, j
+      INTEGER k, kp1, iTracer
+      _RL fluxFac(2), maskKp1
+      _RL locVar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL recVol(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
-      _RL minusone
-      PARAMETER (minusOne=-1.)
 
 C --  These factors convert the units of TFLUX and SFLUX diagnostics
 C --  back to surfaceForcingT and surfaceForcingS units
-      fluxfac(1) = 1.0/(HeatCapacity_Cp*rUnit2mass)
-      fluxfac(2) = 1.0/rUnit2mass
+      fluxFac(1) = mass2rUnit/HeatCapacity_Cp
+      fluxFac(2) = mass2rUnit
 
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO iTracer = 1,2
 
-          DO iTracer = 1,2
-           k = 1
-C --       Loop for surface fluxes
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-
+          k = 1
+C    <==  THIS BELOW LOOKS WRONG for Ocean in P-Pcoords case (surface not at k=1)
+C --      Loop for surface fluxes
 #ifdef SHORTWAVE_HEATING
 C --      Have to remove the shortwave from the surface flux because it is added later
-             IF (iTracer.EQ.1) THEN
-               layers_surfflux(i,j,k,iTracer,bi,bj) =
+          IF ( selectPenetratingSW.GT.0 .AND. iTracer.EQ.1 ) THEN
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+              layers_surfflux(i,j,k,iTracer,bi,bj) =
      &           layers_surfflux(i,j,k,iTracer,bi,bj)
 C --      Sign convention for Qsw means we have to add it to subtract it
-     &           +Qsw(i,j,bi,bj)
-             ENDIF
+     &         + Qsw(i,j,bi,bj)
+            ENDDO
+           ENDDO
+          ENDIF
 #endif /* SHORTWAVE_HEATING */
-
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
              layers_surfflux(i,j,k,iTracer,bi,bj) =
      &       layers_surfflux(i,j,k,iTracer,bi,bj)
      &       *recip_drF(1)*_recip_hFacC(i,j,1,bi,bj)
-     &       *fluxfac(iTracer)
-            ENDDO
+     &       *fluxFac(iTracer)
            ENDDO
+          ENDDO
 
-C --       Loop for diffusive fluxes
-C --       If done correctly, we can overwrite the flux array in place
-C --       with its own divergence
-           DO k=1,Nr
-            downFac = 1. _d 0
-C     note: here kdown is for the mask below current level k
-            IF ( usingZCoords ) THEN
-             kdown = MIN(k+1,Nr)
-             IF ( k.EQ.Nr ) downFac = 0. _d 0
-            ELSE
-C     this is the oceanic pressure coordinate case
-             kdown = MAX(k-1,1)
-             IF ( k.EQ.1  ) downFac = 0. _d 0
-            ENDIF
+C --      Loop for diffusive fluxes
+C --      If done correctly, we can overwrite the vertical flux array in place
+C --      with its own divergence
+          DO k=1,Nr
+            maskKp1 = 1. _d 0
+            kp1 = MIN( k+1, Nr )
+            IF ( k.EQ.Nr ) maskKp1 = 0. _d 0
             DO j=1-OLy,sNy+OLy-1
              DO i=1-OLx,sNx+OLx-1
+              recVol(i,j) = _recip_hFacC(i,j,k,bi,bj) * recip_drF(k)
+     &                    * recip_rA(i,j,bi,bj) * recip_deepFac2C(k)
+     &                    * recip_rhoFacC(k) * maskInC(i,j,bi,bj)
+             ENDDO
+            ENDDO
+
 C -- Diffusion
-              tmpfac = -_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
-     &          *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)*recip_rhoFacC(k)
-              layers_dfx(i,j,k,iTracer,bi,bj) = maskInC(i,j,bi,bj) *
-     &         tmpfac * ( layers_dfx(i+1,j,k,iTracer,bi,bj) -
-     &          layers_dfx(i,j,k,iTracer,bi,bj) )
-              layers_dfy(i,j,k,iTracer,bi,bj) = maskInC(i,j,bi,bj) *
-     &         tmpfac * ( layers_dfy(i,j+1,k,iTracer,bi,bj) -
-     &          layers_dfy(i,j,k,iTracer,bi,bj) )
-              layers_dfr(i,j,k,iTracer,bi,bj) = tmpfac * rkSign *
-     &        ( layers_dfr(i,j,kdown,iTracer,bi,bj)*downfac -
-     &          layers_dfr(i,j,k,iTracer,bi,bj) )
+            DO j=1-OLy,sNy+OLy-1
+             DO i=1-OLx,sNx+OLx-1
+              locVar(i,j) = layers_dfx(i+1,j,k,iTracer,bi,bj)
+     &                    - layers_dfx( i ,j,k,iTracer,bi,bj)
+             ENDDO
+            ENDDO
+            DO j=1-OLy,sNy+OLy-1
+             DO i=1-OLx,sNx+OLx-1
+              layers_dfx(i,j,k,iTracer,bi,bj) = -locVar(i,j)*recVol(i,j)
+              locVar(i,j) = layers_dfy(i,j+1,k,iTracer,bi,bj)
+     &                    - layers_dfy(i, j ,k,iTracer,bi,bj)
+             ENDDO
+            ENDDO
+            DO j=1-OLy,sNy+OLy-1
+             DO i=1-OLx,sNx+OLx-1
+              layers_dfy(i,j,k,iTracer,bi,bj) = -locVar(i,j)*recVol(i,j)
+              locVar(i,j) = layers_dfr(i,j,kp1,iTracer,bi,bj)*maskKp1
+     &                    - layers_dfr(i,j,k,iTracer,bi,bj)
+              layers_dfr(i,j,k,iTracer,bi,bj) = -rkSign
+     &                                          *locVar(i,j)*recVol(i,j)
+             ENDDO
+            ENDDO
 C -- Advection
-              layers_afx(i,j,k,iTracer,bi,bj) = maskInC(i,j,bi,bj) *
-     &         tmpfac * ( layers_afx(i+1,j,k,iTracer,bi,bj) -
-     &          layers_afx(i,j,k,iTracer,bi,bj) )
-              layers_afy(i,j,k,iTracer,bi,bj) = maskInC(i,j,bi,bj) *
-     &         tmpfac * ( layers_afy(i,j+1,k,iTracer,bi,bj) -
-     &          layers_afy(i,j,k,iTracer,bi,bj) )
-              layers_afr(i,j,k,iTracer,bi,bj) = tmpfac * rkSign *
-     &        ( layers_afr(i,j,kdown,iTracer,bi,bj)*downfac -
-     &          layers_afr(i,j,k,iTracer,bi,bj) )
+            DO j=1-OLy,sNy+OLy-1
+             DO i=1-OLx,sNx+OLx-1
+              locVar(i,j) = layers_afx(i+1,j,k,iTracer,bi,bj)
+     &                    - layers_dfx( i ,j,k,iTracer,bi,bj)
+             ENDDO
+            ENDDO
+            DO j=1-OLy,sNy+OLy-1
+             DO i=1-OLx,sNx+OLx-1
+              layers_afx(i,j,k,iTracer,bi,bj) = -locVar(i,j)*recVol(i,j)
+              locVar(i,j) = layers_afy(i,j+1,k,iTracer,bi,bj)
+     &                    - layers_afy(i, j ,k,iTracer,bi,bj)
+             ENDDO
+            ENDDO
+            DO j=1-OLy,sNy+OLy-1
+             DO i=1-OLx,sNx+OLx-1
+              layers_afy(i,j,k,iTracer,bi,bj) = -locVar(i,j)*recVol(i,j)
+              locVar(i,j) = layers_afr(i,j,kp1,iTracer,bi,bj)*maskKp1
+     &                    - layers_afr(i,j,k,iTracer,bi,bj)
+              layers_afr(i,j,k,iTracer,bi,bj) = -rkSign
+     &                                          *locVar(i,j)*recVol(i,j)
+             ENDDO
+            ENDDO
 
 #ifdef SHORTWAVE_HEATING
-              IF (iTracer.EQ.1) THEN
+            IF ( selectPenetratingSW.GT.0 .AND. iTracer.EQ.1 ) THEN
+             DO j=1-OLy,sNy+OLy-1
+              DO i=1-OLx,sNx+OLx-1
                 layers_sw(i,j,k,iTracer,bi,bj) =
      &            layers_sw(i,j,k,iTracer,bi,bj)
      &            + Qsw(i,j,bi,bj)*gravitySign
      &            *( SWFrac3D(i,j,k,bi,bj) - SWFrac3D(i,j,k+1,bi,bj) )
-     &            *fluxfac(1)
+     &            *fluxFac(1)
      &            *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
-              ENDIF
+              ENDDO
+             ENDDO
+            ENDIF
 #endif /* SHORTWAVE_HEATING */
 
-             ENDDO
-            ENDDO
-           ENDDO
+C--    end k loop
           ENDDO
-         ENDDO
+
+C--     end iTracer, bi,bj loops
         ENDDO
+       ENDDO
+      ENDDO
 
 CML   I am guessing that this copy of the original diagnostics code
 CML   is here only for reference:
@@ -240,7 +273,6 @@ C      ENDDO
 C     ENDDO
 
 # endif /* LAYERS_THERMODYNAMICS */
-#endif /* USE_LAYERS */
+#endif /* ALLOW_LAYERS */
       RETURN
       END
-C -- end of S/R LAYERS_CALC_DIVERGENCE
