@@ -29,6 +29,7 @@ c       _RL taudx (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 c       _RL taudx (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #ifdef ALLOW_STREAMICE
+#if 0
 
 C     LOCAL VARIABLES
       INTEGER i, j, bi, bj
@@ -477,6 +478,7 @@ c check face to left
       ENDDO
 c       call write_fld_xy_rl ('driving_taux','',taudx_si,0,myThid)
 
+#endif
 #endif
       RETURN
       END
