@@ -510,7 +510,7 @@ CADJ STORE verticalShear = comlev1_bibj_k, key = kkey, kind=isbyte
 #ifdef ALLOW_GGL90_LANGMUIR
        IF (useLANGMUIR) THEN
 C       compute (dStokesU/dz) and (dStokesV/dz)
-        depthFac = recip_Lasq*EXP( recip_LD*rF(k) )
+        depthFac = recip_Lasq*EXP( recip_LD*rF(k)*recip_coordFac )
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           dstokesUdR(i,j) = recip_LD * uStar(i,j) * depthFac

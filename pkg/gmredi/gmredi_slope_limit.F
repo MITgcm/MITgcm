@@ -102,8 +102,8 @@ C     !LOCAL VARIABLES:
       PARAMETER( fpi = PI )
       INTEGER i, j
       _RL f1, Smod, f2, Rnondim
-      _RL maxSlopeSqr
-      _RL convSlopeUnit, loc_rMaxSlope
+      _RL maxSlopeSqr, smallNumberDr
+      _RL convSlopeUnit, loc_rMaxSlope, loc_sqCutoff
       _RL dSigmMod   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dRdSigmaLtd(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tmpFld     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -126,13 +126,19 @@ C-   need to put this one in GM namelist :
 CEOP
 
       IF (kPos.EQ.3 ) THEN
+       smallNumberDr = GM_Small_Number*rVel2wUnit(k)
        GM_bigSlope   = GM_bigSlope*wUnit2rVel(k)
        maxSlopeSqr   = GM_maxSlope*GM_maxSlope
      &                *wUnit2rVel(k)*wUnit2rVel(k)
+       loc_sqCutoff  = GM_slopeSqCutoff
+     &                *wUnit2rVel(k)*wUnit2rVel(k)
        convSlopeUnit = rVel2wUnit(k)
       ELSE
+       smallNumberDr = GM_Small_Number*z2rUnit(k)
        GM_bigSlope   = GM_bigSlope*z2rUnit(k)
        maxSlopeSqr   = GM_maxSlope*GM_maxSlope
+     &                *z2rUnit(k)*z2rUnit(k)
+       loc_sqCutoff  = GM_slopeSqCutoff
      &                *z2rUnit(k)*z2rUnit(k)
        convSlopeUnit = rUnit2z(k)
       ENDIF
@@ -247,8 +253,8 @@ C-        Bottom or below:
             taperFct(i,j) = 0. _d 0
           ELSE
 C-        Above bottom:
-           IF ( dSigmaDr(i,j).LE. GM_Small_Number )
-     &          dSigmaDr(i,j) = GM_Small_Number
+           IF ( dSigmaDr(i,j).LE. smallNumberDr )
+     &          dSigmaDr(i,j) = smallNumberDr
            tmpFld(i,j) = dSigmaDx(i,j)*dSigmaDx(i,j)
      &                 + dSigmaDy(i,j)*dSigmaDy(i,j)
            IF ( tmpFld(i,j).GT.zeroRL ) THEN
@@ -427,9 +433,9 @@ C         but still neglect Kxy & Kyx (assumed to be zero)
 #ifndef ALLOW_AUTODIFF_TAMC
 cph-- this part does not adjoint well
           IF ( SlopeSqr(i,j) .GT. maxSlopeSqr .AND.
-     &         SlopeSqr(i,j) .LT. GM_slopeSqCutoff ) THEN
+     &         SlopeSqr(i,j) .LT. loc_sqCutoff ) THEN
            taperFct(i,j) = maxSlopeSqr/SlopeSqr(i,j)
-          ELSEIF ( SlopeSqr(i,j) .GE. GM_slopeSqCutoff ) THEN
+          ELSEIF ( SlopeSqr(i,j) .GE. loc_sqCutoff ) THEN
            taperFct(i,j) = 0. _d 0
           ENDIF
 #endif
@@ -461,8 +467,8 @@ CADJ STORE dSigmaDr = loctape_gm
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
           IF ( dSigmaDr(i,j) .NE. zeroRL ) THEN
-           IF ( dSigmaDr(i,j) .LE. GM_Small_Number )
-     &         dSigmaDr(i,j) = GM_Small_Number
+           IF ( dSigmaDr(i,j) .LE. smallNumberDr )
+     &         dSigmaDr(i,j) = smallNumberDr
           ENDIF
          ENDDO
         ENDDO
@@ -510,8 +516,8 @@ CADJ STORE SlopeSqr = loctape_gm
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
 #endif
-          IF ( SlopeSqr(i,j) .GE. GM_slopeSqCutoff ) THEN
-            slopeSqr(i,j) = GM_slopeSqCutoff
+          IF ( SlopeSqr(i,j) .GE. loc_sqCutoff ) THEN
+            slopeSqr(i,j) = loc_sqCutoff
             taperFct(i,j) = 0. _d 0
           ENDIF
          ENDDO
@@ -528,7 +534,7 @@ C-      Simplest adiabatic tapering = Smax/Slope (linear)
           IF ( SlopeSqr(i,j) .EQ. zeroRL ) THEN
            taperFct(i,j) = 1. _d 0
           ELSEIF ( SlopeSqr(i,j) .GT. maxSlopeSqr .AND.
-     &             SlopeSqr(i,j) .LT. GM_slopeSqCutoff )  THEN
+     &             SlopeSqr(i,j) .LT. loc_sqCutoff )  THEN
            taperFct(i,j) = SQRT(maxSlopeSqr / SlopeSqr(i,j))
            slopeSqr(i,j) = MIN( slopeSqr(i,j),GM_bigSlope*GM_bigSlope )
           ENDIF
@@ -545,7 +551,7 @@ C-      Gerdes, Koberle and Willebrand, Clim. Dyn. 1991
           IF ( SlopeSqr(i,j) .EQ. zeroRL ) THEN
            taperFct(i,j) = 1. _d 0
           ELSEIF ( SlopeSqr(i,j) .GT. maxSlopeSqr .AND.
-     &             SlopeSqr(i,j) .LT. GM_slopeSqCutoff ) THEN
+     &             SlopeSqr(i,j) .LT. loc_sqCutoff ) THEN
            taperFct(i,j) = maxSlopeSqr/SlopeSqr(i,j)
           ENDIF
 
@@ -560,7 +566,7 @@ C-      Danabasoglu and McWilliams, J. Clim. 1995
 
           IF ( SlopeSqr(i,j) .EQ. zeroRL ) THEN
            taperFct(i,j) = 1. _d 0
-          ELSEIF ( SlopeSqr(i,j) .LT. GM_slopeSqCutoff ) THEN
+          ELSEIF ( SlopeSqr(i,j) .LT. loc_sqCutoff ) THEN
            Smod = SQRT(SlopeSqr(i,j))*convSlopeUnit
            taperFct(i,j) = op5*( oneRL + TANH( (GM_Scrit-Smod)/GM_Sd ) )
           ENDIF
@@ -575,7 +581,7 @@ C-      Large, Danabasoglu and Doney, JPO 1997
 
           IF ( SlopeSqr(i,j) .EQ. zeroRL ) THEN
            taperFct(i,j) = 1. _d 0
-          ELSEIF ( SlopeSqr(i,j) .LT. GM_slopeSqCutoff ) THEN
+          ELSEIF ( SlopeSqr(i,j) .LT. loc_sqCutoff ) THEN
            Smod = SQRT(SlopeSqr(i,j))
            f1 = op5*( oneRL
      &              + TANH( (GM_Scrit-Smod*convSlopeUnit)/GM_Sd ) )
