@@ -2,6 +2,9 @@
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
 #endif
+#ifdef ALLOW_EXCH2
+# include "W2_OPTIONS.h"
+#endif /* ALLOW_EXCH2 */
 
 CBOP
       SUBROUTINE BLING_READPARMS( myThid )
@@ -24,10 +27,10 @@ C     === Global variables ===
 #ifdef ALLOW_EXF
 # include "EXF_PARAM.h"
 # ifdef USE_EXF_INTERPOLATION
-c#  ifdef ALLOW_EXCH2
-c#   include "W2_EXCH2_SIZE.h"
-c#   include "W2_EXCH2_TOPOLOGY.h"
-c#  endif /* ALLOW_EXCH2 */
+#  ifdef ALLOW_EXCH2
+#   include "W2_EXCH2_SIZE.h"
+#   include "W2_EXCH2_TOPOLOGY.h"
+#  endif /* ALLOW_EXCH2 */
 #  include "SET_GRID.h"
 #  include "EXF_INTERP_SIZE.h"
 #  include "EXF_INTERP_PARAM.h"
@@ -874,7 +877,7 @@ C--   bling wind speed
      I         bling_windRepCycle, 
      I         bling_windPeriod,
      I         bling_windStartTime, 
-     I         useExfYearlyFields,
+     I         bling_useExfYearlyFields,
      I         addBlkLn, 
      I         myThid )
 #ifdef USE_EXF_INTERPOLATION
@@ -898,7 +901,7 @@ C--   bling atmospheric pressure
      I         bling_apressRepCycle, 
      I         bling_apressPeriod,
      I         bling_apressStartTime, 
-     I         useExfYearlyFields, 
+     I         bling_useExfYearlyFields, 
      I         addBlkLn, 
      I         myThid )
 #ifdef USE_EXF_INTERPOLATION
@@ -922,7 +925,7 @@ C--   bling surface silica
      I         bling_silicaRepCycle, 
      I         bling_silicaPeriod,
      I         bling_silicaStartTime, 
-     I         useExfYearlyFields, 
+     I         bling_useExfYearlyFields, 
      I         addBlkLn, 
      I         myThid )
 #ifdef USE_EXF_INTERPOLATION
@@ -946,7 +949,7 @@ C--   bling iron forcing
      I         bling_ironRepCycle, 
      I         bling_ironPeriod,
      I         bling_ironStartTime, 
-     I         useExfYearlyFields, 
+     I         bling_useExfYearlyFields, 
      I         addBlkLn, 
      I         myThid )
 #ifdef USE_EXF_INTERPOLATION
@@ -970,7 +973,7 @@ C--   bling atmospheric CO2 forcing
      I         bling_apco2RepCycle, 
      I         bling_apco2Period,
      I         bling_apco2StartTime, 
-     I         useExfYearlyFields, 
+     I         bling_useExfYearlyFields, 
      I         addBlkLn, 
      I         myThid)
 #ifdef USE_EXF_INTERPOLATION
@@ -994,7 +997,7 @@ C--  bling sea ice forcing
      I         bling_iceRepCycle, 
      I         bling_icePeriod,
      I         bling_iceStartTime, 
-     I         useExfYearlyFields, 
+     I         bling_useExfYearlyFields, 
      I         addBlkLn, 
      I         myThid ) 
 #ifdef USE_EXF_INTERPOLATION
@@ -1014,12 +1017,12 @@ C--  bling sea ice forcing
 C bling_useEXF
       ENDIF
 
-C     bling_useEXF and useExfYearlyFields
-      IF ( bling_useEXF .AND. useExfYearlyFields ) THEN
+C     bling_useEXF and bling_useExfYearlyFields
+      IF ( bling_useEXF .AND. bling_useExfYearlyFields ) THEN
        IF ( bling_ironFile.NE.' ' .AND.
      &      bling_ironRepCycle.NE.0. ) THEN
         WRITE(msgBuf,'(3A)') 'BLING_READPARMS: The use of ',
-     &   'useExfYearlyFields AND bling_ironRepCycle ',
+     &   'bling_useExfYearlyFields AND bling_ironRepCycle ',
      &   'is not implemented'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
@@ -1027,7 +1030,7 @@ C     bling_useEXF and useExfYearlyFields
        IF ( bling_silicaFile.NE.' ' .AND.
      &      bling_silicaRepCycle.NE.0. ) THEN
         WRITE(msgBuf,'(3A)') 'BLING_READPARMS: The use of ',
-     &   'useExfYearlyFields AND bling_silicaRepCycle ',
+     &   'bling_useExfYearlyFields AND bling_silicaRepCycle ',
      &   'is not implemented'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
@@ -1035,7 +1038,7 @@ C     bling_useEXF and useExfYearlyFields
        IF ( bling_apco2File.NE.' ' .AND.
      &      bling_apco2RepCycle.NE.0. ) THEN
         WRITE(msgBuf,'(3A)') 'BLING_READPARMS: The use of ',
-     &   'useExfYearlyFields AND bling_apco2RepCycle ',
+     &   'bling_useExfYearlyFields AND bling_apco2RepCycle ',
      &   'is not implemented'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
@@ -1043,7 +1046,7 @@ C     bling_useEXF and useExfYearlyFields
        IF ( bling_windFile.NE.' ' .AND.
      &      bling_windRepCycle.NE.0. ) THEN
         WRITE(msgBuf,'(3A)') 'BLING_READPARMS: The use of ',
-     &   'useExfYearlyFields AND bling_windRepCycle ',
+     &   'bling_useExfYearlyFields AND bling_windRepCycle ',
      &   'is not implemented'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
@@ -1051,7 +1054,7 @@ C     bling_useEXF and useExfYearlyFields
        IF ( bling_iceFile.NE.' ' .AND.
      &      bling_iceRepCycle.NE.0. ) THEN
         WRITE(msgBuf,'(3A)') 'BLING_READPARMS: The use of ',
-     &   'useExfYearlyFields AND bling_iceRepCycle ',
+     &   'bling_useExfYearlyFields AND bling_iceRepCycle ',
      &   'is not implemented'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
@@ -1059,7 +1062,7 @@ C     bling_useEXF and useExfYearlyFields
        IF ( bling_apressFile.NE.' ' .AND.
      &      bling_apressRepCycle.NE.0. ) THEN
         WRITE(msgBuf,'(3A)') 'BLING_READPARMS: The use of ',
-     &   'useExfYearlyFields AND bling_apressRepCycle ',
+     &   'bling_useExfYearlyFields AND bling_apressRepCycle ',
      &   'is not implemented'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1

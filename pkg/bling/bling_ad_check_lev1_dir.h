@@ -28,8 +28,8 @@ CADJ STORE ice0              = comlev1, key = ikey_dynamics, kind=isbyte
 CADJ STORE ice1              = comlev1, key = ikey_dynamics, kind=isbyte
 CADJ STORE InputFe0          = comlev1, key = ikey_dynamics, kind=isbyte
 CADJ STORE InputFe1          = comlev1, key = ikey_dynamics, kind=isbyte
-CADJ STORE bling_apco20      = comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE bling_apco21      = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE bling_apco20      = comlev1, key = ikey_dynamics, kind=isbyte
+CADJ STORE bling_apco21      = comlev1, key = ikey_dynamics, kind=isbyte
 
 #ifdef ALLOW_EXF
 CADJ STORE apressure         = comlev1, key = ikey_dynamics, kind=isbyte
