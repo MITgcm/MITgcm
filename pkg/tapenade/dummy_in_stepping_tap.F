@@ -59,6 +59,11 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
+#ifdef ALLOW_PTRACERS
+# include "PTRACERS_SIZE.h"
+# include "PTRACERS_PARAMS.h"
+# include "PTRACERS_FIELDS.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myTime :: time counter for this thread
@@ -67,6 +72,11 @@ C     myThid :: Thread number for this instance of the routine.
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
+#ifdef ALLOW_PTRACERS
+      INTEGER ip
+      CHARACTER*(8)  diagName
+      CHARACTER*(MAX_LEN_FNAM) dumpName
+#endif
 CEOP
 
 #ifdef ALLOW_AUTODIFF_MONITOR
@@ -109,6 +119,20 @@ C-----------------------------------------------------------------------
 # ifdef ALLOW_DIFFKR_CONTROL
       CALL DUMMY_IN_STEPPING_XYZ_RL( diffKr, 'ADJdifkr', 'ADJdiffkr.',
      &                               myTime, myIter, myThid )
+# endif
+
+# ifdef ALLOW_PTRACERS
+      IF ( usePtracers) THEN
+       DO ip = 1, PTRACERS_numInUse
+        WRITE(diagName,'(A6,A2)') 'ADJptr', PTRACERS_ioLabel(ip)
+        WRITE(dumpName,'(A10,A2,A1)')
+     &        'ADJptracer', PTRACERS_ioLabel(ip), '.'
+
+        CALL DUMMY_IN_STEPPING_XYZ_RL( pTracer(1-OLx,1-OLy,1,1,1,ip),
+     &                                 diagName, dumpName,
+     &                                 myTime, myIter, myThid )
+       ENDDO
+      ENDIF
 # endif
 
 #endif /* ALLOW_AUTODIFF_MONITOR */
