@@ -40,6 +40,15 @@
   bling_ironStartDate1      = 20070116,
   bling_ironStartDate2      = 000000,
 #
-# Atmospheric pCO2
-  bling_pCO2                = 380.5E-6,
+# Atmospheric pCO2 monthly values
+  bling_apco2file           = 'atmospco2_monthly_2007.bin',
+  bling_apco2startdate1     = 20061215,
+  bling_apco2startdate2     = 000000,
+  bling_apco2period         = 2629800,
+  bling_apco2_lon0          = 0,
+  bling_apco2_lon_inc       = 360,
+  bling_apco2_lat0          = -90,
+  bling_apco2_lat_inc       = 180,
+  bling_apco2_nlon          = 2,
+  bling_apco2_nlat          = 2,
  &
