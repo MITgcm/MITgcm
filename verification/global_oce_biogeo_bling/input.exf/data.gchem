@@ -1,0 +1,5 @@
+ &GCHEM_PARM01
+  useBLING=.TRUE.,
+  nsubtime=1,
+  gchem_secondsperyear = 31104000.0,
+ &
