@@ -692,7 +692,7 @@ whereas Tapenaade requires directories ``code_tap`` and ``input_tap`` respective
    Also contains additional TAF adjoint setup
    with sea ice thermodynamics-only using :filelink:`pkg/thsice` (:filelink:`input_ad.thsice <verification/offline_exf_seaice/input_ad.thsice>`).
 
-#. :filelink:`tutorial_barotropic_gyre <verification/tutorial_barotropic_gyre>` - Based on forward
+#. :filelink:`tutorial_baroclinic_gyre <verification/tutorial_baroclinic_gyre>` - Based on forward
    experiment described in :numref:`tutorial_baroclinic_gyre`, with Tapenade adjoint setup.
 
 #. :filelink:`tutorial_dic_adjoffline <verification/tutorial_dic_adjoffline>` - TAF adjoint setup of offline form of passive tracers coupled
