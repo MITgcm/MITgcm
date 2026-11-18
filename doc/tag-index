@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification:
+  - add Tapenade (AD & TL) tests to experiment "tutorial_baroclinic_gyre",
+    also included in CI "tapenade-other" group.
 o pkg/streamice:
   - fix metric terms k1AtC_str,k2AtC_str and how they are applied.
 o pkg/steep_icecavity:
