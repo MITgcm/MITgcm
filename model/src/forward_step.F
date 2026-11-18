@@ -124,6 +124,7 @@ C     !CALLING SEQUENCE:
 C     FORWARD_STEP
 C       |
 C       |-- AUTODIFF_INADMODE_UNSET
+C       |-- AUTODIFF_INADMODE_UNSET_TAP
 C       |
 C       |-- SHELFICE_REMESHING
 C       |
@@ -147,6 +148,7 @@ C       |-- CHEAPAML
 C       |
 C       |-- CTRL_MAP_FORCING
 C       |-- DUMMY_IN_STEPPING
+C       |-- DUMMY_IN_STEPPING_TAP
 C       |
 C       |-- CPL_EXPORT_IMPORT_DATA
 C       |
@@ -232,6 +234,7 @@ C       |
 C       |-- DO_WRITE_PICKUP
 C       |
 C       |-- AUTODIFF_INADMODE_SET
+C       |-- AUTODIFF_INADMODE_SET_TAP
 C       |
 C       |-- SHOWFLOPS_INLOOP
 
@@ -432,6 +435,10 @@ C--   Reset the model iteration counter and the model time.
 
 #ifdef ALLOW_AUTODIFF
       CALL AUTODIFF_INADMODE_UNSET( myTime, myIter, myThid )
+# ifdef ALLOW_TAPENADE
+C     Tapenade counterpart (pkg/tapenade/dummy_tap.F)
+      CALL AUTODIFF_INADMODE_UNSET_TAP( etaN, myTime, myIter, myThid )
+# endif
 #endif
 
 #ifdef ALLOW_LONGSTEP
@@ -577,6 +584,10 @@ C--   Add control vector for forcing and parameter fields
 
 #ifdef ALLOW_AUTODIFF_MONITOR
       CALL DUMMY_IN_STEPPING( myTime, myIter, myThid )
+# ifdef ALLOW_TAPENADE
+C     Tapenade counterpart (pkg/tapenade/dummy_in_stepping_tap.F)
+      CALL DUMMY_IN_STEPPING_TAP( myTime, myIter, myThid )
+# endif
 #endif
 
 #ifdef COMPONENT_MODULE
@@ -1206,6 +1217,10 @@ C--   Save state for restarts
 
 #ifdef ALLOW_AUTODIFF
       CALL AUTODIFF_INADMODE_SET( myTime, myIter, myThid )
+# ifdef ALLOW_TAPENADE
+C     Tapenade counterpart (pkg/tapenade/dummy_tap.F)
+      CALL AUTODIFF_INADMODE_SET_TAP( etaN, myTime, myIter, myThid )
+# endif
 #endif
 
 #ifdef ALLOW_SHOWFLOPS

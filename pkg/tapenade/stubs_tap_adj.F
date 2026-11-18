@@ -9,6 +9,24 @@ C--    *_B: adjoint with checkpointing on
 C--    *_D: tlm
 C--    *_FWD, *_BWD: adjoint with no checkpointing
 C--
+C--   The five ADEXCH_* routines are the adjoint halo exchanges that the
+C--   adjoint output routines of pkg/autodiff (addummy_in_stepping.F,
+C--   copy_ad_uv_outp.F, monitor_ad.F, ...) apply to an adjoint field
+C--   before writing it, to fold the tile-overlap contributions into the
+C--   interior points that own them. Each one composes, in reverse
+C--   order, the *_AD twins of the exchanges its forward counterpart
+C--   calls (EXCH2_R{L,S}{1,2}_CUBE_AD with pkg/exch2, the EXCH1_*_AD
+C--   family otherwise), mirroring eesupp/src/exch_3d_rl.F,
+C--   exch_uv_3d_rl.F, exch_xy_rs.F, exch_uv_xy_rs.F and exch_xy_rl.F.
+C--   Without them a dumped adjoint field keeps partial sums on every
+C--   internal tile edge of a multi-tile decomposition.
+C--   Two limitations: the cubed-sphere corner fix-ups of the forward UV
+C--   wrappers (pkg/exch2/exch2_uv_3d_rl.F, active only under
+C--   useCubedSphereExchange) are not adjointed, so the fold is
+C--   incomplete next to facet corners; and under DISCONNECTED_TILES the
+C--   forward exchange (EXCH0_*) has no adjoint counterpart, so no fold
+C--   is applied.
+C--
 C--    Contents:
 C--    o  GLOBAL_MAX_R8_B
 C--    o  GLOBAL_SUM_TILE_RL_B
@@ -145,51 +163,187 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-      SUBROUTINE ADEXCH_3D_RL( adVar, Nr, myThid )
+C     Adjoint halo exchange of a 3-D _RL centered (tracer-point) field:
+C     tile-overlap adjoint values are added into the interior points that
+C     own them, then zeroed (the transpose of the forward halo copy).
+C     Mirrors EXCH_3D_RL / EXCH2_3D_RL with each exchange replaced by its
+C     _AD twin, composed in reverse order (corners first).
+      SUBROUTINE ADEXCH_3D_RL( adVar, myNz, myThid )
       IMPLICIT NONE
-      _RL    adVar
-      INTEGER Nr
+#include "SIZE.h"
+#include "EEPARAMS.h"
+      INTEGER myNz
+      _RL     adVar( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, myNz, nSx, nSy )
       INTEGER myThid
-      WRITE(*,*) "Called not yet defined"
+
+#ifdef ALLOW_EXCH2
+      CALL EXCH2_RL1_CUBE_AD( adVar, .FALSE., 'T ',
+     I            OLx, OLx, OLy, OLy, myNz,
+     I            OLx, OLy, EXCH_UPDATE_CORNERS, myThid )
+      CALL EXCH2_RL1_CUBE_AD( adVar, .FALSE., 'T ',
+     I            OLx, OLx, OLy, OLy, myNz,
+     I            OLx, OLy, EXCH_IGNORE_CORNERS, myThid )
+#else /* ALLOW_EXCH2 */
+      IF ( useCubedSphereExchange ) THEN
+        CALL EXCH1_RL_CUBE_AD( adVar, .FALSE.,
+     I            OLx, OLx, OLy, OLy, myNz,
+     I            OLx, OLy, EXCH_UPDATE_CORNERS, myThid )
+      ELSE
+# ifndef DISCONNECTED_TILES
+        CALL EXCH1_RL_AD( adVar,
+     I            OLx, OLx, OLy, OLy, myNz,
+     I            OLx, OLy, EXCH_UPDATE_CORNERS, myThid )
+# endif
+      ENDIF
+#endif /* ALLOW_EXCH2 */
       RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-      SUBROUTINE ADEXCH_UV_XY_RS( adU, adV, bool, myThid )
+C     Adjoint halo exchange of a 2-D _RS C-grid vector pair (e.g. wind
+C     stress adjoints).  Mirrors EXCH_UV_XY_RS; see ADEXCH_UV_3D_RL for
+C     the cubed-sphere caveat.
+      SUBROUTINE ADEXCH_UV_XY_RS( adU, adV, withSigns, myThid )
       IMPLICIT NONE
-      _RS     adU, adV
-      LOGICAL bool
+#include "SIZE.h"
+#include "EEPARAMS.h"
+      _RS     adU( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
+      _RS     adV( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
+      LOGICAL withSigns
       INTEGER myThid
-      WRITE(*,*) "Called not yet defined"
+
+#ifdef ALLOW_EXCH2
+      CALL EXCH2_RS2_CUBE_AD( adU, adV, withSigns, 'Cg',
+     I            OLx, OLx, OLy, OLy, 1,
+     I            OLx, OLy, EXCH_UPDATE_CORNERS, myThid )
+      CALL EXCH2_RS2_CUBE_AD( adU, adV, withSigns, 'Cg',
+     I            OLx, OLx, OLy, OLy, 1,
+     I            OLx, OLy, EXCH_IGNORE_CORNERS, myThid )
+#else /* ALLOW_EXCH2 */
+      IF ( useCubedSphereExchange ) THEN
+        CALL EXCH1_UV_RS_CUBE_AD( adU, adV, withSigns,
+     I            OLx, OLx, OLy, OLy, 1,
+     I            OLx, OLy, EXCH_UPDATE_CORNERS, myThid )
+      ELSE
+# ifndef DISCONNECTED_TILES
+        CALL EXCH1_RS_AD( adV,
+     I            OLx, OLx, OLy, OLy, 1,
+     I            OLx, OLy, EXCH_UPDATE_CORNERS, myThid )
+        CALL EXCH1_RS_AD( adU,
+     I            OLx, OLx, OLy, OLy, 1,
+     I            OLx, OLy, EXCH_UPDATE_CORNERS, myThid )
+# endif
+      ENDIF
+#endif /* ALLOW_EXCH2 */
       RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-      SUBROUTINE ADEXCH_UV_3D_RL( aduVel, advVel, bool, Nr, myThid )
+C     Adjoint halo exchange of a 3-D _RL C-grid vector pair (uVelb,vVelb).
+C     Mirrors EXCH_UV_3D_RL / EXCH2_UV_3D_RL with the exchanges replaced
+C     by their _AD twins in reverse order.  The forward wrapper's corner
+C     fix-ups run only under useCubedSphereExchange and are not adjointed
+C     here; on a single-facet topology they never execute.
+      SUBROUTINE ADEXCH_UV_3D_RL( aduVel, advVel, withSigns,
+     &                            myNz, myThid )
       IMPLICIT NONE
-      _RL     aduVel, advVel
-      LOGICAL bool
-      INTEGER Nr
+#include "SIZE.h"
+#include "EEPARAMS.h"
+      INTEGER myNz
+      _RL     aduVel( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, myNz, nSx, nSy )
+      _RL     advVel( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, myNz, nSx, nSy )
+      LOGICAL withSigns
       INTEGER myThid
-      WRITE(*,*) "Called not yet defined"
+
+#ifdef ALLOW_EXCH2
+      CALL EXCH2_RL2_CUBE_AD( aduVel, advVel, withSigns, 'Cg',
+     I            OLx, OLx, OLy, OLy, myNz,
+     I            OLx, OLy, EXCH_UPDATE_CORNERS, myThid )
+      CALL EXCH2_RL2_CUBE_AD( aduVel, advVel, withSigns, 'Cg',
+     I            OLx, OLx, OLy, OLy, myNz,
+     I            OLx, OLy, EXCH_IGNORE_CORNERS, myThid )
+#else /* ALLOW_EXCH2 */
+      IF ( useCubedSphereExchange ) THEN
+        CALL EXCH1_UV_RL_CUBE_AD( aduVel, advVel, withSigns,
+     I            OLx, OLx, OLy, OLy, myNz,
+     I            OLx, OLy, EXCH_UPDATE_CORNERS, myThid )
+      ELSE
+# ifndef DISCONNECTED_TILES
+        CALL EXCH1_RL_AD( advVel,
+     I            OLx, OLx, OLy, OLy, myNz,
+     I            OLx, OLy, EXCH_UPDATE_CORNERS, myThid )
+        CALL EXCH1_RL_AD( aduVel,
+     I            OLx, OLx, OLy, OLy, myNz,
+     I            OLx, OLy, EXCH_UPDATE_CORNERS, myThid )
+# endif
+      ENDIF
+#endif /* ALLOW_EXCH2 */
       RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C     Adjoint halo exchange of a 2-D _RS centered field (Qnetb, EmPmRb).
+C     Mirrors EXCH_XY_RS / EXCH2_3D_RS with myNz=1.
       SUBROUTINE ADEXCH_XY_RS( adVar, myThid )
       IMPLICIT NONE
-      _RS     adVar
+#include "SIZE.h"
+#include "EEPARAMS.h"
+      _RS     adVar( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
       INTEGER myThid
-      WRITE(*,*) "Called not yet defined"
+
+#ifdef ALLOW_EXCH2
+      CALL EXCH2_RS1_CUBE_AD( adVar, .FALSE., 'T ',
+     I            OLx, OLx, OLy, OLy, 1,
+     I            OLx, OLy, EXCH_UPDATE_CORNERS, myThid )
+      CALL EXCH2_RS1_CUBE_AD( adVar, .FALSE., 'T ',
+     I            OLx, OLx, OLy, OLy, 1,
+     I            OLx, OLy, EXCH_IGNORE_CORNERS, myThid )
+#else /* ALLOW_EXCH2 */
+      IF ( useCubedSphereExchange ) THEN
+        CALL EXCH1_RS_CUBE_AD( adVar, .FALSE.,
+     I            OLx, OLx, OLy, OLy, 1,
+     I            OLx, OLy, EXCH_UPDATE_CORNERS, myThid )
+      ELSE
+# ifndef DISCONNECTED_TILES
+        CALL EXCH1_RS_AD( adVar,
+     I            OLx, OLx, OLy, OLy, 1,
+     I            OLx, OLy, EXCH_UPDATE_CORNERS, myThid )
+# endif
+      ENDIF
+#endif /* ALLOW_EXCH2 */
       RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C     Adjoint halo exchange of a 2-D _RL centered field (EtaNb).
+C     Mirrors EXCH_XY_RL / EXCH2_3D_RL with myNz=1.
       SUBROUTINE ADEXCH_XY_RL( adVar, myThid )
       IMPLICIT NONE
-      _RL     adVar
+#include "SIZE.h"
+#include "EEPARAMS.h"
+      _RL     adVar( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
       INTEGER myThid
-      WRITE(*,*) "Called not yet defined"
+
+#ifdef ALLOW_EXCH2
+      CALL EXCH2_RL1_CUBE_AD( adVar, .FALSE., 'T ',
+     I            OLx, OLx, OLy, OLy, 1,
+     I            OLx, OLy, EXCH_UPDATE_CORNERS, myThid )
+      CALL EXCH2_RL1_CUBE_AD( adVar, .FALSE., 'T ',
+     I            OLx, OLx, OLy, OLy, 1,
+     I            OLx, OLy, EXCH_IGNORE_CORNERS, myThid )
+#else /* ALLOW_EXCH2 */
+      IF ( useCubedSphereExchange ) THEN
+        CALL EXCH1_RL_CUBE_AD( adVar, .FALSE.,
+     I            OLx, OLx, OLy, OLy, 1,
+     I            OLx, OLy, EXCH_UPDATE_CORNERS, myThid )
+      ELSE
+# ifndef DISCONNECTED_TILES
+        CALL EXCH1_RL_AD( adVar,
+     I            OLx, OLx, OLy, OLy, 1,
+     I            OLx, OLy, EXCH_UPDATE_CORNERS, myThid )
+# endif
+      ENDIF
+#endif /* ALLOW_EXCH2 */
       RETURN
       END
 
