@@ -1,0 +1,97 @@
+# Diagnostic Package Choices
+#-----------------
+# for each output-stream:
+#  filename(n) : prefix of the output file name (only 8.c long) for outp.stream n
+#  frequency(n):< 0 : write snap-shot output every |frequency| seconds
+#               > 0 : write time-average output every frequency seconds
+#  timePhase(n)     : write at time = timePhase + multiple of |frequency|
+#  levels(:,n) : list of levels to write to file (Notes: declared as REAL)
+#                 when this entry is missing, select all common levels of this list
+#  fields(:,n) : list of diagnostics fields (8.c) (see "available_diagnostics" file
+#                 for the list of all available diag. in this particular config)
+#-----------------
+#
+# daily 2-D fields:
+# =================
+# 
+# ETAN     Perturbation of Surface (pressure, height) (Pa,m)
+# oceTAUX  zonal surface wind stress, >0 increases uVel (N/m^2)
+# oceTAUY  meridional surf. wind stress, >0 increases vVel (N/m^2)
+# surForcT model surface forcing for Temperature, >0 increases theta (W/m^2)
+# oceQsw   net Short-Wave radiation (+=down), >0 increases theta (W/m^2)
+# surForcS model surface forcing for Salinity, >0 increases salinity (g/m^2/s)
+# SSS      Sea Surface Salinity (g/kg)
+# SST      Sea Surface Temperature (degC,K)
+# UVEL_k1  Zonal Component of Velocity at level 1 (m/s)
+# VVEL_k1  Meridional Component of Velocity at level 1 (m/s)
+# SIarea   SEAICE fractional ice-covered area [0 to 1]
+# SIheff   SEAICE effective ice thickness (m)
+# SIuice   SEAICE zonal ice velocity, >0 from West to East (m/s)
+# SIvice   SEAICE merid. ice velocity, >0 from South to North (m/s)
+# SIhsnow  SEAICE snow thickness (m)
+# SIhsalt  SEAICE salinity (g/m^2)
+# 
+# monthly 3-D fields:
+# ===================
+# 
+# SALTanom Salt anomaly (=SALT-35; g/kg)
+# THETA    Potential Temperature (degC,K)
+# UVELMASS Zonal Mass-Weighted Comp of Velocity (m/s)
+# VVELMASS Meridional Mass-Weighted Comp of Velocity (m/s)
+# WVELMASS Vertical Mass-Weighted Comp of Velocity (m/s)
+#
+ &diagnostics_list
+  frequency(1)  = 2628000.,
+   fields(1,1)  = 'ETAN    ',
+   filename(1)  = 'ETAN',
+  frequency(2)  = 2628000.,
+   fields(1,2)  = 'oceTAUX ','oceTAUY '
+   filename(2)  = 'oceTAU',
+  frequency(3)  = 2400.,
+   fields(1,3)  = 'UDIAG1  ',
+   filename(3)  = 'UDIAG1',
+  frequency(4)  = 2628000.,
+   fields(1,4)  = 'surForcT','oceQsw  ','surForcS'
+   filename(4)  = 'surForc',
+  frequency(5)  = 2628000.,
+   fields(1,5)  = 'ADVx_TH ','ADVy_TH '
+   filename(5)  = 'ADV_TH',
+  frequency(6)  = 2628000.,
+   fields(1,6)  = 'ADVx_SLT','ADVy_SLT'
+   filename(6)  = 'ADV_SLT',
+  frequency(7)  = 2628000.,
+   fields(1,7)  = 'SALT    ',
+   levels(1,7)  = 1.,
+   filename(7)  = 'SSS',
+  frequency(8)  = 2628000.,
+   fields(1,8)  = 'THETA   ',
+   levels(1,8)  = 1.,
+   filename(8)  = 'SST',
+  frequency(9)  = 2628000.,
+   fields(1,9)  = 'UVEL    ',
+   levels(1,9)  = 1.,
+   filename(9)  = 'UVEL_k1',
+  frequency(10) = 2628000.,
+   fields(1,10) = 'VVEL    ',
+   levels(1,10) = 1.,
+   filename(10) = 'VVEL_k1',
+ &
+
+# Parameter for Diagnostics of per level statistics:
+#-----------------
+# for each output-stream:
+#  stat_fname(n) : prefix of the output file name (only 8.c long) for outp.stream n
+#  stat_freq(n):< 0 : write snap-shot output every |stat_freq| seconds
+#               > 0 : write time-average output every stat_freq seconds
+#  stat_phase(n)    : write at time = stat_phase + multiple of |stat_freq|
+#  stat_region(:,n) : list of "regions" (default: 1 region only=global)
+#  stat_fields(:,n) : list of diagnostics fields (8.c) (see "available_diagnostics.log"
+#                 file for the list of all available diag. in this particular config)
+#-----------------
+ &DIAG_STATIS_PARMS
+#- an example just to check the agreement with MONITOR output:
+#stat_fields(1,1)= 'ETAN    ','UVEL    ','VVEL    ','WVEL    ', 'THETA   ',
+#   stat_fname(1)= 'dynStDiag',
+#    stat_freq(1)= -864000.,
+#   stat_phase(1)= 0.,
+ &
