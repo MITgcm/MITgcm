@@ -19,6 +19,7 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "GRID.h"
 #include "FFIELDS.h"
+#include "GCHEM_VARS.h"
 #include "DIC_VARS.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
@@ -125,22 +126,25 @@ C for non-interactive Si
          ENDDO
         ENDDO
 
-#ifdef CARBONCHEM_SOLVESAPHE
+#ifndef ALLOW_AUTODIFF
+        IF ( selectModernCoeffs.GT.0 ) THEN
 #ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('DIC_COEFFS_SURF',myThid)
+         IF (debugMode) CALL DEBUG_CALL('GCHEM_COEFFS_SURF',myThid)
 #endif
-        CALL DIC_COEFFS_SURF(
+         CALL GCHEM_COEFFS_SURF(
      I                       surftemp,surfsalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
-#else /* CARBONCHEM_SOLVESAPHE */
+        ELSE
+#endif /* ALLOW_AUTODIFF */
 #ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('CARBON_COEFFS',myThid)
+         IF (debugMode) CALL DEBUG_CALL('GCHEM_CARBON_COEFFS',myThid)
 #endif
-        CALL CARBON_COEFFS(
+         CALL GCHEM_CARBON_COEFFS(
      I                       surftemp,surfsalt,
-     I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
-
-#endif /* CARBONCHEM_SOLVESAPHE */
+     I                       bi,bj,iMin,iMax,jMin,jMax,0,myThid)
+#ifndef ALLOW_AUTODIFF
+        ENDIF
+#endif
 
 C====================================================================
 
@@ -161,14 +165,14 @@ C$TAF LOOP = parallel
            DO i=iMin,iMax
             IF ( maskC(i,j,kLev,bi,bj) .NE. 0. _d 0) THEN
 C$TAF init dic_surf = static, 10
-#ifdef CARBONCHEM_SOLVESAPHE
+#ifndef ALLOW_AUTODIFF
              IF ( selectPHsolver.GT.0 ) THEN
 C Use Munhoven (2013) Solvesaphe routine to initialize pH
 #ifdef ALLOW_DEBUG
-              IF (debugPrt) CALL DEBUG_CALL('AHINI_FOR_AT',myThid)
+              IF (debugPrt) CALL DEBUG_CALL('GCHEM_AHINI_FOR_AT',myThid)
 #endif
-C call AHINI_FOR_AT to get better initial guess of pH
-              CALL AHINI_FOR_AT(
+C call GCHEM_AHINI_FOR_AT to get better initial guess of pH
+              CALL GCHEM_AHINI_FOR_AT(
      I           surfalk(i,j)*permil,
      I           surfdic(i,j)*permil,
      I           bt(i,j,bi,bj),
@@ -180,28 +184,28 @@ C$TAF STORE surfalk(i,j), surfphos(i,j), surfsi(i,j)   = dic_surf
 
 #ifdef ALLOW_DEBUG
               IF (debugPrt)
-     &          CALL DEBUG_CALL('CALC_PCO2_SOLVESAPHE',myThid)
+     &          CALL DEBUG_CALL('GCHEM_CALC_PCO2_SOLVESAPHE',myThid)
 #endif
-              CALL CALC_PCO2_SOLVESAPHE(
+              CALL GCHEM_CALC_PCO2_SOLVESAPHE(
      I         surftemp(i,j),surfsalt(i,j),
      I         surfdic(i,j), surfphos(i,j),
-     I         surfsi(i,j),surfalk(i,j),
+     I         surfsi(i,j),surfalk(i,j), permil,
      U         pH(i,j,bi,bj),pCO2(i,j,bi,bj),co3dummy,
      I         i,j,kLev,bi,bj, debugPrt, nIter0, myThid )
               debugPrt = .FALSE.
              ELSE
+#endif /* ALLOW_AUTODIFF */
 C Use the original Follows et al. (2006) solver
-#endif /* CARBONCHEM_SOLVESAPHE */
 #ifdef ALLOW_DEBUG
               IF (debugPrt) THEN
-                CALL DEBUG_CALL('CALC_PCO2_APPROX',myThid)
+                CALL DEBUG_CALL('GCHEM_CALC_PCO2_APPROX',myThid)
                 debugPrt = .FALSE.
               ENDIF
 #endif
               DO it=1,10
 cC$TAF STORE pH(i,j,bi,bj)                              = dic_surf
 cC$TAF STORE surfalk(i,j), surfphos(i,j), surfsi(i,j)   = dic_surf
-               CALL CALC_PCO2_APPROX(
+               CALL GCHEM_CALC_PCO2_APPROX(
      I          surftemp(i,j),surfsalt(i,j),
      I          surfdic(i,j), surfphos(i,j),
      I          surfsi(i,j),surfalk(i,j),
@@ -212,12 +216,13 @@ cC$TAF STORE surfalk(i,j), surfphos(i,j), surfsi(i,j)   = dic_surf
      I          ak0(i,j,bi,bj), fugf(i,j,bi,bj),
      I          ff(i,j,bi,bj),
      I          bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
+     I          permil,
      U          pH(i,j,bi,bj),pCO2(i,j,bi,bj),co3dummy,
      I          i,j,kLev,bi,bj, it ,  myThid )
               ENDDO
-#ifdef CARBONCHEM_SOLVESAPHE
+#ifndef ALLOW_AUTODIFF
              ENDIF
-#endif /* CARBONCHEM_SOLVESAPHE */
+#endif
             ENDIF
            ENDDO
           ENDDO
