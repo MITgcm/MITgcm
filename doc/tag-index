@@ -1,6 +1,14 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/generic_advdiff:
+  - fix a bug in 4 tracer vertical advection routines (Adv-Scheme: 4, 30, 33
+    and 7) when dry grid-cells are present at lower k-index end of the column,
+    i.e., using P-coord with bathy/orography or if using with pkg/shelfice.
+  - also fix diagnostics of vertical velocity times tracers (T,S, or Ptracer)
+    when free-surface location is not at k=1.
+  - add a secondary test to  exp. advect_xz using Linear free-surface and with
+    1 level of dry cells at the top. also update isomip.htd AD ref. output.
 o verification:
   - add Tapenade (AD & TL) tests to experiment "tutorial_baroclinic_gyre",
     also included in CI "tapenade-other" group.

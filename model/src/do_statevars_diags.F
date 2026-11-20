@@ -1,7 +1,6 @@
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
-
 CBOP
 C     !ROUTINE: DO_STATEVARS_DIAGS
 C     !INTERFACE:
@@ -24,6 +23,10 @@ C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "DYNVARS.h"
+#ifdef ALLOW_LONGSTEP
+# include "LONGSTEP.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -49,6 +52,9 @@ C            = 2 :: fill-in diagnostics for momentum variables only
 C            = 3 :: fill-in diagnostics for momentum & tracer variables
 C            = 4 :: fill-in state variable tendency diagnostics the second time
       INTEGER selectVars
+#ifdef ALLOW_LONGSTEP
+      INTEGER trIter
+#endif
 
 C--   Fill-in Diagnostics pkg storage array (for state-variables)
       IF ( usediagnostics ) THEN
@@ -75,7 +81,24 @@ C                    and stagger/synchronous TimeStep
 #ifdef ALLOW_PTRACERS
         IF ( (selectVars.EQ.1 .OR. selectVars.EQ.3)
      &      .AND. usePTRACERS ) THEN
-          CALL PTRACERS_DIAGNOSTICS_STATE( myTime, myIter, myThid )
+#ifdef ALLOW_LONGSTEP
+C     fill only once every long time step:
+C     at first timestep (trIter=nIter0) we do not have averaged velocities yet
+C     so we use initial velocities instead.
+         trIter = myIter
+         IF ( staggerTimeStep ) trIter = myIter-1
+         IF ( LS_doTimeStep .AND. trIter.GT.nIter0 ) THEN
+          CALL PTRACERS_DIAGNOSTICS_STATE(
+     I                  LS_uVel, LS_vVel, LS_wVel,
+     I                  myTime, myIter, myThid )
+         ELSEIF ( trIter.EQ.nIter0 ) THEN
+#else
+         IF ( .TRUE. ) THEN
+#endif
+          CALL PTRACERS_DIAGNOSTICS_STATE(
+     I                  uVel, vVel, wVel, myTime, myIter, myThid )
+C     LS_doTimeStep
+         ENDIF
         ENDIF
 #endif /* ALLOW_PTRACERS */
 
