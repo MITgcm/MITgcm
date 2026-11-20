@@ -272,7 +272,7 @@ For many experiments, additional information is provided in a ``README`` file lo
    (:filelink:`input.ab3_c4 <verification/advect_xy/input.ab3_c4>`).
 
 #. :filelink:`advect_xz <verification/advect_xz>` - 2-D (vertical plane) passive advection
-   test on Cartesian grid. Also contains an additional setups:
+   test on Cartesian grid. Also contains additional setups:
 
    - using linear free-surface with divergent barotropic flow and a level of dry cells
      at the top (:filelink:`input.linFS <verification/advect_xz/input.linFS>`);
