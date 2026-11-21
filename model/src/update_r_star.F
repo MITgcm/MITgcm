@@ -1,3 +1,4 @@
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
@@ -21,6 +22,9 @@ C     == Global variables
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SURFACE.h"
+#ifdef ALLOW_WETDRY
+# include "WETDRY.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -115,6 +119,25 @@ C
         ENDDO
 
        ENDIF
+
+#ifdef ALLOW_WETDRY
+C-- Wetting-drying: close the faces shut by pkg/wetdry (maskW/S already
+C   updated in WETDRY_UPDATE_MASKS, so recip_hFacW/S only needs zeroing)
+       IF ( useWETDRY ) THEN
+        DO k=1,Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+            hFacW(i,j,k,bi,bj) = hFacW(i,j,k,bi,bj)*wdMaskW(i,j,bi,bj)
+            hFacS(i,j,k,bi,bj) = hFacS(i,j,k,bi,bj)*wdMaskS(i,j,bi,bj)
+            recip_hFacW(i,j,k,bi,bj) = recip_hFacW(i,j,k,bi,bj)
+     &                               * wdMaskW(i,j,bi,bj)
+            recip_hFacS(i,j,k,bi,bj) = recip_hFacS(i,j,k,bi,bj)
+     &                               * wdMaskS(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
+#endif /* ALLOW_WETDRY */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

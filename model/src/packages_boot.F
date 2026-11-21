@@ -96,6 +96,7 @@ C     data.pkg namelists
      &          useMNC,
      &          useRunClock,
      &          useEMBED_FILES,
+     &          useWETDRY,
      &          useMYPACKAGE,
      &          useATM2d
 
@@ -163,6 +164,7 @@ c     useGAD          =.FALSE.
       useMNC          =.FALSE.
       useRunClock     =.FALSE.
       useEMBED_FILES  =.FALSE.
+      useWETDRY       =.FALSE.
       useMYPACKAGE    =.FALSE.
 C-    retired pkgs:
       useATM2d        =.FALSE.
@@ -454,6 +456,9 @@ C----- pkgs with a standard "usePKG" On/Off switch in "data.pkg":
 #endif
 #ifdef ALLOW_EMBED_FILES
       CALL PACKAGES_PRINT_MSG( useEMBED_FILES,'EMBED_FILES', ' ' )
+#endif
+#ifdef ALLOW_WETDRY
+      CALL PACKAGES_PRINT_MSG( useWETDRY,     'WETDRY',      ' ' )
 #endif
 #ifdef ALLOW_MYPACKAGE
       CALL PACKAGES_PRINT_MSG( useMYPACKAGE,  'MYPACKAGE',   ' ' )

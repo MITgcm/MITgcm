@@ -623,6 +623,15 @@ C--   needs to be called after the OASIS_INIT
       ENDIF
 #endif
 
+#ifdef ALLOW_WETDRY
+      IF (useWETDRY) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('WETDRY_INIT_FIXED',myThid)
+# endif
+        CALL WETDRY_INIT_FIXED(myThid)
+      ENDIF
+#endif
+
 #ifdef ALLOW_MYPACKAGE
       IF (useMYPACKAGE) THEN
 # ifdef ALLOW_DEBUG
