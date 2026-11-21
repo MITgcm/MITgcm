@@ -62,15 +62,17 @@ set in ``data.rbcs``, and their default values.
    +------------------------------------+--------+------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------+
    | :varlink:`rbcsIter0`               | PARM01 | 0                      | shift in iteration numbers used to label files if :varlink:`rbcsSingleTimeFiles` = ``.TRUE.`` (see below for examples)                                       |
    +------------------------------------+--------+------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`useRBCtemp`,             | PARM01 | FALSE                  | whether to use RBCS for T/S/U/V                                                                                                                              |
+   | :varlink:`useRBCtemp`,             | PARM01 | FALSE                  | whether to use RBCS for T/S/U/V/Eta (Note Eta only if using non-linear free surface)                                                                         |
    | :varlink:`useRBCsalt`,             |        |                        |                                                                                                                                                              |
    | :varlink:`useRBCuVel`,             |        |                        |                                                                                                                                                              |
    | :varlink:`useRBCvVel`              |        |                        |                                                                                                                                                              |
+   | :varlink:`useRBCeta`               |        |                        |                                                                                                                                                              |
    +------------------------------------+--------+------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`tauRelaxT`,              | PARM01 | 0.0                    | timescales (in seconds) for relaxing T/S/U/V (:math:`\tau_T` in equation above); required if the corresponding ``useRBCxxx`` is ``.TRUE.``                   |
+   | :varlink:`tauRelaxT`,              | PARM01 | 0.0                    | timescales (in seconds) for relaxing T/S/U/V/Eta (:math:`\tau_T` in equation above); required if the corresponding ``useRBCxxx`` is ``.TRUE.``               |
    | :varlink:`tauRelaxS`,              |        |                        |                                                                                                                                                              |
    | :varlink:`tauRelaxU`,              |        |                        |                                                                                                                                                              |
    | :varlink:`tauRelaxV`               |        |                        |                                                                                                                                                              |
+   | :varlink:`tauRelaxEta`             |        |                        |                                                                                                                                                              |
    +------------------------------------+--------+------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------+
    | :varlink:`relaxMaskFile` (irbc)    | PARM01 | :kbd:`' '`             | filename of 3-D file with mask (:math:`M_{rbc}` above), requires a file for each irbc (1=temperature, 2=salinity, 3=ptracer1, 4=ptracer2, etc);              |
    |                                    |        |                        | if :varlink:`maskLEN` is less than the number of tracers, then :code:`relaxMaskFile(maskLEN)` is used for all remaining tracers                              |
@@ -78,10 +80,13 @@ set in ``data.rbcs``, and their default values.
    | :varlink:`relaxMaskUFile`,         | PARM01 | :kbd:`' '`             | filename of 3-D file with mask for U/V.                                                                                                                      |
    | :varlink:`relaxMaskVFile`          |        |                        |                                                                                                                                                              |
    +------------------------------------+--------+------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`relaxTFile`,             | PARM01 | :kbd:`' '`             | name of file with 3-D relaxation field values (:math:`T_{rbc}` in equation above);                                                                           |
+   | :varlink:`relaxMaskEtaFile`,       | PARM01 | :kbd:`' '`             | filename of 2-D file with mask for Eta.                                                                                                                      |
+   +------------------------------------+--------+------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------+
+   | :varlink:`relaxTFile`,             | PARM01 | :kbd:`' '`             | name of file with 3-D relaxation field values (:math:`T_{rbc}` in equation above), or 2-D for Eta;                                                           |
    | :varlink:`relaxSFile`,             |        |                        | if :varlink:`rbcsSingleTimeFiles` = ``.FALSE.``, it must have one record for each forcing period,                                                            |
    | :varlink:`relaxUFile`,             |        |                        | otherwise there must be a separate file for each period with a 10-digit iteration number appended                                                            |
-   | :varlink:`relaxVFile`              |        |                        | to the file name (see :numref:`tab_phys_pkg_rbcs_timing` and examples below)                                                                                 |
+   | :varlink:`relaxVFile`              |        |                        | to the file name (see :numref:`tab_phys_pkg_rbcs_timing`, :numref:`sec_mitgcm_inp_file_format`, and                                                          |
+   | :varlink:`relaxEtaFile`,           |        |                        | examples below)                                                                                                                                              |
    +------------------------------------+--------+------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------+
    | :varlink:`useRBCpTrNum` (iTrc)     | PARM02 | FALSE                  | if ``.TRUE.``,  use RBCS for the corresponding passive tracer                                                                                                |
    +------------------------------------+--------+------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------+
@@ -154,6 +159,9 @@ last and first records of rbcs data, placed at :math:`-p/2` and :math:`p/2`,
 respectively, as appropriate for fields averaged over the time intervals
 :math:`[-p, 0]` and :math:`[0, p]`.
 
+Note that the file shapes are `(nt, nz, ny, nx)` for 3-D fields and
+`(nt, ny, nx)` for 2-D fields (Eta)
+
 Non-cyclic data, multiple files
 ###############################
 
@@ -184,6 +192,17 @@ Set :varlink:`rbcsForcingCycle` = 0 and :varlink:`rbcsSingleTimeFiles` =
 start with data from files ``relax\*File.0000000000.data`` at :math:`t=0`. It
 would then proceed to interpolate between this file and files
 ``relax\*File.0000000001.data`` at :math:`t={}`\ :varlink:`rbcsForcingPeriod`.
+
+Relaxing sea surface height
++++++++++++++++++++++++++++
+
+If :varlink:`useRBCeta` = :code:`.TRUE.` then sea-surface height can be nudged
+if the sea surface is non-linear, e.g. if :varlink:`nonlinFreeSurf` is greater
+than zero (:numref:`nonlinear-freesurface`).
+
+Note that the prescribed sea-surface height should not vary so much that the
+top-most vertical grid cell is driven to be infinitely thin.
+
 
 Do’s and Don’ts
 +++++++++++++++
