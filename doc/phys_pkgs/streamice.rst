@@ -12,7 +12,7 @@ Introduction
 ~~~~~~~~~~~~
 
 Package :filelink:`STREAMICE <pkg/streamice>` provides a dynamic land ice model for MITgcm.
-It was created primarily to develop a TAF- and OpenAD-generated ice model adjoint
+It was created primarily to develop a TAF- and Tapenade-generated ice model adjoint
 and to provide synchronous ice-ocean coupling through the :filelink:`SHELFICE <pkg/shelfice>` package.
 It solves a set of dynamic equations appropriate for floating ice-shelf
 flow as well as ice-stream and slower ice-sheet flow. It has been tested
@@ -694,9 +694,10 @@ have an effect if they are specified along calving front boundaries (see :ref:`s
 Adjoint
 ~~~~~~~
 
-The STREAMICE package is adjointable using both TAF (Goldberg et al. 2013 :cite:`goldberg_heimbach:2013`)
-and OpenAD (Goldberg et al. 2016 :cite:`goldberg_openad_fixed:2016`). In OpenAD, the fixed-point method of
+The STREAMICE package is adjointable using both TAF (Goldberg et al. 2013 :cite:`goldberg_heimbach:2013`), 
+OpenAD (Goldberg et al. 2016 :cite:`goldberg_openad_fixed:2016`), and Tapenade. In Tapenade, the fixed-point method of
 :cite:`christianson:94` is implemented, greatly reducing the memory requirements and also improving performance when PETSc is used.
+(**Note**: OpenAD differentiation is no longer supported by MITgcm.)
 
 Verification experiments with both OpenAD and TAF are located in the :filelink:`verification/halfpipe_streamice` (see below).
 
