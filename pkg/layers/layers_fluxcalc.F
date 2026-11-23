@@ -7,8 +7,8 @@ CBOP 0
 C     !ROUTINE: LAYERS_FLUXCALC
 C     !INTERFACE:
       SUBROUTINE LAYERS_FLUXCALC(
-     I                  uVel,vVel,tracer,iLa,
-     O                  UH,VH,Hw,Hs,PIw,PIs,Uw,Vs,
+     I                  uVel, vVel, tracer, iLa,
+     O                  UH, VH, Hw, Hs, PIw, PIs, Uw, Vs,
      I                  myThid )
 
 C     !DESCRIPTION: \bv
@@ -76,8 +76,6 @@ C      iLa  :: layer coordinate index
 #endif
       INTEGER iLa
 CEOP
-
-#ifdef ALLOW_LAYERS
 
 C !LOCAL VARIABLES:
 C     bi, bj   :: tile indices
