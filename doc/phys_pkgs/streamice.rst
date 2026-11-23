@@ -400,18 +400,6 @@ wherever
 is satisfied. Floatation criteria is stored in :varlink:`float_frac_streamice`,
 equal to 1 where ice is grounded, and equal to 0 where ice is floating.
 
-The strain rates :math:`\varepsilon_{ij}` are generalized to the case of
-orthogonal curvilinear coordinates, to include the "metric" terms that
-arise when casting the equations of motion on a sphere or projection on
-to a sphere (see :ref:`para_phys_pkg_seaice_discretization`).
-Thus
-
-.. math::
-   \begin{aligned}
-   \dot{\varepsilon}_{xx} = & u_x + k_1 v, \notag \\
-   \dot{\varepsilon}_{yy} = & v_y + k_1 u, \notag \\ 
-   \dot{\varepsilon}_{xy} = & \frac{1}{2}(u_y+v_x) + k_1 u + k_2 v. \notag \end{aligned}
-
 :math:`\nu` has the form arising from Glen's law
 
 .. math::
@@ -514,6 +502,35 @@ In the formulation for :math:`\tau_b`, :math:`u_b`, the horizontal
 velocity at :math:`u_b` is used instead. The details are given in Goldberg (2011)
 :cite:`goldberg:2011`.
 
+General Orthogonal Curvilinear Coordinates
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The strain rates :math:`\varepsilon_{ij}` are generalized to the case of
+orthogonal curvilinear coordinates, to include the "metric" terms that
+arise when casting the equations of motion on a sphere or projection on
+to a sphere:
+
+.. math::
+   \begin{aligned}
+   \dot{\varepsilon}_{xx} = & \frac{\partial u}{\partial x} + k_2 v, \notag \\
+   \dot{\varepsilon}_{yy} = & \frac{\partial v}{\partial y} + k_1 u, \notag \\ 
+   \dot{\varepsilon}_{xy} = & \frac{1}{2}(\frac{\partial u}{\partial y}+ \frac{\partial v}{\partial x} + k_1 v + k_2 u). \notag \end{aligned}
+
+(see :ref:`para_phys_pkg_seaice_discretization` for definitions of :math:`k_1` and :math:`k_2`.) As with the sea-ice model, additional terms
+are needed in the stress balance (expressed here for SSA only):
+
+.. math::
+   \partial_x(h\nu(4\dot{\varepsilon}_{xx}+2\dot{\varepsilon}_{yy})) +
+   \partial_y(2h\nu\dot{\varepsilon}_{xy}) - k_1 h\nu(4\dot{\varepsilon}_{yy}+2\dot{\varepsilon}_{xx}) + 2k_2 h\nu\varepsilon}_{xy}
+   - \tau_{bx} = \rho g h \frac{\partial s}{\partial x}, 
+   :label: mom_x_latlon
+
+.. math::
+   \partial_x(2h\nu\dot{\varepsilon}_{xy}) +
+   \partial_y(h\nu(4\dot{\varepsilon}_{yy}+2\dot{\varepsilon}_{xx})) - k_2 h\nu(4\dot{\varepsilon}_{xx}+2\dot{\varepsilon}_{yy}) + 2k_1 h\nu\varepsilon}_{xy}
+   - \tau_{by} = \rho g h \frac{\partial s}{\partial y}.
+   :label: mom_y_latlon
+
 .. _ssub_phys_pkg_streamice_advance:
 
 Ice front advance
@@ -555,6 +572,8 @@ where :math:`n` is :varlink:`n_glen`.
 (`C` in :eq:`tau_eqn`). Again :math:`C^{1/2}` is directly specified rather than `C` to ensure positivity. The units are
 :math:`\mathrm{Pa}^{1/2} (\mathrm{m }\ \mathrm{yr}^{-1})^{n_b}`
 where :math:`n_b` is :varlink:`n_basal_friction`.
+
+.. _para_phys_pkg_streamice_discretization:
 
 Numerical Details
 ~~~~~~~~~~~~~~~~~
