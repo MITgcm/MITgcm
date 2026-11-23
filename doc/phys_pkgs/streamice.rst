@@ -514,21 +514,23 @@ to a sphere:
    \begin{aligned}
    \dot{\varepsilon}_{xx} = & \frac{\partial u}{\partial x} + k_2 v, \notag \\
    \dot{\varepsilon}_{yy} = & \frac{\partial v}{\partial y} + k_1 u, \notag \\ 
-   \dot{\varepsilon}_{xy} = & \frac{1}{2}(\frac{\partial u}{\partial y}+ \frac{\partial v}{\partial x} + k_1 v + k_2 u). \notag \end{aligned}
+   \dot{\varepsilon}_{xy} = & \frac{1}{2}(\frac{\partial u}{\partial y}+ \frac{\partial v}{\partial x} - k_1 v - k_2 u). \notag \end{aligned}
 
 (see :ref:`para_phys_pkg_seaice_discretization` for definitions of :math:`k_1` and :math:`k_2`.) As with the sea-ice model, additional terms
 are needed in the stress balance (expressed here for SSA only):
 
 .. math::
+   \begin{aligned}
    \partial_x(h\nu(4\dot{\varepsilon}_{xx}+2\dot{\varepsilon}_{yy})) +
-   \partial_y(2h\nu\dot{\varepsilon}_{xy}) - k_1 h\nu(4\dot{\varepsilon}_{yy}+2\dot{\varepsilon}_{xx}) + 2k_2 h\nu\varepsilon}_{xy}
-   - \tau_{bx} = \rho g h \frac{\partial s}{\partial x}, 
+   \partial_y(2h\nu\dot{\varepsilon}_{xy}) - k_1 h\nu(4\dot{\varepsilon}_{yy}+2\dot{\varepsilon}_{xx}) + & 2k_2 h\nu\dot{\varepsilon}_{xy} \notag \\
+   & - \tau_{bx} = \rho g h \frac{\partial s}{\partial x},\end{aligned}
    :label: mom_x_latlon
 
 .. math::
+   \begin{aligned}
    \partial_x(2h\nu\dot{\varepsilon}_{xy}) +
-   \partial_y(h\nu(4\dot{\varepsilon}_{yy}+2\dot{\varepsilon}_{xx})) - k_2 h\nu(4\dot{\varepsilon}_{xx}+2\dot{\varepsilon}_{yy}) + 2k_1 h\nu\varepsilon}_{xy}
-   - \tau_{by} = \rho g h \frac{\partial s}{\partial y}.
+   \partial_y(h\nu(4\dot{\varepsilon}_{yy}+2\dot{\varepsilon}_{xx})) - k_2 h\nu(4\dot{\varepsilon}_{xx}+2\dot{\varepsilon}_{yy}) + & 2k_1 h\nu\dot{\varepsilon}_{xy} \notag \\
+   & - \tau_{by} = \rho g h \frac{\partial s}{\partial y}.\end{aligned}
    :label: mom_y_latlon
 
 .. _ssub_phys_pkg_streamice_advance:
