@@ -74,6 +74,7 @@ Packages Related to Hydrodynamical Kernel
    zonal_filt.rst
    exch2.rst
    gridalt.rst
+   wetdry.rst
 
 General purpose numerical infrastructure packages
 =================================================

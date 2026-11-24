@@ -1089,6 +1089,7 @@ C-- Logical flags for selecting packages
       LOGICAL useMNC
       LOGICAL useRunClock
       LOGICAL useEMBED_FILES
+      LOGICAL useWETDRY
       LOGICAL useMYPACKAGE
       COMMON /PARM_PACKAGES/
      &        useGAD, useOBCS, useSHAP_FILT, useZONAL_FILT,
@@ -1103,7 +1104,7 @@ C-- Logical flags for selecting packages
      &        useStreamIce, useICEFRONT, useThSIce, useLand,
      &        useAIM, useAtm_Phys, useFizhi, useGridAlt,
      &        useDiagnostics, useREGRID, useLayers, useMNC,
-     &        useRunClock, useEMBED_FILES,
+     &        useRunClock, useEMBED_FILES, useWETDRY,
      &        useMYPACKAGE
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

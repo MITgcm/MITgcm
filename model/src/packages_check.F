@@ -500,6 +500,12 @@ C---  Continue with standard packages (with standard usePKG flag)
      &                  'EMBED_FILES', ' ', myThid )
 #endif
 
+#ifdef ALLOW_WETDRY
+      IF ( useWETDRY ) CALL WETDRY_CHECK( myThid )
+#else
+      IF ( useWETDRY ) CALL PACKAGES_ERROR_MSG( 'WETDRY', ' ', myThid )
+#endif
+
 #ifdef ALLOW_MYPACKAGE
       IF ( useMYPACKAGE ) CALL MYPACKAGE_CHECK( myThid )
 #else
