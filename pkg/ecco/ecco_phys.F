@@ -392,6 +392,26 @@ C This is something worth improving in the future.
          ENDDO
         ENDDO
        ENDIF
+
+       IF (gencost_barfile(kgen)(1:14).EQ.'m_icefreeboard') THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j = 1,sNy
+           DO i =  1,sNx
+            tmprecip_area = 1. _d 0/SQRT(area(i,j,bi,bj)*area(i,j,bi,bj)
+     &       + area_reg_sq)
+            tmphsnowact = hsnow(I,J,bi,bj) * tmprecip_area
+            tmpheffact  = heff(I,J,bi,bj) * tmprecip_area
+            gencost_storefld(i,j,bi,bj,kgen) =
+     &       ( tmpheffact -
+     &         ( tmphsnowact * SEAICE_rhoSnow +
+     &           tmpheffact * SEAICE_rhoIce ) * recip_rhoConst 
+     &       ) * maskC(i,j,1,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
 #endif
 
        DO bj=myByLo(myThid),myByHi(myThid)
