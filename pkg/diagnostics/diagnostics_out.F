@@ -43,6 +43,7 @@ C     lm    :: loop index (averageCycle)
 C     md    :: field number in the list "listId".
 C     ndId  :: diagnostics  Id number (in available diagnostics list)
 C     ip    :: diagnostics  pointer to storage array
+C     ip1   :: diagnostics  pointer to storage array (1st fld in listId)
 C     im    :: counter-mate pointer to storage array
 C     mate  :: counter mate Id number (in available diagnostics list)
 C     mDbl  :: processing mate Id number (in case processing requires 2 diags)
@@ -61,7 +62,7 @@ c     COMMON /LOCAL_DIAGNOSTICS_OUT/ qtmp1
 
       INTEGER i, j, k, lm
       INTEGER bi, bj
-      INTEGER md, ndId, nn, ip, im
+      INTEGER md, ndId, nn, ip, im, ip1
       INTEGER mate, mDbl, mVec
       INTEGER ppFld, isComputed
       CHARACTER*10 gcode
@@ -121,27 +122,9 @@ C-    end of time-averaging interval:
         timeRec(2) = myTime
 
 C-    begining of time-averaging interval:
-c       timeRec(1) = myTime - freq(listId)
-C     a) find the time of the previous multiple of output freq:
-        timeRec(1) = myTime-deltaTClock*0.5 _d 0
-        timeRec(1) = (timeRec(1)-phase(listId))/freq(listId)
-        tmpLoc     = DINT( timeRec(1) )
-        IF ( timeRec(1).LT.zeroRL ) THEN
-          IF ( timeRec(1).NE.tmpLoc ) tmpLoc = tmpLoc - 1. _d 0
-        ENDIF
-        timeRec(1) = phase(listId) + freq(listId)*tmpLoc
-c       WRITE(0,'(3I5,A,2F17.4)') myProcId, myThid, listId,
-c    &                     ' f ', tmpLoc, timeRec(1)/deltaTClock
-        timeRec(1) = MAX( timeRec(1), startTime )
-
-C     b) round off to nearest multiple of time-step:
-        timeRec(1) = (timeRec(1)-baseTime)/deltaTClock
-        tmpLoc = DNINT( timeRec(1) )
-C     if just half way, NINT will return the next time-step: correct this
-        IF ( (timeRec(1)+halfRL).EQ.tmpLoc ) tmpLoc = tmpLoc - 1. _d 0
-        timeRec(1) = baseTime + deltaTClock*tmpLoc
-c       WRITE(0,'(3I5,A,2F17.4)') myProcId, myThid, listId,
-c    &                     '   ', tmpLoc, timeRec(1)/deltaTClock
+C      Derive it from the actual fill count (ndiag)
+        ip1 = ABS(idiag(1,listId))
+        timeRec(1) = timeRec(2) - deltaTClock*DFLOAT( ndiag(ip1,1,1) )
       ENDIF
 C--   Convert time to iteration number (debug)
 c     DO i=1,nTimRec
