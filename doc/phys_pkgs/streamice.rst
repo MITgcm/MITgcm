@@ -516,8 +516,9 @@ to a sphere:
    \dot{\varepsilon}_{yy} = & \frac{\partial v}{\partial y} + k_1 u, \notag \\ 
    \dot{\varepsilon}_{xy} = & \frac{1}{2}(\frac{\partial u}{\partial y}+ \frac{\partial v}{\partial x} - k_1 v - k_2 u). \notag \end{aligned}
 
-(see :ref:`para_phys_pkg_seaice_discretization` for definitions of :math:`k_1` and :math:`k_2`.) As with the sea-ice model, additional terms
-are needed in the stress balance (expressed here for SSA only):
+:math:`k_1` and :math:`k_2` are terms describing how the mesh spacing changes when moving across the mesh. See :ref:`para_phys_pkg_seaice_discretization` for their general definitions. In the specific case of spherical polar coordinates, :math:`k_1=0` and :math:`k_2=-\mathrm{tan}(\phi)/a`, where :math:`\phi` is latitude and :math:`a` is the spherical (earth) radius.
+
+As with the sea-ice model, additional terms are needed in the stress balance (expressed here for SSA only):
 
 .. math::
    \begin{aligned}
@@ -720,7 +721,7 @@ OpenAD (Goldberg et al. 2016 :cite:`goldberg_openad_fixed:2016`), and Tapenade. 
 :cite:`christianson:94` is implemented, greatly reducing the memory requirements and also improving performance when PETSc is used.
 (**Note**: OpenAD differentiation is no longer supported by MITgcm.)
 
-Verification experiments with both OpenAD and TAF are located in the :filelink:`verification/halfpipe_streamice` (see below).
+Verification experiments with both TAF and Tapenade are located in the :filelink:`verification/halfpipe_streamice` (see below).
 
 Key Subroutines
 ~~~~~~~~~~~~~~~
