@@ -5,12 +5,12 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
       SUBROUTINE STREAMICE_VISC_BETA ( myThid )
 
-C     /============================================================\
+C     *============================================================*
 C     | SUBROUTINE                                                 |
 C     | o                                                          |
-C     |============================================================|
+C     *============================================================*
 C     |                                                            |
-C     \============================================================/
+C     *============================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -76,10 +76,10 @@ C     LOCAL VARIABLES
      &           V_streamice(i,j,bi,bj)) /
      &           (2. * dyF(i,j,bi,bj))
 
-           exx = ux + k1AtC_str(i,j,bi,bj)*vmid
-           eyy = vy + k2AtC_str(i,j,bi,bj)*umid
-           exy = .5*(uy+vx) +
-     &      k1AtC_str(i,j,bi,bj)*umid + k2AtC_str(i,j,bi,bj)*vmid
+           exx = ux + k2AtC_str(i,j,bi,bj)*vmid
+           eyy = vy + k1AtC_str(i,j,bi,bj)*umid
+           exy = .5*(uy+vx) - .5 *
+     &      (k2AtC_str(i,j,bi,bj)*umid + k1AtC_str(i,j,bi,bj)*vmid)
 
 !A_glen_isothermal, n_glen, eps_glen_min,
 

@@ -88,8 +88,9 @@ jobs:
         - exp: "global_ocean.cs32x15"
         - exp: "isomip"
         - exp: "lab_sea"
+        - exp: "tutorial_baroclinic_gyre"
         - exp: "tutorial_global_oce_biogeo"
-        - exp: "tutorial_tracel_adjsens"
+        - exp: "tutorial_tracer_adjsens"
 
    continue-on-error: true
 

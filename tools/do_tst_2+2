@@ -298,7 +298,7 @@ if test "x$ADDRESS" != xNONE -a "x$ADDRESS" != x ; then
         fi
     fi
 fi
-echo '' ; echo '=====  Summary (tst_2+2_out.txt):  ======'
+echo '' ; echo '======== Summary (tst_2+2_out.txt):  ========'
 cat $SUMMARY
 
 # save output and remove output Dir (if no address was provided)
@@ -308,3 +308,4 @@ cp -p $SUMMARY tst_2+2_out.txt
 if test "x$ADDRESS" = x ; then
   rm -rf $DRESULTS
 fi
+echo '======== End of do_tst_2+2 execution ========'

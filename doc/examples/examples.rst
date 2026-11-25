@@ -272,10 +272,16 @@ For many experiments, additional information is provided in a ``README`` file lo
    (:filelink:`input.ab3_c4 <verification/advect_xy/input.ab3_c4>`).
 
 #. :filelink:`advect_xz <verification/advect_xz>` - 2-D (vertical plane) passive advection
-   test on Cartesian grid. Also contains an additional setup using non-linear free-surface
-   with divergent barotropic flow and implicit vertical advection (:filelink:`input.nlfs <verification/advect_xz/input.nlfs>`),
-   and a setup using piecewise quartic ("mono" and "weno" limiter)
-   advection schemes (:filelink:`input.pqm <verification/advect_xz/input.pqm>`).
+   test on Cartesian grid. Also contains additional setups:
+
+   - using linear free-surface with divergent barotropic flow and a level of dry cells
+     at the top (:filelink:`input.linFS <verification/advect_xz/input.linFS>`);
+
+   - using non-linear free-surface with divergent barotropic flow and implicit
+     vertical advection (:filelink:`input.nlfs <verification/advect_xz/input.nlfs>`);
+
+   - using piecewise quartic ("mono" and "weno" limiter) advection schemes
+     (:filelink:`input.pqm <verification/advect_xz/input.pqm>`).
 
 #. :filelink:`aim.5l_cs <verification/aim.5l_cs>` - 5-level intermediate atmospheric physics, global
    configuration on cube sphere grid (32x32 grid points per face,
@@ -303,6 +309,9 @@ For many experiments, additional information is provided in a ``README`` file lo
 
 #. :filelink:`cheapAML_box <verification/cheapAML_box>` - Example using cheap atmospheric mixed layer
    (:filelink:`cheapaml <pkg/cheapaml>`) package.
+   Also contains a secondary setup (:filelink:`input.lanl <verification/cheapAML_box/input.lanl>`)
+   with alternative cheapaml choice ("LANL" surface flux formulae and centered 2nd Order
+   advection scheme).
 
 #. :filelink:`cpl_aim+ocn <verification/cpl_aim+ocn>` - Coupled ocean-atmosphere realistic configuration
    on cubed-sphere cs32 horizontal grid, using intermediate atmospheric
@@ -688,6 +697,9 @@ whereas Tapenaade requires directories ``code_tap`` and ``input_tap`` respective
 #. :filelink:`offline_exf_seaice <verification/offline_exf_seaice>` - Based on standard forward experiment, TAF adjoint setup.
    Also contains additional TAF adjoint setup
    with sea ice thermodynamics-only using :filelink:`pkg/thsice` (:filelink:`input_ad.thsice <verification/offline_exf_seaice/input_ad.thsice>`).
+
+#. :filelink:`tutorial_baroclinic_gyre <verification/tutorial_baroclinic_gyre>` - Based on forward
+   experiment described in :numref:`tutorial_baroclinic_gyre`, with Tapenade adjoint setup.
 
 #. :filelink:`tutorial_dic_adjoffline <verification/tutorial_dic_adjoffline>` - TAF adjoint setup of offline form of passive tracers coupled
    to the dissolved inorganic carbon biogeochemistry model (currently NOT documented as a tutorial experiment).

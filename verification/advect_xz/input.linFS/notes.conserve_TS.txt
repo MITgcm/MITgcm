@@ -1,0 +1,50 @@
+Notes related to this secondary set-up (input.linFS/, tr_run.linFS/):
+ - make the top-level grid-cell dry (for testing purpose) by using/setting:
+   | topoFile='top_boundary.bin',
+   which requires a second set of binary input files
+ - use a prescribed divergent flow field (Udiv.bin), similar to input.nlfs
+
+To generate input files, un-comment "zT" (top Z position) setting in input/gendata.m :
+> cd advect_xz/input.linFS
+> sed 's/^% zT=/  zT=/' ../input/gendata.m >  gendata.m
+And generate second set of binary input files using this locally updated gendata.m
+  >> gendata
+
+To check tracer conservation in advect_xz/input.linFS set-up, and in general when
+- using Linear FreeSurf
+- using or not Adams-Bashforth (used here for Salinity)
+- without temperature/salt/fresh-water forcing
+
+We use stats-diags output (file: dynStDiag) to get global mean T and S values
+every 100 mn (negative stat_freq(1)= -6000., for snap-shot stats-diags); this allows
+to derive the total tendency (increment between 2 snap-shot divided by time-interval).
+To check the conservation, we need the time-averaged surface loss/gain of tracer
+due to the linear free-surface formulation. We use a second stats-diags output
+(file: flxStDiag, positive stat_freq(2)=  6000., for time-averaged stats-diags)
+with diagnostics 'WTHMASS ' and 'WSLTMASS', to get this average surface flux, here
+at k=2 (kSrf in grph_StD_ws.m).
+
+Instructions:
+  From a standard run with input.linFS parameter files:
+  > cd advect_xz/tr_run.linFS
+
+  Get a local copy of 2 utility scripts:
+  > cp ../../../utils/scripts/extract_StD .
+  > cp ../../../utils/matlab/read_StD.m .
+
+  Split multi-variable stats-diags file into variable specific files:
+  > ./extract_StD dynStDiag.0000000000.txt dynStD std
+  > ./extract_StD flxStDiag.0000000000.txt flxStD std
+
+  Plot global stats evolution and derived tendency using matlab:
+  >> grph_StD_ws
+
+figure-3, top-panel: "Avr T" shows the evolution of global averaged (potential) Temperature.
+
+figure-4, top-panel: "Avr S" shows the evolution of global averaged Salinity.
+
+figure-9, shows derived Temp tendency: Total, from surface flux, and in bottom panel
+  the residual (Total + Surf-Flux)
+figure-10, shows derived Salt tendency: Total, from surface flux, from Adams-Bashforth,
+  and in bottom panel the residual (Total + Surf-Flux - gAB)
+
