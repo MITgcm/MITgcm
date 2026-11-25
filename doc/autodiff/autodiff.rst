@@ -1311,7 +1311,8 @@ Several ways exist to generate output of adjoint fields.
    ensure that
    TAMC does not automatically generate :filelink:`addummy_in_stepping.F <pkg/autodiff/addummy_in_stepping.F>` by
    trying to differentiate :filelink:`dummy_in_stepping.F <pkg/autodiff/dummy_in_stepping.F>`, but instead refers to
-   the hand-written routine.
+   the hand-written routine. How the same hook reaches a Tapenade-generated
+   adjoint is described in :numref:`ad_output_hooks`.
 
    :filelink:`dummy_in_stepping.F <pkg/autodiff/dummy_in_stepping.F>` is called in the forward code at the beginning
    of each timestep, before the call to :filelink:`model/src/dynamics.F`, thus ensuring that
@@ -1916,7 +1917,8 @@ verification experiments for reference.
 
 ``autodiff`` is not completely untangled from the Tapenade setup yet. In
 ``code_tap/AUTODIFF_OPTIONS.h``, the only flag that can be defined safely is
-``ALLOW_AUTODIFF_MONITOR``.
+``ALLOW_AUTODIFF_MONITOR`` (which enables the adjoint output described in
+:numref:`ad_output`).
 
 Rest of the setup remains unchanged.
 
@@ -1976,6 +1978,171 @@ flow will look as follows -
     ./prepare_run
     ln -s ../build/mitgcmuv_tap_adj .
     ./mitgcmuv_tap_adj > output_tap_adj.txt 2>&1
+
+.. _ad_output:
+
+Adjoint and tangent-linear output
+=================================
+
+During the backward sweep the adjoint state can be written to files or
+passed to :filelink:`pkg/diagnostics`, and the model physics can be switched
+to an approximation through the adjoint-mode parameters of ``data.autodiff``.
+Both are implemented with hooks: subroutines that do nothing in the forward
+model and whose adjoint and tangent-linear counterparts are written by hand.
+This section describes the output, the parameters, and how the hand-written
+routines are made part of the generated code with TAF and with Tapenade.
+
+Authors: Tanvir Shahriar and Patrick Heimbach
+
+.. _ad_output_dumps_diags:
+
+Dumps and diagnostics of the adjoint state
+------------------------------------------
+
+With :varlink:`ALLOW_AUTODIFF_MONITOR` defined in
+:filelink:`AUTODIFF_OPTIONS.h <pkg/autodiff/AUTODIFF_OPTIONS.h>`, the adjoint
+state is available in two forms:
+
+- as binary files ``ADJtheta.*``, ``ADJsalt.*``, ``ADJuvel.*``, ..., written
+  every :varlink:`adjDumpFreq` seconds (namelist ``PARM03`` of ``data``) by the
+  hand-written adjoint of S/R ``DUMMY_IN_STEPPING``, and ``ADJetan.*`` by that
+  of S/R ``DUMMY_FOR_ETAN`` (see :numref:`sec_autodiff_output_adj_vars`); with
+  :varlink:`dumpAdVarExch` ``= 1`` (``data.autodiff``) the adjoint
+  contributions in the tile overlaps are added to the interior points that
+  own them before a field is written;
+- as the diagnostics ``ADJtheta``, ``ADJuvel``, ... of
+  :filelink:`pkg/diagnostics`, filled by the same routines whenever
+  ``data.diagnostics`` requests them (see
+  :ref:`outp_pkg_diagnostics_adjoint_vars` for the names and the setup).
+
+A tangent-linear model writes the ``G_J*`` counterparts of the binary files.
+
+With TAF, the fields written are those of
+:filelink:`addummy_in_stepping.F <pkg/autodiff/addummy_in_stepping.F>` and of
+the package routines it calls
+(:filelink:`seaice_ad_dump.F <pkg/seaice/seaice_ad_dump.F>`,
+:filelink:`ptracers_ad_dump.F <pkg/ptracers/ptracers_ad_dump.F>`), and the
+:filelink:`pkg/exf` snapshots of
+:filelink:`exf_adjoint_snapshots_ad.F <pkg/exf/exf_adjoint_snapshots_ad.F>`.
+With Tapenade, they are those of
+:filelink:`dummy_in_stepping_tap.F <pkg/tapenade/dummy_in_stepping_tap.F>`:
+``ADJtheta``, ``ADJsalt``, ``ADJuvel``, ``ADJvvel``, ``ADJwvel`` and
+``ADJetan``; without :filelink:`pkg/exf` and :filelink:`pkg/seaice` also
+``ADJtaux``, ``ADJtauy``, ``ADJqnet``, ``ADJempr`` and, with
+``SHORTWAVE_HEATING``, ``ADJqsw``; and ``ADJdiffkr`` with
+``ALLOW_DIFFKR_CONTROL``. The adjoint fields of :filelink:`pkg/seaice`,
+:filelink:`pkg/ptracers`, :filelink:`pkg/exf`, :filelink:`pkg/gmredi`,
+:filelink:`pkg/ggl90` and :filelink:`pkg/shelfice`, and the bottom-drag and
+eddy-streamfunction sensitivities, are not written with Tapenade, and their
+diagnostics are not available in a build with :filelink:`pkg/tapenade`.
+
+.. _ad_inadmode_switches:
+
+Adjoint-mode parameter switches
+-------------------------------
+
+The adjoint-mode parameters of ``data.autodiff`` (namelist
+``AUTODIFF_PARM01``;
+:filelink:`autodiff_readparms.F <pkg/autodiff/autodiff_readparms.F>` has the
+complete list with defaults) change the model physics in the backward sweep
+only, so that the adjoint of a simplified or more dissipative model is
+computed along the trajectory of the full forward model. S/R
+``ADAUTODIFF_INADMODE_SET``
+(:filelink:`autodiff_inadmode_set_ad.F <pkg/autodiff/autodiff_inadmode_set_ad.F>`)
+applies them at the start of every backward time step and S/R
+``ADAUTODIFF_INADMODE_UNSET``
+(:filelink:`autodiff_inadmode_unset_ad.F <pkg/autodiff/autodiff_inadmode_unset_ad.F>`)
+reverts them at its end; the logical :varlink:`inAdMode` is ``.TRUE.`` in
+between.
+
+- :varlink:`useKPPinAdMode`, :varlink:`useGMRediInAdMode`,
+  :varlink:`useSEAICEinAdMode`, :varlink:`useGGL90inAdMode` and
+  :varlink:`useSALT_PLUMEinAdMode` replace the corresponding ``use«PKG»``
+  flag in the backward sweep, so that a package can be left out of the
+  adjoint while it remains in the forward sweep.
+- :varlink:`useApproxAdvectionInAdMode` (also set by :varlink:`inAdExact`
+  ``= .FALSE.``) replaces the flux-limited third-order direct space-time
+  advection scheme (33) by its unlimited form (30) in the backward sweep.
+- :varlink:`viscFacInAd` and :varlink:`viscFacInFw` scale the lateral
+  viscosities read from file in the backward and in the forward sweep
+  respectively.
+- :filelink:`pkg/seaice` has further switches of its own.
+
+The switches work with either AD tool. TAF keeps the two routines in the
+reverse sweep through the flow directives of
+:filelink:`autodiff_inadmode.flow <pkg/autodiff/autodiff_inadmode.flow>`;
+Tapenade reaches them through the hooks described next.
+
+Whether a switched value reaches a given routine depends on how that
+routine is differentiated. In Tapenade's default mode a routine is
+re-executed inside its adjoint, after the switch has acted, so
+:varlink:`viscFacInAd` reaches the viscosities recomputed there. A routine
+differentiated in split mode (``-nocheckpoint``) instead replays the values
+recorded in the forward sweep, before any switch, and the factor does not
+reach it. This is the situation of a TAF adjoint in which the viscosities
+are stored rather than recomputed, which is why the store directives for
+them in :filelink:`mom_vecinv.F <pkg/mom_vecinv/mom_vecinv.F>` and
+:filelink:`mom_fluxform.F <pkg/mom_fluxform/mom_fluxform.F>` are left out
+when ``AUTODIFF_ALLOW_VISCFACADJ`` is defined.
+
+.. _ad_output_hooks:
+
+How the hand-written routines enter the reverse sweep
+-----------------------------------------------------
+
+The forward model calls four hooks that do nothing: S/R
+``AUTODIFF_INADMODE_UNSET`` near the start of each time step, S/R
+``DUMMY_IN_STEPPING`` before the dynamics and S/R ``AUTODIFF_INADMODE_SET``
+at the end of the step, in
+:filelink:`forward_step.F <model/src/forward_step.F>`, and S/R
+``DUMMY_FOR_ETAN`` in
+:filelink:`integr_continuity.F <model/src/integr_continuity.F>` after the
+free-surface update, separately because the adjoint of the free surface is
+one time step out of phase with the rest of the state. Their adjoints and
+tangents are written by hand, and each AD tool is made to call them in its
+own way.
+
+- With TAF, the flow directives of
+  :filelink:`dummy_in_stepping.flow <pkg/autodiff/dummy_in_stepping.flow>`,
+  :filelink:`dummy_for_etan.flow <pkg/autodiff/dummy_for_etan.flow>` and
+  :filelink:`autodiff_inadmode.flow <pkg/autodiff/autodiff_inadmode.flow>`
+  keep the call of each hook in the reverse sweep (``REQUIRED``) although it
+  has no active argument, so that the hand-written adjoint is called in
+  place of a generated one; it reads the adjoint state from the common
+  blocks of :filelink:`adcommon.h <pkg/autodiff/adcommon.h>`, as described
+  in :numref:`sec_autodiff_output_adj_vars`.
+- Tapenade has no such directive. Its external library
+  (:filelink:`tools/TAP_support/flow_tap`) describes data flow only, and a
+  call whose arguments are all passive is left out of the generated code.
+  Each hook therefore has a Tapenade counterpart, called beside it under
+  ``ALLOW_TAPENADE`` (S/R ``DUMMY_IN_STEPPING_TAP``, ``DUMMY_FOR_ETAN_TAP``,
+  ``AUTODIFF_INADMODE_SET_TAP`` and ``AUTODIFF_INADMODE_UNSET_TAP`` in
+  :filelink:`dummy_tap.F <pkg/tapenade/dummy_tap.F>`), which takes the field
+  it acts on as an argument, declared in ``flow_tap`` as read and written.
+  Tapenade then generates, at the mirror image of the forward call, a call to
+  the hook's ``_B`` (adjoint), ``_D`` (tangent-linear) or ``_FWD``/``_BWD``
+  (adjoint without checkpointing) routine, with the derivative of the field
+  as an additional argument. These routines are written by hand in
+  ``dummy_tap.F`` and call the same ``DUMP_ADJ_*``, ``WRITE_FLD_*`` and
+  ``ADAUTODIFF_INADMODE_*`` routines as the TAF path; the adjoint state
+  arrives as an argument, so no equivalent of ``adcommon.h`` is needed. The
+  state and forcing fields are passed one per call from
+  :filelink:`dummy_in_stepping_tap.F <pkg/tapenade/dummy_in_stepping_tap.F>`,
+  the one routine of the package that Tapenade differentiates (listed in
+  :filelink:`tapenade_ad_diff.list <pkg/tapenade/tapenade_ad_diff.list>`), so
+  that a field which is passive in a given configuration loses only its own
+  call and the argument list of every generated call stays fixed. The mode
+  switches take the 2-D ``etaN`` as their argument only so that Tapenade
+  generates the call; its adjoint is not modified.
+
+To add a field with TAF, add its ``DUMP_ADJ_*`` call to
+``addummy_in_stepping.F`` (and its adjoint common block to ``adcommon.h`` if
+it is not there yet); with Tapenade, add one guarded call in
+``dummy_in_stepping_tap.F`` and, for a field shape without a hook, a hook
+family in ``dummy_tap.F`` with its ``flow_tap`` stanza. In both cases,
+register the diagnostic in the package's ``*_diagnostics_init.F`` with ``A``
+in the fourth position of ``diagCode``
+(:ref:`outp_pkg_diagnostics_adjoint_vars`).
 
 .. rubric:: Footnotes
 

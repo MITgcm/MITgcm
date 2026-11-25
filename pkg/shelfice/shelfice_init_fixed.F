@@ -357,7 +357,10 @@ cHP adding diagnostic for drag from ice shelf to allow exp. dissip decomp
 #endif
 
 # ifdef ALLOW_AUTODIFF
-#  ifndef SHI_ALLOW_GAMMAFRICT
+#  ifndef ALLOW_TAPENADE
+C      not written by a Tapenade-generated adjoint (see
+C      pkg/tapenade/dummy_in_stepping_tap.F for the fields it writes)
+#   ifndef SHI_ALLOW_GAMMAFRICT
        diagName  = 'ADJshict'
        diagTitle = 'dJ/dgammaT: Sens. to shelfice heat transfer coeff'
        diagUnits = 'dJ/(m/s)        '
@@ -372,14 +375,15 @@ cHP adding diagnostic for drag from ice shelf to allow exp. dissip decomp
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-#  else
+#   else
        diagName  = 'ADJshicd'
        diagTitle = 'dJ/dcDrag: Sensitivity to shelfice u* drag coeff'
        diagUnits = 'dJ/1            '
        diagCode  = 'SM A    M1      '
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-#  endif
+#   endif
+#  endif /* ndef ALLOW_TAPENADE */
 # endif
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */

@@ -841,6 +841,74 @@ subroutine dummy_in_stepping:
   NotReadThenWritten: (0,0,0)
   ReadThenWritten:    (0,0,0)
 
+# Tapenade output hooks (pkg/tapenade/dummy_in_stepping_tap.F, dummy_tap.F)
+# and adjoint-mode switches: the field argument(s) are declared read-then-
+# written so that Tapenade generates the call to the hand-written adjoint
+# (_B / _BWD) or tangent (_D) routine at the mirror image of the forward
+# call; the remaining arguments (names, myTime, myIter, myThid) are read only.
+subroutine dummy_in_stepping_xyz_rl:
+  external:
+  shape: (param 1, param 2, param 3, param 4, param 5, param 6)
+  type: (none(),none(),none(),none(),none(),none())
+  NotReadNotWritten:  (0,0,0,0,0,0)
+  ReadNotWritten:     (0,1,1,1,1,1)
+  NotReadThenWritten: (0,0,0,0,0,0)
+  ReadThenWritten:    (1,0,0,0,0,0)
+
+subroutine dummy_in_stepping_xy_rs:
+  external:
+  shape: (param 1, param 2, param 3, param 4, param 5, param 6)
+  type: (none(),none(),none(),none(),none(),none())
+  NotReadNotWritten:  (0,0,0,0,0,0)
+  ReadNotWritten:     (0,1,1,1,1,1)
+  NotReadThenWritten: (0,0,0,0,0,0)
+  ReadThenWritten:    (1,0,0,0,0,0)
+
+subroutine dummy_in_stepping_uv_xyz_rl:
+  external:
+  shape: (param 1, param 2, param 3, param 4, param 5, param 6, param 7, param 8, param 9)
+  type: (none(),none(),none(),none(),none(),none(),none(),none(),none())
+  NotReadNotWritten:  (0,0,0,0,0,0,0,0,0)
+  ReadNotWritten:     (0,0,1,1,1,1,1,1,1)
+  NotReadThenWritten: (0,0,0,0,0,0,0,0,0)
+  ReadThenWritten:    (1,1,0,0,0,0,0,0,0)
+
+subroutine dummy_in_stepping_uv_xy_rs:
+  external:
+  shape: (param 1, param 2, param 3, param 4, param 5, param 6, param 7, param 8, param 9)
+  type: (none(),none(),none(),none(),none(),none(),none(),none(),none())
+  NotReadNotWritten:  (0,0,0,0,0,0,0,0,0)
+  ReadNotWritten:     (0,0,1,1,1,1,1,1,1)
+  NotReadThenWritten: (0,0,0,0,0,0,0,0,0)
+  ReadThenWritten:    (1,1,0,0,0,0,0,0,0)
+
+subroutine dummy_for_etan_tap:
+  external:
+  shape: (param 1, param 2, param 3, param 4)
+  type: (none(),none(),none(),none())
+  NotReadNotWritten:  (0,0,0,0)
+  ReadNotWritten:     (0,1,1,1)
+  NotReadThenWritten: (0,0,0,0)
+  ReadThenWritten:    (1,0,0,0)
+
+subroutine autodiff_inadmode_set_tap:
+  external:
+  shape: (param 1, param 2, param 3, param 4)
+  type: (none(),none(),none(),none())
+  NotReadNotWritten:  (0,0,0,0)
+  ReadNotWritten:     (0,1,1,1)
+  NotReadThenWritten: (0,0,0,0)
+  ReadThenWritten:    (1,0,0,0)
+
+subroutine autodiff_inadmode_unset_tap:
+  external:
+  shape: (param 1, param 2, param 3, param 4)
+  type: (none(),none(),none(),none())
+  NotReadNotWritten:  (0,0,0,0)
+  ReadNotWritten:     (0,1,1,1)
+  NotReadThenWritten: (0,0,0,0)
+  ReadThenWritten:    (1,0,0,0)
+
 subroutine diagnostics_fract_fill:
   external:
   shape: (param 1, param 2, param 3, param 4, param 5, param 6, param 7, param 8, param 9, param 10, param 11)
