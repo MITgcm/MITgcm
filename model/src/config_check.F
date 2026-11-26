@@ -530,6 +530,19 @@ C     o Need to use S/R APPLY_FORCING_U,V to get Tidal forcing
       ENDIF
 #endif /* ALLOW_SRCG */
 
+#ifndef ALLOW_PCSI
+      IF (usePcsiSolver) THEN
+        WRITE(msgBuf,'(A,A)')
+     &  'CONFIG_CHECK: usePcsiSolver = .TRUE., but PCSI ',
+     &  'code is not compiled.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)')
+     &  'CONFIG_CHECK: Re-compile with ALLOW_PCSI defined'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+#endif /* ALLOW_SRCG */
+
 #ifndef ALLOW_BOTTOMDRAG_ROUGHNESS
       IF (zRoughBot .GT. 0.) THEN
         WRITE(msgBuf,'(A,A)') 'CONFIG_CHECK: zRoughBot > 0.',
