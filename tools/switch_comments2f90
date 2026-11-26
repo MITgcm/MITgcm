@@ -1,0 +1,18 @@
+#! /usr/bin/env sh
+
+tmpFil=tmp.$$
+cat > $tmpFil
+
+  grep -q '^! End of included CPP Options files -- Do not delete or modify ' $tmpFil
+  retVal=$?
+  if [ $retVal -eq 0 ] ; then
+    #echo '-- Replace comments' 1>&2
+    sed '1,/^! End of included CPP Options files -- Do not delete or modify / s/^C/!/I' $tmpFil
+  else
+    #echo '-- Nothing done' 1>&2
+    cat $tmpFil
+  fi
+
+#ls -l $tmpFil 1>&2
+rm -f $tmpFil
+
