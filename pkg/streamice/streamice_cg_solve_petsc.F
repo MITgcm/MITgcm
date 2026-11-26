@@ -467,6 +467,7 @@ C       call PCGAMGSetReuseProl(pc,PETSC_FALSE,ierr)
 #endif
       call KSPDestroy (ksp, ierr)
       call MatDestroy (matrix, ierr)
+      streamice_need2createmat = .TRUE.
 #ifdef ALLOW_AUTODIFF
 #ifdef ALLOW_STREAMICE_FP_ADJ
       endif
