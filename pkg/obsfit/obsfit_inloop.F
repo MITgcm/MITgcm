@@ -142,7 +142,7 @@ C recorded value and add to it
      I                 obsfit_dummy(num_file,bi,bj) )
 
                 ENDIF !IF ((sample_time
-              ENDIF !IF (sampleNo(num_file,bi,bj).NE.0)
+              ENDIF !IF (sample_num.LE.sampleNo)
             ENDDO !DO sample_num
           ENDDO !DO num_file
 

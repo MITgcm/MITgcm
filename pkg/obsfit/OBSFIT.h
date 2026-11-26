@@ -10,6 +10,11 @@ C     | Header file defining ObsFit parameters and variables
 C     ==================================================================
 CEOP
 
+C--  OBSFIT_PARAMS common block:
+C    obsfit_dBugLevel :: control debug print to STDOUT or log file, higher -> more
+      INTEGER obsfit_dBugLevel
+      COMMON /OBSFIT_PARAMS_I/ obsfit_dBugLevel
+
 C ObsFit LOGICAL parameters
       LOGICAL obsfitDoNcOutput
       LOGICAL obsfitDoGenGrid
@@ -27,10 +32,9 @@ C ObsFit real parameters
       _RL sample_modmask(nSx,nSy)
       _RL obs_delT(NFILESMAX_OBS,NOBSMAX_OBS)
 
-      COMMON /OBSFIT_R/ sample_type, sample_timeS,
-     & sample_timeE, sample_lon, sample_lat,
-     & sample_depth, sample_weight, sample_modmask,
-     & obs_delT
+      COMMON /OBSFIT_R/ sample_timeS, sample_timeE,
+     & sample_lon, sample_lat, sample_depth,
+     & sample_weight, sample_modmask, obs_delT
 
 C ObsFit integer parameters
       INTEGER sample_type(NFILESMAX_OBS,NSAMP_PER_TILE_MAX,nSx,nSy)
@@ -55,7 +59,8 @@ C ObsFit integer parameters
       _RL m_VN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
 
-      COMMON /OBSFIT_I/ obs_ind_glob, obs_np, obsfitOperation,
+      COMMON /OBSFIT_I/ sample_type,
+     & obs_ind_glob, obs_np, obsfitOperation,
      & sample_ind_glob, ObsNo, sampleNo,
      & fidfwd_obs, fidadj_obs, fidtan_obs, fiddata_obs,
      & fidglobal, fidadglobal, fidtanglobal, fidmisfit,

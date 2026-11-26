@@ -132,3 +132,98 @@ C Create a binary file
 
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: OBSFIT_INIT_GLOBFILE
+
+C     !INTERFACE:
+      SUBROUTINE OBSFIT_INIT_GLOBFILE(
+     I                                 fname,
+     I                                 length,
+     I                                 fillval,
+     I                                 fillmask,
+     O                                 fid,
+     O                                 nerr,
+     I                                 myThid )
+
+C     !DESCRIPTION:
+C     ==================================================================
+C     | (Re)create a global model counterparts file (mod_val and
+C     | mod_mask, of length iOBS) and leave it open for writing
+C     ==================================================================
+
+C !USES:
+      IMPLICIT NONE
+C     == Global variables ===
+#include "EEPARAMS.h"
+#include "SIZE.h"
+#ifdef ALLOW_OBSFIT
+# include "OBSFIT_SIZE.h"
+# include "OBSFIT.h"
+# include "netcdf.inc"
+#endif
+
+C     !INPUT PARAMETERS:
+C     fname   :: file name
+C     length  :: number of obs (iOBS dimension)
+C     fillval :: _FillValue of mod_val
+C     fillmask:: _FillValue of mod_mask (so that obs never written
+C                have this mask value)
+C     myThid  :: my thread ID number
+C     !OUTPUT PARAMETERS:
+C     fid     :: NetCDF id of the open file
+C     nerr    :: number of NetCDF calls that failed
+      CHARACTER*(*) fname
+      INTEGER length, fid, nerr, myThid
+      _RL fillval, fillmask
+CEOP
+
+#ifdef ALLOW_OBSFIT
+C     !LOCAL VARIABLES:
+      INTEGER dimid, varID(2), err
+
+      nerr = 0
+      err = NF_CREATE( fname, NF_CLOBBER, fid )
+      CALL OBSFIT_NF_ERROR( 'INIT_GLOBFILE: NF_CREATE',
+     &     err,0,0,myThid )
+      IF ( err.NE.NF_NOERR ) nerr = nerr+1
+      err = NF_DEF_DIM( fid, 'iOBS', length, dimid )
+      CALL OBSFIT_NF_ERROR( 'INIT_GLOBFILE: NF_DEF_DIM iOBS',
+     &     err,0,0,myThid )
+      IF ( err.NE.NF_NOERR ) nerr = nerr+1
+      err = NF_DEF_VAR( fid, obsfit_nameequi, NF_DOUBLE, 1,
+     &      dimid, varID(1) )
+      CALL OBSFIT_NF_ERROR( 'INIT_GLOBFILE: NF_DEF_VAR mod_val',
+     &     err,0,0,myThid )
+      IF ( err.NE.NF_NOERR ) nerr = nerr+1
+      err = NF_PUT_ATT_DOUBLE( fid, varID(1), '_FillValue',
+     &      NF_DOUBLE, 1, fillval )
+      CALL OBSFIT_NF_ERROR( 'INIT_GLOBFILE: NF_PUT_ATT mod_val',
+     &     err,0,0,myThid )
+      IF ( err.NE.NF_NOERR ) nerr = nerr+1
+      err = NF_DEF_VAR( fid, obsfit_namemask, NF_DOUBLE, 1,
+     &      dimid, varID(2) )
+      CALL OBSFIT_NF_ERROR( 'INIT_GLOBFILE: NF_DEF_VAR mod_mask',
+     &     err,0,0,myThid )
+      IF ( err.NE.NF_NOERR ) nerr = nerr+1
+      err = NF_PUT_ATT_DOUBLE( fid, varID(2), '_FillValue',
+     &      NF_DOUBLE, 1, fillmask )
+      CALL OBSFIT_NF_ERROR( 'INIT_GLOBFILE: NF_PUT_ATT mod_mask',
+     &     err,0,0,myThid )
+      IF ( err.NE.NF_NOERR ) nerr = nerr+1
+      err = NF_ENDDEF( fid )
+      CALL OBSFIT_NF_ERROR( 'INIT_GLOBFILE: NF_ENDDEF',
+     &     err,0,0,myThid )
+      IF ( err.NE.NF_NOERR ) nerr = nerr+1
+      err = NF_CLOSE( fid )
+      CALL OBSFIT_NF_ERROR( 'INIT_GLOBFILE: NF_CLOSE',
+     &     err,0,0,myThid )
+      IF ( err.NE.NF_NOERR ) nerr = nerr+1
+      err = NF_OPEN( fname, NF_WRITE, fid )
+      CALL OBSFIT_NF_ERROR( 'INIT_GLOBFILE: NF_OPEN',
+     &     err,0,0,myThid )
+      IF ( err.NE.NF_NOERR ) nerr = nerr+1
+#endif /* ALLOW_OBSFIT */
+
+      RETURN
+      END
