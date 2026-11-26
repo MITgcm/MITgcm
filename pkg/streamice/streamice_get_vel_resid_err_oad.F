@@ -88,10 +88,11 @@ C     !INPUT/OUTPUT ARGUMENTS
      &            taudx_SI(i,j,bi,bj))
             ENDIF
             IF (STREAMICE_vmask(i,j,bi,bj).eq.1) THEN
-             err_tempv = MAX( err_tempu,
+             err_tempv = 
      &        ABS (Av_SI(i,j,bi,bj)+0*vbd_SI(i,j,bi,bj) -
-     &            taudy_SI(i,j,bi,bj)))
+     &            taudy_SI(i,j,bi,bj))
             ENDIF
+            err_tempv = MAX(err_tempu, err_tempv)
             IF (err_tempv .ge. err_max) THEN
              err_max = err_tempv
             ENDIF
