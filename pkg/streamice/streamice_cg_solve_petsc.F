@@ -346,7 +346,15 @@ c     &              A_vv(i,j,bi,bj,colx,coly),INSERT_VALUES,ierr)
 #endif
 
       IF (PETSC_PRECOND_TYPE.eq.'MUMPS') then
+#ifdef ALLOW_STREAMICE_PETSC_MUMPS               
        call KSPSetType(ksp,KSPPREONLY,ierr)
+#else
+       WRITE(msgBuf,'(3A)') 'S/R STREAMICE_CG_SOLVE_PETSC: ',
+     &       'MUMPS solver not allowed without defining ',
+     &       'ALLOW_STREAMICE_PETSC_MUMPS in STREAMICE_OPTIONS.h'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R STREAMICE_CG_SOLVE_PETSC' 
+#endif       
       ELSE
        SELECT CASE (PETSC_SOLVER_TYPE)
        CASE ('CG')
@@ -405,13 +413,17 @@ C       call PCGAMGSetReuseProl(pc,PETSC_FALSE,ierr)
        call kspsetup (ksp, ierr)
 
        CASE ('MUMPS')
+#ifdef ALLOW_STREAMICE_PETSC_MUMPS               
        PRINT *, "PETSC PRECOND: SELECTED MUMPS"
-       call PCSetType(pc,PCLU,ierr)
+       call PCSetType(pc,PCCHOLESKY,ierr)
        call PCFactorSetMatSolverType(pc,MATSOLVERMUMPS,ierr)
        call PCFactorSetUpMatSolverType(pc,ierr)
        call PCFactorGetMatrix(pc,mumpsFac,ierr)
        call MatMumpsSetIcntl(mumpsfac,24,1,ierr)
        call kspsetup (ksp, ierr)
+! DNG: NO CODE HERE TO CATCH ERROR AS IT WILL NOT BE EXECUTED
+!      WITHOUT COMPLETING ABOVE MUMPS BLOCK
+#endif
 
        CASE DEFAULT
        PRINT *, "PETSC PRECOND: SELECTED DEFAULT"

@@ -46,6 +46,7 @@ C-  Undocumented Options:
 #undef ALLOW_STREAMICE_TIMEDEP_FORCING
 #undef ALLOW_STREAMICE_FLUX_CONTROL
 #undef ALLOW_STREAMICE_TC_COST
+#undef ALLOW_STREAMICE_PETSC_MUMPS 
 
 C-- for OpenAD or Tapenade:
 C   Fixed-Point problem treatment for adjoint computation as described in
