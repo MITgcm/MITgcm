@@ -164,13 +164,13 @@ C FOR NON-INTERACTIVE Si
        DO j=jmin,jmax
         DO i=imin,imax
 
-C Pre-compute part of exchange coefficient: pisvel*(1-fice)
+C Pre-compute part of exchange coefficient: pisvel*(1-fIce)
 C which is re-used for flux of O2
 C Schmidt number is accounted for later
 
               pisvel(i,j) = 0.337 _d 0 * wind(i,j,bi,bj)**2/3.6 _d 5
 
-              Kwexch_Pre(i,j) = pisvel(i,j)* (1. _d 0 - FIce(i,j,bi,bj))
+              Kwexch_Pre(i,j) = pisvel(i,j)* (1. _d 0 - fIce(i,j,bi,bj))
 
         ENDDO
        ENDDO
@@ -303,7 +303,7 @@ C calculate SCHMIDT NO. for O2
 
 C Determine surface flux of O2
 C exchange coeff accounting for ice cover and Schmidt no.
-C Kwexch_Pre= pisvel*(1-fice): previously computed above
+C Kwexch_Pre= pisvel*(1-fIce): previously computed above
 
               Kwexch_o2(i,j) = Kwexch_Pre(i,j)
      &                    / sqrt(SchmidtNoO2(i,j)/660.0 _d 0)

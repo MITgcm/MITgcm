@@ -6,9 +6,9 @@
  &
 
  &BLING_FORCING
-  BLING_windFile='tren_speed.bin',
-  BLING_iceFile='fice.bin',
-  BLING_silicaFile='sillev1.bin',
-  BLING_ironFile='mah_flux_smooth.bin',
-  BLING_pCO2=380.5E-6,
+  bling_windFile='tren_speed.bin',
+  bling_iceFile='fice.bin',
+  bling_silicaFile='sillev1.bin',
+  bling_ironFile='mah_flux_smooth.bin',
+  bling_pCO2=380.5E-6,
  &
