@@ -182,6 +182,21 @@ C     for rbcsSingleTimeFiles=.TRUE.
         CALL EXCH_XYZ_RS( rbcs1 , myThid )
        ENDIF
 
+       IF (useRBCeta .AND. nonlinFreeSurf.GT.0 .AND.
+     &     relaxEtaFile .NE. ' ' ) THEN
+        IF ( rbcsSingleTimeFiles ) THEN
+         IL=ILNBLNK( relaxEtaFile )
+         WRITE(fullName,'(2a,i10.10)') relaxEtaFile(1:IL),'.',initer0
+         CALL READ_REC_XY_RS(fullName, rbceta0, 1, myIter, myThid)
+         WRITE(fullName,'(2a,i10.10)') relaxEtaFile(1:IL),'.',initer1
+         CALL READ_REC_XY_RS(fullName, rbceta1, 1, myIter, myThid)
+        ELSE
+         CALL READ_REC_XY_RS(relaxEtaFile,rbceta0,intime0,myIter,myThid)
+         CALL READ_REC_XY_RS(relaxEtaFile,rbceta1,intime1,myIter,myThid)
+        ENDIF
+        CALL EXCH_XYZ_RS( rbceta0 , myThid )
+        CALL EXCH_XYZ_RS( rbceta1 , myThid )
+       ENDIF
 #ifdef ALLOW_PTRACERS
        IF ( usePTRACERS ) THEN
         DO iTracer = 1, PTRACERS_numInUse
@@ -251,6 +266,13 @@ C--   Interpolate
            ENDDO
           ENDDO
          ENDDO
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+           RBCeta(i,j,bi,bj) = bWght*rbceta0(i,j,bi,bj)
+     &                        +aWght*rbceta1(i,j,bi,bj)
+          ENDDO
+         ENDDO
+
        ENDDO
       ENDDO
 
