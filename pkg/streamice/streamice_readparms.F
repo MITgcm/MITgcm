@@ -253,7 +253,7 @@ C--   Default values for STREAMICE
       streamice_nonlin_tol_adjoint = 1.e-14
       streamice_nonlin_tol_adjoint_rl = 1.e-14
 #ifdef ALLOW_PETSC
-      PETSC_PRECOND_OAD = 'MUMPS'
+      PETSC_PRECOND_OAD = 'JACOBI'
       STREAMICE_OAD_petsc_reuse =.false.
 #endif
 #endif
@@ -332,8 +332,8 @@ c      streamice_n_sub_regularize = 4
       STREAMICEcostMaskFile = ''
       STREAMICEGlenConstConfig = 'UNIFORM'
 #ifdef ALLOW_PETSC
-      PETSC_PRECOND_TYPE = 'PCBJACOBI'
-      PETSC_SOLVER_TYPE = 'KSPCG'
+      PETSC_PRECOND_TYPE = 'JACOBI'
+      PETSC_SOLVER_TYPE = 'CG'
       streamice_use_petsc = .false.
 #endif
       STREAMICE_ADV_SCHEME = ''
@@ -549,6 +549,18 @@ C-    Set Output type flags :
       IF (streamice_maxnliter_petsc.eq.-1) then
        streamice_maxnliter_petsc = streamice_max_nl_iter
       ENDIF
+#ifndef ALLOW_STREAMICE_PETSC_MUMPS
+      IF (streamice_use_petsc) then
+       IF (PETSC_PRECOND_TYPE.eq.'MUMPS'.or.
+     &     PETSC_PRECOND_OAD.eq.'MUMPS') then
+        WRITE(msgBuf,'(3A)') 'S/R STREAMICE_READPARMS: ',
+     &       'MUMPS solver not allowed without defining ',
+     &       'ALLOW_STREAMICE_PETSC_MUMPS in STREAMICE_OPTIONS.h'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R STREAMICE_READPARMS'
+       ENDIF
+      ENDIF
+#endif      
 #endif
 
       _END_MASTER(myThid)
