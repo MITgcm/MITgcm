@@ -13,10 +13,10 @@ import MITgcmutils as mit
 
 # some helper routines
 def sqinf(a):
-    """ replace zeros by Inf
+    """ replace zeros by inf
     """
     b = np.copy(np.squeeze(a))
-    b[b==0] = np.Inf
+    b[b==0] = np.inf
     return b
 
 def readfield(fname,dims,datatype):
@@ -66,7 +66,8 @@ def writefield(fname,data):
         if sys.byteorder == 'little': data.byteswap(True)
 
 def calc_hydrostatic_pressure(s,t,p0,dz,gravity=9.81,rhoConst=1035.):
-    from MITgcmutils import jmd95
+    from MITgcmutils import dens
+    eos = dens.jmd95
     mskz = np.copy(t)
     mskz[mskz!=0]=1.
     dp = np.copy(p0)
@@ -74,11 +75,11 @@ def calc_hydrostatic_pressure(s,t,p0,dz,gravity=9.81,rhoConst=1035.):
     dims[0]=dims[0]+1
     pf = np.zeros(dims)
     grho = gravity*rhoConst
-    rhoInSitu0 = jmd95.dens(s,t,p0/grho)*mskz
+    rhoInSitu0 = eos(s,t,p0/grho)*mskz
     # integration of non-linear hydrostatic equation requires iteration:
     resid = 1
     while resid>1e-15:
-        rhoInSitu = jmd95.dens(s,t,p0/grho)*mskz
+        rhoInSitu = eos(s,t,p0/grho)*mskz
         # save old pressure
         dp = np.copy(p0)
         # compute new pressure
