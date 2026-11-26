@@ -16,6 +16,7 @@ C     \ev
 
 C !USES:
       IMPLICIT NONE
+
 C !INPUT PARAMETERS:
 C     xx        :: array of bin-boundaries (layers_boundaries)
 C     n         :: length of xx
@@ -108,8 +109,6 @@ C     that should have covered all the options
        ENDDO
       ENDDO
 #endif /* TARGET_NEC_SX */
-
-#endif /* ALLOW_LAYERS */
 
       RETURN
       END
