@@ -346,7 +346,11 @@ c     &              A_vv(i,j,bi,bj,colx,coly),INSERT_VALUES,ierr)
 #endif
 
       IF (PETSC_PRECOND_TYPE.eq.'MUMPS') then
+#ifdef ALLOW_STREAMICE_PETSC_MUMPS               
        call KSPSetType(ksp,KSPPREONLY,ierr)
+! DNG: NO CODE HERE TO CATCH ERROR AS IT SHOULD
+!      BE CAUGHT IN PARAMETER PROCESSING
+#endif       
       ELSE
        SELECT CASE (PETSC_SOLVER_TYPE)
        CASE ('CG')
@@ -405,13 +409,17 @@ C       call PCGAMGSetReuseProl(pc,PETSC_FALSE,ierr)
        call kspsetup (ksp, ierr)
 
        CASE ('MUMPS')
+#ifdef ALLOW_STREAMICE_PETSC_MUMPS               
        PRINT *, "PETSC PRECOND: SELECTED MUMPS"
-       call PCSetType(pc,PCLU,ierr)
+       call PCSetType(pc,PCCHOLESKY,ierr)
        call PCFactorSetMatSolverType(pc,MATSOLVERMUMPS,ierr)
        call PCFactorSetUpMatSolverType(pc,ierr)
        call PCFactorGetMatrix(pc,mumpsFac,ierr)
        call MatMumpsSetIcntl(mumpsfac,24,1,ierr)
        call kspsetup (ksp, ierr)
+! DNG: NO CODE HERE TO CATCH ERROR AS IT SHOULD
+!      BE CAUGHT IN PARAMETER PROCESSING
+#endif
 
        CASE DEFAULT
        PRINT *, "PETSC PRECOND: SELECTED DEFAULT"
@@ -467,6 +475,7 @@ C       call PCGAMGSetReuseProl(pc,PETSC_FALSE,ierr)
 #endif
       call KSPDestroy (ksp, ierr)
       call MatDestroy (matrix, ierr)
+      streamice_need2createmat = .TRUE.
 #ifdef ALLOW_AUTODIFF
 #ifdef ALLOW_STREAMICE_FP_ADJ
       endif
