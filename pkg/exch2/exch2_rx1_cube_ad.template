@@ -99,11 +99,14 @@ C--    Extract from buffer (either from level 1 if local exch,
 C                           or level 2 if coming from an other Proc)
 C  AD: = fill buffer from my-tile-edge overlap-region, level 1 or 2 depending
 C  AD:   on local (to this Proc) or remote Proc tile destination
+C  AD: neighbours in reverse order: with updateCorners, the regions of two
+C  AD:   neighbours overlap at the corners and the forward keeps the value
+C  AD:   of the last one: its adjoint must read (and zero) these points first
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
         thisTile=W2_myTileList(bi,bj)
         nN=exch2_nNeighbours(thisTile)
-        DO N=1,nN
+        DO N=nN,1,-1
           CALL EXCH2_GET_SCAL_BOUNDS(
      I               fieldCode, exchWidthX, updateCorners,
      I               thisTile, N,
