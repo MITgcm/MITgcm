@@ -1,0 +1,98 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+ tRef               = 3*23.,3*22.,21.,2*20.,19.,2*18.,17.,2*16.,15.,14.,13.,
+                      12.,11.,2*9.,8.,7.,2*6.,2*5.,3*4.,3*3.,4*2.,12*1.,
+ sRef               = 50*34.5,
+ viscAr= 5.6614e-04,
+ no_slip_sides=.FALSE.,
+ diffKrT=6.0e-6,
+ diffKrS=6.0e-6,
+ diffKhT=1.e1,
+ diffKhS=1.e1,
+ rhonil=1027.5,
+ rhoConstFresh=999.8,
+ eosType='JMD95Z',
+ hFacMinDr=50.,
+ hFacMin=0.3,
+ hFacInf=0.1,
+ hFacSup=5.,
+ implicitDiffusion=.TRUE.,
+ implicitViscosity=.TRUE.,
+# viscC4Leith=1.5,
+# viscC4Leithd=1.5,
+# viscA4GridMax=0.5,
+ viscAh=1.0,
+ viscA4Grid=0.1,
+ useAreaViscLength=.TRUE.,
+ sideDragFactor=0.,
+ highOrderVorticity  = .FALSE.,
+ bottomDragQuadratic = 0.0021,
+ tempAdvScheme=7,
+ saltAdvScheme=7,
+ StaggerTimeStep=.TRUE.,
+ vectorInvariantMomentum=.TRUE.,
+ implicitFreeSurface=.TRUE.,
+ exactConserv=.TRUE.,
+# debuglevel=-1,
+ convertFW2Salt=-1.0,
+ useSingleCPUio=.TRUE.,
+ globalFiles=.TRUE.,
+ useRealFreshWaterFlux=.TRUE.,
+ select_rStar=2,
+ nonlinFreeSurf=4,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=200,
+ cg2dTargetResidual=1.E-9,
+ &
+
+# Time stepping parameters
+ &PARM03
+ niter0=0,
+# nTimeSteps = 460224,
+ nTimeSteps = 10,
+# endtime=220924800.,
+ abEps=0.1,
+ deltaT=2400,
+ cAdjFreq=0.,
+ pChkptFreq=315360000.,
+ chkptFreq=31536000.,
+ monitorFreq    = 2400.,
+ dumpFreq = 2400.,
+ forcing_In_AB = .FALSE.
+ dumpInitAndLast=.FALSE.
+ periodicExternalForcing=.TRUE.,
+ externForcingPeriod=2628000.,
+ externForcingCycle=31536000.,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingCartesianGrid=.FALSE.,
+ usingSphericalPolarGrid=.FALSE.,
+ usingCurvilinearGrid=.TRUE.,
+ horizGridFile='CS_topcap64',
+ delR   = 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.01,
+ 10.03, 10.11, 10.32, 10.80, 11.76, 13.42, 16.04 , 19.82, 24.85, 
+ 31.10, 38.42, 46.50, 55.00, 63.50, 71.58, 78.90, 85.15, 90.18, 
+ 93.96, 96.58, 98.25, 99.25,100.01,101.33,104.56,111.33,122.83,
+ 139.09,158.94,180.83,203.55,226.50,249.50,272.50,295.50,318.50,
+ 341.50,364.50,387.50,410.50,433.50,456.50,
+ &
+
+# Input datasets
+ &PARM05
+ bathyFile      ='ETOPO2_210x192_arctic',
+ hydrogThetaFile='WGHC_T_210x192x50_arctic',
+ hydrogSaltFile ='WGHC_S_210x192x50_arctic',
+# ptracFluxFile6  ='./tracereflux.bin',
+# ptracFluxFile7  ='./tracerfflux.bin',
+# ptracFluxFile8  ='./tracergflux.bin',
+# ptracFluxFile9  ='./traceriflux.bin',
+ &
